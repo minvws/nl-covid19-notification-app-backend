@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DevServer.Kick": {
+      "commandName": "Project",
+      "commandLineArgs": "20 123"
+    }
+  }
+}

@@ -1,20 +1,36 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Covid19 Notification App Backend
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+Local development support is provided for all platforms - Windows, macOS, Linux (anyone using that?) - by ServerStandAlone - a .NET Core MVC Web App, and the command line apps in the Data Utilites folder.
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+## Development Tools
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+* Visual Studio 2019
+* Your choice of SQL Server instances
+* Your choice of PostGres instances
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+## Supporting local mobile app development
+
+### Standalone
+
+1. Download dotnet SDK: https://dotnet.microsoft.com/download/dotnet-core/3.1
+1. Clone this repo
+1. Setup a database instance. Windows users can use a local SQL Server or PostGres. On macOS, setup a local PostGres instance.
+1. Add an `appsettings.Development.json` file. This overrides the settings in appsettings.json. And add a value for the MSS connection string.
+1. Go to the ProvisionDb folder and run it with 'dotnet run' - this adds sample reference data.
+1. Run genWorkflows, genauth, genExposureKeySets as required.
+1. Go to the ServerStandAlone folder and run it with 'dotnet run'.
+
+### Docker
+Run `docker-compose up --build` in `/docker` (`cd docker && docker-compose up --build` in solution root)  
+ProvisionDb is executed automatically on a clean install before the server starts.
+
+See the individual app folders for details.
+
+## Development & Contribution process
+
+The core team works on the repository in a private fork (for reasons of compliance with existing processes) and will share its work as often as possible.
+If you plan to make non-trivial changes, we recommend to open an issue beforehand where we can discuss your planned changes.
+This increases the chance that we might be able to use your contribution (or it avoids doing work if there are reasons why we wouldn't be able to use it).
+
+## Attribution
+Some parts of this application are inspired by the work on [Private Tracer](https://gitlab.com/PrivateTracer/server.azure). You can find their license [here](LICENSE/LICENSE.PrivateTracer.org.txt).

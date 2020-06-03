@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DevServer.Gen.ProvisionDb": {
+      "commandName": "Project",
+      "commandLineArgs": "dev4"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+﻿<ProjectConfiguration>
+  <Settings>
+    <DefaultTestTimeout>120000</DefaultTestTimeout>
+    <IgnoredTests>
+      <FixtureTestSelector>
+        <FixtureName>CuckooFilters.Tests.CuckooFilterBuilderTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>CuckooFilters.Tests.CuckooFilterBatchBuilderTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>Components.Tests.CuckooFilters.CuckooFilterBuilderTests</FixtureName>
+      </FixtureTestSelector>
+    </IgnoredTests>
+  </Settings>
+</ProjectConfiguration>
