@@ -2,10 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows
 {
     public class KeysFirstTekReleaseWorkflowEntity : TekReleaseWorkflowEntity

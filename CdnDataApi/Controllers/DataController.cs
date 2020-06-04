@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RivmAdvice;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
 {

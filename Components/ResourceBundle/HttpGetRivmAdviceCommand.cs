@@ -6,7 +6,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RivmAdvice
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle
 {
     public class HttpGetRivmAdviceCommand
     {

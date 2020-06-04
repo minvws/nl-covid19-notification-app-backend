@@ -5,7 +5,7 @@
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RivmAdvice;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 

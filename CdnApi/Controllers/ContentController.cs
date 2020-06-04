@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnApi.Cont
         public async Task GetCurrentManifest()
         {
             var r = await new CdnContentHttpReader().Execute("/manifest");
-            new HttpGetCdnContentCommmand().Execute(HttpContext, r);
+            new HttpGetCdnContentCommand().Execute(HttpContext, r);
         }
 
         [HttpGet]
@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnApi.Cont
         public async Task GetCurrentManifest(string id)
         {
             var r = await new CdnContentHttpReader().Execute("/rivmadvice", id);
-            new HttpGetCdnContentCommmand().Execute(HttpContext, r);
+            new HttpGetCdnContentCommand().Execute(HttpContext, r);
         }
 
         [HttpGet]
@@ -39,15 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnApi.Cont
         public async Task GetCurrent(string id)
         {
             var r = await new CdnContentHttpReader().Execute("/RiskCalculationconfig", id);
-            new HttpGetCdnContentCommmand().Execute(HttpContext, r);
-        }
-
-        [HttpGet]
-        [Route("/blecalibration/{id}")]
-        public async Task GetCurrentBleCalibration(string id)
-        {
-            var r = await new CdnContentHttpReader().Execute("/blecalibration", id);
-            new HttpGetCdnContentCommmand().Execute(HttpContext, r);
+            new HttpGetCdnContentCommand().Execute(HttpContext, r);
         }
     }
 }

@@ -9,10 +9,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
     public class HttpGetLatestManifestCommand
     {
-        private readonly HttpGetCdnContentCommmand _Handler;
+        private readonly HttpGetCdnContentCommand _Handler;
         private readonly GetLatestManifestCommand _Reader;
 
-        public HttpGetLatestManifestCommand(GetLatestManifestCommand reader, HttpGetCdnContentCommmand handler)
+        public HttpGetLatestManifestCommand(GetLatestManifestCommand reader, HttpGetCdnContentCommand handler)
         {
             _Reader = reader;
             _Handler = handler;

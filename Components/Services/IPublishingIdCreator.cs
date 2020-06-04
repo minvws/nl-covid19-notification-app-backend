@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RivmAdvice;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services

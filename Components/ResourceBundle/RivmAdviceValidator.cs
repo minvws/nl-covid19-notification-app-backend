@@ -6,7 +6,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RivmAdvice
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle
 {
     public class RivmAdviceValidator
     {

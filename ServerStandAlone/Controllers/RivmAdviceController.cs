@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.AspNetCore.Mvc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RivmAdvice;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers
 {

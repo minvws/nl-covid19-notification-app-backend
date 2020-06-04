@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "DevServer.Gen.Authorise": {
-      "commandName": "Project",
-      "commandLineArgs": "50 123"
-    }
-  }
-}

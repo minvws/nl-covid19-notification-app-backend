@@ -4,7 +4,7 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RivmAdvice
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle
 {
     [Table("ResourceBundleContent")]
     public class ResourceBundleContentEntity : ContentEntity

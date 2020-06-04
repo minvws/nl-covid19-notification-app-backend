@@ -4,7 +4,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RivmAdvice
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle
 {
     public class HttpPostRivmAdviceCommand
     {

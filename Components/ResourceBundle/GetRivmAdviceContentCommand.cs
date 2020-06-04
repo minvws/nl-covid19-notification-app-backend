@@ -4,8 +4,9 @@
 
 using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RivmAdvice
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle
 {
     public class GetRivmAdviceContentCommand
     {

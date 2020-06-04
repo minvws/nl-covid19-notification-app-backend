@@ -8,6 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 {
     public class ExposureKeySetEntity
     {
+        public int Id { get; set; }
         public DateTime Created { get; set; }
         public string CreatingJobName { get; set; }
         public int CreatingJobQualifier { get; set; }

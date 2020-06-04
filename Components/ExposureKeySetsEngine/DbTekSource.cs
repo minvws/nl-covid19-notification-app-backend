@@ -5,16 +5,16 @@
 using System.Linq;
 using EFCore.BulkExtensions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
 {
     public class DbTekSource : ITekSource
     {
-        private readonly DbContextProvider<WorkflowDbContext> _DbContextProvider;
+        private readonly IDbContextProvider<WorkflowDbContext> _DbContextProvider;
 
-        public DbTekSource(DbContextProvider<WorkflowDbContext> dbContextProvider)
+        public DbTekSource(IDbContextProvider<WorkflowDbContext> dbContextProvider)
         {
             _DbContextProvider = dbContextProvider;
         }

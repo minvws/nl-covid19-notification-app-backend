@@ -5,7 +5,7 @@
 using System;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RivmAdvice;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.RivmAdvice
 {
