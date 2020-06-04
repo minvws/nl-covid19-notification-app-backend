@@ -13,6 +13,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
         string Create(ManifestEntity e);
         string Create(RiskCalculationContentEntity e);
         string Create(ExposureKeySetContentEntity e);
-        string Create(RivmAdviceContentEntity e);
+        string Create(ResourceBundleContentEntity e);
     }
 }

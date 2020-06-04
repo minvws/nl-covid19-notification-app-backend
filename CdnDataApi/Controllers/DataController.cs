@@ -30,12 +30,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
 
         [HttpGet]
         [Route("/rivmadvice/{id}")]
-        public IActionResult GetCurrentManifest(string id, [FromServices]HttpGetContentCommand<RivmAdviceContentEntity> command)
+        public IActionResult GetCurrentManifest(string id, [FromServices]HttpGetContentCommand<ResourceBundleContentEntity> command)
             =>  command.Execute(id);
 
         [HttpGet]
         [Route("/RiskCalculationconfig/{id}")]
-        public IActionResult GetCurrent(string id, [FromServices]HttpGetContentCommand<RivmAdviceContentEntity> command)
+        public IActionResult GetCurrent(string id, [FromServices]HttpGetContentCommand<ResourceBundleContentEntity> command)
             => command.Execute(id);
     }
 }

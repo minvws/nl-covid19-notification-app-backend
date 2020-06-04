@@ -7,19 +7,21 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RivmAdvice
 {
-    public class GetRivmAdviceContentCommand
+    public class SafeGetRivmAdviceCommand
     {
-        private readonly IDbContextProvider<ExposureContentDbContext> _DbConfig;
+        private readonly IDbContextProvider<ExposureContentDbContext>_DbConfig;
 
-        public GetRivmAdviceContentCommand(IDbContextProvider<ExposureContentDbContext> dbConfig)
+        public SafeGetRivmAdviceCommand(IDbContextProvider<ExposureContentDbContext>dbConfig)
         {
             _DbConfig = dbConfig;
         }
 
-        public RivmAdviceContentEntity Execute(string id)
+        public ResourceBundleContentEntity Execute(string id)
         {
-            return _DbConfig.Current.Set<RivmAdviceContentEntity>()
-                .SingleOrDefault(x => x.PublishingId == id);
+            return _DbConfig.Current.Set<ResourceBundleContentEntity>()
+                .Where(x => x.PublishingId == id)
+                .Take(1)
+                .SingleOrDefault();
         }
     }
 }

@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         {
             var now = _UtcDateTimeProvider.Now();
 
-            var hushNow = _DbConfig.Current.Set<KeysFirstWorkflowEntity>()
+            var hushNow = _DbConfig.Current.Set<KeysFirstTekReleaseWorkflowEntity>()
                 .Where(x => x.Created < now - TimeSpan.FromDays(_AgConfig.WorkflowSecretLifetimeDays))
                 .ToArray();
 

@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.TokenFirstWor
 
         public void Execute(WorkflowArgs args)
         {
-            var e = _DbContextProvider.Current.TokenFirstWorkflows
+            var e = _DbContextProvider.Current.KeysLastWorkflows
                 .SingleOrDefault(x => x.TekWriteAuthorisationToken == args.Token && x.State == TokenFirstWorkflowState.Receiving);
 
             if (e == null)
@@ -31,10 +31,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.TokenFirstWor
             }
 
             e.TekWriteAuthorisationToken = null;
-            e.Content = JsonConvert.SerializeObject(args.Items);
+            e.TekContent = JsonConvert.SerializeObject(args.Items);
             e.State = TokenFirstWorkflowState.Authorised;
 
-            _DbContextProvider.Current.TokenFirstWorkflows.Update(e);
+            _DbContextProvider.Current.KeysLastWorkflows.Update(e);
             _DbContextProvider.Current.SaveChangesAsync();
 
             //TODO log hit

@@ -36,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
         public string Create(ExposureKeySetContentEntity e)
             => Create(e.Content);
 
-        public string Create(RivmAdviceContentEntity e)
+        public string Create(ResourceBundleContentEntity e)
             => Create(e.Content);
     }
 }

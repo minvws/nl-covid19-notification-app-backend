@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.KeysFirstWork
 
         public async Task Execute(WorkflowAuthorisationArgs args)
         {
-            var Workflow = _DbContextProvider.Current.Set<KeysFirstWorkflowEntity>()
+            var Workflow = _DbContextProvider.Current.Set<KeysFirstTekReleaseWorkflowEntity>()
                 .Where(x => x.AuthorisationToken == args.Token)
                 .Take(1)
                 .ToArray()

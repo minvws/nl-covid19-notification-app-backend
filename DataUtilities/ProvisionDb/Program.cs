@@ -19,12 +19,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DataUtilities.ProvisionD
             try
             {
                 var config = AppSettingsFromJsonFiles.GetConfigurationRoot();
-                using var dbContextProvider = new DbContextProvider<ExposureContentDbContext>(
+                using var contentDb = new DbContextProvider<ExposureContentDbContext>(
                     () => new ExposureContentDbContext(new PostGresDbContextOptionsBuilder(new StandardEfDbConfig(config, "Content")).Build())
+                    //() => new ExposureContentDbContext(new SqlServerDbContextOptionsBuilder(new StandardEfDbConfig(config, "Content")).Build())
                 );
 
-                var dpProvision = new CreateDatabaseAndCollections(dbContextProvider, new Sha256PublishingIdCreator(new HardCodedExposureKeySetSigning()));
+                var dpProvision = new CreateDatabaseAndCollections(contentDb, new Sha256PublishingIdCreator(new HardCodedExposureKeySetSigning()));
                 dpProvision.Execute().GetAwaiter().GetResult();
+
+                using var workflowDb = new DbContextProvider<WorkflowDbContext>(
+                    () => new WorkflowDbContext(new PostGresDbContextOptionsBuilder(new StandardEfDbConfig(config, "Workflow")).Build())
+                    //() => new ExposureContentDbContext(new SqlServerDbContextOptionsBuilder(new StandardEfDbConfig(config, "Content")).Build())
+                );
+
+                workflowDb.Current.Database.EnsureCreated();
+
                 Console.WriteLine("Completed.");
             }
             catch (Exception exception)

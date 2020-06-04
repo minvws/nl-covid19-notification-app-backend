@@ -3,14 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows
 {
-    public class TokenFirstWorkflowEntity //: DatabaseEntity
+    public class KeysLastTekReleaseWorkflowEntity : TekReleaseWorkflowEntity
     {
-        public int Id { get; set; }
-
 
         /// <summary>
         /// Set to null to free up key space when Authorised.
@@ -32,23 +30,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows
         /// </summary>
         public TokenFirstWorkflowState State { get; set; }
 
-        /// <summary>
-        /// Base time for the job to delete if never authorised.
-        /// E.g. negative test?
-        /// TODO Do we have/need a -ve test explicit delete?
-        /// </summary>
-        public DateTime Created { get; set; }
 
         /// <summary>
         /// Base time for the job to return the state to Unauthorised.
         /// </summary>
         public DateTime? ReceivingStarted { get; set; }
 
-        /// <summary>
-        /// TEK[] as JSON
-        /// </summary>
-        public string Content { get; set; }
-
-        public string Region { get; set; } = DefaultValues.Region;
     }
 }

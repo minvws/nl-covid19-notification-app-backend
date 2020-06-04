@@ -42,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             };
         }
 
-        public static KeysFirstWorkflowEntity ToEntity(this WorkflowArgs args)
+        public static KeysFirstTekReleaseWorkflowEntity ToEntity(this WorkflowArgs args)
         {
             var content = args.Items.Select(x =>
                 new WorkflowKeyContent
@@ -53,14 +53,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
                     RollingStartNumber = x.RollingStartNumber
                 }).ToArray();
 
-            return new KeysFirstWorkflowEntity
+            return new KeysFirstTekReleaseWorkflowEntity
             {
                 AuthorisationToken = args.Token,
-                Content = JsonConvert.SerializeObject(content) //TODO deserialize had better not screw with this cos array...
+                TekContent = JsonConvert.SerializeObject(content) //TODO deserialize had better not screw with this cos array...
             };
         }
 
-        public static RivmAdviceContentEntity ToEntity(this MobileDeviceRivmAdviceArgs args)
+        public static ResourceBundleContentEntity ToEntity(this MobileDeviceRivmAdviceArgs args)
         {
             var content = new MobileDeviceRivmAdviceConfigEntityContent
             {
@@ -75,7 +75,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
                 TemporaryExposureKeyRetentionDays = args.TemporaryExposureKeyRetentionDays,
             };
 
-            return new RivmAdviceContentEntity
+            return new ResourceBundleContentEntity
             {
                 Release = args.Release,
                 Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content))
@@ -100,14 +100,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
         //    };
         //}
 
-        public static KeysFirstWorkflowEntity ToDbEntity(this WorkflowArgs args)
+        public static KeysFirstTekReleaseWorkflowEntity ToDbEntity(this WorkflowArgs args)
         {
             var content = JsonConvert.SerializeObject(args.Items.Select(ToDbEntity).ToArray()); //TODO no envelope?
 
-            return new KeysFirstWorkflowEntity
+            return new KeysFirstTekReleaseWorkflowEntity
             {
                 //TODO region?
-                Content = content,
+                TekContent = content,
                 AuthorisationToken = args.Token,
             };
         }

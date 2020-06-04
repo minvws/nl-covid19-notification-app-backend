@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RivmAdvice
         public string Execute()
         {
             var now = _DateTimeProvider.Now();
-            return _DbConfig.Current.Set<RivmAdviceContentEntity>()
+            return _DbConfig.Current.Set<ResourceBundleContentEntity>()
                 .Where(x => x.Release <= now)
                 .OrderByDescending(x => x.Release)
                 .Take(1)

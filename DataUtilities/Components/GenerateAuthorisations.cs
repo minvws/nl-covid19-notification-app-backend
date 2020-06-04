@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DataUtilities.Components
         public void Execute(int pAuthorise, Random r)
         {
             _DbContextProvider.BeginTransaction();
-            var unauthorised = _DbContextProvider.Current.Set<KeysFirstWorkflowEntity>()
+            var unauthorised = _DbContextProvider.Current.Set<KeysFirstTekReleaseWorkflowEntity>()
                 .Where(x => x.Authorised == false)
                 .Select(x => x.AuthorisationToken)
                 .ToArray();

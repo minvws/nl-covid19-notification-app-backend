@@ -22,14 +22,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.TokenFirstWor
 
         public void Execute(string token)
         {
-            var e = new TokenFirstWorkflowEntity 
+            var e = new KeysLastTekReleaseWorkflowEntity 
             { 
                 Created = _DateTimeProvider.Now(),
                 SecretToken = token,
                 State = TokenFirstWorkflowState.Unauthorised
             };
             
-            _DbContextProvider.Current.TokenFirstWorkflows.Add(e);
+            _DbContextProvider.Current.KeysLastWorkflows.Add(e);
         }
     }
 }

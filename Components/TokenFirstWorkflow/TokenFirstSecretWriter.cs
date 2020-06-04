@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.TokenFirstWor
 
         public void Execute(string secretToken)
         {
-            var e = new TokenFirstWorkflowEntity
+            var e = new KeysLastTekReleaseWorkflowEntity
             {
                 Created = _DateTimeProvider.Now(),
                 SecretToken = secretToken,
@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.TokenFirstWor
             };
 
             //TODO secret token already exists...
-            _DbContextProvider.Current.TokenFirstWorkflows.AddAsync(e);
+            _DbContextProvider.Current.KeysLastWorkflows.AddAsync(e);
             _DbContextProvider.Current.SaveChangesAsync();
         }
     }

@@ -29,10 +29,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.TokenFirstWor
             var expired = _DateTimeProvider.Now() - TimeSpan.FromDays(_TokenFirstWorkflowConfig.WorkflowTokenTtlDays);
 
             _DbContextProvider.BeginTransaction();
-            var q = _DbContextProvider.Current.TokenFirstWorkflows
+            var q = _DbContextProvider.Current.KeysLastWorkflows
                 .Where(x => x.State == TokenFirstWorkflowState.Unauthorised && x.Created < expired);
 
-            _DbContextProvider.Current.TokenFirstWorkflows.RemoveRange(q);
+            _DbContextProvider.Current.KeysLastWorkflows.RemoveRange(q);
             _DbContextProvider.Current.SaveChanges();
             _DbContextProvider.SaveAndCommit();
         }

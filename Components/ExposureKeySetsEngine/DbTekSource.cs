@@ -21,14 +21,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         public SourceItem[] Read()
             //TODO TX?
-            => _DbContextProvider.Current.TokenFirstWorkflows
+            => _DbContextProvider.Current.KeysLastWorkflows
                 .Where(x => x.State == TokenFirstWorkflowState.Authorised)
-                .Select(x => new SourceItem {Id = x.Id, Content = x.Content, Region = x.Region})
+                .Select(x => new SourceItem {Id = x.Id, Content = x.TekContent, Region = x.Region})
                 .ToArray();
 
         public void Delete(int[] things)
         {
-            var die = things.Select(x => new TokenFirstWorkflowEntity {Id = x}).ToList();
+            var die = things.Select(x => new KeysLastTekReleaseWorkflowEntity {Id = x}).ToList();
             _DbContextProvider.Current.BulkDeleteAsync(die);
         }
     }

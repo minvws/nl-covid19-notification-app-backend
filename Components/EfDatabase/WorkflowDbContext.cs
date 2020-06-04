@@ -15,8 +15,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
         {
         }
 
+        
+        public DbSet<TekReleaseWorkflowEntity> TekReleaseWorkflowEntity { get; set; }
+
         [Obsolete]
-        public DbSet<KeysFirstWorkflowEntity> KeysFirstWorkflows { get; set; }
-        public DbSet<TokenFirstWorkflowEntity> TokenFirstWorkflows { get; set; }
+        public DbSet<KeysFirstTekReleaseWorkflowEntity> KeysFirstWorkflows { get; set; }
+
+        public DbSet<KeysLastTekReleaseWorkflowEntity> KeysLastWorkflows { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<TekReleaseWorkflowEntity>(x => x.ToTable("TekReleaseWorkflowEntity"));
+            modelBuilder.Entity<KeysFirstTekReleaseWorkflowEntity>(x => x.HasBaseType<TekReleaseWorkflowEntity>());
+            modelBuilder.Entity<KeysLastTekReleaseWorkflowEntity>(x => x.HasBaseType<TekReleaseWorkflowEntity>());
+        }
     }
 }

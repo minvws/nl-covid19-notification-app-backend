@@ -10,7 +10,7 @@ McsTestConfigProvider.Db.DoNotCommit.cs
 *.userosscache
 *.sln.docstates
 local.settings.json
-*.Development.json
+*.[Dd]evelopment.json
 .idea
 
 # User-specific files (MonoDevelop/Xamarin Studio)
@@ -359,4 +359,4 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-/MobileClientServices/appsettings.Developer.json
+

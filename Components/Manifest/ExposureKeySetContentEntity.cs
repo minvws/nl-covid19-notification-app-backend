@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RivmAdvice;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
@@ -10,9 +11,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
     /// <summary>
     /// TODO incomplete.
     /// </summary>
+    [Table("ExposureKeySetContent")]
     public class ExposureKeySetContentEntity : ContentEntity
     {
-        public int Id { get; set; }
         /// <summary>
         /// Metadata - Job Id.
         /// </summary>
