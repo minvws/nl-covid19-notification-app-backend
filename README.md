@@ -1,6 +1,6 @@
 # Covid19 Notification App Backend
 
-Local development support is provided for all platforms - Windows, macOS, Linux (anyone using that?) - by ServerStandAlone - a .NET Core MVC Web App, and the command line apps in the Data Utilites folder.
+Local development support is provided for all platforms - Windows, macOS, Linux - by ServerStandAlone - a .NET Core MVC Web App, and the command line apps in the Data Utilites folder.
 
 ## Development Tools
 
