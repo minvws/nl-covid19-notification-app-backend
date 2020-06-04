@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -51,21 +52,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddSingleton<IAgConfig, AgConfigAppSettings>();
             services.AddSingleton<IPublishingIdCreator>(x => new Sha256PublishingIdCreator(new HardCodedExposureKeySetSigning()));
 
+            var isPostGreSQL = Configuration["DbType"] == "PostGreSQL";
+            var t = isPostGreSQL ? typeof(PostGresDbContextOptionsBuilder) : typeof(SqlServerDbContextOptionsBuilder);
+            
             services.AddScoped<IDbContextProvider<ExposureContentDbContext>>(x =>
             {
-                var builder = new SqlServerDbContextOptionsBuilder(new StandardEfDbConfig(Configuration, "Content"));
+                var config = new StandardEfDbConfig(Configuration, "Content");
+                var builder = (IDbContextOptionsBuilder)Activator.CreateInstance(t, config);
                 return new DbContextProvider<ExposureContentDbContext>(() => new ExposureContentDbContext(builder.Build()));
             });
 
             services.AddScoped<IDbContextProvider<WorkflowDbContext>>(x =>
             {
-                var builder = new SqlServerDbContextOptionsBuilder(new StandardEfDbConfig(Configuration, "WorkFlow"));
+                var config = new StandardEfDbConfig(Configuration, "WorkFlow");
+                var builder = (IDbContextOptionsBuilder)Activator.CreateInstance(t, config);
                 return new DbContextProvider<WorkflowDbContext>(() => new WorkflowDbContext(builder.Build()));
             });
 
             services.AddScoped<IDbContextProvider<ExposureKeySetsBatchJobDbContext>>(x =>
             {
-                var builder = new SqlServerDbContextOptionsBuilder(new StandardEfDbConfig(Configuration, "Job"));
+                var config = new StandardEfDbConfig(Configuration, "Job");
+                var builder = (IDbContextOptionsBuilder)Activator.CreateInstance(t, config);
                 return new DbContextProvider<ExposureKeySetsBatchJobDbContext>(() => new ExposureKeySetsBatchJobDbContext(builder.Build()));
             });
 
