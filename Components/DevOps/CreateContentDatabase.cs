@@ -61,11 +61,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 {
                         new LocalizableTextArgs
                         {
-                            Locale = "en-GB", IsolationAdviceShort = "Stay the hell indoors for {0} day!!!", IsolationAdviceLong = "Something hmtl, zipped",
+                            Locale = "en-GB", IsolationAdviceShort = "Stay indoors for {0} days!!!", IsolationAdviceLong = "Something hmtl, zipped",
                         },
                         new LocalizableTextArgs
                         {
-                            Locale = "nl-nl", IsolationAdviceShort = "Verklaar de hel binnenshuis", IsolationAdviceLong = "Verklaar de hel binnenshuis but longer.",
+                            Locale = "nl-nl", IsolationAdviceShort = "Verklaar binnenshuis", IsolationAdviceLong = "Verklaar binnenshuis but longer.",
                         }
                     }
             }.ToEntity();
