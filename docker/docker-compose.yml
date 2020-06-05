@@ -12,9 +12,9 @@ services:
   db_mssql:
     image: mcr.microsoft.com/mssql/server:2019-latest
     ports:
-      - "1434:1433"
+      - "1433:1433"
     volumes:
       - ./docker/db:/var/data/project
     environment:
-      MSSQL_SA_PASSWORD: "mss-dev"
+      SA_PASSWORD: "mss-nl-covid-19-dev"
       ACCEPT_EULA: "Y"
