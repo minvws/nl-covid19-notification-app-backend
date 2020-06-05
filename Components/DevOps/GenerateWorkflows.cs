@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -14,26 +15,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
     public class GenerateWorkflows
     {
-        private readonly IDbContextProvider<ExposureContentDbContext>_DbContextProvider;
+        private readonly IDbContextProvider<WorkflowDbContext> _DbContextProvider;
 
-        public GenerateWorkflows(IDbContextProvider<ExposureContentDbContext>dbContextProvider)
+        public GenerateWorkflows(IDbContextProvider<WorkflowDbContext> dbContextProvider)
         {
             _DbContextProvider = dbContextProvider;
         }
 
-        public void Execute(int WorkflowCount, Func<int, int> randomInt, Action<byte[]> randomBytes)
+        public async Task Execute(int WorkflowCount, Func<int, int> randomInt, Action<byte[]> randomBytes)
         {
             var luhnModNConfig = new LuhnModNConfig();
             var WorkflowKeyGenerator = new GenerateWorkflowKeys(luhnModNConfig);
             var WorkflowValidatorConfig = new HardCodedAgWorkflowValidatorConfig();
             var WorkflowKeyValidatorConfig = new HardCodedAgTemporaryExposureKeyValidatorConfig();
             var writer = new WorkflowInsertDbCommand(_DbContextProvider, new StandardUtcDateTimeProvider());
-            var c = new Workflows.HttpPostWorkflowCommand(
+            var c = new HttpPostWorkflowCommand(
                 writer,
                 new WorkflowValidator(
                     WorkflowValidatorConfig,
                     new WorkflowAuthorisationTokenLuhnModNValidator(luhnModNConfig),
-                        new TemporaryExposureKeyValidator(WorkflowKeyValidatorConfig)), 
+                        new TemporaryExposureKeyValidator(WorkflowKeyValidatorConfig)),
                 _DbContextProvider);
 
             var keyBuffer = new byte[WorkflowKeyValidatorConfig.DailyKeyByteCount];
@@ -60,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 }
                 Workflow.Items = keys.ToArray();
 
-                c.Execute(Workflow);
+                await c.Execute(Workflow);
 
                 if (i > 0 && i % 100 == 0)
                     Console.WriteLine($"Workflow count {i}...");

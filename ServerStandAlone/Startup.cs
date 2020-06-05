@@ -2,7 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +17,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.KeysFirstWorkflow.WorkflowAuthorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -46,33 +46,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             });
                 
             services.AddControllers();
+            services.AddSeriLog(Configuration);
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<ILuhnModNConfig, LuhnModNConfig>();
             services.AddSingleton<IAgConfig, AgConfigAppSettings>();
             services.AddSingleton<IPublishingIdCreator>(x => new Sha256PublishingIdCreator(new HardCodedExposureKeySetSigning()));
 
-            var isPostGreSQL = Configuration["DbType"] == "PostGreSQL";
-            var t = isPostGreSQL ? typeof(PostGresDbContextOptionsBuilder) : typeof(SqlServerDbContextOptionsBuilder);
-            
             services.AddScoped<IDbContextProvider<ExposureContentDbContext>>(x =>
             {
                 var config = new StandardEfDbConfig(Configuration, "Content");
-                var builder = (IDbContextOptionsBuilder)Activator.CreateInstance(t, config);
+                var builder = new SqlServerDbContextOptionsBuilder(config);
                 return new DbContextProvider<ExposureContentDbContext>(() => new ExposureContentDbContext(builder.Build()));
             });
 
             services.AddScoped<IDbContextProvider<WorkflowDbContext>>(x =>
             {
                 var config = new StandardEfDbConfig(Configuration, "WorkFlow");
-                var builder = (IDbContextOptionsBuilder)Activator.CreateInstance(t, config);
+                var builder = new SqlServerDbContextOptionsBuilder(config);
                 return new DbContextProvider<WorkflowDbContext>(() => new WorkflowDbContext(builder.Build()));
             });
 
             services.AddScoped<IDbContextProvider<ExposureKeySetsBatchJobDbContext>>(x =>
             {
                 var config = new StandardEfDbConfig(Configuration, "Job");
-                var builder = (IDbContextOptionsBuilder)Activator.CreateInstance(t, config);
+                var builder = new SqlServerDbContextOptionsBuilder(config);
                 return new DbContextProvider<ExposureKeySetsBatchJobDbContext>(() => new ExposureKeySetsBatchJobDbContext(builder.Build()));
             });
 
@@ -113,16 +111,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<SafeGetRivmAdviceCommand, SafeGetRivmAdviceCommand>();
 
             services.AddScoped<HttpPostProvisionDbCommand, HttpPostProvisionDbCommand>();
+            services.AddScoped<HttpPostGenerateWorkflowCommand, HttpPostGenerateWorkflowCommand>();
             services.AddScoped<HttpPostGenerateWorkflowArguments, HttpPostGenerateWorkflowArguments>();
             services.AddScoped<HttpPostGenerateExposureKeySetsCommand, HttpPostGenerateExposureKeySetsCommand>();
             services.AddScoped<HttpPostGenerateAuthorizeCommand, HttpPostGenerateAuthorizeCommand>();
             services.AddScoped<GenerateAuthorizations, GenerateAuthorizations>();
+            
 
             services.AddScoped<HttpGetLatestManifestCommand, HttpGetLatestManifestCommand>();
             services.AddScoped<GetLatestManifestCommand, GetLatestManifestCommand>();
             services.AddScoped<HttpGetCdnContentCommand, HttpGetCdnContentCommand>();
             
-
             services.AddSwaggerGen(o =>
             {
                 o.SwaggerDoc("v1", new OpenApiInfo { Title = "MSS Stand-Alone Development Server", Version = "v1" });

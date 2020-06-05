@@ -12,9 +12,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.KeysFirstWork
 {
     public class WorkflowDbAuthoriseCommand : IWorkflowAuthorisationWriter
     {
-        private readonly IDbContextProvider<ExposureContentDbContext>_DbContextProvider;
+        private readonly IDbContextProvider<WorkflowDbContext>_DbContextProvider;
 
-        public WorkflowDbAuthoriseCommand(IDbContextProvider<ExposureContentDbContext>dbContextProvider)
+        public WorkflowDbAuthoriseCommand(IDbContextProvider<WorkflowDbContext>dbContextProvider)
         {
             _DbContextProvider = dbContextProvider;
         }
