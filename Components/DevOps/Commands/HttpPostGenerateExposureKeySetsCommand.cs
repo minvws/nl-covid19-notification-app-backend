@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AgProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -20,14 +21,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.Comman
 {
     public class HttpPostGenerateExposureKeySetsCommand
     {
+        private readonly IConfiguration _config;
         private readonly IDbContextProvider<WorkflowDbContext> _input;
         private readonly IDbContextProvider<ExposureContentDbContext> _output;
+        private readonly IDbContextProvider<ExposureKeySetsBatchJobDbContext> _jobs;
         private readonly IUtcDateTimeProvider _standardUtcDateTimeProvider;
 
-        public HttpPostGenerateExposureKeySetsCommand(IDbContextProvider<WorkflowDbContext> input, IDbContextProvider<ExposureContentDbContext> output, IUtcDateTimeProvider standardUtcDateTimeProvider)
+        public HttpPostGenerateExposureKeySetsCommand(IConfiguration config, IDbContextProvider<WorkflowDbContext> input, IDbContextProvider<ExposureContentDbContext> output, IDbContextProvider<ExposureKeySetsBatchJobDbContext> jobs, IUtcDateTimeProvider standardUtcDateTimeProvider)
         {
+            _config = config;
             _input = input;
             _output = output;
+            _jobs = jobs;
             _standardUtcDateTimeProvider = standardUtcDateTimeProvider;
         }
 
@@ -35,24 +40,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.Comman
         {
             try
             {
-                var config = AppSettingsFromJsonFiles.GetConfigurationRoot();
-
-                var jobConfigBuilder = new PostGresDbContextOptionsBuilder(new StandardEfDbConfig(config, "Job"));
-                using var jobContext = new DbContextProvider<ExposureKeySetsBatchJobDbContext>(
-                    () => new ExposureKeySetsBatchJobDbContext(jobConfigBuilder.Build())
-                );
-                
                 using var bb = new ExposureKeySetBatchJob(
                     new DbTekSource(_input),
-                    jobConfigBuilder,
+                    _jobs,
                     _standardUtcDateTimeProvider,
                     new ExposureKeySetDbWriter(_output, new Sha256PublishingIdCreator(new HardCodedExposureKeySetSigning())),
-                    new AgConfigAppSettings(config), 
+                    new AgConfigAppSettings(_config), 
                     new JsonContentExposureKeySetFormatter(), 
                     new ExposureKeySetBuilderV1(
-                        new HsmExposureKeySetHeaderInfoConfig(config),
+                        new HsmExposureKeySetHeaderInfoConfig(_config),
                         new HardCodedExposureKeySetSigning(), _standardUtcDateTimeProvider, new GeneratedProtobufContentFormatter())
-                    , new ExposureKeySetBatchJobConfig(config)
+                    , new ExposureKeySetBatchJobConfig(_config)
                 );
 
                 await bb.Execute();

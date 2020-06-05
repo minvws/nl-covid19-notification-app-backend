@@ -48,20 +48,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         /// <summary>
         /// Prod
         /// </summary>
-        public ExposureKeySetBatchJob(ITekSource tekSource, IDbContextOptionsBuilder jobDbOptionsBuilder, IUtcDateTimeProvider dateTimeProvider,
+        public ExposureKeySetBatchJob(ITekSource tekSource, IDbContextProvider<ExposureKeySetsBatchJobDbContext> jobDbOptionsBuilder, IUtcDateTimeProvider dateTimeProvider,
             IExposureKeySetWriter eksWriter, IAgConfig agConfig, IJsonExposureKeySetFormatter jsonSetFormatter, IExposureKeySetBuilder agSetBuilder, IExposureKeySetBatchJobConfig jobConfig)
         {
             _Used = new List<WorkflowInputEntity>(_JobConfig.InputListCapacity);
             _Start = dateTimeProvider.Now();
             JobName = $"ExposureKeySetsJob_{_Start:u}".Replace(" ", "_");
-
+            _JobDbProvider = jobDbOptionsBuilder;
             _AgConfig = agConfig;
             _TekSource = tekSource;
 
-             _JobDbProvider = new DbContextProvider<ExposureKeySetsBatchJobDbContext>(
-                 () => new ExposureKeySetsBatchJobDbContext(jobDbOptionsBuilder.AddDatabaseName(JobName).Build()));
-
-            _JsonSetFormatter = jsonSetFormatter;
+             _JsonSetFormatter = jsonSetFormatter;
             _AgSetBuilder = agSetBuilder;
             _JobConfig = jobConfig;
             _Writer = eksWriter;

@@ -24,7 +24,6 @@ Local development support is provided for all platforms - Windows, macOS, Linux 
 
 * Visual Studio 2019
 * Your choice of SQL Server instances
-* Your choice of PostGres instances
 
 ## Supporting local mobile app development
 
