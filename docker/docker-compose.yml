@@ -14,7 +14,7 @@ services:
     ports:
       - "1433:1433"
     volumes:
-      - ./docker/db:/var/data/project
+      - ./db:/var/data/project
     environment:
       SA_PASSWORD: "mss-nl-covid-19-dev"
       ACCEPT_EULA: "Y"
