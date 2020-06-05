@@ -7,13 +7,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AgProtocolSettings;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 
@@ -46,7 +44,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.Comman
                     _standardUtcDateTimeProvider,
                     new ExposureKeySetDbWriter(_output, new Sha256PublishingIdCreator(new HardCodedExposureKeySetSigning())),
                     new AgConfigAppSettings(_config), 
-                    new JsonContentExposureKeySetFormatter(), 
                     new ExposureKeySetBuilderV1(
                         new HsmExposureKeySetHeaderInfoConfig(_config),
                         new HardCodedExposureKeySetSigning(), _standardUtcDateTimeProvider, new GeneratedProtobufContentFormatter())
