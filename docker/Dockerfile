@@ -4,8 +4,9 @@ ADD Components /app/Components
 ADD ServerStandAlone /app/ServerStandAlone
 ADD GaenFormat /app/GaenFormat
 
-ADD docker/appsettings.Development.json /app/ServerStandAlone/appsettings.Development.json
-ADD docker/appsettings.Development.json /app/Components/appsettings.Development.json
+ADD docker/appsettings.Development.json /app/ServerStandAlone/appsettings.json
+ADD docker/appsettings.Development.json /app/Components/appsettings.json
+ADD docker/appsettings.Development.json /app/GaenFormat/appsettings.json
 ADD docker/start.sh /app/start.sh
 WORKDIR /app
-ENTRYPOINT ["./start.sh"]
+ENTRYPOINT ["sh", "start.sh"]
