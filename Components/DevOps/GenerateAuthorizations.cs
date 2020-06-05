@@ -14,10 +14,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
     public class GenerateAuthorizations
     {
-        private readonly IDbContextProvider<ExposureContentDbContext>_DbContextProvider;
+        private readonly IDbContextProvider<WorkflowDbContext>_DbContextProvider;
         private readonly IWorkflowAuthorisationWriter _Writer;
 
-        public GenerateAuthorizations(IDbContextProvider<ExposureContentDbContext>dbContextProvider, IWorkflowAuthorisationWriter writer)
+        public GenerateAuthorizations(IDbContextProvider<WorkflowDbContext>dbContextProvider, IWorkflowAuthorisationWriter writer)
         {
             _DbContextProvider = dbContextProvider;
             _Writer = writer;

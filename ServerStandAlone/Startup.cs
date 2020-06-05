@@ -109,10 +109,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<SafeGetRivmAdviceCommand, SafeGetRivmAdviceCommand>();
 
             services.AddScoped<HttpPostProvisionDbCommand, HttpPostProvisionDbCommand>();
+            services.AddScoped<HttpPostGenerateWorkflowCommand, HttpPostGenerateWorkflowCommand>();
             services.AddScoped<HttpPostGenerateWorkflowArguments, HttpPostGenerateWorkflowArguments>();
             services.AddScoped<HttpPostGenerateExposureKeySetsCommand, HttpPostGenerateExposureKeySetsCommand>();
             services.AddScoped<HttpPostGenerateAuthorizeCommand, HttpPostGenerateAuthorizeCommand>();
             services.AddScoped<GenerateAuthorizations, GenerateAuthorizations>();
+            
 
             services.AddScoped<HttpGetLatestManifestCommand, HttpGetLatestManifestCommand>();
             services.AddScoped<GetLatestManifestCommand, GetLatestManifestCommand>();

@@ -12,10 +12,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows
 {
     public class WorkflowInsertDbCommand : IWorkflowWriter
     {
-        private readonly IDbContextProvider<ExposureContentDbContext>_DbContextProvider;
+        private readonly IDbContextProvider<WorkflowDbContext> _DbContextProvider;
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
 
-        public WorkflowInsertDbCommand(IDbContextProvider<ExposureContentDbContext>contextProvider, IUtcDateTimeProvider utcDateTimeProvider)
+        public WorkflowInsertDbCommand(IDbContextProvider<WorkflowDbContext> contextProvider, IUtcDateTimeProvider utcDateTimeProvider)
         {
             _DbContextProvider = contextProvider;
             _UtcDateTimeProvider = utcDateTimeProvider;

@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -12,25 +13,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows
     {
         private readonly IWorkflowWriter _WorkflowDbInsertCommand;
         private readonly IWorkflowValidator _WorkflowValidator;
-        private readonly IDbContextProvider<ExposureContentDbContext>_DbContextProvider;
+        private readonly IDbContextProvider<WorkflowDbContext> _DbContextProvider;
 
-        public HttpPostWorkflowCommand(IWorkflowWriter infectionDbInsertCommand, IWorkflowValidator WorkflowValidator, IDbContextProvider<ExposureContentDbContext>dbContextProvider)
+        public HttpPostWorkflowCommand(IWorkflowWriter infectionDbInsertCommand, IWorkflowValidator WorkflowValidator, IDbContextProvider<WorkflowDbContext> dbContextProvider)
         {
             _WorkflowDbInsertCommand = infectionDbInsertCommand;
             _WorkflowValidator = WorkflowValidator;
             _DbContextProvider = dbContextProvider;
         }
 
-        public IActionResult Execute(WorkflowArgs args)
+        public async Task<IActionResult> Execute(WorkflowArgs args)
         {
             if (!_WorkflowValidator.Validate(args))
                 return new BadRequestResult();
 
-            using (var tx = _DbContextProvider.BeginTransaction())
+            await using (var tx = _DbContextProvider.BeginTransaction())
             {
-                _WorkflowDbInsertCommand.Execute(args).GetAwaiter().GetResult();
-                _DbContextProvider.Current.SaveChanges();
-                tx.Commit();
+                await _WorkflowDbInsertCommand.Execute(args);
+                await _DbContextProvider.Current.SaveChangesAsync();
+                await tx.CommitAsync();
             }
 
             return new OkResult();

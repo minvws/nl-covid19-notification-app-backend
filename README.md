@@ -31,10 +31,8 @@ Local development support is provided for all platforms - Windows, macOS, Linux 
 
 1. Download dotnet SDK: https://dotnet.microsoft.com/download/dotnet-core/3.1
 1. Clone this repo
-1. Setup a database instance. Windows users can use a local SQL Server or PostGres. On macOS, setup a local PostGres instance.
+1. Setup a database instance. Windows users can use a local SQL Server.
 1. Add an `appsettings.Development.json` file. This overrides the settings in appsettings.json. And add a value for the MSS connection string.
-1. Go to the ProvisionDb folder and run it with 'dotnet run' - this adds sample reference data.
-1. Run genWorkflows, genauth, genExposureKeySets as required.
 1. Go to the ServerStandAlone folder and run it with 'dotnet run'.
 
 ### Docker

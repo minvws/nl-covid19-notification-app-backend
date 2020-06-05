@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.Arguments;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -12,23 +13,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.Comman
 {
     public class HttpPostGenerateWorkflowCommand
     {
-        private readonly IDbContextProvider<ExposureContentDbContext> _contextProvider;
+        private readonly IDbContextProvider<WorkflowDbContext> _contextProvider;
 
-        public HttpPostGenerateWorkflowCommand(IDbContextProvider<ExposureContentDbContext>contextProvider)
+        public HttpPostGenerateWorkflowCommand(IDbContextProvider<WorkflowDbContext> contextProvider)
         {
             _contextProvider = contextProvider;
         }
 
-        public IActionResult Execute(HttpPostGenerateWorkflowArguments args)
+        public async Task<IActionResult> Execute(HttpPostGenerateWorkflowArguments args)
         {
             try
             {
                 if (args.WorkflowCount < 1)
                     throw new ArgumentOutOfRangeException(nameof(args.WorkflowCount));
-                
+
                 var r = new Random(args.RandomSeed); //Don't need the crypto version.
                 var c1 = new GenerateWorkflows(_contextProvider);
-                c1.Execute(args.WorkflowCount, x => r.Next(x), x => r.NextBytes(x));
+                await c1.Execute(args.WorkflowCount, x => r.Next(x), x => r.NextBytes(x));
 
                 return new OkResult();
             }

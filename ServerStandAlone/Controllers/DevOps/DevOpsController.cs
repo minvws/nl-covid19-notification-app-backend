@@ -30,9 +30,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         /// <returns></returns>
         [HttpPost]
         [Route("/devops/GenWorkFlows")]
-        public IActionResult WorkFlows([FromBody]HttpPostGenerateWorkflowArguments arguments, [FromServices]HttpPostGenerateWorkflowCommand command)
+        public async Task<IActionResult> WorkFlows([FromBody]HttpPostGenerateWorkflowArguments arguments, [FromServices]HttpPostGenerateWorkflowCommand command)
         {
-            return command.Execute(arguments);
+            return await command.Execute(arguments);
         }
 
         /// <summary>

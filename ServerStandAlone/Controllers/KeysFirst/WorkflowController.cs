@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
 
@@ -13,9 +14,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
     {
         [HttpPost]
         [Route("keysfirst/Workflow")]
-        public IActionResult PostWorkflow([FromBody]WorkflowArgs args, [FromServices]HttpPostWorkflowCommand command)
+        public async Task<IActionResult> PostWorkflow([FromBody]WorkflowArgs args, [FromServices]HttpPostWorkflowCommand command)
         {
-            return command.Execute(args);
+            return await command.Execute(args);
         }
     }
 }

@@ -14,7 +14,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
 {
@@ -51,6 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         public ExposureKeySetBatchJob(ITekSource tekSource, IDbContextProvider<ExposureKeySetsBatchJobDbContext> jobDbOptionsBuilder, IUtcDateTimeProvider dateTimeProvider,
             IExposureKeySetWriter eksWriter, IAgConfig agConfig, IJsonExposureKeySetFormatter jsonSetFormatter, IExposureKeySetBuilder agSetBuilder, IExposureKeySetBatchJobConfig jobConfig)
         {
+            _JobConfig = jobConfig;
             _Used = new List<WorkflowInputEntity>(_JobConfig.InputListCapacity);
             _Start = dateTimeProvider.Now();
             JobName = $"ExposureKeySetsJob_{_Start:u}".Replace(" ", "_");
@@ -60,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
              _JsonSetFormatter = jsonSetFormatter;
             _AgSetBuilder = agSetBuilder;
-            _JobConfig = jobConfig;
+            
             _Writer = eksWriter;
         }
         public async Task Execute()
