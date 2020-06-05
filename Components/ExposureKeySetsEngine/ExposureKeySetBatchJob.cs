@@ -27,18 +27,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         public string JobName { get; }
 
         private readonly List<WorkflowInputEntity> _Used;
-
         private readonly List<TemporaryExposureKeyArgs> _KeyBatch = new List<TemporaryExposureKeyArgs>();
 
         private readonly IExposureKeySetBatchJobConfig _JobConfig;
         private readonly IAgConfig _AgConfig;
-
         private readonly ITekSource _TekSource;
         private readonly IDbContextProvider<ExposureKeySetsBatchJobDbContext> _JobDbProvider;
-        
         private readonly IExposureKeySetWriter _Writer;
-
-        private readonly IJsonExposureKeySetFormatter _JsonSetFormatter;
         private readonly IExposureKeySetBuilder _AgSetBuilder;
 
         private int _Counter;
@@ -48,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         /// Prod
         /// </summary>
         public ExposureKeySetBatchJob(ITekSource tekSource, IDbContextProvider<ExposureKeySetsBatchJobDbContext> jobDbOptionsBuilder, IUtcDateTimeProvider dateTimeProvider,
-            IExposureKeySetWriter eksWriter, IAgConfig agConfig, IJsonExposureKeySetFormatter jsonSetFormatter, IExposureKeySetBuilder agSetBuilder, IExposureKeySetBatchJobConfig jobConfig)
+            IExposureKeySetWriter eksWriter, IAgConfig agConfig, IExposureKeySetBuilder agSetBuilder, IExposureKeySetBatchJobConfig jobConfig)
         {
             _JobConfig = jobConfig;
             _Used = new List<WorkflowInputEntity>(_JobConfig.InputListCapacity);
@@ -57,8 +52,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _JobDbProvider = jobDbOptionsBuilder;
             _AgConfig = agConfig;
             _TekSource = tekSource;
-
-             _JsonSetFormatter = jsonSetFormatter;
             _AgSetBuilder = agSetBuilder;
             
             _Writer = eksWriter;
@@ -111,12 +104,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             })
             .ToArray();
 
-            await using (var tx = _JobDbProvider.Current.Database.BeginTransaction())
-            {
-                await _JobDbProvider.Current.BulkInsertAsync(authorisedWorkflows);
-                await _JobDbProvider.Current.SaveChangesAsync();
-                await tx.CommitAsync();
-            }
+            await using var tx = await _JobDbProvider.Current.Database.BeginTransactionAsync();
+            await _JobDbProvider.Current.BulkInsertAsync(authorisedWorkflows);
+            await _JobDbProvider.Current.SaveChangesAsync();
+            await tx.CommitAsync();
         }
 
         private async Task Build()
@@ -132,10 +123,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             };
             _KeyBatch.Clear();
 
-            using (var tx = _JobDbProvider.BeginTransaction())
+            await using (var tx = _JobDbProvider.BeginTransaction())
             {
                 await _JobDbProvider.Current.AddAsync(e);
-                tx.Commit();
+                await tx.CommitAsync();
             }
 
             await WriteUsed();
@@ -151,8 +142,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             await using (var tx = _JobDbProvider.BeginTransaction())
             {
                 await _JobDbProvider.Current.BulkUpdateAsync(_Used);
-                _JobDbProvider.Current.SaveChanges();
-                tx.Commit();
+                await _JobDbProvider.Current.SaveChangesAsync();
+                await tx.CommitAsync();
             }
 
             _Used.Clear();
