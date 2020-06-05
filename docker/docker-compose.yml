@@ -8,8 +8,13 @@ services:
       - '5000:5000'
       - '5001:5001'
     links:
-      - 'db:database'
-  db:
-    image: 'postgres:12-alpine'
+      - 'db_mssql:database'
+  db_mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - "1434:1433"
+    volumes:
+      - ./docker/db:/var/data/project
     environment:
-      POSTGRES_PASSWORD: mss-dev
+      MSSQL_SA_PASSWORD: "mss-dev"
+      ACCEPT_EULA: "Y"
