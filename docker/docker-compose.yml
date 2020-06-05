@@ -13,8 +13,6 @@ services:
     image: mcr.microsoft.com/mssql/server:2019-latest
     ports:
       - "1433:1433"
-    volumes:
-      - ./db:/var/data/project
     environment:
       SA_PASSWORD: "mss-nl-covid-19-dev"
       ACCEPT_EULA: "Y"

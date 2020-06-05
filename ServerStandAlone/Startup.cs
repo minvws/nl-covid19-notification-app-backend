@@ -17,6 +17,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.KeysFirstWorkflow.WorkflowAuthorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -45,6 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             });
                 
             services.AddControllers();
+            services.AddSeriLog(Configuration);
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<ILuhnModNConfig, LuhnModNConfig>();
@@ -120,7 +122,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<GetLatestManifestCommand, GetLatestManifestCommand>();
             services.AddScoped<HttpGetCdnContentCommand, HttpGetCdnContentCommand>();
             
-
             services.AddSwaggerGen(o =>
             {
                 o.SwaggerDoc("v1", new OpenApiInfo { Title = "MSS Stand-Alone Development Server", Version = "v1" });
