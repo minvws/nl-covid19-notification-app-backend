@@ -36,8 +36,9 @@ Local development support is provided for all platforms - Windows, macOS, Linux 
 1. Go to the ServerStandAlone folder and run it with 'dotnet run'.
 
 ### Docker
-Run `docker-compose up --build` in `/docker` (`cd docker && docker-compose up --build` in solution root)  
-ProvisionDb is executed automatically on a clean install before the server starts.
+1. Copy `docker/appsettings.Development.example.json` to `docker/appsettings.Development.json`
+1. Check MSSQL passwords in `docker-compose.yml` and `appsettings.Development.json`
+1. Run `docker-compose up --build` in `/docker` ( `cd docker && docker-compose up --build` in solution root)
 
 See the individual app folders for details.
 
