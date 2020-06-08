@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
         public DateTime Release { get; set; }
         [Index]
         public string Region { get; set; } = DefaultValues.Region;
-        public byte[] Content { get; set; }
+        public byte[]? Content { get; set; }
         public string ContentTypeName { get; set; } = "application/json"; //TODO
     }
 }

@@ -10,6 +10,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     public interface ITekSource
     {
         SourceItem[] Read();
-        void Delete(int[] things);
+        void Delete(int[] kf, int[] kl);
     }
 }

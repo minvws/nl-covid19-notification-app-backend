@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows
 {
@@ -15,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows
             _Config = config;
         }
 
-        public bool Valid(WorkflowKeyArgs value)
+        public bool Valid(TemporaryExposureKeyArgs value)
         {
             if (value == null)
                 return false;

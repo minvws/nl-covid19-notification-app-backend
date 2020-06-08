@@ -10,16 +10,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
     public class CreateWorkflowDatabase
     {
-        private readonly IDbContextProvider<WorkflowDbContext> _provider;
+        private readonly IDbContextProvider<WorkflowDbContext> _Provider;
 
         public CreateWorkflowDatabase(IDbContextProvider<WorkflowDbContext> provider)
         {
-            _provider = provider;
+            _Provider = provider;
         }
 
         public async Task Execute()
         {
-            await _provider.Current.Database.EnsureCreatedAsync();
+            await _Provider.Current.Database.EnsureCreatedAsync();
         }
 
     }

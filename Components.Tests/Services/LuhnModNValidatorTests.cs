@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
         public void ValidateTest(string value, bool expected)
         {
             Assert.AreEqual(expected, new LuhnModNValidator(new LuhnModNConfig()).Validate(value));
-            Assert.AreEqual(expected, new WorkflowAuthorisationTokenLuhnModNValidator(new LuhnModNConfig()).IsValid(value));
+            Assert.AreEqual(expected, new KeysFirstAuthorisationTokenLuhnModNValidator(new LuhnModNConfig()).IsValid(value));
         }
 
         [TestMethod]

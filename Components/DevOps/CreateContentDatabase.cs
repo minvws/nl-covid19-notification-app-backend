@@ -16,12 +16,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
     public class CreateContentDatabase
     {
         private readonly IDbContextProvider<ExposureContentDbContext> _DbContextProvider;
-        private readonly IPublishingIdCreator _PublishingIdCreator;
+        private readonly IPublishingId _PublishingId;
 
-        public CreateContentDatabase(IDbContextProvider<ExposureContentDbContext> contextProvider, IPublishingIdCreator publishingIdCreator)
+        public CreateContentDatabase(IDbContextProvider<ExposureContentDbContext> contextProvider, IPublishingId publishingId)
         {
             _DbContextProvider = contextProvider;
-            _PublishingIdCreator = publishingIdCreator;
+            _PublishingId = publishingId;
         }
 
         public async Task Execute()
@@ -29,11 +29,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             await _DbContextProvider.Current.Database.EnsureCreatedAsync();
         }
 
-        public async Task Seed()
+        public async Task AddExampleContent()
         {
             await using var tx = await _DbContextProvider.Current.Database.BeginTransactionAsync();
 
-            var e0 = new MobileDeviceRivmAdviceArgs
+            var e0 = new ResourceBundleArgs
             {
                 Release = new DateTime(2020, 1, 1),
                 Text = new[]
@@ -48,10 +48,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                         }
                     }
             }.ToEntity();
-            e0.PublishingId = _PublishingIdCreator.Create(e0);
+            e0.PublishingId = _PublishingId.Create(e0);
             await _DbContextProvider.Current.AddAsync(e0);
 
-            var e1 = new MobileDeviceRivmAdviceArgs
+            var e1 = new ResourceBundleArgs
             {
                 Release = new DateTime(2020, 5, 1),
                 IsolationPeriodDays = 10,
@@ -69,15 +69,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                         }
                     }
             }.ToEntity();
-            e1.PublishingId = _PublishingIdCreator.Create(e1);
+            e1.PublishingId = _PublishingId.Create(e1);
             await _DbContextProvider.Current.AddAsync(e1);
 
-            var e2 = new MobileDeviceRivmAdviceArgs
+            var e2 = new ResourceBundleArgs
             {
                 Release = new DateTime(2021, 1, 1),
                 Text = new LocalizableTextArgs[0]
             }.ToEntity();
-            e2.PublishingId = _PublishingIdCreator.Create(e2);
+            e2.PublishingId = _PublishingId.Create(e2);
             await _DbContextProvider.Current.AddAsync(e2);
 
             //TODO something more realistic
@@ -90,7 +90,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 DurationLevelValues = new WeightingArgs { Weight = 50, LevelValues = new[] { 10, 2, 3, 4, 5 } },
                 TransmissionRisk = new WeightingArgs { Weight = 60, LevelValues = new[] { 10, 100, 1000 } },
             }.ToEntity();
-            e4.PublishingId = _PublishingIdCreator.Create(e4);
+            e4.PublishingId = _PublishingId.Create(e4);
 
             await _DbContextProvider.Current.AddAsync(e4);
             await _DbContextProvider.Current.SaveChangesAsync();

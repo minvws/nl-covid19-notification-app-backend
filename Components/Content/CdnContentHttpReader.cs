@@ -10,47 +10,47 @@ using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
-    public class CdnContentHttpReader
-    {
-        public async Task<BinaryContentResponse?> Execute(string uri2)
-        {
-            if (!Uri.TryCreate(uri2, UriKind.Absolute, out var uri))
-                throw new ArgumentException();
+    //public class CdnContentHttpReader
+    //{
+    //    public async Task<BinaryContentResponse?> Execute(string uri2)
+    //    {
+    //        if (!Uri.TryCreate(uri2, UriKind.Absolute, out var uri))
+    //            throw new ArgumentException();
 
-            return await BinaryContentResponse(uri);
-        }
+    //        return await BinaryContentResponse(uri);
+    //    }
 
-        public async Task<BinaryContentResponse?> Execute(string baseUri, string id)
-        {
-            //TODO validate id as a publishingId
+    //    public async Task<BinaryContentResponse?> Execute(string baseUri, string id)
+    //    {
+    //        //TODO validate id as a publishingId
 
-            if (!Uri.TryCreate($"{baseUri}/{id}", UriKind.Absolute, out var uri))
-                throw new ArgumentException();
+    //        if (!Uri.TryCreate($"{baseUri}/{id}", UriKind.Absolute, out var uri))
+    //            throw new ArgumentException();
 
-            return await BinaryContentResponse(uri);
-        }
+    //        return await BinaryContentResponse(uri);
+    //    }
 
-        private static async Task<BinaryContentResponse?> BinaryContentResponse(Uri uri)
-        {
-            using var client = new HttpClient();
-            client.BaseAddress = uri;
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("x-protobuf"));
-            var response = await client.GetAsync(client.BaseAddress);
+    //    private static async Task<BinaryContentResponse?> BinaryContentResponse(Uri uri)
+    //    {
+    //        using var client = new HttpClient();
+    //        client.BaseAddress = uri;
+    //        client.DefaultRequestHeaders.Accept.Clear();
+    //        client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("x-protobuf"));
+    //        var response = await client.GetAsync(client.BaseAddress);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                if (response.StatusCode == HttpStatusCode.NotFound)
-                    return null;
+    //        if (!response.IsSuccessStatusCode)
+    //        {
+    //            if (response.StatusCode == HttpStatusCode.NotFound)
+    //                return null;
 
-                throw new InvalidOperationException("Unexpected response to data call.");
-            }
+    //            throw new InvalidOperationException("Unexpected response to data call.");
+    //        }
 
-            var bytes = await response.Content.ReadAsByteArrayAsync();
-            using var stream = new MemoryStream(bytes);
-            return ProtoBuf.Serializer.Deserialize<BinaryContentResponse>(stream);
-        }
-    }
+    //        var bytes = await response.Content.ReadAsByteArrayAsync();
+    //        using var stream = new MemoryStream(bytes);
+    //        return ProtoBuf.Serializer.Deserialize<BinaryContentResponse>(stream);
+    //    }
+    //}
 
     //public class HttpGetContent<T> where T : ContentEntity
     //{

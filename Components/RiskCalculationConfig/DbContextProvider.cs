@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculati
     {
         private readonly Func<T> _Build;
 
-        private T _Current;
+        private T? _Current;
 
         public T Current => _Current ??= _Build();
 

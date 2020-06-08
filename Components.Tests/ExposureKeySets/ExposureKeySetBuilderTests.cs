@@ -5,6 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices.ComTypes;
+using System.Text;
+using System.Text.Encodings.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
@@ -12,6 +15,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
+using TemporaryExposureKeyArgs = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.TemporaryExposureKeyArgs;
+
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
 {
@@ -37,16 +42,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         private TemporaryExposureKeyArgs[] GetRandomKeys(int WorkflowCount, int seed)
         {
             var random = new Random(seed);
-            var WorkflowKeyValidatorConfig = new HardCodedAgTemporaryExposureKeyValidatorConfig();
-            var WorkflowValidatorConfig = new HardCodedAgWorkflowValidatorConfig();
+            var WorkflowKeyValidatorConfig = new DefaultGaenTekValidatorConfig();
+            var WorkflowValidatorConfig = new DefaultGeanTekListValidationConfig();
 
-            var result = new List<TemporaryExposureKeyArgs>(WorkflowCount * WorkflowValidatorConfig.WorkflowKeyCountMax);
+            var result = new List<TemporaryExposureKeyArgs>(WorkflowCount * WorkflowValidatorConfig.TemporaryExposureKeyCountMax);
             var keyBuffer = new byte[WorkflowKeyValidatorConfig.DailyKeyByteCount];
 
             for (var i = 0; i < WorkflowCount; i++)
             {
 
-                var keyCount = 1 + random.Next(WorkflowValidatorConfig.WorkflowKeyCountMax - 1);
+                var keyCount = 1 + random.Next(WorkflowValidatorConfig.TemporaryExposureKeyCountMax - 1);
                 var keys = new List<TemporaryExposureKeyArgs>(keyCount);
                 for (var j = 0; j < keyCount; j++)
                 {

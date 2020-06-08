@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows
         {
         }
 
-        private const string Prefix = "Validation:AgWorkflowKey:";
+        private const string Prefix = "Validation:TemporaryExposureKey:";
 
         public int RollingPeriodMin => GetValueInt32(Prefix+nameof(RollingPeriodMin));
         public int RollingPeriodMax => GetValueInt32(Prefix + nameof(RollingPeriodMax));

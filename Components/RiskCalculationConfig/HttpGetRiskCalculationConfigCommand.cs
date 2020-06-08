@@ -1,39 +1,44 @@
-// Copyright © 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
-// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
-// SPDX-License-Identifier: EUPL-1.2
+//// Copyright © 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+//// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+//// SPDX-License-Identifier: EUPL-1.2
 
-using System.Text;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
+//using System;
+//using System.Text;
+//using System.Web;
+//using Microsoft.AspNetCore.Mvc;
+//using Newtonsoft.Json;
+//using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
+//using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig
-{
-    
-    public class HttpGetRiskCalculationConfigCommand
-    {
-        private readonly SafeGetRiskCalculationConfigDbCommand _SafeReadcommand;
+//namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig
+//{
 
-        public HttpGetRiskCalculationConfigCommand(SafeGetRiskCalculationConfigDbCommand safeReadcommand)
-        {
-            _SafeReadcommand = safeReadcommand;
-        }
+//    [Obsolete("Use BinaryContentResponse mechanism.")]
+//    public class HttpGetRiskCalculationConfigCommand
+//    {
+//        private readonly SafeGetRiskCalculationConfigDbCommand _SafeReadcommand;
+//        private readonly IPublishingId _PublishingId;
 
-        public IActionResult Execute(string id)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-                return new BadRequestResult();
+//        public HttpGetRiskCalculationConfigCommand(SafeGetRiskCalculationConfigDbCommand safeReadcommand, IPublishingId publishingId)
+//        {
+//            _SafeReadcommand = safeReadcommand;
+//            _PublishingId = publishingId;
+//        }
 
-            //TODO validate the id further?
+//        public IActionResult Execute(string id)
+//        {
+//            if (string.IsNullOrWhiteSpace(id))
+//                return new BadRequestResult();
 
-            var e = _SafeReadcommand.Execute(id.Trim());
+//            var parsed = _PublishingId.ParseUri(id);
+//            var e = _SafeReadcommand.Execute(parsed);
 
-            if (e == null)
-                return new NotFoundResult();
+//            if (e == null)
+//                return new NotFoundResult();
 
-            var content = JsonConvert.DeserializeObject<RiskCalculationConfigContent>(Encoding.UTF8.GetString(e.Content));
-            var result = content.ToResponse();
-            return new OkObjectResult(result);
-        }
-    }
-}
+//            var content = JsonConvert.DeserializeObject<RiskCalculationConfigContent>(Encoding.UTF8.GetString(e.Content));
+//            var result = content.ToResponse();
+//            return new OkObjectResult(result);
+//        }
+//    }
+//}

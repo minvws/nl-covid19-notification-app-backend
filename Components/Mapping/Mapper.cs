@@ -5,9 +5,12 @@
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
+using TemporaryExposureKeyArgs = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks.TemporaryExposureKeyArgs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 {
@@ -42,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             };
         }
 
-        public static KeysFirstTekReleaseWorkflowEntity ToEntity(this WorkflowArgs args)
+        public static KeysFirstTeksWorkflowEntity ToEntity(this KeysFirstEscrowArgs args)
         {
             var content = args.Items.Select(x =>
                 new WorkflowKeyContent
@@ -53,16 +56,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
                     RollingStartNumber = x.RollingStartNumber
                 }).ToArray();
 
-            return new KeysFirstTekReleaseWorkflowEntity
+            return new KeysFirstTeksWorkflowEntity
             {
                 AuthorisationToken = args.Token,
                 TekContent = JsonConvert.SerializeObject(content) //TODO deserialize had better not screw with this cos array...
             };
         }
 
-        public static ResourceBundleContentEntity ToEntity(this MobileDeviceRivmAdviceArgs args)
+        public static ResourceBundleContentEntity ToEntity(this ResourceBundleArgs args)
         {
-            var content = new MobileDeviceRivmAdviceConfigEntityContent
+            var content = new ResourceBundleEntityContent
             {
                 Text = args.Text.Select(x => new LocalizableText
                 {
@@ -100,22 +103,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
         //    };
         //}
 
-        public static KeysFirstTekReleaseWorkflowEntity ToDbEntity(this WorkflowArgs args)
-        {
-            var content = JsonConvert.SerializeObject(args.Items.Select(ToDbEntity).ToArray()); //TODO no envelope?
-
-            return new KeysFirstTekReleaseWorkflowEntity
-            {
-                //TODO region?
-                TekContent = content,
-                AuthorisationToken = args.Token,
-            };
-        }
-
-        private static TemporaryExposureKeyContent ToDbEntity(WorkflowKeyArgs args)
+        private static TemporaryExposureKeyContent ToDbEntity(TemporaryExposureKeyArgs args)
             => new TemporaryExposureKeyContent
             {
-                DailyKey = args.KeyData,
+                KeyData = args.KeyData,
                 RollingPeriod = args.RollingPeriod,
                 RollingStart = args.RollingStartNumber,
                 Risk = args.TransmissionRiskLevel

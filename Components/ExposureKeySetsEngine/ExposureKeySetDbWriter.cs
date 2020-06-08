@@ -17,35 +17,34 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     /// </summary>
     public class ExposureKeySetDbWriter : IExposureKeySetWriter
     {
-        public ExposureKeySetDbWriter(IDbContextProvider<ExposureContentDbContext> dbContext, IPublishingIdCreator publishingIdCreator)
+        public ExposureKeySetDbWriter(IDbContextProvider<ExposureContentDbContext> dbContext, IPublishingId publishingId)
         {
             _DbContext = dbContext;
-            _PublishingIdCreator = publishingIdCreator;
+            _PublishingId = publishingId;
         }
 
         private readonly IDbContextProvider<ExposureContentDbContext> _DbContext;
-        private readonly IPublishingIdCreator _PublishingIdCreator;
+        private readonly IPublishingId _PublishingId;
 
         public void Write(ExposureKeySetEntity[] things)
         {
-
             var entities = things.Select(x => new ExposureKeySetContentEntity
             {
-                Content = x.AgContent,
+                Content = x.GaenContent,
                 CreatingJobName = x.CreatingJobName,
                 CreatingJobQualifier = x.CreatingJobQualifier,
                 Region = x.Region,
                 Release = x.Created,
-            });
+            }).ToList();
 
             foreach (var i in entities)
             {
-                i.PublishingId = _PublishingIdCreator.Create(i);
+                i.PublishingId = _PublishingId.Create(i);
             }
 
             using (_DbContext.BeginTransaction())
             {
-                _DbContext.Current.BulkInsertAsync(entities.ToList());
+                _DbContext.Current.BulkInsertAsync(entities);
                 _DbContext.SaveAndCommit();
             }
         }

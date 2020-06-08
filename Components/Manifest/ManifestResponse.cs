@@ -6,8 +6,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
     public class ManifestResponse
     {
-        public AgExposureKeySetsConfig ExposureKeySets { get; set; }
-        public string RivmAdvice { get; set; }
-        public string RiskCalculationConfig { get; set; }
+        public string[] ExposureKeySets { get; set; }
+        public string ResourceBundle { get; set; }
+        public string RiskCalculationParameters { get; set; }
     }
 }

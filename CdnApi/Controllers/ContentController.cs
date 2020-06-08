@@ -2,10 +2,15 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnApi.Controllers
 {
@@ -13,33 +18,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnApi.Cont
     [Route("[controller]")]
     public class ContentController : ControllerBase
     {
-        public ContentController(ILogger<ContentController> logger)
+        [HttpGet]
+        [Route(EndPointNames.CdnApi.ResourceBundle + "/{id}")]
+        public async Task GetResourceBundle(string id, [FromServices]HttpGetCdnContentCommand<ResourceBundleContentEntity> command)
         {
-            logger.LogInformation("CdnApi.Controllers init");
+            await command.Execute(HttpContext, id);
         }
 
         [HttpGet]
-        [Route("/manifest")]
-        public async Task GetCurrentManifest()
+        [Route(EndPointNames.CdnApi.RiskCalculationParameters + "/{id}")]
+        public async Task GetRiskCalculationParameters(string id, [FromServices]HttpGetCdnContentCommand<RiskCalculationContentEntity> command)
         {
-            var r = await new CdnContentHttpReader().Execute("/manifest");
-            new HttpGetCdnContentCommand().Execute(HttpContext, r);
+            await command.Execute(HttpContext, id);
         }
 
         [HttpGet]
-        [Route("/rivmadvice/{id}")]
-        public async Task GetCurrentManifest(string id)
+        [Route(EndPointNames.CdnApi.ExposureKeySet + "/{id}")]
+        public async Task GetExposureKeySet(string id, [FromServices]HttpGetCdnContentCommand<ExposureKeySetContentEntity> command)
         {
-            var r = await new CdnContentHttpReader().Execute("/rivmadvice", id);
-            new HttpGetCdnContentCommand().Execute(HttpContext, r);
-        }
-
-        [HttpGet]
-        [Route("/RiskCalculationconfig/{id}")]
-        public async Task GetCurrent(string id)
-        {
-            var r = await new CdnContentHttpReader().Execute("/RiskCalculationconfig", id);
-            new HttpGetCdnContentCommand().Execute(HttpContext, r);
+            await command.Execute(HttpContext, id);
         }
     }
 }

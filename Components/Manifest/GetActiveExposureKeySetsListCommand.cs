@@ -4,9 +4,9 @@
 
 using System;
 using System.Linq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AgProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
@@ -14,26 +14,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
     public class GetActiveExposureKeySetsListCommand
     {
         private readonly IDbContextProvider<ExposureContentDbContext>_DbConfig;
-        private readonly IAgConfig _AgConfig;
+        private readonly IGaenContentConfig _GaenContentConfig;
 
-        public GetActiveExposureKeySetsListCommand(IDbContextProvider<ExposureContentDbContext>dbConfig, IAgConfig agConfig)
+        public GetActiveExposureKeySetsListCommand(IDbContextProvider<ExposureContentDbContext>dbConfig, IGaenContentConfig gaenContentConfig)
         {
             _DbConfig = dbConfig;
-            _AgConfig = agConfig;
+            _GaenContentConfig = gaenContentConfig;
         }
 
-        public AgExposureKeySetsConfig Execute()
+        public string[] Execute()
         {
-            var expired = new StandardUtcDateTimeProvider().Now() - TimeSpan.FromDays(_AgConfig.ExposureKeySetLifetimeDays);
-            var activeExposureKeySets = _DbConfig.Current.Set<ExposureKeySetContentEntity>()
+            var expired = new StandardUtcDateTimeProvider().Now() - TimeSpan.FromDays(_GaenContentConfig.ExposureKeySetLifetimeDays);
+            var result = _DbConfig.Current.Set<ExposureKeySetContentEntity>()
                 .Where(x => x.Release > expired)
                 .Select(x => x.PublishingId)
                 .ToArray();
 
-            return new AgExposureKeySetsConfig
-            {
-                Ids = activeExposureKeySets
-            };
+            return result;
         }
     }
 }

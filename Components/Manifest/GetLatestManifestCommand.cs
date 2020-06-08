@@ -7,34 +7,37 @@ using System.Linq;
 using System.Text;
 using EFCore.BulkExtensions;
 using Newtonsoft.Json;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AgProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
+    [Obsolete("Writes to DB too.")]
     public class GetLatestManifestCommand
     {
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IDbContextProvider<ExposureContentDbContext> _DbContext;
         private readonly ManifestBuilder _ManifestBuilder;
-        private readonly IAgConfig _AgConfig;
-        private readonly IPublishingIdCreator _PublishingIdCreator;
+        private readonly IGaenContentConfig _GaenContentConfig;
+        private readonly IPublishingId _PublishingId;
 
-        public GetLatestManifestCommand(IUtcDateTimeProvider dateTimeProvider, IDbContextProvider<ExposureContentDbContext> dbContext, ManifestBuilder manifestBuilder, IAgConfig agConfig, IPublishingIdCreator publishingIdCreator)
+        public GetLatestManifestCommand(IUtcDateTimeProvider dateTimeProvider, IDbContextProvider<ExposureContentDbContext> dbContext, ManifestBuilder manifestBuilder, IGaenContentConfig gaenContentConfig, IPublishingId publishingId)
         {
             _DateTimeProvider = dateTimeProvider;
             _DbContext = dbContext;
             _ManifestBuilder = manifestBuilder;
-            _AgConfig = agConfig;
-            _PublishingIdCreator = publishingIdCreator;
+            _GaenContentConfig = gaenContentConfig;
+            _PublishingId = publishingId;
         }
 
         public ManifestEntity Execute()
         {
+            _DbContext.BeginTransaction(); //TODO should be using WebDbContentProvider
+
             var now = _DateTimeProvider.Now();
-            var releaseCutoff = now - TimeSpan.FromHours(_AgConfig.ManifestLifeTimeHours);
+            var releaseCutoff = now - TimeSpan.FromHours(_GaenContentConfig.ManifestLifetimeHours);
 
             var e = _DbContext.Current.ManifestContent
                 .Where(x => x.Release > releaseCutoff)
@@ -56,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
                 Content = bytes,
                 Region = DefaultValues.Region,
             };
-            e.PublishingId = _PublishingIdCreator.Create(e);
+            e.PublishingId = _PublishingId.Create(e);
             _DbContext.Current.ManifestContent.Add(e);
             _DbContext.SaveAndCommit();
 

@@ -5,14 +5,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Workflow
 {
-    public class KeysFirstTekReleaseWorkflow : IEntityTypeConfiguration<KeysFirstTekReleaseWorkflowEntity>
+    public class KeysFirstTekReleaseWorkflow : IEntityTypeConfiguration<KeysFirstTeksWorkflowEntity>
     {
-        public void Configure(EntityTypeBuilder<KeysFirstTekReleaseWorkflowEntity> builder)
+        public void Configure(EntityTypeBuilder<KeysFirstTeksWorkflowEntity> builder)
         {
-            builder.HasBaseType<TekReleaseWorkflowEntity>();
         }
     }
 }

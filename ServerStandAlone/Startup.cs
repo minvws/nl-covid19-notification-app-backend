@@ -2,29 +2,31 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AgProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.Arguments;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.KeysFirstWorkflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.KeysFirstWorkflow.WorkflowAuthorisation;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 {
@@ -46,12 +48,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             });
                 
             services.AddControllers();
-            services.AddSeriLog(Configuration);
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<ILuhnModNConfig, LuhnModNConfig>();
-            services.AddSingleton<IAgConfig, AgConfigAppSettings>();
-            services.AddSingleton<IPublishingIdCreator>(x => new Sha256PublishingIdCreator(new HardCodedExposureKeySetSigning()));
+            services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
+            services.AddSingleton<IExposureKeySetHeaderInfoConfig, HsmExposureKeySetHeaderInfoConfig>();
+            services.AddSingleton<IExposureKeySetBatchJobConfig, ExposureKeySetBatchJobConfig>();
+            services.AddSingleton<IPublishingId>(x => new Sha256PublishingId(new HardCodedExposureKeySetSigning()));
 
             services.AddScoped<IDbContextProvider<ExposureContentDbContext>>(x =>
             {
@@ -74,54 +77,58 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 return new DbContextProvider<ExposureKeySetsBatchJobDbContext>(() => new ExposureKeySetsBatchJobDbContext(builder.Build()));
             });
 
-            services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(x.GetService<IConfiguration>(), "MSS"));
+            //Just for the Batch Job
+            services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Job"));
 
-            services.AddScoped<HttpPostWorkflowCommand, HttpPostWorkflowCommand>();
-            services.AddSingleton<IWorkflowValidator, WorkflowValidator>();
-            services.AddSingleton<IWorkflowAuthorisationTokenValidator, WorkflowAuthorisationTokenLuhnModNValidator>();
-            services.AddSingleton<IWorkflowValidatorConfig, WorkflowValidationAppSettings>();
+            services.AddScoped<HttpPostKeysFirstGenerateTekSetsCommand, HttpPostKeysFirstGenerateTekSetsCommand>();
+            services.AddScoped<HttpPostKeysFirstEscrowCommand, HttpPostKeysFirstEscrowCommand>();
+
+            services.AddSingleton<IKeysFirstEscrowValidator, KeysFirstEscrowValidator>();
+            services.AddSingleton<IKeysFirstAuthorisationTokenValidator, KeysFirstAuthorisationTokenLuhnModNValidator>();
+            services.AddSingleton<IGeanTekListValidationConfig, StandardGeanCommonWorkflowConfig>();
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
-            services.AddScoped<IWorkflowWriter, WorkflowInsertDbCommand>();
+            services.AddScoped<IKeysFirstEscrowWriter, KeysFirstEscrowInsertDbCommand>();
 
-            services.AddScoped<HttpPostWorkflowAuthoriseCommand, HttpPostWorkflowAuthoriseCommand>();
-            services.AddScoped<IWorkflowAuthorisationWriter, WorkflowDbAuthoriseCommand>();
+            services.AddScoped<HttpPostKeysFirstAuthorisationCommand, HttpPostKeysFirstAuthorisationCommand>();
+            services.AddScoped<IKeysFirstAuthorisationWriter, KeysFirstDbAuthoriseCommand>();
             
-            services.AddScoped<HttpGetLatestManifestCommand, HttpGetLatestManifestCommand>();
+            //TODO services.AddScoped<HttpGetLatestManifestCommand, HttpGetLatestManifestCommand>();
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
             services.AddScoped<GetActiveExposureKeySetsListCommand, GetActiveExposureKeySetsListCommand>();
-            services.AddScoped<GetLatestRiskCalculationConfigCommand, GetLatestRiskCalculationConfigCommand>();
-            services.AddScoped<GetLatestRivmAdviceCommand, GetLatestRivmAdviceCommand>();
+            services.AddScoped<GetLatestRiskCalculationParametersCommand, GetLatestRiskCalculationParametersCommand>();
+            services.AddScoped<GetLatestResourceBundleCommand, GetLatestResourceBundleCommand>();
 
-            services.AddScoped<HttpGetAgExposureKeySetCommand, HttpGetAgExposureKeySetCommand>();
-            services.AddScoped<AgExposureKeySetSafeReadCommand, AgExposureKeySetSafeReadCommand>();
+            services.AddScoped<ExposureKeySetSafeReadCommand, ExposureKeySetSafeReadCommand>();
             
-            services.AddScoped<HttpGetRiskCalculationConfigCommand, HttpGetRiskCalculationConfigCommand>();
             services.AddScoped<SafeGetRiskCalculationConfigDbCommand, SafeGetRiskCalculationConfigDbCommand>();
 
             services.AddScoped<HttpPostRiskCalculationConfigCommand, HttpPostRiskCalculationConfigCommand>();
             services.AddScoped<RiskCalculationConfigValidator, RiskCalculationConfigValidator>();
             services.AddScoped<RiskCalculationConfigInsertDbCommand, RiskCalculationConfigInsertDbCommand>();
 
-            services.AddScoped<HttpPostRivmAdviceCommand, HttpPostRivmAdviceCommand>();
-            services.AddScoped<RivmAdviceInsertDbCommand, RivmAdviceInsertDbCommand>();
-            services.AddScoped<RivmAdviceValidator, RivmAdviceValidator>();
+            services.AddScoped<HttpPostResourceBundleCommand, HttpPostResourceBundleCommand>();
+            services.AddScoped<ResourceBundleInsertDbCommand, ResourceBundleInsertDbCommand>();
+            services.AddScoped<ResourceBundleValidator, ResourceBundleValidator>();
 
-            services.AddScoped<HttpGetRivmAdviceCommand, HttpGetRivmAdviceCommand>();
-            services.AddScoped<SafeGetRivmAdviceCommand, SafeGetRivmAdviceCommand>();
+            //services.AddScoped<SafeGetResourceBundleCommand, SafeGetResourceBundleCommand>();
 
-            services.AddScoped<HttpPostProvisionDbCommand, HttpPostProvisionDbCommand>();
-            services.AddScoped<HttpPostGenerateWorkflowCommand, HttpPostGenerateWorkflowCommand>();
-            services.AddScoped<HttpPostGenerateWorkflowArguments, HttpPostGenerateWorkflowArguments>();
+            services.AddScoped<ProvisionDatabasesCommand, ProvisionDatabasesCommand>();
+            services.AddScoped<GenerateKeysFirstTekSetsArgs, GenerateKeysFirstTekSetsArgs>();
             services.AddScoped<HttpPostGenerateExposureKeySetsCommand, HttpPostGenerateExposureKeySetsCommand>();
-            services.AddScoped<HttpPostGenerateAuthorizeCommand, HttpPostGenerateAuthorizeCommand>();
-            services.AddScoped<GenerateAuthorizations, GenerateAuthorizations>();
-            
+            services.AddScoped<HttpPostKeysFirstRandomAuthorisationCommand, HttpPostKeysFirstRandomAuthorisationCommand>();
+            services.AddScoped<GenerateKeysFirstAuthorisations, GenerateKeysFirstAuthorisations>();
 
-            services.AddScoped<HttpGetLatestManifestCommand, HttpGetLatestManifestCommand>();
-            services.AddScoped<GetLatestManifestCommand, GetLatestManifestCommand>();
-            services.AddScoped<HttpGetCdnContentCommand, HttpGetCdnContentCommand>();
-            
+            services.AddScoped<HttpGetCdnContentCommand<ManifestEntity>, HttpGetCdnContentCommand<ManifestEntity>>();
+            services.AddScoped<HttpGetCdnContentCommand<ExposureKeySetContentEntity>, HttpGetCdnContentCommand<ExposureKeySetContentEntity>>();
+            services.AddScoped<HttpGetCdnContentCommand<RiskCalculationContentEntity>, HttpGetCdnContentCommand<RiskCalculationContentEntity>>();
+            services.AddScoped<HttpGetCdnContentCommand<ResourceBundleContentEntity>, HttpGetCdnContentCommand<ResourceBundleContentEntity>>();
+
+            services.AddScoped<IReader<ManifestEntity>, DynamicManifestReader>();
+            services.AddScoped<IReader<ExposureKeySetContentEntity>, SafeBinaryContentDbReader<ExposureKeySetContentEntity>>();
+            services.AddScoped<IReader<ResourceBundleContentEntity>, SafeBinaryContentDbReader<ResourceBundleContentEntity>>();
+            services.AddScoped<IReader<RiskCalculationContentEntity>, SafeBinaryContentDbReader<RiskCalculationContentEntity>>();
+
             services.AddSwaggerGen(o =>
             {
                 o.SwaggerDoc("v1", new OpenApiInfo { Title = "MSS Stand-Alone Development Server", Version = "v1" });
@@ -138,6 +145,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             });
             if(!env.IsDevelopment()) app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
             app.UseRouting();
+
+            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -3,8 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers
 {
@@ -12,22 +16,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
     [Route("[controller]")]
     public class ExposureKeySetsController : ControllerBase
     {
-        private const string ContentTypeNameJson = "application/json";
-
-        /// <summary>
-        /// Swashbuckle has a long-lived bug around not supporting ProducesAttribute so we have to parse the content-type 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="command"></param>
-        /// <returns></returns>
         [HttpGet]
-        [Route("/ExposureKeySets/{id}")]
-        public IActionResult GetExposureKeySetsAg(string id, [FromServices]HttpGetAgExposureKeySetCommand command)
+        [Route(EndPointNames.CdnApi.ExposureKeySet + "/{id}")]
+        public async Task GetLatestConfig(string id, [FromServices]HttpGetCdnContentCommand<ExposureKeySetContentEntity> command)
         {
-            var resultFormat = !string.Equals(Request.ContentType, ContentTypeNameJson, StringComparison.InvariantCultureIgnoreCase) 
-                ? ExposureKeySetFormat.Ag : ExposureKeySetFormat.Json;
-
-            return null; //TODO command.Execute(id, resultFormat);
+            await command.Execute(HttpContext, id);
         }
+
     }
 }

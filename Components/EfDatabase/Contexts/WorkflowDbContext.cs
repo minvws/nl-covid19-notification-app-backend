@@ -5,6 +5,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts
 {
@@ -15,19 +17,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
         }
 
-        
-        public DbSet<TekReleaseWorkflowEntity> TekReleaseWorkflowEntity { get; set; }
-
         [Obsolete]
-        public DbSet<KeysFirstTekReleaseWorkflowEntity> KeysFirstWorkflows { get; set; }
+        public DbSet<KeysFirstTeksWorkflowEntity> KeysFirstWorkflows { get; set; }
 
-        public DbSet<KeysLastTekReleaseWorkflowEntity> KeysLastWorkflows { get; set; }
+        public DbSet<KeysLastTeksWorkflowEntity> KeysLastWorkflows { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new Configuration.Workflow.KeysFirstTekReleaseWorkflow());
             modelBuilder.ApplyConfiguration(new Configuration.Workflow.KeysLastTekReleaseWorkflow());
-            modelBuilder.ApplyConfiguration(new Configuration.Workflow.TekReleaseWorkflow());
         }
     }
 }
