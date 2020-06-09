@@ -6,10 +6,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculati
 {
     public class RiskCalculationConfigResponse
     {
+        //Range 0-8
         public int MinimumRiskScore { get; set; }
-        public WeightingResponse Attenuation { get; set; }
-        public WeightingResponse DaysSinceLastExposure { get; set; }
-        public WeightingResponse DurationLevelValues { get; set; }
-        public WeightingResponse TransmissionRisk { get; set; }
+        //Might not be int..
+        public int[] AttenuationScores​ { get; set; }
+        //Might not be int..
+        public int[] DaysSinceLastExposureScores​ { get; set; }
+        //Might not be int..
+        public int[] DurationScores { get; set; }
+        //Might not be int..
+        public int[] TransmissionRiskScores​ { get; set; }
+        //Might not be int..
+        //length 2
+        public int[] DurationAtAttenuationThresholds​ { get; set; }
     }
 }

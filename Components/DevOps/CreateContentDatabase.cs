@@ -90,10 +90,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             {
                 Release = new DateTime(2020, 5, 1),
                 MinimumRiskScore = 4,
-                Attenuation = new WeightingArgs { Weight = 30, LevelValues = new[] { 1 } },
-                DaysSinceLastExposure = new WeightingArgs { Weight = 40, LevelValues = new[] { 1, 2, 3, 4 } },
-                DurationLevelValues = new WeightingArgs { Weight = 50, LevelValues = new[] { 10, 2, 3, 4, 5 } },
-                TransmissionRisk = new WeightingArgs { Weight = 60, LevelValues = new[] { 10, 100, 1000 } },
+                DaysSinceLastExposureScores​ = new[]{1,2,3,4},
+                AttenuationScores​ = new[] { 2, 3, 4 },
+                DurationAtAttenuationThresholds​ = new[] { 20, 30, 40 ,50, 60, 70 },
+                DurationScores = new[] { 2, 3, 4 },
+                TransmissionRiskScores​ = new[] { 2, 3, 4 },
             }.ToEntity();
             e4.PublishingId = _PublishingId.Create(e4);
 

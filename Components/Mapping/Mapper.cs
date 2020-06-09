@@ -20,10 +20,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             => new RiskCalculationConfigResponse
             {
                 MinimumRiskScore = e.MinimumRiskScore,
-                Attenuation = new WeightingResponse {Weight = e.Attenuation.Weight, LevelValues = e.Attenuation.LevelValues},
-                DaysSinceLastExposure = new WeightingResponse {Weight = e.DaysSinceLastExposure.Weight, LevelValues = e.DaysSinceLastExposure.LevelValues},
-                DurationLevelValues = new WeightingResponse {Weight = e.DurationLevelValues.Weight, LevelValues = e.DurationLevelValues.LevelValues},
-                TransmissionRisk = new WeightingResponse {Weight = e.TransmissionRisk.Weight, LevelValues = e.TransmissionRisk.LevelValues},
+                DaysSinceLastExposureScores​ = e.DaysSinceLastExposureScores​,
+                AttenuationScores​ = e.AttenuationScores​,
+                DurationAtAttenuationThresholds​ = e.DurationAtAttenuationThresholds​,
+                DurationScores = e.DurationScores,
+                TransmissionRiskScores​ = e.TransmissionRiskScores​
             };
 
 
@@ -32,10 +33,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             var content = new RiskCalculationConfigContent
             {
                 MinimumRiskScore = args.MinimumRiskScore,
-                Attenuation = new WeightingContent {Weight = args.Attenuation.Weight, LevelValues = args.Attenuation.LevelValues},
-                DaysSinceLastExposure = new WeightingContent {Weight = args.DaysSinceLastExposure.Weight, LevelValues = args.DaysSinceLastExposure.LevelValues},
-                DurationLevelValues = new WeightingContent {Weight = args.DurationLevelValues.Weight, LevelValues = args.DurationLevelValues.LevelValues},
-                TransmissionRisk = new WeightingContent {Weight = args.TransmissionRisk.Weight, LevelValues = args.TransmissionRisk.LevelValues},
+                DaysSinceLastExposureScores​ = args.DaysSinceLastExposureScores​,
+                AttenuationScores​ = args.AttenuationScores​,
+                DurationAtAttenuationThresholds​ = args.DurationAtAttenuationThresholds​,
+                DurationScores = args.DurationScores,
+                TransmissionRiskScores​ = args.TransmissionRiskScores​
             };
 
             return new RiskCalculationContentEntity
