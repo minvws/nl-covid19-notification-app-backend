@@ -8,6 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Auth
 {
     public interface IKeysLastAuthorisationTokenValidator
     {
-        bool Valid(KeysLastAuthorisationArgs args);
+        bool Valid(string token);
     }
 }

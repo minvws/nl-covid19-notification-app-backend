@@ -6,17 +6,18 @@ using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.SendTeks
 {
     public class HttpPostKeysLastReleaseTeksCommand
     {
-        private readonly IKeysLastWorkflowValidator _Validator;
+        private readonly IKeysLastReleaseTeksValidator _Validator;
         private readonly IKeysLastTekWriter _Writer;
-        private readonly IDbContextProvider<ExposureContentDbContext> _DbContextProvider;
+        private readonly IDbContextProvider<WorkflowDbContext> _DbContextProvider;
 
-        public HttpPostKeysLastReleaseTeksCommand(IKeysLastWorkflowValidator validator, IKeysLastTekWriter writer, DbContextProvider<ExposureContentDbContext> dbContextProvider)
+        public HttpPostKeysLastReleaseTeksCommand(IKeysLastReleaseTeksValidator validator, IKeysLastTekWriter writer, IDbContextProvider<WorkflowDbContext> dbContextProvider)
         {
             _Validator = validator;
             _Writer = writer;
@@ -31,7 +32,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
                 return new OkResult();
             }
 
-            _DbContextProvider.BeginTransaction();
             _Writer.Execute(args);
             _DbContextProvider.SaveAndCommit();
             return new OkResult();

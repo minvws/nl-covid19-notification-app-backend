@@ -23,6 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
         /// Currently fixed at 144? e.g. 10mins
         /// </summary>
         public int RollingPeriod { get; set; }
+
         /// <summary>
         /// Yet to be well defined.
         /// Self-diagnosis support?
@@ -31,6 +32,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
         /// 1-8 or 0-100?
         /// </summary>
         public int TransmissionRiskLevel { get; set; }
-
     }
 }

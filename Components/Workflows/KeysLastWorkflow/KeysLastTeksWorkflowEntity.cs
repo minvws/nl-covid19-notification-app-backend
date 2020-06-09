@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
     {
         public int Id { get; set; }
         public DateTime Created { get; set; }
-        public string TekContent { get; set; }
+        public string? TekContent { get; set; }
         public string Region { get; set; } = DefaultValues.Region;
 
         /// <summary>
@@ -36,10 +36,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
         /// </summary>
         public KeysLastWorkflowState State { get; set; }
 
-
         /// <summary>
         /// Base time for the job to return the state to Unauthorised.
         /// </summary>
-        public DateTime? ReceivingStarted { get; set; }
+        public DateTime? AuthorisationWindowStart { get; set; }
     }
 }

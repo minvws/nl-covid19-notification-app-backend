@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
@@ -18,9 +19,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         private readonly IDbContextProvider<ExposureContentDbContext> _DbContextProvider;
         private readonly IPublishingId _PublishingId;
 
-        public CreateContentDatabase(IDbContextProvider<ExposureContentDbContext> contextProvider, IPublishingId publishingId)
+        public CreateContentDatabase(IConfiguration configuration, IPublishingId publishingId)
         {
-            _DbContextProvider = contextProvider;
+            var config = new StandardEfDbConfig(configuration, "Content");
+            var builder = new SqlServerDbContextOptionsBuilder(config);
+            _DbContextProvider = new DbContextProvider<ExposureContentDbContext>(new ExposureContentDbContext(builder.Build()));
             _PublishingId = publishingId;
         }
 

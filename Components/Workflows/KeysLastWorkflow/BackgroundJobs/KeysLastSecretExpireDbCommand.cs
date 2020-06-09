@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 
             _DbContextProvider.BeginTransaction();
             var q = _DbContextProvider.Current.KeysLastWorkflows
-                .Where(x => x.State == KeysLastWorkflowState.Receiving && x.ReceivingStarted < expired);
+                .Where(x => x.State == KeysLastWorkflowState.Receiving && x.AuthorisationWindowStart < expired);
 
             _DbContextProvider.Current.KeysLastWorkflows.RemoveRange(q);
             _DbContextProvider.Current.SaveChanges();

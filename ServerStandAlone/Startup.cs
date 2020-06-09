@@ -26,6 +26,10 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.RegisterSecret;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.SendTeks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
@@ -60,21 +64,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             {
                 var config = new StandardEfDbConfig(Configuration, "Content");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
-                return new DbContextProvider<ExposureContentDbContext>(() => new ExposureContentDbContext(builder.Build()));
+                var result = new DbContextProvider<ExposureContentDbContext>(new ExposureContentDbContext(builder.Build()));
+                result.BeginTransaction();
+                return result;
             });
 
             services.AddScoped<IDbContextProvider<WorkflowDbContext>>(x =>
             {
                 var config = new StandardEfDbConfig(Configuration, "WorkFlow");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
-                return new DbContextProvider<WorkflowDbContext>(() => new WorkflowDbContext(builder.Build()));
+                var result = new DbContextProvider<WorkflowDbContext>(new WorkflowDbContext(builder.Build()));
+                result.BeginTransaction();
+                return result;
             });
 
             services.AddScoped<IDbContextProvider<ExposureKeySetsBatchJobDbContext>>(x =>
             {
                 var config = new StandardEfDbConfig(Configuration, "Job");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
-                return new DbContextProvider<ExposureKeySetsBatchJobDbContext>(() => new ExposureKeySetsBatchJobDbContext(builder.Build()));
+                //Not no TX start cos the DB name is not even known yet.
+                return new DbContextProvider<ExposureKeySetsBatchJobDbContext>(new ExposureKeySetsBatchJobDbContext(builder.Build()));
             });
 
             //Just for the Batch Job
@@ -128,6 +137,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<IReader<ExposureKeySetContentEntity>, SafeBinaryContentDbReader<ExposureKeySetContentEntity>>();
             services.AddScoped<IReader<ResourceBundleContentEntity>, SafeBinaryContentDbReader<ResourceBundleContentEntity>>();
             services.AddScoped<IReader<RiskCalculationContentEntity>, SafeBinaryContentDbReader<RiskCalculationContentEntity>>();
+
+            services.AddScoped<HttpPostKeysLastRegisterSecret, HttpPostKeysLastRegisterSecret>();
+            services.AddScoped<IKeysLastSecretValidator, KeysLastSecretValidator>();
+            services.AddScoped<IKeysLastSecretConfig, StandardKeysLastSecretConfig>();
+
+            services.AddScoped<IKeysLastSecretWriter, KeysLastSecretWriter>();
+            
+            services.AddScoped<KeysLastAuthorisationWriter, KeysLastAuthorisationWriter>();
+
+            services.AddScoped<HttpPostKeysLastReleaseTeksCommand, HttpPostKeysLastReleaseTeksCommand>();
+            services.AddScoped<IKeysLastReleaseTeksValidator, KeysLastReleaseTeksValidator>();
+            services.AddScoped<IKeysLastAuthorisationTokenValidator, FakeKeysLastReleaseTeksValidator>();
+
+            services.AddScoped<IKeysLastTekWriter, FakeKeysLastTekWriter>();
 
             services.AddSwaggerGen(o =>
             {

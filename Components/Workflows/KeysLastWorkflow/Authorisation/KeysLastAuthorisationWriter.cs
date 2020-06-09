@@ -2,6 +2,8 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -20,16 +22,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             _DbContextProvider = dbContextProvider;
         }
 
-        public void Execute(string token)
+        public void Execute(string id, string releaseToken)
         {
-            var e = new KeysLastTeksWorkflowEntity 
-            { 
-                Created = _DateTimeProvider.Now(),
-                SecretToken = token,
-                State = KeysLastWorkflowState.Unauthorised
-            };
+            var e = _DbContextProvider.Current
+                .KeysLastWorkflows
+                .SingleOrDefault(x => x.ExternalTestId == id);
+
+            if (e == null)
+                //TODO log miss.
+                return;
+
+            e.TekWriteAuthorisationToken = releaseToken;
+            e.AuthorisationWindowStart = _DateTimeProvider.Now();
+            e.State = KeysLastWorkflowState.Receiving;
             
-            _DbContextProvider.Current.KeysLastWorkflows.Add(e);
+            _DbContextProvider.Current.KeysLastWorkflows.Update(e);
         }
     }
 }

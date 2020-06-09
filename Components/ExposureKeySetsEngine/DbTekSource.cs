@@ -13,12 +13,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLas
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
 {
-    public static class WorkflowId
-    {
-        public const string KeysFirst = "KF";
-        public const string KeysLast = "KL";
-    }
-
     public class DbTekSource : ITekSource
     {
         private readonly IDbContextProvider<WorkflowDbContext> _DbContextProvider;

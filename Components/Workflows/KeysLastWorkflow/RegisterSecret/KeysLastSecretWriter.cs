@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -10,8 +11,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 {
     public class KeysLastSecretWriter : IKeysLastSecretWriter
     {
-        private readonly DbContextProvider<WorkflowDbContext> _DbContextProvider;
+        private readonly IDbContextProvider<WorkflowDbContext> _DbContextProvider;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
+
+        public KeysLastSecretWriter(IDbContextProvider<WorkflowDbContext> dbContextProvider, IUtcDateTimeProvider dateTimeProvider)
+        {
+            _DbContextProvider = dbContextProvider;
+            _DateTimeProvider = dateTimeProvider;
+        }
 
         public void Execute(string secretToken)
         {
@@ -24,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 
             //TODO secret token already exists...
             _DbContextProvider.Current.KeysLastWorkflows.AddAsync(e);
-            _DbContextProvider.Current.SaveChangesAsync();
+            _DbContextProvider.SaveAndCommit();
         }
     }
 }

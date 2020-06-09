@@ -21,11 +21,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Auth
             if (string.IsNullOrWhiteSpace(args?.Token))
                 return false;
 
-            var r = new Span<byte>();
-            if (!Convert.TryFromBase64Chars(args.Token, r, out _))
+            var _ = new Span<byte>(new byte[_Config.ByteCount]);
+            if (!Convert.TryFromBase64String(args.Token, _, out var length))
                 return false;
 
-            if (r.Length != _Config.ByteCount)
+            if (length != _Config.ByteCount)
                 return false;
 
             //TODO Anything else?

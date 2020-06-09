@@ -102,14 +102,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
         //        AgContent = output.AgContent
         //    };
         //}
-
-        private static TemporaryExposureKeyContent ToDbEntity(TemporaryExposureKeyArgs args)
-            => new TemporaryExposureKeyContent
-            {
-                KeyData = args.KeyData,
-                RollingPeriod = args.RollingPeriod,
-                RollingStart = args.RollingStartNumber,
-                Risk = args.TransmissionRiskLevel
-            };
     }
 }

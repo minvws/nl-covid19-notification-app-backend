@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
 
         [HttpPost]
         [Route(EndPointNames.CaregiversPortalApi.KeysLastWorkflow.Authorise)]
-        public IActionResult PostAuthorise([FromBody]KeysLastAuthorisationArgs args, [FromServices]HttpPostKeysLastAuthorize command)
+        public IActionResult PostAuthorise([FromBody]KeysLastAuthorisationArgs args, [FromServices]HttpPostKeysLastAuthorise command)
         {
             return command.Execute(args);
         }

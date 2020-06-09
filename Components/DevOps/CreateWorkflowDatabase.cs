@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
@@ -12,9 +14,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
     {
         private readonly IDbContextProvider<WorkflowDbContext> _Provider;
 
-        public CreateWorkflowDatabase(IDbContextProvider<WorkflowDbContext> provider)
+        public CreateWorkflowDatabase(IConfiguration configuration)
         {
-            _Provider = provider;
+            var config = new StandardEfDbConfig(configuration, "Workflow");
+            var builder = new SqlServerDbContextOptionsBuilder(config);
+            _Provider = new DbContextProvider<WorkflowDbContext>(new WorkflowDbContext(builder.Build()));
         }
 
         public async Task Execute()

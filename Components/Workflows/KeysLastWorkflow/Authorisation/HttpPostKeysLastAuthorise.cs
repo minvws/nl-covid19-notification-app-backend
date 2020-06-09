@@ -7,12 +7,12 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Authoris
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.Authorisation
 {
-    public class HttpPostKeysLastAuthorize
+    public class HttpPostKeysLastAuthorise
     {
         private readonly IKeysLastAuthorisationTokenValidator _AuthorisationTokenValidator;
         private readonly IKeysLastAuthorisationWriter _AuthorisationWriter;
 
-        public HttpPostKeysLastAuthorize(IKeysLastAuthorisationTokenValidator authorisationTokenValidator, IKeysLastAuthorisationWriter authorisationWriter)
+        public HttpPostKeysLastAuthorise(IKeysLastAuthorisationTokenValidator authorisationTokenValidator, IKeysLastAuthorisationWriter authorisationWriter)
         {
             _AuthorisationTokenValidator = authorisationTokenValidator;
             _AuthorisationWriter = authorisationWriter;
@@ -20,13 +20,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 
         public IActionResult Execute(KeysLastAuthorisationArgs args)
         {
-            if (!_AuthorisationTokenValidator.Valid(args))
+            //TODO validate args as a whole...
+            if (!_AuthorisationTokenValidator.Valid(args.UploadAuthorisationToken))
             {
                 //TODO log bad token
                 return new OkResult();
             }
 
-            _AuthorisationWriter.Execute(args.Token);
+            _AuthorisationWriter.Execute(args.TestId, args.UploadAuthorisationToken);
             return new OkResult();
         }
     }

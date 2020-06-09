@@ -39,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         
         private readonly IExposureKeySetWriter _Writer;
 
-        private readonly IJsonExposureKeySetFormatter _JsonSetFormatter;
+        //private readonly IJsonExposureKeySetFormatter _JsonSetFormatter;
         private readonly IExposureKeySetBuilder _SetBuilder;
 
         private int _Counter;
@@ -49,9 +49,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         /// Prod
         /// </summary>
         public ExposureKeySetBatchJob(ITekSource tekSource, IDbContextOptionsBuilder jobDbOptionsBuilder, IUtcDateTimeProvider dateTimeProvider,
-            IExposureKeySetWriter eksWriter, IGaenContentConfig gaenContentConfig, IJsonExposureKeySetFormatter jsonSetFormatter, IExposureKeySetBuilder setBuilder, IExposureKeySetBatchJobConfig jobConfig)
+            IExposureKeySetWriter eksWriter, IGaenContentConfig gaenContentConfig, /*IJsonExposureKeySetFormatter jsonSetFormatter,*/ IExposureKeySetBuilder setBuilder, IExposureKeySetBatchJobConfig jobConfig)
         {
-            _JsonSetFormatter = jsonSetFormatter;
+            //_JsonSetFormatter = jsonSetFormatter;
             _SetBuilder = setBuilder;
             _JobConfig = jobConfig;
             _Writer = eksWriter;
@@ -63,9 +63,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             JobName = $"ExposureKeySetsJob_{_Start:u}".Replace(" ", "_").Replace(":", "_");
 
              _JobDbProvider = new DbContextProvider<ExposureKeySetsBatchJobDbContext>(
-                 () => new ExposureKeySetsBatchJobDbContext(jobDbOptionsBuilder.AddDatabaseName(JobName).Build()));
-
+                 new ExposureKeySetsBatchJobDbContext(jobDbOptionsBuilder.AddDatabaseName(JobName).Build()));
         }
+
         public async Task Execute()
         {
             if (_Disposed)

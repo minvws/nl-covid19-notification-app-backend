@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                     _UtcDateTimeProvider,
                     new ExposureKeySetDbWriter(_Output, new Sha256PublishingId(new HardCodedExposureKeySetSigning())),
                     _GaenContentConfig, 
-                    new JsonContentExposureKeySetFormatter(), 
+                    //new JsonContentExposureKeySetFormatter(),
                     new ExposureKeySetBuilderV1(
                         _HsmExposureKeySetHeaderInfoConfig,
                         new HardCodedExposureKeySetSigning(), _UtcDateTimeProvider, new GeneratedProtobufContentFormatter())

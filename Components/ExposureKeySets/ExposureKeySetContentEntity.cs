@@ -4,7 +4,7 @@
 
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets
 {
     /// <summary>
     /// TODO incomplete.

@@ -10,11 +10,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
-    public interface IReader<out T> where T : ContentEntity
-    {
-        T? Execute(string id);
-    }
-
     public class SafeBinaryContentDbReader<T> : IReader<T> where T : ContentEntity
     {
         private readonly IDbContextProvider<ExposureContentDbContext> _DbContextProvider;

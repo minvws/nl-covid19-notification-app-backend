@@ -14,9 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public string PublishingId { get; set; }
-        [Index]
         public DateTime Release { get; set; }
-        [Index]
         public string Region { get; set; } = DefaultValues.Region;
         public byte[]? Content { get; set; }
         public string ContentTypeName { get; set; } = "application/json"; //TODO

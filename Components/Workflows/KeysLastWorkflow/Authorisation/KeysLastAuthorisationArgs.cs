@@ -6,6 +6,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 {
     public class KeysLastAuthorisationArgs
     {
-        public string Token { get; set; }
+        /// <summary>
+        /// Identifier for Workflow item - Tan1?
+        /// </summary>
+        public string TestId { get; set; }
+
+        public string UploadAuthorisationToken { get; set; }
     }
 }

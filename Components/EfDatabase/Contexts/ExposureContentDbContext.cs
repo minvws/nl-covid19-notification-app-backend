@@ -4,10 +4,10 @@
 
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
-using DbContext = Microsoft.EntityFrameworkCore.DbContext;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts
 {
@@ -18,10 +18,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
         }
 
-        public Microsoft.EntityFrameworkCore.DbSet<ManifestEntity> ManifestContent { get; set; }
-        public Microsoft.EntityFrameworkCore.DbSet<ExposureKeySetContentEntity> ExposureKeySetContent { get; set; }
-        public Microsoft.EntityFrameworkCore.DbSet<RiskCalculationContentEntity> RiskCalculationContent { get; set; }
-        public Microsoft.EntityFrameworkCore.DbSet<ResourceBundleContentEntity> ResourceBundleContent { get; set; }
+        public DbSet<ManifestEntity> ManifestContent { get; set; }
+        public DbSet<ExposureKeySetContentEntity> ExposureKeySetContent { get; set; }
+        public DbSet<RiskCalculationContentEntity> RiskCalculationContent { get; set; }
+        public DbSet<ResourceBundleContentEntity> ResourceBundleContent { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

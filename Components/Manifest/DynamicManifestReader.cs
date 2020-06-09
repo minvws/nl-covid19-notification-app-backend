@@ -5,10 +5,9 @@
 using System.Text;
 using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
     public class DynamicManifestReader : IReader<ManifestEntity>
     {

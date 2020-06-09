@@ -25,12 +25,10 @@
 
   <ItemGroup>
     <PackageReference Include="EFCore.BulkExtensions" Version="3.1.1" />
-    <PackageReference Include="EntityFramework6.Npgsql" Version="6.4.1" />
-    <PackageReference Include="Google.Protobuf" Version="3.12.2" />
-    <PackageReference Include="MassTransit" Version="6.3.2" />
+    <PackageReference Include="Google.Protobuf" Version="3.12.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.1.6" />
+    <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.1.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.4" />

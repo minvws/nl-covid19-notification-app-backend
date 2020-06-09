@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -14,23 +15,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
     public class ProvisionDatabasesCommand
     {
-        private readonly IDbContextProvider<ExposureContentDbContext> _ContextProvider;
-        private readonly IDbContextProvider<WorkflowDbContext> _WorkFlowProvider;
+        private readonly IConfiguration _Configuration;
 
-        public ProvisionDatabasesCommand(
-            IDbContextProvider<ExposureContentDbContext> contextProvider, 
-            IDbContextProvider<WorkflowDbContext> workFlowProvider)
+        public ProvisionDatabasesCommand(IConfiguration configuration)
         {
-            _ContextProvider = contextProvider;
-            _WorkFlowProvider = workFlowProvider;
+            _Configuration = configuration;
         }
 
         public async Task<IActionResult> Execute()
         {
-                var db2 = new CreateWorkflowDatabase(_WorkFlowProvider);
+                var db2 = new CreateWorkflowDatabase(_Configuration);
                 await db2.Execute();
 
-                var db3 = new CreateContentDatabase(_ContextProvider, new Sha256PublishingId(new HardCodedExposureKeySetSigning()));
+                var db3 = new CreateContentDatabase(_Configuration, new Sha256PublishingId(new HardCodedExposureKeySetSigning()));
                 await db3.Execute();
                 await db3.AddExampleContent();
                 

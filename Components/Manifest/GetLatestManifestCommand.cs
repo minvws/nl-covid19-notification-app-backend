@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             if (e != null)
                 return e;
 
-            _DbContext.Current.BulkDelete(_DbContext.Current.ManifestContent.ToList()); //TODO execute sql.
+            _DbContext.Current.BulkDelete(_DbContext.Current.Set<ManifestEntity>().ToList()); //TODO execute sql.
             var content = JsonConvert.SerializeObject(_ManifestBuilder.Execute());
             var bytes = Encoding.UTF8.GetBytes(content);
 

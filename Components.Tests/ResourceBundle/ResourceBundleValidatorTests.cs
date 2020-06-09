@@ -7,7 +7,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.RivmAdvice
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ResourceBundle
 {
     [TestClass()]
     public class ResourceBundleValidatorTests
