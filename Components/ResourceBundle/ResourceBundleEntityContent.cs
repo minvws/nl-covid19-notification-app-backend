@@ -2,6 +2,8 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Collections.Generic;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle
 {
     public class ResourceBundleEntityContent
@@ -18,6 +20,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
 
         public int IsolationPeriodDays { get; set; }
 
-        public LocalizableText[] Text { get; set; }
+        public Dictionary<string,Dictionary<string,string>> Text { get; set; }
     }
 }

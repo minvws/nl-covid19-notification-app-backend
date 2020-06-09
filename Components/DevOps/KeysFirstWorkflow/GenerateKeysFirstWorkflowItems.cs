@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -15,14 +16,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.KeysFi
 {
     public class GenerateKeysFirstWorkflowItems
     {
-        private readonly IDbContextProvider<WorkflowDbContext> _DbContextProvider;
+        private readonly WorkflowDbContext _DbContextProvider;
 
-        public GenerateKeysFirstWorkflowItems(IDbContextProvider<WorkflowDbContext> dbContextProvider)
+        public GenerateKeysFirstWorkflowItems(WorkflowDbContext dbContextProvider)
         {
             _DbContextProvider = dbContextProvider;
         }
 
-        public void Execute(int itemCount, Func<int, int> randomInt, Action<byte[]> randomBytes)
+        public async Task Execute(int itemCount, Func<int, int> randomInt, Action<byte[]> randomBytes)
         {
             var luhnModNConfig = new LuhnModNConfig();
             var tokenGenerator = new GenerateKeysFirstAuthorisationToken(luhnModNConfig);
@@ -61,8 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.KeysFi
                 }
                 workflow.Items = keys.ToArray();
 
-                c.Execute(workflow);
-
+                await c.Execute(workflow);
             }
         }
     }

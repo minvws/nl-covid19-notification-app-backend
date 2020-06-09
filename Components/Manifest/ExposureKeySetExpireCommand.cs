@@ -6,7 +6,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
@@ -16,11 +15,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
     public class ExposureKeySetExpireCommand
     {
-        private readonly IDbContextProvider<ExposureContentDbContext>_DbConfig;
+        private readonly ExposureContentDbContext _DbConfig;
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
         private readonly IGaenContentConfig _GaenContentConfig;
 
-        public ExposureKeySetExpireCommand(IDbContextProvider<ExposureContentDbContext>config, IUtcDateTimeProvider utcDateTimeProvider, IGaenContentConfig gaenContentConfig)
+        public ExposureKeySetExpireCommand(ExposureContentDbContext config, IUtcDateTimeProvider utcDateTimeProvider, IGaenContentConfig gaenContentConfig)
         {
             _DbConfig = config;
             _UtcDateTimeProvider = utcDateTimeProvider;
@@ -31,11 +30,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         {
             var now = _UtcDateTimeProvider.Now();
             
-            var timeToDie = _DbConfig.Current.Set<ExposureKeySetContentEntity>()
+            var timeToDie = _DbConfig.Set<ExposureKeySetContentEntity>()
                 .Where(x => x.Release < now - TimeSpan.FromDays(_GaenContentConfig.ExposureKeySetLifetimeDays))
                 .ToList();
 
-            await _DbConfig.Current.BulkDeleteAsync(timeToDie);
+            await _DbConfig.BulkDeleteAsync(timeToDie);
         }
     }
 }

@@ -17,15 +17,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
     public class HttpPostGenerateExposureKeySetsCommand
     {
-        private readonly IDbContextProvider<WorkflowDbContext> _Input;
-        private readonly IDbContextProvider<ExposureContentDbContext> _Output;
+        private readonly WorkflowDbContext _Input;
+        private readonly ExposureContentDbContext _Output;
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
         private readonly IEfDbConfig _StandardEfDbConfig; //Job!
         private readonly IGaenContentConfig _GaenContentConfig;
         private readonly IExposureKeySetHeaderInfoConfig _HsmExposureKeySetHeaderInfoConfig;
         private readonly IExposureKeySetBatchJobConfig _ExposureKeySetBatchJobConfig;
 
-        public HttpPostGenerateExposureKeySetsCommand(IDbContextProvider<WorkflowDbContext> input, IDbContextProvider<ExposureContentDbContext> output, IUtcDateTimeProvider utcDateTimeProvider, IEfDbConfig standardEfDbConfig, IGaenContentConfig gaenContentConfig, IExposureKeySetHeaderInfoConfig hsmExposureKeySetHeaderInfoConfig, IExposureKeySetBatchJobConfig exposureKeySetBatchJobConfig)
+        public HttpPostGenerateExposureKeySetsCommand(WorkflowDbContext input, ExposureContentDbContext output, IUtcDateTimeProvider utcDateTimeProvider, IEfDbConfig standardEfDbConfig, IGaenContentConfig gaenContentConfig, IExposureKeySetHeaderInfoConfig hsmExposureKeySetHeaderInfoConfig, IExposureKeySetBatchJobConfig exposureKeySetBatchJobConfig)
         {
             _Input = input;
             _Output = output;

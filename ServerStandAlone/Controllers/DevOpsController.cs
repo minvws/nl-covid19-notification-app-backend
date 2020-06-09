@@ -31,9 +31,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         /// <returns></returns>
         [HttpPost]
         [Route(EndPointNames.DevOps.KeysFirstWorkFlow.TekSetsGenerateRandom)]
-        public IActionResult WorkFlows([FromBody]GenerateKeysFirstTekSetsArgs arguments, [FromServices]HttpPostKeysFirstGenerateTekSetsCommand command)
+        public async Task<IActionResult> WorkFlows([FromBody]GenerateKeysFirstTekSetsArgs arguments, [FromServices]HttpPostKeysFirstGenerateTekSetsCommand command)
         {
-            return command.Execute(arguments);
+            return await command.Execute(arguments);
         }
 
         /// <summary>

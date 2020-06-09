@@ -3,17 +3,15 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Linq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets
 {
     public class ExposureKeySetSafeReadCommand
     {
-        private readonly IDbContextProvider<ExposureContentDbContext>_DbConfig;
+        private readonly ExposureContentDbContext _DbConfig;
 
-        public ExposureKeySetSafeReadCommand(IDbContextProvider<ExposureContentDbContext>dbConfig)
+        public ExposureKeySetSafeReadCommand(ExposureContentDbContext dbConfig)
         {
             _DbConfig = dbConfig;
         }
@@ -21,12 +19,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         /// <summary>
         /// Returns null if not found.
         /// </summary>
-        /// <param name="ExposureKeySetId"></param>
+        /// <param name="exposureKeySetId"></param>
         /// <returns></returns>
-        public ExposureKeySetContentEntity Execute(string ExposureKeySetId)
+        public ExposureKeySetContentEntity Execute(string exposureKeySetId)
         {
-            return _DbConfig.Current.Set<ExposureKeySetContentEntity>()
-                .Where(x => x.PublishingId == ExposureKeySetId)
+            return _DbConfig.Set<ExposureKeySetContentEntity>()
+                .Where(x => x.PublishingId == exposureKeySetId)
                 .Take(1)
                 .ToArray()
                 .SingleOrDefault();

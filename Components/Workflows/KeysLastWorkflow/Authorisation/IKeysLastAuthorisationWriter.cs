@@ -2,10 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Threading.Tasks;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.Authorisation
 {
     public interface IKeysLastAuthorisationWriter
     {
-        void Execute(string id, string releaseToken);
+        Task Execute(string id, string releaseToken);
     }
 }

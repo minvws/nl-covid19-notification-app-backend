@@ -2,11 +2,9 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
 
@@ -14,16 +12,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 {
     public class FakeKeysLastTekWriter : IKeysLastTekWriter
     {
-        private readonly IDbContextProvider<WorkflowDbContext> _DbContextProvider;
+        private readonly WorkflowDbContext _DbContextProvider;
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
 
-        public FakeKeysLastTekWriter(IDbContextProvider<WorkflowDbContext> dbContextProvider, IUtcDateTimeProvider utcDateTimeProvider)
+        public FakeKeysLastTekWriter(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider utcDateTimeProvider)
         {
             _DbContextProvider = dbContextProvider;
             _UtcDateTimeProvider = utcDateTimeProvider;
         }
 
-        public void Execute(KeysLastReleaseTeksArgs args)
+        public async Task Execute(KeysLastReleaseTeksArgs args)
         {
             var e = new KeysLastTeksWorkflowEntity 
             {
@@ -32,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
                 State = KeysLastWorkflowState.Authorised,
             };
 
-            _DbContextProvider.Current.KeysLastWorkflows.Add(e);
+            await _DbContextProvider.KeysLastWorkflows.AddAsync(e);
         }
     }
 }

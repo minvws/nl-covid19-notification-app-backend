@@ -18,12 +18,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
     public class GetLatestManifestCommand
     {
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly IDbContextProvider<ExposureContentDbContext> _DbContext;
+        private readonly ExposureContentDbContext _DbContext;
         private readonly ManifestBuilder _ManifestBuilder;
         private readonly IGaenContentConfig _GaenContentConfig;
         private readonly IPublishingId _PublishingId;
 
-        public GetLatestManifestCommand(IUtcDateTimeProvider dateTimeProvider, IDbContextProvider<ExposureContentDbContext> dbContext, ManifestBuilder manifestBuilder, IGaenContentConfig gaenContentConfig, IPublishingId publishingId)
+        public GetLatestManifestCommand(IUtcDateTimeProvider dateTimeProvider, ExposureContentDbContext dbContext, ManifestBuilder manifestBuilder, IGaenContentConfig gaenContentConfig, IPublishingId publishingId)
         {
             _DateTimeProvider = dateTimeProvider;
             _DbContext = dbContext;
@@ -39,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             var now = _DateTimeProvider.Now();
             var releaseCutoff = now - TimeSpan.FromHours(_GaenContentConfig.ManifestLifetimeHours);
 
-            var e = _DbContext.Current.ManifestContent
+            var e = _DbContext.ManifestContent
                 .Where(x => x.Release > releaseCutoff)
                 .OrderByDescending(x => x.Release)
                 .Take(1)
@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             if (e != null)
                 return e;
 
-            _DbContext.Current.BulkDelete(_DbContext.Current.Set<ManifestEntity>().ToList()); //TODO execute sql.
+            _DbContext.BulkDelete(_DbContext.Set<ManifestEntity>().ToList()); //TODO execute sql.
             var content = JsonConvert.SerializeObject(_ManifestBuilder.Execute());
             var bytes = Encoding.UTF8.GetBytes(content);
 
@@ -60,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
                 Region = DefaultValues.Region,
             };
             e.PublishingId = _PublishingId.Create(e);
-            _DbContext.Current.ManifestContent.Add(e);
+            _DbContext.ManifestContent.Add(e);
             _DbContext.SaveAndCommit();
 
             return e;

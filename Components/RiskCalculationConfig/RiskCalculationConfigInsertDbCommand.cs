@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -12,10 +11,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculati
 {
     public class RiskCalculationConfigInsertDbCommand
     {
-        private readonly IDbContextProvider<ExposureContentDbContext>_DbContextProvider;
+        private readonly ExposureContentDbContext _DbContextProvider;
         private readonly IPublishingId _PublishingId;
 
-        public RiskCalculationConfigInsertDbCommand(IDbContextProvider<ExposureContentDbContext>contextProvider, IPublishingId publishingId)
+        public RiskCalculationConfigInsertDbCommand(ExposureContentDbContext contextProvider, IPublishingId publishingId)
         {
             _DbContextProvider = contextProvider;
             _PublishingId = publishingId;
@@ -25,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculati
         {
             var e = args.ToEntity();
             e.PublishingId = _PublishingId.Create(e);
-            _DbContextProvider.Current.Add(e);
+            await _DbContextProvider.AddAsync(e);
         }
     }
 }

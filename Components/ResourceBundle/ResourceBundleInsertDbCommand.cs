@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -12,10 +11,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
 {
     public class ResourceBundleInsertDbCommand
     {
-        private readonly IDbContextProvider<ExposureContentDbContext>_DbConfig;
+        private readonly ExposureContentDbContext _DbConfig;
         private readonly IPublishingId _PublishingId;
 
-        public ResourceBundleInsertDbCommand(IDbContextProvider<ExposureContentDbContext>dbConfig, IPublishingId publishingId)
+        public ResourceBundleInsertDbCommand(ExposureContentDbContext dbConfig, IPublishingId publishingId)
         {
             _DbConfig = dbConfig;
             _PublishingId = publishingId;
@@ -25,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
         {
             var e = args.ToEntity();
             e.PublishingId = _PublishingId.Create(e);
-            await _DbConfig.Current.AddAsync(e);
+            await _DbConfig.AddAsync(e);
         }
     }
 }

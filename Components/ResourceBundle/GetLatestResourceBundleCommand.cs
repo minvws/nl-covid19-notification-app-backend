@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Linq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
@@ -11,10 +10,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
 {
     public class GetLatestResourceBundleCommand
     {
-        private readonly IDbContextProvider<ExposureContentDbContext>_DbConfig;
+        private readonly ExposureContentDbContext _DbConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public GetLatestResourceBundleCommand(IDbContextProvider<ExposureContentDbContext>dbConfig, IUtcDateTimeProvider dateTimeProvider)
+        public GetLatestResourceBundleCommand(ExposureContentDbContext dbConfig, IUtcDateTimeProvider dateTimeProvider)
         {
             _DbConfig = dbConfig;
             _DateTimeProvider = dateTimeProvider;
@@ -23,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
         public string Execute()
         {
             var now = _DateTimeProvider.Now();
-            return _DbConfig.Current.Set<ResourceBundleContentEntity>()
+            return _DbConfig.Set<ResourceBundleContentEntity>()
                 .Where(x => x.Release <= now)
                 .OrderByDescending(x => x.Release)
                 .Take(1)

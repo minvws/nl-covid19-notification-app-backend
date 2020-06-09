@@ -4,7 +4,6 @@
 
 using System;
 using System.Linq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
@@ -14,10 +13,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
     public class GetActiveExposureKeySetsListCommand
     {
-        private readonly IDbContextProvider<ExposureContentDbContext>_DbConfig;
+        private readonly ExposureContentDbContext _DbConfig;
         private readonly IGaenContentConfig _GaenContentConfig;
 
-        public GetActiveExposureKeySetsListCommand(IDbContextProvider<ExposureContentDbContext>dbConfig, IGaenContentConfig gaenContentConfig)
+        public GetActiveExposureKeySetsListCommand(ExposureContentDbContext dbConfig, IGaenContentConfig gaenContentConfig)
         {
             _DbConfig = dbConfig;
             _GaenContentConfig = gaenContentConfig;
@@ -26,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         public string[] Execute()
         {
             var expired = new StandardUtcDateTimeProvider().Now() - TimeSpan.FromDays(_GaenContentConfig.ExposureKeySetLifetimeDays);
-            var result = _DbConfig.Current.Set<ExposureKeySetContentEntity>()
+            var result = _DbConfig.Set<ExposureKeySetContentEntity>()
                 .Where(x => x.Release > expired)
                 .Select(x => x.PublishingId)
                 .ToArray();

@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle
@@ -17,12 +18,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
             _Validator = validator;
         }
 
-        public IActionResult Execute(ResourceBundleArgs args)
+        public async Task<IActionResult> Execute(ResourceBundleArgs args)
         {
             if (!_Validator.Valid(args))
                 return new BadRequestResult();
 
-            _Writer.Execute(args);
+            await _Writer.Execute(args);
             return new OkResult();
         }
     }

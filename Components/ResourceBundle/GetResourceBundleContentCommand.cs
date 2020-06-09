@@ -3,23 +3,22 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Linq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle
 {
     public class GetResourceBundleContentCommand
     {
-        private readonly IDbContextProvider<ExposureContentDbContext> _DbConfig;
+        private readonly ExposureContentDbContext _DbConfig;
 
-        public GetResourceBundleContentCommand(IDbContextProvider<ExposureContentDbContext> dbConfig)
+        public GetResourceBundleContentCommand(ExposureContentDbContext dbConfig)
         {
             _DbConfig = dbConfig;
         }
 
         public ResourceBundleContentEntity Execute(string id)
         {
-            return _DbConfig.Current.Set<ResourceBundleContentEntity>()
+            return _DbConfig.Set<ResourceBundleContentEntity>()
                 .SingleOrDefault(x => x.PublishingId == id);
         }
     }

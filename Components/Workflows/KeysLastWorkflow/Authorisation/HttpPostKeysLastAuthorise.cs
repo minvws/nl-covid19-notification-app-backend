@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
 
@@ -18,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             _AuthorisationWriter = authorisationWriter;
         }
 
-        public IActionResult Execute(KeysLastAuthorisationArgs args)
+        public async Task<IActionResult> Execute(KeysLastAuthorisationArgs args)
         {
             //TODO validate args as a whole...
             if (!_AuthorisationTokenValidator.Valid(args.UploadAuthorisationToken))
@@ -27,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
                 return new OkResult();
             }
 
-            _AuthorisationWriter.Execute(args.TestId, args.UploadAuthorisationToken);
+            await _AuthorisationWriter.Execute(args.TestId, args.UploadAuthorisationToken);
             return new OkResult();
         }
     }

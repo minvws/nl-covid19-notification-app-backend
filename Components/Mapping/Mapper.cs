@@ -67,12 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
         {
             var content = new ResourceBundleEntityContent
             {
-                Text = args.Text.Select(x => new LocalizableText
-                {
-                    Locale = x.Locale,
-                    IsolationAdviceLong = x.IsolationAdviceLong,
-                    IsolationAdviceShort = x.IsolationAdviceShort
-                }).ToArray(),
+                Text = args.Text,
                 IsolationPeriodDays = args.IsolationPeriodDays,
                 ObservedTemporaryExposureKeyRetentionDays = args.ObservedTemporaryExposureKeyRetentionDays,
                 TemporaryExposureKeyRetentionDays = args.TemporaryExposureKeyRetentionDays,

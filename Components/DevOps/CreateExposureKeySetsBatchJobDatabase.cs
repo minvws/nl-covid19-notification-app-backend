@@ -3,23 +3,22 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
     public class CreateExposureKeySetsBatchJobDatabase
     {
-        private readonly IDbContextProvider<ExposureKeySetsBatchJobDbContext> _Provider;
+        private readonly ExposureKeySetsBatchJobDbContext _Provider;
 
-        public CreateExposureKeySetsBatchJobDatabase(IDbContextProvider<ExposureKeySetsBatchJobDbContext> provider)
+        public CreateExposureKeySetsBatchJobDatabase(ExposureKeySetsBatchJobDbContext provider)
         {
             _Provider = provider;
         }
 
         public async Task Execute()
         {
-            await _Provider.Current.Database.EnsureCreatedAsync();
+            await _Provider.Database.EnsureCreatedAsync();
         }
 
     }

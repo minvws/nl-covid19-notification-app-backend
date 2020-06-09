@@ -6,7 +6,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 {
     public interface IEfDbConfig
     {
-
         string ConnectionString { get; }
     }
 }

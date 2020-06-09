@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -14,17 +15,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
     {
 
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly IDbContextProvider<WorkflowDbContext> _DbContextProvider;
+        private readonly WorkflowDbContext _DbContextProvider;
 
-        public KeysLastAuthorisationWriter(IUtcDateTimeProvider dateTimeProvider, IDbContextProvider<WorkflowDbContext> dbContextProvider)
+        public KeysLastAuthorisationWriter(IUtcDateTimeProvider dateTimeProvider, WorkflowDbContext dbContextProvider)
         {
             _DateTimeProvider = dateTimeProvider;
             _DbContextProvider = dbContextProvider;
         }
 
-        public void Execute(string id, string releaseToken)
+        public async Task Execute(string id, string releaseToken)
         {
-            var e = _DbContextProvider.Current
+            var e = _DbContextProvider
                 .KeysLastWorkflows
                 .SingleOrDefault(x => x.ExternalTestId == id);
 
@@ -36,7 +37,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             e.AuthorisationWindowStart = _DateTimeProvider.Now();
             e.State = KeysLastWorkflowState.Receiving;
             
-            _DbContextProvider.Current.KeysLastWorkflows.Update(e);
+            _DbContextProvider.KeysLastWorkflows.Update(e);
+            await _DbContextProvider.SaveChangesAsync();
         }
     }
 }

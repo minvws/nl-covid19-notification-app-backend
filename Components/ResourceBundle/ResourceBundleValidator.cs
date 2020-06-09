@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -55,7 +56,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
             if (args.Release.Year < 2020) //TODO range?
                 return false;
 
-            var locales = args.Text.Select(x => x.Locale).ToArray();
+            var locales = args.Text.Select(x => x.Key).ToArray();
 
             if (locales.Any(x => !LocalValid(x)))
                 return false;
@@ -63,18 +64,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
             if (locales.Distinct().Count() != locales.Length)
                 return false;
 
-            return args.Text.All(Valid);
+            return args.Text.All(x => Valid(x.Value));
         }
 
-        private bool Valid(LocalizableTextArgs args)
+        private bool Valid(Dictionary<string, string> args)
         {
-            if (!IsBase64(args.IsolationAdviceLong))
-                return false;
-
-            if (!IsBase64(args.IsolationAdviceShort))
-                return false;
-
-            return true;
+            return args.All(val => IsBase64(val.Value));
         }
     }
 }

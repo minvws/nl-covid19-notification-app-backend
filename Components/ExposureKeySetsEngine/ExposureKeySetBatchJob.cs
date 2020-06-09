@@ -13,8 +13,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
 {
@@ -24,24 +22,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     public sealed class ExposureKeySetBatchJob : IDisposable
     {
         private bool _Disposed;
-
         public string JobName { get; }
-
         private readonly List<TeksInputEntity> _Used;
-
         private readonly List<TemporaryExposureKeyArgs> _KeyBatch = new List<TemporaryExposureKeyArgs>();
-
         private readonly IExposureKeySetBatchJobConfig _JobConfig;
         private readonly IGaenContentConfig _GaenContentConfig;
-
         private readonly ITekSource _TekSource;
-        private readonly IDbContextProvider<ExposureKeySetsBatchJobDbContext> _JobDbProvider;
-        
+        private readonly ExposureKeySetsBatchJobDbContext _JobDbProvider;
         private readonly IExposureKeySetWriter _Writer;
-
-        //private readonly IJsonExposureKeySetFormatter _JsonSetFormatter;
         private readonly IExposureKeySetBuilder _SetBuilder;
-
         private int _Counter;
         private readonly DateTime _Start;
 
@@ -62,8 +51,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _Start = dateTimeProvider.Now();
             JobName = $"ExposureKeySetsJob_{_Start:u}".Replace(" ", "_").Replace(":", "_");
 
-             _JobDbProvider = new DbContextProvider<ExposureKeySetsBatchJobDbContext>(
-                 new ExposureKeySetsBatchJobDbContext(jobDbOptionsBuilder.AddDatabaseName(JobName).Build()));
+             _JobDbProvider = new ExposureKeySetsBatchJobDbContext(jobDbOptionsBuilder.AddDatabaseName(JobName).Build());
+                 
         }
 
         public async Task Execute()
@@ -78,7 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         private async Task BuildBatches()
         {
-            foreach (var i in _JobDbProvider.Current.Set<TeksInputEntity>().ToArray()) //TODO page or otherwise close the data reader before writing in Build
+            foreach (var i in _JobDbProvider.Set<TeksInputEntity>().ToArray()) //TODO page or otherwise close the data reader before writing in Build
             {
                 var keys = JsonConvert.DeserializeObject<TemporaryExposureKeyContent[]>(i.Content);
                     
@@ -93,7 +82,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 await Build();
         }
 
-        private TemporaryExposureKeyArgs Map(TemporaryExposureKeyContent c)
+        private static TemporaryExposureKeyArgs Map(TemporaryExposureKeyContent c)
             => new TemporaryExposureKeyArgs 
             { 
                 RollingPeriod = c.RollingPeriod,
@@ -115,12 +104,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             })
             .ToArray();
 
-            await _JobDbProvider.Current.Database.EnsureCreatedAsync();
+            await _JobDbProvider.Database.EnsureCreatedAsync();
 
             await using (_JobDbProvider.BeginTransaction())
             {
-                await _JobDbProvider.Current.BulkInsertAsync(authorisedWorkflows);
-                //await _JobDbProvider.Current.SaveChangesAsync();
+                await _JobDbProvider.BulkInsertAsync(authorisedWorkflows);
                 _JobDbProvider.SaveAndCommit();
             }
         }
@@ -140,7 +128,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             await using (_JobDbProvider.BeginTransaction())
             {
-                await _JobDbProvider.Current.AddAsync(e);
+                await _JobDbProvider.AddAsync(e);
                 _JobDbProvider.SaveAndCommit();
             }
 
@@ -156,7 +144,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             await using (_JobDbProvider.BeginTransaction())
             {
-                await _JobDbProvider.Current.BulkUpdateAsync(_Used);
+                await _JobDbProvider.BulkUpdateAsync(_Used);
                 _JobDbProvider.SaveAndCommit();
             }
 
@@ -165,10 +153,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         private async Task CommitResults()
         {
-            _Writer.Write(_JobDbProvider.Current.Set<ExposureKeySetEntity>().ToArray());
+            _Writer.Write(_JobDbProvider.Set<ExposureKeySetEntity>().ToArray());
 
             ////Delete Workflows that were included in a EKS.
-            var q = _JobDbProvider.Current.Set<TeksInputEntity>()
+            var q = _JobDbProvider.Set<TeksInputEntity>()
                 .Where(x => x.Used)
                 //.Select(x => new {  })
                 .ToArray()
@@ -181,7 +169,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _TekSource.Delete(kkff, kkll);
 
             if (_JobConfig.DeleteJobDatabase)
-                await _JobDbProvider.Current.Database.EnsureDeletedAsync();
+                await _JobDbProvider.Database.EnsureDeletedAsync();
         }
 
         public void Dispose()

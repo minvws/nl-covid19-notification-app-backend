@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.RegisterSecret
@@ -17,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             _Writer = writer;
         }
 
-        public IActionResult Execute(KeysLastSecretArgs args)
+        public async Task<IActionResult> Execute(KeysLastSecretArgs args)
         {
             if (!_Validator.Valid(args))
             {
@@ -25,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
                 return new OkResult();
             }
 
-            _Writer.Execute(args.Token);
+            await _Writer.Execute(args.Token);
             return new OkResult();
         }
     }

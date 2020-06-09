@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers
@@ -24,9 +23,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.ResourceBundle)]
-        public IActionResult Post([FromBody]ResourceBundleArgs args, [FromServices]HttpPostResourceBundleCommand command)
+        public async Task<IActionResult> Post([FromBody]ResourceBundleArgs args, [FromServices]HttpPostResourceBundleCommand command)
         {
-            return command.Execute(args);
+            return await command.Execute(args);
         }
     }
 }

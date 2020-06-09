@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Linq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig
@@ -11,16 +10,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculati
 
     public class SafeGetRiskCalculationConfigDbCommand
     {
-        private readonly IDbContextProvider<ExposureContentDbContext>_DbContextProvider;
+        private readonly ExposureContentDbContext _DbContextProvider;
 
-        public SafeGetRiskCalculationConfigDbCommand(IDbContextProvider<ExposureContentDbContext>contextProvider)
+        public SafeGetRiskCalculationConfigDbCommand(ExposureContentDbContext contextProvider)
         {
             _DbContextProvider = contextProvider;
         }
 
         public RiskCalculationContentEntity Execute(string id)
         {
-            return _DbContextProvider.Current.Set<RiskCalculationContentEntity>()
+            return _DbContextProvider.Set<RiskCalculationContentEntity>()
                 .Where(x => x.PublishingId == id)
                 .Take(1)
                 .ToArray() //TODO sql might let me drop this.

@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;

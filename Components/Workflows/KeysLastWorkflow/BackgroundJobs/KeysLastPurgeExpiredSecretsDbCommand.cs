@@ -6,18 +6,17 @@ using System;
 using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.BackgroundJobs
 {
     public class KeysLastPurgeExpiredSecretsDbCommand
     {
-        private readonly DbContextProvider<WorkflowDbContext> _DbContextProvider;
+        private readonly WorkflowDbContext _DbContextProvider;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IKeysLastWorkflowConfig _KeysLastWorkflowConfig;
 
-        public KeysLastPurgeExpiredSecretsDbCommand(DbContextProvider<WorkflowDbContext> dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IKeysLastWorkflowConfig tokenFirstWorkflowConfig)
+        public KeysLastPurgeExpiredSecretsDbCommand(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IKeysLastWorkflowConfig tokenFirstWorkflowConfig)
         {
             _DbContextProvider = dbContextProvider;
             _DateTimeProvider = dateTimeProvider;
@@ -29,11 +28,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             var expired = _DateTimeProvider.Now() - TimeSpan.FromDays(_KeysLastWorkflowConfig.SecretLifetimeDays);
 
             _DbContextProvider.BeginTransaction();
-            var q = _DbContextProvider.Current.KeysLastWorkflows
+            var q = _DbContextProvider.KeysLastWorkflows
                 .Where(x => x.State == KeysLastWorkflowState.Unauthorised && x.Created < expired);
 
-            _DbContextProvider.Current.KeysLastWorkflows.RemoveRange(q);
-            _DbContextProvider.Current.SaveChanges();
+            _DbContextProvider.KeysLastWorkflows.RemoveRange(q);
+            _DbContextProvider.SaveChanges();
             _DbContextProvider.SaveAndCommit();
         }
     }

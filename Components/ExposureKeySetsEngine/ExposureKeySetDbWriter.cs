@@ -7,7 +7,6 @@ using EFCore.BulkExtensions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
@@ -18,13 +17,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     /// </summary>
     public class ExposureKeySetDbWriter : IExposureKeySetWriter
     {
-        public ExposureKeySetDbWriter(IDbContextProvider<ExposureContentDbContext> dbContext, IPublishingId publishingId)
+        public ExposureKeySetDbWriter(ExposureContentDbContext dbContext, IPublishingId publishingId)
         {
             _DbContext = dbContext;
             _PublishingId = publishingId;
         }
 
-        private readonly IDbContextProvider<ExposureContentDbContext> _DbContext;
+        private readonly ExposureContentDbContext _DbContext;
         private readonly IPublishingId _PublishingId;
 
         public void Write(ExposureKeySetEntity[] things)
@@ -45,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             using (_DbContext.BeginTransaction())
             {
-                _DbContext.Current.BulkInsertAsync(entities);
+                _DbContext.BulkInsertAsync(entities);
                 _DbContext.SaveAndCommit();
             }
         }

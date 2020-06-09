@@ -3,31 +3,31 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.KeysFirstWorkflow
 {
     public class HttpPostKeysFirstGenerateTekSetsCommand
     {
-        private readonly IDbContextProvider<WorkflowDbContext> _ContextProvider;
+        private readonly WorkflowDbContext _ContextProvider;
 
-        public HttpPostKeysFirstGenerateTekSetsCommand(IDbContextProvider<WorkflowDbContext> contextProvider)
+        public HttpPostKeysFirstGenerateTekSetsCommand(WorkflowDbContext contextProvider)
         {
             _ContextProvider = contextProvider;
         }
 
-        public IActionResult Execute(GenerateKeysFirstTekSetsArgs args)
+        public async Task<IActionResult> Execute(GenerateKeysFirstTekSetsArgs args)
         {
-                if (args.WorkflowCount < 1)
-                    throw new ArgumentOutOfRangeException(nameof(args.WorkflowCount));
-                
-                var r = new Random(args.RandomSeed); //Don't need the crypto version.
-                var c1 = new GenerateKeysFirstWorkflowItems(_ContextProvider);
-                c1.Execute(args.WorkflowCount, x => r.Next(x), x => r.NextBytes((byte[])x));
+            if (args.WorkflowCount < 1)
+                throw new ArgumentOutOfRangeException(nameof(args.WorkflowCount));
 
-                return new OkResult();
+            var r = new Random(args.RandomSeed); //Don't need the crypto version.
+            var c1 = new GenerateKeysFirstWorkflowItems(_ContextProvider);
+            await c1.Execute(args.WorkflowCount, x => r.Next(x), x => r.NextBytes(x));
+
+            return new OkResult();
         }
     }
 }

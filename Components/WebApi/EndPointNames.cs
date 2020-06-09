@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
+﻿namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 {
     public static class EndPointNames
     {

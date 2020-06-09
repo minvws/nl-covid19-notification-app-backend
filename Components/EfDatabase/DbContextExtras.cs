@@ -10,21 +10,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 {
     public static class DbContextExtras
     {
-        public static IDbContextTransaction BeginTransaction<T>(this IDbContextProvider<T> thiz) where T : DbContext
+        public static IDbContextTransaction BeginTransaction(this DbContext context)
         {
-            if (thiz.Current.Database.CurrentTransaction != null)
+            if (context.Database.CurrentTransaction != null)
                 throw new InvalidOperationException("Database has existing transaction.");
 
-            return thiz.Current.Database.BeginTransaction();
+            return context.Database.BeginTransaction();
         }
 
-        public static void SaveAndCommit<T>(this IDbContextProvider<T> thiz) where T : DbContext
+        public static void SaveAndCommit(this DbContext context)
         {
-            if (thiz.Current.Database.CurrentTransaction == null)
+            if (context.Database.CurrentTransaction == null)
                 throw new InvalidOperationException("No current transaction.");
 
-            thiz.Current.SaveChanges();
-            thiz.Current.Database.CurrentTransaction.Commit();
+            context.SaveChanges();
+            context.Database.CurrentTransaction.Commit();
         }
     }
 }

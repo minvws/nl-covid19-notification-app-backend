@@ -14,10 +14,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.KeysFi
 {
     public class GenerateKeysFirstAuthorisations
     {
-        private readonly IDbContextProvider<WorkflowDbContext>_DbContextProvider;
+        private readonly WorkflowDbContext _DbContextProvider;
         private readonly IKeysFirstAuthorisationWriter _Writer;
 
-        public GenerateKeysFirstAuthorisations(IDbContextProvider<WorkflowDbContext> dbContextProvider, IKeysFirstAuthorisationWriter writer)
+        public GenerateKeysFirstAuthorisations(WorkflowDbContext dbContextProvider, IKeysFirstAuthorisationWriter writer)
         {
             _DbContextProvider = dbContextProvider;
             _Writer = writer;
@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.KeysFi
         public async Task Execute(int pAuthorize, Random r)
         {
             _DbContextProvider.BeginTransaction();
-            var unauthorized = _DbContextProvider.Current.Set<KeysFirstTeksWorkflowEntity>()
+            var unauthorized = _DbContextProvider.Set<KeysFirstTeksWorkflowEntity>()
                 .Where(x => x.Authorised == false)
                 .Select(x => x.AuthorisationToken)
                 .ToArray();

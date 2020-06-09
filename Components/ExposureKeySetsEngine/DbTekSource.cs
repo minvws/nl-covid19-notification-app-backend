@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using EFCore.BulkExtensions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow;
 
@@ -15,9 +13,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 {
     public class DbTekSource : ITekSource
     {
-        private readonly IDbContextProvider<WorkflowDbContext> _DbContextProvider;
+        private readonly WorkflowDbContext _DbContextProvider;
 
-        public DbTekSource(IDbContextProvider<WorkflowDbContext> dbContextProvider)
+        public DbTekSource(WorkflowDbContext dbContextProvider)
         {
             _DbContextProvider = dbContextProvider;
         }
@@ -26,11 +24,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         {
             using (_DbContextProvider.BeginTransaction())
             {
-                var kf = _DbContextProvider.Current.Set<KeysFirstTeksWorkflowEntity>()
+                var kf = _DbContextProvider.Set<KeysFirstTeksWorkflowEntity>()
                     .Where(x => x.Authorised)
                     .Select(y => new SourceItem {Id = y.Id, Content = y.TekContent, Region = y.Region, Workflow = WorkflowId.KeysFirst});
 
-                var kl = _DbContextProvider.Current.Set<KeysLastTeksWorkflowEntity>()
+                var kl = _DbContextProvider.Set<KeysLastTeksWorkflowEntity>()
                     .Where(x => x.State == KeysLastWorkflowState.Authorised)
                     .Select(y => new SourceItem {Id = y.Id, Content = y.TekContent, Region = y.Region, Workflow = WorkflowId.KeysLast});
 
@@ -47,18 +45,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         {
             using (_DbContextProvider.BeginTransaction())
             {
-                var die1 = _DbContextProvider.Current.Set<KeysLastTeksWorkflowEntity>()
+                var die1 = _DbContextProvider.Set<KeysLastTeksWorkflowEntity>()
                     .Where(x => kl.Contains(x.Id)).ToList();
 
-                _DbContextProvider.Current.BulkDeleteAsync(die1);
+                _DbContextProvider.BulkDeleteAsync(die1);
 
-                _DbContextProvider.Current.SaveChanges();
+                _DbContextProvider.SaveChanges();
 
-                var die2 = _DbContextProvider.Current.Set<KeysFirstTeksWorkflowEntity>()
+                var die2 = _DbContextProvider.Set<KeysFirstTeksWorkflowEntity>()
                     .Where(x => kf.Contains(x.Id)).ToList();
 
-                _DbContextProvider.Current.BulkDeleteAsync(die2);
-
+                _DbContextProvider.BulkDeleteAsync(die2);
                 _DbContextProvider.SaveAndCommit();
             }
         }

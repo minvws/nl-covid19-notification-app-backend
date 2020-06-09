@@ -2,7 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -26,11 +25,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.SendTeks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 {
@@ -60,30 +57,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddSingleton<IExposureKeySetBatchJobConfig, ExposureKeySetBatchJobConfig>();
             services.AddSingleton<IPublishingId>(x => new Sha256PublishingId(new HardCodedExposureKeySetSigning()));
 
-            services.AddScoped<IDbContextProvider<ExposureContentDbContext>>(x =>
+            services.AddScoped(x =>
             {
                 var config = new StandardEfDbConfig(Configuration, "Content");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new DbContextProvider<ExposureContentDbContext>(new ExposureContentDbContext(builder.Build()));
-                result.BeginTransaction();
+                var result = new ExposureContentDbContext(builder.Build());
                 return result;
             });
 
-            services.AddScoped<IDbContextProvider<WorkflowDbContext>>(x =>
+            services.AddScoped(x =>
             {
                 var config = new StandardEfDbConfig(Configuration, "WorkFlow");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new DbContextProvider<WorkflowDbContext>(new WorkflowDbContext(builder.Build()));
-                result.BeginTransaction();
+                var result = new WorkflowDbContext(builder.Build());
                 return result;
             });
 
-            services.AddScoped<IDbContextProvider<ExposureKeySetsBatchJobDbContext>>(x =>
+            services.AddScoped(x =>
             {
                 var config = new StandardEfDbConfig(Configuration, "Job");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
-                //Not no TX start cos the DB name is not even known yet.
-                return new DbContextProvider<ExposureKeySetsBatchJobDbContext>(new ExposureKeySetsBatchJobDbContext(builder.Build()));
+                return new ExposureKeySetsBatchJobDbContext(builder.Build());
             });
 
             //Just for the Batch Job

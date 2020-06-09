@@ -2,9 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System.Data;
 using System.Linq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 
@@ -12,9 +10,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     public class SafeBinaryContentDbReader<T> : IReader<T> where T : ContentEntity
     {
-        private readonly IDbContextProvider<ExposureContentDbContext> _DbContextProvider;
+        private readonly ExposureContentDbContext _DbContextProvider;
 
-        public SafeBinaryContentDbReader(IDbContextProvider<ExposureContentDbContext> dbContextProvider)
+        public SafeBinaryContentDbReader(ExposureContentDbContext dbContextProvider)
         {
             _DbContextProvider = dbContextProvider;
         }
@@ -22,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         public T? Execute(string id)
         {
 
-            return _DbContextProvider.Current.Set<T>()
+            return _DbContextProvider.Set<T>()
                 .SingleOrDefault(x => x.PublishingId == id);
 
             //if (e == null)

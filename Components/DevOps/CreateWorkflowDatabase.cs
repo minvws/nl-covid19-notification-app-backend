@@ -6,24 +6,23 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
     public class CreateWorkflowDatabase
     {
-        private readonly IDbContextProvider<WorkflowDbContext> _Provider;
+        private readonly WorkflowDbContext _Provider;
 
         public CreateWorkflowDatabase(IConfiguration configuration)
         {
             var config = new StandardEfDbConfig(configuration, "Workflow");
             var builder = new SqlServerDbContextOptionsBuilder(config);
-            _Provider = new DbContextProvider<WorkflowDbContext>(new WorkflowDbContext(builder.Build()));
+            _Provider = new WorkflowDbContext(builder.Build());
         }
 
         public async Task Execute()
         {
-            await _Provider.Current.Database.EnsureCreatedAsync();
+            await _Provider.Database.EnsureCreatedAsync();
         }
 
     }
