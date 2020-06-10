@@ -1,1 +1,2 @@
 db/*
+!appsettings.Development.json
