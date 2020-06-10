@@ -5,9 +5,10 @@
         <div class="card-body">
           <h5 class="card-title">Infectie Confirmatie Code</h5>
           <p class="card-text">
-            Gegenereerde code:
+            [ICC] Gegenereerde code:
           </p>
-          <div class="d-flex"  (click)="copyCodeToClipboard()">
+<!--          TODO: Convert generated code into fill-in ICC -->
+          <div class="d-flex" id="iccWrapper" (click)="copyCodeToClipboard()">
             <input class="form-control" [value]="icc_code[0]" disabled/>
             <input class="form-control" [value]="icc_code[1]" disabled/>
             <input class="form-control" [value]="icc_code[2]" disabled/>
@@ -15,7 +16,19 @@
             <input class="form-control" [value]="icc_code[4]" disabled/>
             <input class="form-control" [value]="icc_code[5]" disabled/>
           </div>
-          <button class="btn w-100 btn-light mt-3" (click)="generateCode()">Opnieuw genereren</button>
+          <button class="btn w-100 btn-light my-3" (click)="generateCode()">Opnieuw genereren</button>
+          <p class="card-text">
+            [IC Id] Patient Infectie Confirmatie Id:
+          </p>
+          <div class="d-flex" id="icIdWrapper">
+            <input class="form-control" (keypress)="ICIdKeyPress($event, 0)" placeholder="0" type="number"/>
+            <input class="form-control" (keypress)="ICIdKeyPress($event, 1)" placeholder="0" type="number"/>
+            <input class="form-control" (keypress)="ICIdKeyPress($event, 2)" placeholder="0" type="number"/>
+            <input class="form-control" (keypress)="ICIdKeyPress($event, 3)" placeholder="0" type="number"/>
+            <input class="form-control" (keypress)="ICIdKeyPress($event, 4)" placeholder="0" type="number"/>
+            <input class="form-control" (keypress)="ICIdKeyPress($event, 5)" placeholder="0" type="number"/>
+          </div>
+          <button class="btn w-100 btn-dark my-3" (click)="report()">Raporteren</button>
         </div>
       </div>
     </div>

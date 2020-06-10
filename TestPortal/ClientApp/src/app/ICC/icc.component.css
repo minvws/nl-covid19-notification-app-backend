@@ -4,6 +4,9 @@
   font-size: 2em;
   margin: .1em;
 }
+.card .card-body input.form-control::-webkit-inner-spin-button {
+  display: none;
+}
 /*.card .card-body .d-flex{*/
 /*  alig*/
 /*}*/
