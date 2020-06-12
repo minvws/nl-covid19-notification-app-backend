@@ -3,18 +3,20 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
     public class ManifestBuilder
     {
         private readonly GetActiveExposureKeySetsListCommand _ExposureKeySetsListCommand;
-        private readonly GetLatestResourceBundleCommand _ResourceBundleFinder;
-        private readonly GetLatestRiskCalculationParametersCommand _WorkflowCalcParametersFinder;
-        private readonly GetLatestAppConfigCommand _AppConfigFinder;
+        private readonly GetLatestContentCommand<ResourceBundleContentEntity> _ResourceBundleFinder;
+        private readonly GetLatestContentCommand<RiskCalculationContentEntity> _WorkflowCalcParametersFinder;
+        private readonly GetLatestContentCommand<AppConfigContentEntity> _AppConfigFinder;
 
-        public ManifestBuilder(GetActiveExposureKeySetsListCommand exposureKeySetsListCommand, GetLatestResourceBundleCommand resourceBundleFinder, GetLatestRiskCalculationParametersCommand workflowCalcParametersFinder, GetLatestAppConfigCommand appConfigFinder)
+        public ManifestBuilder(GetActiveExposureKeySetsListCommand exposureKeySetsListCommand, GetLatestContentCommand<ResourceBundleContentEntity> resourceBundleFinder, GetLatestContentCommand<RiskCalculationContentEntity> workflowCalcParametersFinder, GetLatestContentCommand<AppConfigContentEntity> appConfigFinder)
         {
             _ExposureKeySetsListCommand = exposureKeySetsListCommand;
             _ResourceBundleFinder = resourceBundleFinder;

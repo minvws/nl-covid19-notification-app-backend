@@ -103,8 +103,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             //TODO services.AddScoped<HttpGetLatestManifestCommand, HttpGetLatestManifestCommand>();
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
             services.AddScoped<GetActiveExposureKeySetsListCommand, GetActiveExposureKeySetsListCommand>();
-            services.AddScoped<GetLatestRiskCalculationParametersCommand, GetLatestRiskCalculationParametersCommand>();
-            services.AddScoped<GetLatestResourceBundleCommand, GetLatestResourceBundleCommand>();
+            
 
             services.AddScoped<ExposureKeySetSafeReadCommand, ExposureKeySetSafeReadCommand>();
             
@@ -154,7 +153,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<HttpPostAppConfigCommand, HttpPostAppConfigCommand>();
             services.AddScoped<AppConfigInsertDbCommand, AppConfigInsertDbCommand>();
             services.AddScoped<AppConfigValidator, AppConfigValidator>();
-            services.AddScoped<GetLatestAppConfigCommand, GetLatestAppConfigCommand>();
+            
+            services.AddScoped<GetLatestContentCommand<ResourceBundleContentEntity>, GetLatestContentCommand<ResourceBundleContentEntity>>();
+            services.AddScoped<GetLatestContentCommand<RiskCalculationContentEntity>, GetLatestContentCommand<RiskCalculationContentEntity>>();
+            services.AddScoped<GetLatestContentCommand<AppConfigContentEntity>, GetLatestContentCommand<AppConfigContentEntity>>();
 
             services.AddSwaggerGen(o =>
             {
