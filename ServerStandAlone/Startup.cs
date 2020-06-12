@@ -62,6 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 var config = new StandardEfDbConfig(Configuration, "Content");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new ExposureContentDbContext(builder.Build());
+                result.BeginTransaction();
                 return result;
             });
 
@@ -70,6 +71,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 var config = new StandardEfDbConfig(Configuration, "WorkFlow");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new WorkflowDbContext(builder.Build());
+                result.BeginTransaction();
                 return result;
             });
 

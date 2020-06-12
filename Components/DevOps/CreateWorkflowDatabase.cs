@@ -22,6 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
         public async Task Execute()
         {
+            await _Provider.Database.EnsureDeletedAsync();
             await _Provider.Database.EnsureCreatedAsync();
         }
 

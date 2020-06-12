@@ -22,7 +22,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         public SourceItem[] Read()
         {
-            using (_DbContextProvider.BeginTransaction())
+            
+            using (_DbContextProvider.EnsureNoChangesOrTransaction().BeginTransaction())
             {
                 var kf = _DbContextProvider.Set<KeysFirstTeksWorkflowEntity>()
                     .Where(x => x.Authorised)
@@ -43,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         /// </summary>
         public void Delete(int[] kf, int[] kl)
         {
-            using (_DbContextProvider.BeginTransaction())
+            using (_DbContextProvider.EnsureNoChangesOrTransaction().BeginTransaction())
             {
                 var die1 = _DbContextProvider.Set<KeysLastTeksWorkflowEntity>()
                     .Where(x => kl.Contains(x.Id)).ToList();
