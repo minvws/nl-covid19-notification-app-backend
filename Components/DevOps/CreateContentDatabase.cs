@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
             var e0 = new ResourceBundleArgs
             {
-                Release = new DateTime(2020, 1, 1),
+                Release = DateTime.Now,
                 Text = new Dictionary<string, Dictionary<string, string>>
                 {
                     {"en-GB", new Dictionary<string, string>()
@@ -59,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
             var e1 = new ResourceBundleArgs
             {
-                Release = new DateTime(2020, 5, 1),
+                Release = DateTime.Now,
                 IsolationPeriodDays = 10,
                 ObservedTemporaryExposureKeyRetentionDays = 14,
                 TemporaryExposureKeyRetentionDays = 15,
@@ -82,21 +82,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
             var e2 = new ResourceBundleArgs
             {
-                Release = new DateTime(2021, 1, 1)
+                Release = DateTime.Now
             }.ToEntity();
             e2.PublishingId = _PublishingId.Create(e2);
             await _DbContextProvider.AddAsync(e2);
 
-            //TODO something more realistic
             var e4 = new RiskCalculationConfigArgs
             {
-                Release = new DateTime(2020, 5, 1),
-                MinimumRiskScore = 4,
-                DaysSinceLastExposureScores​ = new[]{1,2,3,4},
-                AttenuationScores​ = new[] { 2, 3, 4 },
-                DurationAtAttenuationThresholds​ = new[] { 20, 30, 40 ,50, 60, 70 },
-                DurationScores = new[] { 2, 3, 4 },
-                TransmissionRiskScores​ = new[] { 2, 3, 4 },
+                Release = new DateTime(2020, 6, 12),
+                MinimumRiskScore = 1,
+                DaysSinceLastExposureScores​ = new[]{1,2,3,4,5,6,7,8},
+                AttenuationScores​ = new[] { 1,2,3,4,5,6,7,8 },
+                DurationAtAttenuationThresholds​ = new[] { 42,56 },
+                DurationScores = new[] { 1,2,3,4,5,6,7,8 },
+                TransmissionRiskScores​ = new[] { 1,2,3,4,5,6,7,8 },
             }.ToEntity();
             e4.PublishingId = _PublishingId.Create(e4);
             await _DbContextProvider.AddAsync(e4);
