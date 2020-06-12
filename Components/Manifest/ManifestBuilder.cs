@@ -12,7 +12,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         private readonly GetLatestResourceBundleCommand _ResourceBundleFinder;
         private readonly GetLatestRiskCalculationParametersCommand _WorkflowCalcParametersFinder;
 
-        public ManifestBuilder(GetActiveExposureKeySetsListCommand exposureKeySetsListCommand, GetLatestResourceBundleCommand resourceBundleFinder, GetLatestRiskCalculationParametersCommand workflowCalcParametersFinder)
+        public ManifestBuilder(GetActiveExposureKeySetsListCommand exposureKeySetsListCommand, 
+            GetLatestResourceBundleCommand resourceBundleFinder, 
+            GetLatestRiskCalculationParametersCommand workflowCalcParametersFinder)
         {
             _ExposureKeySetsListCommand = exposureKeySetsListCommand;
             _ResourceBundleFinder = resourceBundleFinder;
