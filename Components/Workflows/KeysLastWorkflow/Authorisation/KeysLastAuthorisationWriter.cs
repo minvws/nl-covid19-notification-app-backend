@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -23,22 +24,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             _DbContextProvider = dbContextProvider;
         }
 
-        public async Task Execute(string id, string releaseToken)
+        public Task Execute(KeysLastAuthorisationArgs args)
         {
-            var e = _DbContextProvider
-                .KeysLastWorkflows
-                .SingleOrDefault(x => x.ExternalTestId == id);
+            throw new NotImplementedException();
 
-            if (e == null)
-                //TODO log miss.
-                return;
+            //var e = _DbContextProvider
+            //    .KeysLastWorkflows
+            //    .SingleOrDefault(x => x.ExternalTestId == args.LabConfirmationID); //TODO probably the wrong mapping
 
-            e.TekWriteAuthorisationToken = releaseToken;
-            e.AuthorisationWindowStart = _DateTimeProvider.Now();
-            e.State = KeysLastWorkflowState.Receiving;
+            //if (e == null)
+            //    //TODO log miss.
+            //    return;
+
+            //e.TekWriteAuthorisationToken = ;
+            //e.AuthorisationWindowStart = _DateTimeProvider.Now();
+            //e.State = KeysLastWorkflowState.Receiving;
             
-            _DbContextProvider.KeysLastWorkflows.Update(e);
-            await _DbContextProvider.SaveChangesAsync();
+            //_DbContextProvider.KeysLastWorkflows.Update(e);
+            //await _DbContextProvider.SaveChangesAsync();
         }
     }
 }

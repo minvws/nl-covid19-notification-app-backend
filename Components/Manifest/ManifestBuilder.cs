@@ -26,6 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
                 ExposureKeySets = _ExposureKeySetsListCommand.Execute(),
                 ResourceBundle = _ResourceBundleFinder.Execute(),
                 RiskCalculationParameters = _WorkflowCalcParametersFinder.Execute(),
+                AppConfig = "Not implemented."
             };
         }
     }

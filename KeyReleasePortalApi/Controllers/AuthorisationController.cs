@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleasePortalApi.Cont
     public class AuthorisationController : ControllerBase
     {
         [HttpPost]
-        [Route(EndPointNames.CaregiversPortalApi.KeysLastWorkflow.Authorise)]
+        [Route(EndPointNames.CaregiversPortalApi.KeysLastWorkflow.LabConfirmation)]
         public async Task<IActionResult> PostAuthorise([FromBody]KeysLastAuthorisationArgs args, [FromServices]HttpPostKeysLastAuthorise command)
         {
             return await command.Execute(args);

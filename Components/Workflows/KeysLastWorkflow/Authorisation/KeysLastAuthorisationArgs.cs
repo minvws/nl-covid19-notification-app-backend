@@ -4,12 +4,16 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.Authorisation
 {
+    
+    /// <summary>
+    /// Lab confirmation...
+    /// </summary>
     public class KeysLastAuthorisationArgs
     {
         /// <summary>
         /// Identifier for Workflow item - Tan1?
         /// </summary>
-        public string TestId { get; set; }
+        public string LabConfirmationID { get; set; }
 
         public string UploadAuthorisationToken { get; set; }
     }

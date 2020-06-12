@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -150,7 +151,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             services.AddSwaggerGen(o =>
             {
-                o.SwaggerDoc("v1", new OpenApiInfo { Title = "MSS Stand-Alone Development Server", Version = "v1" });
+                o.SwaggerDoc("v1", new OpenApiInfo 
+                { 
+                    Title = "Dutch Exposure Notification API (inc. dev support)", 
+                    Version = "v1", 
+                    Description = "This specification describes the interface between the Dutch exposure notification app and the backend service.\nTODO: Add signatures to manifest, riskcalculationparameters and appconfig",
+                    Contact = new OpenApiContact {
+                        Name = "Ministerie van Volksgezondheid Welzijn en Sport backend repository", //TODO looks wrong?
+                        Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend"),
+                    },
+                    License = new OpenApiLicense 
+                    { 
+                        Name = "European Union Public License v. 1.2",
+                        //TODO this should be https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+                        Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend/blob/master/LICENSE.txt")
+                    },
+                    
+                });
             });
         }
 
@@ -160,12 +177,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             app.UseSwagger();
             app.UseSwaggerUI(o =>
             {
-                o.SwaggerEndpoint("/swagger/v1/swagger.json", "MSS Stand-Alone Development Server V1");
+                o.SwaggerEndpoint("/swagger/v1/swagger.json", "Dutch Exposure Notification API (inc. dev support)");
             });
             if(!env.IsDevelopment()) app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
             app.UseRouting();
-
-            
 
             app.UseEndpoints(endpoints =>
             {

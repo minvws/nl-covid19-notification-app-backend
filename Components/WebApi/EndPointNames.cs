@@ -13,8 +13,9 @@
             public static class KeysLastWorkflow
             {
                 private const string Prefix = "/keyslast/v1";
-                public const string RegisterSecret = Prefix + "/secret";
-                public const string ReleaseTeks = Prefix + "/teks";
+                public const string RegisterSecret = Prefix + "/register";
+                public const string ReleaseTeks = Prefix + "/postkeys";
+                public const string RandomNoise = Prefix + "/stopkeys";
             }
         }
 
@@ -33,7 +34,7 @@
             public static class KeysLastWorkflow
             {
                 private const string Prefix = "/keyslast";
-                public const string Authorise = Prefix + "/authorise";
+                public const string LabConfirmation = Prefix + "/labconfirm";
 
                 //Workflow tba.
             }
@@ -77,6 +78,7 @@
         {
             private const string Prefix = "/cdn/v1";
             public const string Manifest = Prefix + "/manifest";
+            public const string AppConfig = Prefix + "/appconfig";
             public const string ResourceBundle = Prefix + "/resourcebundle";
             public const string ExposureKeySet = Prefix + "/exposurekeyset";
             public const string RiskCalculationParameters = Prefix + "/riskcalculationparameters";
