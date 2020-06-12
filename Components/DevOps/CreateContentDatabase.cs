@@ -40,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
             var e0 = new ResourceBundleArgs
             {
-                Release = new DateTime(2020, 1, 1),
+                Release = DateTime.Now,
                 Text = new Dictionary<string, Dictionary<string, string>>
                 {
                     {"en-GB", new Dictionary<string, string>()
@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
             var e1 = new ResourceBundleArgs
             {
-                Release = new DateTime(2020, 5, 1),
+                Release = DateTime.Now,
                 IsolationPeriodDays = 10,
                 ObservedTemporaryExposureKeyRetentionDays = 14,
                 TemporaryExposureKeyRetentionDays = 15,
@@ -81,7 +81,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
             var e2 = new ResourceBundleArgs
             {
-                Release = new DateTime(2021, 1, 1)
+                Release = DateTime.Now
             }.ToEntity();
             e2.PublishingId = _PublishingId.Create(e2);
             await _DbContextProvider.AddAsync(e2);
