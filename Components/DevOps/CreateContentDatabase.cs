@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
@@ -98,8 +99,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 TransmissionRiskScores​ = new[] { 2, 3, 4 },
             }.ToEntity();
             e4.PublishingId = _PublishingId.Create(e4);
-
             await _DbContextProvider.AddAsync(e4);
+
+            var e5 = new AppConfigArgs
+            {
+                Release = new DateTime(2020, 5, 1),
+                ManifestFrequency = 5,
+                DecoyProbability = 1,
+                Version = 123345
+            }.ToEntity();
+
+            e5.PublishingId = _PublishingId.Create(e5);
+            await _DbContextProvider.AddAsync(e5);
+
             await _DbContextProvider.SaveChangesAsync();
             await tx.CommitAsync();
         }

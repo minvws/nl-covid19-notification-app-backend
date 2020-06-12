@@ -27,7 +27,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
         public async Task Execute(HttpContext httpContext, string id)
         {
-
             if (httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
             {
                 httpContext.Response.ContentLength = 0;

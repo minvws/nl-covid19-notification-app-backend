@@ -4,15 +4,15 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Content
 {
-    public class ExposureKeySetContent : IEntityTypeConfiguration<ExposureKeySetContentEntity>
+    public class AppConfigContent : IEntityTypeConfiguration<AppConfigContentEntity>
     {
-        public void Configure(EntityTypeBuilder<ExposureKeySetContentEntity> builder)
+        public void Configure(EntityTypeBuilder<AppConfigContentEntity> builder)
         {
-            builder.ToTable("ExposureKeySetContent");
+            builder.ToTable("AppConfigContent");
         }
     }
 }
