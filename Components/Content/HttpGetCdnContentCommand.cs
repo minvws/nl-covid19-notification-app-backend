@@ -54,9 +54,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             httpContext.Response.Headers.Add("etag", content.PublishingId);
             httpContext.Response.Headers.Add("last-modified", content.Release.ToUniversalTime().ToString("r"));
             httpContext.Response.Headers.Add("content-type", content.ContentTypeName);
-         
-            httpContext.Response.ContentLength = content.Content.Length;
-            await httpContext.Response.Body.WriteAsync(content.Content);
+
+            if (content.Content != null)
+            {
+                httpContext.Response.ContentLength = content.Content.Length;
+                await httpContext.Response.Body.WriteAsync(content.Content);
+            }
         }
     }
 }
