@@ -4,11 +4,10 @@
 
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
 {
-    public interface IPublishingId
+    public class AppConfigContentEntity : ContentEntity
     {
-        string Create(ContentEntity e);
-        string ParseUri(string uri);
+        
     }
 }

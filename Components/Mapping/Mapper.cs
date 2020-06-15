@@ -2,9 +2,11 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
@@ -77,6 +79,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             {
                 Release = args.Release,
                 Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content))
+            };
+        }
+
+        public static AppConfigContentEntity ToEntity(this AppConfigArgs args)
+        {
+            var content = new AppConfigContent
+            {
+                DecoyProbability = args.DecoyProbability,
+                ManifestFrequency = args.ManifestFrequency,
+                Version = args.Version
+            };
+
+            return new AppConfigContentEntity
+            {
+                Release = args.Release,
+                Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content)),
             };
         }
 
