@@ -27,6 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
         public async Task Execute(HttpContext httpContext, string id)
         {
+            
             if (httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
             {
                 httpContext.Response.ContentLength = 0;
@@ -53,6 +54,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             httpContext.Response.Headers.Add("etag", content.PublishingId);
             httpContext.Response.Headers.Add("last-modified", content.Release.ToUniversalTime().ToString("r"));
             httpContext.Response.Headers.Add("content-type", content.ContentTypeName);
+         
+            httpContext.Response.ContentLength = content.Content.Length;
             await httpContext.Response.Body.WriteAsync(content.Content);
         }
     }
