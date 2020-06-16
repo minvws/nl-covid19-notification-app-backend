@@ -13,6 +13,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow;
+using TemporaryExposureKeyArgs = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.TemporaryExposureKeyArgs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 {
@@ -49,15 +50,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             };
         }
 
-        public static TemporaryExposureKeyEntity[] ToEntities(this KeysFirstEscrowArgs args)
+        public static TemporaryExposureKeyEntity[] ToEntities(this TemporaryExposureKeyArgs[] items)
         {
-            var content = args.Items.Select(x =>
+            var content = items.Select(x =>
                 new TemporaryExposureKeyEntity
                 {
                     KeyData = Convert.FromBase64String(x.KeyData),
                     TransmissionRiskLevel = x.TransmissionRiskLevel,
                     RollingPeriod = x.RollingPeriod,
-                    RollingStartNumber = x.RollingStartNumber
+                    RollingStartNumber = x.RollingStartNumber,
                 }).ToArray();
 
             return content;

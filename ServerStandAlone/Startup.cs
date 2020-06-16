@@ -153,7 +153,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<HttpPostAppConfigCommand, HttpPostAppConfigCommand>();
             services.AddScoped<AppConfigInsertDbCommand, AppConfigInsertDbCommand>();
             services.AddScoped<AppConfigValidator, AppConfigValidator>();
-            
+
+            services.AddScoped<HttpPostKeysLastAuthorise, HttpPostKeysLastAuthorise>();
+            services.AddScoped<IKeysLastAuthorisationWriter, KeysLastAuthorisationWriter>();
+
             services.AddScoped<GetLatestContentCommand<ResourceBundleContentEntity>, GetLatestContentCommand<ResourceBundleContentEntity>>();
             services.AddScoped<GetLatestContentCommand<RiskCalculationContentEntity>, GetLatestContentCommand<RiskCalculationContentEntity>>();
             services.AddScoped<GetLatestContentCommand<AppConfigContentEntity>, GetLatestContentCommand<AppConfigContentEntity>>();

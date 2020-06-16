@@ -20,10 +20,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             _UtcDateTimeProvider = utcDateTimeProvider;
         }
 
-        public async Task Execute(KeysFirstEscrowArgs args)
+        public Task Execute(KeysFirstEscrowArgs args)
         {
-            var e = args.ToEntities();
-            await _DbContextProvider.AddRangeAsync(e);
+            // var e = args.Items.ToEntities();
+            // await _DbContextProvider.AddRangeAsync(e);
+            return Task.CompletedTask;
         }
     }
 }
