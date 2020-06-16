@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
@@ -18,6 +19,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             : base(options)
         {
         }
+
+        public DbSet<TeksInputEntity> EksInput { get; set; }
+        public DbSet<ExposureKeySetContentEntity> EksOutput { get; set; }
 
         public DbSet<ManifestEntity> ManifestContent { get; set; }
         public DbSet<ExposureKeySetContentEntity> ExposureKeySetContent { get; set; }

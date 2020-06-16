@@ -39,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
         /// </summary>
         public string? TekWriteAuthorisationToken { get; set; }
 
-        public DateTime Authorised { get; set; }
+        public bool Authorised { get; set; }
 
 
         //REMOVED public KeysLastWorkflowState State { get; set; }
@@ -50,39 +50,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 
     public class TemporaryExposureKeyEntity
     {
-        public TemporaryExposureKeyContent Owner { get; set; }
+        public int Id { get; set; }
 
-        /// <summary>
-        /// TemporaryExposureKey
-        /// Equivalent to DP-3T daily key
-        /// The 'ephemeral key' is called the RollingProximityIdentifier
-        /// </summary>
+        public KeysLastTeksWorkflowEntity Owner { get; set; }
+
         public byte[] KeyData { get; set; }
 
-        /// <summary>
-        /// Equivalent of Dp3T Epoch
-        /// </summary>
         public int RollingStart { get; set; }
 
-        /// <summary>
-        /// Number of epochs in 24hours
-        /// Currently fixed at 144? e.g. 10mins
-        /// </summary>
         public int RollingPeriod { get; set; }
 
-        /// <summary>
-        /// Yet to be well defined.
-        /// Self-diagnosis support?
-        /// Comes from server?
-        /// Phone can transmit risk level.
-        /// 1-8 or 0-100?
-        /// </summary>
         public int Risk { get; set; }
         public string Region { get; set; }
-
         public PublishingState PublishingState { get; set; }
     }
-
 
     //Authorisation is via the parent workflow entity
     public enum PublishingState

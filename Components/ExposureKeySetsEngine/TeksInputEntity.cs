@@ -17,16 +17,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        //public TemporaryExposureKeyContent[] Keys { get; set; }
-
-        public string Content { get; set; }
-
         /// <summary>
         /// Set when the exposure key set it written
         /// </summary>
         public bool Used { get; set; }
 
-        public string Region { get; set; }
-        public string Workflow { get; set; }
+        public byte[] KeyData { get; set; }
+        public int RollingStart { get; set; }
+        public int RollingPeriod { get; set; }
+        public int Risk { get; set; }
     }
 }

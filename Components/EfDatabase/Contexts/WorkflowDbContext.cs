@@ -21,6 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public DbSet<KeysFirstTeksWorkflowEntity> KeysFirstWorkflows { get; set; }
 
         public DbSet<KeysLastTeksWorkflowEntity> KeysLastWorkflows { get; set; }
+        public DbSet<TemporaryExposureKeyEntity> TemporaryExposureKeys { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
