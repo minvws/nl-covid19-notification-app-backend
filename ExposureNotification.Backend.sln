@@ -29,7 +29,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CdnApi", "CdnApi\CdnApi.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CdnDataApi", "CdnDataApi\CdnDataApi.csproj", "{8D6F8E01-ECAC-4DED-A95D-D3D710595F6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPortal", "TestPortal\TestPortal.csproj", "{984B6279-20C1-4956-9902-C25497970D53}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPortalPoC", "TestPortalPoC\TestPortalPoC.csproj", "{984B6279-20C1-4956-9902-C25497970D53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICCBackend", "ICCBackend\ICCBackend.csproj", "{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICCPortal", "ICCPortal\ICCPortal.csproj", "{2E5FC398-C354-4D0E-84F3-804411340C65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +69,14 @@ Global
 		{984B6279-20C1-4956-9902-C25497970D53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{984B6279-20C1-4956-9902-C25497970D53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{984B6279-20C1-4956-9902-C25497970D53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E5FC398-C354-4D0E-84F3-804411340C65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E5FC398-C354-4D0E-84F3-804411340C65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E5FC398-C354-4D0E-84F3-804411340C65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E5FC398-C354-4D0E-84F3-804411340C65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

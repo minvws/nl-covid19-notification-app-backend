@@ -6,13 +6,20 @@ import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import {ICCComponent} from "./ICC/icc.component";
+import {ICCReportComponent} from "./icc/report.component";
+import {ICCGenerateComponent} from "./icc/generate.component";
+import {LoginComponent} from "./login/login.component";
+
+
+
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    ICCComponent,
+    ICCReportComponent,
+    ICCGenerateComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -20,7 +27,9 @@ import {ICCComponent} from "./ICC/icc.component";
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'icc', component: ICCComponent, pathMatch: 'full' },
+      { path: 'login', component: LoginComponent, pathMatch: 'full' },
+      { path: 'icc/report', component: ICCReportComponent, pathMatch: 'full' },
+      { path: 'icc/generate', component: ICCGenerateComponent, pathMatch: 'full' },
     ])
   ],
   providers: [],

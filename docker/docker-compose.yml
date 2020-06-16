@@ -5,14 +5,28 @@ services:
       context: ..
       dockerfile: docker/Dockerfile
     ports:
-      - '5000:5000'
-      - '5001:5001'
+      - '5004:5000'
+      - '5005:5001'
     links:
       - 'db_mssql:database'
   db_mssql:
     image: mcr.microsoft.com/mssql/server:2019-latest
     ports:
       - "1433:1433"
+    environment:
+      SA_PASSWORD: "mss-nl-covid-19-dev"
+      ACCEPT_EULA: "Y"
+  db_icc_backend:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - "1434:1433"
+    environment:
+      SA_PASSWORD: "mss-nl-covid-19-dev"
+      ACCEPT_EULA: "Y"
+  db_icc_portal:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - "1435:1433"
     environment:
       SA_PASSWORD: "mss-nl-covid-19-dev"
       ACCEPT_EULA: "Y"
