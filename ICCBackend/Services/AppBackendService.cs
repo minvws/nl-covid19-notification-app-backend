@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
 
         private HttpClient CreateBackendHttpClient(string endpoint)
         {
-            string BaseURL = "https://" + _Configuration.GetSection("AppBackendConfig:Host").ToString() + "/";
+            string BaseURL = "https://" + _Configuration.GetSection("AppBackendConfig:Host").Value.ToString() + "/";
             // TODO: Make HTTPClient with urls;
             return new HttpClient();
         }

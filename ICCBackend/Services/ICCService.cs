@@ -59,9 +59,8 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
         }
 
         private static Random random;
-        private static string RandomString(int length)
+        private static string RandomString(int length, string chars)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTXYZ0123456789";
             return new string(Enumerable.Repeat(chars, length)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
@@ -77,7 +76,8 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
         {
             random = new Random();
             int length = Convert.ToInt32(_Configuration.GetSection("ICCConfig:Code:Length").Value);
-            string generatedIcc = RandomString(length);
+            string chars = _Configuration.GetSection("ICCConfig:Code:Chars").Value;
+            string generatedIcc = RandomString(length, chars);
 
             InfectionConfirmationCodeEntity icc = new InfectionConfirmationCodeEntity();
             icc.Code = generatedIcc;
