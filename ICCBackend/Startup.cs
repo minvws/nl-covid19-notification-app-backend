@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using Swashbuckle.AspNetCore.SwaggerGen;
 

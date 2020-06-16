@@ -2,20 +2,16 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC;
 
-namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC
 {
     public class ICCAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
