@@ -18,6 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             : base(options)
         {
         }
+
         //
         public DbSet<InfectionConfirmationCodeEntity> InfectionConfirmationCode { get; set; }
         // public DbSet<ExposureKeySetContentEntity> ExposureKeySetContent { get; set; }
@@ -26,9 +27,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // modelBuilder.Entity<InfectionConfirmationCodeEntity>().HasIndex();
-            
-            
+            modelBuilder.Entity<InfectionConfirmationCodeEntity>().Property(e => e.Code)
+                .IsRequired();
+            modelBuilder.Entity<InfectionConfirmationCodeEntity>().Property(e => e.Created)
+                .HasDefaultValueSql("NOW()")
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<InfectionConfirmationCodeEntity>().HasIndex(e => e.Code);
+
+
             // modelBuilder.ApplyConfiguration(new ExposureKeySetContent());
             // modelBuilder.ApplyConfiguration(new Configuration.Content.Manifest());
             // modelBuilder.ApplyConfiguration(new RiskCalculationContent());
@@ -54,6 +60,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         //    //    x.HasNoDiscriminator();
         //    //});
         //}
-
     }
 }

@@ -1,7 +1,8 @@
-// Copyright © 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright ï¿½ 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.Extensions.Configuration;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
@@ -14,6 +15,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
         public StandardEfDbConfig(IConfiguration configuration, string connStringName)
         {
             _Configuration = configuration;
+            Console.WriteLine("INITING STANDARD EFDBCONFIG");
+            Console.WriteLine(connStringName);
             _ConnStringName = connStringName;
         }
 
