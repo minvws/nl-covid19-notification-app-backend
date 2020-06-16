@@ -3,13 +3,14 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC
 {
+    [Table("InfectionConfirmationCodes")]
     public class InfectionConfirmationCodeEntity
     {
-        public int Id { get; set; }
-
         /// <summary>
         /// 32-digit Infection Confirmation Code
         /// </summary>

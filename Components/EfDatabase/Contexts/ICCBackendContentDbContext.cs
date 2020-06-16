@@ -20,16 +20,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         }
 
         //
-        public DbSet<InfectionConfirmationCodeEntity> InfectionConfirmationCode { get; set; }
+        public DbSet<InfectionConfirmationCodeEntity> InfectionConfirmationCodes { get; set; }
         // public DbSet<ExposureKeySetContentEntity> ExposureKeySetContent { get; set; }
         // public DbSet<RiskCalculationContentEntity> RiskCalculationContent { get; set; }
         // public DbSet<ResourceBundleContentEntity> ResourceBundleContent { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<InfectionConfirmationCodeEntity>().HasIndex(e => e.Code);
-            modelBuilder.Entity<InfectionConfirmationCodeEntity>().Property(e => e.Code)
-                .IsRequired();
+            modelBuilder.Entity<InfectionConfirmationCodeEntity>().HasKey(e => e.Code);
+            
             modelBuilder.Entity<InfectionConfirmationCodeEntity>().Property(e => e.Created)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .ValueGeneratedOnAdd();

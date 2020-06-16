@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             var db = new CreateICCDatabase(_Configuration);
             await db.Execute();
 
-            Console.WriteLine("Completed.");
+            Console.WriteLine("ICC ProvisionDB Completed.");
 
             return new OkResult();
         }
