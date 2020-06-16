@@ -40,5 +40,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC
         /// User Guid from user that used the Code
         /// </summary>
         public Guid? UsedBy { get; set; }
+
+        public bool IsValid()
+        {
+            return (Used == null && (Revoked == null || Revoked > DateTime.Now));
+        }
     }
 }

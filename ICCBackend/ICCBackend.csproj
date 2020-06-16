@@ -49,6 +49,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Middlewares" />
       <Folder Include="Models" />
     </ItemGroup>
 

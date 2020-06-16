@@ -19,12 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
         }
 
-        //
         public DbSet<InfectionConfirmationCodeEntity> InfectionConfirmationCodes { get; set; }
-        // public DbSet<ExposureKeySetContentEntity> ExposureKeySetContent { get; set; }
-        // public DbSet<RiskCalculationContentEntity> RiskCalculationContent { get; set; }
-        // public DbSet<ResourceBundleContentEntity> ResourceBundleContent { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<InfectionConfirmationCodeEntity>().HasKey(e => e.Code);
