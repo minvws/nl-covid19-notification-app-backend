@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -13,25 +14,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
     {
         private readonly WorkflowDbContext _DbContextProvider;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly RandomNumberGenerator _NumberGenerator;
 
-        public KeysLastSecretWriter(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider)
+        public KeysLastSecretWriter(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, RandomNumberGenerator numberGenerator)
         {
             _DbContextProvider = dbContextProvider;
             _DateTimeProvider = dateTimeProvider;
+            _NumberGenerator = numberGenerator;
         }
 
-        public async Task Execute(string secretToken)
+        public async Task<EnrollmentResponse> Execute()
         {
-            var e = new KeysLastTeksWorkflowEntity
+            var entity = new KeyReleaseWorkflowState
             {
+                LabConfirmationId = _NumberGenerator.GenerateToken(),
                 Created = _DateTimeProvider.Now(),
-                SecretToken = secretToken,
-                //TODO State = KeysLastWorkflowState.Unauthorised
+                BucketId = Convert.ToBase64String(_NumberGenerator.GenerateKey()),
+                ConfirmationKey = Convert.ToBase64String(_NumberGenerator.GenerateKey()),
             };
 
-            //TODO secret token already exists...
-            await _DbContextProvider.KeysLastWorkflows.AddAsync(e);
+            await _DbContextProvider.KeyReleaseWorkflowStates.AddAsync(entity);
+
             _DbContextProvider.SaveAndCommit();
+
+            return new EnrollmentResponse
+            {
+                ConfirmationKey = entity.ConfirmationKey,
+                BucketId = entity.BucketId,
+                LabConfirmationId = entity.LabConfirmationId
+            };
         }
     }
 }

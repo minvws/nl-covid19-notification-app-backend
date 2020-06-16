@@ -20,13 +20,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
     {
         private readonly ExposureContentDbContext _DbContextProvider;
         private readonly IPublishingId _PublishingId;
+        private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public CreateContentDatabase(IConfiguration configuration, IPublishingId publishingId)
+        public CreateContentDatabase(IConfiguration configuration, IPublishingId publishingId, IUtcDateTimeProvider dateTimeProvider)
         {
             var config = new StandardEfDbConfig(configuration, "Content");
             var builder = new SqlServerDbContextOptionsBuilder(config);
             _DbContextProvider = new ExposureContentDbContext(builder.Build());
             _PublishingId = publishingId;
+            _DateTimeProvider = dateTimeProvider;
         }
 
         public async Task Execute()
@@ -41,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
             var e0 = new ResourceBundleArgs
             {
-                Release = DateTime.Now,
+                Release = _DateTimeProvider.Now(),
                 Text = new Dictionary<string, Dictionary<string, string>>
                 {
                     {"en-GB", new Dictionary<string, string>()
@@ -59,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
             var e1 = new ResourceBundleArgs
             {
-                Release = DateTime.Now,
+                Release = _DateTimeProvider.Now(),
                 IsolationPeriodDays = 10,
                 ObservedTemporaryExposureKeyRetentionDays = 14,
                 TemporaryExposureKeyRetentionDays = 15,
@@ -82,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
             var e2 = new ResourceBundleArgs
             {
-                Release = DateTime.Now
+                Release = _DateTimeProvider.Now()
             }.ToEntity();
             e2.PublishingId = _PublishingId.Create(e2);
             await _DbContextProvider.AddAsync(e2);
@@ -102,7 +104,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
             var e5 = new AppConfigArgs
             {
-                Release = new DateTime(2020, 5, 1),
+                Release = _DateTimeProvider.Now(),
                 ManifestFrequency = 5,
                 DecoyProbability = 1,
                 Version = 123345
@@ -111,8 +113,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             e5.PublishingId = _PublishingId.Create(e5);
             await _DbContextProvider.AddAsync(e5);
 
-            await _DbContextProvider.SaveChangesAsync();
-            await tx.CommitAsync();
+            _DbContextProvider.SaveAndCommit();
         }
     }
 }

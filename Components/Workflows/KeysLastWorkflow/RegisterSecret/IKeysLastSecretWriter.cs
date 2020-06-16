@@ -8,6 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 {
     public interface IKeysLastSecretWriter
     {
-        Task Execute(string argsToken);
+        Task<EnrollmentResponse> Execute();
     }
 }

@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             if (args == null)
                 return false;
 
-            if (!_AuthorisationTokenValidator.Valid(args.Token))
+            if (!_AuthorisationTokenValidator.Valid(args.BucketId))
                 return false;
 
             if (_Config.TemporaryExposureKeyCountMin > args.Items.Length

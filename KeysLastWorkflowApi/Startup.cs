@@ -52,7 +52,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi
             
             services.AddScoped<HttpPostKeysLastRegisterSecret, HttpPostKeysLastRegisterSecret>();
             services.AddScoped<IKeysLastSecretWriter, KeysLastSecretWriter>();
-            services.AddScoped<IKeysLastSecretValidator, KeysLastSecretValidator>();
             services.AddScoped<IKeysLastSecretConfig, StandardKeysLastSecretConfig>();
             services.AddScoped<IKeysLastTekWriter, FakeKeysLastTekWriter>();
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.Authorisation;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.KeysFirstWorkflow
 {
@@ -26,9 +26,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.KeysFi
         public async Task Execute(int pAuthorize, Random r)
         {
             _DbContextProvider.BeginTransaction();
-            var unauthorized = _DbContextProvider.Set<KeysFirstTeksWorkflowEntity>()
+            var unauthorized = _DbContextProvider.Set<KeyReleaseWorkflowState>()
                 .Where(x => x.Authorised == false)
-                .Select(x => x.AuthorisationToken)
+                .Select(x => x.ConfirmationKey)
                 .ToArray();
 
             var authorized = unauthorized

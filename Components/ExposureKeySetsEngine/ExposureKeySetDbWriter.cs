@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         {
             var entities = things.Select(x => new ExposureKeySetContentEntity
             {
-                Content = x.GaenContent,
+                Content = x.Content,
                 CreatingJobName = x.CreatingJobName,
                 CreatingJobQualifier = x.CreatingJobQualifier,
                 Region = x.Region,

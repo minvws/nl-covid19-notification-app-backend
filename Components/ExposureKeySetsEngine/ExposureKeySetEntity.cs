@@ -4,6 +4,7 @@
 
 using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
 {
@@ -14,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         public string CreatingJobName { get; set; }
         public int CreatingJobQualifier { get; set; }
         //public string DebugContentJson { get; set; }
-        public byte[] GaenContent { get; set; }
+        public byte[] Content { get; set; }
         public string Region { get; set; } = DefaultValues.Region;
     }
 }

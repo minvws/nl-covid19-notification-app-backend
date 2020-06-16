@@ -33,6 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 
             await _Writer.Execute(args);
             _DbContextProvider.SaveAndCommit();
+
             return new OkResult();
         }
     }

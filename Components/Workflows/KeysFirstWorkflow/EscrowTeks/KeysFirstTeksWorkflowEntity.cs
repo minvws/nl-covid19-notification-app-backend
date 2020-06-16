@@ -8,7 +8,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks
 {
-    [Table("KeysFirstTeksWorkflowItems")]
     public class KeysFirstTeksWorkflowEntity
     {
         public int Id { get; set; }

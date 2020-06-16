@@ -22,6 +22,10 @@
     <EmbeddedResource Remove="BleCalibration\**" />
     <None Remove="BleCalibration\**" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="EfDatabase\Configuration\Workflow\KeysFirstTekReleaseWorkflow.cs" />
+    <Compile Remove="Workflows\KeysFirstWorkflow\EscrowTeks\KeysFirstTeksWorkflowEntity.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="EFCore.BulkExtensions" Version="3.1.1" />

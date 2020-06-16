@@ -40,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         {
                 var jobConfigBuilder = new SqlServerDbContextOptionsBuilder(_StandardEfDbConfig);
 
-                using var bb = new ExposureKeySetBatchJob(
+                using var bb = new ExposureKeySetBatchJobMk2(
                     new DbTekSource(_Input),
                     jobConfigBuilder,
                     _UtcDateTimeProvider,

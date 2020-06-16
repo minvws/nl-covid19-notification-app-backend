@@ -9,7 +9,7 @@ using EFCore.BulkExtensions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.BackgroundJobs
 {
@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
         {
             var now = _UtcDateTimeProvider.Now();
 
-            var hushNow = _Context.Set<KeysFirstTeksWorkflowEntity>()
+            var hushNow = _Context.Set<KeyReleaseWorkflowState>()
                 .Where(x => x.Created < now - TimeSpan.FromDays(_GaenContentConfig.KeysLastSecretLifetimeDays))
                 .ToArray();
 
