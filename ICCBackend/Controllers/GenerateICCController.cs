@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -18,46 +19,43 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend.Controllers
     [Route("[controller]")]
     public class GenerateICCController
     {
+        private readonly IICCService _ICCService;
         private readonly ILogger<GenerateICCController> _logger;
         private readonly IConfiguration _Configuration;
-        private readonly ICCBackendContentDbContext _context;
+        
 
-        public GenerateICCController(ILogger<GenerateICCController> logger, IConfiguration configuration,
-            ICCBackendContentDbContext context)
+        public GenerateICCController(ILogger<GenerateICCController> logger, IConfiguration configuration, IICCService iccService )
         {
             _logger = logger;
             _Configuration = configuration;
-            _context = context;
+            _ICCService = iccService;
         }
 
-        private static Random random = new Random();
 
-        public static string RandomString(int length)
+        [HttpPost("single")]
+        public async Task<JsonResult> PostGenerateICC([FromBody] Guid userId)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<object>> PostGenerateICC([FromBody] Guid UserId)
-        {
-            int length = Convert.ToInt32(_Configuration.GetSection("ICCConfig:Code:Length").Value);
-            string generatedIcc = RandomString(length);
-            
-            InfectionConfirmationCodeEntity icc = new InfectionConfirmationCodeEntity();
-            icc.Code = generatedIcc;
-            icc.GeneratedBy = UserId;
-
-            _context.InfectionConfirmationCodes.Add(icc);
-            await _context.SaveChangesAsync();
-
+            InfectionConfirmationCodeEntity icc = await _ICCService.GenerateICC(userId);
             return new JsonResult(new
             {
                 ok = true,
                 status = 200,
                 icc = icc,
                 length = _Configuration.GetSection("ICCConfig:Code:Length").Value
+            });
+        }
+        
+        
+        [HttpPost("batch")]
+        public async Task<JsonResult> PostGenerateBatchICC([FromBody] Guid userId)
+        {
+            List<InfectionConfirmationCodeEntity> batch = await _ICCService.GenerateBatch(userId);
+            return new JsonResult(new
+            {
+                ok = true,
+                status = 200,
+                length = _Configuration.GetSection("ICCConfig:Code:Length").Value,
+                batch = batch
             });
         }
     }

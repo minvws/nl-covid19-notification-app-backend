@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC;
+using NL.Rijksoverheid.ExposureNotification.ICCBackend.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.ICCBackend.Controllers
 {
@@ -17,39 +18,35 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend.Controllers
     {
         private readonly ILogger<RedeemICCController> _logger;
         private readonly ActionExecutedContext _Context;
-        private readonly ICCBackendContentDbContext _DbContext;
+        private readonly IICCService _ICCService;
+        private readonly AppBackendService _AppBackendService;
 
-        public RedeemICCController( ICCBackendContentDbContext dbContext, ILogger<RedeemICCController> logger)
+        public RedeemICCController(IICCService iccService, ILogger<RedeemICCController> logger, AppBackendService appBackendService)
         {
-         
-            _DbContext = dbContext;
+            _ICCService = iccService;
+            _AppBackendService = appBackendService;
             _logger = logger;
         }
 
         [HttpPost, Authorize]
-        public async Task<ActionResult<object>> PostRedeemICC(object payload)
+        public async Task<ActionResult<object>> PostRedeemICC(RedeemICCModel redeemIccModel)
         {
-            // POST /labresult call on App Backend
-            
-            // Delete ICC in DB regardless of prev. step results
-
-            // return valid response
-
             // Make ICC Used, so it can only be used once 
-            InfectionConfirmationCodeEntity ICC =
-                await _DbContext.InfectionConfirmationCodes.FindAsync(User.Identity.Name);
-            ICC.Used = DateTime.Now;
-            await _DbContext.SaveChangesAsync();
+            InfectionConfirmationCodeEntity ICC = await _ICCService.RedeemICC(User.Identity.Name);
             
-            return new JsonResult(new
+            // POST /labresult call on App Backend
+            bool LabCID_IsValid = await _AppBackendService.LabConfirmationIDIsValid(redeemIccModel);
+            if (LabCID_IsValid)
             {
-                ok = true,
-                status = 501,
-                auth=User.Identity.Name,
-                payload = payload
-            });
-
-            // return Unauthorized(new {ok = false, status = "401", payload = payload});
+                return new JsonResult(new
+                {
+                    ok = true,
+                    status = 501,
+                    ICC = ICC,
+                    payload = redeemIccModel
+                });
+            }
+            return Unauthorized(new {ok = false, status = "401", payload = redeemIccModel});
         }
     }
 }

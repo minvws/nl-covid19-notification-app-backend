@@ -1,0 +1,52 @@
+// Copyright © 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using NL.Rijksoverheid.ExposureNotification.ICCBackend.Models;
+
+namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
+{
+    public class AppBackendService
+    {
+        private IConfiguration _Configuration;
+        public AppBackendService(IConfiguration _configuration)
+        {
+            _Configuration = _configuration;
+        }
+
+        private HttpClient CreateBackendHttpClient(string endpoint)
+        {
+            string BaseURL = "https://" + _Configuration.GetSection("AppBackendConfig:Host").ToString() + "/";
+            // TODO: Make HTTPClient with urls;
+            return new HttpClient();
+        }
+
+        private object BackendGetRequest()
+        {
+            return new {};
+        }
+        private object BackendPostRequest(object payload)
+        {
+            return new {};
+            
+        }
+        
+        public async Task<bool> LabConfirmationIDIsValid(RedeemICCModel redeemIccModel)
+        {
+            Console.WriteLine(_Configuration.GetSection("AppBackendConfig:Host"));
+            
+            // post to labresult with id and date params
+            
+            object backendResponse = BackendPostRequest(redeemIccModel);
+            
+            
+            
+            return true;
+        }
+    }
+}

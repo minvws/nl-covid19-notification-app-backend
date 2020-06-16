@@ -19,6 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
 {
     public class ICCAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
+        private readonly IICCService _ICCService;
         private readonly ICCBackendContentDbContext _DbContext;
         private readonly ILogger<ICCAuthenticationHandler> _logger;
 
@@ -26,11 +27,13 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
+            IICCService ICCService,
             ICCBackendContentDbContext dbContext,
             ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
             _DbContext = dbContext;
+            _ICCService = ICCService;
             _logger = logger.CreateLogger<ICCAuthenticationHandler>();
         }
 
@@ -43,15 +46,14 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
             {
                 var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
                 string headerICCode = authHeader.ToString();
-                
-                // TODO: Make Service that handles ICC auth
-                ICC = await _DbContext.InfectionConfirmationCodes.FindAsync(headerICCode);
-                if(!ICC.IsValid()) return AuthenticateResult.Fail("Invalid ICC 2");
+                ICC = await _ICCService.Validate(headerICCode);
             }
             catch
             {
                 return AuthenticateResult.Fail("Invalid ICC");
             }
+
+            if (ICC == null) return AuthenticateResult.Fail("Invalid ICC");
 
             var claims = new[]
             {

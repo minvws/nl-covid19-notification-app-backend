@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
 
             services.AddControllers();
 
-
+            // Database Scoping
             services.AddScoped(x =>
             {
                 var config = new StandardEfDbConfig(Configuration, "ICC");
@@ -43,8 +43,12 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
             services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "ICC"));
             services.AddScoped<ProvisionDatabasesCommandICC, ProvisionDatabasesCommandICC>();
 
+
+            services.AddScoped<IICCService, ICCService>();
+            services.AddScoped<AppBackendService, AppBackendService>();
             services.AddAuthentication("ICCAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, ICCAuthenticationHandler>("ICCAuthentication", null);
+
 
             services.AddCors();
 
@@ -60,7 +64,6 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
                     Scheme = "ICCAuthentication"
                 });
                 o.OperationFilter<SecurityRequirementsOperationFilter>();
-                    
             });
         }
 
@@ -68,6 +71,7 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyHeader());
+            
             app.UseSwagger();
             app.UseSwaggerUI(o => { o.SwaggerEndpoint("/swagger/v1/swagger.json", "ICC Back-end Server V1"); });
 
@@ -101,19 +105,19 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
 
             if (requiredScopes.Any())
             {
-                operation.Responses.Add("401", new OpenApiResponse { Description = "Unauthorized" });
-                operation.Responses.Add("403", new OpenApiResponse { Description = "Forbidden" });
+                operation.Responses.Add("401", new OpenApiResponse {Description = "Unauthorized"});
+                operation.Responses.Add("403", new OpenApiResponse {Description = "Forbidden"});
 
                 var ICCAuthenticationScheme = new OpenApiSecurityScheme
                 {
-                    Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "ICC" }
+                    Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "ICC"}
                 };
 
                 operation.Security = new List<OpenApiSecurityRequirement>
                 {
                     new OpenApiSecurityRequirement
                     {
-                        [ ICCAuthenticationScheme ] = requiredScopes.ToList()
+                        [ICCAuthenticationScheme] = requiredScopes.ToList()
                     }
                 };
             }
