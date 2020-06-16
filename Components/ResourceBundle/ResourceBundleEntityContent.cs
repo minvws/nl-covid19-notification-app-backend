@@ -8,8 +8,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
 {
     public class ResourceBundleEntityContent
     {
+        //TODO Version of what? Remove
+        public string Version { get; set; }
+
         /// <summary>
-        /// TemporaryExposureKey
+        /// For TemporaryExposureKeys
         /// </summary>
         public int TemporaryExposureKeyRetentionDays { get; set; }
 

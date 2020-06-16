@@ -4,12 +4,8 @@
 
 using System;
 using System.Web;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {
@@ -25,21 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
         private string Create(byte[] contents)
             => Convert.ToBase64String(_Signer.GetSignature(contents));
 
-        public string Create(ManifestEntity e)
-            => Create(e.Content);
-
-        public string Create(RiskCalculationContentEntity e)
-            => Create(e.Content);
-
-        /// <summary>
-        /// TODO check GetHashCode works on byte[]
-        /// </summary>
-        /// <param name="e"></param>
-        /// <returns></returns>
-        public string Create(ExposureKeySetContentEntity e)
-            => Create(e.Content);
-
-        public string Create(ResourceBundleContentEntity e)
+        public string Create(ContentEntity e)
             => Create(e.Content);
 
         public string ParseUri(string uri)

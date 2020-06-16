@@ -18,11 +18,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Auth
 
         public bool Valid(KeysLastSecretArgs args)
         {
-            if (string.IsNullOrWhiteSpace(args?.Token))
+            if (string.IsNullOrWhiteSpace(args?.ConfirmationKey))
                 return false;
 
             var _ = new Span<byte>(new byte[_Config.ByteCount]);
-            if (!Convert.TryFromBase64String(args.Token, _, out var length))
+            if (!Convert.TryFromBase64String(args.ConfirmationKey, _, out var length))
                 return false;
 
             if (length != _Config.ByteCount)

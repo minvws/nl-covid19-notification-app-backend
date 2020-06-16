@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
                 return new OkResult();
             }
 
-            await _AuthorisationWriter.Execute(args.TestId, args.UploadAuthorisationToken);
+            await _AuthorisationWriter.Execute(args);
             return new OkResult();
         }
     }

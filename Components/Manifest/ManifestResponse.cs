@@ -9,5 +9,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         public string[] ExposureKeySets { get; set; }
         public string ResourceBundle { get; set; }
         public string RiskCalculationParameters { get; set; }
+        public string AppConfig { get; set; }
     }
 }

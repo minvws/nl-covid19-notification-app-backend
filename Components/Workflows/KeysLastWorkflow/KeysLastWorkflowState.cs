@@ -2,8 +2,11 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow
 {
+    [Obsolete("Have to use keys/lab auth to set a simple bool as order of arrival not guaranteed.")]
     public enum KeysLastWorkflowState
     {
         /// <summary>

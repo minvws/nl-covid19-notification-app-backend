@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
     public class RiskCalculationParametersController : ControllerBase
     {
         [HttpGet]
-        [Route(EndPointNames.CdnApi.RiskCalculationParameters +"/{id}")]
+        [Route(EndPointNames.ContentAdminPortalDataApi.RiskCalculationParameters +"/{id}")]
         public async Task GetLatestConfig(string id, [FromServices]HttpGetCdnContentCommand<RiskCalculationContentEntity> command)
         {
             await command.Execute(HttpContext, id);

@@ -42,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 i.PublishingId = _PublishingId.Create(i);
             }
 
-            using (_DbContext.BeginTransaction())
+            using (_DbContext.EnsureNoChangesOrTransaction().BeginTransaction())
             {
                 _DbContext.BulkInsertAsync(entities);
                 _DbContext.SaveAndCommit();

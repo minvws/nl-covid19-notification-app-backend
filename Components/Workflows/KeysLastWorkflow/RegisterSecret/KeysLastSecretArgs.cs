@@ -4,11 +4,20 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.RegisterSecret
 {
+    /// <summary>
+    /// EnrollmentRequest
+    /// </summary>
     public class KeysLastSecretArgs
     {
         /// <summary>
-        /// Base64
+        /// EnrollmentRequest
+        /// confirmationKey
         /// </summary>
-        public string Token { get; set; }
+        public string ConfirmationKey { get; set; }
+
+        /// <summary>
+        /// TODO Should this be consistently applied to the other posts/gets? Also byte[], please.
+        /// </summary>
+        public string Padding { get; set; }
     }
 }

@@ -2,12 +2,14 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.KeysFirstWorkflow;
@@ -62,6 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 var config = new StandardEfDbConfig(Configuration, "Content");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new ExposureContentDbContext(builder.Build());
+                result.BeginTransaction();
                 return result;
             });
 
@@ -70,6 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 var config = new StandardEfDbConfig(Configuration, "WorkFlow");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new WorkflowDbContext(builder.Build());
+                result.BeginTransaction();
                 return result;
             });
 
@@ -99,8 +103,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             //TODO services.AddScoped<HttpGetLatestManifestCommand, HttpGetLatestManifestCommand>();
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
             services.AddScoped<GetActiveExposureKeySetsListCommand, GetActiveExposureKeySetsListCommand>();
-            services.AddScoped<GetLatestRiskCalculationParametersCommand, GetLatestRiskCalculationParametersCommand>();
-            services.AddScoped<GetLatestResourceBundleCommand, GetLatestResourceBundleCommand>();
+            
 
             services.AddScoped<ExposureKeySetSafeReadCommand, ExposureKeySetSafeReadCommand>();
             
@@ -126,11 +129,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<HttpGetCdnContentCommand<ExposureKeySetContentEntity>, HttpGetCdnContentCommand<ExposureKeySetContentEntity>>();
             services.AddScoped<HttpGetCdnContentCommand<RiskCalculationContentEntity>, HttpGetCdnContentCommand<RiskCalculationContentEntity>>();
             services.AddScoped<HttpGetCdnContentCommand<ResourceBundleContentEntity>, HttpGetCdnContentCommand<ResourceBundleContentEntity>>();
+            services.AddScoped<HttpGetCdnContentCommand<AppConfigContentEntity>, HttpGetCdnContentCommand<AppConfigContentEntity>>();
 
             services.AddScoped<IReader<ManifestEntity>, DynamicManifestReader>();
             services.AddScoped<IReader<ExposureKeySetContentEntity>, SafeBinaryContentDbReader<ExposureKeySetContentEntity>>();
             services.AddScoped<IReader<ResourceBundleContentEntity>, SafeBinaryContentDbReader<ResourceBundleContentEntity>>();
             services.AddScoped<IReader<RiskCalculationContentEntity>, SafeBinaryContentDbReader<RiskCalculationContentEntity>>();
+            services.AddScoped<IReader<AppConfigContentEntity>, SafeBinaryContentDbReader<AppConfigContentEntity>>();
 
             services.AddScoped<HttpPostKeysLastRegisterSecret, HttpPostKeysLastRegisterSecret>();
             services.AddScoped<IKeysLastSecretValidator, KeysLastSecretValidator>();
@@ -143,12 +148,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<HttpPostKeysLastReleaseTeksCommand, HttpPostKeysLastReleaseTeksCommand>();
             services.AddScoped<IKeysLastReleaseTeksValidator, KeysLastReleaseTeksValidator>();
             services.AddScoped<IKeysLastAuthorisationTokenValidator, FakeKeysLastReleaseTeksValidator>();
-
             services.AddScoped<IKeysLastTekWriter, FakeKeysLastTekWriter>();
+
+            services.AddScoped<HttpPostAppConfigCommand, HttpPostAppConfigCommand>();
+            services.AddScoped<AppConfigInsertDbCommand, AppConfigInsertDbCommand>();
+            services.AddScoped<AppConfigValidator, AppConfigValidator>();
+            
+            services.AddScoped<GetLatestContentCommand<ResourceBundleContentEntity>, GetLatestContentCommand<ResourceBundleContentEntity>>();
+            services.AddScoped<GetLatestContentCommand<RiskCalculationContentEntity>, GetLatestContentCommand<RiskCalculationContentEntity>>();
+            services.AddScoped<GetLatestContentCommand<AppConfigContentEntity>, GetLatestContentCommand<AppConfigContentEntity>>();
 
             services.AddSwaggerGen(o =>
             {
-                o.SwaggerDoc("v1", new OpenApiInfo { Title = "MSS Stand-Alone Development Server", Version = "v1" });
+                o.SwaggerDoc("v1", new OpenApiInfo 
+                { 
+                    Title = "Dutch Exposure Notification API (inc. dev support)", 
+                    Version = "v1", 
+                    Description = "This specification describes the interface between the Dutch exposure notification app and the backend service.\nTODO: Add signatures to manifest, riskcalculationparameters and appconfig",
+                    Contact = new OpenApiContact {
+                        Name = "Ministerie van Volksgezondheid Welzijn en Sport backend repository", //TODO looks wrong?
+                        Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend"),
+                    },
+                    License = new OpenApiLicense 
+                    { 
+                        Name = "European Union Public License v. 1.2",
+                        //TODO this should be https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+                        Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend/blob/master/LICENSE.txt")
+                    },
+                    
+                });
             });
         }
 
@@ -158,12 +186,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             app.UseSwagger();
             app.UseSwaggerUI(o =>
             {
-                o.SwaggerEndpoint("/swagger/v1/swagger.json", "MSS Stand-Alone Development Server V1");
+                o.SwaggerEndpoint("/swagger/v1/swagger.json", "Dutch Exposure Notification API (inc. dev support)");
             });
             if(!env.IsDevelopment()) app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
             app.UseRouting();
-
-            
 
             app.UseEndpoints(endpoints =>
             {

@@ -28,10 +28,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             var expired = _DateTimeProvider.Now() - TimeSpan.FromDays(_KeysLastWorkflowConfig.SecretLifetimeDays);
 
             _DbContextProvider.BeginTransaction();
-            var q = _DbContextProvider.KeysLastWorkflows
-                .Where(x => x.State == KeysLastWorkflowState.Unauthorised && x.Created < expired);
 
-            _DbContextProvider.KeysLastWorkflows.RemoveRange(q);
+            throw new NotImplementedException();
+
+            //var q = _DbContextProvider.KeysLastWorkflows
+            //    .Where(x => x.State == KeysLastWorkflowState.Unauthorised && x.Created < expired);
+
+            //_DbContextProvider.KeysLastWorkflows.RemoveRange(q);
+
             _DbContextProvider.SaveChanges();
             _DbContextProvider.SaveAndCommit();
         }
