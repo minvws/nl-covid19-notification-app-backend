@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
         }
 
-        public DbSet<TeksInputEntity> Input { get; set; }
+        public DbSet<EksCreateJobInputEntity> Input { get; set; }
         public DbSet<ExposureKeySetEntity> Output { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

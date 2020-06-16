@@ -2,8 +2,10 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
@@ -36,24 +38,34 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             _ExposureKeySetBatchJobConfig = exposureKeySetBatchJobConfig;
         }
 
-        public async Task<IActionResult> Execute()
+        public async Task<IActionResult> Execute(bool useAllKeys = false)
         {
-                var jobConfigBuilder = new SqlServerDbContextOptionsBuilder(_StandardEfDbConfig);
+                //var jobConfigBuilder = new SqlServerDbContextOptionsBuilder(_StandardEfDbConfig);
 
                 using var bb = new ExposureKeySetBatchJobMk2(
-                    new DbTekSource(_Input),
-                    jobConfigBuilder,
-                    _UtcDateTimeProvider,
-                    new ExposureKeySetDbWriter(_Output, new Sha256PublishingId(new HardCodedExposureKeySetSigning())),
-                    _GaenContentConfig, 
-                    //new JsonContentExposureKeySetFormatter(),
+                    _GaenContentConfig,
                     new ExposureKeySetBuilderV1(
                         _HsmExposureKeySetHeaderInfoConfig,
-                        new HardCodedExposureKeySetSigning(), _UtcDateTimeProvider, new GeneratedProtobufContentFormatter())
-                    , _ExposureKeySetBatchJobConfig
+                        new HardCodedExposureKeySetSigning(), _UtcDateTimeProvider, new GeneratedProtobufContentFormatter()),
+                    _Input,
+                    _Output,
+                    _UtcDateTimeProvider,
+                    new Sha256PublishingId(new HardCodedExposureKeySetSigning())
+
+                    //new ExposureKeySetDbWriter(_Output, new Sha256PublishingId(new HardCodedExposureKeySetSigning())),
+                    //new JsonContentExposureKeySetFormatter(),
+                    //_ExposureKeySetBatchJobConfig
+                    //jobConfigBuilder,
                 );
 
-                await bb.Execute();
+                try
+                {
+                    await bb.Execute(useAllKeys);
+                }
+                catch (Exception e)
+                {
+                    throw;
+                }
 
                 return new OkResult();
         }   

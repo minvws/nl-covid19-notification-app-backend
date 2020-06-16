@@ -10,6 +10,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSetti
         int KeysLastSecretLifetimeDays { get; }
         
         int ExposureKeySetLifetimeDays { get; }
+        
+        /// <summary>
+        /// TODO Key count - rename
+        /// </summary>
         int ExposureKeySetCapacity { get; }
         double ManifestLifetimeHours { get; set; }
     }

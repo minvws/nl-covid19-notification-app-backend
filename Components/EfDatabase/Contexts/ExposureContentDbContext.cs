@@ -20,8 +20,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
         }
 
-        public DbSet<TeksInputEntity> EksInput { get; set; }
-        public DbSet<ExposureKeySetContentEntity> EksOutput { get; set; }
+        public DbSet<EksCreateJobInputEntity> EksInput { get; set; }
+        public DbSet<EksCreateJobOutputEntity> EksOutput { get; set; }
 
         public DbSet<ManifestEntity> ManifestContent { get; set; }
         public DbSet<ExposureKeySetContentEntity> ExposureKeySetContent { get; set; }
@@ -31,6 +31,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfiguration(new Configuration.Content.EksCreateJobInput());
+            modelBuilder.ApplyConfiguration(new Configuration.Content.EksCreateJobOutput());
             modelBuilder.ApplyConfiguration(new Configuration.Content.ExposureKeySetContent());
             modelBuilder.ApplyConfiguration(new Configuration.Content.Manifest());
             modelBuilder.ApplyConfiguration(new Configuration.Content.RiskCalculationContent());

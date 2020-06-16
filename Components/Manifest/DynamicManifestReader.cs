@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
                 Content = bytes,
                 ContentTypeName = ContentHeaderValues.Json,
             };
-            result.PublishingId = _PublishingId.Create(result);
+            result.PublishingId = _PublishingId.Create(result.Content);
             return result;
         }
     }

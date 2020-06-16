@@ -59,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
                 Content = bytes,
                 Region = DefaultValues.Region,
             };
-            e.PublishingId = _PublishingId.Create(e);
+            e.PublishingId = _PublishingId.Create(e.Content);
             _DbContext.ManifestContent.Add(e);
             _DbContext.SaveAndCommit();
 

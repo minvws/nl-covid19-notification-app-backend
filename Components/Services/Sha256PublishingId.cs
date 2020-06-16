@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Text;
 using System.Web;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
@@ -18,12 +19,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
             _Signer = signer;
         }
 
-        private string Create(byte[] contents)
-            => Convert.ToBase64String(_Signer.GetSignature(contents));
+        public string Create(byte[] contents)
+        {
+            var id = _Signer.GetSignature(contents);
 
-        public string Create(ContentEntity e)
-            => Create(e.Content);
+            var result = new StringBuilder(id.Length * 2);
+            foreach (var i in id)
+                result.AppendFormat("{0:x2}", i);
 
+            return result.ToString();
+        }
+
+        [Obsolete("Not sure this are a problem now")]
         public string ParseUri(string uri)
             => HttpUtility.UrlDecode(uri).Replace(" ", "+");
         

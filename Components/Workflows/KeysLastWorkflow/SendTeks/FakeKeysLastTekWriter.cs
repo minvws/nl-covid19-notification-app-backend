@@ -22,21 +22,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             _UtcDateTimeProvider = utcDateTimeProvider;
         }
 
+        /// <summary>
+        /// May arrive BEFORE authorisation
+        /// TODO limits on keys.
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public async Task Execute(KeysLastReleaseTeksArgs args)
         {
             var wf = _DbContextProvider
                 .KeyReleaseWorkflowStates
-                .Where(x => x.BucketId == args.BucketId)
-                .FirstOrDefault(x => x.Authorised);
+                .FirstOrDefault(x => x.BucketId == args.BucketId);
 
-            if (wf != null)
-            {
-                var entities = args.Items.ToEntities();
-                foreach (var e in entities)
-                    e.Owner = wf;
+            if (wf == null)
+                return;
 
-                await _DbContextProvider.TemporaryExposureKeys.AddRangeAsync(entities);
-            }
+            var entities = args.Items.ToEntities();
+            
+            foreach (var e in entities)
+                e.Owner = wf;
+
+            await _DbContextProvider.TemporaryExposureKeys.AddRangeAsync(entities);
         }
     }
 }
