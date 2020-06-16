@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
 {
@@ -26,11 +27,13 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
     {
         private readonly ICCBackendContentDbContext _DbContext;
         private readonly IConfiguration _Configuration;
+        private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public ICCService(ICCBackendContentDbContext dbContext, IConfiguration configuration)
+        public ICCService(ICCBackendContentDbContext dbContext, IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider)
         {
             _DbContext = dbContext;
             _Configuration = configuration;
+            _DateTimeProvider = dateTimeProvider;
         }
 
         /// <summary>
@@ -82,6 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
             InfectionConfirmationCodeEntity icc = new InfectionConfirmationCodeEntity();
             icc.Code = generatedIcc;
             icc.GeneratedBy = userId;
+            icc.Created = _DateTimeProvider.Now();
 
 
             _DbContext.InfectionConfirmationCodes.Add(icc);
@@ -111,7 +115,7 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
         public async Task<InfectionConfirmationCodeEntity> RedeemICC(string icc)
         {
             InfectionConfirmationCodeEntity ICC = await Get(icc);
-            ICC.Used = DateTime.Now;
+            ICC.Used = _DateTimeProvider.Now();
             await _DbContext.SaveChangesAsync();
             return ICC;
         }

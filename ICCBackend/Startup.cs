@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 
@@ -42,6 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
             });
             services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "ICC"));
             services.AddScoped<ProvisionDatabasesCommandICC, ProvisionDatabasesCommandICC>();
+            services.AddScoped<IUtcDateTimeProvider, IUtcDateTimeProvider>();
 
 
             services.AddScoped<IICCService, ICCService>();
