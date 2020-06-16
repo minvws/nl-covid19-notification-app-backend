@@ -9,15 +9,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
     /// </summary>
     public class KeysLastSecretArgs
     {
-        /// <summary>
-        /// EnrollmentRequest
-        /// confirmationKey
-        /// </summary>
-        public string ConfirmationKey { get; set; }
-
-        /// <summary>
-        /// TODO Should this be consistently applied to the other posts/gets? Also byte[], please.
-        /// </summary>
-        public string Padding { get; set; }
+        public byte[]? Padding { get; set; }
     }
 }

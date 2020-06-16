@@ -22,9 +22,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 
         public async Task Execute(KeysFirstEscrowArgs args)
         {
-            var e = args.ToEntity();
-            e.Created = _UtcDateTimeProvider.Now();
-            await _DbContextProvider.AddAsync(e);
+            var e = args.ToEntities();
+            await _DbContextProvider.AddRangeAsync(e);
         }
     }
 }

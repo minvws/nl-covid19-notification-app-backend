@@ -2,10 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
@@ -26,5 +28,43 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             await _Provider.Database.EnsureCreatedAsync();
         }
 
+        public async Task AddExampleContent()
+        {
+            await using var tx = await _Provider.Database.BeginTransactionAsync();
+
+            var wfs1 = new KeyReleaseWorkflowState
+            {
+                LabConfirmationId = "1",
+                BucketId = "2",
+                ConfirmationKey = "3",
+                Created = new DateTime(2020, 5, 1),
+            };
+
+            var key1 = new TemporaryExposureKeyEntity
+            {
+                Owner = wfs1,
+                PublishingState = PublishingState.Unpublished,
+                RollingPeriod = 1,
+                RollingStartNumber = 1,
+                TransmissionRiskLevel = 1,
+                KeyData = new byte[0],
+                Region = "NL"
+            };
+
+            var key2 = new TemporaryExposureKeyEntity
+            {
+                Owner = wfs1,
+                PublishingState = PublishingState.Unpublished,
+                RollingPeriod = 1,
+                RollingStartNumber = 1,
+                TransmissionRiskLevel = 1,
+                KeyData = new byte[0],
+                Region = "NL"
+            };
+
+            await _Provider.KeyReleaseWorkflowStates.AddAsync(wfs1);
+            await _Provider.TemporaryExposureKeys.AddRangeAsync(key1, key2);
+            _Provider.SaveAndCommit();
+        }
     }
 }

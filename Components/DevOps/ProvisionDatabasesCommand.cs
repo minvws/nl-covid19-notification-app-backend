@@ -24,6 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         {
             var db2 = new CreateWorkflowDatabase(_Configuration);
             await db2.Execute();
+            await db2.AddExampleContent();
 
             var db3 = new CreateContentDatabase(_Configuration, new Sha256PublishingId(new HardCodedExposureKeySetSigning()));
             await db3.Execute();

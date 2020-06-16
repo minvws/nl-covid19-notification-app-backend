@@ -40,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
     }
 
 
-        [TestClass()]
+    [TestClass()]
     public class LuhnModNValidatorConfigTests
     {
         [TestMethod()]

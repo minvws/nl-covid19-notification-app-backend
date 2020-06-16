@@ -51,14 +51,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         {
             using (_DbContextProvider.EnsureNoChangesOrTransaction().BeginTransaction())
             {
-                var die1 = _DbContextProvider.Set<KeysLastTeksWorkflowEntity>()
+                var die1 = _DbContextProvider.Set<KeyReleaseWorkflowState>()
                     .Where(x => kl.Contains(x.Id)).ToList();
 
                 _DbContextProvider.BulkDeleteAsync(die1);
 
                 _DbContextProvider.SaveChanges();
 
-                var die2 = _DbContextProvider.Set<KeysFirstTeksWorkflowEntity>()
+                var die2 = _DbContextProvider.Set<KeyReleaseWorkflowState>()
                     .Where(x => kf.Contains(x.Id)).ToList();
 
                 _DbContextProvider.BulkDeleteAsync(die2);

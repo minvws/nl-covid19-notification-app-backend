@@ -92,9 +92,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             => new TemporaryExposureKeyArgs 
             { 
                 RollingPeriod = c.RollingPeriod,
-                TransmissionRiskLevel = c.Risk,
+                TransmissionRiskLevel = c.TransmissionRiskLevel,
                 KeyData = c.KeyData,
-                RollingStartNumber = c.RollingStart
+                RollingStartNumber = c.RollingStartNumber
             };
 
         //private async Task CopyInputData()
@@ -154,8 +154,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                         Id = x.Id,
                         RollingPeriod = x.RollingPeriod,
                         KeyData = x.KeyData,
-                        Risk = x.Risk,
-                        RollingStart = x.RollingStart,
+                        TransmissionRiskLevel = x.TransmissionRiskLevel,
+                        RollingStartNumber = x.RollingStartNumber,
                     }).ToList();
 
                 await using (_ContentDbContext.BeginTransaction())

@@ -111,8 +111,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             e5.PublishingId = _PublishingId.Create(e5);
             await _DbContextProvider.AddAsync(e5);
 
-            await _DbContextProvider.SaveChangesAsync();
-            await tx.CommitAsync();
+            _DbContextProvider.SaveAndCommit();
         }
     }
 }

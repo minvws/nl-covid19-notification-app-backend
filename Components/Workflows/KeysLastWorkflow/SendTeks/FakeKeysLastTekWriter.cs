@@ -23,14 +23,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 
         public async Task Execute(KeysLastReleaseTeksArgs args)
         {
-            var e = new KeysLastTeksWorkflowEntity 
+            var e = new KeyReleaseWorkflowState 
             {
                 Created = _UtcDateTimeProvider.Now(),
                 //TODO add keys to new table //TekContent = JsonConvert.SerializeObject(args.Items),
                 //TODO only authorise after both keys and auth have been received //State = KeysLastWorkflowState.Authorised,
             };
 
-            await _DbContextProvider.KeysLastWorkflows.AddAsync(e);
+            await _DbContextProvider.KeyReleaseWorkflowStates.AddAsync(e);
         }
     }
 }

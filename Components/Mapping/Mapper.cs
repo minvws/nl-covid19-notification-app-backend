@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
@@ -11,6 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 {
@@ -47,22 +49,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             };
         }
 
-        public static KeysFirstTeksWorkflowEntity ToEntity(this KeysFirstEscrowArgs args)
+        public static TemporaryExposureKeyEntity[] ToEntities(this KeysFirstEscrowArgs args)
         {
             var content = args.Items.Select(x =>
-                new WorkflowKeyContent
+                new TemporaryExposureKeyEntity
                 {
-                    KeyData = x.KeyData,
+                    KeyData = Convert.FromBase64String(x.KeyData),
                     TransmissionRiskLevel = x.TransmissionRiskLevel,
                     RollingPeriod = x.RollingPeriod,
                     RollingStartNumber = x.RollingStartNumber
                 }).ToArray();
 
-            return new KeysFirstTeksWorkflowEntity
-            {
-                AuthorisationToken = args.Token,
-                TekContent = JsonConvert.SerializeObject(content) //TODO deserialize had better not screw with this cos array...
-            };
+            return content;
         }
 
         public static ResourceBundleContentEntity ToEntity(this ResourceBundleArgs args)

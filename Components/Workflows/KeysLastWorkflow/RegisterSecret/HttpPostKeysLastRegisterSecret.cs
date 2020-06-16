@@ -9,25 +9,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 {
     public class HttpPostKeysLastRegisterSecret
     {
-        private readonly IKeysLastSecretValidator _Validator;
         private readonly IKeysLastSecretWriter _Writer;
 
-        public HttpPostKeysLastRegisterSecret(IKeysLastSecretValidator validator, IKeysLastSecretWriter writer)
+        public HttpPostKeysLastRegisterSecret(IKeysLastSecretWriter writer)
         {
-            _Validator = validator;
             _Writer = writer;
         }
 
         public async Task<IActionResult> Execute(KeysLastSecretArgs args)
         {
-            if (!_Validator.Valid(args))
-            {
-                //TODO log bad token
-                return new OkResult();
-            }
-
-            await _Writer.Execute(args.ConfirmationKey);
-            return new OkObjectResult(new EnrollmentResponse());
+            var result = await _Writer.Execute();
+            return new OkObjectResult(result);
         }
     }
 
@@ -37,5 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
         public string LabConfirmationId { get; set; }
         //description: Random generated number that will later in the upload process associate the keys with the correct signature
         public string BucketId { get; set; }
+
+        public string ConfirmationKey { get; set; }
     }
 }

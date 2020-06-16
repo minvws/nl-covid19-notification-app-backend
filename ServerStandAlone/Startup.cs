@@ -138,7 +138,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<IReader<AppConfigContentEntity>, SafeBinaryContentDbReader<AppConfigContentEntity>>();
 
             services.AddScoped<HttpPostKeysLastRegisterSecret, HttpPostKeysLastRegisterSecret>();
-            services.AddScoped<IKeysLastSecretValidator, KeysLastSecretValidator>();
+            services.AddScoped<RandomNumberGenerator, RandomNumberGenerator>();
             services.AddScoped<IKeysLastSecretConfig, StandardKeysLastSecretConfig>();
 
             services.AddScoped<IKeysLastSecretWriter, KeysLastSecretWriter>();

@@ -4,15 +4,21 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Workflow
 {
-    public class KeysLastTekReleaseWorkflow : IEntityTypeConfiguration<KeysLastTeksWorkflowEntity>
+    public class KeyReleaseWorkflowStateConfig : IEntityTypeConfiguration<KeyReleaseWorkflowState>
     {
-        public void Configure(EntityTypeBuilder<KeysLastTeksWorkflowEntity> builder)
+        public void Configure(EntityTypeBuilder<KeyReleaseWorkflowState> builder)
         {
+            builder.ToTable("KeyReleaseWorkflowState");
+
+            builder
+                .HasMany(x => x.Keys)
+                .WithOne(x => x.Owner)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
