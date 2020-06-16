@@ -5,35 +5,54 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow;
 using TemporaryExposureKeyArgs = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.TemporaryExposureKeyArgs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 {
+    public interface IContentEntityFormatter
+    {
+        Task<TContentEntity> Fill<TContentEntity, TContent>(TContentEntity e, TContent c) where TContentEntity : ContentEntity;
+    }
+
+    public class StandardContentEntityFormatter : IContentEntityFormatter
+    {
+        private readonly ZippedSignedContentFormatter _SignedFormatter;
+        private readonly IPublishingId _PublishingId;
+
+        public StandardContentEntityFormatter(ZippedSignedContentFormatter signedFormatter, IPublishingId publishingId)
+        {
+            _SignedFormatter = signedFormatter;
+            _PublishingId = publishingId;
+        }
+
+        public async Task<TContentEntity> Fill<TContentEntity, TContent>(TContentEntity e, TContent c) where TContentEntity : ContentEntity
+        {
+            e.Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(c));
+            e.PublishingId = _PublishingId.Create(e.Content);
+            e.ContentTypeName = MediaTypeNames.Application.Json;
+
+            e.SignedContent = await _SignedFormatter.SignedContentPacket(e.Content);
+            e.SignedPublishingId = _PublishingId.Create(e.SignedContent);
+            e.SignedContentTypeName = MediaTypeNames.Application.Zip;
+            return e;
+        }
+    }
+
     public static class Mapper
     {
-        public static RiskCalculationConfigResponse ToResponse(this RiskCalculationConfigContent e)
-            => new RiskCalculationConfigResponse
-            {
-                MinimumRiskScore = e.MinimumRiskScore,
-                DaysSinceLastExposureScores​ = e.DaysSinceLastExposureScores​,
-                AttenuationScores​ = e.AttenuationScores​,
-                DurationAtAttenuationThresholds​ = e.DurationAtAttenuationThresholds​,
-                DurationScores = e.DurationScores,
-                TransmissionRiskScores​ = e.TransmissionRiskScores​
-            };
-
-
-        public static RiskCalculationContentEntity ToEntity(this RiskCalculationConfigArgs args)
-        {
-            var content = new RiskCalculationConfigContent
+        public static RiskCalculationConfigContent ToContent(this RiskCalculationConfigArgs args)
+            => new RiskCalculationConfigContent
             {
                 MinimumRiskScore = args.MinimumRiskScore,
                 DaysSinceLastExposureScores​ = args.DaysSinceLastExposureScores​,
@@ -42,13 +61,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
                 DurationScores = args.DurationScores,
                 TransmissionRiskScores​ = args.TransmissionRiskScores​
             };
-
-            return new RiskCalculationContentEntity
-            {
-                Release = args.Release,
-                Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content))
-            };
-        }
 
         public static TemporaryExposureKeyEntity[] ToEntities(this TemporaryExposureKeyArgs[] items)
         {
@@ -64,9 +76,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             return content;
         }
 
-        public static ResourceBundleContentEntity ToEntity(this ResourceBundleArgs args)
-        {
-            var content = new ResourceBundleEntityContent
+        public static ResourceBundleEntityContent ToContent(this ResourceBundleArgs args)
+            => new ResourceBundleEntityContent
             {
                 Text = args.Text,
                 IsolationPeriodDays = args.IsolationPeriodDays,
@@ -74,14 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
                 TemporaryExposureKeyRetentionDays = args.TemporaryExposureKeyRetentionDays,
             };
 
-            return new ResourceBundleContentEntity
-            {
-                Release = args.Release,
-                Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content))
-            };
-        }
-
-        public static AppConfigContentEntity ToEntity(this AppConfigArgs args)
+        public static AppConfigContentEntity ToContent(this AppConfigArgs args)
         {
             var content = new AppConfigContent
             {

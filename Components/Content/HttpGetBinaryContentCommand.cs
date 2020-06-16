@@ -3,8 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
@@ -15,21 +18,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     public class HttpGetBinaryContentCommand<T> where T : ContentEntity
     {
         private readonly IReader<T> _SafeReader;
+        private readonly IPublishingId _PublishingId;
 
-        public HttpGetBinaryContentCommand(IReader<T> safeReader)
+        public HttpGetBinaryContentCommand(IReader<T> safeReader, IPublishingId publishingId)
         {
             _SafeReader = safeReader;
+            _PublishingId = publishingId;
         }
 
-        public IActionResult Execute(string id)
+        public IActionResult Execute(string id, bool signed = false)
         {
-            //TODO BEGIN this is not the proper converter/validator - see IPublishingId
-            if (string.IsNullOrWhiteSpace(id))
+            if (!_PublishingId.Validate(id))
                 return new BadRequestResult();
-
-            if (Convert.TryFromBase64String(id, new Span<byte>(), out var length) && length == 256) //TODO config
-                return new BadRequestResult();
-            //TODO END this is not the proper converter/validator - see IPublishingId
 
             var e = _SafeReader.Execute(id);
 
@@ -40,8 +40,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             {
                 LastModified = e.Release,
                 PublishingId = e.PublishingId,
-                ContentTypeName = e.ContentTypeName,
-                Content = e.Content
+                ContentTypeName = signed ? e.SignedContentTypeName : e.ContentTypeName,
+                Content = signed ? e.SignedContent : e.Content
             };
 
             return new OkObjectResult(r);

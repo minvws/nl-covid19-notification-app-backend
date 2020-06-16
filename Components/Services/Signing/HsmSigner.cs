@@ -9,12 +9,12 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing
 {
-    public class HsmExposureKeySetSigning : IExposureKeySetSigning
+    public class HsmSigner : ISigner
     {
         private const string SignatureAlgorithmDescription = "SHA256withECDSA";
         private readonly IExposureKeySetSigningConfig _Config;
 
-        public HsmExposureKeySetSigning(IExposureKeySetSigningConfig config)
+        public HsmSigner(IExposureKeySetSigningConfig config)
         {
             _Config = config;
         }
@@ -33,6 +33,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             var signer = cert.GetECDsaPrivateKey();  
             return signer.SignHash(hash);
         }
+
+        public int LengthBytes => 32;
 
         private X509Certificate2 GetCertificate()
         {

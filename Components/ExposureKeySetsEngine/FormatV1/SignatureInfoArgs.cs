@@ -6,10 +6,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 {
     public class SignatureInfoArgs
     {
-        public string AppBundleId { get; set; }
-        public string AndroidPackage { get; set; }
         public string SignatureAlgorithm { get; set; }
         public string VerificationKeyId { get; set; }
         public string VerificationKeyVersion { get; set; }
+        public string AppBundleId { get; set; }
     }
 }

@@ -10,5 +10,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
     {
         string Create(byte[] contents);
         string ParseUri(string uri);
+        bool Validate(string id);
     }
 }

@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
 
         public async Task Execute(AppConfigArgs args)
         {
-            var e = args.ToEntity();
+            var e = args.ToContent();
             e.PublishingId = _PublishingId.Create(e.Content);
             await _DbConfig.AddAsync(e);
         }

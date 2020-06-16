@@ -13,18 +13,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculati
     public class RiskCalculationConfigInsertDbCommand
     {
         private readonly ExposureContentDbContext _DbContextProvider;
-        private readonly IPublishingId _PublishingId;
+        private readonly IContentEntityFormatter _Formatter;
 
-        public RiskCalculationConfigInsertDbCommand(ExposureContentDbContext contextProvider, IPublishingId publishingId)
+        public RiskCalculationConfigInsertDbCommand(ExposureContentDbContext contextProvider, IContentEntityFormatter formatter)
         {
             _DbContextProvider = contextProvider;
-            _PublishingId = publishingId;
+            _Formatter = formatter;
         }
 
         public async Task Execute(RiskCalculationConfigArgs args)
         {
-            var e = args.ToEntity();
-            e.PublishingId = _PublishingId.Create(e.Content);
+            var e = new RiskCalculationContentEntity
+            {
+                Release = args.Release
+            };
+            await _Formatter.Fill(e, args.ToContent());
             await _DbContextProvider.AddAsync(e);
         }
     }

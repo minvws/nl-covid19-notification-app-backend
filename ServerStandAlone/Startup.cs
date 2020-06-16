@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
             services.AddSingleton<IExposureKeySetHeaderInfoConfig, HsmExposureKeySetHeaderInfoConfig>();
             services.AddSingleton<IExposureKeySetBatchJobConfig, ExposureKeySetBatchJobConfig>();
-            services.AddSingleton<IPublishingId>(x => new Sha256PublishingId(new HardCodedExposureKeySetSigning()));
+            services.AddSingleton<IPublishingId>(x => new StandardPublishingIdFormatter(new HardCodedSigner()));
 
             services.AddScoped(x =>
             {

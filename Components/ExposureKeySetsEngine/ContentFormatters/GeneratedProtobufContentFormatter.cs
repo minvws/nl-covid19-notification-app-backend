@@ -39,7 +39,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private static NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo Map(SignatureInfoArgs arg)
             => new NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo
             {
-                AndroidPackage = arg.AndroidPackage,
                 AppBundleId = arg.AppBundleId,
                 SignatureAlgorithm = arg.SignatureAlgorithm,
                 VerificationKeyId = arg.VerificationKeyId,
