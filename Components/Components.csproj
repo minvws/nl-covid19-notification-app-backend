@@ -13,6 +13,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningsAsErrors>NU1605;CS8625</WarningsAsErrors>
+    <DocumentationFile>D:\Repos\VWS\MSS-nl-covid19-notification-app-backend\Components\NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <WarningsAsErrors>CS8625</WarningsAsErrors>

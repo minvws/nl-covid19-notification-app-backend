@@ -26,8 +26,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
             OperationId = "getManifest", //TODO Is this correct?
             Tags = new[] { "CDN" }
         )] //Adds nothing to UI
-        [ProducesResponseType(typeof(ManifestResponse), 200)] //Adds nothing to UI
-        [SwaggerResponse(200, "Argle")] //Adds nothing to UI
+        [ProducesResponseType(typeof(ManifestResponse), 200)]
+        [ProducesResponseType(typeof(ManifestResponse), 200)]
+        [ProducesResponseType(500)]
         public async Task GetLatestConfig([FromServices]HttpGetCdnContentCommand<ManifestEntity> command)
         {
             await command.Execute(HttpContext, "ignored...");
