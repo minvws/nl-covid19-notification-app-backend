@@ -5,7 +5,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
     /// </summary>
     public class KeysLastReleaseTeksArgs
     {
-        public string Token { get; set; }
+        public string BucketId { get; set; }
         public TemporaryExposureKeyArgs[] Items { get; set; }
     }
 }

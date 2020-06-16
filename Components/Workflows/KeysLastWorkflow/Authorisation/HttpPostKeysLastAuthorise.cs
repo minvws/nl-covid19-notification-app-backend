@@ -4,6 +4,8 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.Authorisation
@@ -12,11 +14,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
     {
         private readonly IKeysLastAuthorisationTokenValidator _AuthorisationTokenValidator;
         private readonly IKeysLastAuthorisationWriter _AuthorisationWriter;
+        private readonly WorkflowDbContext _DbContextProvider;
 
-        public HttpPostKeysLastAuthorise(IKeysLastAuthorisationTokenValidator authorisationTokenValidator, IKeysLastAuthorisationWriter authorisationWriter)
+        public HttpPostKeysLastAuthorise(IKeysLastAuthorisationTokenValidator authorisationTokenValidator, IKeysLastAuthorisationWriter authorisationWriter, WorkflowDbContext dbContextProvider)
         {
             _AuthorisationTokenValidator = authorisationTokenValidator;
             _AuthorisationWriter = authorisationWriter;
+            _DbContextProvider = dbContextProvider;
         }
 
         public async Task<IActionResult> Execute(KeysLastAuthorisationArgs args)
@@ -29,6 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             }
 
             await _AuthorisationWriter.Execute(args);
+            _DbContextProvider.SaveAndCommit();
             return new OkResult();
         }
     }
