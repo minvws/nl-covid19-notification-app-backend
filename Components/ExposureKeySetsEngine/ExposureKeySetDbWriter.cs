@@ -39,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             foreach (var i in entities)
             {
-                i.PublishingId = _PublishingId.Create(i);
+                i.PublishingId = _PublishingId.Create(i.Content);
             }
 
             using (_DbContext.EnsureNoChangesOrTransaction().BeginTransaction())

@@ -9,7 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 {
     public class TemporaryExposureKeyEntity
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
         public KeyReleaseWorkflowState Owner { get; set; }
         public byte[] KeyData { get; set; }
         public int RollingStartNumber { get; set; }

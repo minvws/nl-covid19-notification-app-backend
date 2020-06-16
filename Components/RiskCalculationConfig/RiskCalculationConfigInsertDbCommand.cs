@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculati
         public async Task Execute(RiskCalculationConfigArgs args)
         {
             var e = args.ToEntity();
-            e.PublishingId = _PublishingId.Create(e);
+            e.PublishingId = _PublishingId.Create(e.Content);
             await _DbContextProvider.AddAsync(e);
         }
     }

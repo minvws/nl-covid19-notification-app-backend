@@ -9,12 +9,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 {
     public class KeyReleaseWorkflowState
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public DateTime Created { get; set; }
+        
+        /// <summary>
+        /// TODO Add uq
+        /// </summary>
         public string? LabConfirmationId { get; set; }
+
+        /// <summary>
+        /// TODO Add uq
+        /// </summary>
         public string? ConfirmationKey { get; set; }
+
+        /// <summary>
+        /// TODO Add uq
+        /// </summary>
         public string? BucketId { get; set; }
+
+        /// <summary>
+        /// TODO Add index?
+        /// </summary>
         public bool Authorised { get; set; }
+
         public ICollection<TemporaryExposureKeyEntity> Keys { get; set; }
     }
 }

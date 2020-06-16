@@ -56,7 +56,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                     }}
                 }
             }.ToEntity();
-            e0.PublishingId = _PublishingId.Create(e0);
+            e0.PublishingId = _PublishingId.Create(e0.Content);
             await _DbContextProvider.AddAsync(e0);
 
             var e1 = new ResourceBundleArgs
@@ -79,14 +79,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                     }}
                 }
             }.ToEntity();
-            e1.PublishingId = _PublishingId.Create(e1);
+            e1.PublishingId = _PublishingId.Create(e1.Content);
             await _DbContextProvider.AddAsync(e1);
 
             var e2 = new ResourceBundleArgs
             {
                 Release = _DateTimeProvider.Now()
             }.ToEntity();
-            e2.PublishingId = _PublishingId.Create(e2);
+            e2.PublishingId = _PublishingId.Create(e2.Content);
             await _DbContextProvider.AddAsync(e2);
 
             var e4 = new RiskCalculationConfigArgs
@@ -99,7 +99,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 DurationScores = new[] { 1,2,3,4,5,6,7,8 },
                 TransmissionRiskScores​ = new[] { 1,2,3,4,5,6,7,8 },
             }.ToEntity();
-            e4.PublishingId = _PublishingId.Create(e4);
+            e4.PublishingId = _PublishingId.Create(e4.Content);
             await _DbContextProvider.AddAsync(e4);
 
             var e5 = new AppConfigArgs
@@ -110,7 +110,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 Version = 123345
             }.ToEntity();
 
-            e5.PublishingId = _PublishingId.Create(e5);
+            e5.PublishingId = _PublishingId.Create(e5.Content);
             await _DbContextProvider.AddAsync(e5);
 
             _DbContextProvider.SaveAndCommit();

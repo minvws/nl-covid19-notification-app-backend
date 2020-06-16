@@ -8,9 +8,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Job
 {
-    public class WorkflowInput : IEntityTypeConfiguration<TeksInputEntity>
+    public class WorkflowInput : IEntityTypeConfiguration<EksCreateJobInputEntity>
     {
-        public void Configure(EntityTypeBuilder<TeksInputEntity> builder)
+        public void Configure(EntityTypeBuilder<EksCreateJobInputEntity> builder)
         {
             builder.ToTable("Input");
         }

@@ -38,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             _ExposureKeySetBatchJobConfig = exposureKeySetBatchJobConfig;
         }
 
-        public async Task<IActionResult> Execute()
+        public async Task<IActionResult> Execute(bool useAllKeys = false)
         {
                 //var jobConfigBuilder = new SqlServerDbContextOptionsBuilder(_StandardEfDbConfig);
 
@@ -49,7 +49,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                         new HardCodedExposureKeySetSigning(), _UtcDateTimeProvider, new GeneratedProtobufContentFormatter()),
                     _Input,
                     _Output,
-                    _UtcDateTimeProvider
+                    _UtcDateTimeProvider,
+                    new Sha256PublishingId(new HardCodedExposureKeySetSigning())
+
                     //new ExposureKeySetDbWriter(_Output, new Sha256PublishingId(new HardCodedExposureKeySetSigning())),
                     //new JsonContentExposureKeySetFormatter(),
                     //_ExposureKeySetBatchJobConfig
@@ -58,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
                 try
                 {
-                    await bb.Execute();
+                    await bb.Execute(useAllKeys);
                 }
                 catch (Exception e)
                 {
