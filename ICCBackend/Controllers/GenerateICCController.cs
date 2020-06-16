@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC;
+using NL.Rijksoverheid.ExposureNotification.ICCBackend.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.ICCBackend.Controllers
 {
@@ -33,9 +34,9 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend.Controllers
 
 
         [HttpPost("single")]
-        public async Task<JsonResult> PostGenerateICC([FromBody] Guid userId)
+        public async Task<JsonResult> PostGenerateICC(GenerateICCModel generateIccModel)
         {
-            InfectionConfirmationCodeEntity icc = await _ICCService.GenerateICC(userId);
+            InfectionConfirmationCodeEntity icc = await _ICCService.GenerateICC(generateIccModel.UserId);
             return new JsonResult(new
             {
                 ok = true,
@@ -47,9 +48,9 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend.Controllers
         
         
         [HttpPost("batch")]
-        public async Task<JsonResult> PostGenerateBatchICC([FromBody] Guid userId)
+        public async Task<JsonResult> PostGenerateBatchICC(GenerateICCModel generateIccModel)
         {
-            List<InfectionConfirmationCodeEntity> batch = await _ICCService.GenerateBatch(userId);
+            List<InfectionConfirmationCodeEntity> batch = await _ICCService.GenerateBatch(generateIccModel.UserId);
             return new JsonResult(new
             {
                 ok = true,

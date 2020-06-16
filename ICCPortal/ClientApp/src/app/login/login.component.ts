@@ -9,16 +9,19 @@ import {Router} from "@angular/router";
 })
 export class LoginComponent {
   private router
+  public username:string = ""
+  public password:string = ""
 
   constructor(router: Router) {
     this.router = router;
   }
 
   public login() {
-    const username = document.querySelector("#exampleInputEmail1").value.toLowerCase()
-    if (username.includes("reporter")) {
+    // const username = document.querySelector("#exampleInputEmail1").value.toLowerCase()
+    console.log(this.username)
+    if (this.username.includes("reporter")) {
       this.router.navigate(["icc/report"]);
-    } else if (username.includes("generator")){
+    } else if (this.username.includes("generator")) {
       this.router.navigate(["icc/generate"]);
     }
   }
