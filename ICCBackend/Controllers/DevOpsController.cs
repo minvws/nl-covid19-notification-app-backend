@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         /// <returns></returns>
         [HttpPost]
         [Route(EndPointNames.DevOps.NukeAndPave)]
-        public async Task<IActionResult> ProvisionDb([FromServices]ProvisionDatabasesCommand command)
+        public async Task<IActionResult> ProvisionDb([FromServices]ProvisionDatabasesCommandICC command)
         {
             return await command.Execute();
         }

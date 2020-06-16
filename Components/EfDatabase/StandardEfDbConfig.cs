@@ -15,8 +15,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
         public StandardEfDbConfig(IConfiguration configuration, string connStringName)
         {
             _Configuration = configuration;
-            Console.WriteLine("INITING STANDARD EFDBCONFIG");
-            Console.WriteLine(connStringName);
             _ConnStringName = connStringName;
         }
 

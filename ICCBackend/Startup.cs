@@ -39,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
                 return result;
             });
             services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "ICC"));
-            services.AddScoped<ProvisionDatabasesCommand, ProvisionDatabasesCommand>();
+            services.AddScoped<ProvisionDatabasesCommandICC, ProvisionDatabasesCommandICC>();
             
             
             services.AddCors();

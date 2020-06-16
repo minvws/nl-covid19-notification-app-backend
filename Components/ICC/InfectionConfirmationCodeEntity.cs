@@ -9,35 +9,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC
     public class InfectionConfirmationCodeEntity
     {
         public int Id { get; set; }
-        
+
         /// <summary>
         /// 32-digit Infection Confirmation Code
         /// </summary>
-        public string Code { get; set; } 
-        
-        /// <summary>
-        /// Default NULL, if Datetime => Revoked = true
-        /// </summary>
-        public DateTime Revoked { get; set;  }
-        
-        /// <summary>
-        /// Default NULL, if Datetime => Used = true
-        /// </summary>
-        public DateTime Used { get; set;  }
-        
-        /// <summary>
-        /// User Guid from user that used the Code
-        /// </summary>
-        public Guid UsedBy { get; set;  }
-        
+        public string Code { get; set; }
+
         /// <summary>
         /// Timestamp for Code generation
         /// </summary>
         public DateTime Created { get; set; }
-        
+
         /// <summary>
         /// User Guid from generator user
         /// </summary>
         public Guid GeneratedBy { get; set; }
+
+        /// <summary>
+        /// Default NULL, if Datetime => Revoked = true
+        /// </summary>
+        public DateTime? Revoked { get; set; }
+
+        /// <summary>
+        /// Default NULL, if Datetime => Used = true
+        /// </summary>
+        public DateTime? Used { get; set; }
+
+        /// <summary>
+        /// User Guid from user that used the Code
+        /// </summary>
+        public Guid? UsedBy { get; set; }
     }
 }

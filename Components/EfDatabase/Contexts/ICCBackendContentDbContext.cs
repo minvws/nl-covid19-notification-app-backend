@@ -27,38 +27,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<InfectionConfirmationCodeEntity>().HasIndex(e => e.Code);
             modelBuilder.Entity<InfectionConfirmationCodeEntity>().Property(e => e.Code)
                 .IsRequired();
             modelBuilder.Entity<InfectionConfirmationCodeEntity>().Property(e => e.Created)
-                .HasDefaultValueSql("NOW()")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .ValueGeneratedOnAdd();
-            modelBuilder.Entity<InfectionConfirmationCodeEntity>().HasIndex(e => e.Code);
-
-
-            // modelBuilder.ApplyConfiguration(new ExposureKeySetContent());
-            // modelBuilder.ApplyConfiguration(new Configuration.Content.Manifest());
-            // modelBuilder.ApplyConfiguration(new RiskCalculationContent());
-            // modelBuilder.ApplyConfiguration(new ResourceBundleContent());
+            modelBuilder.Entity<InfectionConfirmationCodeEntity>().Property(e => e.GeneratedBy)
+                .IsRequired();
         }
-
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    //modelBuilder.Entity<ManifestEntity>(x =>
-        //    //{
-        //    //    x.HasNoDiscriminator();
-        //    //});
-        //    //modelBuilder.Entity<ExposureKeySetContentEntity>(x =>
-        //    //{
-        //    //    x.HasNoDiscriminator();
-        //    //});
-        //    //modelBuilder.Entity<RiskCalculationContentEntity>(x =>
-        //    //{
-        //    //    x.HasNoDiscriminator();
-        //    //});
-        //    //modelBuilder.Entity<ResourceBundleContentEntity>(x =>
-        //    //{
-        //    //    x.HasNoDiscriminator();
-        //    //});
-        //}
     }
 }
