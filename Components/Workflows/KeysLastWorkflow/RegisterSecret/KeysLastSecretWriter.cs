@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             {
                 Created = _DateTimeProvider.Now(),
                 SecretToken = secretToken,
-                State = KeysLastWorkflowState.Unauthorised
+                //TODO State = KeysLastWorkflowState.Unauthorised
             };
 
             //TODO secret token already exists...

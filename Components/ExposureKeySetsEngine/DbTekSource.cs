@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Linq;
 using EFCore.BulkExtensions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -25,16 +26,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             
             using (_DbContextProvider.EnsureNoChangesOrTransaction().BeginTransaction())
             {
-                var kf = _DbContextProvider.Set<KeysFirstTeksWorkflowEntity>()
-                    .Where(x => x.Authorised)
-                    .Select(y => new SourceItem {Id = y.Id, Content = y.TekContent, Region = y.Region, Workflow = WorkflowId.KeysFirst});
+                //TODO kill keysfirst workflow
+                //var kf = _DbContextProvider.Set<KeysFirstTeksWorkflowEntity>()
+                //    .Where(x => x.Authorised)
+                //    .Select(y => new SourceItem {Id = y.Id, Content = y.TekContent, Region = y.Region, Workflow = WorkflowId.KeysFirst});
 
-                var kl = _DbContextProvider.Set<KeysLastTeksWorkflowEntity>()
-                    .Where(x => x.State == KeysLastWorkflowState.Authorised)
-                    .Select(y => new SourceItem {Id = y.Id, Content = y.TekContent, Region = y.Region, Workflow = WorkflowId.KeysLast});
+                //TODO flag Keys as Processing when the Workflow is Authorised.
+                //var kl = _DbContextProvider.Set<KeysLastTeksWorkflowEntity>()
+                //    .Where(x => x.Authorised != null)
+                //    .Select(y => new SourceItem {Id = y.Id, Content = y.TekContent, Region = y.Region, Workflow = WorkflowId.KeysLast});
 
-                return kf.Concat(kl)
-                    .ToArray();
+                //return kf.Concat(kl)
+                //    .ToArray();
+
+                throw new NotImplementedException();
             }
         }
 

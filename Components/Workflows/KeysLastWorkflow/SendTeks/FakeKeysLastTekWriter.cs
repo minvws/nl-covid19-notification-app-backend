@@ -26,8 +26,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             var e = new KeysLastTeksWorkflowEntity 
             {
                 Created = _UtcDateTimeProvider.Now(),
-                TekContent = JsonConvert.SerializeObject(args.Items),
-                State = KeysLastWorkflowState.Authorised,
+                //TODO add keys to new table //TekContent = JsonConvert.SerializeObject(args.Items),
+                //TODO only authorise after both keys and auth have been received //State = KeysLastWorkflowState.Authorised,
             };
 
             await _DbContextProvider.KeysLastWorkflows.AddAsync(e);
