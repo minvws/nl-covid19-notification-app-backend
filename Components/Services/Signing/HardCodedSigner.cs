@@ -2,10 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Security.Cryptography;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing
 {
+    [Obsolete("Use this class only for testing purposes")]
     public class HardCodedSigner : ISigner
     {
         private const string SignatureAlgorithmDescription = "HardCoded";
