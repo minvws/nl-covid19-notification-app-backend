@@ -17,9 +17,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
         /// Publishing Id is f(Content)
         /// </summary>
         public string PublishingId { get; set; }
-        public byte[] Content { get; set; }
-        public string ContentTypeName { get; set; }
-        public byte[] SignedContent { get; set; }
-        public string SignedContentTypeName { get; set; }
+
+        public byte[]? Content { get; set; }
+        public string? ContentTypeName { get; set; }
+        public byte[]? SignedContent { get; set; }
+        public string? SignedContentTypeName { get; set; }
     }
 }

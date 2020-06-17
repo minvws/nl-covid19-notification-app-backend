@@ -189,56 +189,60 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     x => new ExposureKeySetContentEntity
                     {
                         Release = x.Release,
-                        Content = x.Content,
-                        ContentTypeName = MediaTypeNames.Application.Zip,
+                        Content = null,
+                        ContentTypeName = null,
+                        SignedContentTypeName = MediaTypeNames.Application.Zip,
+                        SignedContent = x.Content,
                         CreatingJobName = x.CreatingJobName,
                         CreatingJobQualifier = x.CreatingJobQualifier,
                         PublishingId = _PublishingId.Create(x.Content)
-                    }).ToArray(); //TODO copy? Cos it's the same DB cos 'policy'
+                    }).ToArray();
                 _ContentDbContext.ExposureKeySetContent.AddRange(move);
                 _ContentDbContext.SaveAndCommit();
             }
 
             await using (_ContentDbContext.BeginTransaction()) //Read-only
-            await using (_WorkflowDbContext.BeginTransaction())
             {
-                var count = 0;
-                var used = _ContentDbContext.Set<EksCreateJobInputEntity>()
-                    .Where(x => x.Used)
-                    .Skip(count)
-                    .Select(x => x.Id)
-                    .Take(100)
-                    .ToArray();
-
-                while (used.Length > 0)
+                await using (_WorkflowDbContext.BeginTransaction())
                 {
-                    var zap = _WorkflowDbContext.TemporaryExposureKeys
-                        .Where(x => used.Contains(x.Id))
-                        .ToList();
-
-                    foreach (var i in zap)
-                    {
-                        i.PublishingState = PublishingState.Published;
-                    }
-
-                    await _WorkflowDbContext.BulkUpdateAsync(zap, x => x.PropertiesToInclude=new List<string>() {nameof(TemporaryExposureKeyEntity.PublishingState)});
-
-                    count += used.Length;
-
-                    used = _ContentDbContext.Set<EksCreateJobInputEntity>()
+                    var count = 0;
+                    var used = _ContentDbContext.Set<EksCreateJobInputEntity>()
                         .Where(x => x.Used)
                         .Skip(count)
                         .Select(x => x.Id)
                         .Take(100)
                         .ToArray();
+
+                    while (used.Length > 0)
+                    {
+                        var zap = _WorkflowDbContext.TemporaryExposureKeys
+                            .Where(x => used.Contains(x.Id))
+                            .ToList();
+
+                        foreach (var i in zap)
+                        {
+                            i.PublishingState = PublishingState.Published;
+                        }
+
+                        await _WorkflowDbContext.BulkUpdateAsync(zap, x => x.PropertiesToInclude = new List<string>() {nameof(TemporaryExposureKeyEntity.PublishingState)});
+
+                        count += used.Length;
+
+                        used = _ContentDbContext.Set<EksCreateJobInputEntity>()
+                            .Where(x => x.Used)
+                            .Skip(count)
+                            .Select(x => x.Id)
+                            .Take(100)
+                            .ToArray();
+                    }
+
+                    _WorkflowDbContext.SaveAndCommit();
                 }
 
-                _WorkflowDbContext.SaveAndCommit();
+                await _ContentDbContext.EksInput.BatchDeleteAsync();
+                await _ContentDbContext.EksOutput.BatchDeleteAsync();
+                _ContentDbContext.SaveAndCommit();
             }
-
-            await _ContentDbContext.EksInput.BatchDeleteAsync();
-            await _ContentDbContext.EksOutput.BatchDeleteAsync();
-            _ContentDbContext.SaveAndCommit();
         }
     }
 }

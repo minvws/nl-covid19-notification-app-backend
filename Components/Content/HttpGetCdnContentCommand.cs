@@ -60,10 +60,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 return;
             }
 
-            //TODO yuk!
-            var accepts = httpContext.Request.Headers["accept"]; //TODO check case sensitivity
-            var signedResponse = accepts.ToArray().Contains(content.SignedContentTypeName); //TODO check case sensitivity!!!!
-            if (!signedResponse && !accepts.ToArray().Contains(content.ContentTypeName))
+            var accepts = httpContext.Request.Headers["accept"].ToHashSet();
+
+            var signedResponse = content.SignedContentTypeName != null && accepts.Contains(content.SignedContentTypeName);
+
+            if (!signedResponse && content.ContentTypeName != null && accepts.Contains(content.ContentTypeName))
             {
                 httpContext.Response.StatusCode = 406;
                 httpContext.Response.ContentLength = 0;
@@ -73,6 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             httpContext.Response.Headers.Add("etag", content.PublishingId);
             httpContext.Response.Headers.Add("last-modified", content.Release.ToUniversalTime().ToString("r"));
             httpContext.Response.Headers.Add("content-type", signedResponse ? content.SignedContentTypeName : content.ContentTypeName);
+            httpContext.Response.Headers.Add("x-vws-signed", signedResponse.ToString());
 
             httpContext.Response.StatusCode = 200;
             httpContext.Response.ContentLength = (signedResponse ? content.SignedContent : content.Content).Length;
