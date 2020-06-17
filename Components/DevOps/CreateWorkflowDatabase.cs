@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 PublishingState = PublishingState.Unpublished,
                 RollingPeriod = 1,
                 RollingStartNumber = 1,
-                TransmissionRiskLevel = 1,
+                TransmissionRiskLevel = 0,
                 KeyData = new byte[0],
                 Region = "NL"
             };
@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 PublishingState = PublishingState.Unpublished,
                 RollingPeriod = 1,
                 RollingStartNumber = 1,
-                TransmissionRiskLevel = 1,
+                TransmissionRiskLevel = 0,
                 KeyData = new byte[0],
                 Region = "NL"
             };
