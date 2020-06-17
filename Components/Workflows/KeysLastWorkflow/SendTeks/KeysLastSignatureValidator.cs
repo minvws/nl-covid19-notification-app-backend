@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 
         public bool Valid(byte[] signature, string bucketId, byte[] data)
         {
-            if (signature != null)
+            if (signature == null)
                 return false;
 
             var wf = _Context
