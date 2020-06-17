@@ -23,10 +23,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
             _Logger.LogInformation("Running...");
             
             _Logger.LogInformation("Apply WorkflowDb Migrations...");
-            await _WorkflowDbContext.Database.MigrateAsync();
+            await _WorkflowDbContext.Database.EnsureCreatedAsync();
             
             _Logger.LogInformation("Apply ExposureContentDb Migrations...");
-            await _ExposureContentDbContext.Database.MigrateAsync();
+            await _ExposureContentDbContext.Database.EnsureCreatedAsync();
             
             _Logger.LogInformation("Completed...");
         }
