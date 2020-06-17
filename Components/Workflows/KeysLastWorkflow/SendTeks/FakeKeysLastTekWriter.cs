@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -11,6 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFir
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.SendTeks
 {
+    [Obsolete("Use this class only for testing purposes")]
     public class FakeKeysLastTekWriter : IKeysLastTekWriter
     {
         private readonly WorkflowDbContext _DbContextProvider;

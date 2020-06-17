@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
@@ -147,7 +149,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             services.AddScoped<HttpPostKeysLastReleaseTeksCommand, HttpPostKeysLastReleaseTeksCommand>();
             services.AddScoped<IKeysLastReleaseTeksValidator, KeysLastReleaseTeksValidator>();
-            services.AddScoped<IKeysLastAuthorisationTokenValidator, FakeKeysLastReleaseTeksValidator>();
+            services.AddScoped<IKeysLastSignatureValidator, FakeKeysLastSignatureValidator>();
             services.AddScoped<IKeysLastTekWriter, FakeKeysLastTekWriter>();
 
             services.AddScoped<HttpPostAppConfigCommand, HttpPostAppConfigCommand>();
@@ -156,6 +158,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             services.AddScoped<HttpPostKeysLastAuthorise, HttpPostKeysLastAuthorise>();
             services.AddScoped<IKeysLastAuthorisationWriter, KeysLastAuthorisationWriter>();
+            services.AddScoped<IReleaseKeysAuthorizationValidator, FakeReleaseKeysAuthorizationValidator>();
 
             services.AddScoped<GetLatestContentCommand<ResourceBundleContentEntity>, GetLatestContentCommand<ResourceBundleContentEntity>>();
             services.AddScoped<GetLatestContentCommand<RiskCalculationContentEntity>, GetLatestContentCommand<RiskCalculationContentEntity>>();
@@ -185,6 +188,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI(o =>
