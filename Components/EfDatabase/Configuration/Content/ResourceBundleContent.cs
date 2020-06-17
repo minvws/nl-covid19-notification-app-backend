@@ -13,6 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public void Configure(EntityTypeBuilder<ResourceBundleContentEntity> builder)
         {
             builder.ToTable("ResourceBundleContent");
+            builder.Property(u => u.Id).UseHiLo();
         }
     }
 }

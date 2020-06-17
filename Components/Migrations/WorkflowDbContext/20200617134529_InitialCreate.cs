@@ -15,8 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Wo
                 name: "KeyReleaseWorkflowState",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<long>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LabConfirmationId = table.Column<string>(nullable: true),
                     ConfirmationKey = table.Column<string>(nullable: true),

@@ -9,6 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public void Configure(EntityTypeBuilder<EksCreateJobOutputEntity> builder)
         {
             builder.ToTable("EksCreateJobOutput");
+            builder.Property(u => u.Id).UseHiLo();
         }
     }
 }

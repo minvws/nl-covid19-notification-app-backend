@@ -7,12 +7,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateSequence(
+                name: "EntityFrameworkHiLoSequence",
+                incrementBy: 10);
+
             migrationBuilder.CreateTable(
                 name: "AppConfigContent",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(nullable: false),
                     Release = table.Column<DateTime>(nullable: false),
                     PublishingId = table.Column<string>(nullable: false),
                     Content = table.Column<byte[]>(nullable: false),
@@ -45,8 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
                 name: "EksCreateJobOutput",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(nullable: false),
                     Release = table.Column<DateTime>(nullable: false),
                     Region = table.Column<string>(nullable: false),
                     Content = table.Column<byte[]>(nullable: true),
@@ -62,8 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
                 name: "ExposureKeySetContent",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(nullable: false),
                     Release = table.Column<DateTime>(nullable: false),
                     PublishingId = table.Column<string>(nullable: false),
                     Content = table.Column<byte[]>(nullable: false),
@@ -82,8 +83,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
                 name: "Manifest",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(nullable: false),
                     Release = table.Column<DateTime>(nullable: false),
                     PublishingId = table.Column<string>(nullable: false),
                     Content = table.Column<byte[]>(nullable: false),
@@ -100,8 +100,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
                 name: "ResourceBundleContent",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(nullable: false),
                     Release = table.Column<DateTime>(nullable: false),
                     PublishingId = table.Column<string>(nullable: false),
                     Content = table.Column<byte[]>(nullable: false),
@@ -118,8 +117,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
                 name: "RiskCalculationContent",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(nullable: false),
                     Release = table.Column<DateTime>(nullable: false),
                     PublishingId = table.Column<string>(nullable: false),
                     Content = table.Column<byte[]>(nullable: false),
@@ -155,6 +153,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
 
             migrationBuilder.DropTable(
                 name: "RiskCalculationContent");
+
+            migrationBuilder.DropSequence(
+                name: "EntityFrameworkHiLoSequence");
         }
     }
 }

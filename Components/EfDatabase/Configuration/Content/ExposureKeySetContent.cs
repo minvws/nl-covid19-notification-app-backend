@@ -13,6 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public void Configure(EntityTypeBuilder<ExposureKeySetContentEntity> builder)
         {
             builder.ToTable("ExposureKeySetContent");
+            builder.Property(u => u.Id).UseHiLo();
         }
     }
 }

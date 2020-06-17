@@ -13,6 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public void Configure(EntityTypeBuilder<RiskCalculationContentEntity> builder)
         {
             builder.ToTable("RiskCalculationContent");
+            builder.Property(u => u.Id).UseHiLo();
         }
     }
 }
