@@ -36,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
                 new TemporaryExposureKeyEntity
                 {
                     KeyData = Convert.FromBase64String(x.KeyData),
-                    TransmissionRiskLevel = 1, //ToDo define
+                    TransmissionRiskLevel = 0,
                     RollingPeriod = x.RollingPeriod,
                     RollingStartNumber = x.RollingStartNumber,
                 }).ToArray();
