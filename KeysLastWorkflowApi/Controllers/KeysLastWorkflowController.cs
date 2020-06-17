@@ -6,8 +6,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.RegisterSecret;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.SendTeks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi.Controllers
 {

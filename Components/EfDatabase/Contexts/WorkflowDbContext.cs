@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts
 {
@@ -22,17 +21,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
             modelBuilder.ApplyConfiguration(new Configuration.Workflow.KeyReleaseWorkflowStateConfig());
             modelBuilder.ApplyConfiguration(new Configuration.Workflow.TemporaryExposureKeyConfig());
-        }
-    }
-
-    public class WorkflowDbContextFactory : IDesignTimeDbContextFactory<WorkflowDbContext>
-    {
-        public WorkflowDbContext CreateDbContext(string[] args)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<WorkflowDbContext>();
-            optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=WorkFlow;Integrated Security=true");
-
-            return new WorkflowDbContext(optionsBuilder.Options);
         }
     }
 }

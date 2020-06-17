@@ -1,3 +1,7 @@
+// Copyright © 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -9,9 +13,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.RegisterSecret;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.SendTeks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi
 {

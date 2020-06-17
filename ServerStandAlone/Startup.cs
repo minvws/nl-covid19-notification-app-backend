@@ -10,12 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.KeysFirstWorkflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
@@ -24,16 +22,14 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.Authorisation;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.Authorisation;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.RegisterSecret;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.SendTeks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 {
@@ -59,7 +55,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddControllers();
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddSingleton<ILuhnModNConfig, LuhnModNConfig>();
             services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
             services.AddSingleton<IExposureKeySetHeaderInfoConfig, HsmExposureKeySetHeaderInfoConfig>();
             services.AddSingleton<IExposureKeySetBatchJobConfig, ExposureKeySetBatchJobConfig>();
@@ -86,20 +81,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             //Just for the Batch Job
             services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Job"));
 
-            services.AddScoped<HttpPostKeysFirstGenerateTekSetsCommand, HttpPostKeysFirstGenerateTekSetsCommand>();
-            services.AddScoped<HttpPostKeysFirstEscrowCommand, HttpPostKeysFirstEscrowCommand>();
-
-            services.AddSingleton<IKeysFirstEscrowValidator, KeysFirstEscrowValidator>();
-            services.AddSingleton<IKeysFirstAuthorisationTokenValidator, KeysFirstAuthorisationTokenLuhnModNValidator>();
             services.AddSingleton<IGeanTekListValidationConfig, StandardGeanCommonWorkflowConfig>();
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
-            services.AddScoped<IKeysFirstEscrowWriter, KeysFirstEscrowInsertDbCommand>();
             services.AddScoped<ISigner, HardCodedSigner>();
 
-            services.AddScoped<HttpPostKeysFirstAuthorisationCommand, HttpPostKeysFirstAuthorisationCommand>();
-            services.AddScoped<IKeysFirstAuthorisationWriter, KeysFirstDbAuthoriseCommand>();
-            
             //TODO services.AddScoped<HttpGetLatestManifestCommand, HttpGetLatestManifestCommand>();
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
             services.AddScoped<GetActiveExposureKeySetsListCommand, GetActiveExposureKeySetsListCommand>();
@@ -118,11 +104,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             //services.AddScoped<SafeGetResourceBundleCommand, SafeGetResourceBundleCommand>();
 
             services.AddScoped<ProvisionDatabasesCommand, ProvisionDatabasesCommand>();
-            services.AddScoped<GenerateKeysFirstTekSetsArgs, GenerateKeysFirstTekSetsArgs>();
             services.AddScoped<HttpPostGenerateExposureKeySetsCommand, HttpPostGenerateExposureKeySetsCommand>();
-            services.AddScoped<HttpPostKeysFirstRandomAuthorisationCommand, HttpPostKeysFirstRandomAuthorisationCommand>();
-            services.AddScoped<GenerateKeysFirstAuthorisations, GenerateKeysFirstAuthorisations>();
-
             services.AddScoped<HttpGetCdnContentCommand<ManifestEntity>, HttpGetCdnContentCommand<ManifestEntity>>();
             services.AddScoped<HttpGetCdnContentCommand<ExposureKeySetContentEntity>, HttpGetCdnContentCommand<ExposureKeySetContentEntity>>();
             services.AddScoped<HttpGetCdnContentCommand<RiskCalculationContentEntity>, HttpGetCdnContentCommand<RiskCalculationContentEntity>>();

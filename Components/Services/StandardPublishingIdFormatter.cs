@@ -6,7 +6,6 @@ using System;
 using System.Globalization;
 using System.Text;
 using System.Web;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
@@ -44,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 
             for (var i = 0; i < id.Length; i += 2)
             {
-                if (!int.TryParse(id.Substring(i, 2), System.Globalization.NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out var _))
+                if (!int.TryParse(id.Substring(i, 2), NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out _))
                     return false;
             }
 
