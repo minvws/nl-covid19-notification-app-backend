@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi.Cont
     public class KeysLastWorkflowController : ControllerBase
     {
         [HttpPost]
-        [Route(EndPointNames.MobileAppApi.KeysLastWorkflow.ReleaseTeks)]
+        [Route(EndPointNames.MobileAppApi.ReleaseTeks)]
         public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostKeysLastReleaseTeksCommand command)
         {
             using var reader = new StreamReader(Request.Body);
@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi.Cont
         }
 
         [HttpPost]
-        [Route(EndPointNames.MobileAppApi.KeysLastWorkflow.RegisterSecret)]
+        [Route(EndPointNames.MobileAppApi.RegisterSecret)]
         public async Task<IActionResult> PostSecret([FromBody]KeysLastSecretArgs args, [FromServices]HttpPostKeysLastRegisterSecret command)
         {
             return await command.Execute(args);

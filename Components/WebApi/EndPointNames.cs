@@ -8,19 +8,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
     {
         public static class MobileAppApi
         {
-            public static class KeysFirstWorkflow
-            {
-                private const string Prefix = "/keysfirst/v1";
-                public const string Teks = Prefix + "/teks";
-            }
-
-            public static class KeysLastWorkflow
-            {
-                private const string Prefix = "/keyslast/v1";
+                private const string Prefix = "/MobileAppApi/v1";
                 public const string RegisterSecret = Prefix + "/register";
                 public const string ReleaseTeks = Prefix + "/postkeys";
                 public const string RandomNoise = Prefix + "/stopkeys";
-            }
         }
 
 
@@ -29,19 +20,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
         /// </summary>
         public static class CaregiversPortalApi
         {
-            public static class KeysFirstWorkflow
-            {
-                private const string Prefix = "/keysfirst";
-                public const string Authorise = Prefix+"/authorise";
-            }
-
-            public static class KeysLastWorkflow
-            {
-                private const string Prefix = "/keyslast";
-                public const string LabConfirmation = Prefix + "/labconfirm";
-
-                //Workflow tba.
-            }
+            private const string Prefix = "/CaregiversPortalApi/v1";
+            public const string LabConfirmation = Prefix + "/labconfirm";
         }
 
         public static class DevOps
@@ -70,8 +50,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 
         public static class ContentAdminPortalDataApi
         {
-            private const string Prefix = "/contentadmin/v1";
+            private const string Prefix = "/ContentAdmin/v1";
 
+            public const string AppConfig = Prefix + "/appconfig";
             public const string ResourceBundle = Prefix + "/resourcebundle";
             public const string ExposureKeySet = Prefix + "/exposurekeyset";
             public const string RiskCalculationParameters = Prefix + "/riskcalculationparameters";

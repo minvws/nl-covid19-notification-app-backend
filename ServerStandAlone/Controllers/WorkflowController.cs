@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
     public class WorkflowController : ControllerBase
     {
         [HttpPost]
-        [Route(EndPointNames.MobileAppApi.KeysLastWorkflow.ReleaseTeks)]
+        [Route(EndPointNames.MobileAppApi.ReleaseTeks)]
         [SwaggerOperation(
             Summary = "Creates a new product",
             Description = "Requires admin privileges",
@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         }
 
         [HttpPost]
-        [Route(EndPointNames.MobileAppApi.KeysLastWorkflow.RegisterSecret)]
+        [Route(EndPointNames.MobileAppApi.RegisterSecret)]
         [SwaggerOperation(
             Summary = "Creates a new product",
             Description = "Requires admin privileges",
@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         }
 
         [HttpPost]
-        [Route(EndPointNames.CaregiversPortalApi.KeysLastWorkflow.LabConfirmation)]
+        [Route(EndPointNames.CaregiversPortalApi.LabConfirmation)]
         [SwaggerOperation(
             Summary = "Creates a new product",
             Description = "Requires admin privileges",
