@@ -41,6 +41,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
                 Log.Information("Starting service");
                 await serviceProvider.GetService<App>().Run();
                 Log.Information("Ending service");
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadLine();
             }
             catch (Exception ex)
             {

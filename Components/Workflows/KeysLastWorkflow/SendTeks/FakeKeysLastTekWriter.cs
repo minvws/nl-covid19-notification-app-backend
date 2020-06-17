@@ -39,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             if (wf == null)
                 return;
 
-            var entities = args.Items.ToEntities();
+            var entities = args.Keys.ToEntities();
             
             foreach (var e in entities)
                 e.Owner = wf;

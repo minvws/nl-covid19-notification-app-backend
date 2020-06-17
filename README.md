@@ -47,3 +47,8 @@ See the individual app folders for details.
 
 ## Attribution
 Some parts of this application are inspired by the work on [Private Tracer](https://gitlab.com/PrivateTracer/server.azure). You can find their license [here](LICENSE/LICENSE.PrivateTracer.org.txt).
+
+### Migrations
+1. Set Startup project to DatabaseProvisioningTool
+1. Open Package Manager Console
+1. add-migration InitialCreate -Context ExposureContentDbContext -OutputDir Migrations/ExposureContentDbContext

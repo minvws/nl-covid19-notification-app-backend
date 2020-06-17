@@ -2,9 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -17,26 +15,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         private readonly ManifestBuilder _ManifestBuilder;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IPublishingId _PublishingId;
+        private readonly ISigner _Signer;
 
-        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId)
+        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId, ISigner signer)
         {
             _ManifestBuilder = manifestBuilder;
             _DateTimeProvider = dateTimeProvider;
             _PublishingId = publishingId;
+            _Signer = signer;
         }
 
         public async Task<ManifestEntity?> Execute(string _)
         {
-            var now = _DateTimeProvider.Now();
             var e = new ManifestEntity
             {
-                Release = now,
+                Release = _DateTimeProvider.Now(),
             };
             var content = _ManifestBuilder.Execute();
-            //TODO HAX!
-            var _Signer = new HardCodedSigner();
             var formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_Signer), new StandardPublishingIdFormatter(_Signer));
-            //End hax
             await formatter.Fill(e, content);
             return e;
         }

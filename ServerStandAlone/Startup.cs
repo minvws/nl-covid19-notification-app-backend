@@ -52,7 +52,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddControllers(options => 
             { 
                 options.RespectBrowserAcceptHeader = true; 
-            });
+            }).AddNewtonsoftJson(options =>
+                options.SerializerSettings.ContractResolver =
+                    new CamelCasePropertyNamesContractResolver());
                 
             services.AddControllers();
 
@@ -189,11 +191,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
-
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI(o =>

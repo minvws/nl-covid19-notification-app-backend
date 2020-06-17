@@ -10,7 +10,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.WorkflowDbContext
 {
     [DbContext(typeof(NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts.WorkflowDbContext))]
-    [Migration("20200617085848_InitialCreate")]
+    [Migration("20200617134529_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,7 +27,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Wo
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<bool>("Authorised")
                         .HasColumnType("bit");
