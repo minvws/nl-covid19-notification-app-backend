@@ -1,15 +1,24 @@
 version: '3'
 services:
-  web:
+  standalone_server:
     build:
       context: ..
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/standalone/Dockerfile
     ports:
       - '5004:5000'
       - '5005:5001'
     links:
-      - 'db_mssql:database'
-  db_mssql:
+      - 'db_standalone_server:database'
+  icc_backend:
+    build:
+      context: ..
+      dockerfile: docker/icc_backend/Dockerfile
+    ports:
+      - '5006:5000'
+      - '5007:5001'
+    links:
+      - 'db_icc_backend:database'
+  db_standalone_server:
     image: mcr.microsoft.com/mssql/server:2019-latest
     ports:
       - "1433:1433"
@@ -23,10 +32,10 @@ services:
     environment:
       SA_PASSWORD: "mss-nl-covid-19-dev"
       ACCEPT_EULA: "Y"
-  db_icc_portal:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    ports:
-      - "1435:1433"
-    environment:
-      SA_PASSWORD: "mss-nl-covid-19-dev"
-      ACCEPT_EULA: "Y"
+#  db_icc_portal:
+#    image: mcr.microsoft.com/mssql/server:2019-latest
+#    ports:
+#      - "1435:1433"
+#    environment:
+#      SA_PASSWORD: "mss-nl-covid-19-dev"
+#      ACCEPT_EULA: "Y"
