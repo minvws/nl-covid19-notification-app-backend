@@ -39,7 +39,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExposureKeySetsEngine", "Ex
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentPusherEngine", "ContentPusherEngine\ContentPusherEngine.csproj", "{7370C505-62CF-4B82-B616-190EBDB311D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseProvisioningTool", "DatabaseProvisioningTool\DatabaseProvisioningTool.csproj", "{3966F120-D026-4E4D-A165-752BD5803ED1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseProvisioningTool", "DatabaseProvisioningTool\DatabaseProvisioningTool.csproj", "{3966F120-D026-4E4D-A165-752BD5803ED1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EKSEngineApi", "EKSEngineApi\EKSEngineApi.csproj", "{C9AA366C-852A-4D11-9842-96E9841B2291}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,6 +97,10 @@ Global
 		{3966F120-D026-4E4D-A165-752BD5803ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3966F120-D026-4E4D-A165-752BD5803ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3966F120-D026-4E4D-A165-752BD5803ED1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9AA366C-852A-4D11-9842-96E9841B2291}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9AA366C-852A-4D11-9842-96E9841B2291}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9AA366C-852A-4D11-9842-96E9841B2291}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9AA366C-852A-4D11-9842-96E9841B2291}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -110,6 +116,7 @@ Global
 		{D1863859-2FD5-42F7-834A-5BC3CE4BFC65} = {E377E5DF-C352-401F-9857-C18A1726A68F}
 		{7370C505-62CF-4B82-B616-190EBDB311D5} = {E377E5DF-C352-401F-9857-C18A1726A68F}
 		{3966F120-D026-4E4D-A165-752BD5803ED1} = {E377E5DF-C352-401F-9857-C18A1726A68F}
+		{C9AA366C-852A-4D11-9842-96E9841B2291} = {E377E5DF-C352-401F-9857-C18A1726A68F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}
