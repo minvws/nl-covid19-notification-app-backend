@@ -8,9 +8,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
     /// <summary>
     /// TODO more generic name. Scope of use is now wider.
     /// </summary>
-    public interface IExposureKeySetSigning
+    public interface ISigner
     {
         string SignatureDescription { get; }
         byte[] GetSignature(byte[] content);
+        int LengthBytes { get; }
     }
 }

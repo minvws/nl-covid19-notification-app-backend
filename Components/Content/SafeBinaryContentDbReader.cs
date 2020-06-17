@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Linq;
+using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 
@@ -17,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             _DbContextProvider = dbContextProvider;
         }
 
-        public T? Execute(string id)
+        public async Task<T?> Execute(string id)
         {
 
             return _DbContextProvider.Set<T>()

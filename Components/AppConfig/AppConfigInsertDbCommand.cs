@@ -11,20 +11,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
 {
     public class AppConfigInsertDbCommand
     {
-        private readonly ExposureContentDbContext _DbConfig;
-        private readonly IPublishingId _PublishingId;
+        private readonly ExposureContentDbContext _DbContext;
+        private readonly IContentEntityFormatter _Formatter;
 
-        public AppConfigInsertDbCommand(ExposureContentDbContext dbConfig, IPublishingId publishingId)
+        public AppConfigInsertDbCommand(ExposureContentDbContext context, IContentEntityFormatter formatter)
         {
-            _DbConfig = dbConfig;
-            _PublishingId = publishingId;
+            _DbContext = context;
+            _Formatter = formatter;
         }
 
         public async Task Execute(AppConfigArgs args)
         {
-            var e = args.ToEntity();
-            e.PublishingId = _PublishingId.Create(e.Content);
-            await _DbConfig.AddAsync(e);
+            var e = new AppConfigContentEntity
+            {
+                Release = args.Release
+            };
+            await _Formatter.Fill(e, args.ToContent());
+            await _DbContext.AddAsync(e);
         }
     }
 }

@@ -46,11 +46,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                     _GaenContentConfig,
                     new ExposureKeySetBuilderV1(
                         _HsmExposureKeySetHeaderInfoConfig,
-                        new HardCodedExposureKeySetSigning(), _UtcDateTimeProvider, new GeneratedProtobufContentFormatter()),
+                        new HardCodedSigner(), _UtcDateTimeProvider, new GeneratedProtobufContentFormatter()),
                     _Input,
                     _Output,
                     _UtcDateTimeProvider,
-                    new Sha256PublishingId(new HardCodedExposureKeySetSigning())
+                    new StandardPublishingIdFormatter(new HardCodedSigner())
 
                     //new ExposureKeySetDbWriter(_Output, new Sha256PublishingId(new HardCodedExposureKeySetSigning())),
                     //new JsonContentExposureKeySetFormatter(),

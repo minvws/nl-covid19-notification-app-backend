@@ -16,13 +16,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private const string ContentEntryName = "export.bin";
         private const string SignaturesEntryName = "export.sig";
 
-        private readonly IExposureKeySetSigning _ExposureKeySetSigning;
+        private readonly ISigner _Signer;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IContentFormatter _ContentFormatter;
         private readonly IExposureKeySetHeaderInfoConfig _Config;
-        public ExposureKeySetBuilderV1(IExposureKeySetHeaderInfoConfig headerInfoConfig, IExposureKeySetSigning exposureKeySetSigning, IUtcDateTimeProvider dateTimeProvider, IContentFormatter contentFormatter)
+        public ExposureKeySetBuilderV1(IExposureKeySetHeaderInfoConfig headerInfoConfig, ISigner signer, IUtcDateTimeProvider dateTimeProvider, IContentFormatter contentFormatter)
         {
-            _ExposureKeySetSigning = exposureKeySetSigning;
+            _Signer = signer;
             _DateTimeProvider = dateTimeProvider;
             _ContentFormatter = contentFormatter;
             _Config = headerInfoConfig;
@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         public async Task<byte[]> BuildAsync(TemporaryExposureKeyArgs[] keys)
         {
-            var securityInfo = GetSignatureInfo();
+            var securityInfo = GetGaenSignatureInfo();
 
             var now = _DateTimeProvider.Now();
 
@@ -38,11 +38,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             {
                 Header = Header,
                 Region = "NL",
-                BatchNum = 1, //TODO real values!
-                BatchSize = keys.Length, //TODO real values!
+                BatchNum = 1, //TODO real values?
+                BatchSize = keys.Length, //TODO real values?
                 SignatureInfos = new[] {securityInfo},
-                StartTimestamp = now.AddDays(-1).ToUnixTime(), //TODO real values!
-                EndTimestamp = now.ToUnixTime(), //TODO real values!
+                StartTimestamp = now.AddDays(-1).ToUnixTime(), //TODO real values?
+                EndTimestamp = now.ToUnixTime(), //TODO real values?
                 Keys = keys
             };
 
@@ -55,22 +55,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     new ExposureKeySetSignatureContentArgs
                     {
                         SignatureInfo = securityInfo,
-                        Signature = _ExposureKeySetSigning.GetSignature(contentBytes),
+                        Signature = _Signer.GetSignature(contentBytes),
                         BatchSize = 1,
                         BatchNum = 1
-                    }
+                    },
+                    //new ExposureKeySetSignatureContentArgs
+                    //{
+                    //    //TODO The NL sig.
+                    //},
                 }
             };
 
             return await CreateZipArchive(contentBytes, _ContentFormatter.GetBytes(signatures));
         }
 
-        private SignatureInfoArgs GetSignatureInfo()
+        //Germany has
+        //signature_infos {
+        //app_bundle_id: " de.rki.coronawarnapp"
+        //verification_key_version: "v1"
+        //verification_key_id: "262"
+        //signature_algorithm: "1.2.840.10045.4.3.2"
+        //}
+        private SignatureInfoArgs GetGaenSignatureInfo()
             => new SignatureInfoArgs
             {
                 AppBundleId = _Config.AppBundleId,
-                AndroidPackage = _Config.AndroidPackage,
-                SignatureAlgorithm = _ExposureKeySetSigning.SignatureDescription,
+                SignatureAlgorithm = _Signer.SignatureDescription,
                 VerificationKeyId = _Config.VerificationKeyId,
                 VerificationKeyVersion = _Config.VerificationKeyVersion
             };
