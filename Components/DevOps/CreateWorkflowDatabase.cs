@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -25,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         public async Task Execute()
         {
             await _Provider.Database.EnsureDeletedAsync();
-            await _Provider.Database.EnsureCreatedAsync();
+            await _Provider.Database.MigrateAsync();
         }
 
         public async Task AddExampleContent()
