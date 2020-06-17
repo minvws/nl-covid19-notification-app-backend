@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
@@ -35,17 +36,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.ExposureKeySet + "/{id}")]
-        public IActionResult GetExposureKeySet(string id, [FromServices]HttpGetBinaryContentCommand<ExposureKeySetContentEntity> command)
-            => command.Execute(id);
+        public async Task<IActionResult> GetExposureKeySet(string id, [FromServices]HttpGetBinaryContentCommand<ExposureKeySetContentEntity> command)
+            => await command.Execute(id);
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.ResourceBundle + "/{id}")]
-        public IActionResult GetResourceBundle(string id, [FromServices]HttpGetBinaryContentCommand<ResourceBundleContentEntity> command)
-            => command.Execute(id);
+        public async Task<IActionResult> GetResourceBundle(string id, [FromServices]HttpGetBinaryContentCommand<ResourceBundleContentEntity> command)
+            => await command.Execute(id);
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.RiskCalculationParameters + "/{id}")]
-        public IActionResult GetRiskCalculationParameters(string id, [FromServices]HttpGetBinaryContentCommand<RiskCalculationContentEntity> command)
-            => command.Execute(id);
+        public async Task<IActionResult> GetRiskCalculationParameters(string id, [FromServices]HttpGetBinaryContentCommand<RiskCalculationContentEntity> command)
+            => await command.Execute(id);
     }
 }

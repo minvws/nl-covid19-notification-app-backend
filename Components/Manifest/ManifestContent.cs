@@ -4,7 +4,7 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
-    public class ManifestResponse
+    public class ManifestContent
     {
         public string[] ExposureKeySets { get; set; }
         public string ResourceBundle { get; set; }

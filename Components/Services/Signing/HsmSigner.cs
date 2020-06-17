@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             return signer.SignHash(hash);
         }
 
-        public int LengthBytes => 32;
+        public int LengthBytes => 64;
 
         private X509Certificate2 GetCertificate()
         {

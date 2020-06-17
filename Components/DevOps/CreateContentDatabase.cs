@@ -21,7 +21,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
     {
         private readonly ExposureContentDbContext _DbContextProvider;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly HardCodedSigner _Signer;
         private readonly StandardContentEntityFormatter _Formatter;
 
         public CreateContentDatabase(IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider)
@@ -30,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             var builder = new SqlServerDbContextOptionsBuilder(config);
             _DbContextProvider = new ExposureContentDbContext(builder.Build());
             _DateTimeProvider = dateTimeProvider;
-            _Signer = new HardCodedSigner();
+            var _Signer = new HardCodedSigner();
             _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_Signer), new StandardPublishingIdFormatter(_Signer));
         }
 

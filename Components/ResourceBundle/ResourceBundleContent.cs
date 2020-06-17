@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle
 {
-    public class ResourceBundleEntityContent
+    public class ResourceBundleContent
     {
         //TODO Version of what? Remove
         public string Version { get; set; }

@@ -4,6 +4,7 @@
 
 using System;
 using System.Net.Mime;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
@@ -26,12 +27,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             _PublishingId = publishingId;
         }
 
-        public IActionResult Execute(string id, bool signed = false)
+        public async Task<IActionResult> Execute(string id)
         {
             if (!_PublishingId.Validate(id))
                 return new BadRequestResult();
 
-            var e = _SafeReader.Execute(id);
+            var e = await _SafeReader.Execute(id);
 
             if (e == null)
                 return new NotFoundResult();
@@ -40,8 +41,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             {
                 LastModified = e.Release,
                 PublishingId = e.PublishingId,
-                ContentTypeName = signed ? e.SignedContentTypeName : e.ContentTypeName,
-                Content = signed ? e.SignedContent : e.Content
+                ContentTypeName = e.ContentTypeName,
+                Content = e.Content,
+                SignedContentTypeName = e.SignedContentTypeName,
+                SignedContent = e.SignedContent
             };
 
             return new OkObjectResult(r);
