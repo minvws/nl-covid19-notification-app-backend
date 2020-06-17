@@ -79,13 +79,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 return result;
             });
 
-            services.AddScoped(x =>
-            {
-                var config = new StandardEfDbConfig(Configuration, "Job");
-                var builder = new SqlServerDbContextOptionsBuilder(config);
-                return new ExposureKeySetsBatchJobDbContext(builder.Build());
-            });
-
             //Just for the Batch Job
             services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Job"));
 
