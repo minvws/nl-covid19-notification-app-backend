@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Globalization;
 using System.Text;
 using System.Web;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
@@ -10,11 +11,11 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {
-    public class Sha256PublishingId : IPublishingId
+    public class StandardPublishingIdFormatter : IPublishingId
     {
-        private readonly IExposureKeySetSigning _Signer;
+        private readonly ISigner _Signer;
 
-        public Sha256PublishingId(IExposureKeySetSigning signer)
+        public StandardPublishingIdFormatter(ISigner signer)
         {
             _Signer = signer;
         }
@@ -22,7 +23,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
         public string Create(byte[] contents)
         {
             var id = _Signer.GetSignature(contents);
-
             var result = new StringBuilder(id.Length * 2);
             foreach (var i in id)
                 result.AppendFormat("{0:x2}", i);
@@ -33,6 +33,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
         [Obsolete("Not sure this are a problem now")]
         public string ParseUri(string uri)
             => HttpUtility.UrlDecode(uri).Replace(" ", "+");
-        
+
+        public bool Validate(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return false;
+
+            if(id.Length != _Signer.LengthBytes * 2)
+                return false;
+
+            for (var i = 0; i < id.Length; i += 2)
+            {
+                if (!int.TryParse(id.Substring(i, 2), System.Globalization.NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out var _))
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

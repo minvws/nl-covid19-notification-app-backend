@@ -33,7 +33,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 Content = x.Content,
                 CreatingJobName = x.CreatingJobName,
                 CreatingJobQualifier = x.CreatingJobQualifier,
-                Region = x.Region,
                 Release = x.Created,
             }).ToList();
 

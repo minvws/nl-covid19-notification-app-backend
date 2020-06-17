@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing
 {
-    public class HardCodedExposureKeySetSigning : IExposureKeySetSigning
+    public class HardCodedSigner : ISigner
     {
         private const string SignatureAlgorithmDescription = "HardCoded";
 
@@ -21,5 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             signer.GenerateKey(ECCurve.CreateFromFriendlyName("ECDSA_P256"));
             return signer.SignHash(hash);
         }
+
+        public int LengthBytes => 64;
     }
 }

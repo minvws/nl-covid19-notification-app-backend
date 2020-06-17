@@ -14,22 +14,24 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
     public class CreateContentDatabase
     {
         private readonly ExposureContentDbContext _DbContextProvider;
-        private readonly IPublishingId _PublishingId;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly StandardContentEntityFormatter _Formatter;
 
-        public CreateContentDatabase(IConfiguration configuration, IPublishingId publishingId, IUtcDateTimeProvider dateTimeProvider)
+        public CreateContentDatabase(IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider)
         {
             var config = new StandardEfDbConfig(configuration, "Content");
             var builder = new SqlServerDbContextOptionsBuilder(config);
             _DbContextProvider = new ExposureContentDbContext(builder.Build());
-            _PublishingId = publishingId;
             _DateTimeProvider = dateTimeProvider;
+            var _Signer = new HardCodedSigner();
+            _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_Signer), new StandardPublishingIdFormatter(_Signer));
         }
 
         public async Task Execute()
@@ -40,81 +42,114 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
         public async Task AddExampleContent()
         {
+
             await using var tx = await _DbContextProvider.Database.BeginTransactionAsync();
 
-            var e0 = new ResourceBundleArgs
-            {
-                Release = _DateTimeProvider.Now(),
-                Text = new Dictionary<string, Dictionary<string, string>>
+            await Write(
+                new ResourceBundleArgs
                 {
-                    {"en-GB", new Dictionary<string, string>()
+                    Release = _DateTimeProvider.Now(),
+                    Text = new Dictionary<string, Dictionary<string, string>>
                     {
-                        {"InfectedMessage","You're possibly infected"}
-                    }},
-                    {"nl-NL",new Dictionary<string, string>
-                    {
-                        {"InfectedMessage","U bent mogelijk geinvecteerd"}
-                    }}
+                        {
+                            "en-GB", new Dictionary<string, string>()
+                            {
+                                {"InfectedMessage", "You're possibly infected"}
+                            }
+                        },
+                        {
+                            "nl-NL", new Dictionary<string, string>
+                            {
+                                {"InfectedMessage", "U bent mogelijk geinvecteerd"}
+                            }
+                        }
+                    }
                 }
-            }.ToEntity();
-            e0.PublishingId = _PublishingId.Create(e0.Content);
-            await _DbContextProvider.AddAsync(e0);
+            );
 
-            var e1 = new ResourceBundleArgs
-            {
-                Release = _DateTimeProvider.Now(),
-                IsolationPeriodDays = 10,
-                ObservedTemporaryExposureKeyRetentionDays = 14,
-                TemporaryExposureKeyRetentionDays = 15,
-                Text = new Dictionary<string, Dictionary<string, string>>()
+            await Write(
+                new ResourceBundleArgs
                 {
-                    {"en-GB", new Dictionary<string, string>
+                    Release = _DateTimeProvider.Now(),
+                    IsolationPeriodDays = 10,
+                    ObservedTemporaryExposureKeyRetentionDays = 14,
+                    TemporaryExposureKeyRetentionDays = 15,
+                    Text = new Dictionary<string, Dictionary<string, string>>()
                     {
-                        {"FirstLong","First"},
-                        {"FirstShort","1st"}
-                    }},
-                    {"nl-NL", new Dictionary<string, string>
-                    {
-                        {"FirstLong","Eerste"},
-                        {"FirstShort","1ste"}
-                    }}
+                        {
+                            "en-GB", new Dictionary<string, string>
+                            {
+                                {"FirstLong", "First"},
+                                {"FirstShort", "1st"}
+                            }
+                        },
+                        {
+                            "nl-NL", new Dictionary<string, string>
+                            {
+                                {"FirstLong", "Eerste"},
+                                {"FirstShort", "1ste"}
+                            }
+                        }
+                    }
+                });
+
+            await Write(
+                new ResourceBundleArgs
+                {
+                    Release = _DateTimeProvider.Now()
                 }
-            }.ToEntity();
-            e1.PublishingId = _PublishingId.Create(e1.Content);
-            await _DbContextProvider.AddAsync(e1);
+            );
 
-            var e2 = new ResourceBundleArgs
-            {
-                Release = _DateTimeProvider.Now()
-            }.ToEntity();
-            e2.PublishingId = _PublishingId.Create(e2.Content);
-            await _DbContextProvider.AddAsync(e2);
+            await Write(
+                new RiskCalculationConfigArgs
+                {
+                    Release = new DateTime(2020, 6, 12),
+                    MinimumRiskScore = 1,
+                    DaysSinceLastExposureScores​ = new[] {1, 2, 3, 4, 5, 6, 7, 8},
+                    AttenuationScores​ = new[] {1, 2, 3, 4, 5, 6, 7, 8},
+                    DurationAtAttenuationThresholds​ = new[] {42, 56},
+                    DurationScores = new[] {1, 2, 3, 4, 5, 6, 7, 8},
+                    TransmissionRiskScores​ = new[] {1, 2, 3, 4, 5, 6, 7, 8},
+                });
 
-            var e4 = new RiskCalculationConfigArgs
-            {
-                Release = new DateTime(2020, 6, 12),
-                MinimumRiskScore = 1,
-                DaysSinceLastExposureScores​ = new[]{1,2,3,4,5,6,7,8},
-                AttenuationScores​ = new[] { 1,2,3,4,5,6,7,8 },
-                DurationAtAttenuationThresholds​ = new[] { 42,56 },
-                DurationScores = new[] { 1,2,3,4,5,6,7,8 },
-                TransmissionRiskScores​ = new[] { 1,2,3,4,5,6,7,8 },
-            }.ToEntity();
-            e4.PublishingId = _PublishingId.Create(e4.Content);
-            await _DbContextProvider.AddAsync(e4);
-
-            var e5 = new AppConfigArgs
+            await Write(
+            new AppConfigArgs
             {
                 Release = _DateTimeProvider.Now(),
                 ManifestFrequency = 5,
                 DecoyProbability = 1,
                 Version = 123345
-            }.ToEntity();
-
-            e5.PublishingId = _PublishingId.Create(e5.Content);
-            await _DbContextProvider.AddAsync(e5);
+            });
 
             _DbContextProvider.SaveAndCommit();
+        }
+
+        private async Task Write(RiskCalculationConfigArgs a4)
+        {
+            var e4 = new RiskCalculationContentEntity
+            {
+                Release = a4.Release
+            };
+            await _Formatter.Fill(e4, a4.ToContent());
+            await _DbContextProvider.AddAsync(e4);
+        }
+        private async Task Write(ResourceBundleArgs a4)
+        {
+            var e4 = new ResourceBundleContentEntity
+            {
+                Release = a4.Release
+            };
+            await _Formatter.Fill(e4, a4.ToContent());
+            await _DbContextProvider.AddAsync(e4);
+        }
+        private async Task Write(AppConfigArgs a4)
+        {
+            var e4 = new AppConfigContentEntity
+            {
+                Release = a4.Release
+            };
+            await _Formatter.Fill(e4, a4.ToContent());
+            await _DbContextProvider.AddAsync(e4);
         }
     }
 }

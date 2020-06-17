@@ -11,20 +11,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
 {
     public class ResourceBundleInsertDbCommand
     {
-        private readonly ExposureContentDbContext _DbConfig;
-        private readonly IPublishingId _PublishingId;
+        private readonly ExposureContentDbContext _DbContext;
+        private readonly IContentEntityFormatter _Formatter;
 
-        public ResourceBundleInsertDbCommand(ExposureContentDbContext dbConfig, IPublishingId publishingId)
+        public ResourceBundleInsertDbCommand(ExposureContentDbContext context, IContentEntityFormatter formatter)
         {
-            _DbConfig = dbConfig;
-            _PublishingId = publishingId;
+            _DbContext = context;
+            _Formatter = formatter;
         }
 
         public async Task Execute(ResourceBundleArgs args)
         {
-            var e = args.ToEntity();
-            e.PublishingId = _PublishingId.Create(e.Content);
-            await _DbConfig.AddAsync(e);
+            var e = new ResourceBundleContentEntity
+            {
+                Release = args.Release
+            };
+            await _Formatter.Fill(e, args.ToContent());
+            await _DbContext.AddAsync(e);
         }
     }
 }

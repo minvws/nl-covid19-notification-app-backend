@@ -362,3 +362,5 @@ MigrationBackup/
 
 # MacOS
 .DS_Store
+/ServerStandAlone/NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.xml
+/Components/NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml

@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
@@ -26,8 +27,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
             OperationId = "getManifest", //TODO Is this correct?
             Tags = new[] { "CDN" }
         )] //Adds nothing to UI
-        [ProducesResponseType(typeof(ManifestResponse), 200)] //Adds nothing to UI
-        [SwaggerResponse(200, "Argle")] //Adds nothing to UI
+        [ProducesResponseType(typeof(ManifestContent), 200)]
+        //[ProducesResponseType(typeof(byte[]), 200)] //TODO No added value in Swagger UI
+        [ProducesResponseType(500)]
+        [Produces(MediaTypeNames.Application.Zip, MediaTypeNames.Application.Json)]
         public async Task GetLatestConfig([FromServices]HttpGetCdnContentCommand<ManifestEntity> command)
         {
             await command.Execute(HttpContext, "ignored...");

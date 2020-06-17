@@ -190,7 +190,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     {
                         Release = x.Release,
                         Content = x.Content,
-                        Region = x.Region,
                         ContentTypeName = MediaTypeNames.Application.Zip,
                         CreatingJobName = x.CreatingJobName,
                         CreatingJobQualifier = x.CreatingJobQualifier,

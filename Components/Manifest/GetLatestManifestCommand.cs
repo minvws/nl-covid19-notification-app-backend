@@ -57,7 +57,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
                 Release = now,
                 ContentTypeName = ContentHeaderValues.Json,
                 Content = bytes,
-                Region = DefaultValues.Region,
             };
             e.PublishingId = _PublishingId.Create(e.Content);
             _DbContext.ManifestContent.Add(e);
