@@ -26,7 +26,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="EfDatabase\Configuration\Workflow\KeysFirstTekReleaseWorkflow.cs" />
-    <Compile Remove="Workflows\KeysFirstWorkflow\EscrowTeks\KeysFirstTeksWorkflowEntity.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,10 +51,6 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.EventLog" Version="3.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Azure\" />
   </ItemGroup>
 
   <ItemGroup>

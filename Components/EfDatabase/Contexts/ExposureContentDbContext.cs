@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
@@ -39,17 +38,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             modelBuilder.ApplyConfiguration(new Configuration.Content.RiskCalculationContent());
             modelBuilder.ApplyConfiguration(new Configuration.Content.ResourceBundleContent());
             modelBuilder.ApplyConfiguration(new Configuration.Content.AppConfigContent());
-        }
-    }
-
-    public class ExposureContentContextFactory : IDesignTimeDbContextFactory<ExposureContentDbContext>
-    {
-        public ExposureContentDbContext CreateDbContext(string[] args)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<ExposureContentDbContext>();
-            optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=Content;Integrated Security=true");
-
-            return new ExposureContentDbContext(optionsBuilder.Options);
         }
     }
 }
