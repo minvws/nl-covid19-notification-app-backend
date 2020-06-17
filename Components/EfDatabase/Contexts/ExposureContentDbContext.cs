@@ -31,6 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+           
             modelBuilder.ApplyConfiguration(new Configuration.Content.EksCreateJobInput());
             modelBuilder.ApplyConfiguration(new Configuration.Content.EksCreateJobOutput());
             modelBuilder.ApplyConfiguration(new Configuration.Content.ExposureKeySetContent());

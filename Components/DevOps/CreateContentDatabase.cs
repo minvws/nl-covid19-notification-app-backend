@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         public async Task Execute()
         {
             await _DbContextProvider.Database.EnsureDeletedAsync();
-            await _DbContextProvider.Database.MigrateAsync();
+            await _DbContextProvider.Database.EnsureCreatedAsync();
         }
 
         public async Task AddExampleContent()
