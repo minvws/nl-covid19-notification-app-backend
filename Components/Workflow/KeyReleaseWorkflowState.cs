@@ -34,6 +34,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         /// </summary>
         public bool Authorised { get; set; }
 
+        /// <summary>
+        /// Epoch time in seconds
+        /// </summary>
+        public DateTime ValidUntil { get; set; }
+
         public ICollection<TemporaryExposureKeyEntity> Keys { get; set; }
     }
 }
