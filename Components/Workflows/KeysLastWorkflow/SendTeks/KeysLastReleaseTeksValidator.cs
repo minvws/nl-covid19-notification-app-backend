@@ -23,11 +23,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             if (!ResourceBundleValidator.IsBase64(args.BucketId))
                 return false;
 
-            if (_Config.TemporaryExposureKeyCountMin > args.Items.Length
-                || args.Items.Length > _Config.TemporaryExposureKeyCountMax)
+            if (_Config.TemporaryExposureKeyCountMin > args.Keys.Length
+                || args.Keys.Length > _Config.TemporaryExposureKeyCountMax)
                 return false;
 
-            return args.Items.All(_TemporaryExposureKeyValidator.Valid);
+            return args.Keys.All(_TemporaryExposureKeyValidator.Valid);
         }
     }
 }

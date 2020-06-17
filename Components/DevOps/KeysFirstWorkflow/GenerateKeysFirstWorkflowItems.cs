@@ -57,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.KeysFi
                         KeyData = Convert.ToBase64String(keyBuffer),
                         RollingStartNumber = tekValidatorConfig.RollingPeriodMin + j,
                         RollingPeriod = 11,
-                        TransmissionRiskLevel = 2
+                        RegionsOfInterest = new []{"NL"}
                     });
                 }
                 workflow.Items = keys.ToArray();

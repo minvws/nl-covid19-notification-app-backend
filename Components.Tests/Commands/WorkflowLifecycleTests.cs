@@ -18,7 +18,7 @@
 //            var WorkflowSubmitted = new Workflow
 //            {
 //                Token = "12345",
-//                Items = new[] {
+//                Keys = new[] {
 //                    new WorkflowKey
 //                    {
 //                        Seed = "kTIseJvN3Ro2mNDgPnxdOewOzBwzWmXGbg8FEKPNPG0=",

@@ -1,4 +1,6 @@
-﻿namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.RegisterSecret
+﻿using System;
+
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.RegisterSecret
 {
     public class EnrollmentResponse
     {
@@ -8,5 +10,7 @@
         public string BucketId { get; set; }
 
         public string ConfirmationKey { get; set; }
+
+        public DateTime ValidUntil { get; set; }
     }
 }

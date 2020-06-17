@@ -21,8 +21,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
 
             modelBuilder.Entity("NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig.AppConfigContentEntity", b =>
                 {
-                    b.Property<string>("PublishingId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<byte[]>("Content")
                         .IsRequired()
@@ -32,14 +34,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Region")
+                    b.Property<string>("PublishingId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Release")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("PublishingId");
+                    b.Property<byte[]>("SignedContent")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("SignedContentTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
 
                     b.ToTable("AppConfigContent");
                 });
@@ -75,8 +85,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
 
             modelBuilder.Entity("NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets.ExposureKeySetContentEntity", b =>
                 {
-                    b.Property<string>("PublishingId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<byte[]>("Content")
                         .IsRequired()
@@ -93,14 +105,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
                     b.Property<int>("CreatingJobQualifier")
                         .HasColumnType("int");
 
-                    b.Property<string>("Region")
+                    b.Property<string>("PublishingId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Release")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("PublishingId");
+                    b.Property<byte[]>("SignedContent")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("SignedContentTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
 
                     b.ToTable("ExposureKeySetContent");
                 });
@@ -133,8 +153,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
 
             modelBuilder.Entity("NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest.ManifestEntity", b =>
                 {
-                    b.Property<string>("PublishingId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<byte[]>("Content")
                         .IsRequired()
@@ -144,22 +166,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Region")
+                    b.Property<string>("PublishingId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Release")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("PublishingId");
+                    b.Property<byte[]>("SignedContent")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("SignedContentTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Manifest");
                 });
 
             modelBuilder.Entity("NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle.ResourceBundleContentEntity", b =>
                 {
-                    b.Property<string>("PublishingId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<byte[]>("Content")
                         .IsRequired()
@@ -169,22 +201,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Region")
+                    b.Property<string>("PublishingId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Release")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("PublishingId");
+                    b.Property<byte[]>("SignedContent")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("SignedContentTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
 
                     b.ToTable("ResourceBundleContent");
                 });
 
             modelBuilder.Entity("NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig.RiskCalculationContentEntity", b =>
                 {
-                    b.Property<string>("PublishingId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<byte[]>("Content")
                         .IsRequired()
@@ -194,14 +236,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Region")
+                    b.Property<string>("PublishingId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Release")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("PublishingId");
+                    b.Property<byte[]>("SignedContent")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("SignedContentTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
 
                     b.ToTable("RiskCalculationContent");
                 });

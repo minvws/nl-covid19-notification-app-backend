@@ -11,15 +11,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
                 name: "AppConfigContent",
                 columns: table => new
                 {
-                    PublishingId = table.Column<string>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Release = table.Column<DateTime>(nullable: false),
-                    Region = table.Column<string>(nullable: false),
+                    PublishingId = table.Column<string>(nullable: false),
                     Content = table.Column<byte[]>(nullable: false),
-                    ContentTypeName = table.Column<string>(nullable: false)
+                    ContentTypeName = table.Column<string>(nullable: false),
+                    SignedContent = table.Column<byte[]>(nullable: false),
+                    SignedContentTypeName = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppConfigContent", x => x.PublishingId);
+                    table.PrimaryKey("PK_AppConfigContent", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -59,62 +62,74 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.Ex
                 name: "ExposureKeySetContent",
                 columns: table => new
                 {
-                    PublishingId = table.Column<string>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Release = table.Column<DateTime>(nullable: false),
-                    Region = table.Column<string>(nullable: false),
+                    PublishingId = table.Column<string>(nullable: false),
                     Content = table.Column<byte[]>(nullable: false),
                     ContentTypeName = table.Column<string>(nullable: false),
+                    SignedContent = table.Column<byte[]>(nullable: false),
+                    SignedContentTypeName = table.Column<string>(nullable: false),
                     CreatingJobName = table.Column<string>(nullable: false),
                     CreatingJobQualifier = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ExposureKeySetContent", x => x.PublishingId);
+                    table.PrimaryKey("PK_ExposureKeySetContent", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Manifest",
                 columns: table => new
                 {
-                    PublishingId = table.Column<string>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Release = table.Column<DateTime>(nullable: false),
-                    Region = table.Column<string>(nullable: false),
+                    PublishingId = table.Column<string>(nullable: false),
                     Content = table.Column<byte[]>(nullable: false),
-                    ContentTypeName = table.Column<string>(nullable: false)
+                    ContentTypeName = table.Column<string>(nullable: false),
+                    SignedContent = table.Column<byte[]>(nullable: false),
+                    SignedContentTypeName = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Manifest", x => x.PublishingId);
+                    table.PrimaryKey("PK_Manifest", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "ResourceBundleContent",
                 columns: table => new
                 {
-                    PublishingId = table.Column<string>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Release = table.Column<DateTime>(nullable: false),
-                    Region = table.Column<string>(nullable: false),
+                    PublishingId = table.Column<string>(nullable: false),
                     Content = table.Column<byte[]>(nullable: false),
-                    ContentTypeName = table.Column<string>(nullable: false)
+                    ContentTypeName = table.Column<string>(nullable: false),
+                    SignedContent = table.Column<byte[]>(nullable: false),
+                    SignedContentTypeName = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ResourceBundleContent", x => x.PublishingId);
+                    table.PrimaryKey("PK_ResourceBundleContent", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "RiskCalculationContent",
                 columns: table => new
                 {
-                    PublishingId = table.Column<string>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Release = table.Column<DateTime>(nullable: false),
-                    Region = table.Column<string>(nullable: false),
+                    PublishingId = table.Column<string>(nullable: false),
                     Content = table.Column<byte[]>(nullable: false),
-                    ContentTypeName = table.Column<string>(nullable: false)
+                    ContentTypeName = table.Column<string>(nullable: false),
+                    SignedContent = table.Column<byte[]>(nullable: false),
+                    SignedContentTypeName = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RiskCalculationContent", x => x.PublishingId);
+                    table.PrimaryKey("PK_RiskCalculationContent", x => x.Id);
                 });
         }
 
