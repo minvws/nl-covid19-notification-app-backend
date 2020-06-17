@@ -8,7 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     /// <summary>
     /// Lab confirmation...
     /// </summary>
-    public class KeysLastAuthorisationArgs
+    public class AuthorisationArgs
     {
         /// <summary>
         /// Identifier for Workflow item - Tan1?

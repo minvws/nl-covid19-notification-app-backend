@@ -9,35 +9,32 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.BackgroundJobs
 {
-    
-    /// <summary>
-    /// TODO check conditions for expiry
-    /// </summary>
-    public class KeysLastSecretExpireDbCommand
+    public class PurgeExpiredSecretsDbCommand
     {
         private readonly WorkflowDbContext _DbContextProvider;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly IKeysLastWorkflowConfig _KeysLastWorkflowConfig;
+        private readonly IWorkflowConfig _WorkflowConfig;
 
-        public KeysLastSecretExpireDbCommand(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IKeysLastWorkflowConfig tokenFirstWorkflowConfig)
+        public PurgeExpiredSecretsDbCommand(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IWorkflowConfig tokenFirstWorkflowConfig)
         {
             _DbContextProvider = dbContextProvider;
             _DateTimeProvider = dateTimeProvider;
-            _KeysLastWorkflowConfig = tokenFirstWorkflowConfig;
+            _WorkflowConfig = tokenFirstWorkflowConfig;
         }
 
         public void Execute()
         {
-            var expired = _DateTimeProvider.Now() - TimeSpan.FromMinutes(_KeysLastWorkflowConfig.AuthorisationWindowDurationMinutes);
+            var expired = _DateTimeProvider.Now() - TimeSpan.FromDays(_WorkflowConfig.SecretLifetimeDays);
 
             _DbContextProvider.BeginTransaction();
 
             throw new NotImplementedException();
 
             //var q = _DbContextProvider.KeysLastWorkflows
-            //    .Where(x => x.State == KeysLastWorkflowState.Receiving && x.AuthorisationWindowStart < expired);
+            //    .Where(x => x.State == KeysLastWorkflowState.Unauthorised && x.Created < expired);
 
             //_DbContextProvider.KeysLastWorkflows.RemoveRange(q);
+
             _DbContextProvider.SaveChanges();
             _DbContextProvider.SaveAndCommit();
         }

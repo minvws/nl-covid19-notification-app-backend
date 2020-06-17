@@ -12,12 +12,12 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
     [Obsolete("Use this class only for testing purposes")]
-    public class FakeKeysLastTekWriter : IKeysLastTekWriter
+    public class FakeTekWriter : ITekWriter
     {
         private readonly WorkflowDbContext _DbContextProvider;
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
 
-        public FakeKeysLastTekWriter(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider utcDateTimeProvider)
+        public FakeTekWriter(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider utcDateTimeProvider)
         {
             _DbContextProvider = dbContextProvider;
             _UtcDateTimeProvider = utcDateTimeProvider;
@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task Execute(KeysLastReleaseTeksArgs args)
+        public async Task Execute(ReleaseTeksArgs args)
         {
             var wf = _DbContextProvider
                 .KeyReleaseWorkflowStates

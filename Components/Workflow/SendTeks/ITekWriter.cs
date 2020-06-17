@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
-    public interface IKeysLastTekWriter
+    public interface ITekWriter
     {
-        Task Execute(KeysLastReleaseTeksArgs args);
+        Task Execute(ReleaseTeksArgs args);
     }
 }

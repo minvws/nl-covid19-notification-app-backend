@@ -10,13 +10,13 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
 {
-    public class KeysLastSecretWriter : IKeysLastSecretWriter
+    public class SecretWriter : ISecretWriter
     {
         private readonly WorkflowDbContext _DbContextProvider;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly RandomNumberGenerator _NumberGenerator;
 
-        public KeysLastSecretWriter(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, RandomNumberGenerator numberGenerator)
+        public SecretWriter(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, RandomNumberGenerator numberGenerator)
         {
             _DbContextProvider = dbContextProvider;
             _DateTimeProvider = dateTimeProvider;

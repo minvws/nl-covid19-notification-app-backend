@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi
 {
     public class Startup
     {
-        private const string Title = "MSS KeysLastWorkflow Api";
+        private const string Title = "MSS Workflow Api";
 
         public Startup(IConfiguration configuration)
         {
@@ -50,15 +50,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
 
-            services.AddScoped<HttpPostKeysLastReleaseTeksCommand, HttpPostKeysLastReleaseTeksCommand>();
+            services.AddScoped<HttpPostReleaseTeksCommand, HttpPostReleaseTeksCommand>();
             
-            services.AddScoped<IKeysLastReleaseTeksValidator, KeysLastReleaseTeksValidator>();
-            services.AddScoped<IKeysLastSignatureValidator, KeysLastSignatureValidator>();
+            services.AddScoped<IReleaseTeksValidator, ReleaseTeksValidator>();
+            services.AddScoped<ISignatureValidator, SignatureValidator>();
             
-            services.AddScoped<HttpPostKeysLastRegisterSecret, HttpPostKeysLastRegisterSecret>();
-            services.AddScoped<IKeysLastSecretWriter, KeysLastSecretWriter>();
-            services.AddScoped<IKeysLastSecretConfig, StandardKeysLastSecretConfig>();
-            services.AddScoped<IKeysLastTekWriter, FakeKeysLastTekWriter>();
+            services.AddScoped<HttpPostRegisterSecret, HttpPostRegisterSecret>();
+            services.AddScoped<ISecretWriter, SecretWriter>();
+            services.AddScoped<ISecretConfig, StandardSecretConfig>();
+            services.AddScoped<ITekWriter, FakeTekWriter>();
             services.AddScoped<RandomNumberGenerator, RandomNumberGenerator>();
 
             services.AddSwaggerGen(o =>

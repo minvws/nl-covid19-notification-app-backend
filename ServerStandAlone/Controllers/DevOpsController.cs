@@ -47,6 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
             return await command.Execute(useAllKeys);
         }
 
+        //TODO keys last version!
         ///// <summary>
         ///// Generate new authorisations for the Keys-First workflow.
         ///// </summary>

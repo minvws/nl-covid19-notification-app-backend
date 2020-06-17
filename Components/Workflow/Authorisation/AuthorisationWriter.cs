@@ -9,18 +9,18 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
-    public class KeysLastAuthorisationWriter : IKeysLastAuthorisationWriter
+    public class AuthorisationWriter : IAuthorisationWriter
     {
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly WorkflowDbContext _DbContextProvider;
 
-        public KeysLastAuthorisationWriter(IUtcDateTimeProvider dateTimeProvider, WorkflowDbContext dbContextProvider)
+        public AuthorisationWriter(IUtcDateTimeProvider dateTimeProvider, WorkflowDbContext dbContextProvider)
         {
             _DateTimeProvider = dateTimeProvider;
             _DbContextProvider = dbContextProvider;
         }
 
-        public async Task Execute(KeysLastAuthorisationArgs args)
+        public async Task Execute(AuthorisationArgs args)
         {
             var e = _DbContextProvider
                 .KeyReleaseWorkflowStates

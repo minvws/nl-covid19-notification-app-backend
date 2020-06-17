@@ -117,25 +117,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<IReader<RiskCalculationContentEntity>, SafeBinaryContentDbReader<RiskCalculationContentEntity>>();
             services.AddScoped<IReader<AppConfigContentEntity>, SafeBinaryContentDbReader<AppConfigContentEntity>>();
 
-            services.AddScoped<HttpPostKeysLastRegisterSecret, HttpPostKeysLastRegisterSecret>();
+            services.AddScoped<HttpPostRegisterSecret, HttpPostRegisterSecret>();
             services.AddScoped<RandomNumberGenerator, RandomNumberGenerator>();
-            services.AddScoped<IKeysLastSecretConfig, StandardKeysLastSecretConfig>();
+            services.AddScoped<ISecretConfig, StandardSecretConfig>();
 
-            services.AddScoped<IKeysLastSecretWriter, KeysLastSecretWriter>();
+            services.AddScoped<ISecretWriter, SecretWriter>();
             
-            services.AddScoped<KeysLastAuthorisationWriter, KeysLastAuthorisationWriter>();
+            services.AddScoped<AuthorisationWriter, AuthorisationWriter>();
 
-            services.AddScoped<HttpPostKeysLastReleaseTeksCommand, HttpPostKeysLastReleaseTeksCommand>();
-            services.AddScoped<IKeysLastReleaseTeksValidator, KeysLastReleaseTeksValidator>();
-            services.AddScoped<IKeysLastSignatureValidator, FakeKeysLastSignatureValidator>();
-            services.AddScoped<IKeysLastTekWriter, FakeKeysLastTekWriter>();
+            services.AddScoped<HttpPostReleaseTeksCommand, HttpPostReleaseTeksCommand>();
+            services.AddScoped<IReleaseTeksValidator, ReleaseTeksValidator>();
+            services.AddScoped<ISignatureValidator, FakeSignatureValidator>();
+            services.AddScoped<ITekWriter, FakeTekWriter>();
 
             services.AddScoped<HttpPostAppConfigCommand, HttpPostAppConfigCommand>();
             services.AddScoped<AppConfigInsertDbCommand, AppConfigInsertDbCommand>();
             services.AddScoped<AppConfigValidator, AppConfigValidator>();
 
-            services.AddScoped<HttpPostKeysLastAuthorise, HttpPostKeysLastAuthorise>();
-            services.AddScoped<IKeysLastAuthorisationWriter, KeysLastAuthorisationWriter>();
+            services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
+            services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();
             services.AddScoped<IReleaseKeysAuthorizationValidator, FakeReleaseKeysAuthorizationValidator>();
 
             services.AddScoped<GetLatestContentCommand<ResourceBundleContentEntity>, GetLatestContentCommand<ResourceBundleContentEntity>>();

@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
             OperationId = "CreateProduct",
             Tags = new[] { "Purchase", "Products" }
         )]
-        public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostKeysLastReleaseTeksCommand command)
+        public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand command)
         {
             using var reader = new StreamReader(Request.Body);
             var body = await reader.ReadToEndAsync();
@@ -40,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
             OperationId = "CreateProduct",
             Tags = new[] { "Purchase", "Products" }
         )]
-        public async Task<IActionResult> PostSecret([FromBody] KeysLastSecretArgs args, [FromServices] HttpPostKeysLastRegisterSecret command)
+        public async Task<IActionResult> PostSecret([FromBody] SecretArgs args, [FromServices] HttpPostRegisterSecret command)
         {
             return await command.Execute(args);
         }
@@ -53,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
             OperationId = "CreateProduct",
             Tags = new[] { "Purchase", "Products" }
         )]
-        public async Task<IActionResult> PostAuthorise([FromBody] KeysLastAuthorisationArgs args, [FromServices] HttpPostKeysLastAuthorise command)
+        public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args, [FromServices] HttpPostAuthorise command)
         {
             return await command.Execute(args);
         }

@@ -6,8 +6,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSetti
 {
     public interface IGaenContentConfig
     {
-        //TODO this is KeysLast Workflow
-        int KeysLastSecretLifetimeDays { get; }
+        int SecretLifetimeDays { get; }
         
         int ExposureKeySetLifetimeDays { get; }
         

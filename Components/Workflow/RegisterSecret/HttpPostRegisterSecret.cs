@@ -7,16 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
 {
-    public class HttpPostKeysLastRegisterSecret
+    public class HttpPostRegisterSecret
     {
-        private readonly IKeysLastSecretWriter _Writer;
+        private readonly ISecretWriter _Writer;
 
-        public HttpPostKeysLastRegisterSecret(IKeysLastSecretWriter writer)
+        public HttpPostRegisterSecret(ISecretWriter writer)
         {
             _Writer = writer;
         }
 
-        public async Task<IActionResult> Execute(KeysLastSecretArgs args)
+        public async Task<IActionResult> Execute(SecretArgs args)
         {
             var result = await _Writer.Execute();
             return new OkObjectResult(result);

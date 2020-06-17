@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "KeysLastWorkflowApi": {
+    "WorkflowApi": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

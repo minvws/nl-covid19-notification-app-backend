@@ -10,11 +10,11 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Authoris
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
-    public class KeysLastSignatureValidator : IKeysLastSignatureValidator
+    public class SignatureValidator : ISignatureValidator
     {
         private readonly WorkflowDbContext _Context;
 
-        public KeysLastSignatureValidator(WorkflowDbContext context)
+        public SignatureValidator(WorkflowDbContext context)
         {
             _Context = context;
         }

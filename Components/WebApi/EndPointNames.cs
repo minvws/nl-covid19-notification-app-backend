@@ -14,7 +14,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
                 public const string RandomNoise = Prefix + "/stopkeys";
         }
 
-
         /// <summary>
         /// Use the same ones for CaregiversPortalDataApi
         /// </summary>
@@ -32,20 +31,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 
             public const string ExposureKeySetsCreate = DevOpsPrefix + "/exposurekeysets/runbatchjob";
 
-            public class KeysFirstWorkFlow
-            {
-                private const string Prefix = DevOpsPrefix + "/keysfirst";
 
-                public const string TekSetsGenerateRandom = Prefix + "/teks/random";
-                public const string TekSetsRandomAuthorisation = Prefix + "/teks/authorise";
-            }
-
-            public class KeysLastWorkFlow
-            {
-                private const string Prefix = DevOpsPrefix + "/keyslast";
-                public const string TekSetsGenerateRandom = Prefix + "/teks/random";
-                public const string TekSetsAuthorise = Prefix + "/teks/authorise";
-            }
+            public const string TekSetsGenerateRandom = DevOpsPrefix + "/teks/random";
+            public const string TekSetsAuthorise = DevOpsPrefix + "/teks/authorise";
         }
 
         public static class ContentAdminPortalDataApi

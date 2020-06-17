@@ -4,8 +4,8 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
 {
-    public class DefaultKeysLastSecretConfig : IKeysLastSecretConfig
+    public interface ISecretConfig
     {
-        public int ByteCount => 16; //As per crypto doc.
+        int ByteCount { get; }
     }
 }

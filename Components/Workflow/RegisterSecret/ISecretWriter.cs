@@ -2,10 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
+using System.Threading.Tasks;
+
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
 {
-    public interface IKeysLastReleaseTeksValidator
+    public interface ISecretWriter
     {
-        bool Validate(KeysLastReleaseTeksArgs args);
+        Task<EnrollmentResponse> Execute();
     }
 }

@@ -7,18 +7,18 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
-    public class KeysLastReleaseTeksValidator : IKeysLastReleaseTeksValidator
+    public class ReleaseTeksValidator : IReleaseTeksValidator
     {
         private readonly IGeanTekListValidationConfig _Config;
         private readonly ITemporaryExposureKeyValidator _TemporaryExposureKeyValidator;
 
-        public KeysLastReleaseTeksValidator(IGeanTekListValidationConfig config, ITemporaryExposureKeyValidator temporaryExposureKeyValidator)
+        public ReleaseTeksValidator(IGeanTekListValidationConfig config, ITemporaryExposureKeyValidator temporaryExposureKeyValidator)
         {
             _Config = config;
             _TemporaryExposureKeyValidator = temporaryExposureKeyValidator;
         }
 
-        public bool Validate(KeysLastReleaseTeksArgs args)
+        public bool Validate(ReleaseTeksArgs args)
         {
             if (args == null)
                 return false;

@@ -7,11 +7,11 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 {
-    public class KeysLastWorkflowConfig : AppSettingsReader, IKeysLastWorkflowConfig
+    public class WorkflowConfig : AppSettingsReader, IWorkflowConfig
     {
         private const int WorkflowTokenTtlDaysDefault = 14;
 
-        public KeysLastWorkflowConfig(IConfiguration config) : base(config, "KeysLastWorkflow")
+        public WorkflowConfig(IConfiguration config) : base(config, "Workflow")
         {
         }
 

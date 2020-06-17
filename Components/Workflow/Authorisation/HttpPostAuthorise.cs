@@ -9,20 +9,20 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
-    public class HttpPostKeysLastAuthorise
+    public class HttpPostAuthorise
     {
-        private readonly IKeysLastAuthorisationWriter _AuthorisationWriter;
+        private readonly IAuthorisationWriter _AuthorisationWriter;
         private readonly WorkflowDbContext _DbContextProvider;
         private readonly IReleaseKeysAuthorizationValidator _Validator;
 
-        public HttpPostKeysLastAuthorise(IKeysLastAuthorisationWriter authorisationWriter, WorkflowDbContext dbContextProvider, IReleaseKeysAuthorizationValidator validator)
+        public HttpPostAuthorise(IAuthorisationWriter authorisationWriter, WorkflowDbContext dbContextProvider, IReleaseKeysAuthorizationValidator validator)
         {
             _AuthorisationWriter = authorisationWriter;
             _DbContextProvider = dbContextProvider;
             _Validator = validator;
         }
 
-        public async Task<IActionResult> Execute(KeysLastAuthorisationArgs args)
+        public async Task<IActionResult> Execute(AuthorisationArgs args)
         {
             if (!_Validator.Valid(args.UploadAuthorisationToken)) //TODO check validation
                 return new OkResult();

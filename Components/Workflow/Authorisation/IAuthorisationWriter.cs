@@ -4,10 +4,10 @@
 
 using System.Threading.Tasks;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
-    public interface IKeysLastSecretWriter
+    public interface IAuthorisationWriter
     {
-        Task<EnrollmentResponse> Execute();
+        Task Execute(AuthorisationArgs args);
     }
 }

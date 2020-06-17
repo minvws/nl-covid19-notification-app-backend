@@ -46,9 +46,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleasePortalApi
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
-            services.AddScoped<HttpPostKeysLastAuthorise, HttpPostKeysLastAuthorise>();
-            services.AddScoped<IKeysLastSignatureValidator, KeysLastSignatureValidator>();
-            services.AddScoped<IKeysLastAuthorisationWriter, KeysLastAuthorisationWriter>();
+            services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
+            services.AddScoped<ISignatureValidator, SignatureValidator>();
+            services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();
 
             services.AddSwaggerGen(o =>
             {

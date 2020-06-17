@@ -7,11 +7,11 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
 {
-    public class StandardKeysLastSecretConfig : AppSettingsReader, IKeysLastSecretConfig
+    public class StandardSecretConfig : AppSettingsReader, ISecretConfig
     {
-        private static readonly IKeysLastSecretConfig _Defaults = new DefaultKeysLastSecretConfig();
+        private static readonly ISecretConfig _Defaults = new DefaultSecretConfig();
 
-        public StandardKeysLastSecretConfig(IConfiguration config, string? prefix = null) : base(config, prefix)
+        public StandardSecretConfig(IConfiguration config, string? prefix = null) : base(config, prefix)
         {
         }
 

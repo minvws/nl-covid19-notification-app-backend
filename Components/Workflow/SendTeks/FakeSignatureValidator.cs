@@ -4,7 +4,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Authoris
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
     [Obsolete("Use this class only for testing purposes")]
-    public class FakeKeysLastSignatureValidator : IKeysLastSignatureValidator
+    public class FakeSignatureValidator : ISignatureValidator
     {
         public bool Valid(byte[] signature, string bucketId, byte[] data) => signature != null && data != null;
     }

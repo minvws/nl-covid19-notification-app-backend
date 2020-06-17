@@ -13,11 +13,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi.Cont
 {
     [ApiController]
     [Route("[controller]")]
-    public class KeysLastWorkflowController : ControllerBase
+    public class WorkflowController : ControllerBase
     {
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.ReleaseTeks)]
-        public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostKeysLastReleaseTeksCommand command)
+        public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand command)
         {
             using var reader = new StreamReader(Request.Body);
             var body = await reader.ReadToEndAsync();
@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi.Cont
 
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.RegisterSecret)]
-        public async Task<IActionResult> PostSecret([FromBody]KeysLastSecretArgs args, [FromServices]HttpPostKeysLastRegisterSecret command)
+        public async Task<IActionResult> PostSecret([FromBody]SecretArgs args, [FromServices]HttpPostRegisterSecret command)
         {
             return await command.Execute(args);
         }

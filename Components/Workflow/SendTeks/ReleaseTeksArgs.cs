@@ -3,7 +3,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
     /// <summary>
     /// Diagnosis key
     /// </summary>
-    public class KeysLastReleaseTeksArgs
+    public class ReleaseTeksArgs
     {
         public string BucketId { get; set; }
         public TemporaryExposureKeyArgs[] Keys { get; set; }

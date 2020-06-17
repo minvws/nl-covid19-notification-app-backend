@@ -7,7 +7,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
     /// <summary>
     /// EnrollmentRequest
     /// </summary>
-    public class KeysLastSecretArgs
+    public class SecretArgs
     {
         public byte[]? Padding { get; set; }
     }
