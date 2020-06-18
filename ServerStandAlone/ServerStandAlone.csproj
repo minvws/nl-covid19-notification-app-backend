@@ -12,7 +12,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningsAsErrors>NU1605;CS8625</WarningsAsErrors>
-    <DocumentationFile>ServerStandAlone\NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.xml</DocumentationFile>
+    <DocumentationFile>NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <WarningsAsErrors>CS8625</WarningsAsErrors>
