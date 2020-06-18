@@ -62,7 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             var signedResponse = content.SignedContentTypeName != null && accepts.Contains(content.SignedContentTypeName);
 
-            if (!signedResponse && content.ContentTypeName != null && accepts.Contains(content.ContentTypeName))
+            if (!signedResponse && !accepts.Contains(content.ContentTypeName))
             {
                 httpContext.Response.StatusCode = 406;
                 httpContext.Response.ContentLength = 0;

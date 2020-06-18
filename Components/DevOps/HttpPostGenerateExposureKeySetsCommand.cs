@@ -53,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 _Input,
                 _Output,
                 _UtcDateTimeProvider,
-                new StandardPublishingIdFormatter(_ContentSigner)
+                new StandardPublishingIdFormatter()
             );
 
             try

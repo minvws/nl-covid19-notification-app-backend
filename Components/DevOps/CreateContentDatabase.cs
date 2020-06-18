@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             var builder = new SqlServerDbContextOptionsBuilder(config);
             _DbContextProvider = new ExposureContentDbContext(builder.Build());
             _DateTimeProvider = dateTimeProvider;
-            _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter(signer));
+            _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter());
         }
 
         public async Task Execute()
