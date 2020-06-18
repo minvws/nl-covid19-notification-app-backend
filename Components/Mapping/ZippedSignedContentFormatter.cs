@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 {
@@ -14,9 +15,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
         private const string ContentEntryName = "content.bin";
         private const string SignaturesEntryName = "content.sig";
 
-        private readonly ISigner _Signer;
+        private readonly ContentSigner _Signer;
 
-        public ZippedSignedContentFormatter(ISigner signer)
+        public ZippedSignedContentFormatter(ContentSigner signer)
         {
             _Signer = signer;
         }

@@ -26,6 +26,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="EfDatabase\Configuration\Workflow\KeysFirstTekReleaseWorkflow.cs" />
+    <Compile Remove="ExposureKeySetsEngine\FormatV1\HardCodedExposureKeySetSigningConfig.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\FakeECDSA.p12" />
+    <None Remove="Resources\FakeRSA.p12" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\FakeECDSA.p12" />
+    <EmbeddedResource Include="Resources\FakeRSA.p12" />
   </ItemGroup>
 
   <ItemGroup>

@@ -6,11 +6,11 @@ using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs
 {
-    public class HsmExposureKeySetHeaderInfoConfig : AppSettingsReader, IExposureKeySetHeaderInfoConfig
+    public class ExposureKeySetHeaderInfoConfig : AppSettingsReader, IExposureKeySetHeaderInfoConfig
     {
-        public HsmExposureKeySetHeaderInfoConfig(IConfiguration config, string? prefix = null) : base(config, prefix) { }
+        public ExposureKeySetHeaderInfoConfig(IConfiguration config, string? prefix = null) : base(config, prefix) { }
 
         public string AppBundleId => GetValue("ExposureKeySets:AppleId", "nl.rijksoverheid.samensterk");
         public string AndroidPackage => GetValue("ExposureKeySets:AndroidId", "nl.rijksoverheid.samensterkpoc");

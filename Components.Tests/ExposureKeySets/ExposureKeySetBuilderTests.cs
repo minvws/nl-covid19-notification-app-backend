@@ -10,6 +10,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using TemporaryExposureKeyArgs = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.TemporaryExposureKeyArgs;
 
@@ -27,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         [DataTestMethod]
         public void Build(int keyCount, int seed)
         {
-            var builder = new ExposureKeySetBuilderV1(new HardCodedExposureKeySetHeaderInfoConfig(), new HardCodedSigner(), new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter());
+            var builder = new ExposureKeySetBuilderV1(new FakeExposureKeySetHeaderInfoConfig(), new KeySetSigner(new FakeCertificateProvider("FakeECDSA.p12")), new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter());
 
             var actual = builder.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
             Assert.IsTrue(actual.Length > 0);

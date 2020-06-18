@@ -6,15 +6,15 @@ using System;
 using System.Globalization;
 using System.Text;
 using System.Web;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {
     public class StandardPublishingIdFormatter : IPublishingId
     {
-        private readonly ISigner _Signer;
+        private readonly ContentSigner _Signer;
 
-        public StandardPublishingIdFormatter(ISigner signer)
+        public StandardPublishingIdFormatter(ContentSigner signer)
         {
             _Signer = signer;
         }

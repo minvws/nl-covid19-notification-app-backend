@@ -2,11 +2,13 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs
 {
-    public class HardCodedExposureKeySetHeaderInfoConfig : IExposureKeySetHeaderInfoConfig
+    [Obsolete("Use this class only for testing purposes")]
+    public class FakeExposureKeySetHeaderInfoConfig : IExposureKeySetHeaderInfoConfig
     {
         public string AppBundleId => "nl.rijksoverheid.samensterk";
         public string AndroidPackage => "nl.rijksoverheid.samensterkpoc";
