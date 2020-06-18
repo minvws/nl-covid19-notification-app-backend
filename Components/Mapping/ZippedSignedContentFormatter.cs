@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
     public class ZippedSignedContentFormatter
     {
         private const string ContentEntryName = "content.bin";
-        private const string SignaturesEntryName = "content.sig";
+        internal const string SignaturesEntryName = "content.sig";
 
         private readonly ContentSigner _Signer;
 
