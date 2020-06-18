@@ -2,12 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     //public class CdnContentHttpReader

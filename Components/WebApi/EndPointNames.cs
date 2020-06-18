@@ -1,43 +1,26 @@
-﻿namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
+﻿// Copyright © 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 {
     public static class EndPointNames
     {
         public static class MobileAppApi
         {
-            public static class KeysFirstWorkflow
-            {
-                private const string Prefix = "/keysfirst/v1";
-                public const string Teks = Prefix + "/teks";
-            }
-
-            public static class KeysLastWorkflow
-            {
-                private const string Prefix = "/keyslast/v1";
+                private const string Prefix = "/MobileAppApi/v1";
                 public const string RegisterSecret = Prefix + "/register";
                 public const string ReleaseTeks = Prefix + "/postkeys";
                 public const string RandomNoise = Prefix + "/stopkeys";
-            }
         }
-
 
         /// <summary>
         /// Use the same ones for CaregiversPortalDataApi
         /// </summary>
         public static class CaregiversPortalApi
         {
-            public static class KeysFirstWorkflow
-            {
-                private const string Prefix = "/keysfirst";
-                public const string Authorise = Prefix+"/authorise";
-            }
-
-            public static class KeysLastWorkflow
-            {
-                private const string Prefix = "/keyslast";
-                public const string LabConfirmation = Prefix + "/labconfirm";
-
-                //Workflow tba.
-            }
+            private const string Prefix = "/CaregiversPortalApi/v1";
+            public const string LabConfirmation = Prefix + "/labconfirm";
         }
 
         public static class DevOps
@@ -48,26 +31,16 @@
 
             public const string ExposureKeySetsCreate = DevOpsPrefix + "/exposurekeysets/runbatchjob";
 
-            public class KeysFirstWorkFlow
-            {
-                private const string Prefix = DevOpsPrefix + "/keysfirst";
 
-                public const string TekSetsGenerateRandom = Prefix + "/teks/random";
-                public const string TekSetsRandomAuthorisation = Prefix + "/teks/authorise";
-            }
-
-            public class KeysLastWorkFlow
-            {
-                private const string Prefix = DevOpsPrefix + "/keyslast";
-                public const string TekSetsGenerateRandom = Prefix + "/teks/random";
-                public const string TekSetsAuthorise = Prefix + "/teks/authorise";
-            }
+            public const string TekSetsGenerateRandom = DevOpsPrefix + "/teks/random";
+            public const string TekSetsAuthorise = DevOpsPrefix + "/teks/authorise";
         }
 
         public static class ContentAdminPortalDataApi
         {
-            private const string Prefix = "/contentadmin/v1";
+            private const string Prefix = "/ContentAdmin/v1";
 
+            public const string AppConfig = Prefix + "/appconfig";
             public const string ResourceBundle = Prefix + "/resourcebundle";
             public const string ExposureKeySet = Prefix + "/exposurekeyset";
             public const string RiskCalculationParameters = Prefix + "/riskcalculationparameters";

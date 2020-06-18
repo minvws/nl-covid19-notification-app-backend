@@ -1,3 +1,7 @@
+// Copyright © 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -9,15 +13,15 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.RegisterSecret;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.SendTeks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi
 {
     public class Startup
     {
-        private const string Title = "MSS KeysLastWorkflow Api";
+        private const string Title = "MSS Workflow Api";
 
         public Startup(IConfiguration configuration)
         {
@@ -46,15 +50,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
 
-            services.AddScoped<HttpPostKeysLastReleaseTeksCommand, HttpPostKeysLastReleaseTeksCommand>();
+            services.AddScoped<HttpPostReleaseTeksCommand, HttpPostReleaseTeksCommand>();
             
-            services.AddScoped<IKeysLastReleaseTeksValidator, KeysLastReleaseTeksValidator>();
-            services.AddScoped<IKeysLastSignatureValidator, KeysLastSignatureValidator>();
+            services.AddScoped<IReleaseTeksValidator, ReleaseTeksValidator>();
+            services.AddScoped<ISignatureValidator, SignatureValidator>();
             
-            services.AddScoped<HttpPostKeysLastRegisterSecret, HttpPostKeysLastRegisterSecret>();
-            services.AddScoped<IKeysLastSecretWriter, KeysLastSecretWriter>();
-            services.AddScoped<IKeysLastSecretConfig, StandardKeysLastSecretConfig>();
-            services.AddScoped<IKeysLastTekWriter, FakeKeysLastTekWriter>();
+            services.AddScoped<HttpPostRegisterSecret, HttpPostRegisterSecret>();
+            services.AddScoped<ISecretWriter, SecretWriter>();
+            services.AddScoped<ISecretConfig, StandardSecretConfig>();
+            services.AddScoped<ITekWriter, FakeTekWriter>();
             services.AddScoped<RandomNumberGenerator, RandomNumberGenerator>();
 
             services.AddSwaggerGen(o =>

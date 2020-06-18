@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         }
 
         [HttpPost]
-        [Route(EndPointNames.CdnApi.ResourceBundle)]
+        [Route(EndPointNames.ContentAdminPortalDataApi.ResourceBundle)]
         [ProducesResponseType(500)]
         [ProducesResponseType(400)]
         [Consumes(MediaTypeNames.Application.Json)]
