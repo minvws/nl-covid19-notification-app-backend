@@ -5,11 +5,10 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Models;
 
-namespace NL.Rijksoverheid.ExposureNotification.IccBackend
+namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
 {
     public class AppBackendService
     {
@@ -36,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             
         }
         
-        public async Task<bool> LabConfirmationIDIsValid(RedeemIccModel redeemIccModel)
+        public async Task<bool> LabConfirmationIdIsValid(RedeemIccModel redeemIccModel)
         {
             Console.WriteLine(_Configuration.GetSection("AppBackendConfig:Host"));
             

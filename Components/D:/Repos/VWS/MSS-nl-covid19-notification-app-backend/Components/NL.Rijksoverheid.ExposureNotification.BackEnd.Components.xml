@@ -1,0 +1,362 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NL.Rijksoverheid.ExposureNotification.BackEnd.Components</name>
+    </assembly>
+    <members>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig.AppConfigArgs.Version">
+            <summary>
+            The minimum version of the app.The app has a hardcoded version number that is increased by 1  on each app release. Whenever the app downloads the manifest, it must compare its hardcoded version  number with that of the manifest. If the hardcoded version number is less than the manifest value, the user will be asked to upgrade the app from the app store.See https://github.com/minvws/nl-covid19-notification-app-coordination/blob/master/architecture/Solution%20Architecture.md#lifecycle-management.
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig.AppConfigArgs.ManifestFrequency">
+            This defines the frequency of retrieving the manifest, in minutes.
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig.AppConfigArgs.DecoyProbability">
+            <summary>
+            This defines the probability of sending decoys. This is configurable so we can tune the probability to server load if necessary.
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig.AppConfigContent.Version">
+            <summary>
+            The minimum version of the app.The app has a hardcoded version number that is increased by 1  on each app release. Whenever the app downloads the manifest, it must compare its hardcoded version  number with that of the manifest. If the hardcoded version number is less than the manifest value, the user will be asked to upgrade the app from the app store.See https://github.com/minvws/nl-covid19-notification-app-coordination/blob/master/architecture/Solution%20Architecture.md#lifecycle-management.
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig.AppConfigContent.ManifestFrequency">
+            This defines the frequency of retrieving the manifest, in minutes.
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig.AppConfigContent.DecoyProbability">
+            <summary>
+            This defines the probability of sending decoys. This is configurable so we can tune the probability to server load if necessary.
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration.ConfigFromJsonFiles">
+            <summary>
+            Just for command line apps
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content.HttpGetBinaryContentCommand`1">
+            <summary>
+            Used in the Cdn Data API in the Datacentre/Business Zone
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content.HttpGetCdnContentCommand`1">
+            <summary>
+            Includes mitigations for CDN cache miss/stale item edge cases.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.KeysFirstWorkflow.KeysFirstRandomAuthorisationArgs.pAuthorize">
+            <summary>
+            Percentage chance of authorisation: 1-100
+            </summary>
+        </member>
+        <member name="M:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.DbContextExtras.EnsureNoChangesOrTransaction``1(``0)">
+            <summary>
+            Most likely called by batch jobs running in web applications where the context starts a TX at the beginning of the request.
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets.EksCreateJobOutputEntity">
+            <summary>
+            TODO incomplete.
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets.EksCreateJobOutputEntity.CreatingJobName">
+            <summary>
+            Metadata - Job Id.
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets.EksCreateJobOutputEntity.CreatingJobQualifier">
+            <summary>
+            Metadata - Job Id.
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets.ExposureKeySetContentEntity">
+            <summary>
+            TODO incomplete.
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets.ExposureKeySetContentEntity.CreatingJobName">
+            <summary>
+            Metadata - Job Id.
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets.ExposureKeySetContentEntity.CreatingJobQualifier">
+            <summary>
+            Metadata - Job Id.
+            </summary>
+        </member>
+        <member name="M:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets.ExposureKeySetSafeReadCommand.Execute(System.String)">
+            <summary>
+            Returns null if not found.
+            </summary>
+            <param name="exposureKeySetId"></param>
+            <returns></returns>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.EksCreateJobInputEntity.Id">
+            <summary>
+            This is the id for this table - taken from the original table - NOT an identity/hilo
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.EksCreateJobInputEntity.Used">
+            <summary>
+            Set when the exposure key set it written
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ExposureKeySetBatchJobMk2">
+            <summary>
+            Add database IO to the job
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ExposureKeySetDbWriter">
+            <summary>
+            Write to a Db instead of a queue
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ITekSource">
+            <summary>
+            May be 2 of these - Token First, Keys First.
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.TemporaryExposureKeyContent">
+            <summary>
+            For Db content
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.TemporaryExposureKeyContent.KeyData">
+            <summary>
+            TemporaryExposureKey
+            Equivalent to DP-3T daily key
+            The 'ephemeral key' is called the RollingProximityIdentifier
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.TemporaryExposureKeyContent.RollingStart">
+            <summary>
+            Equivalent of Dp3T Epoch
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.TemporaryExposureKeyContent.RollingPeriod">
+            <summary>
+            Number of epochs in 24hours
+            Currently fixed at 144? e.g. 10mins
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.TemporaryExposureKeyContent.Risk">
+            <summary>
+            Yet to be well defined.
+            Self-diagnosis support?
+            Comes from server?
+            Phone can transmit risk level.
+            1-8 or 0-100?
+            </summary>
+        </member>
+        <member name="M:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.IccService.Get(System.String)">
+            <summary>
+            Get InfectionConfirmationCodeEntity by raw icc string
+            </summary>
+            <param name="icc"></param>
+            <returns></returns>
+            <exception cref="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.IccNotFoundException"></exception>
+        </member>
+        <member name="M:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.IccService.Validate(System.String)">
+            <summary>
+            Checks if Icc exists and is valid
+            </summary>
+            <param name="IccodeString"></param>
+            <returns>Icc if valid else null</returns>
+        </member>
+        <member name="M:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.IccService.GenerateIcc(System.Guid,System.Boolean)">
+            <summary>
+            Generate Icc with configuration length and A-Z, 0-9 characters
+            </summary>
+            <param name="userId"></param>
+            <param name="save"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.IccService.GenerateBatch(System.Guid,System.Int32)">
+            <summary>
+            Generate Icc batch with size [count]
+            </summary>
+            <param name="userId"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.InfectionConfirmationCodeEntity.Code">
+            <summary>
+            32-digit Infection Confirmation Code
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.InfectionConfirmationCodeEntity.Created">
+            <summary>
+            Timestamp for Code generation
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.InfectionConfirmationCodeEntity.GeneratedBy">
+            <summary>
+            User Guid from generator user
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.InfectionConfirmationCodeEntity.Revoked">
+            <summary>
+            Default NULL, if Datetime => Revoked = true
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.InfectionConfirmationCodeEntity.Used">
+            <summary>
+            Default NULL, if Datetime => Used = true
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.InfectionConfirmationCodeEntity.UsedBy">
+            <summary>
+            User Guid from user that used the Code
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings.IGaenContentConfig.ExposureKeySetCapacity">
+            <summary>
+            TODO Key count - rename
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle.ContentEntity.PublishingId">
+            <summary>
+            Publishing Id is f(Content)
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle.ResourceBundleContent.TemporaryExposureKeyRetentionDays">
+            <summary>
+            For TemporaryExposureKeys
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle.ResourceBundleContent.ObservedTemporaryExposureKeyRetentionDays">
+            <summary>
+            The ones an app sees on BLE...
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig.RiskCalculationConfigContent">
+            <summary>
+            Part of DB Entity
+            </summary>
+        </member>
+        <member name="M:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens.LuhnModNConfig.#ctor">
+            <summary>
+            Default for Workflow token
+            </summary>
+        </member>
+        <member name="M:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens.LuhnModNConfig.#ctor(System.String,System.Int32)">
+            <summary>
+            TODO load from config
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.ISigner">
+            <summary>
+            TODO more generic name. Scope of use is now wider.
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.UnixTimeConverter">
+            <summary>
+            TODO has the definition of Epoch changed yet again?
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi.EndPointNames.CaregiversPortalApi">
+            <summary>
+            Use the same ones for CaregiversPortalDataApi
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks.KeysFirstEscrowArgs">
+            <summary>
+            Diagnosis key
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks.KeysLastReleaseTeksArgs">
+            <summary>
+            Diagnosis key
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.Authorisation.KeysLastAuthorisationArgs">
+            <summary>
+            Lab confirmation...
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.Authorisation.KeysLastAuthorisationArgs.LabConfirmationID">
+            <summary>
+            Identifier for Workflow item - Tan1?
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.BackgroundJobs.KeysLastSecretExpireDbCommand">
+            <summary>
+            TODO check conditions for expiry
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.KeyReleaseWorkflowState.LabConfirmationId">
+            <summary>
+            TODO Add uq
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.KeyReleaseWorkflowState.ConfirmationKey">
+            <summary>
+            TODO Add uq
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.KeyReleaseWorkflowState.BucketId">
+            <summary>
+            TODO Add uq
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.KeyReleaseWorkflowState.Authorised">
+            <summary>
+            TODO Add index?
+            </summary>
+        </member>
+        <member name="F:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.KeysLastWorkflowState.Unauthorised">
+            <summary>
+            Starting state.
+            Will accept OpenForAuthorisation only.
+            Delete when expired.
+            </summary>
+        </member>
+        <member name="F:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.KeysLastWorkflowState.Receiving">
+            <summary>
+            Can receive TEKs from mobile client.
+            Return to Unauthorised when window expires.
+            </summary>
+        </member>
+        <member name="F:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.KeysLastWorkflowState.Authorised">
+            <summary>
+            Final state.
+            Ready for next Exposure Key Set creation run and subsequent deletion.
+            </summary>
+        </member>
+        <member name="T:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.RegisterSecret.KeysLastSecretArgs">
+            <summary>
+            EnrollmentRequest
+            </summary>
+        </member>
+        <member name="M:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.SendTeks.FakeKeysLastTekWriter.Execute(NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFirstWorkflow.EscrowTeks.KeysLastReleaseTeksArgs)">
+            <summary>
+            May arrive BEFORE authorisation
+            TODO limits on keys.
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.TemporaryExposureKeyArgs.KeyData">
+            <summary>
+            TemporaryExposureKey
+            The 'ephemeral key' is called the RollingProximityIdentifier
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.TemporaryExposureKeyArgs.RollingStartNumber">
+            <summary>
+            Equivalent of Dp3T Epoch
+            </summary>
+        </member>
+        <member name="P:NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.TemporaryExposureKeyArgs.RollingPeriod">
+            <summary>
+            Number of epochs in 24hours
+            Currently fixed at 144? e.g. 10mins
+            </summary>
+        </member>
+    </members>
+</doc>

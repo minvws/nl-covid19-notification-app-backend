@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Models;
+using NL.Rijksoverheid.ExposureNotification.IccBackend.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 {
@@ -35,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
             InfectionConfirmationCodeEntity Icc = await _IccService.RedeemIcc(User.Identity.Name);
             
             // POST /labresult call on App Backend
-            bool LabCID_IsValid = await _AppBackendService.LabConfirmationIDIsValid(redeemIccModel);
+            bool LabCID_IsValid = await _AppBackendService.LabConfirmationIdIsValid(redeemIccModel);
             if (LabCID_IsValid)
             {
                 return new JsonResult(new

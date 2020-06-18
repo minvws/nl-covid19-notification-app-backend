@@ -5,10 +5,9 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.KeysFirstWorkflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
