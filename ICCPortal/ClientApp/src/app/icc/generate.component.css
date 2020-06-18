@@ -1,0 +1,13 @@
+
+.card .card-body input.form-control {
+  text-align: center;
+  font-size: 1.4em;
+  width: 100%;
+  margin: .1em;
+}
+.card .card-body input.form-control::-webkit-inner-spin-button {
+  display: none;
+}
+/*.card .card-body .d-flex{*/
+/*  alig*/
+/*}*/
