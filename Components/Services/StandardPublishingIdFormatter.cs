@@ -4,6 +4,7 @@
 
 using System;
 using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
@@ -12,16 +13,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {
     public class StandardPublishingIdFormatter : IPublishingId
     {
-        private readonly ContentSigner _Signer;
-
-        public StandardPublishingIdFormatter(ContentSigner signer)
+        public StandardPublishingIdFormatter()
         {
-            _Signer = signer;
         }
 
         public string Create(byte[] contents)
         {
-            var id = _Signer.GetSignature(contents);
+            using var hasher = SHA256.Create();
+            var id = hasher.ComputeHash(contents);
+
             var result = new StringBuilder(id.Length * 2);
             foreach (var i in id)
                 result.AppendFormat("{0:x2}", i);
@@ -33,12 +33,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
         public string ParseUri(string uri)
             => HttpUtility.UrlDecode(uri).Replace(" ", "+");
 
+        //d65b6d0fb08646e8b947f460aa9d2998d22709c459bac9859189a7ae9727e494
         public bool Validate(string id)
         {
+            const int sha256Length = 32;
+
             if (string.IsNullOrWhiteSpace(id))
                 return false;
 
-            if(id.Length != _Signer.LengthBytes * 2)
+            if(id.Length != sha256Length * 2)
                 return false;
 
             for (var i = 0; i < id.Length; i += 2)

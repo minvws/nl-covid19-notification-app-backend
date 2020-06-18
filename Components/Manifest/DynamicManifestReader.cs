@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
                 Release = _DateTimeProvider.Now(),
             };
             var content = _ManifestBuilder.Execute();
-            var formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_Signer), new StandardPublishingIdFormatter(_Signer));
+            var formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_Signer), new StandardPublishingIdFormatter());
             await formatter.Fill(e, content);
             return e;
         }
