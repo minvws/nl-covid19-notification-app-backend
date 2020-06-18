@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         [DataTestMethod]
         public void Build(int keyCount, int seed)
         {
-            var builder = new ExposureKeySetBuilderV1(new FakeExposureKeySetHeaderInfoConfig(), new KeySetSigner(new FakeCertificateProvider("FakeECDSA.p12")), new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter());
+            var builder = new ExposureKeySetBuilderV1(new FakeExposureKeySetHeaderInfoConfig(), new KeySetSigner(new FakeCertificateProvider("FakeECDSA.p12")), new ContentSigner(new FakeCertificateProvider("FakeRSA.p12")), new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter());
 
             var actual = builder.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
             Assert.IsTrue(actual.Length > 0);

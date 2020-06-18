@@ -28,9 +28,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             var cert = _Provider.GetCertificate();
 
             if (cert == null)
-                throw new InvalidOperationException("Certificate not found");
+                throw new InvalidOperationException("Certificate not found.");
 
             var signer = cert.GetRSAPrivateKey();
+
+            if (signer == null)
+                throw new InvalidOperationException("Private key not found.");
+
             var signature = signer.SignHash(hash, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 
             return signature;
