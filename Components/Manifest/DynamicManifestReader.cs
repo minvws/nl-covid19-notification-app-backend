@@ -7,6 +7,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
@@ -15,9 +16,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         private readonly ManifestBuilder _ManifestBuilder;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IPublishingId _PublishingId;
-        private readonly ISigner _Signer;
+        private readonly ContentSigner _Signer;
 
-        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId, ISigner signer)
+        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId, ContentSigner signer)
         {
             _ManifestBuilder = manifestBuilder;
             _DateTimeProvider = dateTimeProvider;
