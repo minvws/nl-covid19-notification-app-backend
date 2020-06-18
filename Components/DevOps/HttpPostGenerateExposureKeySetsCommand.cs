@@ -49,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 _GaenContentConfig,
                 new ExposureKeySetBuilderV1(
                     _HsmExposureKeySetHeaderInfoConfig,
-                    _KeySetSigner, _UtcDateTimeProvider, new GeneratedProtobufContentFormatter()),
+                    _KeySetSigner, _ContentSigner, _UtcDateTimeProvider, new GeneratedProtobufContentFormatter()),
                 _Input,
                 _Output,
                 _UtcDateTimeProvider,

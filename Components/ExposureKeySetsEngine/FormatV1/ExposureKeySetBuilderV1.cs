@@ -5,6 +5,7 @@
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
@@ -13,21 +14,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     public class ExposureKeySetBuilderV1 : IExposureKeySetBuilder
     {
         private const string Header = "EK Export v1    ";
-        private const string ContentEntryName = "export.bin";
-        private const string SignaturesEntryName = "export.sig";
+        private const string ContentEntryName = "export.bin"; //Fixed
+        private const string GaenSignaturesEntryName = "export.sig"; //Fixed
+        private const string NlSignatureEntryName = ZippedSignedContentFormatter.SignaturesEntryName;
 
         private readonly KeySetSigner _KeySetSigner;
+        private readonly ContentSigner _ContentSigner;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IContentFormatter _ContentFormatter;
         private readonly IExposureKeySetHeaderInfoConfig _Config;
 
         public ExposureKeySetBuilderV1(
-            IExposureKeySetHeaderInfoConfig headerInfoConfig, 
+            IExposureKeySetHeaderInfoConfig headerInfoConfig,
             KeySetSigner keySetSigner,
+            ContentSigner contentSigner,
             IUtcDateTimeProvider dateTimeProvider, 
             IContentFormatter contentFormatter)
         {
             _KeySetSigner = keySetSigner;
+            _ContentSigner = contentSigner;
             _DateTimeProvider = dateTimeProvider;
             _ContentFormatter = contentFormatter;
             _Config = headerInfoConfig;
@@ -71,7 +76,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 }
             };
 
-            return await CreateZipArchive(contentBytes, _ContentFormatter.GetBytes(signatures));
+            var nlSig = _ContentSigner.GetSignature(contentBytes);
+
+            return await CreateZipArchive(contentBytes, _ContentFormatter.GetBytes(signatures), nlSig);
         }
 
         private SignatureInfoArgs GetGaenSignatureInfo()
@@ -83,13 +90,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 VerificationKeyVersion = _Config.VerificationKeyVersion
             };
 
-        private static async Task<byte[]> CreateZipArchive(byte[] content, byte[] signatures)
+        private static async Task<byte[]> CreateZipArchive(byte[] content, byte[] gaenSig, byte[] nlSig)
         {
             await using var result = new MemoryStream();
             using (var archive = new ZipArchive(result, ZipArchiveMode.Create, true))
             {
                 await WriteEntry(archive, ContentEntryName, content);
-                await WriteEntry(archive, SignaturesEntryName, signatures);
+                await WriteEntry(archive, GaenSignaturesEntryName, gaenSig);
+                await WriteEntry(archive, NlSignatureEntryName, nlSig);
             }
 
             return result.ToArray();
