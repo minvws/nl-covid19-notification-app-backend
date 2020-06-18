@@ -17,6 +17,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
 {
@@ -61,9 +64,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
-            services.AddSingleton<IExposureKeySetHeaderInfoConfig, HsmExposureKeySetHeaderInfoConfig>();
-            services.AddSingleton<IExposureKeySetSigningConfig, HsmExposureKeySetSigningConfig>();
-            services.AddSingleton<ISigner, HsmSigner>();
+            services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
+            
+            services.AddSingleton(x =>
+            {
+                var config = new HSMSigningConfig(Configuration, "Content");
+                var provider = new HSMCertificateProvider(config.Thumbprint);
+                var signer = new ContentSigner(provider);
+                return signer;
+            });
+            services.AddSingleton(x =>
+            {
+                var config = new HSMSigningConfig(Configuration, "KeySet");
+                var provider = new HSMCertificateProvider(config.Thumbprint);
+                var signer = new KeySetSigner(provider);
+                return signer;
+            });
 
             services.AddScoped<HttpPostGenerateExposureKeySetsCommand, HttpPostGenerateExposureKeySetsCommand>();
             

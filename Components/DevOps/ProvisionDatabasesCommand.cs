@@ -7,16 +7,20 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
     public class ProvisionDatabasesCommand
     {
         private readonly IConfiguration _Configuration;
+        private readonly ContentSigner _Signer;
 
-        public ProvisionDatabasesCommand(IConfiguration configuration)
+        public ProvisionDatabasesCommand(IConfiguration configuration, ContentSigner signer)
         {
             _Configuration = configuration;
+            _Signer = signer;
         }
 
         public async Task<IActionResult> Execute()
@@ -25,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             await db2.Execute();
             await db2.AddExampleContent();
 
-            var db3 = new CreateContentDatabase(_Configuration, new StandardUtcDateTimeProvider());
+            var db3 = new CreateContentDatabase(_Configuration, new StandardUtcDateTimeProvider(), _Signer);
             await db3.Execute();
             await db3.AddExampleContent();
 

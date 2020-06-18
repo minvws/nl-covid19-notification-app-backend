@@ -11,7 +11,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
@@ -22,21 +22,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
         private readonly IGaenContentConfig _GaenContentConfig;
         private readonly IExposureKeySetHeaderInfoConfig _HsmExposureKeySetHeaderInfoConfig;
-        private readonly ISigner _Signer;
+        private readonly KeySetSigner _KeySetSigner;
+        private readonly ContentSigner _ContentSigner;
 
-        public HttpPostGenerateExposureKeySetsCommand(WorkflowDbContext input,
+        public HttpPostGenerateExposureKeySetsCommand(
+            WorkflowDbContext input, 
             ExposureContentDbContext output,
             IUtcDateTimeProvider utcDateTimeProvider,
             IGaenContentConfig gaenContentConfig,
             IExposureKeySetHeaderInfoConfig hsmExposureKeySetHeaderInfoConfig,
-            ISigner signer)
+            KeySetSigner keySetSigner, 
+            ContentSigner contentSigner)
         {
             _Input = input;
             _Output = output;
             _UtcDateTimeProvider = utcDateTimeProvider;
             _GaenContentConfig = gaenContentConfig;
             _HsmExposureKeySetHeaderInfoConfig = hsmExposureKeySetHeaderInfoConfig;
-            _Signer = signer;
+            _KeySetSigner = keySetSigner;
+            _ContentSigner = contentSigner;
         }
 
         public async Task<IActionResult> Execute(bool useAllKeys = false)
@@ -45,11 +49,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 _GaenContentConfig,
                 new ExposureKeySetBuilderV1(
                     _HsmExposureKeySetHeaderInfoConfig,
-                    _Signer, _UtcDateTimeProvider, new GeneratedProtobufContentFormatter()),
+                    _KeySetSigner, _UtcDateTimeProvider, new GeneratedProtobufContentFormatter()),
                 _Input,
                 _Output,
                 _UtcDateTimeProvider,
-                new StandardPublishingIdFormatter(_Signer)
+                new StandardPublishingIdFormatter(_ContentSigner)
             );
 
             try

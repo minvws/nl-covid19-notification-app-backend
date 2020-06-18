@@ -25,7 +25,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
@@ -56,10 +58,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
-            services.AddSingleton<IExposureKeySetHeaderInfoConfig, HsmExposureKeySetHeaderInfoConfig>();
             services.AddSingleton<IExposureKeySetBatchJobConfig, ExposureKeySetBatchJobConfig>();
-            services.AddSingleton<IPublishingId>(x => new StandardPublishingIdFormatter(new HardCodedSigner()));
-
+            services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();
+            
             services.AddScoped(x =>
             {
                 var config = new StandardEfDbConfig(Configuration, "Content");
@@ -80,13 +81,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             //Just for the Batch Job
             services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Job"));
-
+            services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
             services.AddSingleton<IGeanTekListValidationConfig, StandardGeanCommonWorkflowConfig>();
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
-            services.AddScoped<ISigner, HardCodedSigner>();
+            
+            services.AddScoped(x =>
+            {
+                var provider = new FakeCertificateProvider("FakeRSA.p12");
+                var signer = new ContentSigner(provider);
+                return signer;
+            });
 
-            //TODO services.AddScoped<HttpGetLatestManifestCommand, HttpGetLatestManifestCommand>();
+            services.AddScoped(x =>
+            {
+                var provider = new FakeCertificateProvider("FakeECDSA.p12");
+                var signer = new KeySetSigner(provider);
+                return signer;
+            });
+            
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
             services.AddScoped<GetActiveExposureKeySetsListCommand, GetActiveExposureKeySetsListCommand>();
             
@@ -100,8 +113,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<HttpPostResourceBundleCommand, HttpPostResourceBundleCommand>();
             services.AddScoped<ResourceBundleInsertDbCommand, ResourceBundleInsertDbCommand>();
             services.AddScoped<ResourceBundleValidator, ResourceBundleValidator>();
-
-            //services.AddScoped<SafeGetResourceBundleCommand, SafeGetResourceBundleCommand>();
 
             services.AddScoped<ProvisionDatabasesCommand, ProvisionDatabasesCommand>();
             services.AddScoped<HttpPostGenerateExposureKeySetsCommand, HttpPostGenerateExposureKeySetsCommand>();
@@ -145,7 +156,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<IContentEntityFormatter, StandardContentEntityFormatter>();
             services.AddScoped<ZippedSignedContentFormatter, ZippedSignedContentFormatter>();
             
-
             services.AddSwaggerGen(o =>
             {
                 o.SwaggerDoc("v1", new OpenApiInfo

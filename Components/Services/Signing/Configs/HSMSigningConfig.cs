@@ -5,11 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs
 {
-    public class HsmExposureKeySetSigningConfig : AppSettingsReader, IExposureKeySetSigningConfig
+    public class HSMSigningConfig : AppSettingsReader
     {
-        public HsmExposureKeySetSigningConfig(IConfiguration config, string? prefix = null) : base(config, prefix) { }
+        public HSMSigningConfig(IConfiguration config, string? prefix = null) : base(config, prefix) { }
 
         public string Thumbprint => GetValue("ExposureKeySets:Signing:CertificateThumbprint");
     }

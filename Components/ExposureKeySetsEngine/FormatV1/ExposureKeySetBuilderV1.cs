@@ -6,7 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1
 {
@@ -16,13 +16,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private const string ContentEntryName = "export.bin";
         private const string SignaturesEntryName = "export.sig";
 
-        private readonly ISigner _Signer;
+        private readonly KeySetSigner _KeySetSigner;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IContentFormatter _ContentFormatter;
         private readonly IExposureKeySetHeaderInfoConfig _Config;
-        public ExposureKeySetBuilderV1(IExposureKeySetHeaderInfoConfig headerInfoConfig, ISigner signer, IUtcDateTimeProvider dateTimeProvider, IContentFormatter contentFormatter)
+
+        public ExposureKeySetBuilderV1(
+            IExposureKeySetHeaderInfoConfig headerInfoConfig, 
+            KeySetSigner keySetSigner,
+            IUtcDateTimeProvider dateTimeProvider, 
+            IContentFormatter contentFormatter)
         {
-            _Signer = signer;
+            _KeySetSigner = keySetSigner;
             _DateTimeProvider = dateTimeProvider;
             _ContentFormatter = contentFormatter;
             _Config = headerInfoConfig;
@@ -55,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     new ExposureKeySetSignatureContentArgs
                     {
                         SignatureInfo = securityInfo,
-                        Signature = _Signer.GetSignature(contentBytes),
+                        Signature = _KeySetSigner.GetSignature(contentBytes),
                         BatchSize = 1,
                         BatchNum = 1
                     },
@@ -69,18 +74,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             return await CreateZipArchive(contentBytes, _ContentFormatter.GetBytes(signatures));
         }
 
-        //Germany has
-        //signature_infos {
-        //app_bundle_id: " de.rki.coronawarnapp"
-        //verification_key_version: "v1"
-        //verification_key_id: "262"
-        //signature_algorithm: "1.2.840.10045.4.3.2"
-        //}
         private SignatureInfoArgs GetGaenSignatureInfo()
             => new SignatureInfoArgs
             {
                 AppBundleId = _Config.AppBundleId,
-                SignatureAlgorithm = _Signer.SignatureDescription,
+                SignatureAlgorithm = _KeySetSigner.SignatureDescription,
                 VerificationKeyId = _Config.VerificationKeyId,
                 VerificationKeyVersion = _Config.VerificationKeyVersion
             };

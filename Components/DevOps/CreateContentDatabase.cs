@@ -14,6 +14,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
@@ -23,14 +24,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly StandardContentEntityFormatter _Formatter;
 
-        public CreateContentDatabase(IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider)
+        public CreateContentDatabase(IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider, ContentSigner signer)
         {
             var config = new StandardEfDbConfig(configuration, "Content");
             var builder = new SqlServerDbContextOptionsBuilder(config);
             _DbContextProvider = new ExposureContentDbContext(builder.Build());
             _DateTimeProvider = dateTimeProvider;
-            var _Signer = new HardCodedSigner();
-            _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_Signer), new StandardPublishingIdFormatter(_Signer));
+            _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter(signer));
         }
 
         public async Task Execute()
@@ -41,7 +41,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
         public async Task AddExampleContent()
         {
-
             await using var tx = await _DbContextProvider.Database.BeginTransactionAsync();
 
             await Write(
