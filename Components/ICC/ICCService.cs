@@ -1,4 +1,4 @@
-// Copyright © 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -42,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         /// <exception cref="IccNotFoundException"></exception>
         public async Task<InfectionConfirmationCodeEntity> Get(string icc)
         {
-            InfectionConfirmationCodeEntity Icc = await _DbContext.InfectionConfirmationCodes.FindAsync(icc);
+            var Icc = await _DbContext.InfectionConfirmationCodes.FindAsync(icc);
             if (Icc == null) throw new IccNotFoundException();
             return Icc;
         }
@@ -54,7 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         /// <returns>Icc if valid else null</returns>
         public async Task<InfectionConfirmationCodeEntity> Validate(string IccodeString)
         {
-            InfectionConfirmationCodeEntity icc = await Get(IccodeString);
+            var icc = await Get(IccodeString);
             if (icc != null && icc.IsValid()) return icc;
             return null;
         }
@@ -76,11 +76,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         public async Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, bool save = true)
         {
             random = new Random();
-            int length = Convert.ToInt32(_Configuration.GetSection("IccConfig:Code:Length").Value);
-            string chars = _Configuration.GetSection("IccConfig:Code:Chars").Value;
-            string generatedIcc = RandomString(length, chars);
+            var length = Convert.ToInt32(_Configuration.GetSection("IccConfig:Code:Length").Value);
+            var chars = _Configuration.GetSection("IccConfig:Code:Chars").Value;
+            var generatedIcc = RandomString(length, chars);
 
-            InfectionConfirmationCodeEntity icc = new InfectionConfirmationCodeEntity();
+            var icc = new InfectionConfirmationCodeEntity();
             icc.Code = generatedIcc;
             icc.GeneratedBy = userId;
             icc.Created = _DateTimeProvider.Now();
@@ -99,9 +99,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         /// <returns></returns>
         public async Task<List<InfectionConfirmationCodeEntity>> GenerateBatch(Guid userId, int count = 20)
         {
-            List<InfectionConfirmationCodeEntity> batch = new List<InfectionConfirmationCodeEntity>();
+            var batch = new List<InfectionConfirmationCodeEntity>();
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 batch.Add(await GenerateIcc(userId, true));
             }
@@ -112,7 +112,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 
         public async Task<InfectionConfirmationCodeEntity> RedeemIcc(string icc)
         {
-            InfectionConfirmationCodeEntity Icc = await Get(icc);
+            var Icc = await Get(icc);
             Icc.Used = _DateTimeProvider.Now();
             await _DbContext.SaveChangesAsync();
             return Icc;

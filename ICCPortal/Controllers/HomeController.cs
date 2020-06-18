@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using IccPortal.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using IccPortal.Models;
-using Microsoft.AspNetCore.Authorization;
 
 namespace IccPortal.Controllers
 {

@@ -1,4 +1,4 @@
-// Copyright © 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
 
         private HttpClient CreateBackendHttpClient(string endpoint)
         {
-            string BaseURL = "https://" + _Configuration.GetSection("AppBackendConfig:Host").Value.ToString() + "/";
+            var BaseURL = "https://" + _Configuration.GetSection("AppBackendConfig:Host").Value.ToString() + "/";
             // TODO: Make HTTPClient with urls;
             return new HttpClient();
         }
@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
             
             // post to labresult with id and date params
             
-            object backendResponse = BackendPostRequest(redeemIccModel);
+            var backendResponse = BackendPostRequest(redeemIccModel);
             
             
             
