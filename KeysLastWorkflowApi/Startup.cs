@@ -17,7 +17,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
 {
     public class Startup
     {

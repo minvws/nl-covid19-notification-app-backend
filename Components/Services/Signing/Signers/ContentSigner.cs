@@ -3,16 +3,17 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
+using Org.BouncyCastle.Cms;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Security;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers
 {
     public class ContentSigner : ISigner
     {
         private readonly ICertificateProvider _Provider;
-        
+
         public ContentSigner(ICertificateProvider provider)
         {
             _Provider = provider;
@@ -22,24 +23,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
         public byte[] GetSignature(byte[] content)
         {
-            using var hasher = SHA256.Create();
-            var hash = hasher.ComputeHash(content);
-
             var cert = _Provider.GetCertificate();
 
             if (cert == null)
                 throw new InvalidOperationException("Certificate not found.");
 
-            var signer = cert.GetRSAPrivateKey();
+            AsymmetricKeyParameter key = DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+            CmsSignedDataGenerator gen = new CmsSignedDataGenerator();
+            gen.AddSigner(key, DotNetUtilities.FromX509Certificate(cert), CmsSignedGenerator.DigestSha256);
 
-            if (signer == null)
-                throw new InvalidOperationException("Private key not found.");
-
-            var signature = signer.SignHash(hash, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-
+            CmsSignedData cmsSignedData = gen.Generate(new CmsProcessableByteArray(content));
+            var signature = cmsSignedData.GetEncoded();
             return signature;
         }
 
-        public int LengthBytes => 256;
+        public int LengthBytes => 622;
     }
 }

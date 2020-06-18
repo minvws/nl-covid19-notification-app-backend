@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             byte[] bytes = new byte[s.Length];
             s.Read(bytes, 0, bytes.Length);
 
-            return new X509Certificate2(bytes, "Covid-19!");
+            return new X509Certificate2(bytes, "Covid-19!", X509KeyStorageFlags.Exportable);
         }
     }
 }
