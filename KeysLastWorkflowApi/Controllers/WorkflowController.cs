@@ -9,7 +9,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]

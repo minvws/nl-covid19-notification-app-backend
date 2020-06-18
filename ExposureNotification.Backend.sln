@@ -31,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CdnDataApi", "CdnDataApi\Cd
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeyReleasePortalApi", "KeyReleasePortalApi\KeyReleasePortalApi.csproj", "{3C9ADA15-5864-4F1F-97B1-046EB800A5F5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeysLastWorkflowApi", "KeysLastWorkflowApi\KeysLastWorkflowApi.csproj", "{DC54D593-4B03-4879-AA7A-5294170AEB49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowApi", "KeysLastWorkflowApi\WorkflowApi.csproj", "{DC54D593-4B03-4879-AA7A-5294170AEB49}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentManagementDataApi", "ContentManagementDataApi\ContentManagementDataApi.csproj", "{6C8255BF-715C-4783-9978-ACD0D09691E6}"
 EndProject

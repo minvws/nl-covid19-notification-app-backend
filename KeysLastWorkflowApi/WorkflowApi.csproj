@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi</AssemblyName>
-    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi</RootNamespace>
+    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi</AssemblyName>
+    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
