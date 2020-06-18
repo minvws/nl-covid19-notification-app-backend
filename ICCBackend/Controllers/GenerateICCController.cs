@@ -17,13 +17,13 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
     public class GenerateIccController
     {
         private readonly IIccService _IccService;
-        private readonly ILogger<GenerateIccController> _logger;
+        private readonly ILogger<GenerateIccController> _Logger;
         private readonly IConfiguration _Configuration;
         
 
         public GenerateIccController(ILogger<GenerateIccController> logger, IConfiguration configuration, IIccService iccService )
         {
-            _logger = logger;
+            _Logger = logger;
             _Configuration = configuration;
             _IccService = iccService;
         }
@@ -32,12 +32,12 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         [HttpPost("single")]
         public async Task<JsonResult> PostGenerateIcc(GenerateIccModel generateIccModel)
         {
-            InfectionConfirmationCodeEntity icc = await _IccService.GenerateIcc(generateIccModel.UserId);
+            InfectionConfirmationCodeEntity infectionConfirmationCodeEntity = await _IccService.GenerateIcc(generateIccModel.UserId);
             return new JsonResult(new
             {
                 ok = true,
                 status = 200,
-                icc = icc,
+                icc = infectionConfirmationCodeEntity,
                 length = _Configuration.GetSection("IccConfig:Code:Length").Value
             });
         }
@@ -46,13 +46,13 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         [HttpPost("batch")]
         public async Task<JsonResult> PostGenerateBatchIcc(GenerateIccModel generateIccModel)
         {
-            List<InfectionConfirmationCodeEntity> batch = await _IccService.GenerateBatch(generateIccModel.UserId);
+            List<InfectionConfirmationCodeEntity> batchEntity = await _IccService.GenerateBatch(generateIccModel.UserId);
             return new JsonResult(new
             {
                 ok = true,
                 status = 200,
                 length = _Configuration.GetSection("IccConfig:Code:Length").Value,
-                batch = batch
+                batch = batchEntity
             });
         }
     }

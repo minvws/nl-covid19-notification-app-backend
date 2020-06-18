@@ -12,15 +12,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
-    public interface IIccService
-    {
-        Task<InfectionConfirmationCodeEntity> Get(string icc);
-        Task<InfectionConfirmationCodeEntity> Validate(string IccodeString);
-        Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, bool save = false);
-        Task<List<InfectionConfirmationCodeEntity>> GenerateBatch(Guid userId, int count = 20);
-        Task<InfectionConfirmationCodeEntity> RedeemIcc(string icc);
-    }
-
     public class IccService : IIccService
     {
         private readonly IccBackendContentDbContext _DbContext;
@@ -42,28 +33,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         /// <exception cref="IccNotFoundException"></exception>
         public async Task<InfectionConfirmationCodeEntity> Get(string icc)
         {
-            var Icc = await _DbContext.InfectionConfirmationCodes.FindAsync(icc);
-            if (Icc == null) throw new IccNotFoundException();
-            return Icc;
+            var infectionConfirmationCodeEntity = await _DbContext.InfectionConfirmationCodes.FindAsync(icc);
+            if (infectionConfirmationCodeEntity == null) throw new IccNotFoundException();
+            return infectionConfirmationCodeEntity;
         }
         
         /// <summary>
         /// Checks if Icc exists and is valid
         /// </summary>
-        /// <param name="IccodeString"></param>
+        /// <param name="iccCodeString"></param>
         /// <returns>Icc if valid else null</returns>
-        public async Task<InfectionConfirmationCodeEntity> Validate(string IccodeString)
+        public async Task<InfectionConfirmationCodeEntity> Validate(string iccCodeString)
         {
-            var icc = await Get(IccodeString);
-            if (icc != null && icc.IsValid()) return icc;
+            var infectionConfirmationCodeEntity = await Get(iccCodeString);
+            if (infectionConfirmationCodeEntity != null && infectionConfirmationCodeEntity.IsValid()) return infectionConfirmationCodeEntity;
             return null;
         }
 
-        private static Random random;
-        private static string RandomString(int length, string chars)
+        private Random _Random = new Random();
+        private string RandomString(int length, string chars)
         {
             return new string(Enumerable.Repeat(chars, length)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
+                .Select(s => s[_Random.Next(s.Length)]).ToArray());
         }
 
         
@@ -75,15 +66,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         /// <returns></returns>
         public async Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, bool save = true)
         {
-            random = new Random();
+            _Random = new Random();
             var length = Convert.ToInt32(_Configuration.GetSection("IccConfig:Code:Length").Value);
             var chars = _Configuration.GetSection("IccConfig:Code:Chars").Value;
             var generatedIcc = RandomString(length, chars);
 
-            var icc = new InfectionConfirmationCodeEntity();
-            icc.Code = generatedIcc;
-            icc.GeneratedBy = userId;
-            icc.Created = _DateTimeProvider.Now();
+            var icc = new InfectionConfirmationCodeEntity
+            {
+                Code = generatedIcc, GeneratedBy = userId, Created = _DateTimeProvider.Now()
+            };
 
 
             _DbContext.InfectionConfirmationCodes.Add(icc);
@@ -103,7 +94,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 
             for (var i = 0; i < count; i++)
             {
-                batch.Add(await GenerateIcc(userId, true));
+                batch.Add(await GenerateIcc(userId));
             }
 
             await _DbContext.SaveChangesAsync();
@@ -112,13 +103,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 
         public async Task<InfectionConfirmationCodeEntity> RedeemIcc(string icc)
         {
-            var Icc = await Get(icc);
-            Icc.Used = _DateTimeProvider.Now();
+            var infectionConfirmationCodeEntity = await Get(icc);
+            infectionConfirmationCodeEntity.Used = _DateTimeProvider.Now();
             await _DbContext.SaveChangesAsync();
-            return Icc;
+            return infectionConfirmationCodeEntity;
         }
-    }
-    public class IccNotFoundException : Exception
-    {
     }
 }

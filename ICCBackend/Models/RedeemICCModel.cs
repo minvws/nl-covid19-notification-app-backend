@@ -11,6 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Models
     {
         [Required, MinLength(6), MaxLength(6)] 
         public string LabConfirmationID { get; set; }
+
         [Required]
         public DateTime CommencementComplaints { get; set; } 
     }

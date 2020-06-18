@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
     [Route("[controller]")]
     public class RedeemIccController : ControllerBase
     {
-        private readonly ILogger<RedeemIccController> _logger;
+        private readonly ILogger<RedeemIccController> _Logger;
         private readonly ActionExecutedContext _Context;
         private readonly IIccService _IccService;
         private readonly AppBackendService _AppBackendService;
@@ -26,27 +26,29 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         {
             _IccService = iccService;
             _AppBackendService = appBackendService;
-            _logger = logger;
+            _Logger = logger;
         }
 
         [HttpPost, Authorize]
         public async Task<ActionResult<object>> PostRedeemIcc(RedeemIccModel redeemIccModel)
         {
             // Make Icc Used, so it can only be used once 
-            InfectionConfirmationCodeEntity Icc = await _IccService.RedeemIcc(User.Identity.Name);
+            InfectionConfirmationCodeEntity infectionConfirmationCodeEntity = await _IccService.RedeemIcc(User.Identity.Name);
             
             // POST /labresult call on App Backend
-            bool LabCID_IsValid = await _AppBackendService.LabConfirmationIdIsValid(redeemIccModel);
-            if (LabCID_IsValid)
+            bool isValid = await _AppBackendService.LabConfirmationIdIsValid(redeemIccModel);
+
+            if (isValid)
             {
                 return new JsonResult(new
                 {
                     ok = true,
                     status = 501,
-                    Icc = Icc,
+                    Icc = infectionConfirmationCodeEntity,
                     payload = redeemIccModel
                 });
             }
+
             return Unauthorized(new {ok = false, status = "401", payload = redeemIccModel});
         }
     }

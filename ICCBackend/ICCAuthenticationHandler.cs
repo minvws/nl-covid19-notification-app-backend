@@ -18,43 +18,46 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
     {
         private readonly IIccService _IccService;
         private readonly IccBackendContentDbContext _DbContext;
-        private readonly ILogger<IccAuthenticationHandler> _logger;
+        private readonly ILogger<IccAuthenticationHandler> _Logger;
 
         public IccAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            IIccService IccService,
+            IIccService iccService,
             IccBackendContentDbContext dbContext,
             ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
             _DbContext = dbContext;
-            _IccService = IccService;
-            _logger = logger.CreateLogger<IccAuthenticationHandler>();
+            _IccService = iccService;
+            _Logger = logger.CreateLogger<IccAuthenticationHandler>();
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!Request.Headers.ContainsKey("Authorization"))
+            {
                 return AuthenticateResult.Fail("Missing Authorization Header");
-            InfectionConfirmationCodeEntity Icc;
+            }
+                
+            InfectionConfirmationCodeEntity infectionConfirmationCodeEntity;
             try
             {
                 var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
-                var headerIccode = authHeader.ToString();
-                Icc = await _IccService.Validate(headerIccode);
+                var authHeaderString = authHeader.ToString();
+                infectionConfirmationCodeEntity = await _IccService.Validate(authHeaderString);
             }
             catch
             {
                 return AuthenticateResult.Fail("Invalid Icc");
             }
 
-            if (Icc == null) return AuthenticateResult.Fail("Invalid Icc");
+            if (infectionConfirmationCodeEntity == null) return AuthenticateResult.Fail("Invalid Icc");
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, Icc.Code)
+                new Claim(ClaimTypes.Name, infectionConfirmationCodeEntity.Code)
             };
             var identity = new ClaimsIdentity(claims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);

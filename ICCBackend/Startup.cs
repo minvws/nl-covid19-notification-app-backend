@@ -56,7 +56,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddAuthentication("IccAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, IccAuthenticationHandler>("IccAuthentication", null);
 
-
             services.AddCors();
 
             services.AddSwaggerGen(o =>
@@ -81,7 +80,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             
             app.UseSwagger();
             app.UseSwaggerUI(o => { o.SwaggerEndpoint("/swagger/v1/swagger.json", "Icc Back-end Server V1"); });
-
 
             if (env.IsDevelopment())
             {
@@ -108,26 +106,26 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 .GetCustomAttributes(true)
                 .OfType<AuthorizeAttribute>()
                 .Select(attr => attr.Policy)
-                .Distinct();
+                .Distinct()
+                .ToList();
 
-            if (requiredScopes.Any())
+            if (!requiredScopes.Any()) return;
+
+            operation.Responses.Add("401", new OpenApiResponse {Description = "Unauthorized"});
+            operation.Responses.Add("403", new OpenApiResponse {Description = "Forbidden"});
+
+            var iccAuthenticationScheme = new OpenApiSecurityScheme
             {
-                operation.Responses.Add("401", new OpenApiResponse {Description = "Unauthorized"});
-                operation.Responses.Add("403", new OpenApiResponse {Description = "Forbidden"});
+                Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "Icc"}
+            };
 
-                var IccAuthenticationScheme = new OpenApiSecurityScheme
+            operation.Security = new List<OpenApiSecurityRequirement>
+            {
+                new OpenApiSecurityRequirement
                 {
-                    Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "Icc"}
-                };
-
-                operation.Security = new List<OpenApiSecurityRequirement>
-                {
-                    new OpenApiSecurityRequirement
-                    {
-                        [IccAuthenticationScheme] = requiredScopes.ToList()
-                    }
-                };
-            }
+                    [iccAuthenticationScheme] = requiredScopes.ToList()
+                }
+            };
         }
     }
 }

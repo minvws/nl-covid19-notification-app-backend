@@ -12,15 +12,16 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
 {
     public class AppBackendService
     {
-        private IConfiguration _Configuration;
-        public AppBackendService(IConfiguration _configuration)
+        private readonly IConfiguration _Configuration;
+
+        public AppBackendService(IConfiguration configuration)
         {
-            _Configuration = _configuration;
+            _Configuration = configuration;
         }
 
         private HttpClient CreateBackendHttpClient(string endpoint)
         {
-            var BaseURL = "https://" + _Configuration.GetSection("AppBackendConfig:Host").Value.ToString() + "/";
+            var baseUrl = "https://" + _Configuration.GetSection("AppBackendConfig:Host").Value.ToString() + "/";
             // TODO: Make HTTPClient with urls;
             return new HttpClient();
         }

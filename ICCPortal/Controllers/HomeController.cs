@@ -11,11 +11,11 @@ namespace IccPortal.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<HomeController> _Logger;
 
         public HomeController(ILogger<HomeController> logger)
         {
-            _logger = logger;
+            _Logger = logger;
         }
 
         public IActionResult Index()
