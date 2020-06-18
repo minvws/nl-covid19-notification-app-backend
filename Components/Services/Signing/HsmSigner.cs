@@ -9,12 +9,12 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing
 {
-    public class HsmExposureKeySetSigning : IExposureKeySetSigning
+    public class HsmSigner : ISigner
     {
         private const string SignatureAlgorithmDescription = "SHA256withECDSA";
         private readonly IExposureKeySetSigningConfig _Config;
 
-        public HsmExposureKeySetSigning(IExposureKeySetSigningConfig config)
+        public HsmSigner(IExposureKeySetSigningConfig config)
         {
             _Config = config;
         }
@@ -34,9 +34,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             return signer.SignHash(hash);
         }
 
+        public int LengthBytes => 64;
+
         private X509Certificate2 GetCertificate()
         {
-            using var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+            using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             store.Open(OpenFlags.ReadOnly);
 
             var result = store.Certificates

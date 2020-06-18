@@ -8,7 +8,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {
     public interface IPublishingId
     {
-        string Create(ContentEntity e);
+        string Create(byte[] contents);
         string ParseUri(string uri);
+        bool Validate(string id);
     }
 }

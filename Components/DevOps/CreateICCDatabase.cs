@@ -9,15 +9,15 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
-    public class CreateICCDatabase
+    public class CreateIccDatabase
     {
-        private readonly ICCBackendContentDbContext _Provider;
+        private readonly IccBackendContentDbContext _Provider;
 
-        public CreateICCDatabase(IConfiguration configuration)
+        public CreateIccDatabase(IConfiguration configuration)
         {
-            var config = new StandardEfDbConfig(configuration, "ICC");
+            var config = new StandardEfDbConfig(configuration, "Icc");
             var builder = new SqlServerDbContextOptionsBuilder(config);
-            _Provider = new ICCBackendContentDbContext(builder.Build());
+            _Provider = new IccBackendContentDbContext(builder.Build());
         }
 
         public async Task Execute()

@@ -45,7 +45,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private static SignatureInfo Map(SignatureInfoArgs arg)
             => new SignatureInfo
             {
-                AndroidPackage = arg.AndroidPackage,
                 AppBundleId = arg.AppBundleId,
                 SignatureAlgorithm = arg.SignatureAlgorithm,
                 VerificationKeyId = arg.VerificationKeyId,

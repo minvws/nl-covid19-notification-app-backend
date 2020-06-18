@@ -4,19 +4,23 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle
 {
     public abstract class ContentEntity
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public string PublishingId { get; set; }
+        public int Id { get; set; }
         public DateTime Release { get; set; }
-        public string Region { get; set; } = DefaultValues.Region;
+        
+        /// <summary>
+        /// Publishing Id is f(Content)
+        /// </summary>
+        public string PublishingId { get; set; }
+
         public byte[]? Content { get; set; }
-        public string ContentTypeName { get; set; } = "application/json"; //TODO
+        public string? ContentTypeName { get; set; }
+        public byte[]? SignedContent { get; set; }
+        public string? SignedContentTypeName { get; set; }
     }
 }

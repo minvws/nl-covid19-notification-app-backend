@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace ICCPortal.Areas.Identity.Data
+namespace IccPortal.Areas.Identity.Data
 {
-    public class ICCPortalIdentityDbContext : IdentityDbContext<IdentityUser>
+    public class IccPortalIdentityDbContext : IdentityDbContext<IdentityUser>
     {
-        public ICCPortalIdentityDbContext(DbContextOptions<ICCPortalIdentityDbContext> options)
+        public IccPortalIdentityDbContext(DbContextOptions<IccPortalIdentityDbContext> options)
             : base(options)
         {
         }

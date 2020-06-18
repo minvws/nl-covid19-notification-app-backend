@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 
         public Task Execute(KeysFirstEscrowArgs args)
         {
-            // var e = args.Items.ToEntities();
+            // var e = args.Keys.ToEntities();
             // await _DbContextProvider.AddRangeAsync(e);
             return Task.CompletedTask;
         }

@@ -5,9 +5,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace NL.Rijksoverheid.ExposureNotification.ICCBackend.Models
+namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Models
 {
-    public class GenerateICCModel
+    public class GenerateIccModel
     {
         [Required]
         public Guid UserId { get; set; }

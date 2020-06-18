@@ -3,13 +3,15 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow
 {
     public class TemporaryExposureKeyEntity
     {
-        public Guid Id { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public long Id { get; set; }
         public KeyReleaseWorkflowState Owner { get; set; }
         public byte[] KeyData { get; set; }
         public int RollingStartNumber { get; set; }

@@ -7,32 +7,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC;
-using NL.Rijksoverheid.ExposureNotification.ICCBackend.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.IccBackend.Models;
 
-namespace NL.Rijksoverheid.ExposureNotification.ICCBackend.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class RedeemICCController : ControllerBase
+    public class RedeemIccController : ControllerBase
     {
-        private readonly ILogger<RedeemICCController> _logger;
+        private readonly ILogger<RedeemIccController> _logger;
         private readonly ActionExecutedContext _Context;
-        private readonly IICCService _ICCService;
+        private readonly IIccService _IccService;
         private readonly AppBackendService _AppBackendService;
 
-        public RedeemICCController(IICCService iccService, ILogger<RedeemICCController> logger, AppBackendService appBackendService)
+        public RedeemIccController(IIccService iccService, ILogger<RedeemIccController> logger, AppBackendService appBackendService)
         {
-            _ICCService = iccService;
+            _IccService = iccService;
             _AppBackendService = appBackendService;
             _logger = logger;
         }
 
         [HttpPost, Authorize]
-        public async Task<ActionResult<object>> PostRedeemICC(RedeemICCModel redeemIccModel)
+        public async Task<ActionResult<object>> PostRedeemIcc(RedeemIccModel redeemIccModel)
         {
-            // Make ICC Used, so it can only be used once 
-            InfectionConfirmationCodeEntity ICC = await _ICCService.RedeemICC(User.Identity.Name);
+            // Make Icc Used, so it can only be used once 
+            InfectionConfirmationCodeEntity Icc = await _IccService.RedeemIcc(User.Identity.Name);
             
             // POST /labresult call on App Backend
             bool LabCID_IsValid = await _AppBackendService.LabConfirmationIDIsValid(redeemIccModel);
@@ -42,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend.Controllers
                 {
                     ok = true,
                     status = 501,
-                    ICC = ICC,
+                    Icc = Icc,
                     payload = redeemIccModel
                 });
             }

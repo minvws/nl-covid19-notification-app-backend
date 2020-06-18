@@ -3,12 +3,15 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
@@ -18,6 +21,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -48,7 +52,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddControllers(options => 
             { 
                 options.RespectBrowserAcceptHeader = true; 
-            });
+            }).AddNewtonsoftJson(options =>
+                options.SerializerSettings.ContractResolver =
+                    new CamelCasePropertyNamesContractResolver());
                 
             services.AddControllers();
 
@@ -57,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
             services.AddSingleton<IExposureKeySetHeaderInfoConfig, HsmExposureKeySetHeaderInfoConfig>();
             services.AddSingleton<IExposureKeySetBatchJobConfig, ExposureKeySetBatchJobConfig>();
-            services.AddSingleton<IPublishingId>(x => new Sha256PublishingId(new HardCodedExposureKeySetSigning()));
+            services.AddSingleton<IPublishingId>(x => new StandardPublishingIdFormatter(new HardCodedSigner()));
 
             services.AddScoped(x =>
             {
@@ -77,13 +83,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 return result;
             });
 
-            services.AddScoped(x =>
-            {
-                var config = new StandardEfDbConfig(Configuration, "Job");
-                var builder = new SqlServerDbContextOptionsBuilder(config);
-                return new ExposureKeySetsBatchJobDbContext(builder.Build());
-            });
-
             //Just for the Batch Job
             services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Job"));
 
@@ -96,6 +95,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
             services.AddScoped<IKeysFirstEscrowWriter, KeysFirstEscrowInsertDbCommand>();
+            services.AddScoped<ISigner, HardCodedSigner>();
 
             services.AddScoped<HttpPostKeysFirstAuthorisationCommand, HttpPostKeysFirstAuthorisationCommand>();
             services.AddScoped<IKeysFirstAuthorisationWriter, KeysFirstDbAuthoriseCommand>();
@@ -104,9 +104,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
             services.AddScoped<GetActiveExposureKeySetsListCommand, GetActiveExposureKeySetsListCommand>();
             
-
             services.AddScoped<ExposureKeySetSafeReadCommand, ExposureKeySetSafeReadCommand>();
-            
             services.AddScoped<SafeGetRiskCalculationConfigDbCommand, SafeGetRiskCalculationConfigDbCommand>();
 
             services.AddScoped<HttpPostRiskCalculationConfigCommand, HttpPostRiskCalculationConfigCommand>();
@@ -147,7 +145,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             services.AddScoped<HttpPostKeysLastReleaseTeksCommand, HttpPostKeysLastReleaseTeksCommand>();
             services.AddScoped<IKeysLastReleaseTeksValidator, KeysLastReleaseTeksValidator>();
-            services.AddScoped<IKeysLastAuthorisationTokenValidator, FakeKeysLastReleaseTeksValidator>();
+            services.AddScoped<IKeysLastSignatureValidator, FakeKeysLastSignatureValidator>();
             services.AddScoped<IKeysLastTekWriter, FakeKeysLastTekWriter>();
 
             services.AddScoped<HttpPostAppConfigCommand, HttpPostAppConfigCommand>();
@@ -156,30 +154,38 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             services.AddScoped<HttpPostKeysLastAuthorise, HttpPostKeysLastAuthorise>();
             services.AddScoped<IKeysLastAuthorisationWriter, KeysLastAuthorisationWriter>();
+            services.AddScoped<IReleaseKeysAuthorizationValidator, FakeReleaseKeysAuthorizationValidator>();
 
             services.AddScoped<GetLatestContentCommand<ResourceBundleContentEntity>, GetLatestContentCommand<ResourceBundleContentEntity>>();
             services.AddScoped<GetLatestContentCommand<RiskCalculationContentEntity>, GetLatestContentCommand<RiskCalculationContentEntity>>();
             services.AddScoped<GetLatestContentCommand<AppConfigContentEntity>, GetLatestContentCommand<AppConfigContentEntity>>();
 
+            services.AddScoped<IContentEntityFormatter, StandardContentEntityFormatter>();
+            services.AddScoped<ZippedSignedContentFormatter, ZippedSignedContentFormatter>();
+            
+
             services.AddSwaggerGen(o =>
             {
-                o.SwaggerDoc("v1", new OpenApiInfo 
-                { 
-                    Title = "Dutch Exposure Notification API (inc. dev support)", 
-                    Version = "v1", 
+                o.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Dutch Exposure Notification API (inc. dev support)",
+                    Version = "v1",
                     Description = "This specification describes the interface between the Dutch exposure notification app and the backend service.\nTODO: Add signatures to manifest, riskcalculationparameters and appconfig",
-                    Contact = new OpenApiContact {
+                    Contact = new OpenApiContact
+                    {
                         Name = "Ministerie van Volksgezondheid Welzijn en Sport backend repository", //TODO looks wrong?
                         Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend"),
                     },
-                    License = new OpenApiLicense 
-                    { 
+                    License = new OpenApiLicense
+                    {
                         Name = "European Union Public License v. 1.2",
                         //TODO this should be https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
                         Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend/blob/master/LICENSE.txt")
                     },
-                    
+
                 });
+                o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.xml"));
+                o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml"));
             });
         }
 
@@ -189,6 +195,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             app.UseSwagger();
             app.UseSwaggerUI(o =>
             {
+                o.ConfigObject.ShowExtensions = true;
                 o.SwaggerEndpoint("/swagger/v1/swagger.json", "Dutch Exposure Notification API (inc. dev support)");
             });
             if(!env.IsDevelopment()) app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes

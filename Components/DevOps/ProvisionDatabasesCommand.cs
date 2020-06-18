@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             await db2.Execute();
             await db2.AddExampleContent();
 
-            var db3 = new CreateContentDatabase(_Configuration, new Sha256PublishingId(new HardCodedExposureKeySetSigning()), new StandardUtcDateTimeProvider());
+            var db3 = new CreateContentDatabase(_Configuration, new StandardUtcDateTimeProvider());
             await db3.Execute();
             await db3.AddExampleContent();
 

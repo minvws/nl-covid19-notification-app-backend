@@ -7,8 +7,8 @@ import {HttpClient} from "@angular/common/http";
   templateUrl: './report.component.html',
   styleUrls: ['./report.component.css']
 })
-export class ICCReportComponent {
-  public ICC: string = ""
+export class IccReportComponent {
+  public Icc: string = ""
   public labConfirmationID = ["", "", "", "", "", ""]
   private http
 
@@ -35,15 +35,15 @@ export class ICCReportComponent {
   public report() {
 
 
-    // var ICC = document.querySelector("#iccWrapper .form-control").value
+    // var Icc = document.querySelector("#iccWrapper .form-control").value
     // var ICId = Array.from(document.querySelectorAll("#icIdWrapper .form-control")).map(el => el.value).join("")
     //
-    this.http.post("https://localhost:5005/RedeemICC", {
+    this.http.post("https://localhost:5005/RedeemIcc", {
       "labConfirmationID": this.labConfirmationID.join(""),
       "commencementComplaints": new Date(Date.now()).toISOString()
     }, {
       headers: {
-        "Authorization": this.ICC
+        "Authorization": this.Icc
       }
     }).subscribe((result) => {
       alert(JSON.stringify(result))
@@ -51,7 +51,7 @@ export class ICCReportComponent {
 
 
     // console.log(ICId);
-    // console.log(ICC);
+    // console.log(Icc);
     // setTimeout(() => {
     //   Array.from(document.querySelectorAll(".form-control")).forEach(el => {
     //     el.value = ""

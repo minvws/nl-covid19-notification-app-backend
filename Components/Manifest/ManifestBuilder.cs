@@ -24,9 +24,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             _AppConfigFinder = appConfigFinder;
         }
 
-        public ManifestResponse Execute()
+        public ManifestContent Execute()
         {
-            return new ManifestResponse
+            return new ManifestContent
             { 
                 ExposureKeySets = _ExposureKeySetsListCommand.Execute(),
                 ResourceBundle = _ResourceBundleFinder.Execute(),

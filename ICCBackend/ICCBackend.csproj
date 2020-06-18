@@ -2,8 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <RootNamespace>NL.Rijksoverheid.ExposureNotification.ICCBackend</RootNamespace>
-        <AssemblyName>NL.Rijksoverheid.ExposureNotification.ICCBackend</AssemblyName>
+        <RootNamespace>NL.Rijksoverheid.ExposureNotification.IccBackend</RootNamespace>
+        <AssemblyName>NL.Rijksoverheid.ExposureNotification.IccBackend</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

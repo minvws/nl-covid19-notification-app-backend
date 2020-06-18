@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -46,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 PublishingState = PublishingState.Unpublished,
                 RollingPeriod = 1,
                 RollingStartNumber = 1,
-                TransmissionRiskLevel = 1,
+                TransmissionRiskLevel = 0,
                 KeyData = new byte[0],
                 Region = "NL"
             };
@@ -57,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 PublishingState = PublishingState.Unpublished,
                 RollingPeriod = 1,
                 RollingStartNumber = 1,
-                TransmissionRiskLevel = 1,
+                TransmissionRiskLevel = 0,
                 KeyData = new byte[0],
                 Region = "NL"
             };

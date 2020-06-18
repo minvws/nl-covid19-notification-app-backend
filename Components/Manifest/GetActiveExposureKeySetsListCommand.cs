@@ -24,6 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 
         public string[] Execute()
         {
+            //TODO cant test this - inject!
             var expired = new StandardUtcDateTimeProvider().Now() - TimeSpan.FromDays(_GaenContentConfig.ExposureKeySetLifetimeDays);
             var result = _DbConfig.Set<ExposureKeySetContentEntity>()
                 .Where(x => x.Release > expired)

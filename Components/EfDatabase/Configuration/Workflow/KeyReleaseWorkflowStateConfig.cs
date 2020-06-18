@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public void Configure(EntityTypeBuilder<KeyReleaseWorkflowState> builder)
         {
             builder.ToTable("KeyReleaseWorkflowState");
-
+            builder.Property(u => u.Id).UseHiLo();
             builder
                 .HasMany(x => x.Keys)
                 .WithOne(x => x.Owner)

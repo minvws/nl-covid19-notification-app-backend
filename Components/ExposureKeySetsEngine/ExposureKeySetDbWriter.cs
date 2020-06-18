@@ -33,13 +33,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 Content = x.Content,
                 CreatingJobName = x.CreatingJobName,
                 CreatingJobQualifier = x.CreatingJobQualifier,
-                Region = x.Region,
                 Release = x.Created,
             }).ToList();
 
             foreach (var i in entities)
             {
-                i.PublishingId = _PublishingId.Create(i);
+                i.PublishingId = _PublishingId.Create(i.Content);
             }
 
             using (_DbContext.EnsureNoChangesOrTransaction().BeginTransaction())

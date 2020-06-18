@@ -11,21 +11,21 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
-    public class ProvisionDatabasesCommandICC
+    public class ProvisionDatabasesCommandIcc
     {
         private readonly IConfiguration _Configuration;
 
-        public ProvisionDatabasesCommandICC(IConfiguration configuration)
+        public ProvisionDatabasesCommandIcc(IConfiguration configuration)
         {
             _Configuration = configuration;
         }
 
         public async Task<IActionResult> Execute()
         {
-            var db = new CreateICCDatabase(_Configuration);
+            var db = new CreateIccDatabase(_Configuration);
             await db.Execute();
 
-            Console.WriteLine("ICC ProvisionDB Completed.");
+            Console.WriteLine("Icc ProvisionDB Completed.");
 
             return new OkResult();
         }

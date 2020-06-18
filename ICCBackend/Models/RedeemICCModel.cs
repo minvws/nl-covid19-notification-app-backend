@@ -5,9 +5,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace NL.Rijksoverheid.ExposureNotification.ICCBackend.Models
+namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Models
 {
-    public class RedeemICCModel
+    public class RedeemIccModel
     {
         [Required, MinLength(6), MaxLength(6)] 
         public string LabConfirmationID { get; set; }

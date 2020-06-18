@@ -6,8 +6,8 @@ import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import {ICCReportComponent} from "./icc/report.component";
-import {ICCGenerateComponent} from "./icc/generate.component";
+import {IccReportComponent} from "./icc/report.component";
+import {IccGenerateComponent} from "./icc/generate.component";
 import {LoginComponent} from "./login/login.component";
 
 
@@ -17,8 +17,8 @@ import {LoginComponent} from "./login/login.component";
   declarations: [
     AppComponent,
     HomeComponent,
-    ICCReportComponent,
-    ICCGenerateComponent,
+    IccReportComponent,
+    IccGenerateComponent,
     LoginComponent,
   ],
   imports: [
@@ -28,8 +28,8 @@ import {LoginComponent} from "./login/login.component";
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'login', component: LoginComponent, pathMatch: 'full' },
-      { path: 'icc/report', component: ICCReportComponent, pathMatch: 'full' },
-      { path: 'icc/generate', component: ICCGenerateComponent, pathMatch: 'full' },
+      { path: 'icc/report', component: IccReportComponent, pathMatch: 'full' },
+      { path: 'icc/generate', component: IccGenerateComponent, pathMatch: 'full' },
     ])
   ],
   providers: [],

@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "ICCBackend": {
+    "IccBackend": {
       "commandName": "Project",
       "launchBrowser": false,
       "launchUrl": "swagger",

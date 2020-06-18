@@ -3,8 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
@@ -34,10 +37,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             }
 
             var parsed = _PublishingId.ParseUri(id);
-            var content = _SafeReader.Execute(parsed);
+            if (typeof(T) != typeof(ManifestEntity) && !_PublishingId.Validate(id))
+            {
+                httpContext.Response.StatusCode = 400;
+                httpContext.Response.ContentLength = 0;
+            }
+
+            var content = await _SafeReader.Execute(parsed);
             
             if (content == null)
             {
+                //TODO tell CDN to ignore hunting?
                 httpContext.Response.StatusCode = 404;
                 httpContext.Response.ContentLength = 0;
                 return;
@@ -50,21 +60,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 return;
             }
 
+            var accepts = httpContext.Request.Headers["accept"].ToHashSet();
+
+            var signedResponse = content.SignedContentTypeName != null && accepts.Contains(content.SignedContentTypeName);
+
+            if (!signedResponse && content.ContentTypeName != null && accepts.Contains(content.ContentTypeName))
+            {
+                httpContext.Response.StatusCode = 406;
+                httpContext.Response.ContentLength = 0;
+                return;
+            }
+
             httpContext.Response.Headers.Add("etag", content.PublishingId);
             httpContext.Response.Headers.Add("last-modified", content.Release.ToUniversalTime().ToString("r"));
-            httpContext.Response.Headers.Add("content-type", content.ContentTypeName);
+            httpContext.Response.Headers.Add("content-type", signedResponse ? content.SignedContentTypeName : content.ContentTypeName);
+            httpContext.Response.Headers.Add("x-vws-signed", signedResponse.ToString());
 
-            if (content.Content != null)
-            {
-                httpContext.Response.StatusCode = 200;
-                httpContext.Response.ContentLength = content.Content.Length;
-                await httpContext.Response.Body.WriteAsync(content.Content);
-            }
-            else
-            {
-                httpContext.Response.ContentLength = 0;
-                httpContext.Response.StatusCode = 400;
-            }
+            httpContext.Response.StatusCode = 200;
+            httpContext.Response.ContentLength = (signedResponse ? content.SignedContent : content.Content).Length;
+            await httpContext.Response.Body.WriteAsync(signedResponse ? content.SignedContent : content.Content);
         }
     }
 }

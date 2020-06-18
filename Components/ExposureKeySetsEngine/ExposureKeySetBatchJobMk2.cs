@@ -5,9 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
-using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
@@ -26,42 +26,44 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private bool _Disposed;
         public string JobName { get; }
 
-        private readonly IExposureKeySetBatchJobConfig _JobConfig;
+        //private readonly IExposureKeySetBatchJobConfig _JobConfig;
         private readonly IGaenContentConfig _GaenContentConfig;
 
-        private readonly IExposureKeySetWriter _Writer;
+        //private readonly IExposureKeySetWriter _Writer;
         private readonly IExposureKeySetBuilder _SetBuilder;
         private readonly DateTime _Start;
 
         private int _Counter;
-        private readonly List<TeksInputEntity> _Used;
+        private readonly List<EksCreateJobInputEntity> _Used;
         private readonly List<TemporaryExposureKeyArgs> _KeyBatch = new List<TemporaryExposureKeyArgs>();
 
         private readonly WorkflowDbContext _WorkflowDbContext;
         private readonly ExposureContentDbContext _ContentDbContext;
 
-        /// <summary>
-        /// Prod
-        /// </summary>
-        public ExposureKeySetBatchJobMk2(ITekSource tekSource, IDbContextOptionsBuilder jobDbOptionsBuilder, IUtcDateTimeProvider dateTimeProvider,
-            IExposureKeySetWriter eksWriter, IGaenContentConfig gaenContentConfig, /*IJsonExposureKeySetFormatter jsonSetFormatter,*/ IExposureKeySetBuilder setBuilder, IExposureKeySetBatchJobConfig jobConfig)
+        private readonly IPublishingId _PublishingId;
+
+        public ExposureKeySetBatchJobMk2(/*IExposureKeySetBatchJobConfig jobConfig,*/ IGaenContentConfig gaenContentConfig, IExposureKeySetBuilder builder, WorkflowDbContext workflowDbContext, ExposureContentDbContext contentDbContext, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId)
         {
-            _SetBuilder = setBuilder;
-            _JobConfig = jobConfig;
-            _Writer = eksWriter;
+            //_JobConfig = jobConfig;
             _GaenContentConfig = gaenContentConfig;
-            //_TekSource = tekSource;
-            _Used = new List<TeksInputEntity>(_JobConfig.InputListCapacity);
+            _SetBuilder = builder;
+            _WorkflowDbContext = workflowDbContext;
+            _ContentDbContext = contentDbContext;
+            _PublishingId = publishingId;
+            _Used = new List<EksCreateJobInputEntity>(_GaenContentConfig.ExposureKeySetCapacity); //
             _Start = dateTimeProvider.Now();
             JobName = $"ExposureKeySetsJob_{_Start:u}".Replace(" ", "_").Replace(":", "_");
         }
 
-        public async Task Execute()
+        public async Task Execute(bool useAllKeys = false)
         {
             if (_Disposed)
                 throw new ObjectDisposedException(JobName);
 
-            await CopyInput();
+            _WorkflowDbContext.EnsureNoChangesOrTransaction();
+            _ContentDbContext.EnsureNoChangesOrTransaction();
+
+            await CopyInput(useAllKeys);
             await BuildBatches();
             await CommitResults();
         }
@@ -88,7 +90,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 await Build();
         }
 
-        private static TemporaryExposureKeyArgs Map(TeksInputEntity c)
+        private static TemporaryExposureKeyArgs Map(EksCreateJobInputEntity c)
             => new TemporaryExposureKeyArgs 
             { 
                 RollingPeriod = c.RollingPeriod,
@@ -97,40 +99,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 RollingStartNumber = c.RollingStartNumber
             };
 
-        //private async Task CopyInputData()
-        //{
-        //    var authorisedWorkflows 
-        //    = 
-        //    .Select(x => new TeksInputEntity
-        //    {
-        //        Id = x.Id,
-        //        Region = x.Region,
-        //        Content = x.Content,
-        //        Workflow = x.Workflow
-        //    })
-        //    .ToArray();
-        //    await _JobDbProvider.Database.EnsureCreatedAsync();
-        //    await using (_JobDbProvider.BeginTransaction())
-        //    {
-        //        await _JobDbProvider.BulkInsertAsync(authorisedWorkflows);
-        //        _JobDbProvider.SaveAndCommit();
-        //    }
-        //}
-
         private async Task Build()
         {
             var args = _KeyBatch.ToArray();
-            var e = new ExposureKeySetEntity
+            
+            var content = await _SetBuilder.BuildAsync(args);
+            var e = new EksCreateJobOutputEntity
             {
-                Created = _Start,
+                Region = DefaultValues.Region,
+                Release = _Start,
                 CreatingJobName = JobName,
                 CreatingJobQualifier = ++_Counter,
-                Content = await _SetBuilder.BuildAsync(args)
+                Content = content, 
             };
+
             _KeyBatch.Clear();
 
-            //TODO wrong type... await WriteEks(e);
+            await WriteOutput(e);
             await WriteUsed(_Used.ToArray()); 
+        }
+
+        private async Task WriteOutput(EksCreateJobOutputEntity e)
+        {
+            await using (_ContentDbContext.BeginTransaction())
+            {
+                await _ContentDbContext.AddAsync(e);
+                _ContentDbContext.SaveAndCommit();
+            }
         }
 
         public void Dispose()
@@ -142,14 +137,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             //TODO _JobDatabase?.Dispose();
         }
 
-        public async Task CopyInput()
+        public async Task CopyInput(bool useAllKeys = false)
         {
             await using (_WorkflowDbContext.BeginTransaction())
             {
-                //Truncate input and output tables
+                await _ContentDbContext.EksInput.BatchDeleteAsync(); //TODO truncate instead
+                await _ContentDbContext.EksOutput.BatchDeleteAsync();
+
                 var read = _WorkflowDbContext.TemporaryExposureKeys
-                    .Where(x => x.Owner.Authorised && x.PublishingState == PublishingState.Unpublished)
-                    .Select(x => new TeksInputEntity
+                    .Where(x => (x.Owner.Authorised || useAllKeys) && x.PublishingState == PublishingState.Unpublished) 
+                    .Select(x => new EksCreateJobInputEntity
                     {
                         Id = x.Id,
                         RollingPeriod = x.RollingPeriod,
@@ -161,26 +158,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 await using (_ContentDbContext.BeginTransaction())
                 {
                     await _ContentDbContext.BulkInsertAsync(read.ToList());
-                    _WorkflowDbContext.SaveAndCommit();
+                    _ContentDbContext.SaveAndCommit();
                 }
             }
         }
 
-        public TeksInputEntity[] GetInputBatch(int skip, int take)
+        public EksCreateJobInputEntity[] GetInputBatch(int skip, int take)
         {
             return _ContentDbContext.EksInput.Skip(skip).Take(take).ToArray();
         }
 
-        public async Task WriteEks(ExposureKeySetContentEntity e)
-        {
-            await using (_ContentDbContext.BeginTransaction())
-            {
-                await _ContentDbContext.EksOutput.AddAsync(e);
-                _ContentDbContext.SaveAndCommit();
-            }
-        }
-
-        public async Task WriteUsed(TeksInputEntity[] used)
+        public async Task WriteUsed(EksCreateJobInputEntity[] used)
         {
             foreach (var i in used)
             {
@@ -197,46 +185,63 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         {
             await using (_ContentDbContext.BeginTransaction())
             {
-                var move = _ContentDbContext.EksOutput.ToArray(); //TODO copy? Cos it's the same DB cos 'policy'
+                var move = _ContentDbContext.EksOutput.Select(
+                    x => new ExposureKeySetContentEntity
+                    {
+                        Release = x.Release,
+                        Content = null,
+                        ContentTypeName = null,
+                        SignedContentTypeName = MediaTypeNames.Application.Zip,
+                        SignedContent = x.Content,
+                        CreatingJobName = x.CreatingJobName,
+                        CreatingJobQualifier = x.CreatingJobQualifier,
+                        PublishingId = _PublishingId.Create(x.Content)
+                    }).ToArray();
                 _ContentDbContext.ExposureKeySetContent.AddRange(move);
                 _ContentDbContext.SaveAndCommit();
             }
 
-            await using (_ContentDbContext.BeginTransaction())
-            await using (_WorkflowDbContext.BeginTransaction())
+            await using (_ContentDbContext.BeginTransaction()) //Read-only
             {
-                var count = 0;
-                var used = _ContentDbContext.Set<TeksInputEntity>()
-                    .Where(x => x.Used)
-                    .Skip(count)
-                    .Select(x => x.Id)
-                    .Take(100)
-                    .ToArray();
-
-                while (used.Length > 0)
+                await using (_WorkflowDbContext.BeginTransaction())
                 {
-                    var zap = _WorkflowDbContext.TemporaryExposureKeys
-                        .Where(x => used.Contains(x.Id))
-                        .ToList();
-
-                    foreach (var i in zap)
-                    {
-                        i.PublishingState = PublishingState.Published;
-                    }
-
-                    await _WorkflowDbContext.BulkUpdateAsync(zap);
-
-
-                    var q = _ContentDbContext.Set<TeksInputEntity>()
+                    var count = 0;
+                    var used = _ContentDbContext.Set<EksCreateJobInputEntity>()
                         .Where(x => x.Used)
                         .Skip(count)
+                        .Select(x => x.Id)
                         .Take(100)
                         .ToArray();
 
-                    count += q.Length;
+                    while (used.Length > 0)
+                    {
+                        var zap = _WorkflowDbContext.TemporaryExposureKeys
+                            .Where(x => used.Contains(x.Id))
+                            .ToList();
+
+                        foreach (var i in zap)
+                        {
+                            i.PublishingState = PublishingState.Published;
+                        }
+
+                        await _WorkflowDbContext.BulkUpdateAsync(zap, x => x.PropertiesToInclude = new List<string>() {nameof(TemporaryExposureKeyEntity.PublishingState)});
+
+                        count += used.Length;
+
+                        used = _ContentDbContext.Set<EksCreateJobInputEntity>()
+                            .Where(x => x.Used)
+                            .Skip(count)
+                            .Select(x => x.Id)
+                            .Take(100)
+                            .ToArray();
+                    }
+
+                    _WorkflowDbContext.SaveAndCommit();
                 }
 
-                _WorkflowDbContext.SaveAndCommit();
+                await _ContentDbContext.EksInput.BatchDeleteAsync();
+                await _ContentDbContext.EksOutput.BatchDeleteAsync();
+                _ContentDbContext.SaveAndCommit();
             }
         }
     }

@@ -13,6 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public void Configure(EntityTypeBuilder<ManifestEntity> builder)
         {
             builder.ToTable("Manifest");
+            builder.Property(u => u.Id).UseHiLo();
         }
     }
 }

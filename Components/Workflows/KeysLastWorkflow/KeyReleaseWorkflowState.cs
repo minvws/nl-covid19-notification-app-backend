@@ -4,17 +4,36 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow
 {
     public class KeyReleaseWorkflowState
     {
-        public int Id { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public long Id { get; set; }
         public DateTime Created { get; set; }
+        
+        /// <summary>
+        /// TODO Add uq
+        /// </summary>
         public string? LabConfirmationId { get; set; }
+
+        /// <summary>
+        /// TODO Add uq
+        /// </summary>
         public string? ConfirmationKey { get; set; }
+
+        /// <summary>
+        /// TODO Add uq
+        /// </summary>
         public string? BucketId { get; set; }
+
+        /// <summary>
+        /// TODO Add index?
+        /// </summary>
         public bool Authorised { get; set; }
+
         public ICollection<TemporaryExposureKeyEntity> Keys { get; set; }
     }
 }

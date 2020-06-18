@@ -11,12 +11,12 @@ using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 
-namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
+namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
     public class Startup
     {
@@ -37,34 +37,34 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
             // Database Scoping
             services.AddScoped(x =>
             {
-                var config = new StandardEfDbConfig(Configuration, "ICC");
+                var config = new StandardEfDbConfig(Configuration, "Icc");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new ICCBackendContentDbContext(builder.Build());
+                var result = new IccBackendContentDbContext(builder.Build());
                 return result;
             });
-            services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "ICC"));
-            services.AddScoped<ProvisionDatabasesCommandICC, ProvisionDatabasesCommandICC>();
+            services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Icc"));
+            services.AddScoped<ProvisionDatabasesCommandIcc, ProvisionDatabasesCommandIcc>();
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
 
-            services.AddScoped<IICCService, ICCService>();
+            services.AddScoped<IIccService, IccService>();
             services.AddScoped<AppBackendService, AppBackendService>();
-            services.AddAuthentication("ICCAuthentication")
-                .AddScheme<AuthenticationSchemeOptions, ICCAuthenticationHandler>("ICCAuthentication", null);
+            services.AddAuthentication("IccAuthentication")
+                .AddScheme<AuthenticationSchemeOptions, IccAuthenticationHandler>("IccAuthentication", null);
 
 
             services.AddCors();
 
             services.AddSwaggerGen(o =>
             {
-                o.SwaggerDoc("v1", new OpenApiInfo {Title = "ICC Back-end Server", Version = "v1"});
-                o.AddSecurityDefinition("ICC", new OpenApiSecurityScheme
+                o.SwaggerDoc("v1", new OpenApiInfo {Title = "Icc Back-end Server", Version = "v1"});
+                o.AddSecurityDefinition("Icc", new OpenApiSecurityScheme
                 {
-                    Description = "ICC Code Authentication",
+                    Description = "Icc Code Authentication",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
-                    Scheme = "ICCAuthentication"
+                    Scheme = "IccAuthentication"
                 });
                 o.OperationFilter<SecurityRequirementsOperationFilter>();
             });
@@ -76,7 +76,7 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyHeader());
             
             app.UseSwagger();
-            app.UseSwaggerUI(o => { o.SwaggerEndpoint("/swagger/v1/swagger.json", "ICC Back-end Server V1"); });
+            app.UseSwaggerUI(o => { o.SwaggerEndpoint("/swagger/v1/swagger.json", "Icc Back-end Server V1"); });
 
 
             if (env.IsDevelopment())
@@ -111,16 +111,16 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
                 operation.Responses.Add("401", new OpenApiResponse {Description = "Unauthorized"});
                 operation.Responses.Add("403", new OpenApiResponse {Description = "Forbidden"});
 
-                var ICCAuthenticationScheme = new OpenApiSecurityScheme
+                var IccAuthenticationScheme = new OpenApiSecurityScheme
                 {
-                    Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "ICC"}
+                    Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "Icc"}
                 };
 
                 operation.Security = new List<OpenApiSecurityRequirement>
                 {
                     new OpenApiSecurityRequirement
                     {
-                        [ICCAuthenticationScheme] = requiredScopes.ToList()
+                        [IccAuthenticationScheme] = requiredScopes.ToList()
                     }
                 };
             }

@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         [DataTestMethod]
         public void Build(int keyCount, int seed)
         {
-            var builder = new ExposureKeySetBuilderV1(new HardCodedExposureKeySetHeaderInfoConfig(), new HardCodedExposureKeySetSigning(), new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter());
+            var builder = new ExposureKeySetBuilderV1(new HardCodedExposureKeySetHeaderInfoConfig(), new HardCodedSigner(), new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter());
 
             var actual = builder.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
             Assert.IsTrue(actual.Length > 0);

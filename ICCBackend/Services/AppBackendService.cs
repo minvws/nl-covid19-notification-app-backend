@@ -7,9 +7,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using NL.Rijksoverheid.ExposureNotification.ICCBackend.Models;
+using NL.Rijksoverheid.ExposureNotification.IccBackend.Models;
 
-namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
+namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
     public class AppBackendService
     {
@@ -36,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.ICCBackend
             
         }
         
-        public async Task<bool> LabConfirmationIDIsValid(RedeemICCModel redeemIccModel)
+        public async Task<bool> LabConfirmationIDIsValid(RedeemIccModel redeemIccModel)
         {
             Console.WriteLine(_Configuration.GetSection("AppBackendConfig:Host"));
             

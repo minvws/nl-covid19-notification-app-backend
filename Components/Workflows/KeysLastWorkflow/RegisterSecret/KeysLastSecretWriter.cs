@@ -37,11 +37,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
 
             _DbContextProvider.SaveAndCommit();
 
+            var validDate = DateTime.Now.AddDays(1);
+
             return new EnrollmentResponse
             {
                 ConfirmationKey = entity.ConfirmationKey,
                 BucketId = entity.BucketId,
-                LabConfirmationId = entity.LabConfirmationId
+                LabConfirmationId = entity.LabConfirmationId,
+                ValidUntil = new DateTime(validDate.Year, validDate.Month, validDate.Day, 4,0,0, DateTimeKind.Local)
             };
         }
     }

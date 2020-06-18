@@ -2,11 +2,13 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Security.Cryptography;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing
 {
-    public class HardCodedExposureKeySetSigning : IExposureKeySetSigning
+    [Obsolete("Use this class only for testing purposes")]
+    public class HardCodedSigner : ISigner
     {
         private const string SignatureAlgorithmDescription = "HardCoded";
 
@@ -21,5 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             signer.GenerateKey(ECCurve.CreateFromFriendlyName("ECDSA_P256"));
             return signer.SignHash(hash);
         }
+
+        public int LengthBytes => 64;
     }
 }

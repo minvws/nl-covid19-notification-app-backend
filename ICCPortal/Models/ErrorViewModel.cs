@@ -1,6 +1,6 @@
 using System;
 
-namespace ICCPortal.Models
+namespace IccPortal.Models
 {
     public class ErrorViewModel
     {

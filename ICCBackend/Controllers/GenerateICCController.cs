@@ -11,51 +11,51 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC;
-using NL.Rijksoverheid.ExposureNotification.ICCBackend.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.IccBackend.Models;
 
-namespace NL.Rijksoverheid.ExposureNotification.ICCBackend.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class GenerateICCController
+    public class GenerateIccController
     {
-        private readonly IICCService _ICCService;
-        private readonly ILogger<GenerateICCController> _logger;
+        private readonly IIccService _IccService;
+        private readonly ILogger<GenerateIccController> _logger;
         private readonly IConfiguration _Configuration;
         
 
-        public GenerateICCController(ILogger<GenerateICCController> logger, IConfiguration configuration, IICCService iccService )
+        public GenerateIccController(ILogger<GenerateIccController> logger, IConfiguration configuration, IIccService iccService )
         {
             _logger = logger;
             _Configuration = configuration;
-            _ICCService = iccService;
+            _IccService = iccService;
         }
 
 
         [HttpPost("single")]
-        public async Task<JsonResult> PostGenerateICC(GenerateICCModel generateIccModel)
+        public async Task<JsonResult> PostGenerateIcc(GenerateIccModel generateIccModel)
         {
-            InfectionConfirmationCodeEntity icc = await _ICCService.GenerateICC(generateIccModel.UserId);
+            InfectionConfirmationCodeEntity icc = await _IccService.GenerateIcc(generateIccModel.UserId);
             return new JsonResult(new
             {
                 ok = true,
                 status = 200,
                 icc = icc,
-                length = _Configuration.GetSection("ICCConfig:Code:Length").Value
+                length = _Configuration.GetSection("IccConfig:Code:Length").Value
             });
         }
         
         
         [HttpPost("batch")]
-        public async Task<JsonResult> PostGenerateBatchICC(GenerateICCModel generateIccModel)
+        public async Task<JsonResult> PostGenerateBatchIcc(GenerateIccModel generateIccModel)
         {
-            List<InfectionConfirmationCodeEntity> batch = await _ICCService.GenerateBatch(generateIccModel.UserId);
+            List<InfectionConfirmationCodeEntity> batch = await _IccService.GenerateBatch(generateIccModel.UserId);
             return new JsonResult(new
             {
                 ok = true,
                 status = 200,
-                length = _Configuration.GetSection("ICCConfig:Code:Length").Value,
+                length = _Configuration.GetSection("IccConfig:Code:Length").Value,
                 batch = batch
             });
         }

@@ -37,6 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi
                 var config = new StandardEfDbConfig(Configuration, "WorkFlow");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new WorkflowDbContext(builder.Build());
+                result.BeginTransaction();
                 return result;
             });
 
@@ -48,12 +49,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeysLastWorkflowApi
             services.AddScoped<HttpPostKeysLastReleaseTeksCommand, HttpPostKeysLastReleaseTeksCommand>();
             
             services.AddScoped<IKeysLastReleaseTeksValidator, KeysLastReleaseTeksValidator>();
-            services.AddScoped<IKeysLastAuthorisationTokenValidator, FakeKeysLastReleaseTeksValidator>();
+            services.AddScoped<IKeysLastSignatureValidator, KeysLastSignatureValidator>();
             
             services.AddScoped<HttpPostKeysLastRegisterSecret, HttpPostKeysLastRegisterSecret>();
             services.AddScoped<IKeysLastSecretWriter, KeysLastSecretWriter>();
             services.AddScoped<IKeysLastSecretConfig, StandardKeysLastSecretConfig>();
             services.AddScoped<IKeysLastTekWriter, FakeKeysLastTekWriter>();
+            services.AddScoped<RandomNumberGenerator, RandomNumberGenerator>();
 
             services.AddSwaggerGen(o =>
             {

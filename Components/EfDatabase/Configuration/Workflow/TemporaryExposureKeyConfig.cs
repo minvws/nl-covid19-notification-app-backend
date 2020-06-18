@@ -8,7 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
     {
         public void Configure(EntityTypeBuilder<TemporaryExposureKeyEntity> builder)
         {
-            builder.Property(u => u.Id).HasDefaultValueSql("NEWID()");
+            builder.Property(u => u.Id).UseHiLo();
         }
     }
 }

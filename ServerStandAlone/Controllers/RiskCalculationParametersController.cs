@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
@@ -15,14 +16,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
     public class RiskCalculationParametersController : ControllerBase
     {
         [HttpGet]
-        [Route(EndPointNames.ContentAdminPortalDataApi.RiskCalculationParameters +"/{id}")]
+        [Route(EndPointNames.CdnApi.RiskCalculationParameters + "/{id}")]
+        [ProducesResponseType(typeof(RiskCalculationConfigContent), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [Produces(MediaTypeNames.Application.Zip, MediaTypeNames.Application.Json)]
         public async Task GetLatestConfig(string id, [FromServices]HttpGetCdnContentCommand<RiskCalculationContentEntity> command)
         {
             await command.Execute(HttpContext, id);
         }
 
         [HttpPost]
-        [Route(EndPointNames.CdnApi.RiskCalculationParameters)]
+        [Route(EndPointNames.ContentAdminPortalDataApi.RiskCalculationParameters)]
         public async Task<IActionResult> Post([FromBody]RiskCalculationConfigArgs args, [FromServices]HttpPostRiskCalculationConfigCommand command)
         {
             return await command.Execute(args);

@@ -11,49 +11,49 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
-    public class ICCAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    public class IccAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        private readonly IICCService _ICCService;
-        private readonly ICCBackendContentDbContext _DbContext;
-        private readonly ILogger<ICCAuthenticationHandler> _logger;
+        private readonly IIccService _IccService;
+        private readonly IccBackendContentDbContext _DbContext;
+        private readonly ILogger<IccAuthenticationHandler> _logger;
 
-        public ICCAuthenticationHandler(
+        public IccAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            IICCService ICCService,
-            ICCBackendContentDbContext dbContext,
+            IIccService IccService,
+            IccBackendContentDbContext dbContext,
             ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
             _DbContext = dbContext;
-            _ICCService = ICCService;
-            _logger = logger.CreateLogger<ICCAuthenticationHandler>();
+            _IccService = IccService;
+            _logger = logger.CreateLogger<IccAuthenticationHandler>();
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!Request.Headers.ContainsKey("Authorization"))
                 return AuthenticateResult.Fail("Missing Authorization Header");
-            InfectionConfirmationCodeEntity ICC;
+            InfectionConfirmationCodeEntity Icc;
             try
             {
                 var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
-                string headerICCode = authHeader.ToString();
-                ICC = await _ICCService.Validate(headerICCode);
+                string headerIccode = authHeader.ToString();
+                Icc = await _IccService.Validate(headerIccode);
             }
             catch
             {
-                return AuthenticateResult.Fail("Invalid ICC");
+                return AuthenticateResult.Fail("Invalid Icc");
             }
 
-            if (ICC == null) return AuthenticateResult.Fail("Invalid ICC");
+            if (Icc == null) return AuthenticateResult.Fail("Invalid Icc");
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, ICC.Code)
+                new Claim(ClaimTypes.Name, Icc.Code)
             };
             var identity = new ClaimsIdentity(claims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);

@@ -5,10 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ICCPortal.Models;
+using IccPortal.Models;
 using Microsoft.AspNetCore.Authorization;
 
-namespace ICCPortal.Controllers
+namespace IccPortal.Controllers
 {
     public class HomeController : Controller
     {

@@ -6,7 +6,7 @@ import {HttpClient} from '@angular/common/http';
   templateUrl: './generate.component.html',
   styleUrls: ['./generate.component.css']
 })
-export class ICCGenerateComponent {
+export class IccGenerateComponent {
   public all_icc = null
   private http;
 
@@ -16,12 +16,12 @@ export class ICCGenerateComponent {
 
 
   public generateCode() {
-    this.http.post("https://localhost:5005/GenerateICC/batch", {"user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"}).subscribe((result) => {
+    this.http.post("https://localhost:5005/GenerateIcc/batch", {"user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"}).subscribe((result) => {
       this.all_icc = result.batch;
     })
   }
 
-  public getICCCodeTextArea() {
+  public getIccCodeTextArea() {
     return this.all_icc.map((i) => i.code.trim()).join("\n");
   }
 

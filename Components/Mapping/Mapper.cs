@@ -19,21 +19,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 {
     public static class Mapper
     {
-        public static RiskCalculationConfigResponse ToResponse(this RiskCalculationConfigContent e)
-            => new RiskCalculationConfigResponse
-            {
-                MinimumRiskScore = e.MinimumRiskScore,
-                DaysSinceLastExposureScores​ = e.DaysSinceLastExposureScores​,
-                AttenuationScores​ = e.AttenuationScores​,
-                DurationAtAttenuationThresholds​ = e.DurationAtAttenuationThresholds​,
-                DurationScores = e.DurationScores,
-                TransmissionRiskScores​ = e.TransmissionRiskScores​
-            };
-
-
-        public static RiskCalculationContentEntity ToEntity(this RiskCalculationConfigArgs args)
-        {
-            var content = new RiskCalculationConfigContent
+        public static RiskCalculationConfigContent ToContent(this RiskCalculationConfigArgs args)
+            => new RiskCalculationConfigContent
             {
                 MinimumRiskScore = args.MinimumRiskScore,
                 DaysSinceLastExposureScores​ = args.DaysSinceLastExposureScores​,
@@ -43,20 +30,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
                 TransmissionRiskScores​ = args.TransmissionRiskScores​
             };
 
-            return new RiskCalculationContentEntity
-            {
-                Release = args.Release,
-                Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content))
-            };
-        }
-
         public static TemporaryExposureKeyEntity[] ToEntities(this TemporaryExposureKeyArgs[] items)
         {
             var content = items.Select(x =>
                 new TemporaryExposureKeyEntity
                 {
                     KeyData = Convert.FromBase64String(x.KeyData),
-                    TransmissionRiskLevel = x.TransmissionRiskLevel,
+                    TransmissionRiskLevel = 0,
                     RollingPeriod = x.RollingPeriod,
                     RollingStartNumber = x.RollingStartNumber,
                 }).ToArray();
@@ -64,9 +44,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             return content;
         }
 
-        public static ResourceBundleContentEntity ToEntity(this ResourceBundleArgs args)
-        {
-            var content = new ResourceBundleEntityContent
+        public static ResourceBundleContent ToContent(this ResourceBundleArgs args)
+            => new ResourceBundleContent
             {
                 Text = args.Text,
                 IsolationPeriodDays = args.IsolationPeriodDays,
@@ -74,28 +53,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
                 TemporaryExposureKeyRetentionDays = args.TemporaryExposureKeyRetentionDays,
             };
 
-            return new ResourceBundleContentEntity
-            {
-                Release = args.Release,
-                Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content))
-            };
-        }
-
-        public static AppConfigContentEntity ToEntity(this AppConfigArgs args)
-        {
-            var content = new AppConfigContent
+        public static AppConfigContent ToContent(this AppConfigArgs args)
+            => new AppConfigContent
             {
                 DecoyProbability = args.DecoyProbability,
                 ManifestFrequency = args.ManifestFrequency,
                 Version = args.Version
             };
-
-            return new AppConfigContentEntity
-            {
-                Release = args.Release,
-                Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content)),
-            };
-        }
 
         ///// <summary>
         ///// TODO decide whether we really need to Json version but it is useful to see in a readable form what the content of the zipped AG content is too

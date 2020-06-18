@@ -14,7 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using TheIdentityHub.AspNetCore.Authentication;
 
-namespace ICCPortal
+namespace IccPortal
 {
     public class Startup
     {
@@ -37,9 +37,9 @@ namespace ICCPortal
                 .AddTheIdentityHubAuthentication(options =>
                 {
                     options.TheIdentityHubUrl = new Uri("https://www.theidentityhub.com");
-                    options.Tenant = Configuration.GetSection("ICCPortalConfig:IdentityHub:tenant").Value;
-                    options.ClientId = Configuration.GetSection("ICCPortalConfig:IdentityHub:client_id").Value;
-                    options.ClientSecret = Configuration.GetSection("ICCPortalConfig:IdentityHub:client_secret").Value;
+                    options.Tenant = Configuration.GetSection("IccPortalConfig:IdentityHub:tenant").Value;
+                    options.ClientId = Configuration.GetSection("IccPortalConfig:IdentityHub:client_id").Value;
+                    options.ClientSecret = Configuration.GetSection("IccPortalConfig:IdentityHub:client_secret").Value;
                 });
 
 

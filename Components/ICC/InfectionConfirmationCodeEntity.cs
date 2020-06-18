@@ -6,7 +6,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
     [Table("InfectionConfirmationCodes")]
     public class InfectionConfirmationCodeEntity

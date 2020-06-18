@@ -10,24 +10,24 @@ using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
-    public interface IICCService
+    public interface IIccService
     {
         Task<InfectionConfirmationCodeEntity> Get(string icc);
-        Task<InfectionConfirmationCodeEntity> Validate(string ICCodeString);
-        Task<InfectionConfirmationCodeEntity> GenerateICC(Guid userId, bool save = false);
+        Task<InfectionConfirmationCodeEntity> Validate(string IccodeString);
+        Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, bool save = false);
         Task<List<InfectionConfirmationCodeEntity>> GenerateBatch(Guid userId, int count = 20);
-        Task<InfectionConfirmationCodeEntity> RedeemICC(string icc);
+        Task<InfectionConfirmationCodeEntity> RedeemIcc(string icc);
     }
 
-    public class ICCService : IICCService
+    public class IccService : IIccService
     {
-        private readonly ICCBackendContentDbContext _DbContext;
+        private readonly IccBackendContentDbContext _DbContext;
         private readonly IConfiguration _Configuration;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public ICCService(ICCBackendContentDbContext dbContext, IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider)
+        public IccService(IccBackendContentDbContext dbContext, IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider)
         {
             _DbContext = dbContext;
             _Configuration = configuration;
@@ -39,22 +39,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC
         /// </summary>
         /// <param name="icc"></param>
         /// <returns></returns>
-        /// <exception cref="ICCNotFoundException"></exception>
+        /// <exception cref="IccNotFoundException"></exception>
         public async Task<InfectionConfirmationCodeEntity> Get(string icc)
         {
-            InfectionConfirmationCodeEntity ICC = await _DbContext.InfectionConfirmationCodes.FindAsync(icc);
-            if (ICC == null) throw new ICCNotFoundException();
-            return ICC;
+            InfectionConfirmationCodeEntity Icc = await _DbContext.InfectionConfirmationCodes.FindAsync(icc);
+            if (Icc == null) throw new IccNotFoundException();
+            return Icc;
         }
         
         /// <summary>
-        /// Checks if ICC exists and is valid
+        /// Checks if Icc exists and is valid
         /// </summary>
-        /// <param name="ICCodeString"></param>
-        /// <returns>ICC if valid else null</returns>
-        public async Task<InfectionConfirmationCodeEntity> Validate(string ICCodeString)
+        /// <param name="IccodeString"></param>
+        /// <returns>Icc if valid else null</returns>
+        public async Task<InfectionConfirmationCodeEntity> Validate(string IccodeString)
         {
-            InfectionConfirmationCodeEntity icc = await Get(ICCodeString);
+            InfectionConfirmationCodeEntity icc = await Get(IccodeString);
             if (icc != null && icc.IsValid()) return icc;
             return null;
         }
@@ -68,16 +68,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC
 
         
         /// <summary>
-        /// Generate ICC with configuration length and A-Z, 0-9 characters
+        /// Generate Icc with configuration length and A-Z, 0-9 characters
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="save"></param>
         /// <returns></returns>
-        public async Task<InfectionConfirmationCodeEntity> GenerateICC(Guid userId, bool save = true)
+        public async Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, bool save = true)
         {
             random = new Random();
-            int length = Convert.ToInt32(_Configuration.GetSection("ICCConfig:Code:Length").Value);
-            string chars = _Configuration.GetSection("ICCConfig:Code:Chars").Value;
+            int length = Convert.ToInt32(_Configuration.GetSection("IccConfig:Code:Length").Value);
+            string chars = _Configuration.GetSection("IccConfig:Code:Chars").Value;
             string generatedIcc = RandomString(length, chars);
 
             InfectionConfirmationCodeEntity icc = new InfectionConfirmationCodeEntity();
@@ -92,7 +92,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC
         }
 
         /// <summary>
-        /// Generate ICC batch with size [count]
+        /// Generate Icc batch with size [count]
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="count"></param>
@@ -103,22 +103,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC
 
             for (int i = 0; i < count; i++)
             {
-                batch.Add(await GenerateICC(userId, true));
+                batch.Add(await GenerateIcc(userId, true));
             }
 
             await _DbContext.SaveChangesAsync();
             return batch;
         }
 
-        public async Task<InfectionConfirmationCodeEntity> RedeemICC(string icc)
+        public async Task<InfectionConfirmationCodeEntity> RedeemIcc(string icc)
         {
-            InfectionConfirmationCodeEntity ICC = await Get(icc);
-            ICC.Used = _DateTimeProvider.Now();
+            InfectionConfirmationCodeEntity Icc = await Get(icc);
+            Icc.Used = _DateTimeProvider.Now();
             await _DbContext.SaveChangesAsync();
-            return ICC;
+            return Icc;
         }
     }
-    public class ICCNotFoundException : Exception
+    public class IccNotFoundException : Exception
     {
     }
 }

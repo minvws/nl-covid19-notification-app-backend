@@ -24,13 +24,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows
         /// </summary>
         public int RollingPeriod { get; set; }
 
-        /// <summary>
-        /// Yet to be well defined.
-        /// Self-diagnosis support?
-        /// Comes from server?
-        /// Phone can transmit risk level.
-        /// 1-8 or 0-100?
-        /// </summary>
-        public int TransmissionRiskLevel { get; set; }
+        public string[] RegionsOfInterest { get; set; }
     }
 }

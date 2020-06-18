@@ -18,5 +18,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         public string ContentTypeName { get; set; }
         [ProtoMember(4)]
         public byte[] Content { get; set; }
+        [ProtoMember(5)]
+        public string SignedContentTypeName { get; set; }
+        [ProtoMember(6)]
+        public byte[] SignedContent { get; set; }
     }
 }

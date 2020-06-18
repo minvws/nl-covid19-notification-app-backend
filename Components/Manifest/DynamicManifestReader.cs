@@ -2,10 +2,11 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System.Text;
-using Newtonsoft.Json;
+using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
@@ -14,29 +15,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         private readonly ManifestBuilder _ManifestBuilder;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IPublishingId _PublishingId;
+        private readonly ISigner _Signer;
 
-        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId)
+        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId, ISigner signer)
         {
             _ManifestBuilder = manifestBuilder;
             _DateTimeProvider = dateTimeProvider;
             _PublishingId = publishingId;
+            _Signer = signer;
         }
 
-        public ManifestEntity? Execute(string _)
+        public async Task<ManifestEntity?> Execute(string _)
         {
-            var now = _DateTimeProvider.Now();
-            var r = _ManifestBuilder.Execute();
-            var content = JsonConvert.SerializeObject(r);
-            var bytes = Encoding.UTF8.GetBytes(content);
-
-            var result = new ManifestEntity
+            var e = new ManifestEntity
             {
-                Release = now,
-                Content = bytes,
-                ContentTypeName = ContentHeaderValues.Json,
+                Release = _DateTimeProvider.Now(),
             };
-            result.PublishingId = _PublishingId.Create(result);
-            return result;
+            var content = _ManifestBuilder.Execute();
+            var formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_Signer), new StandardPublishingIdFormatter(_Signer));
+            await formatter.Fill(e, content);
+            return e;
         }
     }
 }

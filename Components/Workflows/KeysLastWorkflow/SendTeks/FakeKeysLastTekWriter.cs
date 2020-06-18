@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -11,6 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysFir
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.KeysLastWorkflow.SendTeks
 {
+    [Obsolete("Use this class only for testing purposes")]
     public class FakeKeysLastTekWriter : IKeysLastTekWriter
     {
         private readonly WorkflowDbContext _DbContextProvider;
@@ -22,21 +24,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflows.Key
             _UtcDateTimeProvider = utcDateTimeProvider;
         }
 
+        /// <summary>
+        /// May arrive BEFORE authorisation
+        /// TODO limits on keys.
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public async Task Execute(KeysLastReleaseTeksArgs args)
         {
             var wf = _DbContextProvider
                 .KeyReleaseWorkflowStates
-                .Where(x => x.BucketId == args.BucketId)
-                .FirstOrDefault(x => x.Authorised);
+                .FirstOrDefault(x => x.BucketId == args.BucketId);
 
-            if (wf != null)
-            {
-                var entities = args.Items.ToEntities();
-                foreach (var e in entities)
-                    e.Owner = wf;
+            if (wf == null)
+                return;
 
-                await _DbContextProvider.TemporaryExposureKeys.AddRangeAsync(entities);
-            }
+            var entities = args.Keys.ToEntities();
+            
+            foreach (var e in entities)
+                e.Owner = wf;
+
+            await _DbContextProvider.TemporaryExposureKeys.AddRangeAsync(entities);
         }
     }
 }

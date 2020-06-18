@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
@@ -20,8 +20,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
         }
 
-        public DbSet<TeksInputEntity> EksInput { get; set; }
-        public DbSet<ExposureKeySetContentEntity> EksOutput { get; set; }
+        public DbSet<EksCreateJobInputEntity> EksInput { get; set; }
+        public DbSet<EksCreateJobOutputEntity> EksOutput { get; set; }
 
         public DbSet<ManifestEntity> ManifestContent { get; set; }
         public DbSet<ExposureKeySetContentEntity> ExposureKeySetContent { get; set; }
@@ -31,11 +31,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+           
+            modelBuilder.ApplyConfiguration(new Configuration.Content.EksCreateJobInput());
+            modelBuilder.ApplyConfiguration(new Configuration.Content.EksCreateJobOutput());
             modelBuilder.ApplyConfiguration(new Configuration.Content.ExposureKeySetContent());
             modelBuilder.ApplyConfiguration(new Configuration.Content.Manifest());
             modelBuilder.ApplyConfiguration(new Configuration.Content.RiskCalculationContent());
             modelBuilder.ApplyConfiguration(new Configuration.Content.ResourceBundleContent());
             modelBuilder.ApplyConfiguration(new Configuration.Content.AppConfigContent());
+        }
+    }
+
+    public class ExposureContentContextFactory : IDesignTimeDbContextFactory<ExposureContentDbContext>
+    {
+        public ExposureContentDbContext CreateDbContext(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<ExposureContentDbContext>();
+            optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=Content;Integrated Security=true");
+
+            return new ExposureContentDbContext(optionsBuilder.Options);
         }
     }
 }
