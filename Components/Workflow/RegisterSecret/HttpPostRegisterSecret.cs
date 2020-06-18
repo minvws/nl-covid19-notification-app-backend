@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             _Writer = writer;
         }
 
-        public async Task<IActionResult> Execute(SecretArgs args)
+        public async Task<IActionResult> Execute()
         {
             var result = await _Writer.Execute();
             return new OkObjectResult(result);

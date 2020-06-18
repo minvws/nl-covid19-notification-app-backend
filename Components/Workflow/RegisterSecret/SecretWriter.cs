@@ -25,26 +25,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
 
         public async Task<EnrollmentResponse> Execute()
         {
+            var validDate = _DateTimeProvider.Now().AddDays(1);
+
             var entity = new KeyReleaseWorkflowState
             {
                 LabConfirmationId = _NumberGenerator.GenerateToken(),
                 Created = _DateTimeProvider.Now(),
                 BucketId = Convert.ToBase64String(_NumberGenerator.GenerateKey()),
                 ConfirmationKey = Convert.ToBase64String(_NumberGenerator.GenerateKey()),
+                ValidUntil = new DateTime(validDate.Year, validDate.Month, validDate.Day, 4,0,0, DateTimeKind.Local)
             };
 
             await _DbContextProvider.KeyReleaseWorkflowStates.AddAsync(entity);
 
             _DbContextProvider.SaveAndCommit();
 
-            var validDate = DateTime.Now.AddDays(1);
-
             return new EnrollmentResponse
             {
                 ConfirmationKey = entity.ConfirmationKey,
                 BucketId = entity.BucketId,
                 LabConfirmationId = entity.LabConfirmationId,
-                ValidUntil = new DateTime(validDate.Year, validDate.Month, validDate.Day, 4,0,0, DateTimeKind.Local)
+                Validity = (long)(entity.ValidUntil - _DateTimeProvider.Now()).TotalSeconds
             };
         }
     }

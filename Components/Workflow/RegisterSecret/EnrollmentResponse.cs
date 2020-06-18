@@ -2,8 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
 {
     public class EnrollmentResponse
@@ -15,6 +13,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
 
         public string ConfirmationKey { get; set; }
 
-        public DateTime ValidUntil { get; set; }
+        public long Validity { get; set; }
     }
 }

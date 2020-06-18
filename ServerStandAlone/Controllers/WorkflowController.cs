@@ -9,7 +9,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers
 {
@@ -19,12 +18,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
     {
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.ReleaseTeks)]
-        [SwaggerOperation(
-            Summary = "Creates a new product",
-            Description = "Requires admin privileges",
-            OperationId = "CreateProduct",
-            Tags = new[] { "Purchase", "Products" }
-        )]
         public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand command)
         {
             using var reader = new StreamReader(Request.Body);
@@ -34,25 +27,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
 
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.RegisterSecret)]
-        [SwaggerOperation(
-            Summary = "Creates a new product",
-            Description = "Requires admin privileges",
-            OperationId = "CreateProduct",
-            Tags = new[] { "Purchase", "Products" }
-        )]
-        public async Task<IActionResult> PostSecret([FromBody] SecretArgs args, [FromServices] HttpPostRegisterSecret command)
+        public async Task<IActionResult> PostSecret([FromBody] SecretArgs _, [FromServices] HttpPostRegisterSecret command)
         {
-            return await command.Execute(args);
+            return await command.Execute();
         }
 
         [HttpPost]
         [Route(EndPointNames.CaregiversPortalApi.LabConfirmation)]
-        [SwaggerOperation(
-            Summary = "Creates a new product",
-            Description = "Requires admin privileges",
-            OperationId = "CreateProduct",
-            Tags = new[] { "Purchase", "Products" }
-        )]
         public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args, [FromServices] HttpPostAuthorise command)
         {
             return await command.Execute(args);
