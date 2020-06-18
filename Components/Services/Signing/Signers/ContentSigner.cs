@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             var cert = _Provider.GetCertificate();
 
             if (cert == null)
-                throw new InvalidOperationException("Certificate not found");
+                throw new InvalidOperationException("Certificate not found.");
 
             AsymmetricKeyParameter key = DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
             CmsSignedDataGenerator gen = new CmsSignedDataGenerator();
