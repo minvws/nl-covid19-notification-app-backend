@@ -1,0 +1,42 @@
+<div>
+  <div class="row h-100 min-vh-100 align-items-center justify-content-center">
+    <div class="col-sm-7">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Infectie Confirmatie Code</h5>
+          <p class="card-text">
+            Infectie Confirmatie Code:
+          </p>
+          <!--          TODO: Convert generated code into fill-in Icc -->
+          <div class="d-flex" id="iccWrapper">
+
+            <input placeholder="1234" [(ngModel)]="Icc" [ngModelOptions]="{standalone:true}" class="w-100" style="font-size: 1.3em" type="text" class="form-control">
+            <!--            <input class="form-control" (keydown)="ICIdKeyPress($event, 0)" placeholder="0" type="number"/>-->
+            <!--            <input class="form-control" (keydown)="ICIdKeyPress($event, 1)" placeholder="0" type="number"/>-->
+            <!--            <input class="form-control" (keydown)="ICIdKeyPress($event, 2)" placeholder="0" type="number"/>-->
+            <!--            <input class="form-control" (keydown)="ICIdKeyPress($event, 3)" placeholder="0" type="number"/>-->
+            <!--            <input class="form-control" (keydown)="ICIdKeyPress($event, 4)" placeholder="0" type="number"/>-->
+            <!--            <input class="form-control" (keydown)="ICIdKeyPress($event, 5)" placeholder="0" type="number"/>-->
+          </div>
+          <p class="card-text my-3 text-center">
+            Patient LabConfirmatieID (uit app):
+          </p>
+          <div class="row justify-content-center">
+            <div class="col-sm-8">
+              <div class="d-flex" id="icIdWrapper">
+                <input [(ngModel)]="labConfirmationID[0]" class="form-control"  (keydown)="ICIdKeyPress($event, 0)" placeholder="0" type="text"/>
+                <input [(ngModel)]="labConfirmationID[1]" class="form-control"  (keydown)="ICIdKeyPress($event, 1)" placeholder="0" type="text"/>
+                <input [(ngModel)]="labConfirmationID[2]" class="form-control"  (keydown)="ICIdKeyPress($event, 2)" placeholder="0" type="text"/>
+                <input [(ngModel)]="labConfirmationID[3]" class="form-control"  (keydown)="ICIdKeyPress($event, 3)" placeholder="0" type="text"/>
+                <input [(ngModel)]="labConfirmationID[4]" class="form-control"  (keydown)="ICIdKeyPress($event, 4)" placeholder="0" type="text"/>
+                <input [(ngModel)]="labConfirmationID[5]" class="form-control"  (keydown)="ICIdKeyPress($event, 5)" placeholder="0" type="text"/>
+              </div>
+            </div>
+          </div>
+          <button class="btn w-100 btn-dark my-3" (click)="report()">Raporteren</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
