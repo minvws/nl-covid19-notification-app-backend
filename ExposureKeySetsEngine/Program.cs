@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ExposureKeySetsEngine

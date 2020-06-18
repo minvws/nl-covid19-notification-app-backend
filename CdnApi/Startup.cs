@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnApi
 {
