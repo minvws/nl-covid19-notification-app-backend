@@ -61,7 +61,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         public async Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, bool save = true)
         {
             var length = Convert.ToInt32(_Configuration.GetSection("IccConfig:Code:Length").Value);
-            var chars = _Configuration.GetSection("IccConfig:Code:Chars").Value;
             var generatedIcc = _RandomGenerator.GenerateToken(length);
 
             var icc = new InfectionConfirmationCodeEntity
