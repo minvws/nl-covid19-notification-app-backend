@@ -16,7 +16,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
@@ -25,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
 {
     public class Startup
     {
-        private const string Title = "MSS KeyReleasePortal Api";
+        private const string Title = "MSS EKSEngine Api";
 
         public Startup(IConfiguration configuration)
         {
@@ -73,6 +72,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
                 var signer = new ContentSigner(provider);
                 return signer;
             });
+
             services.AddSingleton(x =>
             {
                 var config = new HSMSigningConfig(Configuration, "KeySet");
@@ -97,7 +97,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
             app.UseSwagger();
             app.UseSwaggerUI(o =>
             {
-                o.SwaggerEndpoint("/swagger/v1/swagger.json", Title);
+                o.SwaggerEndpoint("../swagger/v1/swagger.json", Title);
             });
 
             if (!env.IsDevelopment()) 

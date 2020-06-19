@@ -10,6 +10,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
     [Obsolete("Use this class only for testing purposes")]
     public class FakeSignatureValidator : ISignatureValidator
     {
-        public bool Valid(byte[] signature, string bucketId, byte[] data) => signature != null && data != null;
+        public bool Valid(byte[] signature, KeyReleaseWorkflowState workflow, byte[] data) => signature != null && workflow != null && data != null;
     }
 }
