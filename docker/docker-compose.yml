@@ -14,8 +14,8 @@ services:
       context: ..
       dockerfile: docker/icc_backend/Dockerfile
     ports:
-      - '5006:5000'
-      - '5007:5001'
+      - '5006:5006'
+      - '5007:5007'
     links:
       - 'db_icc_backend:database'
   db_standalone_server:

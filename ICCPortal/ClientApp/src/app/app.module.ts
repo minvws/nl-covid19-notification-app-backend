@@ -10,9 +10,6 @@ import {IccReportComponent} from "./icc/report.component";
 import {IccGenerateComponent} from "./icc/generate.component";
 import {LoginComponent} from "./login/login.component";
 
-
-
-
 @NgModule({
   declarations: [
     AppComponent,

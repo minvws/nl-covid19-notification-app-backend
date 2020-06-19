@@ -1,6 +1,7 @@
 # Covid19 Notification App Backend
 
 ## Introduction
+
 This repository contains the backend code for the Proof of Concept for the Dutch exposure notification app. We provide this code in an early stage so that everyone can follow along as we develop the app, and to solicit feedback. Note that due to the early stage in which we are sharing this code, significant portions of the code might still change. We might add or remove features and code as needed, based on validation and user tests that are conducted partially in parallel to the development.
 
 * The backend is located in the repository you are currently viewing.
@@ -22,20 +23,30 @@ Local development support is provided for all platforms - Windows, macOS, Linux 
 
 ## Development Tools
 
-* Visual Studio 2019
+* Visual Studio 2019 (or Rider)
 * Your choice of SQL Server instances
 
 ## Supporting local mobile app development
 
+First make sure that you have the following installed:
+
+1. Dotnet Core 3.1 SDK: https://dotnet.microsoft.com/download/dotnet-core/3.1
+1. Node JS 12.18.1+ with NPM: https://nodejs.org/en/
+1. Yarn: https://yarnpkg.com/
+1. Angular CLI: https://angular.io/guide/setup-local
+1. Optionally either Visual Studio or Rider.
+1. A terminal is recommended, if you're running an older windows then https://cmder.net/ is useful. You need gitbash.
+
+Then clone this repo.
+
 ### Standalone
 
-1. Download dotnet SDK: https://dotnet.microsoft.com/download/dotnet-core/3.1
-1. Clone this repo
 1. Setup a database instance. Windows users can use a local SQL Server.
 1. Add an `appsettings.Development.json` file. This overrides the settings in appsettings.json. And add a value for the MSS connection string.
 1. Go to the ServerStandAlone folder and run it with 'dotnet run'.
 
 ### Docker
+
 To quickly start a Standalone development environment you can use of the docker-compose file:
 ```bash
 # Solution root
@@ -43,7 +54,28 @@ cd docker
 docker-compose up --build
 ``` 
 
-See the individual app folders for details.
+### ICC Portal
+
+The ICC Portal consists of a .Net Core backend found under `ICCBackend` and an Angular / ASP.Net MVC Core frontend found under `ICCPortal`
+
+#### ICC Portal backend
+
+1. Setup a database instance. Windows users can use a local SQL Server.
+1. Add an `appsettings.Development.json` file to the folder `ICCBackend`. This overrides the settings in appsettings.json. And add a value for the MSS connection string.
+1. Go to the `\ICCBackend` folder and run it with `dotnet run`, this will start the backend in Kestrel.
+1. Access the APIs here: `http://localhost:5000/swagger/index.html`.
+1. To provision the database you must execute `​/devops​/nukeandpavedb` in Swagger.
+1. Done :)
+
+#### ICC Portal frontend
+
+1. Clone this repo
+1. Open a terminal and go to `\ICCPortal\ClientApp`.
+1. Run `yarn` to install all of the dependencies.
+1. Run the frontend with `ng serve`.
+1. The server API url can be configured in `ICCPortal\ClientApp\src\environments\environment.ts`
+1. Done :)
 
 ## Attribution
+
 Some parts of this application are inspired by the work on [Private Tracer](https://gitlab.com/PrivateTracer/server.azure). You can find their license [here](LICENSE/LICENSE.PrivateTracer.org.txt).
