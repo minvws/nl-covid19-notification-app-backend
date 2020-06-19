@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
             services.AddScoped<HttpPostRegisterSecret, HttpPostRegisterSecret>();
             services.AddScoped<ISecretWriter, SecretWriter>();
             services.AddScoped<ISecretConfig, StandardSecretConfig>();
-            services.AddScoped<ITekWriter, FakeTekWriter>();
+            services.AddScoped<ITekWriter, TekWriter>();
             services.AddScoped<RandomNumberGenerator, RandomNumberGenerator>();
 
             services.AddSwaggerGen(o =>

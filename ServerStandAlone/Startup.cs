@@ -100,6 +100,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 var signer = new KeySetSigner(provider);
                 return signer;
             });
+
+            services.AddScoped<ISignatureValidator, FakeSignatureValidator>();
+            services.AddScoped<IReleaseKeysAuthorizationValidator, FakeReleaseKeysAuthorizationValidator>();
             
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
             services.AddScoped<GetActiveExposureKeySetsListCommand, GetActiveExposureKeySetsListCommand>();
@@ -139,8 +142,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             services.AddScoped<HttpPostReleaseTeksCommand, HttpPostReleaseTeksCommand>();
             services.AddScoped<IReleaseTeksValidator, ReleaseTeksValidator>();
-            services.AddScoped<ISignatureValidator, FakeSignatureValidator>();
-            services.AddScoped<ITekWriter, FakeTekWriter>();
+            
+            services.AddScoped<ITekWriter, TekWriter>();
 
             services.AddScoped<HttpPostAppConfigCommand, HttpPostAppConfigCommand>();
             services.AddScoped<AppConfigInsertDbCommand, AppConfigInsertDbCommand>();
@@ -148,7 +151,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
             services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();
-            services.AddScoped<IReleaseKeysAuthorizationValidator, FakeReleaseKeysAuthorizationValidator>();
+            
 
             services.AddScoped<GetLatestContentCommand<ResourceBundleContentEntity>, GetLatestContentCommand<ResourceBundleContentEntity>>();
             services.AddScoped<GetLatestContentCommand<RiskCalculationContentEntity>, GetLatestContentCommand<RiskCalculationContentEntity>>();

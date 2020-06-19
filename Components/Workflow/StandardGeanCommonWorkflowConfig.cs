@@ -16,5 +16,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         }
         public int TemporaryExposureKeyCountMin => GetValueInt32("Min", _Defaults.TemporaryExposureKeyCountMin);
         public int TemporaryExposureKeyCountMax => GetValueInt32("Max", _Defaults.TemporaryExposureKeyCountMax);
+        public int GracePeriod => GetValueInt32("GracePeriod", _Defaults.TemporaryExposureKeyCountMax);
     }
 }

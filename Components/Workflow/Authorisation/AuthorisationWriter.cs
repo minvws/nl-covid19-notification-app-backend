@@ -5,33 +5,34 @@
 using System.Linq;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
     public class AuthorisationWriter : IAuthorisationWriter
     {
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly WorkflowDbContext _DbContextProvider;
 
-        public AuthorisationWriter(IUtcDateTimeProvider dateTimeProvider, WorkflowDbContext dbContextProvider)
+        public AuthorisationWriter(WorkflowDbContext dbContextProvider)
         {
-            _DateTimeProvider = dateTimeProvider;
             _DbContextProvider = dbContextProvider;
         }
 
-        public async Task Execute(AuthorisationArgs args)
+        public Task Execute(AuthorisationArgs args)
         {
             var e = _DbContextProvider
                 .KeyReleaseWorkflowStates
                 .SingleOrDefault(x => x.LabConfirmationId == args.LabConfirmationID);
 
             if (e == null)
-                return;
+                return Task.CompletedTask;
 
-            e.Authorised = true;
+            e.AuthorisedByCaregiver = true;
+
+            if (e.Keys != null && e.Keys.Any())
+                e.Authorised = true;
 
             _DbContextProvider.KeyReleaseWorkflowStates.Update(e);
+            return Task.CompletedTask;
         }
     }
 }

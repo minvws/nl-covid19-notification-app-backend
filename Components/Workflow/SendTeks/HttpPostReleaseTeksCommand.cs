@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         private readonly ITekWriter _Writer;
         private readonly WorkflowDbContext _DbContextProvider;
 
-        public HttpPostReleaseTeksCommand(IReleaseTeksValidator keyValidator, ISignatureValidator signatureValidator, ITekWriter writer, WorkflowDbContext dbContextProvider)
+        public HttpPostReleaseTeksCommand(
+            IReleaseTeksValidator keyValidator, 
+            ISignatureValidator signatureValidator, 
+            ITekWriter writer, 
+            WorkflowDbContext dbContextProvider)
         {
             _KeyValidator = keyValidator;
             _SignatureValidator = signatureValidator;
@@ -31,7 +36,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         {
             var args = JsonConvert.DeserializeObject<ReleaseTeksArgs>(payload);
 
-            if (!_KeyValidator.Validate(args) || !_SignatureValidator.Valid(signature, args.BucketId, Encoding.UTF8.GetBytes(payload)))
+            var workflow = _DbContextProvider
+                .KeyReleaseWorkflowStates
+                .FirstOrDefault(x => x.BucketId == args.BucketId);
+
+            if (workflow == null || !_KeyValidator.Validate(args, workflow) || !_SignatureValidator.Valid(signature, workflow, Encoding.UTF8.GetBytes(payload)))
                 return new OkResult();
 
             await _Writer.Execute(args);
