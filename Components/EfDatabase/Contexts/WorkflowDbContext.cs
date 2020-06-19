@@ -19,6 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasDefaultSchema("dbo");
             modelBuilder.ApplyConfiguration(new Configuration.Workflow.KeyReleaseWorkflowStateConfig());
             modelBuilder.ApplyConfiguration(new Configuration.Workflow.TemporaryExposureKeyConfig());
         }
