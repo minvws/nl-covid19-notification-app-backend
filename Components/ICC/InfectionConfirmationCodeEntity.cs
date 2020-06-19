@@ -16,6 +16,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         public string Code { get; set; }
 
         /// <summary>
+        /// Identification to identify & revoke Batchset of ICC's 
+        /// </summary>
+        public string BatchIdentifier { get; set; } 
+        
+        /// <summary>
         /// Timestamp for Code generation
         /// </summary>
         public DateTime Created { get; set; }
@@ -39,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         /// User Guid from user that used the Code
         /// </summary>
         public Guid? UsedBy { get; set; }
-
+        
         public bool IsValid()
         {
             return (Used == null && (Revoked == null || Revoked > DateTime.Now));

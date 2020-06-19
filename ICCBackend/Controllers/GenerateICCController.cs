@@ -30,9 +30,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 
 
         [HttpPost("single")]
-        public async Task<JsonResult> PostGenerateIcc(GenerateIccModel generateIccModel)
+        public async Task<JsonResult> PostGenerateIcc(GenerateIccInputModel generateIccInputModel)
         {
-            InfectionConfirmationCodeEntity infectionConfirmationCodeEntity = await _IccService.GenerateIcc(generateIccModel.UserId);
+            InfectionConfirmationCodeEntity infectionConfirmationCodeEntity = await _IccService.GenerateIcc(generateIccInputModel.UserId);
             return new JsonResult(new
             {
                 ok = true,
@@ -44,15 +44,17 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         
         
         [HttpPost("batch")]
-        public async Task<JsonResult> PostGenerateBatchIcc(GenerateIccModel generateIccModel)
+        public async Task<JsonResult> PostGenerateBatchIcc(GenerateIccInputModel generateIccInputModel)
         {
-            List<InfectionConfirmationCodeEntity> batchEntity = await _IccService.GenerateBatch(generateIccModel.UserId);
+            
+            List<InfectionConfirmationCodeEntity> IccList = await _IccService.GenerateBatch(generateIccInputModel.UserId);
+            IccBatch batch = new IccBatch("tempbatchid", IccList);
             return new JsonResult(new
             {
                 ok = true,
                 status = 200,
                 length = _Configuration.GetSection("IccConfig:Code:Length").Value,
-                batch = batchEntity
+                batch = batch
             });
         }
     }
