@@ -47,6 +47,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccBackend", "ICCBackend\Ic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccPortal", "ICCPortal\IccPortal.csproj", "{2E5FC398-C354-4D0E-84F3-804411340C65}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5CB694D0-78E1-4347-BF78-A557E0780125}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
