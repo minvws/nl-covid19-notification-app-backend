@@ -16,7 +16,7 @@ export class IccGenerateComponent {
 
 
   public generateCode() {
-    this.http.post("https://localhost:5005/GenerateIcc/batch", {"user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"}).subscribe((result) => {
+    this.http.post("https://localhost:5007/GenerateIcc/batch", {"user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"}).subscribe((result) => {
       this.all_icc = result.batch;
     })
   }

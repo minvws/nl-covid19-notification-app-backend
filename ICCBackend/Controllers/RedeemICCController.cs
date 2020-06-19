@@ -22,7 +22,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         private readonly IIccService _IccService;
         private readonly AppBackendService _AppBackendService;
 
-        public RedeemIccController(IIccService iccService, ILogger<RedeemIccController> logger, AppBackendService appBackendService)
+        public RedeemIccController(IIccService iccService, ILogger<RedeemIccController> logger,
+            AppBackendService appBackendService)
         {
             _IccService = iccService;
             _AppBackendService = appBackendService;
@@ -33,23 +34,24 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         public async Task<ActionResult<object>> PostRedeemIcc(RedeemIccModel redeemIccModel)
         {
             // Make Icc Used, so it can only be used once 
-            InfectionConfirmationCodeEntity infectionConfirmationCodeEntity = await _IccService.RedeemIcc(User.Identity.Name);
-            
+            // InfectionConfirmationCodeEntity infectionConfirmationCodeEntity = await _IccService.RedeemIcc(User.Identity.Name);
+
             // POST /labresult call on App Backend
             bool isValid = await _AppBackendService.LabConfirmationIdIsValid(redeemIccModel);
-
+            // bool isValid = false;
             if (isValid)
             {
+                // TODO: remove debugging Icc and payload from response
                 return new JsonResult(new
                 {
                     ok = true,
-                    status = 501,
-                    Icc = infectionConfirmationCodeEntity,
+                    status = 200,
                     payload = redeemIccModel
                 });
             }
 
-            return Unauthorized(new {ok = false, status = "401", payload = redeemIccModel});
+            return BadRequest(new
+                {ok = false, status = "400", message = "Invalid LabConfirmationId", payload = redeemIccModel});
         }
     }
 }

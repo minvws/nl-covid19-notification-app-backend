@@ -37,7 +37,7 @@ export class IccReportComponent {
     // var Icc = document.querySelector("#iccWrapper .form-control").value
     // var ICId = Array.from(document.querySelectorAll("#icIdWrapper .form-control")).map(el => el.value).join("")
     //
-    this.http.post("https://localhost:5005/RedeemIcc", {
+    this.http.post("https://localhost:5007/RedeemIcc", {
       "labConfirmationID": this.labConfirmationID.join(""),
       "commencementComplaints": new Date(Date.now()).toISOString()
     }, {
