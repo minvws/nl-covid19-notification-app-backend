@@ -74,7 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
         /// <param name="userId"></param>
         /// <param name="save"></param>
         /// <returns></returns>
-        public async Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, string batchId = "")
+        public async Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, string batchId = null)
         {
             _Random = new Random();
             var length = Convert.ToInt32(_Configuration.GetSection("IccConfig:Code:Length").Value);
