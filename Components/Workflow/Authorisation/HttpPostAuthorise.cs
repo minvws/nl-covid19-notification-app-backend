@@ -29,7 +29,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
             await _AuthorisationWriter.Execute(args);
             _DbContextProvider.SaveAndCommit();
-            return new OkResult();
+
+            return new OkObjectResult(new AuthorisationResponse { Valid = true });
         }
     }
 }
