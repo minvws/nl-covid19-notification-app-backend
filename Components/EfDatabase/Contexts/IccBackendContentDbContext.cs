@@ -4,6 +4,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts
 {
@@ -18,6 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<InfectionConfirmationCodeEntity>().HasKey(e => e.Code);
+            modelBuilder.Entity<InfectionConfirmationCodeEntity>().HasIndex(e => e.BatchId);
             
             modelBuilder.Entity<InfectionConfirmationCodeEntity>().Property(e => e.Created)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")

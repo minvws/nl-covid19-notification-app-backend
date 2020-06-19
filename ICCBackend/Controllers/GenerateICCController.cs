@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
@@ -19,9 +20,10 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         private readonly IIccService _IccService;
         private readonly ILogger<GenerateIccController> _Logger;
         private readonly IConfiguration _Configuration;
-        
 
-        public GenerateIccController(ILogger<GenerateIccController> logger, IConfiguration configuration, IIccService iccService )
+
+        public GenerateIccController(ILogger<GenerateIccController> logger, IConfiguration configuration,
+            IIccService iccService)
         {
             _Logger = logger;
             _Configuration = configuration;
@@ -32,7 +34,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         [HttpPost("single")]
         public async Task<JsonResult> PostGenerateIcc(GenerateIccInputModel generateIccInputModel)
         {
-            InfectionConfirmationCodeEntity infectionConfirmationCodeEntity = await _IccService.GenerateIcc(generateIccInputModel.UserId);
+            var infectionConfirmationCodeEntity =
+                await _IccService.GenerateIcc(generateIccInputModel.UserId);
             return new JsonResult(new
             {
                 ok = true,
@@ -41,20 +44,19 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
                 length = _Configuration.GetSection("IccConfig:Code:Length").Value
             });
         }
-        
-        
+
+
         [HttpPost("batch")]
         public async Task<JsonResult> PostGenerateBatchIcc(GenerateIccInputModel generateIccInputModel)
         {
-            
-            List<InfectionConfirmationCodeEntity> IccList = await _IccService.GenerateBatch(generateIccInputModel.UserId);
-            IccBatch batch = new IccBatch("tempbatchid", IccList);
+            var iccBatch = await _IccService.GenerateBatch(generateIccInputModel.UserId);
+
             return new JsonResult(new
             {
                 ok = true,
                 status = 200,
                 length = _Configuration.GetSection("IccConfig:Code:Length").Value,
-                batch = batch
+                iccBatch = iccBatch
             });
         }
     }

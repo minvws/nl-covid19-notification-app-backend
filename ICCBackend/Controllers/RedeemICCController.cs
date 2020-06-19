@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Models;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Services;
 

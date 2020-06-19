@@ -4,7 +4,7 @@
 
 using System;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Exceptions
 {
     public class IccNotFoundException : Exception
     {

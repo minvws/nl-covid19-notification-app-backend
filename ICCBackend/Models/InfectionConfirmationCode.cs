@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Models
 {

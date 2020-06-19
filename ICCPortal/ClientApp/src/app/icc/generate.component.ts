@@ -19,7 +19,8 @@ export class IccGenerateComponent {
     const serviceUrl = environment.apiUrl + "/GenerateIcc/batch";
     this.http.post(serviceUrl, { "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6" })
       .subscribe((result) => {
-        this.all_icc = result.batch;
+        this.all_icc = result.iccBatch.Batch;
+        alert(result.iccBatch.Id + " generated");
       });
   }
 

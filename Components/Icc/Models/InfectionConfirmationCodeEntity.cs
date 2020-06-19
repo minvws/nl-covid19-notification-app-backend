@@ -5,7 +5,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models
 {
     [Table("InfectionConfirmationCodes")]
     public class InfectionConfirmationCodeEntity
@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         /// <summary>
         /// Identification to identify & revoke Batchset of ICC's 
         /// </summary>
-        public string BatchIdentifier { get; set; } 
+        public string? BatchId { get; set; } 
         
         /// <summary>
         /// Timestamp for Code generation
