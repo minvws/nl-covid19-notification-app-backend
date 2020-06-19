@@ -5,30 +5,23 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
-    [Obsolete("Use this class only for testing purposes")]
-    public class FakeTekWriter : ITekWriter
+    public class TekWriter : ITekWriter
     {
         private readonly WorkflowDbContext _DbContextProvider;
-        private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
+        private readonly ILogger<WorkflowDbContext> _Logger;
 
-        public FakeTekWriter(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider utcDateTimeProvider)
+        public TekWriter(WorkflowDbContext dbContextProvider, ILogger<WorkflowDbContext> logger)
         {
             _DbContextProvider = dbContextProvider;
-            _UtcDateTimeProvider = utcDateTimeProvider;
+            _Logger = logger;
         }
 
-        /// <summary>
-        /// May arrive BEFORE authorisation
-        /// TODO limits on keys.
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
         public async Task Execute(ReleaseTeksArgs args)
         {
             var wf = _DbContextProvider
@@ -36,12 +29,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 .FirstOrDefault(x => x.BucketId == args.BucketId);
 
             if (wf == null)
+            {
+                _Logger.LogInformation($"Workflow with bucketId {args.BucketId} not found.");
                 return;
+            }
 
             var entities = args.Keys.ToEntities();
             
             foreach (var e in entities)
                 e.Owner = wf;
+
+            if (wf.AuthorisedByCaregiver)
+                wf.Authorised = true;
 
             await _DbContextProvider.TemporaryExposureKeys.AddRangeAsync(entities);
         }

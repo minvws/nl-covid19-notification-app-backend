@@ -49,6 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleasePortalApi
             services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
             services.AddScoped<ISignatureValidator, SignatureValidator>();
             services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();
+            services.AddScoped<IReleaseKeysAuthorizationValidator, ReleaseKeysAuthorizationValidator>();
 
             services.AddSwaggerGen(o =>
             {
@@ -63,7 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleasePortalApi
             app.UseSwagger();
             app.UseSwaggerUI(o =>
             {
-                o.SwaggerEndpoint("/swagger/v1/swagger.json", Title);
+                o.SwaggerEndpoint("../swagger/v1/swagger.json", Title);
             });
 
             if (!env.IsDevelopment()) 

@@ -4,6 +4,7 @@
 
 using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
+using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Cms;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
@@ -33,10 +34,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             gen.AddSigner(key, DotNetUtilities.FromX509Certificate(cert), CmsSignedGenerator.DigestSha256);
 
             CmsSignedData cmsSignedData = gen.Generate(new CmsProcessableByteArray(content));
-            var signature = cmsSignedData.GetEncoded();
+
+            var signature = cmsSignedData.GetEncoded(Asn1Encodable.Der);
             return signature;
         }
 
-        public int LengthBytes => 622;
+        public int LengthBytes => 620;
     }
 }
