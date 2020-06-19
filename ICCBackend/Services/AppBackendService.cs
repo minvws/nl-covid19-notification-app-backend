@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
 
         public AppBackendService(IConfiguration configuration)
         {
-            _BaseUrl = "http://" + configuration.GetSection("AppBackendConfig:Host").Value.ToString();
+            _BaseUrl = configuration.GetSection("AppBackendConfig:BaseUri").Value.ToString();
             _UploadAuthorisationToken = configuration.GetSection("AppBackendConfig:UploadAuthorisationToken").Value.ToString();
             if (_AuthenticationEnabled)
             {
