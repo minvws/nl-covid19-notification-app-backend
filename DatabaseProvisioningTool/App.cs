@@ -3,8 +3,13 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
 {
@@ -26,11 +31,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
             _Logger.LogInformation("Running...");
             
             _Logger.LogInformation("Apply WorkflowDb Migrations...");
-            await _WorkflowDbContext.Database.EnsureCreatedAsync();
+            await _WorkflowDbContext.Database.MigrateAsync();
+            
             
             _Logger.LogInformation("Apply ExposureContentDb Migrations...");
-            await _ExposureContentDbContext.Database.EnsureCreatedAsync();
-            
+            await _ExposureContentDbContext.Database.MigrateAsync();
+
+            _Logger.LogInformation("Seeding ExposureContent...");
+            var db = new CreateContentDatabase(_ExposureContentDbContext, new StandardUtcDateTimeProvider(), new ContentSigner(new FakeCertificateProvider("FakeRSA.p12")));
+            await db.AddExampleContent();
+
             _Logger.LogInformation("Completed...");
         }
     }

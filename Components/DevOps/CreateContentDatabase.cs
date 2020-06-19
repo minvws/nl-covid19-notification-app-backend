@@ -13,7 +13,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
@@ -32,6 +31,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             _DateTimeProvider = dateTimeProvider;
             _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter());
         }
+
+        public CreateContentDatabase(ExposureContentDbContext DbContextProvider, IUtcDateTimeProvider dateTimeProvider, ContentSigner signer)
+        {
+            _DbContextProvider = DbContextProvider;
+            _DateTimeProvider = dateTimeProvider;
+            _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter());
+        }
+
 
         public async Task Execute()
         {
@@ -101,13 +108,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             await Write(
                 new RiskCalculationConfigArgs
                 {
-                    Release = new DateTime(2020, 6, 12),
-                    MinimumRiskScore = 1,
-                    DaysSinceLastExposureScores​ = new[] {1, 2, 3, 4, 5, 6, 7, 8},
-                    AttenuationScores​ = new[] {1, 2, 3, 4, 5, 6, 7, 8},
-                    DurationAtAttenuationThresholds​ = new[] {42, 56},
-                    DurationScores = new[] {1, 2, 3, 4, 5, 6, 7, 8},
-                    TransmissionRiskScores​ = new[] {1, 2, 3, 4, 5, 6, 7, 8},
+                    AttenuationScores​ = new[] { 1, 2, 4, 4, 4, 4, 4, 4 },
+                    DurationScores = new[] { 1, 1, 1, 2, 4, 4, 4, 4 },
+                    MinimumRiskScore = 8,
+                    DaysSinceLastExposureScores​ = new[] { 1, 1, 1, 1, 1, 1, 1, 1 },
+                    TransmissionRiskScores​ = new[] { 1, 1, 1, 1, 1, 1, 1, 1 },
+                    DurationAtAttenuationThresholds​ = new[] { 1, 1, 1, 1, 1, 1, 1, 1 },
+                    Release = new DateTime(2020, 06, 18)
                 });
 
             await Write(
