@@ -4,11 +4,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
@@ -17,12 +17,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         private readonly IccBackendContentDbContext _DbContext;
         private readonly IConfiguration _Configuration;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly IRandomNumberGenerator _RandomGenerator;
 
-        public IccService(IccBackendContentDbContext dbContext, IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider)
+        public IccService(IccBackendContentDbContext dbContext, IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider,  IRandomNumberGenerator randomGenerator)
         {
             _DbContext = dbContext;
             _Configuration = configuration;
             _DateTimeProvider = dateTimeProvider;
+            _RandomGenerator = randomGenerator;
         }
 
         /// <summary>
@@ -50,14 +52,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
             return null;
         }
 
-        private Random _Random = new Random();
-        private string RandomString(int length, string chars)
-        {
-            return new string(Enumerable.Repeat(chars, length)
-                .Select(s => s[_Random.Next(s.Length)]).ToArray());
-        }
-
-        
         /// <summary>
         /// Generate Icc with configuration length and A-Z, 0-9 characters
         /// </summary>
@@ -66,10 +60,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         /// <returns></returns>
         public async Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, bool save = true)
         {
-            _Random = new Random();
             var length = Convert.ToInt32(_Configuration.GetSection("IccConfig:Code:Length").Value);
             var chars = _Configuration.GetSection("IccConfig:Code:Chars").Value;
-            var generatedIcc = RandomString(length, chars);
+            var generatedIcc = _RandomGenerator.GenerateToken(length);
 
             var icc = new InfectionConfirmationCodeEntity
             {
