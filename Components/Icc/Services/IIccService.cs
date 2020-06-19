@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services
@@ -15,5 +16,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services
         Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, string batchId = "");
         Task<IccBatch> GenerateBatch(Guid userId, int count = 20);
         Task<InfectionConfirmationCodeEntity> RedeemIcc(string icc);
+        Task<bool> RevokeBatch(RevokeBatchInput revokeBatchInput);
     }
 }

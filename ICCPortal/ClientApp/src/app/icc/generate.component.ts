@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
   styleUrls: ['./generate.component.css']
 })
 export class IccGenerateComponent {
-  public all_icc = null;
+  public icc_batch = null;
   private http;
 
   constructor(http: HttpClient) {
@@ -19,13 +19,13 @@ export class IccGenerateComponent {
     const serviceUrl = environment.apiUrl + "/GenerateIcc/batch";
     this.http.post(serviceUrl, { "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6" })
       .subscribe((result) => {
-        this.all_icc = result.iccBatch.Batch;
-        alert(result.iccBatch.Id + " generated");
+        this.icc_batch = result.iccBatch;
+        alert("Batch #" + result.iccBatch.id + " generated");
       });
   }
 
   public getIccCodeTextArea() {
-    return this.all_icc.map((i) => i.code.trim()).join("\n");
+    return this.icc_batch.batch.map((i) => i.code.trim()).join("\n");
   }
 
   public copyCodeToClipboard() {

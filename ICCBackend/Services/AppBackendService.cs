@@ -59,7 +59,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
             string jsonPayload = JsonConvert.SerializeObject(payload);
             try
             {
-                Console.WriteLine(GetAppBackendUrl(endpoint));
                 HttpResponseMessage response = await _HttpClient.PostAsync(GetAppBackendUrl(endpoint),
                     new StringContent(jsonPayload, Encoding.UTF8, "application/json"));
                 response.EnsureSuccessStatusCode();

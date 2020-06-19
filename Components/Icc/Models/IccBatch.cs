@@ -9,8 +9,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models
 {
     public class IccBatch
     {
-        private string Id;
-        private List<InfectionConfirmationCodeEntity> Batch { get; }
+        public string Id { get; set; }
+        public List<InfectionConfirmationCodeEntity> Batch { get; }
 
         public IccBatch(string id)
         {

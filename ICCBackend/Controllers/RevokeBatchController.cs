@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -9,25 +9,24 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
-using NL.Rijksoverheid.ExposureNotification.IccBackend.Models;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class RedeemIccController : ControllerBase
+    public class RevokeBatchController : ControllerBase
     {
-        private readonly ILogger<RedeemIccController> _Logger;
+        private readonly ILogger<RevokeBatchController> _Logger;
         private readonly ActionExecutedContext _Context;
         private readonly IIccService _IccService;
         private readonly AppBackendService _AppBackendService;
         private readonly IccBackendContentDbContext _DbContext;
 
-        public RedeemIccController(IIccService iccService, ILogger<RedeemIccController> logger,
+        public RevokeBatchController(IIccService iccService, ILogger<RevokeBatchController> logger,
             AppBackendService appBackendService, IccBackendContentDbContext dbContext)
         {
             _IccService = iccService;
@@ -37,29 +36,21 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         }
 
         [HttpPost, Authorize]
-        public async Task<ActionResult<object>> PostRedeemIcc(RedeemIccModel redeemIccModel)
+        public async Task<IActionResult> PostRevokeBatch([FromBody] RevokeBatchInput revokeBatchInput)
         {
-            // Make Icc Used, so it can only be used once 
             var infectionConfirmationCodeEntity = await _IccService.RedeemIcc(User.Identity.Name);
+
+            bool result = await _IccService.RevokeBatch(revokeBatchInput);
+
             _DbContext.SaveAndCommit();
 
-            // POST /labresult call on App Backend
-            bool isValid = await _AppBackendService.LabConfirmationIdIsValid(redeemIccModel);
-            
-            // bool isValid = false;
-            if (isValid)
+            if (result) return new OkResult();
+            return NotFound(new
             {
-                // TODO: remove debugging Icc and payload from response
-                return new JsonResult(new
-                {
-                    ok = true,
-                    status = 200,
-                    payload = redeemIccModel
-                });
-            }
-
-            return BadRequest(new
-                {ok = false, status = "400", message = "Invalid LabConfirmationId", payload = redeemIccModel});
+                ok = false,
+                status = 404,
+                message = "Batch not found."
+            });
         }
     }
 }

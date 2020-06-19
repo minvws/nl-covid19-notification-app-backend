@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Exceptions;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -105,7 +106,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
             {
                 batch.AddIcc(await GenerateIcc(userId, batchId));
             }
-
+            
             return batch;
         }
 
@@ -117,17 +118,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
             return infectionConfirmationCodeEntity;
         }
 
-        public async Task<bool> RevokeBatch(string batchId)
+        public async Task<bool> RevokeBatch(RevokeBatchInput revokeBatchInput)
         {
             List<InfectionConfirmationCodeEntity> iccList =
-                await _DbContext.InfectionConfirmationCodes.Where(i => i.BatchId == batchId).ToListAsync();
-            DateTime revokeDate = DateTime.Now;
-            foreach (InfectionConfirmationCodeEntity infectionConfirmationCodeEntity in iccList)
+                await _DbContext.InfectionConfirmationCodes.Where(i => i.BatchId == revokeBatchInput.BatchId)
+                    .ToListAsync();
+
+            if (iccList.Count > 0)
             {
-                infectionConfirmationCodeEntity.Revoked = revokeDate;
+                foreach (InfectionConfirmationCodeEntity infectionConfirmationCodeEntity in iccList)
+                {
+                    infectionConfirmationCodeEntity.Revoked =
+                        revokeBatchInput.RevokeDateTime ?? _DateTimeProvider.Now();
+                }
+
+                return true;
             }
 
-            return true;
+            return false;
         }
     }
 }
