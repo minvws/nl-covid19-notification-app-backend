@@ -9,7 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Models
 {
     public class RedeemIccModel
     {
-        [Required, MinLength(5), MaxLength(6)] 
+        [Required, MinLength(6), MaxLength(6)] 
         public string LabConfirmationId { get; set; }
 
         [Required]
