@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {Element} from "@angular/compiler";
 import {HttpClient} from "@angular/common/http";
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-icc',
@@ -37,7 +38,8 @@ export class IccReportComponent {
     // var Icc = document.querySelector("#iccWrapper .form-control").value
     // var ICId = Array.from(document.querySelectorAll("#icIdWrapper .form-control")).map(el => el.value).join("")
     //
-    this.http.post("https://localhost:5005/RedeemIcc", {
+    const serviceUrl = environment.apiUrl + "/RedeemIcc";
+    this.http.post(serviceUrl, {
       "labConfirmationID": this.labConfirmationID.join(""),
       "commencementComplaints": new Date(Date.now()).toISOString()
     }, {

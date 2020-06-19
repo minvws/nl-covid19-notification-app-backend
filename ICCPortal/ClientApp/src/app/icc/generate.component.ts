@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-icc',
@@ -16,9 +17,11 @@ export class IccGenerateComponent {
 
 
   public generateCode() {
-    this.http.post("https://localhost:5005/GenerateIcc/batch", {"user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"}).subscribe((result) => {
-      this.all_icc = result.batch;
-    })
+    const serviceUrl = environment.apiUrl + "/GenerateIcc/batch";
+    this.http.post(serviceUrl, { "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6" })
+      .subscribe((result) => {
+        this.all_icc = result.batch;
+      });
   }
 
   public getIccCodeTextArea() {
