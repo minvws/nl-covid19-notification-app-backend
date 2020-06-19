@@ -8,13 +8,12 @@ import { environment } from '../../environments/environment';
   styleUrls: ['./generate.component.css']
 })
 export class IccGenerateComponent {
-  public all_icc = null
+  public all_icc = null;
   private http;
 
   constructor(http: HttpClient) {
     this.http = http;
   }
-
 
   public generateCode() {
     const serviceUrl = environment.apiUrl + "/GenerateIcc/batch";
