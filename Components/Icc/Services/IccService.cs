@@ -86,7 +86,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
             };
 
 
-            _DbContext.InfectionConfirmationCodes.Add(icc);
+            await _DbContext.InfectionConfirmationCodes.AddAsync(icc);
             return icc;
         }
 
@@ -106,7 +106,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
                 batch.AddIcc(await GenerateIcc(userId, batchId));
             }
 
-            await _DbContext.SaveChangesAsync();
             return batch;
         }
 
@@ -114,7 +113,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
         {
             var infectionConfirmationCodeEntity = await Get(icc);
             infectionConfirmationCodeEntity.Used = _DateTimeProvider.Now();
-            await _DbContext.SaveChangesAsync();
+
             return infectionConfirmationCodeEntity;
         }
 
