@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
@@ -23,23 +25,27 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         private readonly ActionExecutedContext _Context;
         private readonly IIccService _IccService;
         private readonly AppBackendService _AppBackendService;
+        private readonly IccBackendContentDbContext _DbContext;
 
         public RedeemIccController(IIccService iccService, ILogger<RedeemIccController> logger,
-            AppBackendService appBackendService)
+            AppBackendService appBackendService, IccBackendContentDbContext dbContext)
         {
             _IccService = iccService;
             _AppBackendService = appBackendService;
             _Logger = logger;
+            _DbContext = dbContext;
         }
 
         [HttpPost, Authorize]
         public async Task<ActionResult<object>> PostRedeemIcc(RedeemIccModel redeemIccModel)
         {
             // Make Icc Used, so it can only be used once 
-            // InfectionConfirmationCodeEntity infectionConfirmationCodeEntity = await _IccService.RedeemIcc(User.Identity.Name);
+            var infectionConfirmationCodeEntity = await _IccService.RedeemIcc(User.Identity.Name);
+            _DbContext.SaveAndCommit();
 
             // POST /labresult call on App Backend
             bool isValid = await _AppBackendService.LabConfirmationIdIsValid(redeemIccModel);
+            
             // bool isValid = false;
             if (isValid)
             {
