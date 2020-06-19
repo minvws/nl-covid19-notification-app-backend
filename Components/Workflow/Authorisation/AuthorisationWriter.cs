@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         {
             var e = _DbContextProvider
                 .KeyReleaseWorkflowStates
-                .SingleOrDefault(x => x.LabConfirmationId == args.LabConfirmationID);
+                .SingleOrDefault(x => x.LabConfirmationId == args.LabConfirmationId);
 
             if (e == null)
                 return;
