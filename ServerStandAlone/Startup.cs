@@ -101,7 +101,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 return signer;
             });
 
-            services.AddScoped<ISignatureValidator, FakeSignatureValidator>();
+            services.AddScoped<ISignatureValidator, SignatureValidator>();
             services.AddScoped<IReleaseKeysAuthorizationValidator, FakeReleaseKeysAuthorizationValidator>();
             
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
