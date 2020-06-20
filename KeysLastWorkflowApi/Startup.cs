@@ -53,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
             services.AddScoped<HttpPostReleaseTeksCommand, HttpPostReleaseTeksCommand>();
             
             services.AddScoped<IReleaseTeksValidator, ReleaseTeksValidator>();
-            services.AddScoped<ISignatureValidator, FakeSignatureValidator>();
+            services.AddScoped<ISignatureValidator, SignatureValidator>();
             
             services.AddScoped<HttpPostRegisterSecret, HttpPostRegisterSecret>();
             services.AddScoped<ISecretWriter, SecretWriter>();
