@@ -17,6 +17,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 
         public int RollingPeriodMin => GetValueInt32(Prefix+nameof(RollingPeriodMin), 1);
         public int RollingPeriodMax => GetValueInt32(Prefix + nameof(RollingPeriodMax), 32768);
-        public int DailyKeyByteCount => GetValueInt32(Prefix + nameof(DailyKeyByteCount), 32);
+        public int DailyKeyByteCount => GetValueInt32(Prefix + nameof(DailyKeyByteCount), 16);
     }
 }

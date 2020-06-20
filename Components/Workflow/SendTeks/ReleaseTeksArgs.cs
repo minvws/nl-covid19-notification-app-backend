@@ -14,3 +14,4 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         public byte[]? Padding { get; set; }
     }
 }
+

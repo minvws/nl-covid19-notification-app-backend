@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             _DbContextProvider = dbContextProvider;
         }
 
-        public async Task<IActionResult> Execute(byte[] signature, string payload)
+        public async Task Execute(byte[] signature, string payload)
         {
             var args = JsonConvert.DeserializeObject<ReleaseTeksArgs>(payload);
 
@@ -40,13 +40,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 .KeyReleaseWorkflowStates
                 .FirstOrDefault(x => x.BucketId == args.BucketId);
 
-            if (workflow == null || !_KeyValidator.Validate(args, workflow) || !_SignatureValidator.Valid(signature, workflow, Encoding.UTF8.GetBytes(payload)))
-                return new OkResult();
+            if (workflow == null || !_KeyValidator.Validate(args, workflow) ||
+                !_SignatureValidator.Valid(signature, workflow, Encoding.UTF8.GetBytes(payload)))
+                return;
 
             await _Writer.Execute(args);
-            _DbContextProvider.SaveAndCommit();
 
-            return new OkResult();
+            _DbContextProvider.SaveAndCommit();
         }
     }
 }

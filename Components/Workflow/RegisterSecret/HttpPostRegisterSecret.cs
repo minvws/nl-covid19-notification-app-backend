@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
 {
@@ -16,10 +15,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             _Writer = writer;
         }
 
-        public async Task<IActionResult> Execute()
+        public async Task<EnrollmentResponse> Execute()
         {
-            var result = await _Writer.Execute();
-            return new OkObjectResult(result);
+            return await _Writer.Execute();
         }
     }
 }

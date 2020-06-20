@@ -21,13 +21,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi.Controllers
         {
             using var reader = new StreamReader(Request.Body);
             var body = await reader.ReadToEndAsync();
+            await command.Execute(sig, body);
 
-            return await command.Execute(sig, body);
+            return Ok(new{});
         }
 
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.RegisterSecret)]
-        public async Task<IActionResult> PostSecret([FromBody]SecretArgs _, [FromServices]HttpPostRegisterSecret command)
+        public async Task<EnrollmentResponse> PostSecret([FromBody]SecretArgs _, [FromServices]HttpPostRegisterSecret command)
         {
             return await command.Execute();
         }
