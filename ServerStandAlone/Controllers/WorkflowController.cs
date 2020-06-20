@@ -22,7 +22,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         {
             using var reader = new StreamReader(Request.Body);
             var body = await reader.ReadToEndAsync();
-            return await command.Execute(sig, body);
+            await command.Execute(sig, body);
+            return Ok();
         }
 
         [HttpPost]

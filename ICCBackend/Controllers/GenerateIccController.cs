@@ -39,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         public async Task<JsonResult> PostGenerateIcc(GenerateIccInputModel generateIccInputModel)
         {
             var infectionConfirmationCodeEntity =
-                await _IccService.GenerateIcc(generateIccInputModel.UserId);
+                await _IccService.GenerateIcc(generateIccInputModel.UserId, null!);
             _DbContext.SaveAndCommit();
             return new JsonResult(new
             {
