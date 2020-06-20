@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services
     {
         Task<InfectionConfirmationCodeEntity> Get(string icc);
         Task<InfectionConfirmationCodeEntity> Validate(string iccCodeString);
-        Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, string batchId = "");
+        Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, string batchId);
         Task<IccBatch> GenerateBatch(Guid userId, int count = 20);
         Task<InfectionConfirmationCodeEntity> RedeemIcc(string icc);
         Task<bool> RevokeBatch(RevokeBatchInput revokeBatchInput);

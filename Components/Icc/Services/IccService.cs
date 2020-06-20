@@ -73,6 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="save"></param>
+        /// <param name="batchId"></param>
         /// <returns></returns>
         public async Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, string batchId)
         {
