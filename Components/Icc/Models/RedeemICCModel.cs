@@ -5,7 +5,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Models
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models
 {
     public class RedeemIccModel
     {
