@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi.Controllers
 
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.RegisterSecret)]
-        public async Task<EnrollmentResponse> PostSecret([FromBody]SecretArgs _, [FromServices]HttpPostRegisterSecret command)
+        public async Task<IActionResult> PostSecret([FromBody]SecretArgs _, [FromServices]HttpPostRegisterSecret command)
         {
             return await command.Execute();
         }
