@@ -3,40 +3,33 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.BackgroundJobs
 {
     public class PurgeExpiredSecretsDbCommand
     {
         private readonly WorkflowDbContext _DbContextProvider;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly IWorkflowConfig _WorkflowConfig;
 
-        public PurgeExpiredSecretsDbCommand(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IWorkflowConfig tokenFirstWorkflowConfig)
+        public PurgeExpiredSecretsDbCommand(WorkflowDbContext dbContextProvider)
         {
             _DbContextProvider = dbContextProvider;
-            _DateTimeProvider = dateTimeProvider;
-            _WorkflowConfig = tokenFirstWorkflowConfig;
         }
 
-        public void Execute()
+        public async Task<IActionResult> Execute()
         {
-            var expired = _DateTimeProvider.Now() - TimeSpan.FromDays(_WorkflowConfig.SecretLifetimeDays);
-
-            _DbContextProvider.BeginTransaction();
-
-            throw new NotImplementedException();
-
-            //var q = _DbContextProvider.KeysLastWorkflows
-            //    .Where(x => x.State == KeysLastWorkflowState.Unauthorised && x.Created < expired);
-
-            //_DbContextProvider.KeysLastWorkflows.RemoveRange(q);
-
-            _DbContextProvider.SaveChanges();
+            var entityType = _DbContextProvider.Model.FindEntityType(typeof(KeyReleaseWorkflowState));
+            var schema = entityType.GetSchema();
+            var tableName = entityType.GetTableName();
+            var query = $"DELETE FROM [{schema}].[{tableName}] WHERE {nameof(KeyReleaseWorkflowState.ValidUntil)} <= GETDATE()";
+            await _DbContextProvider.Database.ExecuteSqlRawAsync(query);
             _DbContextProvider.SaveAndCommit();
+
+            return new OkObjectResult(true);
         }
     }
 }

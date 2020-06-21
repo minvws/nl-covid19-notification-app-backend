@@ -2,8 +2,8 @@
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<TargetFramework>netcoreapp3.1</TargetFramework>
-		<AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.ExposureKeySetsEngine</AssemblyName>
-		<RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.ExposureKeySetsEngine</RootNamespace>
+		<AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.ScheduledTaskEngine</AssemblyName>
+		<RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.ScheduledTaskEngine</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.BackgroundJobs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers
 {
@@ -47,16 +48,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
             return await command.Execute(useAllKeys);
         }
 
-        //TODO keys last version!
-        ///// <summary>
-        ///// Generate new authorisations for the Keys-First workflow.
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpPost]
-        //[Route(EndPointNames.DevOps.KeysFirstWorkFlow.TekSetsRandomAuthorisation)]
-        //public async Task<IActionResult> Authorize([FromBody]KeysFirstRandomAuthorisationArgs arguments, [FromServices]HttpPostKeysFirstRandomAuthorisationCommand command)
-        //{
-        //    return await command.Execute(arguments);
-        //}
+        /// <summary>
+        /// Delete all keysets which are invalid
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("Purge")]
+        public async Task<IActionResult> Purge([FromServices] PurgeExpiredSecretsDbCommand command)
+        {
+            return await command.Execute();
+        }
     }
 }
