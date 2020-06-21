@@ -19,7 +19,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         public async Task Run()
         {
             _Logger.LogInformation("Running...");
-            await Task.Delay(1000);
+
+            
+            
+            
+            
+            
             _Logger.LogInformation("Completed...");
         }
     }

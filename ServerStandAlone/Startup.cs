@@ -85,21 +85,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddSingleton<IGeanTekListValidationConfig, StandardGeanCommonWorkflowConfig>();
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
-            
+
+            //services.AddScoped(x =>
+            //{
+            //    var provider = new FakeCertificateProvider("FakeRSA.p12");
+            //    var signer = new ContentSigner(provider);
+            //    return signer;
+            //});
+
+            //services.AddScoped(x =>
+            //{
+            //    var provider = new FakeCertificateProvider("FakeECDSA.p12");
+            //    var signer = new KeySetSigner(provider);
+            //    return signer;
+            //});
+
             services.AddScoped(x =>
             {
-                var provider = new FakeCertificateProvider("FakeRSA.p12");
+                var provider = new HSMCertificateProvider(new HSMSigningConfig(Configuration).Thumbprint);
                 var signer = new ContentSigner(provider);
                 return signer;
             });
 
             services.AddScoped(x =>
             {
-                var provider = new FakeCertificateProvider("FakeECDSA.p12");
+                var provider = new HSMCertificateProvider(new HSMSigningConfig(Configuration).Thumbprint);
                 var signer = new KeySetSigner(provider);
                 return signer;
             });
-            
+
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
             services.AddScoped<GetActiveExposureKeySetsListCommand, GetActiveExposureKeySetsListCommand>();
             

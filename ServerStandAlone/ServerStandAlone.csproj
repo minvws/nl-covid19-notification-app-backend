@@ -8,6 +8,7 @@
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>f41aa621-6aa9-404e-a9a5-017bf487ae2c</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
