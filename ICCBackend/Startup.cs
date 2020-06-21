@@ -20,7 +20,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Services;
+using Org.BouncyCastle.Crypto.Prng;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
@@ -53,7 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Icc"));
             services.AddScoped<ProvisionDatabasesCommandIcc, ProvisionDatabasesCommandIcc>();
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-
+            services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
 
             services.AddScoped<IIccService, IccService>();
             services.AddScoped<AppBackendService, AppBackendService>();
