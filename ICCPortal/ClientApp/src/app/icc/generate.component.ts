@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import {environment} from '../../environments/environment';
+import {ReportService} from "../services/report.service";
+import {GenerateService} from "../services/generate.service";
 
 @Component({
   selector: 'app-icc',
@@ -9,15 +11,13 @@ import { environment } from '../../environments/environment';
 })
 export class IccGenerateComponent {
   public icc_batch = null;
-  private http;
 
-  constructor(http: HttpClient) {
-    this.http = http;
+  constructor(private readonly generateService: GenerateService) {
   }
 
   public generateCode() {
-    const serviceUrl = environment.apiUrl + "/GenerateIcc/batch";
-    this.http.post(serviceUrl, { "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6" })
+
+    this.generateService.generateIccBatch()
       .subscribe((result) => {
         this.icc_batch = result.iccBatch;
         alert("Batch #" + result.iccBatch.id + " generated");

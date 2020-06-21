@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {Element} from "@angular/compiler";
 import { ReportService } from "../services/report.service";
 
 @Component({
@@ -31,19 +30,9 @@ export class IccReportComponent {
 
   public report() {
 
-    // var Icc = document.querySelector("#iccWrapper .form-control").value
-    // var ICId = Array.from(document.querySelectorAll("#icIdWrapper .form-control")).map(el => el.value).join("")
-    //
     this.reportService.redeemIcc(this.labConfirmationId).subscribe((result) => {
       alert(JSON.stringify(result));
     });
 
-    // console.log(ICId);
-    // console.log(Icc);
-    // setTimeout(() => {
-    //   Array.from(document.querySelectorAll(".form-control")).forEach(el => {
-    //     el.value = ""
-    //   })
-    // }, 200)
   }
 }
