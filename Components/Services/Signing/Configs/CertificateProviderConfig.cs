@@ -7,10 +7,10 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs
 {
-    public class HSMSigningConfig : AppSettingsReader
+    public class CertificateProviderConfig : AppSettingsReader
     {
-        public HSMSigningConfig(IConfiguration config, string? prefix = null) : base(config, prefix) { }
+        public CertificateProviderConfig(IConfiguration config, string? prefix = null) : base(config, prefix) { }
 
-        public string Thumbprint => GetValue("ExposureKeySets:Signing:CertificateThumbprint");
+        public string Thumbprint => GetValue("CertificateThumbprint");
     }
 }

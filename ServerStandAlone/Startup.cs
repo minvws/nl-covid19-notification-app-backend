@@ -83,24 +83,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             //Just for the Batch Job
             services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Job"));
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
+            services.AddScoped<IContentSigner, FakeContentSigner>();
             services.AddSingleton<IGeanTekListValidationConfig, StandardGeanCommonWorkflowConfig>();
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
             
-            services.AddScoped(x =>
-            {
-                var provider = new FakeCertificateProvider("FakeRSA.p12");
-                var signer = new ContentSigner(provider);
-                return signer;
-            });
-
-            services.AddScoped(x =>
-            {
-                var provider = new FakeCertificateProvider("FakeECDSA.p12");
-                var signer = new KeySetSigner(provider);
-                return signer;
-            });
-
             services.AddScoped<ISignatureValidator, SignatureValidator>();
             services.AddScoped<IReleaseKeysAuthorizationValidator, FakeReleaseKeysAuthorizationValidator>();
             

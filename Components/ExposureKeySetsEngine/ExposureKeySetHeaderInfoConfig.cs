@@ -13,7 +13,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
         public ExposureKeySetHeaderInfoConfig(IConfiguration config, string? prefix = null) : base(config, prefix) { }
 
         public string AppBundleId => GetValue("ExposureKeySets:AppleId", "nl.rijksoverheid.samensterk");
-        public string AndroidPackage => GetValue("ExposureKeySets:AndroidId", "nl.rijksoverheid.samensterkpoc");
         public string VerificationKeyId => GetValue("ExposureKeySets:Signing:VerificationKeyId", "ServerNL");
         public string VerificationKeyVersion => GetValue("ExposureKeySets:Signing:VerificationKeyVersion", "v1");
     }
