@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Models
 {
-    public class GenerateIccModel
+    public class GenerateIccInputModel
     {
         [Required]
         public Guid UserId { get; set; }

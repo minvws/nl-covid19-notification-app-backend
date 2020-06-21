@@ -5,7 +5,6 @@
         <RootNamespace>NL.Rijksoverheid.ExposureNotification.IccBackend</RootNamespace>
         <AssemblyName>NL.Rijksoverheid.ExposureNotification.IccBackend</AssemblyName>
     </PropertyGroup>
-
     <ItemGroup>
       <_ContentIncludedByDefault Remove="wwwroot\css\site.css" />
       <_ContentIncludedByDefault Remove="wwwroot\favicon.ico" />

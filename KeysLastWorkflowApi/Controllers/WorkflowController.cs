@@ -19,10 +19,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi.Controllers
         [Route(EndPointNames.MobileAppApi.ReleaseTeks)]
         public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand command)
         {
-            using var reader = new StreamReader(Request.Body);
-            var body = await reader.ReadToEndAsync();
-
-            return await command.Execute(sig, body);
+            await command.Execute(sig, Request);
+            return Ok(new{});
         }
 
         [HttpPost]

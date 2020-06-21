@@ -3,14 +3,20 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Exceptions;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
 {
     public class IccService : IIccService
     {
@@ -39,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
             if (infectionConfirmationCodeEntity == null) throw new IccNotFoundException();
             return infectionConfirmationCodeEntity;
         }
-        
+
         /// <summary>
         /// Checks if Icc exists and is valid
         /// </summary>
@@ -48,7 +54,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         public async Task<InfectionConfirmationCodeEntity> Validate(string iccCodeString)
         {
             var infectionConfirmationCodeEntity = await Get(iccCodeString);
-            if (infectionConfirmationCodeEntity != null && infectionConfirmationCodeEntity.IsValid()) return infectionConfirmationCodeEntity;
+            if (infectionConfirmationCodeEntity != null && infectionConfirmationCodeEntity.IsValid())
+                return infectionConfirmationCodeEntity;
             return null;
         }
 
@@ -57,20 +64,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="save"></param>
+        /// <param name="batchId"></param>
         /// <returns></returns>
-        public async Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, bool save = true)
+        public async Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, string batchId)
         {
             var length = Convert.ToInt32(_Configuration.GetSection("IccConfig:Code:Length").Value);
             var generatedIcc = _RandomGenerator.GenerateToken(length);
 
             var icc = new InfectionConfirmationCodeEntity
             {
-                Code = generatedIcc, GeneratedBy = userId, Created = _DateTimeProvider.Now()
+                Code = generatedIcc, GeneratedBy = userId, Created = _DateTimeProvider.Now(), BatchId = batchId
             };
 
 
-            _DbContext.InfectionConfirmationCodes.Add(icc);
-            if (save) await _DbContext.SaveChangesAsync();
+            await _DbContext.InfectionConfirmationCodes.AddAsync(icc);
             return icc;
         }
 
@@ -80,16 +87,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         /// <param name="userId"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public async Task<List<InfectionConfirmationCodeEntity>> GenerateBatch(Guid userId, int count = 20)
+        public async Task<IccBatch> GenerateBatch(Guid userId, int count = 20)
         {
-            var batch = new List<InfectionConfirmationCodeEntity>();
+            string batchId = _RandomGenerator.GenerateToken(6);
+            IccBatch batch = new IccBatch(batchId);
 
             for (var i = 0; i < count; i++)
             {
-                batch.Add(await GenerateIcc(userId));
+                batch.AddIcc(await GenerateIcc(userId, batchId));
             }
-
-            await _DbContext.SaveChangesAsync();
+            
             return batch;
         }
 
@@ -97,8 +104,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         {
             var infectionConfirmationCodeEntity = await Get(icc);
             infectionConfirmationCodeEntity.Used = _DateTimeProvider.Now();
-            await _DbContext.SaveChangesAsync();
+
             return infectionConfirmationCodeEntity;
+        }
+
+        public async Task<bool> RevokeBatch(RevokeBatchInput revokeBatchInput)
+        {
+            List<InfectionConfirmationCodeEntity> iccList =
+                await _DbContext.InfectionConfirmationCodes.Where(i => i.BatchId == revokeBatchInput.BatchId)
+                    .ToListAsync();
+
+            if (iccList.Count > 0)
+            {
+                foreach (InfectionConfirmationCodeEntity infectionConfirmationCodeEntity in iccList)
+                {
+                    infectionConfirmationCodeEntity.Revoked =
+                        revokeBatchInput.RevokeDateTime ?? _DateTimeProvider.Now();
+                }
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -5,7 +5,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models
 {
     [Table("InfectionConfirmationCodes")]
     public class InfectionConfirmationCodeEntity
@@ -15,6 +15,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         /// </summary>
         public string Code { get; set; }
 
+        /// <summary>
+        /// Identification to identify & revoke Batchset of ICC's 
+        /// </summary>
+        public string? BatchId { get; set; } 
+        
         /// <summary>
         /// Timestamp for Code generation
         /// </summary>
@@ -39,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         /// User Guid from user that used the Code
         /// </summary>
         public Guid? UsedBy { get; set; }
-
+        
         public bool IsValid()
         {
             return (Used == null && (Revoked == null || Revoked > DateTime.Now));

@@ -2,7 +2,9 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +17,8 @@ using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Services;
@@ -46,6 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 var config = new StandardEfDbConfig(Configuration, "Icc");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new IccBackendContentDbContext(builder.Build());
+                result.BeginTransaction();
                 return result;
             });
             services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Icc"));
@@ -62,7 +66,25 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             services.AddSwaggerGen(o =>
             {
-                o.SwaggerDoc("v1", new OpenApiInfo {Title = "Icc Back-end Server", Version = "v1"});
+                o.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Dutch Exposure Notification ICC API (inc. dev support)",
+                    Version = "v1",
+                    Description = "This specification describes the interface between the Dutch exposure notification app backend, ICC Webportal and the ICC backend service.",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Ministerie van Volksgezondheid Welzijn en Sport backend repository", //TODO looks wrong?
+                        Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend"),
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "European Union Public License v. 1.2",
+                        //TODO this should be https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+                        Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend/blob/master/LICENSE.txt")
+                    },
+
+                });
+                o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml"));
                 o.AddSecurityDefinition("Icc", new OpenApiSecurityScheme
                 {
                     Description = "Icc Code Authentication",
@@ -75,7 +97,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyHeader()); // TODO: Fix CORS
