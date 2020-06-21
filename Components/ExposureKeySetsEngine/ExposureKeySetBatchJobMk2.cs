@@ -165,7 +165,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         public EksCreateJobInputEntity[] GetInputBatch(int skip, int take)
         {
-            return _ContentDbContext.EksInput.Skip(skip).Take(take).ToArray();
+            return _ContentDbContext.EksInput.OrderBy(x => x.KeyData).Skip(skip).Take(take).ToArray();
         }
 
         public async Task WriteUsed(EksCreateJobInputEntity[] used)
