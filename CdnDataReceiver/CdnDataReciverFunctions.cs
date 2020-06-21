@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -6,9 +8,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
@@ -37,36 +36,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
     public class CdnDataReciverFunctions : AppFunctionBase
     {
         [FunctionName("manifest")]
-        public async Task<IActionResult> HttpPostManifest([HttpTrigger(AuthorizationLevel.Function, "post", Route = "/v1/manifest")] HttpRequest httpRequest, ILogger logger, ExecutionContext executionContext)
+        public async Task<IActionResult> HttpPostManifest([HttpTrigger(AuthorizationLevel.Function, "post", Route = "v1/manifest")] HttpRequest httpRequest, ILogger logger, ExecutionContext executionContext)
         {
             SetConfig(executionContext);
             return await new Receiver<ManifestEntity>().Execute(httpRequest, logger, Configuration);
         }
 
         [FunctionName("appconfig")]
-        public async Task<IActionResult> HttpPostAppConfig([HttpTrigger(AuthorizationLevel.Function, "post", Route = "/v1/appconfig")] HttpRequest httpRequest, ILogger logger, ExecutionContext executionContext)
+        public async Task<IActionResult> HttpPostAppConfig([HttpTrigger(AuthorizationLevel.Function, "post", Route = "v1/appconfig")] HttpRequest httpRequest, ILogger logger, ExecutionContext executionContext)
         {
             SetConfig(executionContext);
             return await new Receiver<AppConfigContentEntity>().Execute(httpRequest, logger, Configuration);
         }
 
         [FunctionName("resourcebundle")]
-        
-        public async Task<IActionResult> HttpPostResourceBundle([HttpTrigger(AuthorizationLevel.Function, "post", Route = "/v1/resourcebundle")] HttpRequest httpRequest, ILogger logger, ExecutionContext executionContext)
+        public async Task<IActionResult> HttpPostResourceBundle([HttpTrigger(AuthorizationLevel.Function, "post", Route = "v1/resourcebundle")] HttpRequest httpRequest, ILogger logger, ExecutionContext executionContext)
         {
             SetConfig(executionContext);
             return await new Receiver<ResourceBundleContentEntity>().Execute(httpRequest, logger, Configuration);
         }
 
         [FunctionName("riskcalculationparameters")]
-        public async Task<IActionResult> HttpPostCalcConfig([HttpTrigger(AuthorizationLevel.Function, "post", Route = "/v1/riskcalculationparameters")] HttpRequest httpRequest, ILogger logger, ExecutionContext executionContext)
+        public async Task<IActionResult> HttpPostCalcConfig([HttpTrigger(AuthorizationLevel.Function, "post", Route = "v1/riskcalculationparameters")] HttpRequest httpRequest, ILogger logger, ExecutionContext executionContext)
         {
             SetConfig(executionContext);
             return await new Receiver<RiskCalculationContentEntity>().Execute(httpRequest, logger, Configuration);
         }
 
         [FunctionName("exposurekeyset")]
-        public async Task<IActionResult> HttpPostEks([HttpTrigger(AuthorizationLevel.Function, "post", Route = "/v1/exposurekeyset")] HttpRequest httpRequest, ILogger logger, ExecutionContext executionContext)
+        public async Task<IActionResult> HttpPostEks([HttpTrigger(AuthorizationLevel.Function, "post", Route = "v1/exposurekeyset")] HttpRequest httpRequest, ILogger logger, ExecutionContext executionContext)
         {
             SetConfig(executionContext);
             return await new Receiver<ExposureKeySetContentEntity>().Execute(httpRequest, logger, Configuration);

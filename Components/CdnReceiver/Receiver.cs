@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
@@ -17,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
     {
         public async Task<IActionResult> Execute(HttpRequest httpRequest, ILogger logger, IConfiguration configuration)
         {
-            var content = Serializer.Deserialize<ContentArgs>(httpRequest.Body);
+            var content = Serializer.Deserialize<BinaryContentResponse>(httpRequest.Body);
 
             //TODO check sig!!!
 
@@ -29,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
                 PublishingId = content.PublishingId,
                 SignedContent = content.Content,
                 SignedContentTypeName = MediaTypeNames.Application.Zip,
-                Release = content.Released,
+                Release = content.LastModified,
             };
 
             var config = new StandardEfDbConfig(configuration, "Content");

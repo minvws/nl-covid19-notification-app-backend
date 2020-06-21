@@ -89,6 +89,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
 
+            services.AddSingleton<ISignatureValidator>(new FakeSignatureValidator());
+            
+            services.AddSingleton<IReleaseKeysAuthorizationValidator>(new FakeReleaseKeysAuthorizationValidator());
+
+            
+
             //services.AddScoped(x =>
             //{
             //    var provider = new FakeCertificateProvider("FakeRSA.p12");
@@ -130,16 +136,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<HttpPostResourceBundleCommand, HttpPostResourceBundleCommand>();
             services.AddScoped<ResourceBundleInsertDbCommand, ResourceBundleInsertDbCommand>();
             services.AddScoped<ResourceBundleValidator, ResourceBundleValidator>();
-
+            
             services.AddScoped<ProvisionDatabasesCommand, ProvisionDatabasesCommand>();
             services.AddScoped<HttpPostGenerateExposureKeySetsCommand, HttpPostGenerateExposureKeySetsCommand>();
-            services.AddScoped<HttpGetCdnContentCommand<ManifestEntity>, HttpGetCdnContentCommand<ManifestEntity>>();
+            //services.AddScoped<HttpGetCdnContentCommand<ManifestEntity>, HttpGetCdnContentCommand<ManifestEntity>>();
+
+
             services.AddScoped<HttpGetCdnContentCommand<ExposureKeySetContentEntity>, HttpGetCdnContentCommand<ExposureKeySetContentEntity>>();
             services.AddScoped<HttpGetCdnContentCommand<RiskCalculationContentEntity>, HttpGetCdnContentCommand<RiskCalculationContentEntity>>();
             services.AddScoped<HttpGetCdnContentCommand<ResourceBundleContentEntity>, HttpGetCdnContentCommand<ResourceBundleContentEntity>>();
             services.AddScoped<HttpGetCdnContentCommand<AppConfigContentEntity>, HttpGetCdnContentCommand<AppConfigContentEntity>>();
 
-            services.AddScoped<IReader<ManifestEntity>, DynamicManifestReader>();
+            services.AddScoped<DynamicManifestReader, DynamicManifestReader>();
             services.AddScoped<IReader<ExposureKeySetContentEntity>, SafeBinaryContentDbReader<ExposureKeySetContentEntity>>();
             services.AddScoped<IReader<ResourceBundleContentEntity>, SafeBinaryContentDbReader<ResourceBundleContentEntity>>();
             services.AddScoped<IReader<RiskCalculationContentEntity>, SafeBinaryContentDbReader<RiskCalculationContentEntity>>();

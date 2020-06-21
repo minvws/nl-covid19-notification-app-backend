@@ -13,9 +13,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content.NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     /// <summary>
-    /// Includes mitigations for CDN cache miss/stale item edge cases.
+    /// Differs to the generic Cdn get as it will be different data on the same URI.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public class HttpGetCdnManifestCommand
     {
         private readonly IUtcDateTimeProvider _DateTimeProvider;

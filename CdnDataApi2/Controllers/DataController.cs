@@ -22,6 +22,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
     {
         [HttpGet]
         [Route(EndPointNames.CdnApi.Manifest)]
+        [Produces("application/x-protobuf")]
+        [ProducesResponseType(200)]
+        //[ProducesResponseType(typeof(byte[]), 200)] //TODO No added value in Swagger UI
+        [ProducesResponseType(500)]
         public async Task GetCurrentManifest([FromServices] DynamicManifestReader command, HttpContext httpContext)
         {
             var e = await command.Execute();
