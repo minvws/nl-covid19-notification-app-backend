@@ -72,16 +72,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
             return await new Receiver<ExposureKeySetContentEntity>().Execute(httpRequest, logger, Configuration);
         }
 
-        [FunctionName("provision")]
-        public async Task<IActionResult> HttpPostProvisionDb([HttpTrigger(AuthorizationLevel.Function, "post", Route = "/v1/nukeandpave")] HttpRequest httpRequest, ILogger logger, ExecutionContext executionContext)
-        {
-            SetConfig(executionContext);
-            var config = new StandardEfDbConfig(Configuration, "Content");
-            var builder = new SqlServerDbContextOptionsBuilder(config);
-            var dbContext = new ExposureContentDbContext(builder.Build());
-            await dbContext.Database.EnsureDeletedAsync();
-            await dbContext.Database.EnsureCreatedAsync();
-            return new OkResult();
-        }
+        //[FunctionName("provision")]
+        //public async Task<IActionResult> HttpPostProvisionDb([HttpTrigger(AuthorizationLevel.Function, "post", Route = "/v1/nukeandpave")] HttpRequest httpRequest, ILogger logger, ExecutionContext executionContext)
+        //{
+        //    SetConfig(executionContext);
+        //    var config = new StandardEfDbConfig(Configuration, "Content");
+        //    var builder = new SqlServerDbContextOptionsBuilder(config);
+        //    var dbContext = new ExposureContentDbContext(builder.Build());
+        //    await dbContext.Database.EnsureDeletedAsync();
+        //    await dbContext.Database.EnsureCreatedAsync();
+        //    return new OkResult();
+        //}
     }
 }

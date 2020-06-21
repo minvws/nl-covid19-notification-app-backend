@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
             catch (SqlException ex)
             {
                 if (ex.Errors.AsQueryable().Cast<SqlError>().Select(x => x.Number).Contains(2627))
-                    return new OkResult();
+                    return new ConflictResult();
 
                 throw;
             }

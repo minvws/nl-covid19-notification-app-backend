@@ -24,15 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnApi.Cont
         [Route(EndPointNames.CdnApi.Manifest)]
         public async Task GetManifest(string id, [FromServices] HttpGetCdnManifestCommand command)
         {
-            try
-            {
-                await command.Execute(HttpContext, id);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            await command.Execute(HttpContext, id);
         }
 
         [HttpGet]

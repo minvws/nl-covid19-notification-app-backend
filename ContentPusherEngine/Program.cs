@@ -43,13 +43,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             try
             {
                 Log.Information("Starting service");
-                await serviceProvider.GetService<App>().Run();
+                await serviceProvider.GetService<PushIt>().Run();
                 Log.Information("Ending service");
             }
             catch (Exception ex)
             {
                 Log.Fatal(ex, "Error running service");
-                throw ex;
+                throw;
             }
             finally
             {
@@ -61,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         {
             services.AddSeriLog(Configuration);
             services.AddSingleton(Configuration);
-            services.AddTransient<App>();
+            services.AddTransient<PushIt>();
 
             services.AddScoped(x =>
             {
