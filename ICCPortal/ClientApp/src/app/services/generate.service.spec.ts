@@ -1,13 +1,53 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
 import {GenerateService} from "./generate.service";
+import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
 
 describe('GenerateServiceService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  let service: GenerateService;
+  let httpTestingController: HttpTestingController;
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [GenerateService],
+      imports: [HttpClientTestingModule]
+    })
+    httpTestingController = TestBed.get(HttpTestingController);
+    service = TestBed.get(GenerateService)
+  });
 
   it('should be created', () => {
-    const service: GenerateService = TestBed.get(GenerateService);
     expect(service).toBeTruthy();
   });
+
+  it('returned Observable should match the right data', () => {
+    const mockIccBatch = {
+      ok: true,
+      status: 200,
+      length: 4,
+      iccBatch: {
+        id: "1234AB",
+        batch: [{
+          code: "A12345678910112",
+        }, {
+          code: "A12345678910112",
+        }, {
+          code: "A12345678910112",
+        }, {
+          code: "A12345678910112",
+        }]
+      }
+    }
+    service.generateIccBatch().subscribe(result => {
+      expect(result.ok).toEqual(true)
+      expect(result.status).toEqual(200)
+      expect(result.length).toEqual(4)
+      expect(result.iccBatch.length).toEqual(4);
+      expect(result.iccBatch[0].code).toEqual("A12345678910112");
+    })
+    const req = httpTestingController.expectOne("http://localhost:5006/GenerateIcc/batch")
+    // expect(service).toBeTruthy();
+    req.flush(mockIccBatch)
+  });
+
 
 });
