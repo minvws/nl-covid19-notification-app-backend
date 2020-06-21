@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
 {
-    public class RandomNumberGenerator
+    public class RandomNumberGenerator : IRandomNumberGenerator
     {
         private readonly RNGCryptoServiceProvider csp;
 

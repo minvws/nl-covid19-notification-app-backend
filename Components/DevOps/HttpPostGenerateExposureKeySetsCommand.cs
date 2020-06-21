@@ -22,8 +22,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
         private readonly IGaenContentConfig _GaenContentConfig;
         private readonly IExposureKeySetHeaderInfoConfig _HsmExposureKeySetHeaderInfoConfig;
-        private readonly KeySetSigner _KeySetSigner;
-        private readonly ContentSigner _ContentSigner;
+        private readonly IContentSigner _EcdSaSigner;
+        private readonly IContentSigner _CmsSigner;
 
         public HttpPostGenerateExposureKeySetsCommand(
             WorkflowDbContext input, 
@@ -31,16 +31,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             IUtcDateTimeProvider utcDateTimeProvider,
             IGaenContentConfig gaenContentConfig,
             IExposureKeySetHeaderInfoConfig hsmExposureKeySetHeaderInfoConfig,
-            KeySetSigner keySetSigner, 
-            ContentSigner contentSigner)
+            IContentSigner ecdSaSigner, //ecdsa
+            IContentSigner cmsSigner) //cms
         {
             _Input = input;
             _Output = output;
             _UtcDateTimeProvider = utcDateTimeProvider;
             _GaenContentConfig = gaenContentConfig;
             _HsmExposureKeySetHeaderInfoConfig = hsmExposureKeySetHeaderInfoConfig;
-            _KeySetSigner = keySetSigner;
-            _ContentSigner = contentSigner;
+            _EcdSaSigner = ecdSaSigner;
+            _CmsSigner = cmsSigner;
         }
 
         public async Task<IActionResult> Execute(bool useAllKeys = false)
@@ -49,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 _GaenContentConfig,
                 new ExposureKeySetBuilderV1(
                     _HsmExposureKeySetHeaderInfoConfig,
-                    _KeySetSigner, _ContentSigner, _UtcDateTimeProvider, new GeneratedProtobufContentFormatter()),
+                    _EcdSaSigner, _CmsSigner, _UtcDateTimeProvider, new GeneratedProtobufContentFormatter()),
                 _Input,
                 _Output,
                 _UtcDateTimeProvider,

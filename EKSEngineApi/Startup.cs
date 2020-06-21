@@ -67,17 +67,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
             
             services.AddSingleton(x =>
             {
-                var config = new HSMSigningConfig(Configuration, "Content");
-                var provider = new HSMCertificateProvider(config.Thumbprint);
-                var signer = new ContentSigner(provider);
+                var config = new CertificateProviderConfig(Configuration, "Content");
+                var provider = new HsmCertificateProvider(config.Thumbprint);
+                var signer = new CmsSigner(provider);
                 return signer;
             });
 
             services.AddSingleton(x =>
             {
-                var config = new HSMSigningConfig(Configuration, "KeySet");
-                var provider = new HSMCertificateProvider(config.Thumbprint);
-                var signer = new KeySetSigner(provider);
+                var config = new CertificateProviderConfig(Configuration, "KeySet");
+                var provider = new HsmCertificateProvider(config.Thumbprint);
+                var signer = new EcdSaSigner(provider);
                 return signer;
             });
 
