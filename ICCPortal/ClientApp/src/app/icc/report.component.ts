@@ -1,7 +1,6 @@
 import {Component} from '@angular/core';
 import {Element} from "@angular/compiler";
-import {HttpClient} from "@angular/common/http";
-import { environment } from '../../environments/environment';
+import { ReportService } from "../services/report.service";
 
 @Component({
   selector: 'app-icc',
@@ -9,12 +8,9 @@ import { environment } from '../../environments/environment';
   styleUrls: ['./report.component.css']
 })
 export class IccReportComponent {
-  public Icc: string = "";
-  public labConfirmationID = ["", "", "", "", "", ""];
-  private http;
+  public labConfirmationId = ["", "", "", "", "", ""];
 
-  constructor(http: HttpClient) {
-    this.http = http;
+  constructor(private readonly reportService: ReportService) {
   }
 
   public ICIdKeyPress($event: KeyboardEvent, index) {
@@ -32,20 +28,13 @@ export class IccReportComponent {
       }
     },200);
   }
+
   public report() {
 
     // var Icc = document.querySelector("#iccWrapper .form-control").value
     // var ICId = Array.from(document.querySelectorAll("#icIdWrapper .form-control")).map(el => el.value).join("")
     //
-    const serviceUrl = environment.apiUrl + "/RedeemIcc";
-    this.http.post(serviceUrl, {
-      "labConfirmationID": this.labConfirmationID.join(""),
-      "commencementComplaints": new Date(Date.now()).toISOString()
-    }, {
-      headers: {
-        "Authorization": this.Icc
-      }
-    }).subscribe((result) => {
+    this.reportService.redeemIcc(this.labConfirmationId).subscribe((result) => {
       alert(JSON.stringify(result));
     });
 
