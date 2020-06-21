@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using Serilog;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ExposureKeySetsEngine
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ScheduledTaskEngine
 {
     internal class Program
     {
@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ExposureKeySetsEngine
             try
             {
                 Log.Information("Starting service");
-                await serviceProvider.GetService<App>().Run();
+                await serviceProvider.GetService<App>().Run(args);
                 Log.Information("Ending service");
             }
             catch (Exception ex)
