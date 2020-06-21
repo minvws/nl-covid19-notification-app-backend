@@ -38,14 +38,15 @@ describe('GenerateServiceService', () => {
       }
     }
     service.generateIccBatch().subscribe(result => {
+      console.log(result)
       expect(result.ok).toEqual(true)
       expect(result.status).toEqual(200)
       expect(result.length).toEqual(4)
-      expect(result.iccBatch.length).toEqual(4);
-      expect(result.iccBatch[0].code).toEqual("A12345678910112");
+      expect(result.icc_batch.length()).toEqual(4);
+      expect(result.icc_batch[0].code).toEqual("A12345678910112");
     })
     const req = httpTestingController.expectOne("http://localhost:5006/GenerateIcc/batch")
-    // expect(service).toBeTruthy();
+
     req.flush(mockIccBatch)
   });
 

@@ -15,7 +15,6 @@ export class GenerateService {
   constructor(private readonly http: HttpClient) {
   }
 
-
   generateIccSingle(): Observable<any> {
     const serviceUrl = environment.apiUrl + "/GenerateIcc/single";
 
