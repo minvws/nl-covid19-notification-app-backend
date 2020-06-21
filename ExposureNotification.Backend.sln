@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CdnApi", "CdnApi\CdnApi.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CdnDataApi", "CdnDataApi\CdnDataApi.csproj", "{8D6F8E01-ECAC-4DED-A95D-D3D710595F6B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeyReleasePortalApi", "KeyReleasePortalApi\KeyReleasePortalApi.csproj", "{3C9ADA15-5864-4F1F-97B1-046EB800A5F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeyReleaseApi", "KeyReleasePortalApi\KeyReleaseApi.csproj", "{3C9ADA15-5864-4F1F-97B1-046EB800A5F5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowApi", "KeysLastWorkflowApi\WorkflowApi.csproj", "{DC54D593-4B03-4879-AA7A-5294170AEB49}"
 EndProject
@@ -48,6 +48,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccPortal", "ICCPortal\IccPortal.csproj", "{2E5FC398-C354-4D0E-84F3-804411340C65}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5CB694D0-78E1-4347-BF78-A557E0780125}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScheduledTaskEngine", "ScheduledTaskEngine\ScheduledTaskEngine.csproj", "{2A2DBC89-2150-469B-B224-FC203A11283E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -115,6 +117,10 @@ Global
 		{2E5FC398-C354-4D0E-84F3-804411340C65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E5FC398-C354-4D0E-84F3-804411340C65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E5FC398-C354-4D0E-84F3-804411340C65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A2DBC89-2150-469B-B224-FC203A11283E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A2DBC89-2150-469B-B224-FC203A11283E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A2DBC89-2150-469B-B224-FC203A11283E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A2DBC89-2150-469B-B224-FC203A11283E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -133,6 +139,7 @@ Global
 		{C9AA366C-852A-4D11-9842-96E9841B2291} = {E377E5DF-C352-401F-9857-C18A1726A68F}
 		{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464} = {E377E5DF-C352-401F-9857-C18A1726A68F}
 		{2E5FC398-C354-4D0E-84F3-804411340C65} = {E377E5DF-C352-401F-9857-C18A1726A68F}
+		{2A2DBC89-2150-469B-B224-FC203A11283E} = {E377E5DF-C352-401F-9857-C18A1726A68F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}

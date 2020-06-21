@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ScheduledTaskEngine": {
+      "commandName": "Project",
+      "commandLineArgs": "GET https://localhost:5001/cdn/v1/manifest"
+    }
+  }
+}

@@ -16,11 +16,11 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Authoris
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleasePortalApi
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleaseApi
 {
     public class Startup
     {
-        private const string Title = "MSS KeyReleasePortal Api";
+        private const string Title = "MSS KeyRelease Api";
 
         public Startup(IConfiguration configuration)
         {
