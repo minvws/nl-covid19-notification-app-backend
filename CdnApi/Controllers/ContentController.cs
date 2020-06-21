@@ -22,9 +22,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnApi.Cont
     {
         [HttpGet]
         [Route(EndPointNames.CdnApi.Manifest)]
-        public async Task GetManifest(string id, [FromServices] HttpGetCdnManifestCommand command)
+        public async Task GetManifest([FromServices] HttpGetCdnManifestCommand command)
         {
-            await command.Execute(HttpContext, id);
+            await command.Execute(HttpContext);
         }
 
         [HttpGet]

@@ -23,7 +23,6 @@
     <ProjectReference Include="..\Components\Components.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.9.1" />
     <PackageReference Include="Microsoft.Azure.DocumentDB" Version="2.11.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.5" />

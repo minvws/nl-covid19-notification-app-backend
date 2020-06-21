@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleasePortalApi.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleaseApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]

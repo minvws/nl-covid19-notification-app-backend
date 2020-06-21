@@ -5,7 +5,6 @@
         <RootNamespace>NL.Rijksoverheid.ExposureNotification.IccBackend</RootNamespace>
         <AssemblyName>NL.Rijksoverheid.ExposureNotification.IccBackend</AssemblyName>
     </PropertyGroup>
-
     <ItemGroup>
       <_ContentIncludedByDefault Remove="wwwroot\css\site.css" />
       <_ContentIncludedByDefault Remove="wwwroot\favicon.ico" />
@@ -31,9 +30,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.4.1" />
-      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.4.1" />
-      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.4.1" />
+      <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.5.0" />
+      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.5.0" />
+      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.5.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -46,10 +45,6 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Middlewares" />
     </ItemGroup>
 
 

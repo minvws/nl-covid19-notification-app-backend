@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,6 +31,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.BackgroundJobs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 
@@ -82,6 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             //Just for the Batch Job
             services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Job"));
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
+            services.AddScoped<IContentSigner, FakeContentSigner>();
             services.AddSingleton<IGeanTekListValidationConfig, StandardGeanCommonWorkflowConfig>();
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
@@ -100,19 +103,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             //    return signer;
             //});
 
-            services.AddScoped(x =>
-            {
-                var provider = new HSMCertificateProvider(new HSMSigningConfig(Configuration).Thumbprint);
-                var signer = new ContentSigner(provider);
-                return signer;
-            });
+            //services.AddScoped(x =>
+            //{
+            //    var provider = new HSMCertificateProvider(new HSMSigningConfig(Configuration).Thumbprint);
+            //    var signer = new ContentSigner(provider);
+            //    return signer;
+            //});
 
-            services.AddScoped(x =>
-            {
-                var provider = new HSMCertificateProvider(new HSMSigningConfig(Configuration).Thumbprint);
-                var signer = new KeySetSigner(provider);
-                return signer;
-            });
+            //services.AddScoped(x =>
+            //{
+            //    var provider = new HSMCertificateProvider(new HSMSigningConfig(Configuration).Thumbprint);
+            //    var signer = new KeySetSigner(provider);
+            //    return signer;
+            //});
 
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
             services.AddScoped<GetActiveExposureKeySetsListCommand, GetActiveExposureKeySetsListCommand>();
@@ -141,6 +144,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<IReader<ResourceBundleContentEntity>, SafeBinaryContentDbReader<ResourceBundleContentEntity>>();
             services.AddScoped<IReader<RiskCalculationContentEntity>, SafeBinaryContentDbReader<RiskCalculationContentEntity>>();
             services.AddScoped<IReader<AppConfigContentEntity>, SafeBinaryContentDbReader<AppConfigContentEntity>>();
+            services.AddScoped<PurgeExpiredSecretsDbCommand, PurgeExpiredSecretsDbCommand>();
 
             services.AddScoped<HttpPostRegisterSecret, HttpPostRegisterSecret>();
             services.AddScoped<RandomNumberGenerator, RandomNumberGenerator>();
@@ -152,8 +156,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             services.AddScoped<HttpPostReleaseTeksCommand, HttpPostReleaseTeksCommand>();
             services.AddScoped<IReleaseTeksValidator, ReleaseTeksValidator>();
-            services.AddScoped<ISignatureValidator, FakeSignatureValidator>();
-            services.AddScoped<ITekWriter, FakeTekWriter>();
+            
+            services.AddScoped<ITekWriter, TekWriter>();
 
             services.AddScoped<HttpPostAppConfigCommand, HttpPostAppConfigCommand>();
             services.AddScoped<AppConfigInsertDbCommand, AppConfigInsertDbCommand>();
@@ -161,7 +165,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
             services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();
-            services.AddScoped<IReleaseKeysAuthorizationValidator, FakeReleaseKeysAuthorizationValidator>();
+            
 
             services.AddScoped<GetLatestContentCommand<ResourceBundleContentEntity>, GetLatestContentCommand<ResourceBundleContentEntity>>();
             services.AddScoped<GetLatestContentCommand<RiskCalculationContentEntity>, GetLatestContentCommand<RiskCalculationContentEntity>>();

@@ -18,21 +18,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private const string GaenSignaturesEntryName = "export.sig"; //Fixed
         private const string NlSignatureEntryName = ZippedSignedContentFormatter.SignaturesEntryName;
 
-        private readonly KeySetSigner _KeySetSigner;
-        private readonly ContentSigner _ContentSigner;
+        private readonly IContentSigner _GaenContentSigner;
+        private readonly IContentSigner _NlContentSigner;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IContentFormatter _ContentFormatter;
         private readonly IExposureKeySetHeaderInfoConfig _Config;
 
         public ExposureKeySetBuilderV1(
             IExposureKeySetHeaderInfoConfig headerInfoConfig,
-            KeySetSigner keySetSigner,
-            ContentSigner contentSigner,
+            IContentSigner gaenContentSigner,
+            IContentSigner nlContentSigner,
             IUtcDateTimeProvider dateTimeProvider, 
             IContentFormatter contentFormatter)
         {
-            _KeySetSigner = keySetSigner;
-            _ContentSigner = contentSigner;
+            _GaenContentSigner = gaenContentSigner;
+            _NlContentSigner = nlContentSigner;
             _DateTimeProvider = dateTimeProvider;
             _ContentFormatter = contentFormatter;
             _Config = headerInfoConfig;
@@ -65,7 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     new ExposureKeySetSignatureContentArgs
                     {
                         SignatureInfo = securityInfo,
-                        Signature = _KeySetSigner.GetSignature(contentBytes),
+                        Signature = _GaenContentSigner.GetSignature(contentBytes),
                         BatchSize = 1,
                         BatchNum = 1
                     },
@@ -76,7 +76,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 }
             };
 
-            var nlSig = _ContentSigner.GetSignature(contentBytes);
+            var nlSig = _NlContentSigner.GetSignature(contentBytes);
 
             return await CreateZipArchive(contentBytes, _ContentFormatter.GetBytes(signatures), nlSig);
         }
@@ -85,7 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             => new SignatureInfoArgs
             {
                 AppBundleId = _Config.AppBundleId,
-                SignatureAlgorithm = _KeySetSigner.SignatureDescription,
+                SignatureAlgorithm = _GaenContentSigner.SignatureDescription,
                 VerificationKeyId = _Config.VerificationKeyId,
                 VerificationKeyVersion = _Config.VerificationKeyVersion
             };

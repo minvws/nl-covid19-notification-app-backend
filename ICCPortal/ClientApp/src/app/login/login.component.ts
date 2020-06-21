@@ -8,9 +8,9 @@ import {Router} from "@angular/router";
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  private router
-  public username:string = ""
-  public password:string = ""
+  private router;
+  public username:string = "";
+  public password:string = "";
 
   constructor(router: Router) {
     this.router = router;

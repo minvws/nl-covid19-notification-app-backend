@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
         [DataTestMethod]
         public void Build(int length)
         {
-            var signer = new ContentSigner(new FakeCertificateProvider("FakeRSA.p12"));
+            var signer = new CmsSigner(new ResourceCertificateProvider("FakeRSA.p12"));
             var content = Encoding.UTF8.GetBytes(CreateString(length));
             var signature = signer.GetSignature(content);
             Assert.IsTrue(signature.Length == signer.LengthBytes);

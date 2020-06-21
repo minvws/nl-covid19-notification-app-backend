@@ -8,7 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
     {
         public static class MobileAppApi
         {
-                private const string Prefix = "/MobileAppApi/v1";
+                private const string Prefix = "/v1";
                 public const string RegisterSecret = Prefix + "/register";
                 public const string ReleaseTeks = Prefix + "/postkeys";
                 public const string RandomNoise = Prefix + "/stopkeys";

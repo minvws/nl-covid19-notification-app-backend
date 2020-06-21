@@ -5,37 +5,34 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
     public class SignatureValidator : ISignatureValidator
     {
-        private readonly WorkflowDbContext _Context;
+        private readonly ILogger<SignatureValidator> _Logger;
 
-        public SignatureValidator(WorkflowDbContext context)
+        public SignatureValidator(ILogger<SignatureValidator> logger)
         {
-            _Context = context;
+            _Logger = logger;
         }
 
-        public bool Valid(byte[] signature, string bucketId, byte[] data)
+        public bool Valid(byte[] signature, KeyReleaseWorkflowState workflow, byte[] data)
         {
             if (signature == null)
                 return false;
 
-            var wf = _Context
-                .KeyReleaseWorkflowStates
-                .Where(x => x.Authorised)
-                .FirstOrDefault(x => x.BucketId == bucketId);
-
-            if (wf == null)
-                return false;
-
-            using var hmac = new HMACSHA256(Convert.FromBase64String(wf.ConfirmationKey));
+            using var hmac = new HMACSHA256(Convert.FromBase64String(workflow.ConfirmationKey));
             var hash = hmac.ComputeHash(data);
 
-            return hash.SequenceEqual(signature);
+            var result = hash.SequenceEqual(signature);
+            
+            if (!result)
+                _Logger.LogInformation($"Invalid signature for BucketId: {workflow.BucketId}");
+
+            return result;
         }
     }
 }

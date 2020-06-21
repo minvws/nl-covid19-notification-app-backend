@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content.NL.Ri
             _ContentDb = contentDb;
         }
 
-        public async Task Execute(HttpContext httpContext, string id)
+        public async Task Execute(HttpContext httpContext)
         {
             if (httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
             {

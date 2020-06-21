@@ -15,16 +15,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
         internal const string ContentEntryName = "content.bin";
         internal const string SignaturesEntryName = "content.sig";
 
-        private readonly ContentSigner _Signer;
+        private readonly IContentSigner _ContentSigner;
 
-        public ZippedSignedContentFormatter(ContentSigner signer)
+        public ZippedSignedContentFormatter(IContentSigner contentSigner)
         {
-            _Signer = signer;
+            _ContentSigner = contentSigner;
         }
 
         public async Task<byte[]> SignedContentPacket(byte[] content)
         {
-            var signature = _Signer.GetSignature(content);
+            var signature = _ContentSigner.GetSignature(content);
             return await CreateZipArchive(content, signature);
         }
 

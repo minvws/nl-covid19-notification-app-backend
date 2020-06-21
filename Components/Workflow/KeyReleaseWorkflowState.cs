@@ -34,6 +34,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         /// </summary>
         public bool Authorised { get; set; }
 
+
+        public bool AuthorisedByCaregiver { get; set; }
+
         /// <summary>
         /// Epoch time in seconds
         /// </summary>

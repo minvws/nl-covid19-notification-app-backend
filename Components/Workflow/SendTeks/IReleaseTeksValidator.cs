@@ -6,6 +6,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 {
     public interface IReleaseTeksValidator
     {
-        bool Validate(ReleaseTeksArgs args);
+        bool Validate(ReleaseTeksArgs args, KeyReleaseWorkflowState workflow);
     }
 }
