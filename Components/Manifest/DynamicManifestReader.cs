@@ -16,14 +16,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         private readonly ManifestBuilder _ManifestBuilder;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IPublishingId _PublishingId;
-        private readonly ContentSigner _Signer;
+        private readonly IContentSigner _ContentSigner;
 
-        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId, ContentSigner signer)
+        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId, IContentSigner contentSigner)
         {
             _ManifestBuilder = manifestBuilder;
             _DateTimeProvider = dateTimeProvider;
             _PublishingId = publishingId;
-            _Signer = signer;
+            _ContentSigner = contentSigner;
         }
 
         public async Task<ManifestEntity?> Execute(string _)
@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
                 Release = _DateTimeProvider.Now(),
             };
             var content = _ManifestBuilder.Execute();
-            var formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_Signer), new StandardPublishingIdFormatter());
+            var formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_ContentSigner), new StandardPublishingIdFormatter());
             await formatter.Fill(e, content);
             return e;
         }

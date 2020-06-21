@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly StandardContentEntityFormatter _Formatter;
 
-        public CreateContentDatabase(IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider, ContentSigner signer)
+        public CreateContentDatabase(IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider, IContentSigner signer)
         {
             var config = new StandardEfDbConfig(configuration, "Content");
             var builder = new SqlServerDbContextOptionsBuilder(config);
@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter());
         }
 
-        public CreateContentDatabase(ExposureContentDbContext DbContextProvider, IUtcDateTimeProvider dateTimeProvider, ContentSigner signer)
+        public CreateContentDatabase(ExposureContentDbContext DbContextProvider, IUtcDateTimeProvider dateTimeProvider, IContentSigner signer)
         {
             _DbContextProvider = DbContextProvider;
             _DateTimeProvider = dateTimeProvider;

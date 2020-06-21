@@ -15,12 +15,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
     public class ProvisionDatabasesCommand
     {
         private readonly IConfiguration _Configuration;
-        private readonly ContentSigner _Signer;
+        private readonly IContentSigner _ContentSigner;
 
-        public ProvisionDatabasesCommand(IConfiguration configuration, ContentSigner signer)
+        public ProvisionDatabasesCommand(IConfiguration configuration, IContentSigner contentSigner)
         {
             _Configuration = configuration;
-            _Signer = signer;
+            _ContentSigner = contentSigner;
         }
 
         public async Task<IActionResult> Execute()
@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             await db2.Execute();
             await db2.AddExampleContent();
 
-            var db3 = new CreateContentDatabase(_Configuration, new StandardUtcDateTimeProvider(), _Signer);
+            var db3 = new CreateContentDatabase(_Configuration, new StandardUtcDateTimeProvider(), _ContentSigner);
             await db3.Execute();
             await db3.AddExampleContent();
 

@@ -4,7 +4,7 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers
 {
-    public interface ISigner
+    public interface IContentSigner
     {
         string SignatureDescription { get; }
         byte[] GetSignature(byte[] content);

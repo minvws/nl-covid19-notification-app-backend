@@ -7,7 +7,6 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {
