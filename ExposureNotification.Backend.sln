@@ -49,7 +49,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5CB694
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScheduledTaskEngine", "ScheduledTaskEngine\ScheduledTaskEngine.csproj", "{2A2DBC89-2150-469B-B224-FC203A11283E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkflowStateEngineApi", "WorkflowStateEngineApi\WorkflowStateEngineApi.csproj", "{6E3FC75B-E162-4C27-900B-9DD11BB6FA73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowStateEngineApi", "WorkflowStateEngineApi\WorkflowStateEngineApi.csproj", "{6E3FC75B-E162-4C27-900B-9DD11BB6FA73}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
