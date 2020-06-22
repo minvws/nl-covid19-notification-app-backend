@@ -38,10 +38,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             _Logger.LogInformation("Running...");
 
             //Read manifest
-            var wc = new WebClient();
-            wc.Headers.Add("accept", MediaTypeNames.Application.Json);
-            var contentJsonBytes = await wc.DownloadDataTaskAsync(_DataApiConfig.Manifest);
-            
+            var contentJsonBytes = await new BasicAuthDataApiReader(_DataApiConfig).Read(_DataApiConfig.Manifest);
+
             //Push manifest
             if (new PushContentByUrl().Execute(_ReceiverConfig.Manifest, contentJsonBytes))
             {
@@ -57,8 +55,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             var contentBytes = Encoding.UTF8.GetString(contentJsonBytes);
             var bcr = JsonConvert.DeserializeObject<BinaryContentResponse>(contentBytes);
 
-            var manifestJsonBytes = Base64.Decode(bcr.Content);
-            var manifestJson = Encoding.UTF8.GetString(manifestJsonBytes);
+            //var manifestJsonBytes = Base64.Decode(bcr.Content);
+            var manifestJson = Encoding.UTF8.GetString(bcr.Content);
             var manifest = JsonConvert.DeserializeObject<ManifestContent>(manifestJson);
 
             //Push all manifest items
@@ -81,6 +79,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         private async Task Push(string fromUri, string toUri)
         {
             var content = await new BasicAuthDataApiReader(_DataApiConfig).Read(fromUri);
+            //Sanity check
+            var contentBytes = Encoding.UTF8.GetString(content);
+            var bcr = JsonConvert.DeserializeObject<BinaryContentResponse>(contentBytes);
+            //Sanity check
             new PushContentByUrl().Execute(toUri, content);
         }
     }

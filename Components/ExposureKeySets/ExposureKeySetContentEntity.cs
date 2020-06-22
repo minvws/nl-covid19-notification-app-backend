@@ -13,11 +13,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     {
         /// <summary>
         /// Metadata - Job Id.
+        /// Null in the CDN db
         /// </summary>
-        public string CreatingJobName { get; set; }
+        public string? CreatingJobName { get; set; }
         /// <summary>
         /// Metadata - Job Id.
+        /// Null in the CDN db
         /// </summary>
-        public int CreatingJobQualifier { get; set; }
+        public int? CreatingJobQualifier { get; set; }
     }
 }

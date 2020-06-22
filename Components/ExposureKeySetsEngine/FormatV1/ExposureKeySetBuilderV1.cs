@@ -85,7 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             => new SignatureInfoArgs
             {
                 AppBundleId = _Config.AppBundleId,
-                SignatureAlgorithm = _GaenContentSigner.SignatureDescription,
+                SignatureAlgorithm = _GaenContentSigner.SignatureOid,
                 VerificationKeyId = _Config.VerificationKeyId,
                 VerificationKeyVersion = _Config.VerificationKeyVersion
             };

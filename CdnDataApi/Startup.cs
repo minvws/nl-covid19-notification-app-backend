@@ -14,6 +14,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
@@ -58,9 +59,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             });
 
             services.AddScoped<GetActiveExposureKeySetsListCommand, GetActiveExposureKeySetsListCommand>();
+            services.AddScoped<GetLatestContentCommand<AppConfigContentEntity>, GetLatestContentCommand<AppConfigContentEntity>>();
             services.AddScoped<GetLatestContentCommand<ResourceBundleContentEntity>, GetLatestContentCommand<ResourceBundleContentEntity>>();
             services.AddScoped<GetLatestContentCommand<RiskCalculationContentEntity>, GetLatestContentCommand<RiskCalculationContentEntity>>();
-            services.AddScoped<GetLatestContentCommand<AppConfigContentEntity>, GetLatestContentCommand<AppConfigContentEntity>>();
+
+            services.AddScoped<HttpGetBinaryContentCommand<ExposureKeySetContentEntity>, HttpGetBinaryContentCommand<ExposureKeySetContentEntity>>();
+            services.AddScoped<HttpGetBinaryContentCommand<AppConfigContentEntity>, HttpGetBinaryContentCommand<AppConfigContentEntity>>();
+            services.AddScoped<HttpGetBinaryContentCommand<ResourceBundleContentEntity>,  HttpGetBinaryContentCommand<ResourceBundleContentEntity>>();
+            services.AddScoped<HttpGetBinaryContentCommand<RiskCalculationContentEntity>, HttpGetBinaryContentCommand<RiskCalculationContentEntity>>();
+
+            services.AddScoped<IReader<ExposureKeySetContentEntity >, SafeBinaryContentDbReader<ExposureKeySetContentEntity>>();
+            services.AddScoped<IReader<AppConfigContentEntity>, SafeBinaryContentDbReader<AppConfigContentEntity>>();
+            services.AddScoped<IReader<ResourceBundleContentEntity>, SafeBinaryContentDbReader<ResourceBundleContentEntity>>();
+            services.AddScoped<IReader<RiskCalculationContentEntity>, SafeBinaryContentDbReader<RiskCalculationContentEntity>>();
 
 
             services.AddSwaggerGen(o =>

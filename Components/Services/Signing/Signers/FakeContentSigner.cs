@@ -8,7 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 {
     public class FakeContentSigner : IContentSigner
     {
-        public string SignatureDescription => "DoNotUse";
+        public string SignatureOid => "+++DoNotUse+++DoNotUse+++DoNotUse+++";
 
         public byte[] GetSignature(byte[] content)
         {

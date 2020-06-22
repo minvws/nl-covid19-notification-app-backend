@@ -43,17 +43,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
         [Route(EndPointNames.CdnApi.ExposureKeySet)]
         public async Task<IActionResult> HttpPostEks([FromBody] BinaryContentResponse args, [FromServices] HttpPostContentReciever<ExposureKeySetContentEntity> command)
             => await command.Execute(args);
-
-        //[FunctionName("provision")]
-        //public async Task<IActionResult> HttpPostProvisionDb([HttpTrigger(AuthorizationLevel.Function, "post", Route = "/v1/nukeandpave")] HttpRequest httpRequest, ILogger logger, ExecutionContext executionContext)
-        //{
-        //    SetConfig(executionContext);
-        //    var config = new StandardEfDbConfig(Configuration, "Content");
-        //    var builder = new SqlServerDbContextOptionsBuilder(config);
-        //    var dbContext = new ExposureContentDbContext(builder.Build());
-        //    await dbContext.Database.EnsureDeletedAsync();
-        //    await dbContext.Database.EnsureCreatedAsync();
-        //    return new OkResult();
-        //}
     }
 }

@@ -14,6 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
             builder.ToTable("ResourceBundleContent");
             builder.Property(u => u.Id).UseHiLo();
+            builder.HasIndex(x => x.PublishingId).IsUnique();
         }
     }
 }
