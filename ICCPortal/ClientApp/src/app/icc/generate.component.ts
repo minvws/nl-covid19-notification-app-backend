@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import {environment} from '../../environments/environment';
 import * as FileSaver from 'file-saver';
 import {GenerateService} from "../services/generate.service";
 
@@ -25,26 +25,21 @@ export class IccGenerateComponent {
   }
 
   public generateDownloadCsv() {
-    const serviceUrl = environment.apiUrl + "/GenerateIcc/batch-csv";
-    this.http
-      .post(serviceUrl, { "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6" }, { responseType: 'blob' })
-      .subscribe((result) => {
-        var bin = new Blob([result], { type: 'text/csv' });
-        console.log("wanna see the contentdisposition value");
-        FileSaver.saveAs(bin, 'icc.csv');
+    this.generateService.generateDownloadCsv()
+      .subscribe((result: any) => {
+        var contentDisposition = result.headers.get("content-disposition");
+        var filename = (contentDisposition) ? contentDisposition.split(';')[1].split('filename')[1].split('=')[1].trim() : "ICC Batch.csv";
+        var bin = new Blob([result.body], {type: 'text/csv'});
+        FileSaver.saveAs(bin, filename);
       });
   }
 
   public downloadCsv() {
-    const serviceUrl = environment.apiUrl + "/GenerateIcc/batch-csv?batchId="+this.icc_batch.id;
-    const fileName = this.icc_batch.id + '.csv';
-
-    this.http
-      .get(serviceUrl, { responseType: 'blob' })
-      .subscribe((result) => {
-        var bin = new Blob([result], { type: 'text/csv' });
-        FileSaver.saveAs(bin, fileName);
-      });
+    const fileName = "ICC_Batch#" + this.icc_batch.id + '.csv';
+    this.generateService.downloadCsv(this.icc_batch.id).subscribe((result) => {
+      var bin = new Blob([result], {type: 'text/csv'});
+      FileSaver.saveAs(bin, fileName);
+    })
   }
 
   public getIccCodeTextArea() {

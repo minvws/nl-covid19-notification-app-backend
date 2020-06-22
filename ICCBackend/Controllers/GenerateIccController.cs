@@ -79,7 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 
             return new FileContentResult(content, "text/csv")
             {
-                FileDownloadName = $"{iccBatch.Id}.csv"
+                FileDownloadName =  $"ICC_Batch#{iccBatch.Id}.csv"
             };
         }
 
@@ -97,7 +97,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 
             return new FileContentResult(content, "text/csv")
             {
-                FileDownloadName = $"{batchId}.csv"
+                FileDownloadName = $"ICC_Batch#{batchId}.csv"
             };
         }
 

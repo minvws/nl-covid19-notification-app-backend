@@ -31,7 +31,7 @@
           </div>
           <button class="btn w-100 btn-dark my-3" (click)="generateCode()">Genereren</button>
           <!--<button class="btn w-50 btn-light my-3 disabled">Download (.pdf)</button>-->
-          <button class="btn w-50 btn-light my-3" (click)="downloadCsv()">Download (.csv)</button>
+          <button class="btn w-50 btn-light my-3" [disabled]="!icc_batch" (click)="downloadCsv()">Download (.csv)</button>
           <button class="btn w-50 btn-light my-3" (click)="generateDownloadCsv()">Genereren & Download (.csv)</button>
           <!--          <a [routerLink]="['/icc/report']" class="btn w-100 btn-light mt-2">Raporteren</a>-->
         </div>
