@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.BackgroundJobs;
 
@@ -10,6 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowStateEngineApi.C
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class WorkflowController : ControllerBase
     {
         [HttpGet]

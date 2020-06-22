@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-  <PropertyGroup>
-    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone</AssemblyName>
-    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone</AssemblyName>
+		<RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone</RootNamespace>
+	</PropertyGroup>
 
   <PropertyGroup>
     <LangVersion>8.0</LangVersion>
@@ -11,27 +11,27 @@
     <UserSecretsId>f41aa621-6aa9-404e-a9a5-017bf487ae2c</UserSecretsId>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <WarningsAsErrors>NU1605;CS8625</WarningsAsErrors>
-    <DocumentationFile>NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <WarningsAsErrors>CS8625</WarningsAsErrors>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<WarningsAsErrors>NU1605;CS8625</WarningsAsErrors>
+		<DocumentationFile>NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.xml</DocumentationFile>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<WarningsAsErrors>CS8625</WarningsAsErrors>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Components\Components.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Components\Components.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.5.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.5.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.5.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.5.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.5">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.5.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.5.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.5.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.5.0" />
+	</ItemGroup>
 </Project>

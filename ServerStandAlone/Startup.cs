@@ -27,7 +27,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationCo
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;

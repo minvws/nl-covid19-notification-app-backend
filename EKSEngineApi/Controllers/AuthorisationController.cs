@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
@@ -11,6 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class AuthorisationController : ControllerBase
     {
         /// <summary>

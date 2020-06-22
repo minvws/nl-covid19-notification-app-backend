@@ -10,16 +10,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 {
     public class SqlServerDbContextOptionsBuilder : IDbContextOptionsBuilder
     {
-        //TODO dead for now. private readonly IEfDbConfig _EfDbConfig;
         private readonly SqlConnectionStringBuilder _ConnectionStringBuilder;
-
 
         public SqlServerDbContextOptionsBuilder(IEfDbConfig efDbConfig)
         {
-            //_EfDbConfig = efDbConfig;
             _ConnectionStringBuilder = new SqlConnectionStringBuilder(efDbConfig.ConnectionString) 
             {
                     MultipleActiveResultSets = true
+            };
+        }
+
+        public SqlServerDbContextOptionsBuilder(string connectionString)
+        {
+            _ConnectionStringBuilder = new SqlConnectionStringBuilder(connectionString) 
+            {
+                MultipleActiveResultSets = true
             };
         }
 
