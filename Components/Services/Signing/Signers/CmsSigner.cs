@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             _Provider = provider;
         }
 
-        public string SignatureDescription => "sha256RSA";
+        public string SignatureOid => "TODO some official OID";
 
         public byte[] GetSignature(byte[] content)
         {
@@ -31,9 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             var key = DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
             var gen = new CmsSignedDataGenerator();
             gen.AddSigner(key, DotNetUtilities.FromX509Certificate(cert), CmsSignedGenerator.DigestSha256);
-
             var cmsSignedData = gen.Generate(new CmsProcessableByteArray(content));
-
             var signature = cmsSignedData.GetEncoded(Asn1Encodable.Der);
             return signature;
         }

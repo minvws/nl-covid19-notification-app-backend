@@ -13,14 +13,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
     {
     private readonly ICertificateProvider _Provider;
-    private const string SignatureAlgorithmDescription = "sha256ECDSA";
+    private const string SignatureAlgorithmDescription = "1.2.840.10045.4.3.2";
 
     public EcdSaSigner(ICertificateProvider provider)
     {
         _Provider = provider;
     }
 
-    public string SignatureDescription => SignatureAlgorithmDescription;
+    public string SignatureOid => SignatureAlgorithmDescription;
 
     public byte[] GetSignature(byte[] content)
     {
