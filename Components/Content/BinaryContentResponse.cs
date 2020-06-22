@@ -15,12 +15,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         [ProtoMember(2)]
         public DateTime LastModified { get; set; }
         [ProtoMember(3)]
-        public string ContentTypeName { get; set; }
+        public string? ContentTypeName { get; set; }
         [ProtoMember(4)]
-        public byte[] Content { get; set; }
+        public byte[]? Content { get; set; }
         [ProtoMember(5)]
-        public string SignedContentTypeName { get; set; }
+        public string? SignedContentTypeName { get; set; }
         [ProtoMember(6)]
-        public byte[] SignedContent { get; set; }
+        public byte[]? SignedContent { get; set; }
     }
 }
