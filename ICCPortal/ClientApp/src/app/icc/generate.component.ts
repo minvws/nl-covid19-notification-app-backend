@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import * as FileSaver from 'file-saver';
+import {GenerateService} from "../services/generate.service";
 
 @Component({
   selector: 'app-icc',
@@ -10,15 +11,13 @@ import * as FileSaver from 'file-saver';
 })
 export class IccGenerateComponent {
   public icc_batch = null;
-  private http;
 
-  constructor(http: HttpClient) {
-    this.http = http;
+  constructor(private readonly generateService: GenerateService) {
   }
 
   public generateCode() {
-    const serviceUrl = environment.apiUrl + "/GenerateIcc/batch";
-    this.http.post(serviceUrl, { "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6" })
+
+    this.generateService.generateIccBatch()
       .subscribe((result) => {
         this.icc_batch = result.iccBatch;
         alert("Batch #" + result.iccBatch.id + " generated");
@@ -32,7 +31,7 @@ export class IccGenerateComponent {
       .subscribe((result) => {
         var bin = new Blob([result], { type: 'text/csv' });
         console.log("wanna see the contentdisposition value");
-        FileSaver.saveAs(bin, 'icc.csv'); 
+        FileSaver.saveAs(bin, 'icc.csv');
       });
   }
 
@@ -44,7 +43,7 @@ export class IccGenerateComponent {
       .get(serviceUrl, { responseType: 'blob' })
       .subscribe((result) => {
         var bin = new Blob([result], { type: 'text/csv' });
-        FileSaver.saveAs(bin, fileName); 
+        FileSaver.saveAs(bin, fileName);
       });
   }
 

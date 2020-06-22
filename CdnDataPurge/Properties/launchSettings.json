@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "CdnDataPurge": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "AppSettings:ContentLifetimeDays": "4,8",
+        "AppSettings:ExposureKeySetLifetimeDays": "15,3"
+      }
+    }
+  }
+}
