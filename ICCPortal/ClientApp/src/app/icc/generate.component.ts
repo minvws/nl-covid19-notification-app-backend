@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environments/environment';
-import {ReportService} from "../services/report.service";
+import * as FileSaver from 'file-saver';
 import {GenerateService} from "../services/generate.service";
 
 @Component({
@@ -22,6 +22,24 @@ export class IccGenerateComponent {
         this.icc_batch = result.iccBatch;
         alert("Batch #" + result.iccBatch.id + " generated");
       });
+  }
+
+  public generateDownloadCsv() {
+    this.generateService.generateDownloadCsv()
+      .subscribe((result: any) => {
+        var contentDisposition = result.headers.get("content-disposition");
+        var filename = (contentDisposition) ? contentDisposition.split(';')[1].split('filename')[1].split('=')[1].trim() : "ICC Batch.csv";
+        var bin = new Blob([result.body], {type: 'text/csv'});
+        FileSaver.saveAs(bin, filename);
+      });
+  }
+
+  public downloadCsv() {
+    const fileName = "ICC_Batch#" + this.icc_batch.id + '.csv';
+    this.generateService.downloadCsv(this.icc_batch.id).subscribe((result) => {
+      var bin = new Blob([result], {type: 'text/csv'});
+      FileSaver.saveAs(bin, fileName);
+    })
   }
 
   public getIccCodeTextArea() {

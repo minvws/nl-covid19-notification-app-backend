@@ -100,6 +100,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
             return batch;
         }
 
+        public async Task<List<InfectionConfirmationCodeEntity>> GetBatchItems(string batchId)
+        {
+            var batch = await _DbContext.InfectionConfirmationCodes.Where(_ => _.BatchId == batchId).ToListAsync();
+
+            return batch ?? new List<InfectionConfirmationCodeEntity>();
+        }
+
         public async Task<InfectionConfirmationCodeEntity> RedeemIcc(string icc)
         {
             var infectionConfirmationCodeEntity = await Get(icc);

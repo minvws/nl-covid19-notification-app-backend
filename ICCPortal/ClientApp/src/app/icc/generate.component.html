@@ -9,12 +9,12 @@
           <!--          TODO: Convert generated code into fill-in Icc -->
           <div class="d-flex" id="iccWrapper" (click)="copyCodeToClipboard()">
             <div class="w-100" *ngIf="icc_batch && icc_batch.batch.length > 0">
-            <div>
-              <p>Batch ID:</p>
-              <input placeholder="# Batch ID" type="text" class="form-control disabled" disabled [value]="icc_batch.id"
-                     name="icc_id">
-              <br>
-            </div>
+              <div>
+                <p>Batch ID:</p>
+                <input placeholder="# Batch ID" type="text" class="form-control disabled" disabled [value]="icc_batch.id"
+                       name="icc_id">
+                <br>
+              </div>
               <input placeholder="1234" type="text" class="form-control disabled" disabled *ngFor="let icc of icc_batch.batch"
                      [value]="icc.code" name="icc_1">
 
@@ -30,8 +30,9 @@
             <!--            <input class="form-control" [value]="icc_code[5]" disabled/>-->
           </div>
           <button class="btn w-100 btn-dark my-3" (click)="generateCode()">Genereren</button>
-          <button class="btn w-50 btn-light my-3 disabled">Download (.pdf)</button>
-          <button class="btn w-50 btn-light my-3 disabled">Download (.csv)</button>
+          <!--<button class="btn w-50 btn-light my-3 disabled">Download (.pdf)</button>-->
+          <button class="btn w-50 btn-light my-3" [disabled]="!icc_batch" (click)="downloadCsv()">Download (.csv)</button>
+          <button class="btn w-50 btn-light my-3" (click)="generateDownloadCsv()">Genereren & Download (.csv)</button>
           <!--          <a [routerLink]="['/icc/report']" class="btn w-100 btn-light mt-2">Raporteren</a>-->
         </div>
       </div>

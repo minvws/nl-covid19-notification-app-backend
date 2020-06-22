@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
@@ -12,6 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services
     public interface IIccService
     {
         Task<InfectionConfirmationCodeEntity> Get(string icc);
+        Task<List<InfectionConfirmationCodeEntity>> GetBatchItems(string batchId);
         Task<InfectionConfirmationCodeEntity> Validate(string iccCodeString);
         Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, string batchId);
         Task<IccBatch> GenerateBatch(Guid userId, int count = 20);
