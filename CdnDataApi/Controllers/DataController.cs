@@ -21,29 +21,34 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
     {
         [HttpGet]
         [Route(EndPointNames.CdnApi.Manifest)]
-        public async Task GetCurrentManifest([FromServices]HttpGetManifestBinaryContentCommand command, HttpContext httpContext)
+        [Produces(MediaTypeNamesAdditional.Application.Protobuf)]
+        public async Task GetCurrentManifest([FromServices]HttpGetManifestBinaryContentCommand command)
         {
-            await command.Execute(httpContext);
+            await command.Execute(HttpContext);
         }
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.ExposureKeySet + "/{id}")]
-        public async Task GetExposureKeySet(string id, [FromServices]HttpGetBinaryContentCommand<ExposureKeySetContentEntity> command, HttpContext httpContext)
-            => await command.Execute(id, httpContext);
+        [Produces(MediaTypeNamesAdditional.Application.Protobuf)]
+        public async Task GetExposureKeySet(string id, [FromServices]HttpGetBinaryContentCommand<ExposureKeySetContentEntity> command)
+            => await command.Execute(id, HttpContext);
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.ResourceBundle + "/{id}")]
-        public async Task GetResourceBundle(string id, [FromServices]HttpGetBinaryContentCommand<ResourceBundleContentEntity> command, HttpContext httpContext)
-            => await command.Execute(id, httpContext);
+        [Produces(MediaTypeNamesAdditional.Application.Protobuf)]
+        public async Task GetResourceBundle(string id, [FromServices]HttpGetBinaryContentCommand<ResourceBundleContentEntity> command)
+            => await command.Execute(id, HttpContext);
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.RiskCalculationParameters + "/{id}")]
-        public async Task GetRiskCalculationParameters(string id, [FromServices] HttpGetBinaryContentCommand<RiskCalculationContentEntity> command, HttpContext httpContext)
-            => await command.Execute(id, httpContext);
+        [Produces(MediaTypeNamesAdditional.Application.Protobuf)]
+        public async Task GetRiskCalculationParameters(string id, [FromServices] HttpGetBinaryContentCommand<RiskCalculationContentEntity> command)
+            => await command.Execute(id, HttpContext);
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.AppConfig + "/{id}")]
-        public async Task GetAppConfig(string id, [FromServices] HttpGetBinaryContentCommand<AppConfigContentEntity> command, HttpContext httpContext)
-            => await command.Execute(id, httpContext);
+        [Produces(MediaTypeNamesAdditional.Application.Protobuf)]
+        public async Task GetAppConfig(string id, [FromServices] HttpGetBinaryContentCommand<AppConfigContentEntity> command)
+            => await command.Execute(id, HttpContext);
     }
 }

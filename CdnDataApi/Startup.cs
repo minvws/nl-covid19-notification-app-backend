@@ -69,7 +69,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
                 {
                     Title = "CDN Data API",
                     Version = "v1",
-                    Description = "///",
                 });
             });
         }

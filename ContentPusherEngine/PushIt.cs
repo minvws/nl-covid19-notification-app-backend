@@ -2,20 +2,15 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.Buffers.Text;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Text.Unicode;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 {
@@ -39,10 +34,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 
             //Read manifest
             var wc = new WebClient();
-            var zippedContent = await wc.DownloadDataTaskAsync(_DataApiConfig.Manifest);
+            wc.Headers.Add("accept", MediaTypeNamesAdditional.Application.Protobuf);
+            var rawProtobuf = await wc.DownloadDataTaskAsync(_DataApiConfig.Manifest);
 
             //Push manifest
-            if (new PushContentByUrl().Execute(_ReceiverConfig.Manifest, zippedContent))
+            if (new PushContentByUrl().Execute(_ReceiverConfig.Manifest, rawProtobuf))
             {
                 _Logger.LogInformation($"Pushed manifest.");
             }
@@ -53,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             }
 
             //Unpack manifest
-            var contentBytes = await ZippedSignedContentFormatter.Read(zippedContent);
+            var contentBytes = await ZippedSignedContentFormatter.Read(rawProtobuf);
             var json = Encoding.UTF8.GetString(contentBytes.ToArray());
             var manifest = JsonConvert.DeserializeObject<ManifestContent>(json);
 
@@ -79,6 +75,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             var content = await new BasicAuthDataApiReader(_DataApiConfig).Read(fromUri);
             new PushContentByUrl().Execute(toUri, content);
         }
-
     }
 }

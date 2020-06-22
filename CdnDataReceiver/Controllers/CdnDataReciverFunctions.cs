@@ -16,32 +16,37 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
 {
     [ApiController]
     [Route("[controller]")]
-    public class CdnDataReciverFunctions
+    public class CdnDataReciverFunctions : ControllerBase
     {
         [HttpPost]
         [Route(EndPointNames.CdnApi.Manifest)]
-        public async Task<IActionResult> HttpPostManifest(HttpRequest httpRequest, [FromServices] HttpPostContentReciever<ManifestEntity> command)
-            => await command.Execute(httpRequest);
+        [Consumes(MediaTypeNamesAdditional.Application.Protobuf)]
+        public async Task<IActionResult> HttpPostManifest([FromServices] HttpPostContentReciever<ManifestEntity> command)
+            => await command.Execute(Request);
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.AppConfig)]
-        public async Task<IActionResult> HttpPostAppConfig(HttpRequest httpRequest, [FromServices] HttpPostContentReciever<AppConfigContentEntity> command)
-            => await command.Execute(httpRequest);
+        [Consumes(MediaTypeNamesAdditional.Application.Protobuf)]
+        public async Task<IActionResult> HttpPostAppConfig([FromServices] HttpPostContentReciever<AppConfigContentEntity> command)
+            => await command.Execute(Request);
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.ResourceBundle)]
-        public async Task<IActionResult> HttpPostResourceBundle(HttpRequest httpRequest, [FromServices] HttpPostContentReciever<ResourceBundleContentEntity> command)
-            => await command.Execute(httpRequest);
+        [Consumes(MediaTypeNamesAdditional.Application.Protobuf)]
+        public async Task<IActionResult> HttpPostResourceBundle([FromServices] HttpPostContentReciever<ResourceBundleContentEntity> command)
+            => await command.Execute(Request);
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.RiskCalculationParameters)]
-        public async Task<IActionResult> HttpPostCalcConfig(HttpRequest httpRequest, [FromServices] HttpPostContentReciever<RiskCalculationContentEntity> command)
-            => await command.Execute(httpRequest);
+        [Consumes(MediaTypeNamesAdditional.Application.Protobuf)]
+        public async Task<IActionResult> HttpPostCalcConfig([FromServices] HttpPostContentReciever<RiskCalculationContentEntity> command)
+            => await command.Execute(Request);
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.ExposureKeySet)]
-        public async Task<IActionResult> HttpPostEks(HttpRequest httpRequest, [FromServices] HttpPostContentReciever<ExposureKeySetContentEntity> command)
-            => await command.Execute(httpRequest);
+        [Consumes(MediaTypeNamesAdditional.Application.Protobuf)]
+        public async Task<IActionResult> HttpPostEks([FromServices] HttpPostContentReciever<ExposureKeySetContentEntity> command)
+            => await command.Execute(Request);
 
         //[FunctionName("provision")]
         //public async Task<IActionResult> HttpPostProvisionDb([HttpTrigger(AuthorizationLevel.Function, "post", Route = "/v1/nukeandpave")] HttpRequest httpRequest, ILogger logger, ExecutionContext executionContext)

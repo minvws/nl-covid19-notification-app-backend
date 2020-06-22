@@ -6,6 +6,7 @@ using System.IO;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using ProtoBuf;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
@@ -19,8 +20,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             var buffer = stream.ToArray();
 
             httpContext.Response.StatusCode = 200;
+            httpContext.Response.Headers.Add("content-type", MediaTypeNamesAdditional.Application.Protobuf);
             httpContext.Response.ContentLength = buffer.Length;
-            httpContext.Response.Headers.Add("content-type", "application/x-protobuf");
             await httpContext.Response.Body.WriteAsync(buffer);
         }
     }

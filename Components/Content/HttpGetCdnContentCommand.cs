@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             if (httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
             {
                 httpContext.Response.ContentLength = 0;
-                httpContext.Response.StatusCode = 400;
+                httpContext.Response.StatusCode = 400; //TODO!
             }
 
             var parsed = _PublishingId.ParseUri(id);

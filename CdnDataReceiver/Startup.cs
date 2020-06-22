@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -53,6 +54,16 @@ namespace CdnDataReceiver
             services.AddScoped<HttpPostContentReciever<ResourceBundleContentEntity>, HttpPostContentReciever<ResourceBundleContentEntity>>();
             services.AddScoped<HttpPostContentReciever<RiskCalculationContentEntity>, HttpPostContentReciever<RiskCalculationContentEntity>>();
             services.AddScoped<HttpPostContentReciever<ExposureKeySetContentEntity>, HttpPostContentReciever<ExposureKeySetContentEntity>>();
+
+            services.AddSwaggerGen(o =>
+            {
+                o.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "CDN Data Receiver API",
+                    Version = "v1",
+                });
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,10 +75,15 @@ namespace CdnDataReceiver
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(o =>
+            {
+                o.ConfigObject.ShowExtensions = true;
+                o.SwaggerEndpoint("/swagger/v1/swagger.json", "CDN Data API");
+            });
 
             app.UseEndpoints(endpoints =>
             {

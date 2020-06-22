@@ -7,14 +7,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
     {
         public bool Execute(string uri, byte[] args)
         {
-            var buffer = new MemoryStream();
-            ProtoBuf.Serializer.Serialize(buffer, args);
             var wr = WebRequest.CreateHttp(uri);
             wr.Method = "POST";
-            var data = buffer.ToArray();
-            wr.ContentLength = data.Length;
+            wr.ContentLength = args.Length;
             var dataStream = wr.GetRequestStream();
-            dataStream.Write(data, 0, data.Length);
+            dataStream.Write(args, 0, args.Length);
             dataStream.Close();
             var response = (HttpWebResponse)wr.GetResponse();
             return response.StatusCode == HttpStatusCode.OK;

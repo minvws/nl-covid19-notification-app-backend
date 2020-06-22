@@ -47,15 +47,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             await contentStream.CopyToAsync(entryStream);
         }
 
-
-        /// <summary>
-        /////             var contentBuffer = await ZippedSignedContentFormatter.Read(result);
-        //var str = UTF8Encoding.UTF8.GetString(contentBuffer.ToArray());
-        //    return JsonConvert.DeserializeObject<T>(str);
-
-        /// </summary>
-        /// <param name="content"></param>
-        /// <returns></returns>
         public static async Task<byte[]> Read(byte[] content)
         {
             await using var cs = new MemoryStream(content);
