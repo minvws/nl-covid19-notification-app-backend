@@ -13,6 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public void Configure(EntityTypeBuilder<AppConfigContentEntity> builder)
         {
             builder.ToTable("AppConfigContent");
+            builder.HasIndex(x => x.PublishingId).IsUnique();
             builder.Property(u => u.Id).UseHiLo();
         }
     }
