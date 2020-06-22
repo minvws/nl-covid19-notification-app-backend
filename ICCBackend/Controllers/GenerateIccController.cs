@@ -9,8 +9,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Models;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
@@ -73,16 +75,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 
             _DbContext.SaveAndCommit();
 
-            byte[] content;
-
-            using (var memoryStream = new MemoryStream())
-            using (var streamWriter = new StreamWriter(memoryStream))
-            using (var csvWriter = new CsvWriter(streamWriter, CultureInfo.GetCultureInfo("nl-NL")))
-            {    
-                csvWriter.WriteRecords(iccBatch.Batch);
-                streamWriter.Flush();
-                content = memoryStream.ToArray();
-            }
+            var content = GenerateCsv(iccBatch.Batch);
 
             return new FileContentResult(content, "text/csv")
             {
@@ -90,5 +83,29 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
             };
         }
 
+        [HttpGet("batch-csv")]
+        public async Task<FileContentResult> GetGenerateCsv([FromQuery] string batchId)
+        {
+            var items = await _IccService.GetBatchItems(batchId);
+
+            var content = GenerateCsv(items);
+
+            return new FileContentResult(content, "text/csv")
+            {
+                FileDownloadName = "icc.csv"
+            };
+        }
+
+        private byte[] GenerateCsv(List<InfectionConfirmationCodeEntity> items)
+        {
+            using (var memoryStream = new MemoryStream())
+            using (var streamWriter = new StreamWriter(memoryStream))
+            using (var csvWriter = new CsvWriter(streamWriter, CultureInfo.GetCultureInfo("nl-NL")))
+            {    
+                csvWriter.WriteRecords(items);
+                streamWriter.Flush();
+                return memoryStream.ToArray();
+            }
+        }
     }
 }
