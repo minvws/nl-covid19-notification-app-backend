@@ -1,0 +1,63 @@
+using System.Linq;
+using System.Net.Mime;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
+using ProtoBuf;
+using Serilog;
+
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver
+{
+    public class HttpPostContentReciever<T> where T : ContentEntity, new()
+    {
+        private readonly ExposureContentDbContext _DbContext;
+
+        public HttpPostContentReciever(ExposureContentDbContext dbContext)
+        {
+            _DbContext = dbContext;
+        }
+
+        public async Task<IActionResult> Execute(BinaryContentResponse content)
+        {
+            //TODO check sig!!!
+
+            if (content == null)
+                return new OkResult();
+
+            var e = new T
+            {
+                PublishingId = content.PublishingId,
+                Content = content.Content,
+                ContentTypeName = content.ContentTypeName,
+                SignedContent = content.Content,
+                SignedContentTypeName = MediaTypeNames.Application.Zip,
+                Release = content.LastModified,
+            };
+
+            //var config = new StandardEfDbConfig(_Configuration, "Content");
+            //var builder = new SqlServerDbContextOptionsBuilder(config);
+            //var _DbContext = new ExposureContentDbContext(builder.Build());
+
+            try
+
+            {
+                await _DbContext.Set<T>().AddAsync(e);
+                _DbContext.SaveAndCommit();
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Errors.AsQueryable().Cast<SqlError>().Select(x => x.Number).Contains(2627))
+                    return new ConflictResult();
+
+                throw;
+            }
+
+            return new OkResult();
+        }
+    }
+}

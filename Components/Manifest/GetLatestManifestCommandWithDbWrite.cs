@@ -15,7 +15,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
     [Obsolete("Writes to DB too.")]
-    public class GetLatestManifestCommand
+    public class GetLatestManifestCommandWithDbWrite
     {
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly ExposureContentDbContext _DbContext;
@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         private readonly IGaenContentConfig _GaenContentConfig;
         private readonly IPublishingId _PublishingId;
 
-        public GetLatestManifestCommand(IUtcDateTimeProvider dateTimeProvider, ExposureContentDbContext dbContext, ManifestBuilder manifestBuilder, IGaenContentConfig gaenContentConfig, IPublishingId publishingId)
+        public GetLatestManifestCommandWithDbWrite(IUtcDateTimeProvider dateTimeProvider, ExposureContentDbContext dbContext, ManifestBuilder manifestBuilder, IGaenContentConfig gaenContentConfig, IPublishingId publishingId)
         {
             _DateTimeProvider = dateTimeProvider;
             _DbContext = dbContext;

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -24,15 +25,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             _PublishingId = publishingId;
         }
 
-        public async Task<IActionResult> Execute(string id)
+        public async Task<IActionResult> Execute(string id, HttpContext httpContext)
         {
             if (!_PublishingId.Validate(id))
+            {
                 return new BadRequestResult();
+            }
 
             var e = await _SafeReader.Execute(id);
 
             if (e == null)
+            {
                 return new NotFoundResult();
+            }
 
             var r = new BinaryContentResponse
             {

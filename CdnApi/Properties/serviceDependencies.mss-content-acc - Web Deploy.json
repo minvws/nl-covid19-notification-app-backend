@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "type": "mssql.azure",
+      "connectionId": "Content",
+      "secretStore": "AzureAppSettings"
+    }
+  }
+}

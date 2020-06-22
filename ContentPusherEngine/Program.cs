@@ -34,22 +34,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
                 .AddJsonFile($"appsettings.{environmentName}.json", true, true)
                 .Build();
 
-            // add the framework services
+            // Add the framework services
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
-
-            IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
             try
             {
                 Log.Information("Starting service");
-                await serviceProvider.GetService<App>().Run();
+                var pushIt = serviceProvider.GetService<PushIt>();
+                await pushIt.Run();
                 Log.Information("Ending service");
             }
             catch (Exception ex)
             {
                 Log.Fatal(ex, "Error running service");
-                throw ex;
+                throw;
             }
             finally
             {
@@ -60,16 +60,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         public static void ConfigureServices(IServiceCollection services)
         {
             services.AddSeriLog(Configuration);
-            services.AddSingleton(Configuration);
-            services.AddTransient<App>();
-
-            services.AddScoped(x =>
-            {
-                var config = new StandardEfDbConfig(Configuration, "Content");
-                var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new ExposureContentDbContext(builder.Build());
-                return result;
-            });
+            services.AddSingleton<IConfiguration>(Configuration);
+            services.AddSingleton<PushIt>();
+            services.AddSingleton<IDataApiUrls>(new DataApiUrls(Configuration, "DataApi"));
+            services.AddSingleton<IReceiverConfig>(new ReceiverConfig(Configuration, "Receiver"));
         }
     }
 }

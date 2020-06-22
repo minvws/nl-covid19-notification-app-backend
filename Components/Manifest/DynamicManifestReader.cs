@@ -11,7 +11,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
-    public class DynamicManifestReader : IReader<ManifestEntity>
+    //Reads and formats...
+    public class DynamicManifestReader
     {
         private readonly ManifestBuilder _ManifestBuilder;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
@@ -26,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             _ContentSigner = contentSigner;
         }
 
-        public async Task<ManifestEntity?> Execute(string _)
+        public async Task<ManifestEntity?> Execute()
         {
             var e = new ManifestEntity
             {

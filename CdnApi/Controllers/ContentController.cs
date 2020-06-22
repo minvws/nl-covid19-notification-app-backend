@@ -2,9 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content.NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
@@ -17,8 +20,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnApi.Cont
     public class ContentController : ControllerBase
     {
         [HttpGet]
+        [Route(EndPointNames.CdnApi.Manifest)]
+        public async Task GetManifest([FromServices] HttpGetCdnManifestCommand command)
+        {
+            await command.Execute(HttpContext);
+        }
+
+        [HttpGet]
+        [Route(EndPointNames.CdnApi.AppConfig + "/{id}")]
+        public async Task GetAppConfig(string id, [FromServices] HttpGetCdnContentCommand<AppConfigContentEntity> command)
+        {
+            await command.Execute(HttpContext, id);
+        }
+
+        [HttpGet]
         [Route(EndPointNames.CdnApi.ResourceBundle + "/{id}")]
-        public async Task GetResourceBundle(string id, [FromServices]HttpGetCdnContentCommand<ResourceBundleContentEntity> command)
+        public async Task GetResourceBundle(string id, [FromServices] HttpGetCdnContentCommand<ResourceBundleContentEntity> command)
         {
             await command.Execute(HttpContext, id);
         }

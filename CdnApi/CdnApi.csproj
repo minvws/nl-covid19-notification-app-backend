@@ -4,10 +4,19 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnApi</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnApi</RootNamespace>
+    <UserSecretsId>6ed3ed32-c60c-4e42-9889-58044293730a</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="protobuf-net" Version="2.4.6" />
+    <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Include="Serilog.Sinks.EventLog" Version="3.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.5.0" />
   </ItemGroup>
 
   <ItemGroup>

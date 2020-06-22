@@ -87,10 +87,41 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddSingleton<IGeanTekListValidationConfig, StandardGeanCommonWorkflowConfig>();
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
+
+            services.AddSingleton<ISignatureValidator>(new FakeSignatureValidator());
             
-            services.AddScoped<ISignatureValidator, SignatureValidator>();
-            services.AddScoped<IReleaseKeysAuthorizationValidator, FakeReleaseKeysAuthorizationValidator>();
+            services.AddSingleton<IReleaseKeysAuthorizationValidator>(new FakeReleaseKeysAuthorizationValidator());
+
             
+
+            //services.AddScoped(x =>
+            //{
+            //    var provider = new FakeCertificateProvider("FakeRSA.p12");
+            //    var signer = new ContentSigner(provider);
+            //    return signer;
+            //});
+
+            //services.AddScoped(x =>
+            //{
+            //    var provider = new FakeCertificateProvider("FakeECDSA.p12");
+            //    var signer = new KeySetSigner(provider);
+            //    return signer;
+            //});
+
+            //services.AddScoped(x =>
+            //{
+            //    var provider = new HSMCertificateProvider(new HSMSigningConfig(Configuration).Thumbprint);
+            //    var signer = new ContentSigner(provider);
+            //    return signer;
+            //});
+
+            //services.AddScoped(x =>
+            //{
+            //    var provider = new HSMCertificateProvider(new HSMSigningConfig(Configuration).Thumbprint);
+            //    var signer = new KeySetSigner(provider);
+            //    return signer;
+            //});
+
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
             services.AddScoped<GetActiveExposureKeySetsListCommand, GetActiveExposureKeySetsListCommand>();
             
@@ -104,16 +135,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<HttpPostResourceBundleCommand, HttpPostResourceBundleCommand>();
             services.AddScoped<ResourceBundleInsertDbCommand, ResourceBundleInsertDbCommand>();
             services.AddScoped<ResourceBundleValidator, ResourceBundleValidator>();
-
+            
             services.AddScoped<ProvisionDatabasesCommand, ProvisionDatabasesCommand>();
             services.AddScoped<HttpPostGenerateExposureKeySetsCommand, HttpPostGenerateExposureKeySetsCommand>();
-            services.AddScoped<HttpGetCdnContentCommand<ManifestEntity>, HttpGetCdnContentCommand<ManifestEntity>>();
+            //services.AddScoped<HttpGetCdnContentCommand<ManifestEntity>, HttpGetCdnContentCommand<ManifestEntity>>();
+
             services.AddScoped<HttpGetCdnContentCommand<ExposureKeySetContentEntity>, HttpGetCdnContentCommand<ExposureKeySetContentEntity>>();
             services.AddScoped<HttpGetCdnContentCommand<RiskCalculationContentEntity>, HttpGetCdnContentCommand<RiskCalculationContentEntity>>();
             services.AddScoped<HttpGetCdnContentCommand<ResourceBundleContentEntity>, HttpGetCdnContentCommand<ResourceBundleContentEntity>>();
             services.AddScoped<HttpGetCdnContentCommand<AppConfigContentEntity>, HttpGetCdnContentCommand<AppConfigContentEntity>>();
 
-            services.AddScoped<IReader<ManifestEntity>, DynamicManifestReader>();
+            services.AddScoped<DynamicManifestReader, DynamicManifestReader>();
             services.AddScoped<IReader<ExposureKeySetContentEntity>, SafeBinaryContentDbReader<ExposureKeySetContentEntity>>();
             services.AddScoped<IReader<ResourceBundleContentEntity>, SafeBinaryContentDbReader<ResourceBundleContentEntity>>();
             services.AddScoped<IReader<RiskCalculationContentEntity>, SafeBinaryContentDbReader<RiskCalculationContentEntity>>();

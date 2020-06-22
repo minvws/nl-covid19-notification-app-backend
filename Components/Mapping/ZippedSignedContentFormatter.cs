@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 {
     public class ZippedSignedContentFormatter
     {
-        private const string ContentEntryName = "content.bin";
+        internal const string ContentEntryName = "content.bin";
         internal const string SignaturesEntryName = "content.sig";
 
         private readonly IContentSigner _ContentSigner;
@@ -45,6 +45,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             await using var entryStream = archive.CreateEntry(entryName).Open();
             await using var contentStream = new MemoryStream(content);
             await contentStream.CopyToAsync(entryStream);
+        }
+
+        public static async Task<byte[]> Read(byte[] content)
+        {
+            await using var cs = new MemoryStream(content);
+            using (var archive = new ZipArchive(cs, ZipArchiveMode.Read, false))
+            {
+                await using var result = new MemoryStream(content);
+                var entryStream = archive.GetEntry(ContentEntryName);
+                entryStream.Open().CopyTo(result);
+                return result.ToArray();
+            }
         }
     }
 }

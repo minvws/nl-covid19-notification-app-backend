@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroup')]/providers/Microsoft.Sql/servers/mss-content-acc-v2/databases/mss-content-acc-v2",
+      "type": "mssql.azure",
+      "connectionId": "Content",
+      "secretStore": "AzureAppSettings"
+    },
+    "mssql2": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroup')]/providers/Microsoft.Sql/servers/mss-content-acc-v2/databases/mss-workflow-acc-v2",
+      "type": "mssql.azure",
+      "connectionId": "WorkFlow",
+      "secretStore": "AzureAppSettings"
+    }
+  }
+}

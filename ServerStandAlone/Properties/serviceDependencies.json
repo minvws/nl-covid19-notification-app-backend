@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "Content"
+    },
+    "mssql2": {
+      "type": "mssql",
+      "connectionId": "WorkFlow"
+    }
+  }
+}
