@@ -31,17 +31,20 @@ export class IccGenerateComponent {
       .post(serviceUrl, { "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6" }, { responseType: 'blob' })
       .subscribe((result) => {
         var bin = new Blob([result], { type: 'text/csv' });
+        console.log("wanna see the contentdisposition value");
         FileSaver.saveAs(bin, 'icc.csv'); 
       });
   }
 
   public downloadCsv() {
     const serviceUrl = environment.apiUrl + "/GenerateIcc/batch-csv?batchId="+this.icc_batch.id;
+    const fileName = this.icc_batch.id + '.csv';
+
     this.http
       .get(serviceUrl, { responseType: 'blob' })
       .subscribe((result) => {
         var bin = new Blob([result], { type: 'text/csv' });
-        FileSaver.saveAs(bin, 'icc.csv'); 
+        FileSaver.saveAs(bin, fileName); 
       });
   }
 

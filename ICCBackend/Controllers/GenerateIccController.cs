@@ -12,6 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -27,8 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         private readonly ILogger<GenerateIccController> _Logger;
         private readonly IConfiguration _Configuration;
         private readonly IccBackendContentDbContext _DbContext;
-
-
+        
         public GenerateIccController(ILogger<GenerateIccController> logger, IConfiguration configuration,
             IIccService iccService, IccBackendContentDbContext dbContext)
         {
@@ -79,20 +79,25 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 
             return new FileContentResult(content, "text/csv")
             {
-                FileDownloadName = "icc.csv"
+                FileDownloadName = $"{iccBatch.Id}.csv"
             };
         }
 
         [HttpGet("batch-csv")]
         public async Task<FileContentResult> GetGenerateCsv([FromQuery] string batchId)
         {
+            if (batchId == null || batchId.Length != 6)
+            {
+                throw new ArgumentException("Invalid batchId");
+            }
+
             var items = await _IccService.GetBatchItems(batchId);
 
             var content = GenerateCsv(items);
 
             return new FileContentResult(content, "text/csv")
             {
-                FileDownloadName = "icc.csv"
+                FileDownloadName = $"{batchId}.csv"
             };
         }
 
