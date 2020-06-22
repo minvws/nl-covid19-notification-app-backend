@@ -24,6 +24,30 @@ export class IccGenerateComponent {
       });
   }
 
+  public generateDownloadCsv() {
+    const serviceUrl = environment.apiUrl + "/GenerateIcc/batch-csv";
+    this.http
+      .post(serviceUrl, { "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6" }, { responseType: 'blob' })
+      .subscribe((result) => {
+        // Save the result
+        var binaryObject = new Blob([result], { type: 'text/csv' });
+        var url = window.URL.createObjectURL(binaryObject);
+        window.open(url);
+      });
+  }
+
+  public downloadCsv() {
+    const serviceUrl = environment.apiUrl + "/GenerateIcc/batch-csv?batchId="+this.icc_batch.id;
+    this.http
+      .get(serviceUrl, { responseType: 'blob' })
+      .subscribe((result) => {
+        // Save the result
+        var binaryObject = new Blob([result], { type: 'text/csv' });
+        var url = window.URL.createObjectURL(binaryObject);
+        window.open(url);
+      });
+  }
+
   public getIccCodeTextArea() {
     return this.icc_batch.batch.map((i) => i.code.trim()).join("\n");
   }
