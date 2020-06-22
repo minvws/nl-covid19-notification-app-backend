@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-icc',
@@ -29,10 +30,8 @@ export class IccGenerateComponent {
     this.http
       .post(serviceUrl, { "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6" }, { responseType: 'blob' })
       .subscribe((result) => {
-        // Save the result
-        var binaryObject = new Blob([result], { type: 'text/csv' });
-        var url = window.URL.createObjectURL(binaryObject);
-        window.open(url);
+        var bin = new Blob([result], { type: 'text/csv' });
+        FileSaver.saveAs(bin, 'icc.csv'); 
       });
   }
 
@@ -41,10 +40,8 @@ export class IccGenerateComponent {
     this.http
       .get(serviceUrl, { responseType: 'blob' })
       .subscribe((result) => {
-        // Save the result
-        var binaryObject = new Blob([result], { type: 'text/csv' });
-        var url = window.URL.createObjectURL(binaryObject);
-        window.open(url);
+        var bin = new Blob([result], { type: 'text/csv' });
+        FileSaver.saveAs(bin, 'icc.csv'); 
       });
   }
 
