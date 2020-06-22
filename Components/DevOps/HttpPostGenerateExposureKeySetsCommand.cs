@@ -51,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                     _HsmExposureKeySetHeaderInfoConfig,
                     //_EcdSaSigner, _CmsSigner, _UtcDateTimeProvider, new GeneratedProtobufContentFormatter()),
                     _EcdSaSigner, _CmsSigner, _UtcDateTimeProvider,
-                    useGeneratedFormatter ? (IContentFormatter)new ProtobufNetContentFormatter() : new GeneratedProtobufContentFormatter()),
+                    useGeneratedFormatter ? new GeneratedProtobufContentFormatter() : (IContentFormatter)new ProtobufNetContentFormatter()),
                 _Input,
                 _Output,
                 _UtcDateTimeProvider,

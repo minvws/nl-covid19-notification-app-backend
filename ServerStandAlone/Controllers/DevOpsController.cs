@@ -42,10 +42,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [Route(EndPointNames.DevOps.ExposureKeySetsCreate + "/{useAllKeys}")]
-        public async Task<IActionResult> ExposureKeySets(bool useAllKeys, [FromServices]HttpPostGenerateExposureKeySetsCommand command)
+        [Route(EndPointNames.DevOps.ExposureKeySetsCreate)]
+        public async Task<IActionResult> ExposureKeySets([FromQueryAttribute]bool useAllKeys, [FromQueryAttribute]bool useGeneratedFormatter, [FromServices]HttpPostGenerateExposureKeySetsCommand command)
         {
-            return await command.Execute(useAllKeys);
+            return await command.Execute(useAllKeys, useGeneratedFormatter);
         }
 
         /// <summary>
