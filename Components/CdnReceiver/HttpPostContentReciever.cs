@@ -22,10 +22,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
             _DbContext = dbContext;
         }
 
-        public async Task<IActionResult> Execute(HttpRequest httpRequest)
+        public async Task<IActionResult> Execute(BinaryContentResponse content)
         {
-            var content = Serializer.Deserialize<BinaryContentResponse>(httpRequest.Body);
-
             //TODO check sig!!!
 
             if (content == null)
@@ -34,6 +32,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
             var e = new T
             {
                 PublishingId = content.PublishingId,
+                Content = content.Content,
+                ContentTypeName = content.ContentTypeName,
                 SignedContent = content.Content,
                 SignedContentTypeName = MediaTypeNames.Application.Zip,
                 Release = content.LastModified,
@@ -46,7 +46,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
             try
 
             {
-                _DbContext.BeginTransaction();
                 await _DbContext.Set<T>().AddAsync(e);
                 _DbContext.SaveAndCommit();
             }

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Net;
+using System.Net.Mime;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 {
@@ -9,6 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         {
             var wr = WebRequest.CreateHttp(uri);
             wr.Method = "POST";
+            wr.Headers.Add("content-type", MediaTypeNames.Application.Json);
             wr.ContentLength = args.Length;
             var dataStream = wr.GetRequestStream();
             dataStream.Write(args, 0, args.Length);

@@ -25,20 +25,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             _PublishingId = publishingId;
         }
 
-        public async Task Execute(string id, HttpContext httpContext)
+        public async Task<IActionResult> Execute(string id, HttpContext httpContext)
         {
             if (!_PublishingId.Validate(id))
             {
-                httpContext.Response.StatusCode = 400;
-                return;
+                return new BadRequestResult();
             }
 
             var e = await _SafeReader.Execute(id);
 
             if (e == null)
             {
-                httpContext.Response.StatusCode = 404;
-                return;
+                return new NotFoundResult();
             }
 
             var r = new BinaryContentResponse
@@ -51,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 SignedContent = e.SignedContent
             };
 
-            await httpContext.RespondWith(r);
+            return new OkObjectResult(r);
         }
     }
 }

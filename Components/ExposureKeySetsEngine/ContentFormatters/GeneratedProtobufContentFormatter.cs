@@ -2,7 +2,10 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.IO;
 using System.Linq;
+using System.Text;
 using Google.Protobuf;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat;
@@ -20,13 +23,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 BatchSize = content.BatchSize,
                 EndTimestamp = content.EndTimestamp,
                 StartTimestamp = content.StartTimestamp,
-                //Header = content.Header,
                 SignatureInfos = { content.SignatureInfos.Select(Map).ToArray() },
                 Keys = { content.Keys.Select(Map).ToArray() },
+                //NOT IN THE GENERATED PROTOBUF Header = content.Header,
             };
-            return result.ToByteArray();
+            var buffer = result.ToByteArray();
+
+            var headerBytes = Encoding.UTF8.GetBytes(content.Header);
+            var stream = new MemoryStream();
+            stream.Write(headerBytes);
+            stream.Write(buffer);
+            return stream.ToArray();
         }
-        
+
         private static TemporaryExposureKey Map(TemporaryExposureKeyArgs arg)
             => new TemporaryExposureKey
             {

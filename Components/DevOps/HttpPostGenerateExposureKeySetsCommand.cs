@@ -43,13 +43,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             _CmsSigner = cmsSigner;
         }
 
-        public async Task<IActionResult> Execute(bool useAllKeys = false)
+        public async Task<IActionResult> Execute(bool useAllKeys = false, bool useGeneratedFormatter = true)
         {
             using var bb = new ExposureKeySetBatchJobMk2(
                 _GaenContentConfig,
                 new ExposureKeySetBuilderV1(
                     _HsmExposureKeySetHeaderInfoConfig,
-                    _EcdSaSigner, _CmsSigner, _UtcDateTimeProvider, new GeneratedProtobufContentFormatter()),
+                    //_EcdSaSigner, _CmsSigner, _UtcDateTimeProvider, new GeneratedProtobufContentFormatter()),
+                    _EcdSaSigner, _CmsSigner, _UtcDateTimeProvider,
+                    useGeneratedFormatter ? (IContentFormatter)new ProtobufNetContentFormatter() : new GeneratedProtobufContentFormatter()),
                 _Input,
                 _Output,
                 _UtcDateTimeProvider,

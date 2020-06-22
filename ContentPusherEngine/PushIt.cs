@@ -4,13 +4,18 @@
 
 using System.Linq;
 using System.Net;
+using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
+using Org.BouncyCastle.Utilities.Encoders;
+using Serilog.Formatting.Raw;
+using SQLitePCL;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 {
@@ -34,11 +39,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 
             //Read manifest
             var wc = new WebClient();
-            wc.Headers.Add("accept", MediaTypeNamesAdditional.Application.Protobuf);
-            var rawProtobuf = await wc.DownloadDataTaskAsync(_DataApiConfig.Manifest);
-
+            wc.Headers.Add("accept", MediaTypeNames.Application.Json);
+            var contentJsonBytes = await wc.DownloadDataTaskAsync(_DataApiConfig.Manifest);
+            
             //Push manifest
-            if (new PushContentByUrl().Execute(_ReceiverConfig.Manifest, rawProtobuf))
+            if (new PushContentByUrl().Execute(_ReceiverConfig.Manifest, contentJsonBytes))
             {
                 _Logger.LogInformation($"Pushed manifest.");
             }
@@ -49,9 +54,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             }
 
             //Unpack manifest
-            var contentBytes = await ZippedSignedContentFormatter.Read(rawProtobuf);
-            var json = Encoding.UTF8.GetString(contentBytes.ToArray());
-            var manifest = JsonConvert.DeserializeObject<ManifestContent>(json);
+            var contentBytes = Encoding.UTF8.GetString(contentJsonBytes);
+            var bcr = JsonConvert.DeserializeObject<BinaryContentResponse>(contentBytes);
+
+            var manifestJsonBytes = Base64.Decode(bcr.Content);
+            var manifestJson = Encoding.UTF8.GetString(manifestJsonBytes);
+            var manifest = JsonConvert.DeserializeObject<ManifestContent>(manifestJson);
 
             //Push all manifest items
             await Push(string.Format(_DataApiConfig.AppConfig, manifest.AppConfig), _ReceiverConfig.AppConfig);
