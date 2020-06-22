@@ -1,9 +1,12 @@
+using System;
 using System.Linq;
 using System.Net.Mime;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -49,11 +52,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
                 await _DbContext.Set<T>().AddAsync(e);
                 _DbContext.SaveAndCommit();
             }
-            catch (SqlException ex)
+            catch (DbUpdateException ex)
             {
-                if (ex.Errors.AsQueryable().Cast<SqlError>().Select(x => x.Number).Contains(2627))
+                if ((ex?.InnerException as SqlException)?.Number == 2601)
                     return new ConflictResult();
 
+                throw;
+            }
+            catch (Exception ex)
+            {
                 throw;
             }
 

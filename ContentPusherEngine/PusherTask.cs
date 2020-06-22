@@ -19,21 +19,21 @@ using SQLitePCL;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 {
-    public class PushIt
+    public class PusherTask
     {
         private readonly IDataApiUrls _DataApiConfig;
         private readonly IReceiverConfig _ReceiverConfig;
 
-        private readonly ILogger<PushIt> _Logger;
+        private readonly ILogger<PusherTask> _Logger;
 
-        public PushIt(ILogger<PushIt> logger, IDataApiUrls dataApiConfig, IReceiverConfig receiverConfig)
+        public PusherTask(ILogger<PusherTask> logger, IDataApiUrls dataApiConfig, IReceiverConfig receiverConfig)
         {
             _Logger = logger;
             _ReceiverConfig = receiverConfig;
             _DataApiConfig = dataApiConfig;
         }
 
-        public async Task Run()
+        public async Task PushIt()
         {
             _Logger.LogInformation("Running...");
 
@@ -41,49 +41,48 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             var contentJsonBytes = await new BasicAuthDataApiReader(_DataApiConfig).Read(_DataApiConfig.Manifest);
 
             //Push manifest
-            if (new PushContentByUrl().Execute(_ReceiverConfig.Manifest, contentJsonBytes))
-            {
-                _Logger.LogInformation($"Pushed manifest.");
-            }
-            else
+            var writtenToDb = new BasicAuthPostBytesToUrl(_ReceiverConfig).Execute(_ReceiverConfig.Manifest, contentJsonBytes);
+            if (!writtenToDb)
             {
                 _Logger.LogInformation("Completed (Up to date).");
                 return;
             }
 
+            _Logger.LogInformation($"Pushed manifest.");
+
             //Unpack manifest
             var contentBytes = Encoding.UTF8.GetString(contentJsonBytes);
             var bcr = JsonConvert.DeserializeObject<BinaryContentResponse>(contentBytes);
-
-            //var manifestJsonBytes = Base64.Decode(bcr.Content);
             var manifestJson = Encoding.UTF8.GetString(bcr.Content);
             var manifest = JsonConvert.DeserializeObject<ManifestContent>(manifestJson);
 
             //Push all manifest items
-            await Push(string.Format(_DataApiConfig.AppConfig, manifest.AppConfig), _ReceiverConfig.AppConfig);
-            _Logger.LogInformation($"Pushed AppConfig {manifest.AppConfig}.");
-            await Push(string.Format(_DataApiConfig.ResourceBundle, manifest.ResourceBundle), _ReceiverConfig.ResourceBundle);
-            _Logger.LogInformation($"Pushed ResourceBundle {manifest.ResourceBundle}.");
-            await Push(string.Format(_DataApiConfig.RiskCalculationParameters, manifest.RiskCalculationParameters), _ReceiverConfig.RiskCalculationParameters);
-            _Logger.LogInformation($"Pushed RiskCalculationParameters {manifest.RiskCalculationParameters}.");
+            writtenToDb = await PushItGood(string.Format(_DataApiConfig.AppConfig, manifest.AppConfig), _ReceiverConfig.AppConfig);
+            _Logger.LogInformation($"Pushed AppConfig {manifest.AppConfig} - New item:{writtenToDb}.");
+            writtenToDb = await PushItGood(string.Format(_DataApiConfig.ResourceBundle, manifest.ResourceBundle), _ReceiverConfig.ResourceBundle);
+            _Logger.LogInformation($"Pushed ResourceBundle {manifest.ResourceBundle} - New item:{writtenToDb}.");
+            writtenToDb = await PushItGood(string.Format(_DataApiConfig.RiskCalculationParameters, manifest.RiskCalculationParameters), _ReceiverConfig.RiskCalculationParameters);
+            _Logger.LogInformation($"Pushed RiskCalculationParameters {manifest.RiskCalculationParameters} - New item:{writtenToDb}.");
 
             foreach (var i in manifest.ExposureKeySets)
             {
-                await Push(string.Format(_DataApiConfig.ExposureKeySet, i), _ReceiverConfig.ExposureKeySet);
-                _Logger.LogInformation($"Pushed ExposureKeySet {i}.");
+                writtenToDb = await PushItGood(string.Format(_DataApiConfig.ExposureKeySet, i), _ReceiverConfig.ExposureKeySet);
+                _Logger.LogInformation($"Pushed ExposureKeySet {i} - New item:{writtenToDb}.");
             }
 
-            _Logger.LogInformation("Completed...");
+            _Logger.LogInformation("Completed.");
         }
 
-        private async Task Push(string fromUri, string toUri)
+        private async Task<bool> PushItGood(string fromUri, string toUri)
         {
             var content = await new BasicAuthDataApiReader(_DataApiConfig).Read(fromUri);
+#if DEBUG
             //Sanity check
             var contentBytes = Encoding.UTF8.GetString(content);
             var bcr = JsonConvert.DeserializeObject<BinaryContentResponse>(contentBytes);
             //Sanity check
-            new PushContentByUrl().Execute(toUri, content);
+#endif
+            return new BasicAuthPostBytesToUrl(_ReceiverConfig).Execute(toUri, content);
         }
     }
 }
