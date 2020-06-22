@@ -9,25 +9,19 @@ using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
 {
-
-
-
-
-
     [ApiController]
     [Route("[controller]")]
     public class DataController : ControllerBase
     {
         [HttpGet]
         [Route(EndPointNames.CdnApi.Manifest)]
-        public async Task GetCurrentManifest([FromServices] HttpGetManifestBinaryContentCommand command, HttpContext httpContext)
+        public async Task GetCurrentManifest([FromServices]HttpGetManifestBinaryContentCommand command, HttpContext httpContext)
         {
             await command.Execute(httpContext);
         }

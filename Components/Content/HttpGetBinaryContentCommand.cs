@@ -5,7 +5,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
@@ -41,38 +40,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 httpContext.Response.StatusCode = 404;
                 return;
             }
-
-            var r = new BinaryContentResponse
-            {
-                LastModified = e.Release,
-                PublishingId = e.PublishingId,
-                ContentTypeName = e.ContentTypeName,
-                Content = e.Content,
-                SignedContentTypeName = e.SignedContentTypeName,
-                SignedContent = e.SignedContent
-            };
-
-            await httpContext.RespondWith(r);
-        }
-    }
-
-
-    /// <summary>
-    /// Used in the Cdn Data API in the Datacentre/Business Zone
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class HttpGetManifestBinaryContentCommand
-    {
-        private readonly DynamicManifestReader _DynamicManifestReader;
-
-        public HttpGetManifestBinaryContentCommand(DynamicManifestReader dynamicManifestReader)
-        {
-            _DynamicManifestReader = dynamicManifestReader;
-        }
-
-        public async Task Execute(HttpContext httpContext)
-        {
-            var e = await _DynamicManifestReader.Execute();
 
             var r = new BinaryContentResponse
             {

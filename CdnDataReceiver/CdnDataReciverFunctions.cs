@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
@@ -15,24 +14,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationCo
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver
 {
-
-    public abstract class AppFunctionBase
-    {
-        protected IConfigurationRoot Configuration { get; private set; }
-
-        protected void SetConfig(ExecutionContext context)
-        {
-            if (Configuration != null)
-                return;
-
-            Configuration = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", true)
-                .AddEnvironmentVariables()
-                .Build();
-        }
-    }
-
     public class CdnDataReciverFunctions : AppFunctionBase
     {
         [FunctionName("manifest")]
