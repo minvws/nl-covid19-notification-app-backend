@@ -30,6 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="CsvHelper" Version="15.0.5" />
       <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.5.0" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.5.0" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.5.0" />
