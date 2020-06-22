@@ -4,19 +4,25 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using ProtoBuf;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver
 {
-    public class Receiver<T> where T : ContentEntity, new()
+    public class HttpPostContentReciever<T> where T : ContentEntity, new()
     {
-        public async Task<IActionResult> Execute(HttpRequest httpRequest, ILogger logger, IConfiguration configuration)
+        private readonly ExposureContentDbContext _DbContext;
+
+        public HttpPostContentReciever(ExposureContentDbContext dbContext)
+        {
+            _DbContext = dbContext;
+        }
+
+        public async Task<IActionResult> Execute(HttpRequest httpRequest)
         {
             var content = Serializer.Deserialize<BinaryContentResponse>(httpRequest.Body);
 
@@ -33,16 +39,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
                 Release = content.LastModified,
             };
 
-            var config = new StandardEfDbConfig(configuration, "Content");
-            var builder = new SqlServerDbContextOptionsBuilder(config);
+            //var config = new StandardEfDbConfig(_Configuration, "Content");
+            //var builder = new SqlServerDbContextOptionsBuilder(config);
+            //var _DbContext = new ExposureContentDbContext(builder.Build());
 
-            var db = new ExposureContentDbContext(builder.Build());
             try
 
             {
-                db.BeginTransaction();
-                await db.Set<T>().AddAsync(e);
-                db.SaveAndCommit();
+                _DbContext.BeginTransaction();
+                await _DbContext.Set<T>().AddAsync(e);
+                _DbContext.SaveAndCommit();
             }
             catch (SqlException ex)
             {

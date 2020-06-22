@@ -32,6 +32,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSeriLog(Configuration);
+
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
             services.AddScoped(x =>

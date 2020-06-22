@@ -21,7 +21,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
 
         public DbSet<EksCreateJobInputEntity> EksInput { get; set; }
         public DbSet<EksCreateJobOutputEntity> EksOutput { get; set; }
-
         public DbSet<ManifestEntity> ManifestContent { get; set; }
         public DbSet<ExposureKeySetContentEntity> ExposureKeySetContent { get; set; }
         public DbSet<RiskCalculationContentEntity> RiskCalculationContent { get; set; }
