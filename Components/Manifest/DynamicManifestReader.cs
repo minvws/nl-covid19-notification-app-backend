@@ -11,6 +11,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
+    //Reads and formats...
     public class DynamicManifestReader
     {
         private readonly ManifestBuilder _ManifestBuilder;

@@ -16,27 +16,20 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
 {
+
+
+
+
+
     [ApiController]
     [Route("[controller]")]
     public class DataController : ControllerBase
     {
         [HttpGet]
         [Route(EndPointNames.CdnApi.Manifest)]
-        public async Task GetCurrentManifest([FromServices] DynamicManifestReader command, HttpContext httpContext)
+        public async Task GetCurrentManifest([FromServices] HttpGetManifestBinaryContentCommand command, HttpContext httpContext)
         {
-            var e = await command.Execute();
-
-            var r = new BinaryContentResponse
-            {
-                LastModified = e.Release,
-                PublishingId = e.PublishingId,
-                ContentTypeName = e.ContentTypeName,
-                Content = e.Content,
-                SignedContentTypeName = e.SignedContentTypeName,
-                SignedContent = e.SignedContent
-            };
-
-            await httpContext.RespondWith(r);
+            await command.Execute(httpContext);
         }
 
         [HttpGet]
