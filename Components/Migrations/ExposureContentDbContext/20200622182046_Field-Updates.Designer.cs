@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.ExposureContentDbContext
 {
     [DbContext(typeof(NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts.ExposureContentDbContext))]
-    partial class ExposureContentDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200622182046_Field-Updates")]
+    partial class FieldUpdates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

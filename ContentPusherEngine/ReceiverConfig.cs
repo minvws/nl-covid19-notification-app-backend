@@ -9,6 +9,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         {
         }
 
+        public string Username { get; }
+        public string Password { get; }
         public string Manifest => GetValue(nameof(Manifest));
         public string AppConfig => GetValue(nameof(AppConfig));
         public string ExposureKeySet => GetValue(nameof(ExposureKeySet));

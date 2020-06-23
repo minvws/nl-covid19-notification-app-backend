@@ -2,6 +2,8 @@
 {
     public interface IReceiverConfig
     {
+        string Username { get; }
+        string Password { get; }
         string Manifest { get; }
         string AppConfig { get; }
         string ExposureKeySet { get; }

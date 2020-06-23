@@ -15,6 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             builder.ToTable("RiskCalculationContent");
             builder.Property(u => u.Id).UseHiLo();
             builder.HasIndex(x => x.PublishingId).IsUnique();
+            builder.Property(u => u.PublishingId).HasMaxLength(64);
         }
     }
 }

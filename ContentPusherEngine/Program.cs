@@ -42,8 +42,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             try
             {
                 Log.Information("Starting service");
-                var pushIt = serviceProvider.GetService<PushIt>();
-                await pushIt.Run();
+                var pushIt = serviceProvider.GetService<PusherTask>();
+                await pushIt.PushIt();
                 Log.Information("Ending service");
             }
             catch (Exception ex)
@@ -61,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         {
             services.AddSeriLog(Configuration);
             services.AddSingleton<IConfiguration>(Configuration);
-            services.AddSingleton<PushIt>();
+            services.AddSingleton<PusherTask>();
             services.AddSingleton<IDataApiUrls>(new DataApiUrls(Configuration, "DataApi"));
             services.AddSingleton<IReceiverConfig>(new ReceiverConfig(Configuration, "Receiver"));
         }
