@@ -9,7 +9,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 })
 export class ReportService {
 
-  private readonly authHeader: string = "";
+  private authHeader: string = "";
 
   constructor(private readonly http: HttpClient) { }
 
@@ -30,8 +30,7 @@ export class ReportService {
   }
 
   private errorHandler(error: HttpErrorResponse, caught:Observable<any>) : Observable<any> {
-    // TODO: this retries, implement proper error handling / logging here.
-    console.log(error);
-    // return caught;
+    // TODO error handling
+    throw error;
   }
 }

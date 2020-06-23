@@ -49,7 +49,7 @@ export class GenerateService {
   }
 
   private errorHandler(error: HttpErrorResponse, caught: Observable<any>): Observable<any> {
-    // TODO: this retries, implement proper error handling / logging here.
-    // return caught;
+    // TODO error handling
+    throw error;
   }
 }
