@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowStateEngineApi.C
     public class WorkflowController : ControllerBase
     {
         [HttpGet]
-        [Route("Purge")]
+        [Route("purge")]
         public async Task<IActionResult> Purge([FromServices] PurgeExpiredSecretsDbCommand command)
         {
             return await command.Execute();

@@ -12,7 +12,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public ExposureContentDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ExposureContentDbContext>();
-            optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=Content;Integrated Security=true");
+            optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=Content;Integrated Security=true", o =>
+            {
+                o.MigrationsHistoryTable("__MigrationHistory", "dbo");
+            });
 
             return new ExposureContentDbContext(optionsBuilder.Options);
         }

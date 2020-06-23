@@ -12,7 +12,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public IccBackendContentDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<IccBackendContentDbContext>();
-            optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=Icc;Integrated Security=true");
+            optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=Icc;Integrated Security=true",o =>
+            {
+                o.MigrationsHistoryTable("__MigrationHistory", "dbo");
+            });
 
             return new IccBackendContentDbContext(optionsBuilder.Options);
         }

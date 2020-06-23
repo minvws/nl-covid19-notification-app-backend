@@ -12,7 +12,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public WorkflowDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<WorkflowDbContext>();
-            optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=WorkFlow;Integrated Security=true");
+            optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=WorkFlow;Integrated Security=true",o =>
+            {
+                o.MigrationsHistoryTable("__MigrationHistory", "dbo");
+            });
 
             return new WorkflowDbContext(optionsBuilder.Options);
         }

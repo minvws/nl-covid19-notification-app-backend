@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
@@ -17,6 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class DataController : ControllerBase
     {
         [HttpGet]

@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "KeyReleasePortalApi": {
+    "EKSEngineApi": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

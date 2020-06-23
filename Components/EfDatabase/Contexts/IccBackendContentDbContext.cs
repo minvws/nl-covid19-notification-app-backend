@@ -18,6 +18,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public DbSet<InfectionConfirmationCodeEntity> InfectionConfirmationCodes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasDefaultSchema("dbo");
+
             modelBuilder.Entity<InfectionConfirmationCodeEntity>().HasKey(e => e.Code);
             modelBuilder.Entity<InfectionConfirmationCodeEntity>().HasIndex(e => e.BatchId);
             

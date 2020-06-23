@@ -2,8 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -27,6 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
 {
     public class Startup
     {
+        private const string Title = "MSS CDN Data API";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -40,6 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             services.AddSeriLog(Configuration);
 
             services.AddControllers();
+            services.AddBasicAuthentication();
 
             services.AddScoped<HttpGetManifestBinaryContentCommand, HttpGetManifestBinaryContentCommand>();
             services.AddScoped<DynamicManifestReader, DynamicManifestReader>();
@@ -78,8 +79,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             {
                 o.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "CDN Data API",
+                    Title = Title,
                     Version = "v1",
+                });
+
+                o.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "basic",
+                    In = ParameterLocation.Header,
+                    Description = "Basic Authorization header using the Bearer scheme."
+                });
+
+                o.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "basic"
+                            }
+                        },
+                        new string[] {}
+                    }
                 });
             });
         }
@@ -95,11 +120,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             app.UseSwaggerUI(o =>
             {
                 o.ConfigObject.ShowExtensions = true;
-                o.SwaggerEndpoint("/swagger/v1/swagger.json", "CDN Data API");
+                o.SwaggerEndpoint("../swagger/v1/swagger.json", Title);
             });
             app.UseHttpsRedirection();
             app.UseRouting();
-            //app.UseAuthorization();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

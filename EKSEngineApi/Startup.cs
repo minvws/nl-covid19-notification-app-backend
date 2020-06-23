@@ -66,7 +66,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
-            
+            services.AddScoped<IContentSigner, FakeContentSigner>();
+
             services.AddSingleton(x =>
             {
                 var config = new CertificateProviderConfig(Configuration, "Content");
