@@ -20,7 +20,7 @@ export class GenerateService {
     const serviceUrl = environment.apiUrl + "/GenerateIcc/single";
 
     let payload = {
-      user_id: this.testUserId
+      UserId: this.testUserId
     }
     return this.http.post(serviceUrl, payload).pipe(catchError(this.errorHandler));
   }
@@ -29,7 +29,7 @@ export class GenerateService {
     const serviceUrl = environment.apiUrl + "/GenerateIcc/batch";
 
     let payload = {
-      user_id: this.testUserId
+      UserId: this.testUserId
     }
     return this.http.post(serviceUrl, payload).pipe(catchError(this.errorHandler));
   }
@@ -37,7 +37,7 @@ export class GenerateService {
 
   generateDownloadCsv(): Observable<any> {
     const serviceUrl = environment.apiUrl + "/GenerateIcc/batch-csv";
-    return this.http.post(serviceUrl, { "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6" }, {
+    return this.http.post(serviceUrl, { "UserId": "3fa85f64-5717-4562-b3fc-2c963f66afa6" }, {
       observe: 'response',
       responseType: 'blob' as 'json'
     })
@@ -50,6 +50,6 @@ export class GenerateService {
 
   private errorHandler(error: HttpErrorResponse, caught: Observable<any>): Observable<any> {
     // TODO: this retries, implement proper error handling / logging here.
-    return caught;
+    // return caught;
   }
 }

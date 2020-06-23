@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
@@ -50,8 +51,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 var authHeaderString = authHeader.ToString();
                 infectionConfirmationCodeEntity = await _IccService.Validate(authHeaderString);
             }
-            catch
-            {
+            catch(Exception e)
+            {    
+                _Logger.LogCritical(e.ToString());
                 return AuthenticateResult.Fail("Invalid Icc");
             }
 

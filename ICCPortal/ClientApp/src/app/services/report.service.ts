@@ -12,8 +12,9 @@ export class ReportService {
   private readonly authHeader: string = "";
 
   constructor(private readonly http: HttpClient) { }
-  
-  redeemIcc(labConfirmationIds: Array<string>): Observable<any> {
+
+  redeemIcc(authHeader: string, labConfirmationIds: Array<string>): Observable<any> {
+    this.authHeader = authHeader;
     const serviceUrl = environment.apiUrl + "/RedeemIcc";
     const data = {
       "labConfirmationID": labConfirmationIds.join(""),
@@ -30,6 +31,7 @@ export class ReportService {
 
   private errorHandler(error: HttpErrorResponse, caught:Observable<any>) : Observable<any> {
     // TODO: this retries, implement proper error handling / logging here.
-    return caught;
+    console.log(error);
+    // return caught;
   }
 }
