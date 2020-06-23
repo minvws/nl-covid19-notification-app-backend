@@ -3,12 +3,14 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
@@ -20,16 +22,18 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
     {
         private readonly string _BaseUrl;
         private readonly HttpClient _HttpClient = new HttpClient();
-        private readonly bool _AuthenticationEnabled = false;
-        private readonly string _UploadAuthorisationToken;
+        private readonly bool _AuthenticationEnabled = true;
 
-        public AppBackendService(IConfiguration configuration)
+        public AppBackendService(IConfiguration configuration,  IBasicAuthenticationConfig basicAuthConfig)
         {
             _BaseUrl = configuration.GetSection("AppBackendConfig:BaseUri").Value.ToString();
-            _UploadAuthorisationToken = configuration.GetSection("AppBackendConfig:UploadAuthorisationToken").Value.ToString();
             if (_AuthenticationEnabled)
             {
-                _HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "user:pass");
+                var basicAuthToken = $"{basicAuthConfig.UserName}:{basicAuthConfig.Password}";
+                var basicAuthTokenBytes = Encoding.UTF8.GetBytes(basicAuthToken.ToArray());
+                var base64BasicAuthToken = System.Convert.ToBase64String(basicAuthTokenBytes);
+
+                _HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64BasicAuthToken);
             }
         }
 
@@ -76,10 +80,10 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
         {
             var backendResponse =
                 await BackendPostRequest(EndPointNames.CaregiversPortalApi.LabConfirmation,
-                    new AuthorisationArgs(redeemIccModel, _UploadAuthorisationToken));
+                    new AuthorisationArgs(redeemIccModel, "okok"));
 
             if (backendResponse == null) return false;
-            // todo: convert dynamic into labconfirm flow model
+            // todo: convert dynamic into lab-confirm flow model
             var backendResponseJson = JsonConvert.DeserializeObject<dynamic>(backendResponse);
             return backendResponseJson != null &&  backendResponseJson.valid;
         }
