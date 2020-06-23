@@ -13,14 +13,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi.Controllers
     [ApiController]
     [Route("[controller]")]
     [Authorize]
-    public class JobController : ControllerBase
+    public class EngineController : ControllerBase
     {
         /// <summary>
         /// Generate new ExposureKeySets.
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [Route("execute")]
+        [Route("/v1/execute")]
         public async Task<IActionResult> ExposureKeySets([FromServices]HttpPostGenerateExposureKeySetsCommand command)
         {
             return await command.Execute();
