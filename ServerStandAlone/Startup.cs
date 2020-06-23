@@ -33,6 +33,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authoris
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.BackgroundJobs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 {
@@ -182,6 +183,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             services.AddScoped<HttpGetManifestBinaryContentCommand, HttpGetManifestBinaryContentCommand>();
             services.AddScoped<DynamicManifestReader, DynamicManifestReader>();
+            services.AddScoped<HttpGetManifestSasCommand, HttpGetManifestSasCommand>();
             
             services.AddSwaggerGen(o =>
             {

@@ -2,8 +2,11 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
@@ -31,9 +34,55 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         //[ProducesResponseType(typeof(byte[]), 200)] //TODO No added value in Swagger UI
         [ProducesResponseType(500)]
         [Produces(MediaTypeNames.Application.Zip, MediaTypeNames.Application.Json)]
-        public async Task GetLatestConfig([FromServices]HttpGetManifestBinaryContentCommand command)
+        public async Task GetLatestConfig([FromServices]HttpGetManifestSasCommand command)
         {
             await command.Execute(HttpContext);
+        }
+    }
+
+    public class HttpGetManifestSasCommand
+    {
+        private readonly DynamicManifestReader _DynamicManifestReader;
+
+        public HttpGetManifestSasCommand(DynamicManifestReader dynamicManifestReader)
+        {
+            _DynamicManifestReader = dynamicManifestReader;
+        }
+
+        public async Task Execute(HttpContext httpContext)
+        {
+            var e = await _DynamicManifestReader.Execute();
+
+            if (e == null) throw new InvalidOperationException();
+
+            if (!httpContext.Request.Headers.TryGetValue("accept", out var contentList))
+            {
+                httpContext.Response.StatusCode = 415;
+
+                return;
+            }
+
+            if (contentList.Contains(MediaTypeNames.Application.Json))
+            {
+                httpContext.Response.ContentLength = e.Content.Length;
+                httpContext.Response.StatusCode = 200;
+                httpContext.Response.Headers.Add("content-type", e.ContentTypeName);
+                await httpContext.Response.BodyWriter.WriteAsync(e.Content);
+
+                return;
+            }
+
+            if (contentList.Contains(MediaTypeNames.Application.Zip))
+            {
+                httpContext.Response.ContentLength = e.SignedContent.Length;
+                httpContext.Response.StatusCode = 200;
+                httpContext.Response.Headers.Add("content-type", e.SignedContentTypeName);
+                await httpContext.Response.BodyWriter.WriteAsync(e.SignedContent);
+
+                return;
+            }
+
+            httpContext.Response.StatusCode = 415;
         }
     }
 }
