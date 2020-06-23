@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -52,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<ProvisionDatabasesCommandIcc, ProvisionDatabasesCommandIcc>();
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
-
+            services.AddScoped<IBasicAuthenticationConfig, BasicAuthenticationConfig>();
             services.AddScoped<IIccService, IccService>();
             services.AddScoped<AppBackendService, AppBackendService>();
             services.AddAuthentication("IccAuthentication")
