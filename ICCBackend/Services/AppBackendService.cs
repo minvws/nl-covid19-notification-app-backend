@@ -21,25 +21,28 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
     public class AppBackendService
     {
         private readonly string _BaseUrl;
+        private readonly string _Prefix;
         private readonly HttpClient _HttpClient = new HttpClient();
         private readonly bool _AuthenticationEnabled = true;
 
         public AppBackendService(IConfiguration configuration, IBasicAuthenticationConfig basicAuthConfig)
         {
             _BaseUrl = configuration.GetSection("AppBackendConfig:BaseUri").Value.ToString();
+            _Prefix = configuration.GetSection("AppBackendConfig:Prefix").Value.ToString();
             if (_AuthenticationEnabled)
             {
                 var basicAuthToken = $"{basicAuthConfig.UserName}:{basicAuthConfig.Password}";
                 var basicAuthTokenBytes = Encoding.UTF8.GetBytes(basicAuthToken.ToArray());
                 var base64BasicAuthToken = System.Convert.ToBase64String(basicAuthTokenBytes);
-                
-                _HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64BasicAuthToken);
+
+                _HttpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Basic", base64BasicAuthToken);
             }
         }
 
         private string GetAppBackendUrl(string endpoint)
         {
-            return _BaseUrl + (endpoint.StartsWith("/") ? endpoint : "/" + endpoint);
+            return _BaseUrl + (endpoint.StartsWith("/") ? endpoint : "/" + _Prefix + "/" + endpoint);
         }
 
         private async Task<string> BackendGetRequest(string endpoint)
