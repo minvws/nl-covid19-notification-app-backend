@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -21,12 +22,14 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
     public class AppBackendService
     {
         private readonly string _BaseUrl;
+        private readonly string _Prefix;
         private readonly HttpClient _HttpClient = new HttpClient();
         private readonly bool _AuthenticationEnabled = true;
 
-        public AppBackendService(IConfiguration configuration,  IBasicAuthenticationConfig basicAuthConfig)
+        public AppBackendService(IConfiguration configuration, IBasicAuthenticationConfig basicAuthConfig)
         {
             _BaseUrl = configuration.GetSection("AppBackendConfig:BaseUri").Value.ToString();
+            _Prefix = configuration.GetSection("AppBackendConfig:Prefix").Value.ToString();
             if (_AuthenticationEnabled)
             {
                 var basicAuthToken = $"{basicAuthConfig.UserName}:{basicAuthConfig.Password}";
@@ -39,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
 
         private string GetAppBackendUrl(string endpoint)
         {
-            return _BaseUrl + (endpoint.StartsWith("/") ? endpoint : "/" + endpoint);
+            return _BaseUrl + (endpoint.StartsWith("/") ? endpoint : "/" + _Prefix + "/" + endpoint);
         }
 
         private async Task<string> BackendGetRequest(string endpoint)
@@ -61,9 +64,10 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
         private async Task<string> BackendPostRequest(string endpoint, object payload)
         {
             string jsonPayload = JsonConvert.SerializeObject(payload);
+            string url = GetAppBackendUrl(endpoint);
             try
             {
-                HttpResponseMessage response = await _HttpClient.PostAsync(GetAppBackendUrl(endpoint),
+                HttpResponseMessage response = await _HttpClient.PostAsync(url,
                     new StringContent(jsonPayload, Encoding.UTF8, "application/json"));
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadAsStringAsync();
@@ -80,12 +84,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
         {
             var backendResponse =
                 await BackendPostRequest(EndPointNames.CaregiversPortalApi.LabConfirmation,
-                    new AuthorisationArgs(redeemIccModel, "okok"));
+                    new AuthorisationArgs(redeemIccModel));
 
             if (backendResponse == null) return false;
-            // todo: convert dynamic into lab-confirm flow model
-            var backendResponseJson = JsonConvert.DeserializeObject<dynamic>(backendResponse);
-            return backendResponseJson != null &&  backendResponseJson.valid;
+            var backendResponseJson = JsonConvert.DeserializeObject<Dictionary<string, bool>>(backendResponse);
+            return backendResponseJson != null && backendResponseJson["valid"];
         }
     }
 }

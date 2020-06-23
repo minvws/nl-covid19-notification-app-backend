@@ -27,7 +27,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
         {
             private const string DevOpsPrefix = "/devops";
 
-            public const string NukeAndPave = DevOpsPrefix + "/nukeandpavedb";
+            public const string NukeAndPave = DevOpsPrefix + "/nukeandpavedb"; 
+            public const string NukeAndPaveIcc = DevOpsPrefix + "/nukeandpavedb/icc"; 
 
             public const string ExposureKeySetsCreate = DevOpsPrefix + "/exposurekeysets/runbatchjob";
 
