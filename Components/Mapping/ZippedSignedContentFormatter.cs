@@ -5,7 +5,6 @@
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
