@@ -10,11 +10,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 {
     public class BasicAuthPostBytesToUrl
     {
-        private readonly IReceiverConfig _ReceiverConfig;
+        private readonly IReceiverConfig _Config;
 
         public BasicAuthPostBytesToUrl(IReceiverConfig receiverConfig)
         {
-            _ReceiverConfig = receiverConfig;
+            _Config = receiverConfig;
         }
 
         /// <summary>
@@ -26,8 +26,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         public async Task<bool> Execute(string uri, byte[] args)
         {
             using var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization",Convert.ToBase64String(Encoding.UTF8.GetBytes($"Basic {_ReceiverConfig.Username}:{_ReceiverConfig.Password}")));
-            var response = await client.PostAsync(uri, new ByteArrayContent(args));
+            var request = new HttpRequestMessage(HttpMethod.Post, uri)
+            {
+                Content = new ByteArrayContent(args)
+            };
+
+            request.Headers.Add("Authorization",$"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_Config.Username}:{_Config.Password}"))}");
+            var response = await client.SendAsync(request);
 
             return response.StatusCode switch
             {

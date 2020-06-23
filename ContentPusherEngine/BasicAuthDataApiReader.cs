@@ -1,5 +1,10 @@
-﻿using System.Net;
+﻿
+
+using System;
+using System.Net;
+using System.Net.Http;
 using System.Net.Mime;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
@@ -15,10 +20,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 
         public async Task<byte[]> Read(string uri)
         {
-            var wc = new WebClient();
-            wc.Headers.Add("accept", MediaTypeNames.Application.Json);
-            wc.Credentials = new NetworkCredential(_Config.Username, _Config.Password);
-            return await wc.DownloadDataTaskAsync(uri);
+            using var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.Add("Authorization",$"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_Config.Username}:{_Config.Password}"))}");
+            request.Headers.Add("Accept","application/json");
+            var response = await client.SendAsync(request);
+
+            return await response.Content.ReadAsByteArrayAsync();
         }
     }
 }
