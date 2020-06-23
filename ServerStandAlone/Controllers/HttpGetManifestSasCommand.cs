@@ -8,6 +8,7 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
+using System.IO.Pipelines;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers
 {
