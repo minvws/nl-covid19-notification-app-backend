@@ -1,7 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Net.Mime;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 {
@@ -20,29 +23,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         /// <param name="uri"></param>
         /// <param name="args"></param>
         /// <returns>true if written to the db.</returns>
-        public bool Execute(string uri, byte[] args)
+        public async Task<bool> Execute(string uri, byte[] args)
         {
-            var wr = WebRequest.CreateHttp(uri);
-            wr.Method = "POST";
-            wr.Headers.Add("content-type", MediaTypeNames.Application.Json);
-            wr.Credentials = new NetworkCredential(_ReceiverConfig.Username, _ReceiverConfig.Password);
-            wr.ContentLength = args.Length;
-            var dataStream = wr.GetRequestStream();
-            dataStream.Write(args, 0, args.Length);
-            dataStream.Close();
-            try
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization",Convert.ToBase64String(Encoding.UTF8.GetBytes($"Basic {_ReceiverConfig.Username}:{_ReceiverConfig.Password}")));
+            var response = await client.PostAsync(uri, new ByteArrayContent(args));
+
+            return response.StatusCode switch
             {
-                using var response = (HttpWebResponse)wr.GetResponse();
-                return response.StatusCode == HttpStatusCode.OK;
-            }
-            catch (WebException ex)
-            {
-                using var response = (HttpWebResponse)ex.Response;
-                if (response.StatusCode == HttpStatusCode.Conflict)
-                    return false;
-                
-                throw;
-            }
+                HttpStatusCode.OK => true,
+                HttpStatusCode.Conflict => false,
+                _ => throw new InvalidOperationException()
+            };
         }
     }
 }

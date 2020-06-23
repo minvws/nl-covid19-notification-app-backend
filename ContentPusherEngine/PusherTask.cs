@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             var contentJsonBytes = await new BasicAuthDataApiReader(_DataApiConfig).Read(_DataApiConfig.Manifest);
 
             //Push manifest
-            var writtenToDb = new BasicAuthPostBytesToUrl(_ReceiverConfig).Execute(_ReceiverConfig.Manifest, contentJsonBytes);
+            var writtenToDb = await new BasicAuthPostBytesToUrl(_ReceiverConfig).Execute(_ReceiverConfig.Manifest, contentJsonBytes);
             if (!writtenToDb)
             {
                 _Logger.LogInformation("Completed (Up to date).");
@@ -82,7 +82,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             var bcr = JsonConvert.DeserializeObject<BinaryContentResponse>(contentBytes);
             //Sanity check
 #endif
-            return new BasicAuthPostBytesToUrl(_ReceiverConfig).Execute(toUri, content);
+            return await new BasicAuthPostBytesToUrl(_ReceiverConfig).Execute(toUri, content);
         }
     }
 }
