@@ -24,6 +24,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         {
             return await command.Execute();
         }
+        
+        /// <summary>
+        /// Provision Database for IccBackend
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        
+        [HttpPost]
+        [Route(EndPointNames.DevOps.NukeAndPaveIcc)]
+        public async Task<IActionResult> ProvisionDb([FromServices]ProvisionDatabasesCommandIcc command)
+        {
+            return await command.Execute();
+        }
 
         //TODO keys last version!
         ///// <summary>
