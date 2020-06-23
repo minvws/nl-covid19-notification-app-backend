@@ -35,12 +35,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
                 var basicAuthTokenBytes = Encoding.UTF8.GetBytes(basicAuthToken.ToArray());
                 var base64BasicAuthToken = System.Convert.ToBase64String(basicAuthTokenBytes);
 
-                _HttpClient.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Basic", base64BasicAuthToken);
-                var basicAuthToken = $"{basicAuthConfig.UserName}:{basicAuthConfig.Password}";
-                var basicAuthTokenBytes = Encoding.UTF8.GetBytes(basicAuthToken.ToArray());
-                var base64BasicAuthToken = System.Convert.ToBase64String(basicAuthTokenBytes);
-
                 _HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64BasicAuthToken);
             }
         }

@@ -29,7 +29,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             e.AuthorisedByCaregiver = true;
 
             if (e.Keys != null && e.Keys.Any())
+            {
                 e.Authorised = true;
+                e.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
+            }
 
             _DbContextProvider.KeyReleaseWorkflowStates.Update(e);
             return Task.CompletedTask;

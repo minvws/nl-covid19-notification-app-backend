@@ -25,8 +25,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         /// <summary>
         /// Identifier for Workflow item - Tan1?
         /// </summary>
-        public string? LabConfirmationId { get; set; }
-        public DateTime? DateOfSymptomsOnset { get; set; }
+        public string LabConfirmationId { get; set; }
+        public DateTime DateOfSymptomsOnset { get; set; }
 
     }
 }
