@@ -20,6 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
             };
         }
 
+        //TODO use the other ctor...
         public SqlServerDbContextOptionsBuilder(string connectionString)
         {
             _ConnectionStringBuilder = new SqlConnectionStringBuilder(connectionString) 
