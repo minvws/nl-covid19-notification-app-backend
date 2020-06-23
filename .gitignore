@@ -366,8 +366,4 @@ MigrationBackup/
 /ServerStandAlone/NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.xml
 /Components/NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml
 /Components/D:/Repos/VWS/MSS-nl-covid19-notification-app-backend/Components/NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml
-/KeyReleasePortalApi/.config/dotnet-tools.json
-/CdnDataApi/.config/dotnet-tools.json
-/CdnDataApi/.config/dotnet-tools.json
-/ICCBackend/.config/dotnet-tools.json
-/WorkflowStateEngineApi/.config/dotnet-tools.json
+*dotnet-tools.json

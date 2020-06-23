@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             using var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, uri)
             {
-                Content = new ByteArrayContent(args)
+                Content = new StringContent(Encoding.UTF8.GetString(args), Encoding.UTF8, MediaTypeNames.Application.Json)
             };
 
             request.Headers.Add("Authorization",$"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_Config.Username}:{_Config.Password}"))}");
