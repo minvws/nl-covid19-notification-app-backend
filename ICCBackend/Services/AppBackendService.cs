@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -63,9 +64,10 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
         private async Task<string> BackendPostRequest(string endpoint, object payload)
         {
             string jsonPayload = JsonConvert.SerializeObject(payload);
+            string url = GetAppBackendUrl(endpoint);
             try
             {
-                HttpResponseMessage response = await _HttpClient.PostAsync(GetAppBackendUrl(endpoint),
+                HttpResponseMessage response = await _HttpClient.PostAsync(url,
                     new StringContent(jsonPayload, Encoding.UTF8, "application/json"));
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadAsStringAsync();
@@ -85,8 +87,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
                     new AuthorisationArgs(redeemIccModel));
 
             if (backendResponse == null) return false;
-            var backendResponseJson = JsonConvert.DeserializeObject<dynamic>(backendResponse);
-            return backendResponseJson != null && backendResponseJson.Valid;
+            var backendResponseJson = JsonConvert.DeserializeObject<Dictionary<string, bool>>(backendResponse);
+            return backendResponseJson != null && backendResponseJson["valid"];
         }
     }
 }

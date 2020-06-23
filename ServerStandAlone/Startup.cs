@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Security.Principal;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -80,6 +81,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 result.BeginTransaction();
                 return result;
             });
+            services.AddScoped(x =>
+            {
+                var config = new StandardEfDbConfig(Configuration, "Icc");
+                var builder = new SqlServerDbContextOptionsBuilder(config);
+                var result = new IccBackendContentDbContext(builder.Build());
+                result.BeginTransaction();
+                return result;
+            });
 
             //Just for the Batch Job
             services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Job"));
@@ -138,6 +147,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<ResourceBundleValidator, ResourceBundleValidator>();
             
             services.AddScoped<ProvisionDatabasesCommand, ProvisionDatabasesCommand>();
+            services.AddScoped<ProvisionDatabasesCommandIcc, ProvisionDatabasesCommandIcc>();
             services.AddScoped<HttpPostGenerateExposureKeySetsCommand, HttpPostGenerateExposureKeySetsCommand>();
             //services.AddScoped<HttpGetCdnContentCommand<ManifestEntity>, HttpGetCdnContentCommand<ManifestEntity>>();
 

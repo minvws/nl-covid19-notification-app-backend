@@ -13,12 +13,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     /// </summary>
     public class AuthorisationArgs
     {
+
         public AuthorisationArgs()
         {
+            
         }
         public AuthorisationArgs(RedeemIccModel redeemIccModel)
         {
             LabConfirmationId = redeemIccModel.LabConfirmationId;
+            DateOfSymptomsOnset = redeemIccModel.DateOfSymptomsOnset;
         }
 
 

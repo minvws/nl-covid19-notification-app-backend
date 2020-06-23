@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -42,9 +43,16 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
             _DbContext.SaveAndCommit();
 
             // POST /labresult call on App Backend
-            bool isValid = await _AppBackendService.LabConfirmationIdIsValid(redeemIccModel);
-
-            // bool isValid = false;
+            bool isValid = false;
+            try
+            {
+                isValid = await _AppBackendService.LabConfirmationIdIsValid(redeemIccModel);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             if (isValid)
             {
                 // TODO: remove debugging Icc and payload from response
