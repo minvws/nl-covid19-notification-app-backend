@@ -15,8 +15,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services
         Task<InfectionConfirmationCodeEntity> Get(string icc);
         Task<List<InfectionConfirmationCodeEntity>> GetBatchItems(string batchId);
         Task<InfectionConfirmationCodeEntity> Validate(string iccCodeString);
-        Task<InfectionConfirmationCodeEntity> GenerateIcc(Guid userId, string batchId);
-        Task<IccBatch> GenerateBatch(Guid userId, int count = 20);
+        Task<InfectionConfirmationCodeEntity> GenerateIcc(string userId, string batchId);
+        Task<IccBatch> GenerateBatch(string userId, int count = 20);
         Task<InfectionConfirmationCodeEntity> RedeemIcc(string icc);
         Task<bool> RevokeBatch(RevokeBatchInput revokeBatchInput);
     }

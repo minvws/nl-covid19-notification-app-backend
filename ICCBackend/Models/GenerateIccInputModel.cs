@@ -10,6 +10,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Models
     public class GenerateIccInputModel
     {
         [Required]
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

@@ -80,6 +80,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
                 var result = new WorkflowDbContext(builder.Build());
                 return result;
             });
+
+            services.AddScoped(x =>
+            {
+                var config = new StandardEfDbConfig(Configuration, "Icc");
+                var builder = new SqlServerDbContextOptionsBuilder(config);
+                var result = new IccBackendContentDbContext(builder.Build());
+                return result;
+            });
         }
     }
 }

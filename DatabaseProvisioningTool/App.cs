@@ -18,12 +18,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
         private readonly ILogger<App> _Logger;
         private readonly WorkflowDbContext _WorkflowDbContext;
         private readonly ExposureContentDbContext _ExposureContentDbContext;
+        private readonly IccBackendContentDbContext _IccBackendContentDbContext;
 
-        public App(ILogger<App> logger, WorkflowDbContext workflowDbContext, ExposureContentDbContext exposureContentDbContext)
+        public App(ILogger<App> logger, 
+            WorkflowDbContext workflowDbContext, 
+            ExposureContentDbContext exposureContentDbContext, 
+            IccBackendContentDbContext iccBackedBackendContentDb)
         {
             _Logger = logger;
             _WorkflowDbContext = workflowDbContext;
             _ExposureContentDbContext = exposureContentDbContext;
+            _IccBackendContentDbContext = iccBackedBackendContentDb;
         }
 
         public async Task Run()
@@ -33,13 +38,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
             _Logger.LogInformation("Apply WorkflowDb Migrations...");
             await _WorkflowDbContext.Database.MigrateAsync();
             
-            
             _Logger.LogInformation("Apply ExposureContentDb Migrations...");
             await _ExposureContentDbContext.Database.MigrateAsync();
 
             _Logger.LogInformation("Seeding ExposureContent...");
             var db = new CreateContentDatabase(_ExposureContentDbContext, new StandardUtcDateTimeProvider(), new CmsSigner(new ResourceCertificateProvider("FakeRSA.p12")));
             await db.AddExampleContent();
+
+            _Logger.LogInformation("Apply ICCBackedContentDbContext Migrations...");
+            await _IccBackendContentDbContext.Database.MigrateAsync();
 
             _Logger.LogInformation("Completed...");
         }

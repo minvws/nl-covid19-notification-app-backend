@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models
         /// <summary>
         /// User Guid from generator user
         /// </summary>
-        public Guid GeneratedBy { get; set; }
+        public String GeneratedBy { get; set; }
 
         /// <summary>
         /// Default NULL, if Datetime => Revoked = true
@@ -43,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models
         /// <summary>
         /// User Guid from user that used the Code
         /// </summary>
-        public Guid? UsedBy { get; set; }
+        public String? UsedBy { get; set; }
         
         public bool IsValid()
         {
