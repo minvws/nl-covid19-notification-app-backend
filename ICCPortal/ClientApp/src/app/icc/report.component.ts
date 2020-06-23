@@ -7,7 +7,8 @@ import { ReportService } from "../services/report.service";
   styleUrls: ['./report.component.css']
 })
 export class IccReportComponent {
-  public labConfirmationId = ["", "", "", "", "", ""];
+  public labConfirmationId = ["", "", "","-", "", "", ""];
+  public icc = "";
 
   constructor(private readonly reportService: ReportService) {
   }
@@ -30,7 +31,7 @@ export class IccReportComponent {
 
   public report() {
 
-    this.reportService.redeemIcc(this.labConfirmationId).subscribe((result) => {
+    this.reportService.redeemIcc(this.icc, this.labConfirmationId).subscribe((result) => {
       alert(JSON.stringify(result));
     });
 
