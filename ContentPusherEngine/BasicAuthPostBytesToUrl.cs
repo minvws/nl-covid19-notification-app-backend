@@ -38,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             {
                 HttpStatusCode.OK => true,
                 HttpStatusCode.Conflict => false,
-                _ => throw new InvalidOperationException()
+                _ => throw new InvalidOperationException("Status not handled.")
             };
         }
     }
