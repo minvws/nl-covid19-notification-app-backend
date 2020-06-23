@@ -31,9 +31,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         //[ProducesResponseType(typeof(byte[]), 200)] //TODO No added value in Swagger UI
         [ProducesResponseType(500)]
         [Produces(MediaTypeNames.Application.Zip, MediaTypeNames.Application.Json)]
-        public async Task GetLatestConfig([FromServices]HttpGetCdnContentCommand<ManifestEntity> command)
+        public async Task GetLatestConfig([FromServices]HttpGetManifestBinaryContentCommand command)
         {
-            await command.Execute(HttpContext, "ignored...");
+            await command.Execute(HttpContext);
         }
     }
 }
