@@ -13,12 +13,12 @@ export class ReportService {
 
   constructor(private readonly http: HttpClient) { }
 
-  redeemIcc(authHeader: string, labConfirmationIds: Array<string>): Observable<any> {
+  redeemIcc(authHeader: string, labConfirmationIds: Array<string>, dateOfSymptomsOnset: string): Observable<any> {
     this.authHeader = authHeader;
     const serviceUrl = environment.apiUrl + "/RedeemIcc";
     const data = {
-      "labConfirmationID": labConfirmationIds.join(""),
-      "commencementComplaints": new Date(Date.now()).toISOString()
+      "LabConfirmationID": labConfirmationIds.join(""),
+      "DateOfSymptomsOnset": dateOfSymptomsOnset
     };
     const headers = {
       headers: {

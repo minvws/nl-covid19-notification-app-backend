@@ -20,16 +20,18 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
     {
         private readonly string _BaseUrl;
         private readonly HttpClient _HttpClient = new HttpClient();
-        private readonly bool _AuthenticationEnabled = false;
-        private readonly string _UploadAuthorisationToken;
+        private readonly bool _AuthenticationEnabled = true;
 
         public AppBackendService(IConfiguration configuration)
         {
             _BaseUrl = configuration.GetSection("AppBackendConfig:BaseUri").Value.ToString();
-            _UploadAuthorisationToken = configuration.GetSection("AppBackendConfig:UploadAuthorisationToken").Value.ToString();
             if (_AuthenticationEnabled)
             {
-                _HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "user:pass");
+                // TODO: Move to settings service
+                _HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                    Convert.ToBase64String(System.Convert.FromBase64String(
+                        configuration.GetSection("AppBackendConfig:Authentication:UserName").Value + ":" +
+                        configuration.GetSection("AppBackendConfig:Authentication:Password").Value)));
             }
         }
 
@@ -76,12 +78,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
         {
             var backendResponse =
                 await BackendPostRequest(EndPointNames.CaregiversPortalApi.LabConfirmation,
-                    new AuthorisationArgs(redeemIccModel, _UploadAuthorisationToken));
+                    new AuthorisationArgs(redeemIccModel));
 
             if (backendResponse == null) return false;
-            // todo: convert dynamic into labconfirm flow model
             var backendResponseJson = JsonConvert.DeserializeObject<dynamic>(backendResponse);
-            return backendResponseJson != null &&  backendResponseJson.valid;
+            return backendResponseJson != null && backendResponseJson.Valid;
         }
     }
 }

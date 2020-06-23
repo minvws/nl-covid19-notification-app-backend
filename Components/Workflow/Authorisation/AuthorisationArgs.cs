@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
 
@@ -15,10 +16,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         public AuthorisationArgs()
         {
         }
-        public AuthorisationArgs(RedeemIccModel redeemIccModel, string uploadAuthorisationToken)
+        public AuthorisationArgs(RedeemIccModel redeemIccModel)
         {
             LabConfirmationId = redeemIccModel.LabConfirmationId;
-            UploadAuthorisationToken = uploadAuthorisationToken;
         }
 
 
@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         /// Identifier for Workflow item - Tan1?
         /// </summary>
         public string? LabConfirmationId { get; set; }
+        public DateTime? DateOfSymptomsOnset { get; set; }
 
-        public string? UploadAuthorisationToken { get; set; }
     }
 }

@@ -8,9 +8,11 @@ import { ReportService } from "../services/report.service";
 })
 export class IccReportComponent {
   public labConfirmationId = ["", "", "","-", "", "", ""];
+  public dateOfSymptomsOnset = "";
   public icc = "";
 
   constructor(private readonly reportService: ReportService) {
+    this.dateOfSymptomsOnset = new Date(Date.now()).toDateString();
   }
 
   public ICIdKeyPress($event: KeyboardEvent, index) {
@@ -31,7 +33,7 @@ export class IccReportComponent {
 
   public report() {
 
-    this.reportService.redeemIcc(this.icc, this.labConfirmationId).subscribe((result) => {
+    this.reportService.redeemIcc(this.icc, this.labConfirmationId, this.dateOfSymptomsOnset).subscribe((result) => {
       alert(JSON.stringify(result));
     });
 

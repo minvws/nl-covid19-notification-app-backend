@@ -24,8 +24,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
         public async Task<IActionResult> Execute(AuthorisationArgs args)
         {
-            if (!_Validator.Valid(args.UploadAuthorisationToken)) //TODO check validation
-                return new OkResult();
 
             await _AuthorisationWriter.Execute(args);
             _DbContextProvider.SaveAndCommit();
