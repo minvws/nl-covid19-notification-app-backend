@@ -179,6 +179,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             services.AddScoped<IContentEntityFormatter, StandardContentEntityFormatter>();
             services.AddScoped<ZippedSignedContentFormatter, ZippedSignedContentFormatter>();
+
+            services.AddScoped<HttpGetManifestBinaryContentCommand, HttpGetManifestBinaryContentCommand>();
+            services.AddScoped<DynamicManifestReader, DynamicManifestReader>();
             
             services.AddSwaggerGen(o =>
             {
