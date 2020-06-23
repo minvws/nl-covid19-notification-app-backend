@@ -3,12 +3,15 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
@@ -19,23 +22,27 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
     public class AppBackendService
     {
         private readonly string _BaseUrl;
+        private readonly string _Prefix;
         private readonly HttpClient _HttpClient = new HttpClient();
-        private readonly bool _AuthenticationEnabled = false;
-        private readonly string _UploadAuthorisationToken;
+        private readonly bool _AuthenticationEnabled = true;
 
-        public AppBackendService(IConfiguration configuration)
+        public AppBackendService(IConfiguration configuration, IBasicAuthenticationConfig basicAuthConfig)
         {
             _BaseUrl = configuration.GetSection("AppBackendConfig:BaseUri").Value.ToString();
-            _UploadAuthorisationToken = configuration.GetSection("AppBackendConfig:UploadAuthorisationToken").Value.ToString();
+            _Prefix = configuration.GetSection("AppBackendConfig:Prefix").Value.ToString();
             if (_AuthenticationEnabled)
             {
-                _HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "user:pass");
+                var basicAuthToken = $"{basicAuthConfig.UserName}:{basicAuthConfig.Password}";
+                var basicAuthTokenBytes = Encoding.UTF8.GetBytes(basicAuthToken.ToArray());
+                var base64BasicAuthToken = System.Convert.ToBase64String(basicAuthTokenBytes);
+
+                _HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64BasicAuthToken);
             }
         }
 
         private string GetAppBackendUrl(string endpoint)
         {
-            return _BaseUrl + (endpoint.StartsWith("/") ? endpoint : "/" + endpoint);
+            return _BaseUrl + (endpoint.StartsWith("/") ? endpoint : "/" + _Prefix + "/" + endpoint);
         }
 
         private async Task<string> BackendGetRequest(string endpoint)
@@ -57,9 +64,10 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
         private async Task<string> BackendPostRequest(string endpoint, object payload)
         {
             string jsonPayload = JsonConvert.SerializeObject(payload);
+            string url = GetAppBackendUrl(endpoint);
             try
             {
-                HttpResponseMessage response = await _HttpClient.PostAsync(GetAppBackendUrl(endpoint),
+                HttpResponseMessage response = await _HttpClient.PostAsync(url,
                     new StringContent(jsonPayload, Encoding.UTF8, "application/json"));
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadAsStringAsync();
@@ -76,12 +84,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
         {
             var backendResponse =
                 await BackendPostRequest(EndPointNames.CaregiversPortalApi.LabConfirmation,
-                    new AuthorisationArgs(redeemIccModel, _UploadAuthorisationToken));
+                    new AuthorisationArgs(redeemIccModel));
 
             if (backendResponse == null) return false;
-            // todo: convert dynamic into labconfirm flow model
-            var backendResponseJson = JsonConvert.DeserializeObject<dynamic>(backendResponse);
-            return backendResponseJson != null &&  backendResponseJson.valid;
+            var backendResponseJson = JsonConvert.DeserializeObject<Dictionary<string, bool>>(backendResponse);
+            return backendResponseJson != null && backendResponseJson["valid"];
         }
     }
 }

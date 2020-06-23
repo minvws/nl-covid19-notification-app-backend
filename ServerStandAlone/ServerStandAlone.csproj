@@ -35,4 +35,12 @@
 		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.5.0" />
 		<PackageReference Include="System.IO.Pipelines" Version="4.7.2" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="appsettings.Development.json">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
+	</ItemGroup>
 </Project>

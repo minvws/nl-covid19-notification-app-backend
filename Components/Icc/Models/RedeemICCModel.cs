@@ -13,6 +13,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models
         public string LabConfirmationId { get; set; }
 
         [Required]
-        public DateTime CommencementComplaints { get; set; } 
+        public DateTime DateOfSymptomsOnset { get; set; } 
     }
 }

@@ -41,6 +41,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         /// Epoch time in seconds
         /// </summary>
         public DateTime ValidUntil { get; set; }
+        
+        /// <summary>
+        /// Date of Symptoms Onset from ICC Portal
+        /// </summary>
+        public DateTime DateOfSymptomsOnset { get; set; }
 
         public ICollection<TemporaryExposureKeyEntity> Keys { get; set; }
     }
