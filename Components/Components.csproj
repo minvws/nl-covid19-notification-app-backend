@@ -32,11 +32,15 @@
 		<Compile Remove="ExposureKeySetsEngine\FormatV1\HardCodedExposureKeySetSigningConfig.cs" />
 	</ItemGroup>
 	<ItemGroup>
+		<None Remove="DevOps\AppConfigDefaults.json" />
+		<None Remove="DevOps\ResourceBundleDefaults.json" />
 		<None Remove="DevOps\RiskCalcDefaults.json" />
 		<None Remove="Resources\FakeECDSA.p12" />
 		<None Remove="Resources\FakeRSA.p12" />
 	</ItemGroup>
 	<ItemGroup>
+		<EmbeddedResource Include="DevOps\ResourceBundleDefaults.json" />
+		<EmbeddedResource Include="DevOps\AppConfigDefaults.json" />
 		<EmbeddedResource Include="DevOps\RiskCalcDefaults.json" />
 		<EmbeddedResource Include="Resources\FakeECDSA.p12" />
 		<EmbeddedResource Include="Resources\FakeRSA.p12" />

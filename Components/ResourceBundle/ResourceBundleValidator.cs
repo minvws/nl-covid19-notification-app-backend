@@ -44,12 +44,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
             if (args == null)
                 return false;
 
-            if (args.TemporaryExposureKeyRetentionDays < 1) //TODO range?
-                return false;
-
-            if (args.ObservedTemporaryExposureKeyRetentionDays < 1) //TODO range?
-                return false;
-
             if (args.IsolationPeriodDays < 1) //TODO range?
                 return false;
 

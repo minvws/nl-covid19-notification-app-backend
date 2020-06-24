@@ -43,15 +43,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             {
                 Text = args.Text,
                 IsolationPeriodDays = args.IsolationPeriodDays,
-                ObservedTemporaryExposureKeyRetentionDays = args.ObservedTemporaryExposureKeyRetentionDays,
-                TemporaryExposureKeyRetentionDays = args.TemporaryExposureKeyRetentionDays,
             };
 
         public static AppConfigContent ToContent(this AppConfigArgs args)
             => new AppConfigContent
             {
                 DecoyProbability = args.DecoyProbability,
-                ManifestFrequency = args.ManifestFrequency,
+                UpdatePeriodMinutes = args.UpdatePeriodMinutes,
                 Version = args.Version
             };
 

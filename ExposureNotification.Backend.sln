@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CdnPusherEngine", "ContentP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseProvisioningTool", "DatabaseProvisioningTool\DatabaseProvisioningTool.csproj", "{3966F120-D026-4E4D-A165-752BD5803ED1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EKSEngineApi", "EKSEngineApi\EKSEngineApi.csproj", "{C9AA366C-852A-4D11-9842-96E9841B2291}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksEngineApi", "EKSEngineApi\EksEngineApi.csproj", "{C9AA366C-852A-4D11-9842-96E9841B2291}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccBackend", "ICCBackend\IccBackend.csproj", "{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}"
 EndProject

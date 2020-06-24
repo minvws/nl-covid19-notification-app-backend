@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -74,51 +75,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 }
             );
 
-            await Write(
-                new ResourceBundleArgs
-                {
-                    Release = _DateTimeProvider.Now(),
-                    IsolationPeriodDays = 10,
-                    ObservedTemporaryExposureKeyRetentionDays = 14,
-                    TemporaryExposureKeyRetentionDays = 15,
-                    Text = new Dictionary<string, Dictionary<string, string>>()
-                    {
-                        {
-                            "en-GB", new Dictionary<string, string>
-                            {
-                                {"FirstLong", "First"},
-                                {"FirstShort", "1st"}
-                            }
-                        },
-                        {
-                            "nl-NL", new Dictionary<string, string>
-                            {
-                                {"FirstLong", "Eerste"},
-                                {"FirstShort", "1ste"}
-                            }
-                        }
-                    }
-                });
 
-            await Write(
-                new ResourceBundleArgs
-                {
-                    Release = _DateTimeProvider.Now()
-                }
-            );
 
-            var args = ReadFromResource<RiskCalculationConfigArgs>("RiskCalcDefaults.json");
-            args.Release = _DateTimeProvider.Now();
-            await Write(args);
+            var rbd = ReadFromResource<ResourceBundleArgs>("RiskCalcDefaults.json");
+            rbd.Release = _DateTimeProvider.Now();
+            await Write(rbd);
 
-            await Write(
-            new AppConfigArgs
-            {
-                Release = _DateTimeProvider.Now(),
-                ManifestFrequency = 5,
-                DecoyProbability = 1,
-                Version = 123345
-            });
+            var rcd = ReadFromResource<RiskCalculationConfigArgs>("RiskCalcDefaults.json");
+            rcd.Release = _DateTimeProvider.Now();
+            await Write(rcd);
+
+            var acd = ReadFromResource<AppConfigArgs>("AppConfigDefaults.json");
+            acd.Release = _DateTimeProvider.Now();
+            await Write(acd);
 
             _DbContextProvider.SaveAndCommit();
         }

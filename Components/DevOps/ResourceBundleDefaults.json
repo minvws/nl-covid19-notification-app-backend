@@ -1,0 +1,10 @@
+﻿{
+  "release": "0001-01-01T00:00:00",
+  "temporaryExposureKeyRetentionDays": 0,
+  "observedTemporaryExposureKeyRetentionDays": 0,
+  "isolationPeriodDays": 0,
+  "text": {
+    "en-GB": { "InfectedMessage": "You're possibly infected" },
+    "nl-NL": { "InfectedMessage": "U bent mogelijk geinvecteerd" }
+  }
+}
