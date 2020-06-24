@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://TODO:5005'
+  apiUrl: 'https://https://acc.alleensamenmelden.nl/iccapi'
 };
