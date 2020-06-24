@@ -21,6 +21,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
@@ -29,6 +31,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationCo
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
@@ -98,16 +101,49 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             });
 
             //Just for the Batch Job
-            services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Job"));
-            services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
+            //services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Job"));
+            //services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
             services.AddScoped<IContentSigner, FakeContentSigner>();
             services.AddSingleton<IGeanTekListValidationConfig, StandardGeanCommonWorkflowConfig>();
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
+            services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();
+
+
+            services.AddScoped(x =>
+                new ExposureKeySetBatchJobMk2(
+                    x.GetService<IGaenContentConfig>(),
+                    x.GetService<IExposureKeySetBuilder>(),
+                    x.GetService<WorkflowDbContext>(),
+                    x.GetService<ExposureContentDbContext>(),
+                    x.GetService<IUtcDateTimeProvider>(),
+                    x.GetService<IPublishingId>()
+                ));
+
+            services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
+            services.AddScoped<IExposureKeySetBuilder>(x =>
+                new ExposureKeySetBuilderV1(
+                    x.GetService<IExposureKeySetHeaderInfoConfig>(),
+                    new EcdSaSigner(new ResourceCertificateProvider("FakeECDSA.p12")),
+                    new CmsSigner(new ResourceCertificateProvider("FakeRSA.p12")), 
+                    x.GetService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
+                    new GeneratedProtobufContentFormatter()
+                ));
+            services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
+
+
 
             services.AddSingleton<ISignatureValidator>(new FakeSignatureValidator());
-            
             services.AddSingleton<IReleaseKeysAuthorizationValidator>(new FakeReleaseKeysAuthorizationValidator());
+
+            services.AddScoped(x =>
+                new ExposureKeySetBuilderV1(
+                    x.GetService<ExposureKeySetHeaderInfoConfig>(),
+                    new FakeContentSigner(),
+                    new FakeContentSigner(),
+                    x.GetService<IUtcDateTimeProvider>(), 
+                    new GeneratedProtobufContentFormatter()
+                    ));
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
             services.AddScoped<GetActiveExposureKeySetsListCommand, GetActiveExposureKeySetsListCommand>();
             
@@ -121,7 +157,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<HttpPostResourceBundleCommand, HttpPostResourceBundleCommand>();
             services.AddScoped<ResourceBundleInsertDbCommand, ResourceBundleInsertDbCommand>();
             services.AddScoped<ResourceBundleValidator, ResourceBundleValidator>();
-            
+
             services.AddScoped<ProvisionDatabasesCommand, ProvisionDatabasesCommand>();
             services.AddScoped<ProvisionDatabasesCommandIcc, ProvisionDatabasesCommandIcc>();
             services.AddScoped<HttpPostGenerateExposureKeySetsCommand, HttpPostGenerateExposureKeySetsCommand>();
