@@ -1,0 +1,48 @@
+﻿{
+  "release": "2020-06-23T12:24:15.881Z",
+  "minimumRiskScore": 8,
+  "attenuationScores": [
+    1,
+    2,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
+  "daysSinceLastExposureScores": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "durationScores": [
+    1,
+    1,
+    1,
+    2,
+    4,
+    4,
+    4,
+    4
+  ],
+  "transmissionRiskScores": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "durationAtAttenuationThresholds": [
+    42,
+    56
+  ]
+}

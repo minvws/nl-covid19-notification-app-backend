@@ -4,8 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -72,61 +75,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 }
             );
 
-            await Write(
-                new ResourceBundleArgs
-                {
-                    Release = _DateTimeProvider.Now(),
-                    IsolationPeriodDays = 10,
-                    ObservedTemporaryExposureKeyRetentionDays = 14,
-                    TemporaryExposureKeyRetentionDays = 15,
-                    Text = new Dictionary<string, Dictionary<string, string>>()
-                    {
-                        {
-                            "en-GB", new Dictionary<string, string>
-                            {
-                                {"FirstLong", "First"},
-                                {"FirstShort", "1st"}
-                            }
-                        },
-                        {
-                            "nl-NL", new Dictionary<string, string>
-                            {
-                                {"FirstLong", "Eerste"},
-                                {"FirstShort", "1ste"}
-                            }
-                        }
-                    }
-                });
 
-            await Write(
-                new ResourceBundleArgs
-                {
-                    Release = _DateTimeProvider.Now()
-                }
-            );
 
-            await Write(
-                new RiskCalculationConfigArgs
-                {
-                    AttenuationScores​ = new[] { 1, 2, 4, 4, 4, 4, 4, 4 },
-                    DurationScores = new[] { 1, 1, 1, 2, 4, 4, 4, 4 },
-                    MinimumRiskScore = 8,
-                    DaysSinceLastExposureScores​ = new[] { 1, 1, 1, 1, 1, 1, 1, 1 },
-                    TransmissionRiskScores​ = new[] { 1, 1, 1, 1, 1, 1, 1, 1 },
-                    DurationAtAttenuationThresholds​ = new[] { 1, 1, 1, 1, 1, 1, 1, 1 },
-                    Release = new DateTime(2020, 06, 18)
-                });
+            var rbd = ReadFromResource<ResourceBundleArgs>("RiskCalcDefaults.json");
+            rbd.Release = _DateTimeProvider.Now();
+            await Write(rbd);
 
-            await Write(
-            new AppConfigArgs
-            {
-                Release = _DateTimeProvider.Now(),
-                ManifestFrequency = 5,
-                DecoyProbability = 1,
-                Version = 123345
-            });
+            var rcd = ReadFromResource<RiskCalculationConfigArgs>("RiskCalcDefaults.json");
+            rcd.Release = _DateTimeProvider.Now();
+            await Write(rcd);
+
+            var acd = ReadFromResource<AppConfigArgs>("AppConfigDefaults.json");
+            acd.Release = _DateTimeProvider.Now();
+            await Write(acd);
 
             _DbContextProvider.SaveAndCommit();
+        }
+
+        private static T ReadFromResource<T>(string resourceName)
+        {
+            var a = System.Reflection.Assembly.GetExecutingAssembly();
+            var manifestResourceStream = a.GetManifestResourceStream($"NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.{resourceName}");
+            using var s = new StreamReader(manifestResourceStream);
+            var jsonString = s.ReadToEnd();
+            var args = JsonConvert.DeserializeObject<T>(jsonString);
+            return args;
         }
 
         private async Task Write(RiskCalculationConfigArgs a4)

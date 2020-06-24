@@ -11,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
             if (args == null)
                 return false;
 
-            if (args.ManifestFrequency < 1)
+            if (args.UpdatePeriodMinutes < 1)
                 return false;
 
             if (args.DecoyProbability < 1)

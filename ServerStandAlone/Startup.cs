@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Security.Principal;
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -53,13 +54,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers(options => 
-            { 
-                options.RespectBrowserAcceptHeader = true; 
-            }).AddNewtonsoftJson(options =>
-                options.SerializerSettings.ContractResolver =
-                    new CamelCasePropertyNamesContractResolver());
-                
+            services
+                .AddControllers(options => { options.RespectBrowserAcceptHeader = true; })
+                //Arming these options only makes them less tolerant of casing on Deserialization and DOES NOT for serialisation to camelCase.
+                //.AddNewtonsoftJson(options =>
+                //{
+                //    options.UseCamelCasing(false); //NB this IS setting camel case - just not for dictionary element names
+                //})
+                ;
+
+            //Same with this one.
+            //services.AddMvc()
+            //    .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
+
             services.AddControllers();
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
@@ -92,7 +99,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 result.BeginTransaction();
                 return result;
             });
-
 
             //Just for the Batch Job
             //services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Job"));

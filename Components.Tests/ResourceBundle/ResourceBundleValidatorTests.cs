@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ResourceBundle
@@ -28,6 +30,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Resourc
             Assert.IsTrue(ResourceBundleValidator.CultureExists("nl-NL"));
             Assert.IsTrue(ResourceBundleValidator.CultureExists("nl-BE"));
             Assert.IsTrue(ResourceBundleValidator.CultureExists("fr-BE"));
+        }
+
+        [TestMethod()]
+        public void WhatDoesDicOfDicLookLike()
+        {
+
+            var argle = new ResourceBundleArgs
+                {
+                    Text = new Dictionary<string, Dictionary<string, string>>
+                    {
+                        {
+                            "en-GB", new Dictionary<string, string>()
+                            {
+                                {"InfectedMessage", "You're possibly infected"}
+                            }
+                        },
+                        {
+                            "nl-NL", new Dictionary<string, string>
+                            {
+                                {"InfectedMessage", "U bent mogelijk geinvecteerd"}
+                            }
+                        }
+                    }
+                };
+
+            var stuff = JsonConvert.SerializeObject(argle);
+            
         }
     }
 }

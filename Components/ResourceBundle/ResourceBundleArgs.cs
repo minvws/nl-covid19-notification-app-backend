@@ -10,8 +10,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
     public class ResourceBundleArgs
     {
         public DateTime Release { get; set; }
-        public int TemporaryExposureKeyRetentionDays { get; set; }
-        public int ObservedTemporaryExposureKeyRetentionDays { get; set; }
         public int IsolationPeriodDays { get; set; }
         public Dictionary<string,Dictionary<string,string>>? Text { get; set; }
     }
