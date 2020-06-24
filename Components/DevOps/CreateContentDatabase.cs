@@ -4,8 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -105,17 +107,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 }
             );
 
-            await Write(
-                new RiskCalculationConfigArgs
-                {
-                    AttenuationScores​ = new[] { 1, 2, 4, 4, 4, 4, 4, 4 },
-                    DurationScores = new[] { 1, 1, 1, 2, 4, 4, 4, 4 },
-                    MinimumRiskScore = 8,
-                    DaysSinceLastExposureScores​ = new[] { 1, 1, 1, 1, 1, 1, 1, 1 },
-                    TransmissionRiskScores​ = new[] { 1, 1, 1, 1, 1, 1, 1, 1 },
-                    DurationAtAttenuationThresholds​ = new[] { 1, 1, 1, 1, 1, 1, 1, 1 },
-                    Release = new DateTime(2020, 06, 18)
-                });
+            var args = ReadFromResource<RiskCalculationConfigArgs>("RiskCalcDefaults.json");
+            args.Release = _DateTimeProvider.Now();
+            await Write(args);
 
             await Write(
             new AppConfigArgs
@@ -127,6 +121,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             });
 
             _DbContextProvider.SaveAndCommit();
+        }
+
+        private static T ReadFromResource<T>(string resourceName)
+        {
+            var a = System.Reflection.Assembly.GetExecutingAssembly();
+            var manifestResourceStream = a.GetManifestResourceStream($"NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.{resourceName}");
+            using var s = new StreamReader(manifestResourceStream);
+            var jsonString = s.ReadToEnd();
+            var args = JsonConvert.DeserializeObject<T>(jsonString);
+            return args;
         }
 
         private async Task Write(RiskCalculationConfigArgs a4)
