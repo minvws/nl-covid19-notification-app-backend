@@ -4,7 +4,6 @@ ADD Components /app/Components
 ADD GaenFormat /app/GaenFormat
 ADD ICCBackend /app/ICCBackend
 
-RUN rm /app/ICCBackend/appsettings.Development.json
 ADD docker/icc_backend/appsettings.Development.json /app/ICCBackend/appsettings.json
 
 ADD docker/icc_backend/start.sh /app/start.sh
