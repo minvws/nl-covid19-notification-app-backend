@@ -4,6 +4,7 @@ ADD Components /app/Components
 ADD ServerStandAlone /app/ServerStandAlone
 ADD GaenFormat /app/GaenFormat
 
+RUN rm /app/ServerStandAlone/appsettings.Development.json
 ADD docker/standalone/appsettings.Development.json /app/ServerStandAlone/appsettings.json
 
 ADD docker/standalone/start.sh /app/start.sh
