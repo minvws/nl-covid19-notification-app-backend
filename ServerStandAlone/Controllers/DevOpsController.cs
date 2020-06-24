@@ -38,27 +38,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
             return await command.Execute();
         }
 
-        //TODO keys last version!
-        ///// <summary>
-        ///// Generate new WorkFlows.
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpPost]
-        //[Route(EndPointNames.DevOps.KeysFirstWorkFlow.TekSetsGenerateRandom)]
-        //public async Task<IActionResult> WorkFlows([FromBody]GenerateKeysFirstTekSetsArgs arguments, [FromServices]HttpPostKeysFirstGenerateTekSetsCommand command)
-        //{
-        //    return await command.Execute(arguments);
-        //}
-
         /// <summary>
         /// Generate new ExposureKeySets.
         /// </summary>
         /// <returns></returns>
         [HttpPost]
         [Route(EndPointNames.DevOps.ExposureKeySetsCreate)]
-        public async Task<IActionResult> ExposureKeySets([FromQueryAttribute]bool useAllKeys, [FromQueryAttribute]bool useGeneratedFormatter, [FromServices]HttpPostGenerateExposureKeySetsCommand command)
+        public async Task<IActionResult> ExposureKeySets([FromQuery]bool useAllKeys, [FromServices]HttpPostGenerateExposureKeySetsCommand command)
         {
-            return await command.Execute(useAllKeys, useGeneratedFormatter);
+            return await command.Execute(useAllKeys);
         }
 
         /// <summary>

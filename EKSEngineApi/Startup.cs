@@ -14,6 +14,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -64,28 +66,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
             });
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
-            services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
-            services.AddScoped<IContentSigner, FakeContentSigner>();
-
-            services.AddSingleton(x =>
-            {
-                var config = new CertificateProviderConfig(Configuration, "Content");
-                var provider = new HsmCertificateProvider(config.Thumbprint);
-                var signer = new CmsSigner(provider);
-                return signer;
-            });
-
-            services.AddSingleton(x =>
-            {
-                var config = new CertificateProviderConfig(Configuration, "KeySet");
-                var provider = new HsmCertificateProvider(config.Thumbprint);
-                var signer = new EcdSaSigner(provider);
-                return signer;
-            });
 
             services.AddScoped<HttpPostGenerateExposureKeySetsCommand, HttpPostGenerateExposureKeySetsCommand>();
-            
+
+            services.AddScoped(x =>
+                new ExposureKeySetBatchJobMk2(
+                    x.GetService<IGaenContentConfig>(),
+                    x.GetService<IExposureKeySetBuilder>(),
+                    x.GetService<WorkflowDbContext>(),
+                    x.GetService<ExposureContentDbContext>(),
+                    x.GetService<IUtcDateTimeProvider>(),
+                    x.GetService<IPublishingId>()
+                ));
+
+            services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
+            services.AddScoped<IExposureKeySetBuilder>(x =>
+                new ExposureKeySetBuilderV1(
+                    x.GetService<IExposureKeySetHeaderInfoConfig>(),
+                    new EcdSaSigner(new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:GA"))),
+                    //TODO change to real NL signer and use new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"))
+                    new FakeContentSigner(),
+                    x.GetService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
+                    new GeneratedProtobufContentFormatter()
+                ));
+            services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
+            services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();
 
             services.AddSwaggerGen(o =>
             {
