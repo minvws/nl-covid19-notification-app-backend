@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -182,7 +183,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
             services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();
-            
+
+            services.AddScoped<IBasicAuthenticationConfig, BasicAuthenticationConfig>();
+            services.AddBasicAuthentication();
 
             services.AddScoped<GetLatestContentCommand<ResourceBundleContentEntity>, GetLatestContentCommand<ResourceBundleContentEntity>>();
             services.AddScoped<GetLatestContentCommand<RiskCalculationContentEntity>, GetLatestContentCommand<RiskCalculationContentEntity>>();
@@ -217,6 +220,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 });
                 o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.xml"));
                 o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml"));
+                
+                
+                o.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "basic",
+                    In = ParameterLocation.Header,
+                    Description = "Basic Authorization header."
+                });
+                o.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "basic"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
             });
         }
 
@@ -232,6 +259,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             if(!env.IsDevelopment()) app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
             app.UseRouting();
 
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

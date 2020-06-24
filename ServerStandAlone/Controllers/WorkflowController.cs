@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
@@ -33,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
             return await command.Execute();
         }
 
-        [HttpPost]
+        [HttpPost, Authorize]
         [Route(EndPointNames.CaregiversPortalApi.LabConfirmation)]
         public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args, [FromServices] HttpPostAuthorise command)
         {
