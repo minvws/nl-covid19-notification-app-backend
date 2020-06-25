@@ -133,7 +133,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
             services.AddSingleton<ISignatureValidator>(new FakeSignatureValidator());
-            services.AddSingleton<IReleaseKeysAuthorizationValidator>(new FakeReleaseKeysAuthorizationValidator());
 
             services.AddScoped(x =>
                 new ExposureKeySetBuilderV1(

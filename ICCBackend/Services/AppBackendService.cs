@@ -83,7 +83,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
         public async Task<bool> LabConfirmationIdIsValid(RedeemIccModel redeemIccModel)
         {
             var backendResponse =
-                await BackendPostRequest(EndPointNames.CaregiversPortalApi.LabConfirmation,
+                await BackendPostRequest("/v1/labConfirm",
                     new AuthorisationArgs(redeemIccModel));
 
             if (backendResponse == null) return false;
