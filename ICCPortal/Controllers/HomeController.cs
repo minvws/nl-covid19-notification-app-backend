@@ -4,6 +4,7 @@
 
 using System.Diagnostics;
 using IccPortal.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -18,14 +19,16 @@ namespace IccPortal.Controllers
             _Logger = logger;
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult Privacy()
+        [Authorize]
+        public IActionResult Auth()
         {
-            return View();
+            return new JsonResult(User.Claims);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

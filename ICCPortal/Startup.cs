@@ -30,34 +30,34 @@ namespace IccPortal
         {
             
             // TODO @hidde: Make Authentication setup final 
-            // services.AddAuthentication(auth =>
-            //     {
-            //         auth.DefaultChallengeScheme = TheIdentityHubDefaults.AuthenticationScheme;
-            //         auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //         auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //     }).AddCookie()
-            //     .AddTheIdentityHubAuthentication(options =>
-            //     {
-            //         options.TheIdentityHubUrl = new Uri("https://www.theidentityhub.com");
-            //         options.Tenant = Configuration.GetSection("IccPortalConfig:IdentityHub:tenant").Value;
-            //         options.ClientId = Configuration.GetSection("IccPortalConfig:IdentityHub:client_id").Value;
-            //         options.ClientSecret = Configuration.GetSection("IccPortalConfig:IdentityHub:client_secret").Value;
-            //     });
-            //
-            //
-            // services.AddMvc(options =>
-            // {
-            //     var policy = new AuthorizationPolicyBuilder()
-            //         .AddAuthenticationSchemes(TheIdentityHubDefaults.AuthenticationScheme)
-            //         .RequireAuthenticatedUser()
-            //         .Build();
-            //     options.Filters.Add(new AuthorizeFilter(policy));
-            // });
-
-            services.AddSpaStaticFiles(configuration =>
+            services.AddAuthentication(auth =>
+                {
+                    auth.DefaultChallengeScheme = TheIdentityHubDefaults.AuthenticationScheme;
+                    auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                }).AddCookie()
+                .AddTheIdentityHubAuthentication(options =>
+                {
+                    options.TheIdentityHubUrl = new Uri(Configuration.GetSection("IccPortalConfig:IdentityHub:url").Value);
+                    options.Tenant = Configuration.GetSection("IccPortalConfig:IdentityHub:tenant").Value;
+                    options.ClientId = Configuration.GetSection("IccPortalConfig:IdentityHub:client_id").Value;
+                    options.ClientSecret = Configuration.GetSection("IccPortalConfig:IdentityHub:client_secret").Value;
+                });
+            
+            
+            services.AddMvc(options =>
             {
-                configuration.RootPath = "ClientApp/dist";
+                var policy = new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(TheIdentityHubDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser()
+                    .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
             });
+
+            // services.AddSpaStaticFiles(configuration =>
+            // {
+            //     configuration.RootPath = "ClientApp/dist";
+            // });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,34 +81,34 @@ namespace IccPortal
             app.UseRouting();
 
             app.UseHsts();
-            // app.UseAuthorization();
-            // app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
-                endpoints.MapRazorPages();
+                // endpoints.MapControllers();
+                // endpoints.MapRazorPages();
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
             // app.UseMvc();
 
-            app.UseSpa(spa =>
-            {
-                // To learn more about options for serving an Angular SPA from ASP.NET Core,
-                // see https://go.microsoft.com/fwlink/?linkid=864501
-            
-                spa.Options.SourcePath = "ClientApp";
-            
-                if (env.IsDevelopment())
-                {
-                    spa.UseAngularCliServer(npmScript: "start");
-                }
-            });
+            // app.UseSpa(spa =>
+            // {
+            //     // To learn more about options for serving an Angular SPA from ASP.NET Core,
+            //     // see https://go.microsoft.com/fwlink/?linkid=864501
+            //
+            //     spa.Options.SourcePath = "ClientApp";
+            //
+            //     if (env.IsDevelopment())
+            //     {
+            //         spa.UseAngularCliServer(npmScript: "start");
+            //     }
+            // });
         }
     }
 }
