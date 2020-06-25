@@ -129,10 +129,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                     x.GetService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
                     new GeneratedProtobufContentFormatter()
                 ));
+
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
-
-
-
             services.AddSingleton<ISignatureValidator>(new FakeSignatureValidator());
             services.AddSingleton<IReleaseKeysAuthorizationValidator>(new FakeReleaseKeysAuthorizationValidator());
 
@@ -144,6 +142,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                     x.GetService<IUtcDateTimeProvider>(), 
                     new GeneratedProtobufContentFormatter()
                     ));
+
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
             services.AddScoped<GetActiveExposureKeySetsListCommand, GetActiveExposureKeySetsListCommand>();
             
@@ -163,7 +162,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<HttpPostGenerateExposureKeySetsCommand, HttpPostGenerateExposureKeySetsCommand>();
             //services.AddScoped<HttpGetCdnContentCommand<ManifestEntity>, HttpGetCdnContentCommand<ManifestEntity>>();
 
-            services.AddScoped<HttpGetCdnContentCommand<ExposureKeySetContentEntity>, HttpGetCdnContentCommand<ExposureKeySetContentEntity>>();
+            services.AddScoped<HttpGetSignedCdnContentOnlyCommand<ExposureKeySetContentEntity>, HttpGetSignedCdnContentOnlyCommand<ExposureKeySetContentEntity>>();
             services.AddScoped<HttpGetCdnContentCommand<RiskCalculationContentEntity>, HttpGetCdnContentCommand<RiskCalculationContentEntity>>();
             services.AddScoped<HttpGetCdnContentCommand<ResourceBundleContentEntity>, HttpGetCdnContentCommand<ResourceBundleContentEntity>>();
             services.AddScoped<HttpGetCdnContentCommand<AppConfigContentEntity>, HttpGetCdnContentCommand<AppConfigContentEntity>>();

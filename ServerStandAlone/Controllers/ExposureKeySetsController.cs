@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         [ProducesResponseType(404)]
         [ProducesResponseType(400)]
         [Produces(MediaTypeNames.Application.Zip, MediaTypeNames.Application.Json)]
-        public async Task GetLatestConfig(string id, [FromServices]HttpGetCdnContentCommand<ExposureKeySetContentEntity> command)
+        public async Task GetLatestConfig(string id, [FromServices] HttpGetSignedCdnContentOnlyCommand<ExposureKeySetContentEntity> command)
         {
             await command.Execute(HttpContext, id);
         }
