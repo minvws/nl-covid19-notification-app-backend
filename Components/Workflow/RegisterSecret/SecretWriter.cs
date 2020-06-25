@@ -44,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             {
                 ConfirmationKey = entity.ConfirmationKey,
                 BucketId = entity.BucketId,
-                LabConfirmationId = $"{entity.LabConfirmationId.Substring(0,2)}-{entity.LabConfirmationId.Substring(2,2)}-{entity.LabConfirmationId.Substring(4,2)}",
+                LabConfirmationId = $"{entity.LabConfirmationId.Substring(0,3)}-{entity.LabConfirmationId.Substring(3,3)}",
                 Validity = (long)(entity.ValidUntil - _DateTimeProvider.Now()).TotalSeconds
             };
         }
