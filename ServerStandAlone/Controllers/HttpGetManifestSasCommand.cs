@@ -58,6 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
                 httpContext.Response.ContentLength = e.SignedContent.Length;
                 httpContext.Response.StatusCode = 200;
                 httpContext.Response.Headers.Add("content-type", e.SignedContentTypeName);
+                httpContext.Response.Headers.Add("etag", e.PublishingId);
                 await httpContext.Response.BodyWriter.WriteAsync(e.SignedContent);
 
                 return;
