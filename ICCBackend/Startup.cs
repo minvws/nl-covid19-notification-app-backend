@@ -53,9 +53,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<ProvisionDatabasesCommandIcc, ProvisionDatabasesCommandIcc>();
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
-            services.AddScoped<IBasicAuthenticationConfig, BasicAuthenticationConfig>();
+            // services.AddScoped<IBasicAuthenticationConfig, BasicAuthenticationConfig>();
             services.AddScoped<IIccService, IccService>();
-            services.AddScoped<IBasicAuthenticationConfig, BasicAuthenticationConfig>();
             services.AddScoped<AppBackendService, AppBackendService>();
             services.AddAuthentication("IccAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, IccAuthenticationHandler>("IccAuthentication", null);
@@ -92,6 +91,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     Scheme = "IccAuthentication"
                 });
                 o.OperationFilter<SecurityRequirementsOperationFilter>();
+
             });
         }
 
