@@ -18,8 +18,8 @@ export class ReportService {
     const serviceUrl = environment.apiUrl + "/RedeemIcc";
     const data = {
       "LabConfirmationID": labConfirmationIds.join(""),
-      "DateOfSymptomsOnset": dateOfSymptomsOnset
     };
+      // "DateOfSymptomsOnset": dateOfSymptomsOnset
     const headers = {
       headers: {
         "Authorization": this.authHeader

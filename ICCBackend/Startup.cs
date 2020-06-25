@@ -53,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<ProvisionDatabasesCommandIcc, ProvisionDatabasesCommandIcc>();
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
-            // services.AddScoped<IBasicAuthenticationConfig, BasicAuthenticationConfig>();
+            services.AddScoped<IBasicAuthenticationConfig, BasicAuthenticationConfig>();
             services.AddScoped<IIccService, IccService>();
             services.AddScoped<AppBackendService, AppBackendService>();
             services.AddAuthentication("IccAuthentication")

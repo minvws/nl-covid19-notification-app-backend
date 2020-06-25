@@ -367,3 +367,4 @@ MigrationBackup/
 /Components/NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml
 /Components/D:/Repos/VWS/MSS-nl-covid19-notification-app-backend/Components/NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml
 *dotnet-tools.json
+/ICCPortal/appsettings.Development.personal.json
