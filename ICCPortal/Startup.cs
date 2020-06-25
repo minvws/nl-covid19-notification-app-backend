@@ -28,8 +28,10 @@ namespace IccPortal
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRazorPages()
+                .AddRazorRuntimeCompilation();
             
-            // TODO @hidde: Make Authentication setup final 
+            // TODO: Make service for adding authentication + configuration model
             services.AddAuthentication(auth =>
                 {
                     auth.DefaultChallengeScheme = TheIdentityHubDefaults.AuthenticationScheme;
@@ -38,21 +40,28 @@ namespace IccPortal
                 }).AddCookie()
                 .AddTheIdentityHubAuthentication(options =>
                 {
-                    options.TheIdentityHubUrl = new Uri(Configuration.GetSection("IccPortalConfig:IdentityHub:url").Value);
+                    if (Configuration.GetSection("IccPortalConfig:IdentityHub:base_url")
+                            .Exists() &&
+                        !String.IsNullOrEmpty(Configuration.GetSection("IccPortalConfig:IdentityHub:base_url").Value))
+                    {
+                        options.TheIdentityHubUrl =
+                            new Uri(Configuration.GetSection("IccPortalConfig:IdentityHub:base_url").Value);
+                    }
+
                     options.Tenant = Configuration.GetSection("IccPortalConfig:IdentityHub:tenant").Value;
                     options.ClientId = Configuration.GetSection("IccPortalConfig:IdentityHub:client_id").Value;
                     options.ClientSecret = Configuration.GetSection("IccPortalConfig:IdentityHub:client_secret").Value;
                 });
-            
-            
-            services.AddMvc(options =>
-            {
-                var policy = new AuthorizationPolicyBuilder()
-                    .AddAuthenticationSchemes(TheIdentityHubDefaults.AuthenticationScheme)
-                    .RequireAuthenticatedUser()
-                    .Build();
-                options.Filters.Add(new AuthorizeFilter(policy));
-            });
+
+
+            // services.AddMvc(options =>
+            // {
+            //     var policy = new AuthorizationPolicyBuilder()
+            //         .AddAuthenticationSchemes(TheIdentityHubDefaults.AuthenticationScheme)
+            //         .RequireAuthenticatedUser()
+            //         .Build();
+            //     options.Filters.Add(new AuthorizeFilter(policy));
+            // });
 
             // services.AddSpaStaticFiles(configuration =>
             // {

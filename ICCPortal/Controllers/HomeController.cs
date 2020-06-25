@@ -25,11 +25,6 @@ namespace IccPortal.Controllers
             return View();
         }
 
-        [Authorize]
-        public IActionResult Auth()
-        {
-            return new JsonResult(User.Claims);
-        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

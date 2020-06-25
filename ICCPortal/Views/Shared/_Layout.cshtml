@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"]</title>
+
+
+    @* TEMPORARY ADDING UNO FROM GITLAB.IO *@
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/core/base.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/core/grid.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/components/lists/lists.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/components/header/header.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/components/footer/footer.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/components/collapse/collapse.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/components/navigation/navigation.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/components/navigation/breadcrumbs.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/components/navigation/backlink.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/components/navigation/sidenav.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/components/form/form.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/components/form/input.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/components/button/button.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/components/skiplink/skiplink.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/uno/components/tabs/tabs.css">
+    <link rel="stylesheet" href="https://nl-design-system.gitlab.io/nl-design-system/css/main.css">
+    <style>
+        .header .header-logo a::after{
+            background: none;
+            /*content:'Rijksoverheid';*/
+        }
+    </style>
+</head>
+<body>
+<header class="header" style="height:auto" role="banner">
+    <div class="header-logo">
+        <a href="/" title="Logo VWS">
+            @* Rijksoverheid *@
+            <img src="https://coronadashboard.rijksoverheid.nl/images/logo-ro.svg" alt="">
+            @* Ministerie van Volksgezondheid,<br/> *@
+            @* Welzijn en Sport *@
+        </a>
+    </div>
+</header>
+<nav class="top-nav top-nav--donkerblauw" id="docs-nav">
+    <div class="container">
+        <div class="breadcrumbs">
+            <ul class="breadcrumbs__list">
+                <li>
+                    <a href="/" title="Home">
+                        <i class="icon icon-home" role="presentation"></i><span>NotificatieApp</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/" title="Ga naar Inloggen GGD Portaal">
+                        <span>GGD Portaal</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="top-nav__block top-nav-autoresize">
+            <ul class="nav">
+                <li class="nav__item">
+                    <a class="nav__link" href="@Url.Action("Index", "Auth")">
+                        <i class="icon icon-secure" role="presentation"></i><span>Inloggen</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
+    @RenderBody()
+
+
+</div>
+</body>
+</html>
