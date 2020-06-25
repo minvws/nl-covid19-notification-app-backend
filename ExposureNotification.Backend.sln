@@ -44,6 +44,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccPortal", "ICCPortal\IccPortal.csproj", "{2E5FC398-C354-4D0E-84F3-804411340C65}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5CB694D0-78E1-4347-BF78-A557E0780125}"
+ProjectSection(SolutionItems) = preProject
+	docker\README.md = docker\README.md
+EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScheduledTaskEngine", "ScheduledTaskEngine\ScheduledTaskEngine.csproj", "{2A2DBC89-2150-469B-B224-FC203A11283E}"
 EndProject
