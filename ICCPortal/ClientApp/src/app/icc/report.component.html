@@ -12,12 +12,6 @@
 
             <input placeholder="1234" [(ngModel)]="icc" [ngModelOptions]="{standalone:true}" class="w-100"
                    style="font-size: 1.3em" type="text" class="form-control">
-            <!--            <input class="form-control" (keydown)="ICIdKeyPress($event, 0)" placeholder="0" type="number"/>-->
-            <!--            <input class="form-control" (keydown)="ICIdKeyPress($event, 1)" placeholder="0" type="number"/>-->
-            <!--            <input class="form-control" (keydown)="ICIdKeyPress($event, 2)" placeholder="0" type="number"/>-->
-            <!--            <input class="form-control" (keydown)="ICIdKeyPress($event, 3)" placeholder="0" type="number"/>-->
-            <!--            <input class="form-control" (keydown)="ICIdKeyPress($event, 4)" placeholder="0" type="number"/>-->
-            <!--            <input class="form-control" (keydown)="ICIdKeyPress($event, 5)" placeholder="0" type="number"/>-->
           </div>
           <p class="card-text my-3 text-center">
             Patient LabConfirmatieID (uit app):
@@ -29,15 +23,14 @@
                        placeholder="0" type="text"/>
                 <input [(ngModel)]="labConfirmationId[1]" class="form-control w-100" (keydown)="ICIdKeyPress($event, 1)"
                        placeholder="0" type="text"/>
-                <input class="form-control w-100" disabled value="-" placeholder="0" type="text"/>
-                <input [(ngModel)]="labConfirmationId[3]" class="form-control w-100" (keydown)="ICIdKeyPress($event, 3)"
+                <input [(ngModel)]="labConfirmationId[2]" class="form-control w-100" (keydown)="ICIdKeyPress($event, 2)"
                        placeholder="0" type="text"/>
+                <input class="form-control w-100" disabled value="-" placeholder="0" type="text"/>
                 <input [(ngModel)]="labConfirmationId[4]" class="form-control w-100" (keydown)="ICIdKeyPress($event, 4)"
                        placeholder="0" type="text"/>
-                <input class="form-control w-100" disabled value="-" placeholder="0" type="text"/>
-                <input [(ngModel)]="labConfirmationId[6]" class="form-control w-100" (keydown)="ICIdKeyPress($event, 6)"
+                <input [(ngModel)]="labConfirmationId[5]" class="form-control w-100" (keydown)="ICIdKeyPress($event, 5)"
                        placeholder="0" type="text"/>
-                <input [(ngModel)]="labConfirmationId[7]" class="form-control w-100" (keydown)="ICIdKeyPress($event, 7)"
+                <input [(ngModel)]="labConfirmationId[6]" class="form-control w-100" (keydown)="ICIdKeyPress($event, 6)"
                        placeholder="0" type="text"/>
               </div>
 
