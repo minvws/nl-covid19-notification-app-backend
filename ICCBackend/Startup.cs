@@ -101,7 +101,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS
             
             app.UseSwagger();
-            app.UseSwaggerUI(o => { o.SwaggerEndpoint("/swagger/v1/swagger.json", "Icc Back-end Server V1"); });
+            app.UseSwaggerUI(o => { o.SwaggerEndpoint("../swagger/v1/swagger.json", "Icc Back-end Server V1"); });
 
             if (env.IsDevelopment())
             {
