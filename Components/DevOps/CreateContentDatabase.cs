@@ -5,7 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -49,6 +51,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             await _DbContextProvider.Database.EnsureCreatedAsync();
         }
 
+        public async Task DropExampleContent()
+        {
+            await using var tx = await _DbContextProvider.Database.BeginTransactionAsync();
+            foreach (var e in _DbContextProvider.AppConfigContent)
+                _DbContextProvider.AppConfigContent.Remove(e);
+
+            foreach (var e in _DbContextProvider.ResourceBundleContent)
+                _DbContextProvider.ResourceBundleContent.Remove(e);
+
+            foreach (var e in _DbContextProvider.RiskCalculationContent)
+                _DbContextProvider.RiskCalculationContent.Remove(e);
+            _DbContextProvider.SaveAndCommit();
+        }
+
         public async Task AddExampleContent()
         {
             await using var tx = await _DbContextProvider.Database.BeginTransactionAsync();
@@ -74,8 +90,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                     }
                 }
             );
-
-
 
             var rbd = ReadFromResource<ResourceBundleArgs>("RiskCalcDefaults.json");
             rbd.Release = _DateTimeProvider.Now();

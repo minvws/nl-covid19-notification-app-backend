@@ -35,5 +35,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
         /// TODO
         /// </summary>
         public int ObservedTemporaryExposureKeyRetentionDays { get; set; }
+        /// <summary>
+        /// TODO
+        /// </summary>
+        public int AndroidMinimumKillVersion { get; set; }
+        /// <summary>
+        /// TODO
+        /// </summary>
+        public string iOSMinimumKillVersion { get; set; }
     }
 }
