@@ -43,6 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
 
             _Logger.LogInformation("Seeding ExposureContent...");
             var db = new CreateContentDatabase(_ExposureContentDbContext, new StandardUtcDateTimeProvider(), new CmsSigner(new ResourceCertificateProvider("FakeRSA.p12")));
+            await db.DropExampleContent();
             await db.AddExampleContent();
 
             _Logger.LogInformation("Apply ICCBackedContentDbContext Migrations...");

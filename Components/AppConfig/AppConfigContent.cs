@@ -2,7 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
@@ -24,5 +23,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
         /// </summary>
         [JsonProperty("decoyProbability")]
         public int DecoyProbability { get; set; }
+
+        /// <summary>
+        /// Minimum Android Version
+        /// </summary>
+        [JsonProperty("androidMinimumKillVersion")]
+        public int AndroidMinimumKillVersion { get; set; }
+        /// <summary>
+        /// Minimum iOS Version
+        /// </summary>
+        [JsonProperty("iOSMinimumKillVersion")]
+        public string iOSMinimumKillVersion { get; set; }
     }
 }
