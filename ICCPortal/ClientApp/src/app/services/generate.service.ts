@@ -17,26 +17,18 @@ export class GenerateService {
 
   generateIccSingle(): Observable<any> {
     const serviceUrl = environment.apiUrl + '/GenerateIcc/single';
-
-    const payload = {
-      UserId: this.testUserId
-    };
-    return this.http.post(serviceUrl, payload).pipe(catchError(this.errorHandler));
+    return this.http.post(serviceUrl, { UserId: this.testUserId }).pipe(catchError(this.errorHandler));
   }
 
   generateIccBatch(): Observable<any> {
     const serviceUrl = environment.apiUrl + '/GenerateIcc/batch';
-
-    let payload = {
-      UserId: this.testUserId
-    }
-    return this.http.post(serviceUrl, payload).pipe(catchError(this.errorHandler));
+    return this.http.post(serviceUrl, { UserId: this.testUserId }).pipe(catchError(this.errorHandler));
   }
 
   generateDownloadCsv(): Observable<any> {
     const serviceUrl = environment.apiUrl + '/GenerateIcc/batch-csv';
     return this.http.post(serviceUrl,
-      { "UserId": '3fa85f64-5717-4562-b3fc-2c963f66afa6' },
+      { 'UserId': '3fa85f64-5717-4562-b3fc-2c963f66afa6' },
       {
         observe: 'response',
         responseType: (('blob') as any) as 'json'
@@ -44,7 +36,7 @@ export class GenerateService {
   }
 
   downloadCsv(iccBatchId) {
-    const serviceUrl = environment.apiUrl + '/GenerateIcc/batch-csv?batchId='+iccBatchId;
+    const serviceUrl = `${environment.apiUrl}/GenerateIcc/batch-csv?batchId=${iccBatchId}`;
     return this.http.get(serviceUrl, { responseType: 'blob' });
   }
 

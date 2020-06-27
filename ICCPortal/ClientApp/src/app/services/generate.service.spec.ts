@@ -10,8 +10,8 @@ describe('GenerateServiceService', () => {
       providers: [GenerateService],
       imports: [HttpClientTestingModule]
     });
-    httpTestingController = TestBed.get(HttpTestingController);
-    service = TestBed.get(GenerateService);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    service = TestBed.inject(GenerateService);
   });
 
   it('should be created', () => {
@@ -48,6 +48,4 @@ describe('GenerateServiceService', () => {
 
     req.flush(mockIccBatch);
   });
-
-
 });

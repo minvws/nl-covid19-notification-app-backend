@@ -9,7 +9,7 @@ describe('ReportServiceService', () => {
     TestBed.configureTestingModule({
       providers: [ReportService, HttpClient, HttpHandler]
     });
-    service = TestBed.get(ReportService);
+    service = TestBed.inject(ReportService);
   });
 
   it('should be created', () => {

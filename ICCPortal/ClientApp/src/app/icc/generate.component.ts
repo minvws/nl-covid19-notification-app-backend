@@ -24,9 +24,11 @@ export class IccGenerateComponent {
   generateDownloadCsv() {
     this.generateService.generateDownloadCsv()
       .subscribe((result: any) => {
-        var contentDisposition = result.headers.get('content-disposition');
-        var filename = (contentDisposition) ? contentDisposition.split(';')[1].split('filename')[1].split('=')[1].trim() : 'ICC Batch.csv';
-        var bin = new Blob([result.body], {type: 'text/csv'});
+        const contentDisposition = result.headers.get('content-disposition');
+        const filename = (contentDisposition) ?
+            contentDisposition.split(';')[1].split('filename')[1].split('=')[1].trim() :
+            'ICC Batch.csv';
+        const bin = new Blob([result.body], {type: 'text/csv'});
         FileSaver.saveAs(bin, filename);
       });
   }
@@ -34,7 +36,7 @@ export class IccGenerateComponent {
   downloadCsv() {
     const fileName = `ICC_Batch#${this.iccBatch.id}.csv`;
     this.generateService.downloadCsv(this.iccBatch.id).subscribe((result) => {
-      var bin = new Blob([result], {type: 'text/csv'});
+      const bin = new Blob([result], {type: 'text/csv'});
       FileSaver.saveAs(bin, fileName);
     });
   }

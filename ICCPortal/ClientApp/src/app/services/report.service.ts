@@ -9,7 +9,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 })
 export class ReportService {
 
-  private authHeader: string = '';
+  private authHeader = '';
 
   constructor(private readonly http: HttpClient) { }
 
@@ -17,19 +17,19 @@ export class ReportService {
     this.authHeader = authHeader;
     const serviceUrl = environment.apiUrl + '/RedeemIcc';
     const data = {
-      "LabConfirmationID": labConfirmationIds.join('')
+      'LabConfirmationID': labConfirmationIds.join('')
     };
-      // "DateOfSymptomsOnset": dateOfSymptomsOnset
+    // "DateOfSymptomsOnset": dateOfSymptomsOnset
     const headers = {
       headers: {
-        "Authorization": this.authHeader
+        'Authorization': this.authHeader
       }
-    }
+    };
 
     return this.http.post(serviceUrl, data, headers).pipe(catchError(this.errorHandler));
   }
 
-  private errorHandler(error: HttpErrorResponse, caught:Observable<any>) : Observable<any> {
+  private errorHandler(error: HttpErrorResponse, caught: Observable<any>): Observable<any> {
     // TODO error handling
     throw error;
   }

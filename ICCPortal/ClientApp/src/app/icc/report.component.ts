@@ -19,7 +19,7 @@ export class IccReportComponent {
     const target = $event.target as HTMLInputElement;
     setTimeout(() => {
       console.log(index);
-      if ($event.keyCode === 8) {
+      if ($event.code === 'Backspace') {
         target.value = '';
         (<HTMLInputElement>target.parentNode.querySelector(`.form-control:nth-child(${index})`)).focus();
       } else if (index === 2) {
