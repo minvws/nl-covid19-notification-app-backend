@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
                 PublishingId = content.PublishingId,
                 Content = content.Content,
                 ContentTypeName = content.ContentTypeName,
-                SignedContent = content.Content,
+                SignedContent = content.SignedContent,
                 SignedContentTypeName = MediaTypeNames.Application.Zip,
                 Release = content.LastModified,
             };
