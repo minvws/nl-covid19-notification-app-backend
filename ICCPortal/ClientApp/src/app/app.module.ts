@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
@@ -16,7 +16,7 @@ import {LoginComponent} from "./login/login.component";
     HomeComponent,
     IccReportComponent,
     IccGenerateComponent,
-    LoginComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -26,7 +26,7 @@ import {LoginComponent} from "./login/login.component";
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'login', component: LoginComponent, pathMatch: 'full' },
       { path: 'icc/report', component: IccReportComponent, pathMatch: 'full' },
-      { path: 'icc/generate', component: IccGenerateComponent, pathMatch: 'full' },
+      { path: 'icc/generate', component: IccGenerateComponent, pathMatch: 'full' }
     ])
   ],
   providers: [],
