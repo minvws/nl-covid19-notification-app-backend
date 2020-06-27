@@ -84,8 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
                 new ExposureKeySetBuilderV1(
                     x.GetService<IExposureKeySetHeaderInfoConfig>(),
                     new EcdSaSigner(new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:GA"))),
-                    //TODO change to real NL signer and use new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"))
-                    new FakeContentSigner(),
+                    new CmsSigner(new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"))), 
                     x.GetService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
                     new GeneratedProtobufContentFormatter()
                 ));

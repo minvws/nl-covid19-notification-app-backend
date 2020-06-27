@@ -20,7 +20,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Services;
-using Org.BouncyCastle.Crypto.Prng;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {

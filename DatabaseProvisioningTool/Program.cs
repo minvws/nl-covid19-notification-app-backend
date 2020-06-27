@@ -43,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
             try
             {
                 Log.Information("Starting service");
-                await serviceProvider.GetService<App>().Run();
+                await serviceProvider.GetService<App>().Run(args);
                 Log.Information("Ending service");
                 Console.WriteLine("Press any key to exit...");
                 Console.ReadLine();
