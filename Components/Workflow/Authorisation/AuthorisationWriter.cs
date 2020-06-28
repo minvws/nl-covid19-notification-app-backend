@@ -4,6 +4,7 @@
 
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
@@ -21,6 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         {
             var e = _DbContextProvider
                 .KeyReleaseWorkflowStates
+                .Include(x => x.Keys)
                 .SingleOrDefault(x => x.LabConfirmationId == args.LabConfirmationId); 
             
             if (e == null)
