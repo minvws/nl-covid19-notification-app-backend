@@ -1,7 +1,6 @@
 import {TestBed} from '@angular/core/testing';
-
-import {GenerateService} from "./generate.service";
-import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
+import {GenerateService} from './generate.service';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 
 describe('GenerateServiceService', () => {
   let service: GenerateService;
@@ -10,9 +9,9 @@ describe('GenerateServiceService', () => {
     TestBed.configureTestingModule({
       providers: [GenerateService],
       imports: [HttpClientTestingModule]
-    })
-    httpTestingController = TestBed.get(HttpTestingController);
-    service = TestBed.get(GenerateService)
+    });
+    httpTestingController = TestBed.inject(HttpTestingController);
+    service = TestBed.inject(GenerateService);
   });
 
   it('should be created', () => {
@@ -25,30 +24,28 @@ describe('GenerateServiceService', () => {
       status: 200,
       length: 4,
       iccBatch: {
-        id: "1234AB",
+        id: '1234AB',
         batch: [{
-          code: "A12345678910112",
+          code: 'A12345678910112',
         }, {
-          code: "A12345678910112",
+          code: 'A12345678910112',
         }, {
-          code: "A12345678910112",
+          code: 'A12345678910112',
         }, {
-          code: "A12345678910112",
+          code: 'A12345678910112',
         }]
       }
-    }
+    };
     service.generateIccBatch().subscribe(result => {
-      console.log(result)
-      expect(result.ok).toEqual(true)
-      expect(result.status).toEqual(200)
-      expect(result.length).toEqual(4)
+      console.log(result);
+      expect(result.ok).toEqual(true);
+      expect(result.status).toEqual(200);
+      expect(result.length).toEqual(4);
       expect(result.icc_batch.length()).toEqual(4);
-      expect(result.icc_batch[0].code).toEqual("A12345678910112");
-    })
-    const req = httpTestingController.expectOne("http://localhost:5006/GenerateIcc/batch")
+      expect(result.icc_batch[0].code).toEqual('A12345678910112');
+    });
+    const req = httpTestingController.expectOne('http://localhost:5006/GenerateIcc/batch');
 
-    req.flush(mockIccBatch)
+    req.flush(mockIccBatch);
   });
-
-
 });

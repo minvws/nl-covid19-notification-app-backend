@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
-import {Element} from "@angular/compiler";
-import {Router} from "@angular/router";
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-icc',
@@ -9,20 +8,20 @@ import {Router} from "@angular/router";
 })
 export class LoginComponent {
   private router;
-  public username:string = "";
-  public password:string = "";
+  username = '';
+  password = '';
 
   constructor(router: Router) {
     this.router = router;
   }
 
-  public login() {
+  login() {
     // const username = document.querySelector("#exampleInputEmail1").value.toLowerCase()
-    console.log(this.username)
-    if (this.username.includes("reporter")) {
-      this.router.navigate(["icc/report"]);
-    } else if (this.username.includes("generator")) {
-      this.router.navigate(["icc/generate"]);
+    console.log(this.username);
+    if (this.username.includes('reporter')) {
+      this.router.navigate(['icc/report']);
+    } else if (this.username.includes('generator')) {
+      this.router.navigate(['icc/generate']);
     }
   }
 }
