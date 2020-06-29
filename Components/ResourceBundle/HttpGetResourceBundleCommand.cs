@@ -34,6 +34,7 @@
 //            if (e == null)
 //                return new NotFoundResult();
 
+//            // TODO use IJsonSerializer
 //            var content = JsonConvert.DeserializeObject<ResourceBundleEntityContent>(Encoding.UTF8.GetString(e.Content));
 
 //            var result = new ResourceBundleResponse

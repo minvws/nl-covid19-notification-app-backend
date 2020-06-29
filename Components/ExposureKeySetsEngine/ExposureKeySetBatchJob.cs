@@ -68,6 +68,7 @@
 //        {
 //            foreach (var i in _JobDbProvider.Set<TeksInputEntity>().ToArray()) //TODO page or otherwise close the data reader before writing in Build
 //            {
+//                // TODO use IJsonSerializer
 //                var keys = JsonConvert.DeserializeObject<TemporaryExposureKeyContent[]>(i.Content);
                     
 //                if (_KeyBatch.Count + keys.Length > _GaenContentConfig.ExposureKeySetCapacity)

@@ -9,16 +9,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
     public class ManifestContent
     {
-        [JsonProperty("exposureKeySets")]
         public string[] ExposureKeySets { get; set; }
         
-        [JsonProperty("resourceBundle")]
         public string ResourceBundle { get; set; }
         
-        [JsonProperty("riskCalculationParameters")]
         public string RiskCalculationParameters { get; set; }
 
-        [JsonProperty("appConfig")]
         public string AppConfig { get; set; }
     }
 }

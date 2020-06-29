@@ -5,6 +5,6 @@
   "isolationPeriodDays": 0,
   "text": {
     "en-GB": { "InfectedMessage": "You're possibly infected" },
-    "nl-NL": { "InfectedMessage": "U bent mogelijk geinvecteerd" }
+    "nl-NL": { "InfectedMessage": "U bent mogelijk geïnfecteerd" }
   }
 }

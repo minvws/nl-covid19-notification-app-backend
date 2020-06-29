@@ -13,28 +13,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculati
     public class RiskCalculationConfigContent
     {
         //Range 0-8
-        [JsonPropertyName("minimumRiskScore​")]
         public int MinimumRiskScore { get; set; }
 
         //Might not be int..
-        [JsonPropertyName("attenuationScores​​")]
         public int[] AttenuationScores​ { get; set; }
 
         //Might not be int..
-        [JsonPropertyName("daysSinceLastExposureScores​​")]
         public int[] DaysSinceLastExposureScores​ { get; set; }
 
         //Might not be int..
-        [JsonPropertyName("durationScores​")]
         public int[] DurationScores { get; set; }
 
         //Might not be int..
-        [JsonPropertyName("transmissionRiskScores​​")]
         public int[] TransmissionRiskScores​ { get; set; }
 
         //Might not be int..
         //length 
-        [JsonPropertyName("durationAtAttenuationThresholds​")]
         public int[] DurationAtAttenuationThresholds​ { get; set; }
     }
 }

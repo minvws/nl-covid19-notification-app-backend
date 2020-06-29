@@ -62,6 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
         ///// <returns></returns>
         //public static ExposureKeySetConfigEntity ToEntity(this ExposureKeySetOutput output)
         //{
+        //    // TODO use IJsonSerializer
         //    var jsonContent = JsonConvert.SerializeObject(output.DebugContentJson);
         //    return new ExposureKeySetConfigEntity
         //    {

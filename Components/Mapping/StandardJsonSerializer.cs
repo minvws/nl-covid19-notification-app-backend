@@ -19,5 +19,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
         {
             return JsonSerializer.Serialize(input, _SerializerOptions);
         }
+
+        public TContent Deserialize<TContent>(string input)
+        {
+            return JsonSerializer.Deserialize<TContent>(input, _SerializerOptions);
+        }
     }
 }

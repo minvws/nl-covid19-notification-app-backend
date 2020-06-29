@@ -36,6 +36,7 @@
 //            if (e == null)
 //                return new NotFoundResult();
 
+//            // TODO use IJsonSerializer
 //            var content = JsonConvert.DeserializeObject<RiskCalculationConfigContent>(Encoding.UTF8.GetString(e.Content));
 //            var result = content.ToResponse();
 //            return new OkObjectResult(result);
