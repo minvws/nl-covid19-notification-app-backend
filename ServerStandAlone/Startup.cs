@@ -4,11 +4,9 @@
 
 using System;
 using System.IO;
-using System.Security.Principal;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -61,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 })
                 .AddJsonOptions(_ =>
                 {
-                    // NOTE: the StandardContentEntityFormatter also serializes json outside of ASP.NET
+                    // This configures the serializer for ASP.Net, StandardContentEntityFormatter does that for ad-hoc occurrences.
                     _.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 });
 
@@ -203,6 +201,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<HttpGetManifestBinaryContentCommand, HttpGetManifestBinaryContentCommand>();
             services.AddScoped<DynamicManifestReader, DynamicManifestReader>();
             services.AddScoped<HttpGetManifestSasCommand, HttpGetManifestSasCommand>();
+
+            services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
 
             services.AddSwaggerGen(o =>
             {

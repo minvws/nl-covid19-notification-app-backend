@@ -89,7 +89,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 }
             );
 
-            var rbd = ReadFromResource<ResourceBundleArgs>("RiskCalcDefaults.json");
+            var rbd = ReadFromResource<ResourceBundleArgs>("ResourceBundleDefaults.json");
             rbd.Release = _DateTimeProvider.Now();
             await Write(rbd);
 
