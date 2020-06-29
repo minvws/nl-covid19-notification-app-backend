@@ -2,7 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig
 {
@@ -13,28 +13,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculati
     public class RiskCalculationConfigContent
     {
         //Range 0-8
-        [JsonProperty("minimumRiskScore")]
+        [JsonPropertyName("minimumRiskScore​")]
         public int MinimumRiskScore { get; set; }
 
         //Might not be int..
-        [JsonProperty("attenuationScores​")]
+        [JsonPropertyName("attenuationScores​​")]
         public int[] AttenuationScores​ { get; set; }
 
         //Might not be int..
-        [JsonProperty("daysSinceLastExposureScores​")]
+        [JsonPropertyName("daysSinceLastExposureScores​​")]
         public int[] DaysSinceLastExposureScores​ { get; set; }
 
         //Might not be int..
-        [JsonProperty("durationScores")]
+        [JsonPropertyName("durationScores​")]
         public int[] DurationScores { get; set; }
 
         //Might not be int..
-        [JsonProperty("transmissionRiskScores​")]
+        [JsonPropertyName("transmissionRiskScores​​")]
         public int[] TransmissionRiskScores​ { get; set; }
 
         //Might not be int..
-        //length 2
-        [JsonProperty("durationAtAttenuationThresholds​")]
+        //length 
+        [JsonPropertyName("durationAtAttenuationThresholds​")]
         public int[] DurationAtAttenuationThresholds​ { get; set; }
     }
 }
