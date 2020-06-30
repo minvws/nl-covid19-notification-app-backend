@@ -1,6 +1,8 @@
 ﻿{
-  "release": "2020-06-23T12:24:15.881Z",
+  "release": "2020-06-26T06:00:00.000Z",
   "manifestFrequency": 5, //5 what? Bananas?
-  "decoyProbability":  1,
-  "version": 123345
+  "decoyProbability": 1,
+  "version": 123345,
+  "androidMinimumKillVersion": 0,
+  "iOSMinimumKillVersion": "1.0.0"
 }

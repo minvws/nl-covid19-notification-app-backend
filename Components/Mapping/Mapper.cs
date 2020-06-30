@@ -50,7 +50,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             {
                 DecoyProbability = args.DecoyProbability,
                 UpdatePeriodMinutes = args.UpdatePeriodMinutes,
-                Version = args.Version
+                Version = args.Version,
+                AndroidMinimumKillVersion = args.AndroidMinimumKillVersion,
+                iOSMinimumKillVersion = args.iOSMinimumKillVersion
             };
 
         ///// <summary>

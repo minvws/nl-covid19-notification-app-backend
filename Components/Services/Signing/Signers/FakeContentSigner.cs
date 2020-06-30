@@ -4,8 +4,10 @@
 
 using System;
 
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers
 {
+    [Obsolete("Use this class only for testing purposes")]
     public class FakeContentSigner : IContentSigner
     {
         public string SignatureOid => "+++DoNotUse+++DoNotUse+++DoNotUse+++";

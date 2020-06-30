@@ -20,6 +20,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
@@ -47,8 +49,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
             services.AddSingleton<IUtcDateTimeProvider>(new StandardUtcDateTimeProvider());
             services.AddSingleton<IPublishingId>(new StandardPublishingIdFormatter());
-            services.AddScoped<IContentSigner, FakeContentSigner>();
             services.AddSingleton<IGaenContentConfig>(new GaenContentConfig(Configuration));
+            services.AddSingleton<IContentSigner, CmsSigner>();
+            services.AddSingleton<ICertificateProvider, HsmCertificateProvider>();
+            services.AddSingleton<IThumbprintConfig>(x => new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"));
 
             services.AddScoped(x =>
             {

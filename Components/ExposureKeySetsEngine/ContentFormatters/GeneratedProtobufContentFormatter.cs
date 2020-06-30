@@ -2,7 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -25,7 +24,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 StartTimestamp = content.StartTimestamp,
                 SignatureInfos = { content.SignatureInfos.Select(Map).ToArray() },
                 Keys = { content.Keys.Select(Map).ToArray() },
-                //NOT IN THE GENERATED PROTOBUF Header = content.Header,
             };
             var buffer = result.ToByteArray();
 
@@ -40,15 +38,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             => new TemporaryExposureKey
             {
                 KeyData = ByteString.CopyFrom(arg.KeyData),
-                TransmissionRiskLevel = arg.TransmissionRiskLevel,
+                TransmissionRiskLevel = arg.TransmissionRiskLevel, //todo: fix
                 RollingPeriod = arg.RollingPeriod,
                 RollingStartIntervalNumber = arg.RollingStartNumber,
+                //DaysSinceOnsetOfSymptoms = 0
+                //ReportType = TemporaryExposureKey.Types.ReportType.ConfirmedClinicalDiagnosis
             };
-        
-        private static NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo Map(SignatureInfoArgs arg)
-            => new NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo
+
+        private static SignatureInfo Map(SignatureInfoArgs arg)
+            => new SignatureInfo
             {
-                AppBundleId = arg.AppBundleId,
                 SignatureAlgorithm = arg.SignatureAlgorithm,
                 VerificationKeyId = arg.VerificationKeyId,
                 VerificationKeyVersion = arg.VerificationKeyVersion

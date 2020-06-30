@@ -1,11 +1,7 @@
-using System;
-using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
@@ -14,12 +10,12 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver
+namespace CdnDataReceiver.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     [Authorize]
-    public class CdnDataReciverFunctions : ControllerBase
+    public class CdnDataReceiverFunctions : ControllerBase
     {
         [HttpPost]
         [Route(EndPointNames.CdnApi.Manifest)]

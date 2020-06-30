@@ -43,6 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleaseApi
                 var config = new StandardEfDbConfig(Configuration, "WorkFlow");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new WorkflowDbContext(builder.Build());
+                result.Database.BeginTransaction();
                 return result;
             });
 
@@ -51,7 +52,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleaseApi
             services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
             services.AddScoped<ISignatureValidator, SignatureValidator>();
             services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();
-            services.AddScoped<IReleaseKeysAuthorizationValidator, ReleaseKeysAuthorizationValidator>();
 
             services.AddSwaggerGen(o =>
             {

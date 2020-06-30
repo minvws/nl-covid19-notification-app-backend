@@ -8,22 +8,22 @@
           </p>
           <!--          TODO: Convert generated code into fill-in Icc -->
           <div class="d-flex" id="iccWrapper" (click)="copyCodeToClipboard()">
-            <div class="w-100" *ngIf="icc_batch && icc_batch.batch.length > 0">
+            <div class="w-100" *ngIf="iccBatch && iccBatch.batch.length > 0">
               <div>
                 <p>Batch ID:</p>
-                <input placeholder="# Batch ID" type="text" class="form-control disabled" disabled [value]="icc_batch.id"
+                <input placeholder="# Batch ID" type="text" class="form-control disabled" disabled [value]="iccBatch.id"
                        name="icc_id">
                 <br>
               </div>
-              <input placeholder="1234" type="text" class="form-control disabled" disabled *ngFor="let icc of icc_batch.batch"
+              <input placeholder="1234" type="text" class="form-control disabled" disabled *ngFor="let icc of iccBatch.batch"
                      [value]="icc.code" name="icc_1">
 
-              <textarea name="icc_full" class="form-control" cols="40" rows="{{icc_batch.batch.length}}"
+              <textarea name="icc_full" class="form-control" cols="40" rows="{{iccBatch.batch.length}}"
                         [value]="getIccCodeTextArea()"></textarea>
             </div>
           </div>
           <button class="btn w-100 btn-dark my-3" (click)="generateCode()">Genereren</button>
-          <button class="btn w-50 btn-light my-3" [disabled]="!icc_batch" (click)="downloadCsv()">Download (.csv)</button>
+          <button class="btn w-50 btn-light my-3" [disabled]="!iccBatch" (click)="downloadCsv()">Download (.csv)</button>
           <button class="btn w-50 btn-light my-3" (click)="generateDownloadCsv()">Genereren & Download (.csv)</button>
         </div>
       </div>

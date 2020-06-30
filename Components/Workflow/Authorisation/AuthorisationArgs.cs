@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
@@ -13,23 +12,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     /// </summary>
     public class AuthorisationArgs
     {
-
         public AuthorisationArgs()
         {
             
         }
+
         public AuthorisationArgs(RedeemIccModel redeemIccModel)
         {
-            LabConfirmationId = redeemIccModel.LabConfirmationId;
+            LabConfirmationId = redeemIccModel.LabConfirmationId.Replace("-",string.Empty);
             DateOfSymptomsOnset = redeemIccModel.DateOfSymptomsOnset;
         }
-
-
+        
         /// <summary>
         /// Identifier for Workflow item - Tan1?
         /// </summary>
         public string LabConfirmationId { get; set; }
+        
         public DateTime DateOfSymptomsOnset { get; set; }
-
     }
 }

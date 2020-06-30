@@ -48,8 +48,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             {
                 Header = Header,
                 Region = "NL",
-                BatchNum = 1, //TODO real values?
-                BatchSize = keys.Length, //TODO real values?
+                BatchNum = 1,
+                BatchSize = keys.Length,
                 SignatureInfos = new[] {securityInfo},
                 StartTimestamp = now.AddDays(-1).ToUnixTime(), //TODO real values?
                 EndTimestamp = now.ToUnixTime(), //TODO real values?
@@ -66,13 +66,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     {
                         SignatureInfo = securityInfo,
                         Signature = _GaenContentSigner.GetSignature(contentBytes),
-                        BatchSize = 1,
-                        BatchNum = 1
+                        BatchSize = content.BatchSize,
+                        BatchNum = content.BatchNum
                     },
-                    //new ExposureKeySetSignatureContentArgs
-                    //{
-                    //    //TODO The NL sig.
-                    //},
                 }
             };
 
@@ -84,7 +80,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private SignatureInfoArgs GetGaenSignatureInfo()
             => new SignatureInfoArgs
             {
-                AppBundleId = _Config.AppBundleId,
                 SignatureAlgorithm = _GaenContentSigner.SignatureOid,
                 VerificationKeyId = _Config.VerificationKeyId,
                 VerificationKeyVersion = _Config.VerificationKeyVersion
