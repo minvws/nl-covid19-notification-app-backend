@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
         /// <summary>
         /// The time between updates - GETting the manifest, in minutes.
         /// </summary>
-        public int UpdatePeriodMinutes { get; set; }
+        public int ManifestFrequency { get; set; }
 
         /// <summary>
         /// This defines the probability of sending decoys. This is configurable so we can tune the probability to server load if necessary.
@@ -28,14 +28,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
         /// TODO
         /// </summary>
         public int TemporaryExposureKeyRetentionDays { get; set; }
+
         /// <summary>
         /// TODO
         /// </summary>
         public int ObservedTemporaryExposureKeyRetentionDays { get; set; }
+
         /// <summary>
         /// TODO
         /// </summary>
         public int AndroidMinimumKillVersion { get; set; }
+
         /// <summary>
         /// TODO
         /// </summary>

@@ -5,7 +5,6 @@
 //using System;
 //using System.Text;
 //using Microsoft.AspNetCore.Mvc;
-//using Newtonsoft.Json;
 //using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 //namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle

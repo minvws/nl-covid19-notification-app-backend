@@ -7,7 +7,6 @@
 //using System.Linq;
 //using System.Threading.Tasks;
 //using EFCore.BulkExtensions;
-//using Newtonsoft.Json;
 //using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 //using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 //using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;

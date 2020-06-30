@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json.Serialization;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
@@ -42,12 +41,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
         {
             ComponentsContainerHelper.RegisterDefaultServices(services);
 
-            services.AddControllers(options => 
-            { 
-                options.RespectBrowserAcceptHeader = true; 
-            }).AddNewtonsoftJson(options =>
-                options.SerializerSettings.ContractResolver =
-                    new CamelCasePropertyNamesContractResolver());
+            services.AddControllers(options =>
+            {
+                options.RespectBrowserAcceptHeader = true;
+            });
 
             services.AddSeriLog(Configuration);
             services.AddBasicAuthentication();

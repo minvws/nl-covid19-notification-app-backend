@@ -6,7 +6,6 @@
 //using System.Text;
 //using System.Web;
 //using Microsoft.AspNetCore.Mvc;
-//using Newtonsoft.Json;
 //using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 //using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 

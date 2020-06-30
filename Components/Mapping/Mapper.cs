@@ -49,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             => new AppConfigContent
             {
                 DecoyProbability = args.DecoyProbability,
-                UpdatePeriodMinutes = args.UpdatePeriodMinutes,
+                ManifestFrequency = args.ManifestFrequency,
                 Version = args.Version,
                 AndroidMinimumKillVersion = args.AndroidMinimumKillVersion,
                 iOSMinimumKillVersion = args.iOSMinimumKillVersion
