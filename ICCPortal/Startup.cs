@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -30,7 +31,7 @@ namespace IccPortal
         {
             services.AddRazorPages()
                 .AddRazorRuntimeCompilation();
-            
+
             // TODO: Make service for adding authentication + configuration model
             services.AddAuthentication(auth =>
                 {
@@ -53,15 +54,22 @@ namespace IccPortal
                     options.ClientSecret = Configuration.GetSection("IccPortalConfig:IdentityHub:client_secret").Value;
                 });
 
-
-            // services.AddMvc(options =>
-            // {
-            //     var policy = new AuthorizationPolicyBuilder()
-            //         .AddAuthenticationSchemes(TheIdentityHubDefaults.AuthenticationScheme)
-            //         .RequireAuthenticatedUser()
-            //         .Build();
-            //     options.Filters.Add(new AuthorizeFilter(policy));
-            // });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("TelefonistRole",
+                    builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Telefonist-Test"));
+                options.AddPolicy("BeheerRole",
+                    builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Beheer-Test"));
+            });
+            services.AddMvc(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(TheIdentityHubDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser()
+                    .RequireClaim(ClaimTypes.Role)
+                    .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+            });
 
             // services.AddSpaStaticFiles(configuration =>
             // {
