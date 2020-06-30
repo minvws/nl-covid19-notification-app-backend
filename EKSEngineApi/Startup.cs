@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -39,6 +40,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            ComponentsContainerHelper.RegisterDefaultServices(services);
+
             services.AddControllers(options => 
             { 
                 options.RespectBrowserAcceptHeader = true; 

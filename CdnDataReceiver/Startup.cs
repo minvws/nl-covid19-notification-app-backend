@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -29,6 +30,8 @@ namespace CdnDataReceiver
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            ComponentsContainerHelper.RegisterDefaultServices(services);
+
             services.AddBasicAuthentication();
             services.AddSeriLog(Configuration);
             services.AddControllers();

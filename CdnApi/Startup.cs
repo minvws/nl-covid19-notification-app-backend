@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content.NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
@@ -32,6 +33,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            ComponentsContainerHelper.RegisterDefaultServices(services);
+
             services.AddSeriLog(Configuration);
 
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });

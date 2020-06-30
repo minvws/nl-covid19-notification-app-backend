@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
@@ -62,6 +63,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                     // This configures the serializer for ASP.Net, StandardContentEntityFormatter does that for ad-hoc occurrences.
                     _.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 });
+
+            ComponentsContainerHelper.RegisterDefaultServices(services);
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
@@ -201,9 +204,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<HttpGetManifestBinaryContentCommand, HttpGetManifestBinaryContentCommand>();
             services.AddScoped<DynamicManifestReader, DynamicManifestReader>();
             services.AddScoped<HttpGetManifestSasCommand, HttpGetManifestSasCommand>();
-
-            services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
-
+            
             services.AddSwaggerGen(o =>
             {
                 o.SwaggerDoc("v1", new OpenApiInfo
