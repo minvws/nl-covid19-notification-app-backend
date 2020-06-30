@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
@@ -23,17 +23,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
         private readonly ExposureContentDbContext _ExposureContentDbContext;
         private readonly IccBackendContentDbContext _IccBackendContentDbContext;
         private readonly IConfigurationRoot _Configuration;
+        private readonly IJsonSerializer _JsonSerializer;
 
         public App(ILogger<App> logger,
             WorkflowDbContext workflowDbContext,
             ExposureContentDbContext exposureContentDbContext,
-            IccBackendContentDbContext iccBackedBackendContentDb, IConfigurationRoot configuration)
+            IccBackendContentDbContext iccBackedBackendContentDb,
+            IConfigurationRoot configuration,
+            IJsonSerializer jsonSerializer)
         {
             _Logger = logger;
             _WorkflowDbContext = workflowDbContext;
             _ExposureContentDbContext = exposureContentDbContext;
             _IccBackendContentDbContext = iccBackedBackendContentDb;
             _Configuration = configuration;
+            _JsonSerializer = jsonSerializer;
         }
 
         public async Task Run(string[] args)
@@ -49,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
                         var certificateProvider =
                             new HsmCertificateProvider(new CertificateProviderConfig(_Configuration,
                                 "ExposureKeySets:Signing:NL"));
-                        var db = new CreateContentDatabase(_ExposureContentDbContext, new StandardUtcDateTimeProvider(), new CmsSigner(certificateProvider));
+                        var db = new CreateContentDatabase(_ExposureContentDbContext, new StandardUtcDateTimeProvider(), new CmsSigner(certificateProvider), _JsonSerializer);
                         await db.DropExampleContent();
                         await db.AddExampleContent();
                         break;

@@ -4,16 +4,14 @@
 
 using System;
 using System.IO;
-using System.Security.Principal;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json.Serialization;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
@@ -56,19 +54,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddControllers(options => { options.RespectBrowserAcceptHeader = true; })
-                //Arming these options only makes them less tolerant of casing on Deserialization and DOES NOT for serialisation to camelCase.
-                //.AddNewtonsoftJson(options =>
-                //{
-                //    options.UseCamelCasing(false); //NB this IS setting camel case - just not for dictionary element names
-                //})
-                ;
+                .AddControllers(options =>
+                {
+                    options.RespectBrowserAcceptHeader = true;
+                })
+                .AddJsonOptions(_ =>
+                {
+                    // This configures the serializer for ASP.Net, StandardContentEntityFormatter does that for ad-hoc occurrences.
+                    _.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                });
 
-            //Same with this one.
-            //services.AddMvc()
-            //    .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
-
-            services.AddControllers();
+            ComponentsContainerHelper.RegisterDefaultServices(services);
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
@@ -109,6 +105,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
             services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();
+
 
 
             services.AddScoped(x =>
@@ -230,8 +227,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 });
                 o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.xml"));
                 o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml"));
-                
-                
+
+
                 o.AddSecurityDefinition("basic", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -266,7 +263,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 o.ConfigObject.ShowExtensions = true;
                 o.SwaggerEndpoint("/swagger/v1/swagger.json", "Dutch Exposure Notification API (inc. dev support)");
             });
-            if(!env.IsDevelopment()) app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
+            if (!env.IsDevelopment()) app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
             app.UseRouting();
 
 

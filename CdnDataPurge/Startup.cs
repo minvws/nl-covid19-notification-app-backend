@@ -6,6 +6,7 @@ using System;
 using CdnDataPurge;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -24,6 +25,8 @@ namespace CdnDataPurge
 
         public void ConfigureServices(IServiceCollection services)
         {
+            ComponentsContainerHelper.RegisterDefaultServices(services);
+
             services.AddScoped(x =>
             {
                 var builder = new SqlServerDbContextOptionsBuilder(Environment.GetEnvironmentVariable("ConnectionStrings:Content"));
