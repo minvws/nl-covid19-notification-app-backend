@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -39,18 +40,36 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             var manifestJson = Encoding.UTF8.GetString(bcr.Content);
             var manifest = _JsonSerializer.Deserialize<ManifestContent>(manifestJson);
 
+            if (manifest == null)
+                throw new InvalidOperationException("Unable to read manifest.");
+
+            bool writtenToDb;
             //Push all manifest items
-            var writtenToDb = await PushItGood(string.Format(_DataApiConfig.AppConfig, manifest.AppConfig), _ReceiverConfig.AppConfig);
-            _Logger.LogInformation($"Pushed AppConfig {manifest.AppConfig} - New item:{writtenToDb}.");
-            writtenToDb = await PushItGood(string.Format(_DataApiConfig.ResourceBundle, manifest.ResourceBundle), _ReceiverConfig.ResourceBundle);
-            _Logger.LogInformation($"Pushed ResourceBundle {manifest.ResourceBundle} - New item:{writtenToDb}.");
-            writtenToDb = await PushItGood(string.Format(_DataApiConfig.RiskCalculationParameters, manifest.RiskCalculationParameters), _ReceiverConfig.RiskCalculationParameters);
-            _Logger.LogInformation($"Pushed RiskCalculationParameters {manifest.RiskCalculationParameters} - New item:{writtenToDb}.");
+            if (!string.IsNullOrWhiteSpace(manifest.AppConfig))
+            {
+                writtenToDb = await PushItGood(string.Format(_DataApiConfig.AppConfig, manifest.AppConfig), _ReceiverConfig.AppConfig);
+                _Logger.LogInformation($"Pushed AppConfig {manifest.AppConfig} - New item:{writtenToDb}.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(manifest.ResourceBundle))
+            {
+                writtenToDb = await PushItGood(string.Format(_DataApiConfig.ResourceBundle, manifest.ResourceBundle), _ReceiverConfig.ResourceBundle);
+                _Logger.LogInformation($"Pushed ResourceBundle {manifest.ResourceBundle} - New item:{writtenToDb}.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(manifest.RiskCalculationParameters))
+            {
+                writtenToDb = await PushItGood(string.Format(_DataApiConfig.RiskCalculationParameters, manifest.RiskCalculationParameters), _ReceiverConfig.RiskCalculationParameters);
+                _Logger.LogInformation($"Pushed RiskCalculationParameters {manifest.RiskCalculationParameters} - New item:{writtenToDb}.");
+            }
 
             foreach (var i in manifest.ExposureKeySets)
             {
-                writtenToDb = await PushItGood(string.Format(_DataApiConfig.ExposureKeySet, i), _ReceiverConfig.ExposureKeySet);
-                _Logger.LogInformation($"Pushed ExposureKeySet {i} - New item:{writtenToDb}.");
+                if (!string.IsNullOrWhiteSpace(i))
+                {
+                    writtenToDb = await PushItGood(string.Format(_DataApiConfig.ExposureKeySet, i), _ReceiverConfig.ExposureKeySet);
+                    _Logger.LogInformation($"Pushed ExposureKeySet {i} - New item:{writtenToDb}.");
+                }
             }
 
             writtenToDb = await new BasicAuthPostBytesToUrl(_ReceiverConfig).Execute(_ReceiverConfig.Manifest, contentJsonBytes);
@@ -62,13 +81,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         private async Task<bool> PushItGood(string fromUri, string toUri)
         {
             var content = await new BasicAuthDataApiReader(_DataApiConfig).Read(fromUri);
-#if DEBUG
-            //Sanity check
             var contentBytes = Encoding.UTF8.GetString(content);
             var bcr = _JsonSerializer.Deserialize<BinaryContentResponse>(contentBytes);
-            //Sanity check
-#endif
-            return await new BasicAuthPostBytesToUrl(_ReceiverConfig).Execute(toUri, content);
+            var args = new ReceiveContentArgs
+            {
+                LastModified = bcr.LastModified,
+                SignedContent = bcr.SignedContent,
+                PublishingId = bcr.PublishingId
+            };
+            var argsString = _JsonSerializer.Serialize(args);
+            var argsBytes = Encoding.UTF8.GetBytes(argsString);
+            return await new BasicAuthPostBytesToUrl(_ReceiverConfig).Execute(toUri, argsBytes);
         }
     }
 }

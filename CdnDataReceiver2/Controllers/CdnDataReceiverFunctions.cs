@@ -15,7 +15,7 @@ namespace CdnDataReceiver.Controllers
     
     [ApiController]
     [Route("[controller]")]
-    //[Authorize] //TODO
+    [Authorize]
     public class CdnDataReceiverFunctions : ControllerBase
     {
         [HttpPost]

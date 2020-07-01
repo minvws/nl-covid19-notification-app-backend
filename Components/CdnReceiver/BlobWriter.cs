@@ -67,7 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
                 throw;
             }
         }
-
+        
         //TODO where is the GetBlockBlobReference(uri) api?
         private CloudBlockBlob GetBlob(string path, string name)
         {

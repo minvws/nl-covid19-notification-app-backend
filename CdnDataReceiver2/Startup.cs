@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 
 namespace CdnDataReceiver2
 {
@@ -28,6 +29,7 @@ namespace CdnDataReceiver2
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddBasicAuthentication();
             services.AddScoped<HttpPostContentReciever2, HttpPostContentReciever2>();
             services.AddScoped<BlobWriter, BlobWriter>();
             services.AddSingleton<IStorageAccountConfig>(new StorageAccountAppSettings(Configuration));
@@ -78,8 +80,8 @@ namespace CdnDataReceiver2
 
             app.UseRouting();
 
-            //app.UseAuthentication();
-            //app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

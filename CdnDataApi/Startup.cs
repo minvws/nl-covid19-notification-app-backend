@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,16 +25,20 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
 {
     public class Startup
     {
         private const string Title = "MSS CDN Data API";
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            CurrentEnvironment = env;
         }
+
+        public IHostingEnvironment CurrentEnvironment { get; set; }
 
         public IConfiguration Configuration { get; }
 
@@ -44,7 +49,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
 
             services.AddSeriLog(Configuration);
 
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(_ =>
+            {
+                // This configures the serializer for ASP.Net, StandardContentEntityFormatter does that for ad-hoc occurrences.
+                _.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
+
             services.AddBasicAuthentication();
 
             services.AddScoped<HttpGetManifestBinaryContentCommand, HttpGetManifestBinaryContentCommand>();
@@ -53,9 +63,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             services.AddSingleton<IUtcDateTimeProvider>(new StandardUtcDateTimeProvider());
             services.AddSingleton<IPublishingId>(new StandardPublishingIdFormatter());
             services.AddSingleton<IGaenContentConfig>(new GaenContentConfig(Configuration));
-            services.AddSingleton<IContentSigner, CmsSigner>();
-            services.AddSingleton<ICertificateProvider, HsmCertificateProvider>();
-            services.AddSingleton<IThumbprintConfig>(x => new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"));
+
+            if (CurrentEnvironment.IsProduction())
+            {
+                services.AddSingleton<IContentSigner, CmsSigner>();
+                services.AddSingleton<ICertificateProvider, HsmCertificateProvider>();
+                services.AddSingleton<IThumbprintConfig>(x => new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"));
+            }
+            else
+            {
+                services.AddSingleton<IContentSigner, FakeContentSigner>();
+            }
 
             services.AddScoped(x =>
             {
