@@ -24,7 +24,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             request.Headers.Add("Authorization",$"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_Config.Username}:{_Config.Password}"))}");
             request.Headers.Add("Accept",MediaTypeNames.Application.Json);
             var response = await client.SendAsync(request);
-
             return await response.Content.ReadAsByteArrayAsync();
         }
     }
