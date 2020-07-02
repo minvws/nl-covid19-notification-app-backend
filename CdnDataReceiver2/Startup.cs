@@ -29,7 +29,6 @@ namespace CdnDataReceiver2
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddBasicAuthentication();
             services.AddScoped<HttpPostContentReciever2, HttpPostContentReciever2>();
             services.AddScoped<BlobWriter, BlobWriter>();
             services.AddSingleton<IStorageAccountConfig>(new StorageAccountAppSettings(Configuration));
@@ -40,30 +39,6 @@ namespace CdnDataReceiver2
                 {
                     Title = "Azure CDN Data Receiver 2 API",
                     Version = "v1",
-                });
-
-                //o.AddSecurityDefinition("basic", new OpenApiSecurityScheme
-                //{
-                //    Name = "Authorization",
-                //    Type = SecuritySchemeType.Http,
-                //    Scheme = "basic",
-                //    In = ParameterLocation.Header,
-                //    Description = "Basic Authorization header using the Bearer scheme."
-                //});
-
-                o.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "basic"
-                            }
-                        },
-                        new string[] {}
-                    }
                 });
             });
         }
@@ -79,9 +54,6 @@ namespace CdnDataReceiver2
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
