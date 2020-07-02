@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
                 Content = new StringContent(Encoding.UTF8.GetString(args), Encoding.UTF8, MediaTypeNames.Application.Json)
             };
 
-            request.Headers.Add("Authorization",$"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_Config.Username}:{_Config.Password}"))}");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _Config.Password);
             var response = await client.SendAsync(request);
 
             return response.StatusCode switch

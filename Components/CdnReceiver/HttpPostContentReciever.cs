@@ -42,12 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
                 Release = content.LastModified,
             };
 
-            //var config = new StandardEfDbConfig(_Configuration, "Content");
-            //var builder = new SqlServerDbContextOptionsBuilder(config);
-            //var _DbContext = new ExposureContentDbContext(builder.Build());
-
             try
-
             {
                 await _DbContext.Set<T>().AddAsync(e);
                 _DbContext.SaveAndCommit();
@@ -66,5 +61,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
 
             return new OkResult();
         }
+
     }
 }
