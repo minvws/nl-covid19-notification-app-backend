@@ -39,8 +39,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
                 blob.Properties.CacheControl = "max-age=14400"; //TODO hard coded 4 hours.
                 blob.UploadFromStream(input, AccessCondition.GenerateIfNotModifiedSinceCondition(published));
             }
-            catch (Exception e)
+            catch (StorageException e)
             {
+                if (e.RequestInformation.HttpStatusCode == 409)
+                    return;
+
                 throw;
             }
         }
@@ -62,8 +65,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
                 blob.Properties.CacheControl = "immutable;max-age=31536000"; //TODO hard coded 1 year.
                 blob.UploadFromStream(input, AccessCondition.GenerateIfNotExistsCondition());
             }
-            catch (Exception e)
+            catch (StorageException e)
             {
+                if (e.RequestInformation.HttpStatusCode == 409)
+                    return;
+
                 throw;
             }
         }
