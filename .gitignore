@@ -185,7 +185,8 @@ publish/
 *.azurePubxml
 # Note: Comment the next line if you want to checkin your web deploy settings,
 # but database connection strings (with potential passwords) will be unencrypted
-*.pubxml
+# Enable committing of the publish profiles, we target the file system only.
+#*.pubxml
 *.publishproj
 
 # Microsoft Azure Web App publish settings. Comment the next line if you want to
@@ -368,3 +369,7 @@ MigrationBackup/
 /Components/D:/Repos/VWS/MSS-nl-covid19-notification-app-backend/Components/NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml
 *dotnet-tools.json
 /ICCPortal/appsettings.Development.personal.json
+
+# Publishing stuff
+/publish/
+publishlog.txt
