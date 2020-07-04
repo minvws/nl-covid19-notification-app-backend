@@ -8,14 +8,14 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TheIdentityHub.AspNetCore.Authentication;
 
-namespace IccPortal
+namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer
 {
     public class Startup
     {
@@ -29,9 +29,12 @@ namespace IccPortal
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages()
-                .AddRazorRuntimeCompilation();
-
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
             // TODO: Make service for adding authentication + configuration model
             services.AddAuthentication(auth =>
                 {
@@ -53,79 +56,56 @@ namespace IccPortal
                     options.ClientId = Configuration.GetSection("IccPortalConfig:IdentityHub:client_id").Value;
                     options.ClientSecret = Configuration.GetSection("IccPortalConfig:IdentityHub:client_secret").Value;
                 });
-
-            services.AddAuthorization(options =>
+            
+            // services.AddAuthorization(options =>
+            // {
+            //     // options.AddPolicy("TelefonistRole",
+            //     //     builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Telefonist-Test"));
+            //     // options.AddPolicy("BeheerRole",
+            //     //     builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Beheer-Test"));
+            // });
+            
+            services.AddMvc(config =>
             {
-                options.AddPolicy("TelefonistRole",
-                    builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Telefonist-Test"));
-                options.AddPolicy("BeheerRole",
-                    builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Beheer-Test"));
-            });
-            services.AddMvc(options =>
-            {
+                config.EnableEndpointRouting = false;
                 var policy = new AuthorizationPolicyBuilder()
                     .AddAuthenticationSchemes(TheIdentityHubDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser()
                     .RequireClaim(ClaimTypes.Role)
                     .Build();
-                options.Filters.Add(new AuthorizeFilter(policy));
+                config.Filters.Add(new AuthorizeFilter(policy));
             });
-
-            // services.AddSpaStaticFiles(configuration =>
-            // {
-            //     configuration.RootPath = "ClientApp/dist";
-            // });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(options =>
+                options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
 
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseHsts();
-            app.UseAuthorization();
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseRouting();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                // endpoints.MapControllers();
-                // endpoints.MapRazorPages();
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-            // app.UseMvc();
-
-            // app.UseSpa(spa =>
-            // {
-            //     // To learn more about options for serving an Angular SPA from ASP.NET Core,
-            //     // see https://go.microsoft.com/fwlink/?linkid=864501
-            //
-            //     spa.Options.SourcePath = "ClientApp";
-            //
-            //     if (env.IsDevelopment())
-            //     {
-            //         spa.UseAngularCliServer(npmScript: "start");
-            //     }
-            // });
         }
     }
 }

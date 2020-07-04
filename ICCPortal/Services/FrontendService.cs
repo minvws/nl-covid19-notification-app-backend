@@ -6,6 +6,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services
 {
     public class FrontendService
     {
-        
+        public string GetFrontendLoginUrl(string validateStartC)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

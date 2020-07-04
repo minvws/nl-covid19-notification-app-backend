@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace IccPortal
+namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer
 {
     public class Program
     {

@@ -2,21 +2,62 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
 
-namespace IccPortal.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
 {
+    [Authorize]
     public class AuthController : Controller
     {
-        // GET
-        [Authorize]
-        public IActionResult Index()
+        private FrontendService _FrontendService;
+        public AuthController(FrontendService frontendService)
         {
-            // TODO: Check Role Claims and redirect to correct page. 
-            
-            
-            return new JsonResult(User.Claims);
+            _FrontendService = frontendService;
+        }
+
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete(".AspNetCore.Cookies");
+            return Redirect(_FrontendService.GetFrontendLoginUrl("/"));
+            // return Redirect("https://login.ggdghor.nl/ggdghornl/Authenticate/SignOut?replyTo=" + getFrontendLoginUrl());
+        }
+
+
+        public IActionResult Redirect()
+        {
+            // temporary claim payload redirect solution for demo purposes
+            return Redirect(_FrontendService.GetFrontendLoginUrl("/validate/start?c=" +
+                                                                Convert.ToBase64String(
+                                                                    Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(GetClaims())))));
+        }
+
+        private static readonly List<string> ClaimTypeBlackList = new List<string>()
+        {
+            "http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken",
+            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+        };
+
+
+        private Dictionary<string, string> GetClaims()
+        {
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            User.Claims.Where(c => !ClaimTypeBlackList.Contains(c.Type)).ToList()
+                .ForEach((c) => { result.Add(c.Type, c.Value); });
+            return result;
+        }
+
+        public IActionResult Introspection()
+        {
+            return new JsonResult(GetClaims());
         }
     }
 }
