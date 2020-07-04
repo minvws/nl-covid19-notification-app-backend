@@ -18,6 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
     public class AuthController : Controller
     {
         private FrontendService _FrontendService;
+
         public AuthController(FrontendService frontendService)
         {
             _FrontendService = frontendService;
@@ -31,14 +32,21 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
         }
 
 
+
         public IActionResult Redirect()
         {
             // temporary claim payload redirect solution for demo purposes
             return Redirect(_FrontendService.GetFrontendLoginUrl("/validate/start?c=" +
-                                                                Convert.ToBase64String(
-                                                                    Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(GetClaims())))));
+                                                Convert.ToBase64String(
+                                                    Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(GetClaims())))));
         }
-
+        private Dictionary<string, string> GetClaims()
+        {
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            User.Claims.Where(c => !ClaimTypeBlackList.Contains(c.Type)).ToList()
+                .ForEach((c) => { result.Add(c.Type, c.Value); });
+            return result;
+        }
         private static readonly List<string> ClaimTypeBlackList = new List<string>()
         {
             "http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken",
@@ -47,13 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
         };
 
 
-        private Dictionary<string, string> GetClaims()
-        {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            User.Claims.Where(c => !ClaimTypeBlackList.Contains(c.Type)).ToList()
-                .ForEach((c) => { result.Add(c.Type, c.Value); });
-            return result;
-        }
+
 
         public IActionResult Introspection()
         {

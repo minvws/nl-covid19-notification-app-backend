@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
 using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer
@@ -64,7 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer
             //     // options.AddPolicy("BeheerRole",
             //     //     builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Beheer-Test"));
             // });
-            
+            services.AddScoped<FrontendService, FrontendService>();
             services.AddMvc(config =>
             {
                 config.EnableEndpointRouting = false;
