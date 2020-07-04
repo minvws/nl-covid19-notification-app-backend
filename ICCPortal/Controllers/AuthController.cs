@@ -18,6 +18,12 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
     public class AuthController : Controller
     {
         private FrontendService _FrontendService;
+        private static readonly List<string> ClaimTypeBlackList = new List<string>()
+        {
+            "http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken",
+            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+        };
 
         public AuthController(FrontendService frontendService)
         {
@@ -32,14 +38,15 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
         }
 
 
-
         public IActionResult Redirect()
         {
             // temporary claim payload redirect solution for demo purposes
             return Redirect(_FrontendService.GetFrontendLoginUrl("/validate/start?c=" +
-                                                Convert.ToBase64String(
-                                                    Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(GetClaims())))));
+                                                                 Convert.ToBase64String(
+                                                                     Encoding.UTF8.GetBytes(
+                                                                         JsonConvert.SerializeObject(GetClaims())))));
         }
+        
         private Dictionary<string, string> GetClaims()
         {
             Dictionary<string, string> result = new Dictionary<string, string>();
@@ -47,15 +54,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
                 .ForEach((c) => { result.Add(c.Type, c.Value); });
             return result;
         }
-        private static readonly List<string> ClaimTypeBlackList = new List<string>()
-        {
-            "http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken",
-            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
-            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-        };
-
-
-
 
         public IActionResult Introspection()
         {
