@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <AssemblyName>NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer</AssemblyName>
+        <RootNamespace>NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -29,6 +31,16 @@
         <_ContentIncludedByDefault Remove="Views\Shared\_Layout.cshtml" />
         <_ContentIncludedByDefault Remove="Views\Shared\_LoginPartial.cshtml" />
         <_ContentIncludedByDefault Remove="Views\Shared\_ValidationScriptsPartial.cshtml" />
+        <_ContentIncludedByDefault Remove="ClientApp\angular.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\e2e\tsconfig.e2e.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\package-lock.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\package.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\src\tsconfig.app.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\src\tsconfig.server.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\src\tsconfig.spec.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\src\tslint.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\tsconfig.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\tslint.json" />
     </ItemGroup>
 
     <ItemGroup>
