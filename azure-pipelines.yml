@@ -24,21 +24,17 @@ steps:
 # Execute the publish script
 - task: BatchScript@1
   inputs:
-    filename: publish-all.bat
+    filename: build.bat
     arguments: $(Build.BuildId)
 
-# Zip the published build artifacts
-- task: ArchiveFiles@2
+# Execute the publish script
+- task: BatchScript@1
   inputs:
-    rootFolderOrFile: '$(Build.SourcesDirectory)\publish'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/MSS-nl-covid19-notification-app-backend-$(Build.BuildId).zip'
-    replaceExistingArchive: true
+    filename: package.bat
 
 # Save the published files into the artifact repository
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    PathtoPublish: '$(Build.SourcesDirectory)\publish'
     ArtifactName: 'drop'
     publishLocation: 'Container'
