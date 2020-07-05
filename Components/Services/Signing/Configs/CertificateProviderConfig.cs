@@ -14,10 +14,4 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
         public string Thumbprint => GetValue("CertificateThumbprint");
         public bool RootTrusted => GetValueBool(nameof(RootTrusted), true);
     }
-
-    public interface IThumbprintConfig
-    {
-        string Thumbprint { get; }
-        bool RootTrusted { get; }
-    }
 }
