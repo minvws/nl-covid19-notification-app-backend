@@ -30,10 +30,10 @@ steps:
 # Zip the published build artifacts
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(Build.BinariesDirectory)'
+    rootFolderOrFile: '$(Build.BinariesDirectory)\publish'
     includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/MSS-nl-covid19-notification-app-backend-$(Build.BuildId).zip'
     replaceExistingArchive: true
 
 # Save the published files into the artifact repository
