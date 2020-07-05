@@ -30,8 +30,6 @@ steps:
 # Zip the published build artifacts
 - task: ArchiveFiles@2
   inputs:
-- task: ArchiveFiles@2
-  inputs:
     rootFolderOrFile: '$(Build.SourcesDirectory)\publish'
     includeRootFolder: false
     archiveType: 'zip'
