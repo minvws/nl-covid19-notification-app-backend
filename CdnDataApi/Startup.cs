@@ -64,7 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             services.AddSingleton<IPublishingId>(new StandardPublishingIdFormatter());
             services.AddSingleton<IGaenContentConfig>(new GaenContentConfig(Configuration));
 
-            if (CurrentEnvironment.IsProduction())
+            if (CurrentEnvironment.IsProduction() || CurrentEnvironment.IsStaging())
             {
                 services.AddSingleton<IContentSigner, CmsSigner>();
                 services.AddSingleton<ICertificateProvider, HsmCertificateProvider>();

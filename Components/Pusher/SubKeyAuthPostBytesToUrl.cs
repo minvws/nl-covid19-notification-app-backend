@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 {
-    public class BasicAuthPostBytesToUrl
+    public class SubKeyAuthPostBytesToUrl
     {
         private readonly IReceiverConfig _Config;
 
-        public BasicAuthPostBytesToUrl(IReceiverConfig receiverConfig)
+        public SubKeyAuthPostBytesToUrl(IReceiverConfig receiverConfig)
         {
             _Config = receiverConfig;
         }
@@ -32,13 +32,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             };
 
             request.Headers.Add("Ocp-Apim-Subscription-Key", _Config.Password);
+            
             var response = await client.SendAsync(request);
 
             return response.StatusCode switch
             {
                 HttpStatusCode.OK => true,
                 HttpStatusCode.Conflict => false,
-                _ => throw new InvalidOperationException("Status not handled.")
+                _ => throw new InvalidOperationException($"Status {response.StatusCode} not handled.")
             };
         }
     }
