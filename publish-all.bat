@@ -23,7 +23,7 @@ dotnet publish KeyReleasePortalApi\KeyReleaseApi.csproj --no-self-contained --ru
 dotnet publish WorkflowStateEngineApi\WorkflowStateEngineApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\BZ\WorkflowStateEngineApi --version-suffix %suffix%
 dotnet publish ContentPusherEngine\CdnPusherEngine.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\DMZ\ContentPusherEngine --version-suffix %suffix%
 dotnet publish CdnPusherEngine2\CdnPusherEngine2.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\DMZ\CdnPusherEngine2 --version-suffix %suffix%
-dotnet publish ICCPortal\IccPortal.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\DMZ\ICCPortal --version-suffix %suffix%
+dotnet publish ICCPortal\IccPortalAuthorizer.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\DMZ\IccPortalAuthorizer --version-suffix %suffix%
 dotnet publish DatabaseProvisioningTool\DatabaseProvisioningTool.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\DatabaseProvisioningTool --version-suffix %suffix%
 dotnet publish ScheduledTaskEngine\ScheduledTaskEngine.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\ScheduledTaskEngine --version-suffix %suffix%
 
