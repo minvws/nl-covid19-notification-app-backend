@@ -7,7 +7,6 @@
 //using System.Linq;
 //using System.Threading.Tasks;
 //using EFCore.BulkExtensions;
-//using Newtonsoft.Json;
 //using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 //using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 //using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
@@ -68,6 +67,7 @@
 //        {
 //            foreach (var i in _JobDbProvider.Set<TeksInputEntity>().ToArray()) //TODO page or otherwise close the data reader before writing in Build
 //            {
+//                // TODO use IJsonSerializer
 //                var keys = JsonConvert.DeserializeObject<TemporaryExposureKeyContent[]>(i.Content);
                     
 //                if (_KeyBatch.Count + keys.Length > _GaenContentConfig.ExposureKeySetCapacity)

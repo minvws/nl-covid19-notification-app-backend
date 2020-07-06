@@ -10,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 
 namespace CdnDataReceiver2
 {
@@ -26,6 +29,18 @@ namespace CdnDataReceiver2
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddScoped<HttpPostContentReciever2, HttpPostContentReciever2>();
+            services.AddScoped<BlobWriter, BlobWriter>();
+            services.AddSingleton<IStorageAccountConfig>(new StorageAccountAppSettings(Configuration));
+
+            services.AddSwaggerGen(o =>
+            {
+                o.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Azure CDN Data Receiver 2 API",
+                    Version = "v1",
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,12 +55,18 @@ namespace CdnDataReceiver2
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(o =>
+            {
+                o.ConfigObject.ShowExtensions = true;
+                o.SwaggerEndpoint("/swagger/v1/swagger.json", "Azure CDN Data Receiver 2 API");
+            });
+
         }
     }
 }
