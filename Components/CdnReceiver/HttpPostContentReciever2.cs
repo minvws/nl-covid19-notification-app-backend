@@ -54,7 +54,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
             if (!result.ItemAddedOrOverwritten) 
                 return new ConflictResult();
 
-            var path = destination.Name.Equals(EndPointNames.ManifestName) ? destination.Path : string.Concat( destination.Path, "/", content.PublishingId);
+            var path = destination.Name.Equals(EndPointNames.ManifestName) 
+                ? string.Concat(destination.Path, "/", EndPointNames.ManifestName)
+                : string.Concat(destination.Path, "/", content.PublishingId);
+
             var mutable = destination.Name.Equals(EndPointNames.ManifestName);
             await _QueueSender.Send(new StorageAccountSyncMessage { RelativePath = path, MutableContent = mutable });
             return new OkResult();
