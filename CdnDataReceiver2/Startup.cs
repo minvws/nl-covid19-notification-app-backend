@@ -20,7 +20,7 @@ namespace CdnDataReceiver2
         }
 
         private readonly IConfiguration _Configuration;
-        private IWebHostEnvironment _Environment;
+        private readonly IWebHostEnvironment _Environment;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -36,12 +36,13 @@ namespace CdnDataReceiver2
             services.AddSingleton<IContentPathProvider>(new ContentPathProvider(_Configuration));
 
             //Queues
-            if (_Environment.IsDevelopment())
+            if (_Environment.IsDevelopment() || _Environment.IsStaging()) //NB Staging == Acc
             {
                 services.AddScoped<IQueueSender<StorageAccountSyncMessage>, NotAQueueSender<StorageAccountSyncMessage>>();
             }
             else
             {
+                //Test and Prod
                 services.AddScoped<IQueueSender<StorageAccountSyncMessage>, QueueSendCommand<StorageAccountSyncMessage>>();
                 services.AddSingleton<IServiceBusConfig>(new ServiceBusConfig(_Configuration, "ServiceBus"));
             }
