@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             _Job = job;
         }
 
-        public async Task<IActionResult> Execute(bool useAllKeys = false, bool useGeneratedFormatter = true)
+        public async Task<IActionResult> Execute(bool useAllKeys = false)
         {
             await _Job.Execute(useAllKeys);
             return new OkResult();
