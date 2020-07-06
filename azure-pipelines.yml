@@ -1,0 +1,40 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+
+# Execute the publish script
+- task: BatchScript@1
+  inputs:
+    filename: build.bat
+    arguments: $(Build.BuildId)
+
+# Execute the publish script
+- task: BatchScript@1
+  inputs:
+    filename: package.bat
+
+# Save the published files into the artifact repository
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)\publish\packages'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
