@@ -13,26 +13,39 @@ namespace CdnDataReceiver2
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
-            Configuration = configuration;
+            _Configuration = configuration;
+            _Environment = environment;
         }
 
-        public IConfiguration Configuration { get; }
+        private readonly IConfiguration _Configuration;
+        private IWebHostEnvironment _Environment;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
             services.AddScoped<HttpPostContentReciever2>();
-            services.AddScoped<IBlobWriter, StandardBlobWriter>();
-            services.AddSingleton<IStorageAccountConfig>(new StorageAccountAppSettings(Configuration, "Local"));
-            services.AddScoped<ManifestBlobWriter>();
-            services.AddScoped<IQueueSender<StorageAccountSyncMessage>, QueueSendCommand<StorageAccountSyncMessage>>();
-            services.AddSingleton<IServiceBusConfig>(new ServiceBusConfig(Configuration, "ServiceBus"));
-            services.AddSingleton<IJsonSerializer, StandardJsonSerializer>();
-            services.AddSingleton<IContentPathProvider>(new ContentPathProvider(Configuration));
             
+            services.AddScoped<IBlobWriter, StandardBlobWriter>();
+            services.AddScoped<ManifestBlobWriter>();
+            services.AddSingleton<IStorageAccountConfig>(new StorageAccountAppSettings(_Configuration, "Local"));
+
+            services.AddSingleton<IJsonSerializer, StandardJsonSerializer>();
+            services.AddSingleton<IContentPathProvider>(new ContentPathProvider(_Configuration));
+
+            //Queues
+            if (_Environment.IsDevelopment())
+            {
+                services.AddScoped<IQueueSender<StorageAccountSyncMessage>, NotAQueueSender<StorageAccountSyncMessage>>();
+            }
+            else
+            {
+                services.AddScoped<IQueueSender<StorageAccountSyncMessage>, QueueSendCommand<StorageAccountSyncMessage>>();
+                services.AddSingleton<IServiceBusConfig>(new ServiceBusConfig(_Configuration, "ServiceBus"));
+            }
+
             services.AddSwaggerGen(o =>
             {
                 o.SwaggerDoc("v1", new OpenApiInfo

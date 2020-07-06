@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.IO;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -22,11 +23,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
         {
         }
 
-        protected override void Write(CloudBlockBlob blob, MemoryStream input, ReceiveContentArgs content)
+        protected override BlobWriterResponse Write(CloudBlockBlob blob, MemoryStream input, ReceiveContentArgs content)
         {
             blob.Properties.ContentType = MediaTypeNames.Application.Zip;
             blob.Properties.CacheControl = "max-age=14400"; //TODO hard coded 4 hours.
-            blob.UploadFromStream(input, AccessCondition.GenerateIfNotModifiedSinceCondition(content.LastModified));
+            blob.UploadFromStream(input); //NB want to accept ANY change
+            return new BlobWriterResponse {Uri = blob.Uri, ItemAddedOrOverwritten = true};
         }
     }
 
@@ -35,11 +37,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
         public StandardBlobWriter(IStorageAccountConfig storageAccountConfig) : base(storageAccountConfig)
         {
         }
-        protected override void Write(CloudBlockBlob blob, MemoryStream input, ReceiveContentArgs content)
+        protected override BlobWriterResponse Write(CloudBlockBlob blob, MemoryStream input, ReceiveContentArgs content)
         {
             blob.Properties.ContentType = MediaTypeNames.Application.Zip;
             blob.Properties.CacheControl = "immutable;max-age=31536000"; //TODO hard coded 1 year.
-            blob.UploadFromStream(input, AccessCondition.GenerateIfNotExistsCondition());
+            try
+            {
+                blob.UploadFromStream(input, AccessCondition.GenerateIfNotExistsCondition());
+                return new BlobWriterResponse { Uri = blob.Uri, ItemAddedOrOverwritten = true };
+            }
+            catch (StorageException e)
+            {
+                if (e.RequestInformation.HttpStatusCode == 409)
+                    return new BlobWriterResponse { Uri = blob.Uri, ItemAddedOrOverwritten = false };
+
+                throw;
+            }
+            
         }
     }
 

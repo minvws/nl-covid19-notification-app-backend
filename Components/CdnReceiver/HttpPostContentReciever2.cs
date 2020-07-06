@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver
 {
@@ -18,8 +19,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
     }
 
     public class StorageAccountSyncMessage
-    { 
+    {
+        /// <summary>
+        /// DestinationArgs.Path + Name.
+        /// </summary>
         public string RelativePath { get; set; }
+
+        /// <summary>
+        /// Manifest only = true
+        /// </summary>
         public bool MutableContent { get; set; }
     }
 
@@ -46,10 +54,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
             if (!result.ItemAddedOrOverwritten) 
                 return new ConflictResult();
 
-            var path = string.IsNullOrWhiteSpace(destination.Name) ? destination.Path : string.Concat( destination.Path, "/", content.PublishingId);
-            await _QueueSender.Send(new StorageAccountSyncMessage { RelativePath = path });
+            var path = destination.Name.Equals(EndPointNames.ManifestName) ? destination.Path : string.Concat( destination.Path, "/", content.PublishingId);
+            var mutable = destination.Name.Equals(EndPointNames.ManifestName);
+            await _QueueSender.Send(new StorageAccountSyncMessage { RelativePath = path, MutableContent = mutable });
             return new OkResult();
-
         }
     }
 }

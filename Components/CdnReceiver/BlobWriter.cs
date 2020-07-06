@@ -36,22 +36,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
         public async Task<BlobWriterResponse> Write(ReceiveContentArgs content, DestinationArgs destination)
         {
             var blob = GetBlob(destination);
-            try
-            {
-                using var buffer = new MemoryStream(content.SignedContent);
-                Write(blob, buffer, content);
-                return new BlobWriterResponse {ItemAddedOrOverwritten = true, Uri = blob.Uri};
-            }
-            catch (StorageException e)
-            {
-                if (e.RequestInformation.HttpStatusCode == 409)
-                    return new BlobWriterResponse();
-
-                throw;
-            }
+            using var buffer = new MemoryStream(content.SignedContent);
+            return Write(blob, buffer, content);
+            //return new BlobWriterResponse {ItemAddedOrOverwritten = true, Uri = blob.Uri};
         }
 
-        protected abstract void Write(CloudBlockBlob blob, MemoryStream buffer, ReceiveContentArgs content);
+        protected abstract BlobWriterResponse Write(CloudBlockBlob blob, MemoryStream buffer, ReceiveContentArgs content);
 
 
         //TODO where is the GetBlockBlobReference(uri) api?

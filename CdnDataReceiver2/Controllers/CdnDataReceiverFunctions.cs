@@ -27,10 +27,10 @@ namespace CdnDataReceiver.Controllers
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.Manifest)]
-        public async Task<IActionResult> HttpPostManifest([FromBody] ReceiveContentArgs args, [FromServices]ManifestBlobWriter blobWriter, [FromServices]QueueSendCommand<StorageAccountSyncMessage> qSender)
+        public async Task<IActionResult> HttpPostManifest([FromBody] ReceiveContentArgs args, [FromServices]ManifestBlobWriter blobWriter, [FromServices]IQueueSender<StorageAccountSyncMessage> qSender)
         {
             var command = new HttpPostContentReciever2(blobWriter, qSender);
-            return await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.Manifest});
+            return await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.Manifest, Name = EndPointNames.ManifestName});
         }
 
         [HttpPost]
