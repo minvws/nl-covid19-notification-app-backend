@@ -72,9 +72,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer
                 var policy = new AuthorizationPolicyBuilder()
                     .AddAuthenticationSchemes(TheIdentityHubDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser()
-                    .RequireClaim(ClaimTypes.Role)
                     .Build();
                 config.Filters.Add(new AuthorizeFilter(policy));
+                    // .RequireClaim(ClaimTypes.Role)
             });
         }
 
