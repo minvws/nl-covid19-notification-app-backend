@@ -55,18 +55,17 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
             }
             if (isValid)
             {
-                // TODO: remove debugging Icc and payload from response
                 return new JsonResult(new
                 {
                     ok = true,
-                    status = 200,
-                    payload = redeemIccModel
+                    status = 200
                 });
             }
 
             return BadRequest(new
                 {ok = false, status = "400", message = "Invalid LabConfirmationId", payload = redeemIccModel});
         }
+        
 
     }
 }
