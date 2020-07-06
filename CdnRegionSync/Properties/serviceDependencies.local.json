@@ -1,8 +1,3 @@
 {
-  "dependencies": {
-    "storage1": {
-      "type": "storage.emulator",
-      "connectionId": "AzureWebJobsStorage"
-    }
-  }
+  "dependencies": {}
 }

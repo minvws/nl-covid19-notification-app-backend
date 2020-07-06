@@ -9,6 +9,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
         {
         }
 
-        public string ConnectionString => GetValue("ConnectionStrings:StorageAccountLocal");
+        public string ConnectionString => GetValue("ConnectionString");
     }
 }

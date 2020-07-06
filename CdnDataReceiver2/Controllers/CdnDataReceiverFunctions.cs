@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,29 +18,39 @@ namespace CdnDataReceiver.Controllers
     [Route("[controller]")]
     public class CdnDataReceiverFunctions : ControllerBase
     {
+        private readonly IContentPathProvider _ContentPathProvider;
+
+        public CdnDataReceiverFunctions(IContentPathProvider contentPathProvider)
+        {
+            _ContentPathProvider = contentPathProvider;
+        }
+
         [HttpPost]
         [Route(EndPointNames.CdnApi.Manifest)]
-        public async Task<IActionResult> HttpPostManifest([FromBody]ReceiveContentArgs args, [FromServices] HttpPostContentReciever2 command)
-            => await command.Execute(args, new DestinationArgs{ Path = "vws/v01", Name = "manifest"}); //TODO all paths as settings.
+        public async Task<IActionResult> HttpPostManifest([FromBody] ReceiveContentArgs args, [FromServices]ManifestBlobWriter blobWriter, [FromServices]IQueueSender<StorageAccountSyncMessage> qSender)
+        {
+            var command = new HttpPostContentReciever2(blobWriter, qSender);
+            return await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.Manifest, Name = EndPointNames.ManifestName});
+        }
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.AppConfig)]
         public async Task<IActionResult> HttpPostAppConfig([FromBody] ReceiveContentArgs args, [FromServices] HttpPostContentReciever2 command)
-            => await command.Execute(args, new DestinationArgs {Path = "vws/v01/appconfig", Name = args.PublishingId });
+            => await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.AppConfig, Name = args.PublishingId });
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.ResourceBundle)]
         public async Task<IActionResult> HttpPostResourceBundle([FromBody] ReceiveContentArgs args, [FromServices] HttpPostContentReciever2 command)
-            => await command.Execute(args, new DestinationArgs { Path = "vws/v01/resourcebundle", Name = args.PublishingId });
+            => await command.Execute(args, new DestinationArgs { Path = _ContentPathProvider.ResourceBundle, Name = args.PublishingId });
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.RiskCalculationParameters)]
         public async Task<IActionResult> HttpPostCalcConfig([FromBody] ReceiveContentArgs args, [FromServices] HttpPostContentReciever2 command)
-            => await command.Execute(args, new DestinationArgs { Path = "vws/v01/riskcalculationparameters", Name = args.PublishingId });
+            => await command.Execute(args, new DestinationArgs { Path = _ContentPathProvider.RiskCalculationParameters, Name = args.PublishingId });
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.ExposureKeySet)]
         public async Task<IActionResult> HttpPostEks([FromBody] ReceiveContentArgs args, [FromServices] HttpPostContentReciever2 command)
-            => await command.Execute(args, new DestinationArgs { Path = "vws/v01/exposurekeyset", Name = args.PublishingId });
+            => await command.Execute(args, new DestinationArgs { Path = _ContentPathProvider.ExposureKeySet, Name = args.PublishingId });
     }
 }

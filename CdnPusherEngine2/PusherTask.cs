@@ -29,19 +29,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 
         public async Task PushIt()
         {
-            _Logger.LogInformation("Running...");
+            _Logger.LogInformation("Running.");
 
             //Read manifest
-            var contentJsonBytes = await new BasicAuthDataApiReader(_DataApiConfig).Read(_DataApiConfig.Manifest);
-
-            //Unpack manifest
-            var contentBytes = Encoding.UTF8.GetString(contentJsonBytes);
-            var bcr = _JsonSerializer.Deserialize<BinaryContentResponse>(contentBytes);
-            var manifestJson = Encoding.UTF8.GetString(bcr.Content);
+            var bcr = await GetContent(_DataApiConfig.Manifest);
+            var manifestJson = Encoding.UTF8.GetString(bcr.Content); //NB this is why we retain the JSON version
             var manifest = _JsonSerializer.Deserialize<ManifestContent>(manifestJson);
 
             if (manifest == null)
                 throw new InvalidOperationException("Unable to read manifest.");
+
+            _Logger.LogInformation("Read Manifest.");
 
             bool writtenToDb;
             //Push all manifest items
@@ -72,7 +70,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
                 }
             }
 
-            writtenToDb = await new BasicAuthPostBytesToUrl(_ReceiverConfig).Execute(_ReceiverConfig.Manifest, contentJsonBytes);
+            writtenToDb = await new SubKeyAuthPostBytesToUrl(_ReceiverConfig).Execute(_ReceiverConfig.Manifest, MapSignedContent(bcr));
             _Logger.LogInformation($"Pushed manifest - New item:{writtenToDb}.");
 
             _Logger.LogInformation("Completed.");
@@ -80,18 +78,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 
         private async Task<bool> PushItGood(string fromUri, string toUri)
         {
+            var bcr = await GetContent(fromUri);
+            return await new SubKeyAuthPostBytesToUrl(_ReceiverConfig).Execute(toUri, MapSignedContent(bcr));
+        }
+
+        private async Task<BinaryContentResponse> GetContent(string fromUri)
+        {
             var content = await new BasicAuthDataApiReader(_DataApiConfig).Read(fromUri);
             var contentBytes = Encoding.UTF8.GetString(content);
-            var bcr = _JsonSerializer.Deserialize<BinaryContentResponse>(contentBytes);
+            return _JsonSerializer.Deserialize<BinaryContentResponse>(contentBytes);
+        }
+
+        private byte[] MapSignedContent(BinaryContentResponse bcr)
+        {
             var args = new ReceiveContentArgs
             {
                 LastModified = bcr.LastModified,
                 SignedContent = bcr.SignedContent,
-                PublishingId = bcr.PublishingId
+                PublishingId = bcr.PublishingId,
             };
             var argsString = _JsonSerializer.Serialize(args);
-            var argsBytes = Encoding.UTF8.GetBytes(argsString);
-            return await new BasicAuthPostBytesToUrl(_ReceiverConfig).Execute(toUri, argsBytes);
+            return Encoding.UTF8.GetBytes(argsString);
         }
     }
 }

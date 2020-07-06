@@ -28,3 +28,4 @@ dotnet publish DatabaseProvisioningTool\DatabaseProvisioningTool.csproj --no-sel
 dotnet publish ScheduledTaskEngine\ScheduledTaskEngine.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\ScheduledTaskEngine --version-suffix %suffix%
 
 @echo on
+
