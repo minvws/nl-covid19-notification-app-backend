@@ -40,6 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         {
             return await command.Execute(args);
         }
+        
         [HttpPost, Authorize(AuthenticationSchemes = "icc_jwt")]
         [Route(EndPointNames.CaregiversPortalApi.LabUploaded)]
         public async Task<IActionResult> PostKeysAreUploaded([FromBody] AuthorisationArgs args, [FromServices] HttpPostCheckKeysUploaded command)

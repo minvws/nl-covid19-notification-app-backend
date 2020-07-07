@@ -16,6 +16,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers;
@@ -50,30 +51,37 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
                 result.BeginTransaction();
                 return result;
             });
-            services.AddScoped<JwtService, JwtService>();
-            services.AddAuthentication("icc_jwt")
-                .AddScheme<AuthenticationSchemeOptions, JwtAuthorizationHandler>("icc_jwt", null);
-            
+
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<IGeanTekListValidationConfig, StandardGeanCommonWorkflowConfig>();
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
 
             services.AddScoped<HttpPostReleaseTeksCommand, HttpPostReleaseTeksCommand>();
-            
+
             services.AddScoped<IReleaseTeksValidator, ReleaseTeksValidator>();
             services.AddScoped<ISignatureValidator, SignatureValidator>();
-            
+
             services.AddScoped<HttpPostRegisterSecret, HttpPostRegisterSecret>();
             services.AddScoped<ISecretWriter, SecretWriter>();
             services.AddScoped<ISecretConfig, StandardSecretConfig>();
             services.AddScoped<ITekWriter, TekWriter>();
             services.AddScoped<RandomNumberGenerator, RandomNumberGenerator>();
 
-            services.AddSwaggerGen(o =>
-            {
-                o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" });
-            });
+            // CaregiverPortal scopes
+
+            services.AddScoped<JwtService, JwtService>();
+            services.AddAuthentication("icc_jwt")
+                .AddScheme<AuthenticationSchemeOptions, JwtAuthorizationHandler>("icc_jwt", null);
+
+            services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
+            services.AddScoped<HttpPostCheckKeysUploaded, HttpPostCheckKeysUploaded>();
+            services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();
+            services.AddScoped<KeysUploadedChecker, KeysUploadedChecker>();
+            
+            
+            
+            services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,20 +89,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
         {
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
-            app.UseSwaggerUI(o =>
-            {
-                o.SwaggerEndpoint("/swagger/v1/swagger.json", Title);
-            });
+            app.UseSwaggerUI(o => { o.SwaggerEndpoint("/swagger/v1/swagger.json", Title); });
 
-            if (!env.IsDevelopment()) 
+            if (!env.IsDevelopment())
                 app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
-            
+
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

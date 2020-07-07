@@ -24,12 +24,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             var e = _DbContextProvider
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Keys)
-                .SingleOrDefault(x => x.LabConfirmationId == args.LabConfirmationId);
-            return e != null && e.Keys.Count > 0 ? Task.CompletedTask : throw new KeysUploadedNotValidException();
+                .SingleOrDefault(x => x.LabConfirmationId == args.LabConfirmationId && x.DateOfSymptomsOnset == args.DateOfSymptomsOnset);
+            return e != null && e.Keys.Count > 0 ? Task.CompletedTask : throw new KeysUploadedNotValidException(e.Keys.Count.ToString());
         }
     }
 
     public class KeysUploadedNotValidException : Exception
     {
+        public KeysUploadedNotValidException():base(){}
+        public KeysUploadedNotValidException(string message):base(message){}
     }
 }
