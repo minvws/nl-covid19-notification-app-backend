@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseUrls("http://*:5000", "https://*:5001");
+                    webBuilder.UseUrls("http://*:5004", "https://*:5005");
                     webBuilder.UseStartup<Startup>();
                 });
     }

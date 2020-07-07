@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
             var wfs1 = new KeyReleaseWorkflowState
             {
-                LabConfirmationId = "123456",
+                LabConfirmationId = "2L2587",
                 BucketId = "2",
                 ConfirmationKey = "3",
                 Created = new DateTime(2020, 5, 1),
