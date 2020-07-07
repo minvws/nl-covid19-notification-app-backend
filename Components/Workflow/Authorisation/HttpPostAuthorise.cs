@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -22,10 +23,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
         public async Task<IActionResult> Execute(AuthorisationArgs args)
         {
-            await _AuthorisationWriter.Execute(args);
-            _DbContextProvider.SaveAndCommit();
-
-            return new OkObjectResult(new AuthorisationResponse { Valid = true });
+            try
+            {
+                await _AuthorisationWriter.Execute(args);
+                _DbContextProvider.SaveAndCommit();
+                return new OkObjectResult(new AuthorisationResponse {Valid = true});
+            }
+            catch (Exception e)
+            {
+                return new OkObjectResult(new AuthorisationResponse {Valid = false});
+            }
         }
     }
 }
