@@ -1,0 +1,126 @@
+parameters:
+- name: environment
+  type: string
+- name: azureSubscriptionPrimary
+  type: string
+- name: webAppNamePrimary
+  type: string
+- name: azureSubscriptionSecundary
+  type: string
+- name: webAppNameSecundary
+  type: string
+- name: projectName
+  type: string
+- name: webEnvironment
+  type: string
+  default: Production
+  values:
+  - Development
+  - Staging
+  - Production
+
+variables:
+  vmImageName: 'windows-latest'
+
+stages:
+- stage: Build
+  displayName: Build stage
+
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage:  $(vmImageName)
+
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore'
+      inputs:
+        command: 'restore'
+        projects: '${{parameters.projectName}}'
+
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        command: 'build'
+        projects: '${{parameters.projectName}}'
+        arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        replaceExistingArchive: true
+
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      artifact: drop
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  condition: succeeded()
+
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: '${{parameters.environment}}'
+    pool:
+      vmImage: $(vmImageName)
+
+    strategy:
+      runOnce:
+        deploy:
+
+          steps:
+          - task: AzureRmWebAppDeployment@4
+            displayName: 'Deploy to primary region'
+            inputs:
+              ConnectionType: 'AzureRM'
+              appType: 'webApp'
+              WebAppName: '${{parameters.webAppNamePrimary}}'
+              ConnectedServiceName: '${{parameters.azureSubscriptionPrimary}}'
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+
+          - task: AzureAppServiceSettings@1
+            displayName: Azure App Service Settings to primary region
+            inputs:
+              azureSubscription: '${{parameters.azureSubscriptionPrimary}}'
+              appName: '${{parameters.webAppNamePrimary}}'
+              # To deploy the settings on a slot, provide slot name as below. By default, the settings would be applied to the actual Web App (Production slot)
+              # slotName: staging
+              appSettings: |
+                [
+                  {
+                    "name": "ASPNETCORE_ENVIRONMENT",
+                    "value": "'${{parameters.webEnvironment}}'",
+                    "slotSetting": false
+                  }
+                ]
+   
+          - task: AzureRmWebAppDeployment@4
+            displayName: 'Deploy to secondary region'
+            inputs:
+              ConnectionType: 'AzureRM'
+              appType: 'webApp'
+              WebAppName: '${{parameters.webAppNameSecundary}}'
+              ConnectedServiceName: '${{parameters.azureSubscriptionSecundary}}'
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+
+          - task: AzureAppServiceSettings@1
+            displayName: Azure App Service Settings to secondary region
+            inputs:
+              azureSubscription: '${{parameters.azureSubscriptionSecundary}}'
+              appName: '${{parameters.webAppNameSecundary}}'
+              # To deploy the settings on a slot, provide slot name as below. By default, the settings would be applied to the actual Web App (Production slot)
+              # slotName: staging
+              appSettings: |
+                [
+                  {
+                    "name": "ASPNETCORE_ENVIRONMENT",
+                    "value": "'${{parameters.webEnvironment}}'",
+                    "slotSetting": false
+                  }
+                ]

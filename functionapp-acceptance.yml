@@ -1,0 +1,23 @@
+#trigger:
+#- master
+
+extends:
+  template: functionapp-build-deploy.yml
+  parameters:
+    environment: 'covid19-azure-acceptance'
+    # ============================================
+    # parameters hieronder zijn alleen voor testen
+    azureSubscriptionPrimary: 'mss-vws-acc-cicd'
+    functionAppNamePrimary: 'vwssync'
+    azureSubscriptionSecundary: 'mss-vws-acc-cicd'
+    functionAppNameSecundary: 'vwssync'
+    webEnvironment: 'Staging'
+    # ============================================
+    # parameters hieronder zijn voor acceptatie
+    #azureSubscriptionPrimary: 'mss-vws-primary-acc-cicd'
+    #functionAppNamePrimary: 'vwspa-function-app'
+    #azureSubscriptionSecundary: 'mss-vws-secondary-acc-cicd'
+    #functionAppNameSecundary: 'vwssa-function-app'
+    #webEnvironment: 'Staging'
+    # ============================================
+    projectName: '$(System.DefaultWorkingDirectory)/CdnRegionSync/CdnRegionSync.csproj'
