@@ -36,21 +36,13 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
         public IActionResult Logout()
         {
             Response.Cookies.Delete(".AspNetCore.Cookies");
-
             return Redirect(_FrontendService.GetFrontendLoginUrl("/"));
-            // return Redirect("https://login.ggdghor.nl/ggdghornl/Authenticate/SignOut?replyTo=" + getFrontendLoginUrl());
         }
-
-
         public IActionResult Redirect()
         {
             var jwtToken = _JwtService.GenerateJwt(User);
-
             // temporary claim payload redirect solution for demo purposes
-            return Redirect(_FrontendService.GetFrontendLoginUrl("/validate/start?c=" + jwtToken));
-            // Convert.ToBase64String(
-            // Encoding.UTF8.GetBytes(
-            // JsonConvert.SerializeObject(GetClaims())))));
+            return Redirect(_FrontendService.RedirectSuccesfullLogin(jwtToken));
         }
 
         private Dictionary<string, string> GetClaims()

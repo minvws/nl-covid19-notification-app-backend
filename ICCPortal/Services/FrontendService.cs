@@ -21,5 +21,10 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services
             var frontendRedirectUrl = "http://" + frontendHost + endpoint;
             return frontendRedirectUrl;
         }
+
+        public string RedirectSuccesfullLogin(string jwtToken)
+        {
+            return GetFrontendLoginUrl("/auth?token=" + jwtToken);
+        }
     }
 }

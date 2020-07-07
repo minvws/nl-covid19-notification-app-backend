@@ -2,24 +2,23 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
 {
-    [Route("api")]
-    public class IccBackendController : Controller
+    [Authorize(AuthenticationSchemes = "jwt")]
+    public class UserController : Controller
     {
-        [HttpGet, Authorize(AuthenticationSchemes = "jwt")]
-        public IActionResult Index()
+        [HttpGet, Route("user/@me")]
+        public IActionResult Me()
         {
-            return new JsonResult(new {ok = false, message = "not implemented yet", user = User.Identity.Name});
+            return new JsonResult(new 
+            {
+                user=User.Identity.Name
+            });
         }
-        
-        
-        // TODO: Write Proxy routes
-        
-        
         
     }
 }

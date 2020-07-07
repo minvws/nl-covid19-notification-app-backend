@@ -56,6 +56,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers
 
             if (!isValidJwt) return AuthenticateResult.Fail("Invalid Jwt");
 
+            // TODO: Add other payload items aswell to current claims
+            
             var jwtPayload = _JwtService.DecodeJwt(jwtToken);
             var claims = new[]
             {
