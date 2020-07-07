@@ -25,6 +25,12 @@ namespace CdnDataReceiver2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //TODO ensure this is removed once BD finally get the certs.
+            var certificateHack = (bool)_Configuration.GetValue(typeof(bool), "CertificateHack", false);
+            if (certificateHack)
+                ServicePointManager.ServerCertificateValidationCallback += (_, __, ___, ____) =>
+                    true;
+
             services.AddControllers();
             services.AddScoped<HttpPostContentReciever2>();
             
@@ -36,7 +42,8 @@ namespace CdnDataReceiver2
             services.AddSingleton<IContentPathProvider>(new ContentPathProvider(_Configuration));
 
             //Queues
-            if (_Environment.IsDevelopment() || _Environment.IsStaging()) //NB Staging == Acc
+            var regionSync = (bool)_Configuration.GetValue(typeof(bool), "RegionSync", true);
+            if ((_Environment.IsDevelopment() || _Environment.IsStaging()) && !regionSync) //NB Staging == Acc
             {
                 services.AddScoped<IQueueSender<StorageAccountSyncMessage>, NotAQueueSender<StorageAccountSyncMessage>>();
             }
@@ -60,11 +67,6 @@ namespace CdnDataReceiver2
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-
-            //TODO ensure this is removed once BD finally get the certs.
-            ServicePointManager.ServerCertificateValidationCallback += (_, __, ___, ____) => 
-                true;
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
