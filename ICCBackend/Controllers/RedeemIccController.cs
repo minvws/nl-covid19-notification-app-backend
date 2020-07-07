@@ -36,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         }
 
         [HttpPost, Authorize]
-        public async Task<ActionResult<object>> PostRedeemIcc(RedeemIccModel redeemIccModel)
+        public async Task<ActionResult<object>> PostRedeemIcc(ConfirmLabConfirmationIdModel confirmLabConfirmationIdModel)
         {
             // Make Icc Used, so it can only be used once 
             var infectionConfirmationCodeEntity = await _IccService.RedeemIcc(User.Identity.Name);
@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
             bool isValid = false;
             try
             {
-                isValid = await _AppBackendService.LabConfirmationIdIsValid(redeemIccModel);
+                isValid = await _AppBackendService.LabConfirmationIdIsValid(confirmLabConfirmationIdModel);
             }
             catch (Exception e)
             {
@@ -63,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
             }
 
             return BadRequest(new
-                {ok = false, status = "400", message = "Invalid LabConfirmationId", payload = redeemIccModel});
+                {ok = false, status = "400", message = "Invalid LabConfirmationId", payload = confirmLabConfirmationIdModel});
         }
         
 

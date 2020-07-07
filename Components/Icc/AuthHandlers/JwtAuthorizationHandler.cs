@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NL.Rijksoverheid.ExposureNotification.IccBackend;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers

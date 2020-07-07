@@ -17,10 +17,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             
         }
 
-        public AuthorisationArgs(RedeemIccModel redeemIccModel)
+        public AuthorisationArgs(ConfirmLabConfirmationIdModel confirmLabConfirmationIdModel)
         {
-            LabConfirmationId = redeemIccModel.LabConfirmationId.Replace("-",string.Empty);
-            DateOfSymptomsOnset = redeemIccModel.DateOfSymptomsOnset;
+            LabConfirmationId = confirmLabConfirmationIdModel.LabConfirmationId.Replace("-",string.Empty);
+            DateOfSymptomsOnset = confirmLabConfirmationIdModel.DateOfSymptomsOnset;
         }
         
         /// <summary>
