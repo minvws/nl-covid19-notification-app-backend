@@ -5,7 +5,6 @@
 //using System;
 //using System.Text;
 //using Microsoft.AspNetCore.Mvc;
-//using Newtonsoft.Json;
 //using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 //namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle
@@ -34,6 +33,7 @@
 //            if (e == null)
 //                return new NotFoundResult();
 
+//            // TODO use IJsonSerializer
 //            var content = JsonConvert.DeserializeObject<ResourceBundleEntityContent>(Encoding.UTF8.GetString(e.Content));
 
 //            var result = new ResourceBundleResponse

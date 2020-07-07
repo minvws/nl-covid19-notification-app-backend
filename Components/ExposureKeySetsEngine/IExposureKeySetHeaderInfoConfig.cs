@@ -6,7 +6,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 {
     public interface IExposureKeySetHeaderInfoConfig
     {
-        string AppBundleId { get; }
+        // string AppBundleId { get; }
         string VerificationKeyId { get; }
         string VerificationKeyVersion { get; }
     }

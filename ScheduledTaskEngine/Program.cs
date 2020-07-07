@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using Serilog;
 
@@ -57,6 +58,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ScheduledTaskEngine
 
         public static void ConfigureServices(IServiceCollection services)
         {
+            ComponentsContainerHelper.RegisterDefaultServices(services);
+
             services.AddSeriLog(Configuration);
             services.AddSingleton(Configuration);
             services.AddTransient<App>();

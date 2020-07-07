@@ -2,13 +2,10 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -25,21 +22,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         private readonly ExposureContentDbContext _DbContextProvider;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly StandardContentEntityFormatter _Formatter;
+        private readonly IJsonSerializer _JsonSerializer;
 
-        public CreateContentDatabase(IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider, IContentSigner signer)
+        public CreateContentDatabase(IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider, IContentSigner signer, IJsonSerializer jsonSerializer)
         {
             var config = new StandardEfDbConfig(configuration, "Content");
             var builder = new SqlServerDbContextOptionsBuilder(config);
             _DbContextProvider = new ExposureContentDbContext(builder.Build());
             _DateTimeProvider = dateTimeProvider;
             _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter());
+            _JsonSerializer = jsonSerializer;
         }
 
-        public CreateContentDatabase(ExposureContentDbContext DbContextProvider, IUtcDateTimeProvider dateTimeProvider, IContentSigner signer)
+        public CreateContentDatabase(ExposureContentDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IContentSigner signer, IJsonSerializer jsonSerializer)
         {
-            _DbContextProvider = DbContextProvider;
+            _DbContextProvider = dbContextProvider;
             _DateTimeProvider = dateTimeProvider;
             _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter());
+            _JsonSerializer = jsonSerializer;
         }
 
 
@@ -47,6 +47,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         {
             await _DbContextProvider.Database.EnsureDeletedAsync();
             await _DbContextProvider.Database.EnsureCreatedAsync();
+        }
+
+        public async Task DropExampleContent()
+        {
+            await using var tx = await _DbContextProvider.Database.BeginTransactionAsync();
+            foreach (var e in _DbContextProvider.AppConfigContent)
+                _DbContextProvider.AppConfigContent.Remove(e);
+
+            foreach (var e in _DbContextProvider.ResourceBundleContent)
+                _DbContextProvider.ResourceBundleContent.Remove(e);
+
+            foreach (var e in _DbContextProvider.RiskCalculationContent)
+                _DbContextProvider.RiskCalculationContent.Remove(e);
+            _DbContextProvider.SaveAndCommit();
         }
 
         public async Task AddExampleContent()
@@ -68,16 +82,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                         {
                             "nl-NL", new Dictionary<string, string>
                             {
-                                {"InfectedMessage", "U bent mogelijk geinvecteerd"}
+                                {"InfectedMessage", "U bent mogelijk geïnfecteerd"}
                             }
                         }
                     }
                 }
             );
 
-
-
-            var rbd = ReadFromResource<ResourceBundleArgs>("RiskCalcDefaults.json");
+            var rbd = ReadFromResource<ResourceBundleArgs>("ResourceBundleDefaults.json");
             rbd.Release = _DateTimeProvider.Now();
             await Write(rbd);
 
@@ -92,13 +104,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             _DbContextProvider.SaveAndCommit();
         }
 
-        private static T ReadFromResource<T>(string resourceName)
+        private T ReadFromResource<T>(string resourceName)
         {
             var a = System.Reflection.Assembly.GetExecutingAssembly();
             var manifestResourceStream = a.GetManifestResourceStream($"NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.{resourceName}");
             using var s = new StreamReader(manifestResourceStream);
             var jsonString = s.ReadToEnd();
-            var args = JsonConvert.DeserializeObject<T>(jsonString);
+            var args = _JsonSerializer.Deserialize<T>(jsonString);
             return args;
         }
 

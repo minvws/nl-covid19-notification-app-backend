@@ -12,10 +12,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
         public CertificateProviderConfig(IConfiguration config, string? prefix = null) : base(config, prefix) { }
 
         public string Thumbprint => GetValue("CertificateThumbprint");
-    }
-
-    public interface IThumbprintConfig
-    {
-        string Thumbprint { get; }
+        public bool RootTrusted => GetValueBool(nameof(RootTrusted), true);
     }
 }

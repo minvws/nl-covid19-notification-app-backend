@@ -6,9 +6,9 @@ using System;
 using System.Linq;
 using System.Text;
 using EFCore.BulkExtensions;
-using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
@@ -22,14 +22,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         private readonly ManifestBuilder _ManifestBuilder;
         private readonly IGaenContentConfig _GaenContentConfig;
         private readonly IPublishingId _PublishingId;
+        private readonly IJsonSerializer _JsonSerializer;
 
-        public GetLatestManifestCommandWithDbWrite(IUtcDateTimeProvider dateTimeProvider, ExposureContentDbContext dbContext, ManifestBuilder manifestBuilder, IGaenContentConfig gaenContentConfig, IPublishingId publishingId)
+        public GetLatestManifestCommandWithDbWrite(IUtcDateTimeProvider dateTimeProvider, ExposureContentDbContext dbContext, ManifestBuilder manifestBuilder, IGaenContentConfig gaenContentConfig, IPublishingId publishingId, IJsonSerializer jsonSerializer)
         {
             _DateTimeProvider = dateTimeProvider;
             _DbContext = dbContext;
             _ManifestBuilder = manifestBuilder;
             _GaenContentConfig = gaenContentConfig;
             _PublishingId = publishingId;
+            _JsonSerializer = jsonSerializer;
         }
 
         public ManifestEntity Execute()
@@ -49,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
                 return e;
 
             _DbContext.BulkDelete(_DbContext.Set<ManifestEntity>().ToList()); //TODO execute sql.
-            var content = JsonConvert.SerializeObject(_ManifestBuilder.Execute());
+            var content =  _JsonSerializer.Serialize(_ManifestBuilder.Execute());
             var bytes = Encoding.UTF8.GetBytes(content);
 
             e = new ManifestEntity

@@ -2,13 +2,10 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using System.Linq;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using JsonConverter = System.Text.Json.Serialization.JsonConverter;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
@@ -25,6 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         {
             var e = _DbContextProvider
                 .KeyReleaseWorkflowStates
+                .Include(x => x.Keys)
                 .SingleOrDefault(x => x.LabConfirmationId == args.LabConfirmationId); 
             
             if (e == null)
@@ -32,6 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
             e.AuthorisedByCaregiver = true;
             e.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
+
             if (e.Keys != null && e.Keys.Any())
             {
                 e.Authorised = true;

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers
@@ -18,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
     {
         [HttpGet]
         [Route(EndPointNames.CdnApi.ExposureKeySet + "/{id}")]
-        [ProducesResponseType(typeof(ExposureKeySetContent), 200)]
+        [ProducesResponseType(typeof(TemporaryExposureKeyExport), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(404)]
         [ProducesResponseType(400)]

@@ -78,6 +78,24 @@ The ICC Portal consists of a .Net Core backend found under `ICCBackend` and an A
 1. The server API url can be configured in `ICCPortal\ClientApp\src\environments\environment.ts`
 1. Done :)
 
+## Building and packaging
+
+The build and package pipeline for this project is implemented as a set of batch scripts. These scripts can be executed on a development machine without arguments or via a build server (Jenkins, Azure Devops) without the need to lock-in the build process to one specific vendor. This should also make it easier to build older versions of the server because all of the logic required to build is committed to version control.
+
+To run the scripts you must have following installed and assessible in your path:
+
+* 7zip
+
+Here is an overview of our scripts:
+
+| Name                 | Description                                |
+| -------------------- | ------------------------------------------ |
+| build.bat            | Builds all of the project in release mode  |
+|                      | and publishes packages into the folder     |
+|                      | `publish` in the root of the solution.     |
+| package.bat          | Packages the published files as zip        |
+|                      | archives and puts them in `publish`.       |
+
 ## Attribution
 
 Some parts of this application are inspired by the work on [Private Tracer](https://gitlab.com/PrivateTracer/server.azure). You can find their license [here](LICENSE/LICENSE.PrivateTracer.org.txt).

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle
 {
@@ -11,6 +12,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
     {
         public DateTime Release { get; set; }
         public int IsolationPeriodDays { get; set; }
+        // TODO define this properly
+        [JsonIgnore]
         public Dictionary<string,Dictionary<string,string>>? Text { get; set; }
     }
 }

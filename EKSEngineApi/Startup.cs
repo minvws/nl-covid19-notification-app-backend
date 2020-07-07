@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json.Serialization;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -39,12 +39,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers(options => 
-            { 
-                options.RespectBrowserAcceptHeader = true; 
-            }).AddNewtonsoftJson(options =>
-                options.SerializerSettings.ContractResolver =
-                    new CamelCasePropertyNamesContractResolver());
+            ComponentsContainerHelper.RegisterDefaultServices(services);
+
+            services.AddControllers(options =>
+            {
+                options.RespectBrowserAcceptHeader = true;
+            });
 
             services.AddSeriLog(Configuration);
             services.AddBasicAuthentication();
@@ -84,8 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
                 new ExposureKeySetBuilderV1(
                     x.GetService<IExposureKeySetHeaderInfoConfig>(),
                     new EcdSaSigner(new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:GA"))),
-                    //TODO change to real NL signer and use new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"))
-                    new FakeContentSigner(),
+                    new CmsSigner(new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"))), 
                     x.GetService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
                     new GeneratedProtobufContentFormatter()
                 ));

@@ -7,34 +7,31 @@ using IccPortal.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
 
-namespace IccPortal.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _Logger;
+        private FrontendService _FrontendService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, FrontendService frontendService)
         {
             _Logger = logger;
+            _FrontendService = frontendService;
         }
 
         [AllowAnonymous]
         public IActionResult Index()
         {
-            return View();
+            return Redirect(_FrontendService.GetFrontendLoginUrl("/"));
         }
-
-        [Authorize]
-        public IActionResult Auth()
-        {
-            return new JsonResult(User.Claims);
-        }
-
+            
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+            return new JsonResult(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
         }
     }
 }

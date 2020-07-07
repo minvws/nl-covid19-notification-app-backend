@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ResourceBundle
@@ -35,28 +35,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Resourc
         [TestMethod()]
         public void WhatDoesDicOfDicLookLike()
         {
+            IJsonSerializer jsonSerializer = new StandardJsonSerializer();
 
             var argle = new ResourceBundleArgs
+            {
+                Text = new Dictionary<string, Dictionary<string, string>>
                 {
-                    Text = new Dictionary<string, Dictionary<string, string>>
                     {
+                        "en-GB", new Dictionary<string, string>()
                         {
-                            "en-GB", new Dictionary<string, string>()
-                            {
-                                {"InfectedMessage", "You're possibly infected"}
-                            }
-                        },
+                            {"InfectedMessage", "You're possibly infected"}
+                        }
+                    },
+                    {
+                        "nl-NL", new Dictionary<string, string>
                         {
-                            "nl-NL", new Dictionary<string, string>
-                            {
-                                {"InfectedMessage", "U bent mogelijk geinvecteerd"}
-                            }
+                            {"InfectedMessage", "U bent mogelijk geïnfecteerd"}
                         }
                     }
-                };
+                }
+            };
 
-            var stuff = JsonConvert.SerializeObject(argle);
-            
+            var stuff = jsonSerializer.Serialize(argle);
         }
     }
 }

@@ -49,8 +49,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             => new AppConfigContent
             {
                 DecoyProbability = args.DecoyProbability,
-                UpdatePeriodMinutes = args.UpdatePeriodMinutes,
-                Version = args.Version
+                ManifestFrequency = args.ManifestFrequency,
+                Version = args.Version,
+                AndroidMinimumKillVersion = args.AndroidMinimumKillVersion,
+                iOSMinimumKillVersion = args.iOSMinimumKillVersion
             };
 
         ///// <summary>
@@ -60,6 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
         ///// <returns></returns>
         //public static ExposureKeySetConfigEntity ToEntity(this ExposureKeySetOutput output)
         //{
+        //    // TODO use IJsonSerializer
         //    var jsonContent = JsonConvert.SerializeObject(output.DebugContentJson);
         //    return new ExposureKeySetConfigEntity
         //    {

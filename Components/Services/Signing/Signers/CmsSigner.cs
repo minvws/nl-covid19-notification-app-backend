@@ -3,12 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
+using System.Security.Cryptography.Pkcs;
+using System.Security.Cryptography.X509Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
-using Org.BouncyCastle.Asn1;
-using Org.BouncyCastle.Cms;
-using Org.BouncyCastle.Security;
-using Org.BouncyCastle.X509.Store;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers
 {
@@ -21,37 +19,50 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             _Provider = provider;
         }
 
-        public string SignatureOid => "TODO some official OID";
+        public string SignatureOid => "2.16.840.1.101.3.4.2.1";
+
+        private static X509Certificate2[] GetChainWithoutRoot()
+        {
+            var certList = new List<X509Certificate2>();
+
+            var a = System.Reflection.Assembly.GetExecutingAssembly();
+            using var s = a.GetManifestResourceStream("NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Resources.certs.p7b");
+            if (s == null)
+                return certList.ToArray();
+
+            var bytes = new byte[s.Length];
+            s.Read(bytes, 0, bytes.Length);
+
+            var chain = new X509Certificate2Collection();
+            chain.Import(bytes);
+
+            foreach (var c in chain)
+            {
+                if (c.IssuerName.Name != c.SubjectName.Name)
+                    certList.Add(c);
+            }
+
+            return certList.ToArray();
+        }
 
         public byte[] GetSignature(byte[] content)
         {
-            var cer = _Provider.GetCertificate();
+            var certificate = _Provider.GetCertificate();
 
-            if (cer == null)
+            if (certificate == null)
                 throw new InvalidOperationException("Certificate not found.");
 
-            var cert = DotNetUtilities.FromX509Certificate(cer);
-            var signaturePair = DotNetUtilities.GetKeyPair(cer.PrivateKey);
+            var chain = GetChainWithoutRoot();
 
-            IList certList = new ArrayList();
-            IList crlList = new ArrayList();
-            certList.Add(cert);
+            ContentInfo contentInfo = new ContentInfo(content);
+            SignedCms signedCms = new SignedCms(contentInfo, true);
+            var signer = new System.Security.Cryptography.Pkcs.CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, certificate);
+            signedCms.Certificates.AddRange(chain);
+            signedCms.ComputeSignature(signer);
 
-            IX509Store x509Certs = X509StoreFactory.Create("Certificate/Collection", new X509CollectionStoreParameters(certList));
-            IX509Store x509Crls = X509StoreFactory.Create("CRL/Collection", new X509CollectionStoreParameters(crlList));
-
-            var gen = new CmsSignedDataGenerator();
-            gen.AddCertificates(x509Certs);
-
-            gen.AddSigner(signaturePair.Private, cert, CmsSignedGenerator.DigestSha256);
-            //gen.AddCrls(x509Crls);
-            
-            var cmsSignedData = gen.Generate(new CmsProcessableByteArray(content), false);
-            var signature = cmsSignedData.GetEncoded(Asn1Encodable.Der);
-
-            return signature;
+            return signedCms.Encode();
         }
 
-        public int LengthBytes => 1623;
+        public int LengthBytes => 1510;
     }
 }

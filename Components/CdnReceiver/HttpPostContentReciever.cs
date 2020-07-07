@@ -37,17 +37,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
                 PublishingId = content.PublishingId,
                 Content = content.Content,
                 ContentTypeName = content.ContentTypeName,
-                SignedContent = content.Content,
+                SignedContent = content.SignedContent,
                 SignedContentTypeName = MediaTypeNames.Application.Zip,
                 Release = content.LastModified,
             };
 
-            //var config = new StandardEfDbConfig(_Configuration, "Content");
-            //var builder = new SqlServerDbContextOptionsBuilder(config);
-            //var _DbContext = new ExposureContentDbContext(builder.Build());
-
             try
-
             {
                 await _DbContext.Set<T>().AddAsync(e);
                 _DbContext.SaveAndCommit();
@@ -66,5 +61,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
 
             return new OkResult();
         }
+
     }
 }

@@ -6,8 +6,8 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
@@ -16,11 +16,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
     {
         private readonly IConfiguration _Configuration;
         private readonly IContentSigner _ContentSigner;
+        private readonly IJsonSerializer _JsonSerializer;
 
-        public ProvisionDatabasesCommand(IConfiguration configuration, IContentSigner contentSigner)
+        public ProvisionDatabasesCommand(IConfiguration configuration, IContentSigner contentSigner, IJsonSerializer jsonSerializer)
         {
             _Configuration = configuration;
             _ContentSigner = contentSigner;
+            _JsonSerializer = jsonSerializer;
         }
 
         public async Task<IActionResult> Execute()
@@ -29,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             await db2.Execute();
             await db2.AddExampleContent();
 
-            var db3 = new CreateContentDatabase(_Configuration, new StandardUtcDateTimeProvider(), _ContentSigner);
+            var db3 = new CreateContentDatabase(_Configuration, new StandardUtcDateTimeProvider(), _ContentSigner, _JsonSerializer);
             await db3.Execute();
             await db3.AddExampleContent();
 

@@ -47,6 +47,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
             public const string RiskCalculationParameters = Prefix + "/riskcalculationparameters";
         }
 
+        public const string ManifestName = "manifest";
+
         //Also used for the data api where necessary
         public static class CdnApi
         {

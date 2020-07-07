@@ -13,18 +13,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     {
         private readonly IAuthorisationWriter _AuthorisationWriter;
         private readonly WorkflowDbContext _DbContextProvider;
-        private readonly IReleaseKeysAuthorizationValidator _Validator;
 
-        public HttpPostAuthorise(IAuthorisationWriter authorisationWriter, WorkflowDbContext dbContextProvider, IReleaseKeysAuthorizationValidator validator)
+        public HttpPostAuthorise(IAuthorisationWriter authorisationWriter, WorkflowDbContext dbContextProvider)
         {
             _AuthorisationWriter = authorisationWriter;
             _DbContextProvider = dbContextProvider;
-            _Validator = validator;
         }
 
         public async Task<IActionResult> Execute(AuthorisationArgs args)
         {
-
             await _AuthorisationWriter.Execute(args);
             _DbContextProvider.SaveAndCommit();
 

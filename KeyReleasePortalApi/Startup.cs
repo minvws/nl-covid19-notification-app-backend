@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -33,6 +34,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleaseApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            ComponentsContainerHelper.RegisterDefaultServices(services);
+
             services.AddControllers();
 
             services.AddSeriLog(Configuration);
@@ -43,6 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleaseApi
                 var config = new StandardEfDbConfig(Configuration, "WorkFlow");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new WorkflowDbContext(builder.Build());
+                result.Database.BeginTransaction();
                 return result;
             });
 
@@ -51,7 +55,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleaseApi
             services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
             services.AddScoped<ISignatureValidator, SignatureValidator>();
             services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();
-            services.AddScoped<IReleaseKeysAuthorizationValidator, ReleaseKeysAuthorizationValidator>();
 
             services.AddSwaggerGen(o =>
             {

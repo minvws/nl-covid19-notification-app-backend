@@ -11,16 +11,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Services;
-using Org.BouncyCastle.Crypto.Prng;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
@@ -36,9 +37,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
+            ComponentsContainerHelper.RegisterDefaultServices(services);
 
-            services.AddControllers();
+            services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
             // Database Scoping
             services.AddScoped(x =>
@@ -55,7 +56,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
             services.AddScoped<IBasicAuthenticationConfig, BasicAuthenticationConfig>();
             services.AddScoped<IIccService, IccService>();
-            services.AddScoped<IBasicAuthenticationConfig, BasicAuthenticationConfig>();
             services.AddScoped<AppBackendService, AppBackendService>();
             services.AddAuthentication("IccAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, IccAuthenticationHandler>("IccAuthentication", null);
@@ -92,6 +92,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     Scheme = "IccAuthentication"
                 });
                 o.OperationFilter<SecurityRequirementsOperationFilter>();
+
             });
         }
 
