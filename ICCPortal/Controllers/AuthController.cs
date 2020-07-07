@@ -44,15 +44,10 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
 
         public IActionResult Redirect()
         {
-            
-            var jwt = _JwtService.GenerateJwt(User);
-            return new JsonResult(new []
-            {
-                jwt=jwt
-            });
+            var jwtToken = _JwtService.GenerateJwt(User);
 
             // temporary claim payload redirect solution for demo purposes
-            // return Redirect(_FrontendService.GetFrontendLoginUrl("/validate/start?c=" +
+            return Redirect(_FrontendService.GetFrontendLoginUrl("/validate/start?c=" + jwtToken));
             // Convert.ToBase64String(
             // Encoding.UTF8.GetBytes(
             // JsonConvert.SerializeObject(GetClaims())))));
