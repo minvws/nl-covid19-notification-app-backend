@@ -4,8 +4,10 @@
 
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 
@@ -28,6 +30,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi.Controllers
         public async Task<IActionResult> PostSecret([FromBody]SecretArgs _, [FromServices]HttpPostRegisterSecret command)
         {
             return await command.Execute();
+        }
+
+        [HttpPost, Authorize(AuthenticationSchemes = "icc_jwt")]
+        [Route(EndPointNames.CaregiversPortalApi.LabConfirmation)]
+        public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args, [FromServices] HttpPostAuthorise command)
+        {
+            return await command.Execute(args);
         }
     }
 }
