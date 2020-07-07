@@ -2,8 +2,10 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
@@ -23,10 +25,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             var e = _DbContextProvider
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Keys)
-                .SingleOrDefault(x => x.LabConfirmationId == args.LabConfirmationId); 
-            
+                .SingleOrDefault(x => x.LabConfirmationId == args.LabConfirmationId);
+
             if (e == null)
-                return Task.CompletedTask;
+                throw new LabConfirmationIdNotFoundException();
 
             e.AuthorisedByCaregiver = true;
             e.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
@@ -39,5 +41,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             _DbContextProvider.KeyReleaseWorkflowStates.Update(e);
             return Task.CompletedTask;
         }
+    }
+
+    public class LabConfirmationIdNotFoundException : Exception
+    {
     }
 }
