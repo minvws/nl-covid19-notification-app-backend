@@ -1,0 +1,23 @@
+#trigger:
+#- master
+
+extends:
+  template: webApp-build-deploy.yml
+  parameters:
+    environment: 'covid19-azure-production'
+    # ============================================
+    # parameters hieronder zijn alleen voor testen
+    azureSubscriptionPrimary: 'mss-vws-acc-cicd'
+    webAppNamePrimary: 'vwswebapp'
+    azureSubscriptionSecundary: 'mss-vws-acc-cicd'
+    webAppNameSecundary: 'vwswebapp'
+    webEnvironment: 'Production'
+    # ============================================
+    # parameters hieronder zijn voor productie
+    #azureSubscriptionPrimary: 'mss-vws-primary-prd-cicd'
+    #webAppNamePrimary: 'vwspp-app-service'
+    #azureSubscriptionSecundary: 'mss-vws-secondary-prd-cicd'
+    #webAppNameSecundary: 'vwssp-app-service'
+    #webEnvironment: 'Production'
+    # ============================================
+    projectName: '$(System.DefaultWorkingDirectory)/CdnDataReceiver2/CdnDataReceiver2.csproj'

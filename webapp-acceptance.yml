@@ -1,0 +1,23 @@
+trigger:
+- acceptatie
+
+extends:
+  template: webApp-build-deploy.yml
+  parameters:
+    environment: 'covid19-azure-acceptance'
+    # ============================================
+    # parameters hieronder zijn alleen voor testen
+    #azureSubscriptionPrimary: 'mss-vws-acc-cicd'
+    #webAppNamePrimary: 'vwswebapp'
+    #azureSubscriptionSecundary: 'mss-vws-acc-cicd'
+    #webAppNameSecundary: 'vwswebapp'
+    #webEnvironment: 'Staging'
+    # ============================================
+    # parameters hieronder zijn voor acceptatie
+    azureSubscriptionPrimary: 'mss-vws-primary-acc-cicd'
+    webAppNamePrimary: 'vwspa-app-service'
+    azureSubscriptionSecundary: 'mss-vws-secondary-acc-cicd'
+    webAppNameSecundary: 'vwssa-app-service'
+    webEnvironment: 'Staging'
+    # ============================================
+    projectName: '$(System.DefaultWorkingDirectory)/CdnDataReceiver2/CdnDataReceiver2.csproj'
