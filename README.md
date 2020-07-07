@@ -22,9 +22,19 @@ This increases the chance that we might be able to use your contribution (or it 
 Local development support is provided for all platforms - Windows, macOS, Linux - by ServerStandAlone - a .NET Core MVC Web App, and the command line apps in the Data Utilities folder.
 
 ## Development Tools
-
 * Visual Studio 2019 (or Rider)
 * Your choice of SQL Server instances
+* Or quickstart: only Docker
+
+### Docker – to quickstart local app development
+
+To quickly start a local Standalone development environment for app testing purposes you can use of the docker-compose file:
+```bash
+# Solution root
+cd docker
+docker-compose up --build
+``` 
+**Please be aware of the 'quickstart development'-only semi-secrets in `docker/**/*`, the Docker configuration has no intentions to be used in publicly available testing, acceptation or production environments.**
 
 ## Supporting local mobile app development
 
@@ -45,14 +55,6 @@ Then clone this repo.
 1. Add an `appsettings.Development.json` file. This overrides the settings in appsettings.json. And add a value for the MSS connection string.
 1. Go to the ServerStandAlone folder and run it with 'dotnet run'.
 
-### Docker
-
-To quickly start a Standalone development environment you can use of the docker-compose file:
-```bash
-# Solution root
-cd docker
-docker-compose up --build
-``` 
 
 ### ICC Portal
 
