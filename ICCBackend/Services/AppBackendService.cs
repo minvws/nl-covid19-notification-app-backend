@@ -80,11 +80,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Services
             return null;
         }
 
-        public async Task<bool> LabConfirmationIdIsValid(RedeemIccModel redeemIccModel)
+        public async Task<bool> LabConfirmationIdIsValid(ConfirmLabConfirmationIdModel confirmLabConfirmationIdModel)
         {
             var backendResponse =
                 await BackendPostRequest("/v1/labConfirm",
-                    new AuthorisationArgs(redeemIccModel));
+                    new AuthorisationArgs(confirmLabConfirmationIdModel));
 
             if (backendResponse == null) return false;
             var backendResponseJson = _JsonSerializer.Deserialize<Dictionary<string, bool>>(backendResponse);

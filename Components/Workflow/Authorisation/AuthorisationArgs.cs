@@ -17,16 +17,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             
         }
 
-        public AuthorisationArgs(RedeemIccModel redeemIccModel)
+        public AuthorisationArgs(ConfirmLabConfirmationIdModel confirmLabConfirmationIdModel)
         {
-            LabConfirmationId = redeemIccModel.LabConfirmationId.Replace("-",string.Empty);
-            DateOfSymptomsOnset = redeemIccModel.DateOfSymptomsOnset;
+            LabConfirmationId = confirmLabConfirmationIdModel.LabConfirmationId?.Replace("-",string.Empty);
+            DateOfSymptomsOnset = confirmLabConfirmationIdModel.DateOfSymptomsOnset;
         }
         
         /// <summary>
         /// Identifier for Workflow item - Tan1?
         /// </summary>
-        public string LabConfirmationId { get; set; }
+        public string? LabConfirmationId { get; set; }
         
         public DateTime DateOfSymptomsOnset { get; set; }
     }

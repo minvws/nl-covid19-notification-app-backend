@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
             return await command.Execute();
         }
 
-        [HttpPost, Authorize]
+        [HttpPost, Authorize(AuthenticationSchemes = "icc_jwt")]
         [Route(EndPointNames.CaregiversPortalApi.LabConfirmation)]
         public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args, [FromServices] HttpPostAuthorise command)
         {

@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="JWT" Version="7.2.1" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.5" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.5" />
         <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.5" />
@@ -41,6 +42,10 @@
         <_ContentIncludedByDefault Remove="ClientApp\src\tslint.json" />
         <_ContentIncludedByDefault Remove="ClientApp\tsconfig.json" />
         <_ContentIncludedByDefault Remove="ClientApp\tslint.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ICCBackend\IccBackend.csproj" />
     </ItemGroup>
 
 
