@@ -4,6 +4,7 @@
 
 using System;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
 using TheIdentityHub.AspNetCore.Authentication;
 
@@ -57,7 +59,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer
                     options.ClientId = Configuration.GetSection("IccPortalConfig:IdentityHub:client_id").Value;
                     options.ClientSecret = Configuration.GetSection("IccPortalConfig:IdentityHub:client_secret").Value;
                 });
-            
+            services.AddAuthentication("jwt")
+                .AddScheme<AuthenticationSchemeOptions, JwtAuthorizationHandler>("jwt", null);
             // services.AddAuthorization(options =>
             // {
             //     // options.AddPolicy("TelefonistRole",
@@ -66,6 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer
             //     //     builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Beheer-Test"));
             // });
             services.AddScoped<FrontendService, FrontendService>();
+            services.AddScoped<JwtService, JwtService>();
             services.AddMvc(config =>
             {
                 config.EnableEndpointRouting = false;
@@ -74,7 +78,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer
                     .RequireAuthenticatedUser()
                     .Build();
                 config.Filters.Add(new AuthorizeFilter(policy));
-                    // .RequireClaim(ClaimTypes.Role)
+                // .RequireClaim(ClaimTypes.Role)
             });
         }
 

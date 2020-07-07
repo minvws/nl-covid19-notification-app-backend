@@ -18,6 +18,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
     public class AuthController : Controller
     {
         private FrontendService _FrontendService;
+        private JwtService _JwtService;
+
         private static readonly List<string> ClaimTypeBlackList = new List<string>()
         {
             "http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken",
@@ -25,14 +27,16 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
             "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
         };
 
-        public AuthController(FrontendService frontendService)
+        public AuthController(FrontendService frontendService, JwtService jwtService)
         {
             _FrontendService = frontendService;
+            _JwtService = jwtService;
         }
 
         public IActionResult Logout()
         {
             Response.Cookies.Delete(".AspNetCore.Cookies");
+
             return Redirect(_FrontendService.GetFrontendLoginUrl("/"));
             // return Redirect("https://login.ggdghor.nl/ggdghornl/Authenticate/SignOut?replyTo=" + getFrontendLoginUrl());
         }
@@ -40,13 +44,20 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
 
         public IActionResult Redirect()
         {
+            
+            var jwt = _JwtService.GenerateJwt(User);
+            return new JsonResult(new []
+            {
+                jwt=jwt
+            });
+
             // temporary claim payload redirect solution for demo purposes
-            return Redirect(_FrontendService.GetFrontendLoginUrl("/validate/start?c=" +
-                                                                 Convert.ToBase64String(
-                                                                     Encoding.UTF8.GetBytes(
-                                                                         JsonConvert.SerializeObject(GetClaims())))));
+            // return Redirect(_FrontendService.GetFrontendLoginUrl("/validate/start?c=" +
+            // Convert.ToBase64String(
+            // Encoding.UTF8.GetBytes(
+            // JsonConvert.SerializeObject(GetClaims())))));
         }
-        
+
         private Dictionary<string, string> GetClaims()
         {
             Dictionary<string, string> result = new Dictionary<string, string>();

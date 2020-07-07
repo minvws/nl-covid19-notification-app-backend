@@ -9,10 +9,10 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
 {
     public class IccBackendController : Controller
     {
-        [HttpGet, Authorize()]
+        [HttpGet, Authorize(AuthenticationSchemes = "jwt")]
         public IActionResult Index()
         {
-            return new JsonResult(new {ok = false, message = "not implemented yet"});
+            return new JsonResult(new {ok = false, message = "not implemented yet", user = User.Identity.Name});
         }
     }
 }
