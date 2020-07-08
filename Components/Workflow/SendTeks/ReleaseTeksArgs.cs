@@ -9,7 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
     /// </summary>
     public class ReleaseTeksArgs
     {
-        public string BucketId { get; set; }
+        public string BucketID { get; set; }
         public TemporaryExposureKeyArgs[] Keys { get; set; }
         public byte[]? Padding { get; set; }
     }

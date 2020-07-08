@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
     public class WorkflowController : ControllerBase
     {
         [HttpPost]
-        [Route(EndPointNames.MobileAppApi.ReleaseTeks)]
+        [Route(EndPointNames.MobileAppApi.ReleaseTeks)] 
         public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand command)
         {
             await command.Execute(sig, Request);

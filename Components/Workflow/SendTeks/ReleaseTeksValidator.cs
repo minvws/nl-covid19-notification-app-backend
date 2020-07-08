@@ -35,14 +35,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             if (workflow.ValidUntil.AddMinutes(_Config.GracePeriod) <= _DateTimeProvider.Now()) //30 minutes grace period
             {
-                _Logger.LogInformation($"Workflow is not valid anymore: {args.BucketId}");
+                _Logger.LogInformation($"Workflow is not valid anymore: {args.BucketID}");
                 return false;
             }
             
             if (_Config.TemporaryExposureKeyCountMin > args.Keys.Length
                 || args.Keys.Length > _Config.TemporaryExposureKeyCountMax)
             {
-                _Logger.LogInformation($"Invalid number of keys: {args.BucketId}");
+                _Logger.LogInformation($"Invalid number of keys: {args.BucketID}");
                 return false;
             }
 

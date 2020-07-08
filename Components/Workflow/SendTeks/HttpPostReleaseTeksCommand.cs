@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             var workflow = _DbContextProvider
                 .KeyReleaseWorkflowStates
-                .FirstOrDefault(x => x.BucketId == args.BucketId);
+                .FirstOrDefault(x => x.BucketId == args.BucketID);
 
             if (workflow == null || !_KeyValidator.Validate(args, workflow) ||
                 !_SignatureValidator.Valid(signature, workflow, Encoding.UTF8.GetBytes(payload)))
