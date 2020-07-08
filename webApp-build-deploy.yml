@@ -73,7 +73,6 @@ stages:
     strategy:
       runOnce:
         deploy:
-
           steps:
           - task: AzureRmWebAppDeployment@4
             displayName: 'Deploy to primary region'
@@ -83,6 +82,7 @@ stages:
               WebAppName: '${{parameters.webAppNamePrimary}}'
               ConnectedServiceName: '${{parameters.azureSubscriptionPrimary}}'
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+              removeAdditionalFilesFlag: true
 
           - task: AzureAppServiceSettings@1
             displayName: Azure App Service Settings to primary region
@@ -95,7 +95,7 @@ stages:
                 [
                   {
                     "name": "ASPNETCORE_ENVIRONMENT",
-                    "value": "'${{parameters.webEnvironment}}'",
+                    "value": "${{parameters.webEnvironment}}",
                     "slotSetting": false
                   }
                 ]
@@ -108,6 +108,7 @@ stages:
               WebAppName: '${{parameters.webAppNameSecundary}}'
               ConnectedServiceName: '${{parameters.azureSubscriptionSecundary}}'
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+              removeAdditionalFilesFlag: true
 
           - task: AzureAppServiceSettings@1
             displayName: Azure App Service Settings to secondary region
@@ -120,7 +121,7 @@ stages:
                 [
                   {
                     "name": "ASPNETCORE_ENVIRONMENT",
-                    "value": "'${{parameters.webEnvironment}}'",
+                    "value": "${{parameters.webEnvironment}}",
                     "slotSetting": false
                   }
                 ]
