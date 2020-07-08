@@ -26,11 +26,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         {
             var wf = _DbContextProvider
                 .KeyReleaseWorkflowStates
-                .FirstOrDefault(x => x.BucketId == args.BucketId);
+                .FirstOrDefault(x => x.BucketId == args.BucketID);
 
             if (wf == null)
             {
-                _Logger.LogInformation($"Workflow with bucketId {args.BucketId} not found.");
+                _Logger.LogInformation($"Workflow with bucketId {args.BucketID} not found.");
                 return;
             }
 
