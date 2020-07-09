@@ -59,7 +59,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
                 : string.Concat(destination.Path, "/", content.PublishingId);
 
             var mutable = destination.Name.Equals(EndPointNames.ManifestName);
-            await _QueueSender.Send(new StorageAccountSyncMessage { RelativePath = path, MutableContent = mutable });
+
+            try
+            {
+                await _QueueSender.Send(new StorageAccountSyncMessage { RelativePath = path, MutableContent = mutable });
+            }
+            catch (Exception)
+            {
+                //Disambiguate sources of 404 errors
+                return new StatusCodeResult(500);
+            }
+            
             return new OkResult();
         }
     }
