@@ -1,0 +1,30 @@
+trigger:
+- none
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: MSS-Azure
+      ref: master
+
+extends:
+  template: MSS-Azure-CoronaMelder-Pipelines/functionapp-build-deploy.yml@templates
+  parameters:
+    environment: 'covid19-azure-acceptance'
+    # ============================================
+    # parameters hieronder zijn alleen voor testen
+    azureSubscriptionPrimary: 'mss-vws-acc-cicd'
+    functionAppNamePrimary: 'vwssync'
+    azureSubscriptionSecundary: 'mss-vws-acc-cicd'
+    functionAppNameSecundary: 'vwssync'
+    webEnvironment: 'Staging'
+    # ============================================
+    # parameters hieronder zijn voor acceptatie
+    #azureSubscriptionPrimary: 'mss-vws-primary-acc-cicd'
+    #functionAppNamePrimary: 'vwspa-function-app'
+    #azureSubscriptionSecundary: 'mss-vws-secondary-acc-cicd'
+    #functionAppNameSecundary: 'vwssa-function-app'
+    #webEnvironment: 'Staging'
+    # ============================================
+    projectName: '$(System.DefaultWorkingDirectory)/CdnRegionSync/CdnRegionSync.csproj'
