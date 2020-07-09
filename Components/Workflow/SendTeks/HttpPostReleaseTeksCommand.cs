@@ -11,6 +11,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
@@ -47,13 +48,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 .KeyReleaseWorkflowStates
                 .FirstOrDefault(x => x.BucketId == args.BucketId);
 
-            if (workflow == null || !_KeyValidator.Validate(args, workflow) ||
-                !_SignatureValidator.Valid(signature, workflow, Encoding.UTF8.GetBytes(payload)))
+            if (workflow == null)
+            {
+                Log.Warning("Matching workflow not found.");
                 return;
+            }
 
+            if (!_KeyValidator.Validate(args, workflow))
+            {
+                Log.Warning("Keys args not valid.");
+                return;
+            }
+
+
+            if (!_SignatureValidator.Valid(signature, workflow, Encoding.UTF8.GetBytes(payload)))
+            {
+                Log.Warning("Signature not valid.");
+                return;
+            }
+
+            Log.Information("Writing start.");
             await _Writer.Execute(args);
-
+            Log.Information("Committing.");
             _DbContextProvider.SaveAndCommit();
+            Log.Information("Committed.");
         }
     }
 }

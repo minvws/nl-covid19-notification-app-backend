@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -35,18 +36,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             if (workflow.ValidUntil.AddMinutes(_Config.GracePeriod) <= _DateTimeProvider.Now()) //30 minutes grace period
             {
-                _Logger.LogInformation($"Workflow is not valid anymore: {args.BucketId}");
+                _Logger.LogWarning($"Workflow is not valid anymore: {args.BucketId}");
                 return false;
             }
             
-            if (_Config.TemporaryExposureKeyCountMin > args.Keys.Length
-                || args.Keys.Length > _Config.TemporaryExposureKeyCountMax)
+            if (_Config.TemporaryExposureKeyCountMin > args.Keys.Length || args.Keys.Length > _Config.TemporaryExposureKeyCountMax)
             {
-                _Logger.LogInformation($"Invalid number of keys: {args.BucketId}");
+                _Logger.LogWarning($"Invalid number of keys: {args.BucketId}");
                 return false;
             }
 
-            return args.Keys.All(_TemporaryExposureKeyValidator.Valid);
+            if (!args.Keys.All(_TemporaryExposureKeyValidator.Valid))
+            {
+                _Logger.LogWarning($"One or more keys not valid: {args.BucketId}");
+                return false;
+            }
+
+            return true;
         }
     }
 }

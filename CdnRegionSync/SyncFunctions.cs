@@ -17,7 +17,7 @@ namespace CdnRegionSync
         //NB this is for Storage Queues not MBQ. Confirm behaviour is the same.
         //https://stackoverflow.com/questions/48456580/azure-functions-with-service-bus-how-to-keep-a-message-in-the-queue-if-somethin
         [FunctionName("ReceiveSyncMessage")]
-        public async Task Run([ServiceBusTrigger("vwspt-queue", Connection = "Queue", IsSessionsEnabled = true)]
+        public async Task Run([ServiceBusTrigger("%QueueName%", Connection = "QueueConnectionString", IsSessionsEnabled = true)]
             Message message,
             ExecutionContext executionContext
             )

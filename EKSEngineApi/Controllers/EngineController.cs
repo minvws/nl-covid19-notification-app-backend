@@ -21,9 +21,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/v1/execute")]
-        public async Task<IActionResult> ExposureKeySets([FromServices]HttpPostGenerateExposureKeySetsCommand command)
+        public async Task<IActionResult> ExposureKeySets([FromQuery] bool useAllKeys, [FromServices]HttpPostGenerateExposureKeySetsCommand command)
         {
-            return await command.Execute();
+            return await command.Execute(useAllKeys);
         }
     }
 }
