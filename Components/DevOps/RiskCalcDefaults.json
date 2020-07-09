@@ -1,7 +1,7 @@
 ﻿{
-  "release": "2020-06-23T12:24:15.881Z",
+  "release": "2020-07-01T11:59:34.627Z",
   "minimumRiskScore": 8,
-  "attenuationScores​": [
+  "attenuationScores": [
     1,
     2,
     4,
@@ -11,7 +11,7 @@
     4,
     4
   ],
-  "daysSinceLastExposureScores​": [
+  "daysSinceLastExposureScores": [
     1,
     1,
     1,
@@ -31,7 +31,7 @@
     4,
     4
   ],
-  "transmissionRiskScores​": [
+  "transmissionRiskScores": [
     1,
     1,
     1,
@@ -41,7 +41,7 @@
     1,
     1
   ],
-  "durationAtAttenuationThresholds​": [
+  "durationAtAttenuationThresholds": [
     42,
     56
   ]
