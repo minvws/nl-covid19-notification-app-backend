@@ -8,8 +8,8 @@ resources:
       name: MSS-Azure
       ref: master
 
-jobs:
-- template: MSS-Azure-CoronaMelder-Pipelines/webapp-build-deploy.yml@templates
+extends:
+  template: MSS-Azure-CoronaMelder-Pipelines/webapp-build-deploy.yml@templates
   parameters:
     environment: 'covid19-azure-acceptance'
     # ============================================
