@@ -94,7 +94,7 @@ stages:
                 [
                   {
                     "name": "ASPNETCORE_ENVIRONMENT",
-                    "value": "'${{parameters.webEnvironment}}'",
+                    "value": "${{parameters.webEnvironment}}",
                     "slotSetting": false
                   }
                 ]
@@ -118,7 +118,7 @@ stages:
                 [
                   {
                     "name": "ASPNETCORE_ENVIRONMENT",
-                    "value": "'${{parameters.webEnvironment}}'",
+                    "value": "${{parameters.webEnvironment}}",
                     "slotSetting": false
                   }
                 ]
