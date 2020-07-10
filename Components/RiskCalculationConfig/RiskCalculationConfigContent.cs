@@ -19,6 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculati
         public int[] AttenuationScores​ { get; set; }
 
         //Might not be int..
+                   //daysSinceLastExposureScores
         public int[] DaysSinceLastExposureScores​ { get; set; }
 
         //Might not be int..

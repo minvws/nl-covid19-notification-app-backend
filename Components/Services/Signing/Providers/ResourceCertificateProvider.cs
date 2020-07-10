@@ -30,4 +30,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             return new X509Certificate2(bytes, "Covid-19!", X509KeyStorageFlags.Exportable);
         }
     }
+
+    [Obsolete("Use this class only for testing purposes")]
+    public class ResourceCertificateProvider2 : ICertificateProvider
+    {
+        private readonly string _ResourceName;
+
+        public ResourceCertificateProvider2(string resourceName)
+        {
+            _ResourceName = resourceName;
+        }
+
+        public X509Certificate2? GetCertificate()
+        {
+            var a = System.Reflection.Assembly.GetExecutingAssembly();
+            using var s = a.GetManifestResourceStream($"NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Resources.{_ResourceName}");
+            if (s == null)
+                return null;
+
+            var bytes = new byte[s.Length];
+            s.Read(bytes, 0, bytes.Length);
+
+            return new X509Certificate2(bytes, "", X509KeyStorageFlags.Exportable);
+        }
+    }
 }

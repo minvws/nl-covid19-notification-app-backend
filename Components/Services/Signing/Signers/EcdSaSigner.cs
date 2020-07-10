@@ -26,19 +26,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
         public byte[] GetSignature(byte[] content)
         {
-            using var hasher = SHA256.Create();
-            var hash = hasher.ComputeHash(content);
+            //using var hasher = SHA256.Create();
+            //var hash = hasher.ComputeHash(content);
 
             var cert = _Provider.GetCertificate();
 
             if (cert == null)
                 throw new InvalidOperationException("Certificate not found");
 
-            var signer = cert.GetECDsaPrivateKey();
-            return signer.SignHash(hash);
+            //Should be 70 or so but not fixed length
+            //Adds X.962 packaging?
+            //Adds 8 magical bytes.
+            var notTheResult = cert.GetECDsaPrivateKey().SignData(content, HashAlgorithmName.SHA256);
+            return new X962PackagingFix().Format(notTheResult);
         }
 
-        public int LengthBytes => 32;
-
+        public int LengthBytes => 32; //TODO N/A
     }
 }
