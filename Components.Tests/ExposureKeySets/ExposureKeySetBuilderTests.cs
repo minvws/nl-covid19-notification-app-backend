@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
@@ -30,11 +31,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         [DataTestMethod]
         public void Build(int keyCount, int seed)
         {
-            var builder = new ExposureKeySetBuilderV1(new FakeExposureKeySetHeaderInfoConfig(), new EcdSaSigner(new ResourceCertificateProvider("FakeECDSA.p12")), new CmsSigner(new ResourceCertificateProvider("FakeRSA.p12")), new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter());
+            var builder = new ExposureKeySetBuilderV1(new FakeExposureKeySetHeaderInfoConfig(), 
+                new EcdSaSigner(new ResourceCertificateProvider2("TestCert2.p12")), 
+                new CmsSigner(new ResourceCertificateProvider("FakeRSA.p12")), 
+                new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter());
 
             var actual = builder.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
             Assert.IsTrue(actual.Length > 0);
             Trace.WriteLine($"{keyCount} keys = {actual.Length} bytes.");
+
+            using (var fs = new FileStream("EKS.zip", FileMode.Create, FileAccess.Write))
+            {
+                fs.Write(actual, 0, actual.Length);
+            }
         }
 
         private TemporaryExposureKeyArgs[] GetRandomKeys(int WorkflowCount, int seed)

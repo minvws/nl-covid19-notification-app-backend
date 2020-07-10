@@ -45,14 +45,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 //ReportType = TemporaryExposureKey.Types.ReportType.ConfirmedClinicalDiagnosis
             };
 
-        private static SignatureInfo Map(SignatureInfoArgs arg)
-            => new SignatureInfo
-            {
-                SignatureAlgorithm = arg.SignatureAlgorithm,
-                VerificationKeyId = arg.VerificationKeyId,
-                VerificationKeyVersion = arg.VerificationKeyVersion
-            };
-
         public byte[] GetBytes(ExposureKeySetSignaturesContentArgs arg)
         {
             var result = new TEKSignatureList
@@ -73,5 +65,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 SignatureInfo = Map(args.SignatureInfo)
             };
         }
+        private static SignatureInfo Map(SignatureInfoArgs arg)
+            => new SignatureInfo
+            {
+                SignatureAlgorithm = arg.SignatureAlgorithm,
+                VerificationKeyId = arg.VerificationKeyId,
+                VerificationKeyVersion = arg.VerificationKeyVersion
+            };
+
     }
 }
