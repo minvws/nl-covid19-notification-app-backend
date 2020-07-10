@@ -1,5 +1,5 @@
 trigger:
-- none
+- productie
 
 resources:
   repositories:
@@ -14,17 +14,17 @@ extends:
     environment: 'covid19-azure-production'
     # ============================================
     # parameters hieronder zijn alleen voor testen
-    azureSubscriptionPrimary: 'mss-vws-acc-cicd'
-    functionAppNamePrimary: 'vwssync'
-    azureSubscriptionSecundary: 'mss-vws-acc-cicd'
-    functionAppNameSecundary: 'vwssync'
-    webEnvironment: 'Production'
+    #azureSubscriptionPrimary: 'mss-vws-acc-cicd'
+    #functionAppNamePrimary: 'vwssync'
+    #azureSubscriptionSecundary: 'mss-vws-acc-cicd'
+    #functionAppNameSecundary: 'vwssync'
+    #webEnvironment: 'Production'
     # ============================================
     # parameters hieronder zijn voor productie
-    #azureSubscriptionPrimary: 'mss-vws-primary-prd-cicd'
-    #functionAppNamePrimary: 'vwspp-function-app'
-    #azureSubscriptionSecundary: 'mss-vws-secondary-prd-cicd'
-    #functionAppNameSecundary: 'vwssp-function-app'
-    #webEnvironment: 'Production'
+    azureSubscriptionPrimary: 'mss-vws-primary-prd-cicd'
+    functionAppNamePrimary: 'vwspp-function-app'
+    azureSubscriptionSecundary: 'mss-vws-secondary-prd-cicd'
+    functionAppNameSecundary: 'vwssp-function-app'
+    webEnvironment: 'Production'
     # ============================================
     projectName: '$(System.DefaultWorkingDirectory)/CdnRegionSync/CdnRegionSync.csproj'
