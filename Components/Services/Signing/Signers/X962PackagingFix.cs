@@ -110,7 +110,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
                 Array.Copy(ia, 0, buffer, index, ia.Length);
                 index += ia.Length;
             }
-            Array.Copy(r, 0, buffer, index, p.Length);
+            Array.Copy(r, 0, buffer, index, r.Length);
             index += r.Length;
 
             if (s[0] >= 0x80)
@@ -123,7 +123,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
                 Array.Copy(ia, 0, buffer, index, ia.Length);
                 index += ia.Length;
             }
-            Array.Copy(s, 0, buffer, index, r.Length);
+            Array.Copy(s, 0, buffer, index, s.Length);
             index += s.Length;
 
             // Result length varies between 70 and 72.
@@ -135,4 +135,3 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
         }
     }
 }
-
