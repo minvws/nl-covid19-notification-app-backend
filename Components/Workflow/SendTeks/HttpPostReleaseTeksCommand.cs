@@ -2,6 +2,8 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.Buffers.Text;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -40,6 +42,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
         public async Task Execute(byte[] signature, HttpRequest request)
         {
+            if (signature == null)
+                throw new ArgumentNullException(nameof(signature));
+
+            if (signature.Length == 0)
+                throw new ArgumentException("Zero length.", nameof(signature));
+
             using var reader = new StreamReader(request.Body);
             var payload = await reader.ReadToEndAsync();
             var args = _JsonSerializer.Deserialize<ReleaseTeksArgs>(payload);
@@ -60,10 +68,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 return;
             }
 
-
             if (!_SignatureValidator.Valid(signature, workflow, Encoding.UTF8.GetBytes(payload)))
             {
-                Log.Warning("Signature not valid.");
+                Log.Warning($"Signature '{Convert.ToBase64String(signature)}' not valid.");
                 return;
             }
 

@@ -62,8 +62,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
             services.AddScoped<HttpPostReleaseTeksCommand, HttpPostReleaseTeksCommand>();
             
             services.AddScoped<IReleaseTeksValidator, ReleaseTeksValidator>();
-            services.AddScoped<ISignatureValidator, SignatureValidator>();
-            
+
+            var sigValOn = (bool)Configuration.GetValue(typeof(bool), "ValidatePostKeysSignature", true);
+
+            if (sigValOn)
+                services.AddScoped<ISignatureValidator, SignatureValidator>();
+            else
+                services.AddScoped<ISignatureValidator, FakeSignatureValidator>();
+
             services.AddScoped<HttpPostRegisterSecret, HttpPostRegisterSecret>();
             services.AddScoped<ISecretWriter, SecretWriter>();
             services.AddScoped<ISecretConfig, StandardSecretConfig>();
