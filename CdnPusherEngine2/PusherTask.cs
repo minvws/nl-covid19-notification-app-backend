@@ -31,11 +31,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         public async Task PushIt()
         {
             _Logger.LogInformation("Running.");
-            //var certificateHack = (bool)_Configuration.GetValue(typeof(bool), "CertificateHack", false);
-            //if (certificateHack)
-
-            ServicePointManager.ServerCertificateValidationCallback += (_, __, ___, ____) =>
-                true;
 
             //Read manifest
             var bcr = await GetContent(_DataApiConfig.Manifest);

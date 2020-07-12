@@ -17,11 +17,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 
         public string Serialize<TContent>(TContent input)
         {
+            //TODO arg check or does this return {}?
             return JsonSerializer.Serialize(input, _SerializerOptions);
         }
 
         public TContent Deserialize<TContent>(string input)
         {
+            //TODO arg check or does this return null?
             return JsonSerializer.Deserialize<TContent>(input, _SerializerOptions);
         }
     }

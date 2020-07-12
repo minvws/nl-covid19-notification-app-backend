@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
@@ -15,12 +16,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
 
         public AppConfigInsertDbCommand(ExposureContentDbContext context, IContentEntityFormatter formatter)
         {
-            _DbContext = context;
-            _Formatter = formatter;
+            _DbContext = context ?? throw new ArgumentNullException(nameof(context));
+            _Formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
         }
 
         public async Task Execute(AppConfigArgs args)
         {
+            if (args == null) throw new ArgumentNullException(nameof(args));
+
             var e = new AppConfigContentEntity
             {
                 Release = args.Release

@@ -26,6 +26,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
         public byte[] GetSignature(byte[] content)
         {
+            if (content == null) throw new ArgumentNullException(nameof(content));
+
             //using var hasher = SHA256.Create();
             //var hash = hasher.ComputeHash(content);
 

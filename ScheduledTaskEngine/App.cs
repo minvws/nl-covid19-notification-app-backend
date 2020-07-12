@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ScheduledTaskEngine
 
         public async Task Run(string[] args)
         {
-            _Logger.LogInformation("Running...");
+            _Logger.LogInformation("Running.");
 
             var arguments = GetArguments(args);
 
@@ -39,10 +39,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ScheduledTaskEngine
                 var result = await client.SendAsync(requestMessage);
                 result.EnsureSuccessStatusCode();
 
-                _Logger.LogInformation("Completed...");
+                _Logger.LogInformation("Completed.");
             }
             else
-                _Logger.LogWarning("Arguments not valid...");
+                _Logger.LogWarning("Arguments not valid.");
         }
 
         private static StartArguments GetArguments(IReadOnlyList<string> args)

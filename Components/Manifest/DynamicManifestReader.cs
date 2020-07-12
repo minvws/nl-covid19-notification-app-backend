@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
@@ -19,13 +20,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IContentSigner _ContentSigner;
         private readonly ILogger _Logger; //Actually not used.
+        private readonly IJsonSerializer _JsonSerializer;
 
-        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IContentSigner contentSigner, ILogger logger)
+        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IContentSigner contentSigner, ILogger logger, IJsonSerializer jsonSerializer)
         {
-            _ManifestBuilder = manifestBuilder;
-            _DateTimeProvider = dateTimeProvider;
-            _ContentSigner = contentSigner;
-            _Logger = logger;
+            _ManifestBuilder = manifestBuilder ?? throw new ArgumentNullException(nameof(manifestBuilder));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _ContentSigner = contentSigner ?? throw new ArgumentNullException(nameof(contentSigner));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
         }
 
         public async Task<ManifestEntity?> Execute()
@@ -38,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             var content = _ManifestBuilder.Execute();
             //TODO should be injected...
             _Logger.Debug("Format and sign new manifest.");
-            var formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_ContentSigner), new StandardPublishingIdFormatter());
+            var formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_ContentSigner), new StandardPublishingIdFormatter(), _JsonSerializer);
             await formatter.Fill(e, content); //TODO add release date as a parameter
             return e;
         }

@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
@@ -18,11 +19,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 
         public ZippedSignedContentFormatter(IContentSigner contentSigner)
         {
-            _ContentSigner = contentSigner;
+            _ContentSigner = contentSigner ?? throw new ArgumentNullException(nameof(contentSigner));
         }
 
         public async Task<byte[]> SignedContentPacket(byte[] content)
         {
+            if (content == null) throw new ArgumentNullException(nameof(content));
+
             var signature = _ContentSigner.GetSignature(content);
             return await CreateZipArchive(content, signature);
         }
@@ -44,18 +47,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             await using var entryStream = archive.CreateEntry(entryName).Open();
             await using var contentStream = new MemoryStream(content);
             await contentStream.CopyToAsync(entryStream);
-        }
-
-        public static async Task<byte[]> Read(byte[] content)
-        {
-            await using var cs = new MemoryStream(content);
-            using (var archive = new ZipArchive(cs, ZipArchiveMode.Read, false))
-            {
-                await using var result = new MemoryStream(content);
-                var entryStream = archive.GetEntry(ContentEntryName);
-                entryStream.Open().CopyTo(result);
-                return result.ToArray();
-            }
         }
     }
 }

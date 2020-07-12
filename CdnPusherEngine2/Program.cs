@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,21 +40,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
             var serviceProvider = serviceCollection.BuildServiceProvider();
-
             try
             {
-                Log.Information("Starting service");
+                Log.Information("Starting CDN Pusher Engine.");
                 var pushIt = serviceProvider.GetService<PusherTask>();
                 await pushIt.PushIt();
-                Log.Information("Ending service");
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Error running service");
+                Log.Fatal(ex.ToString());
                 throw;
             }
             finally
             {
+                Log.Information("Exiting.");
                 Log.CloseAndFlush();
             }
         }
@@ -67,6 +67,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             services.AddSingleton<PusherTask>();
             services.AddSingleton<IDataApiUrls>(new DataApiUrls(Configuration, "DataApi"));
             services.AddSingleton<IReceiverConfig>(new ReceiverConfig(Configuration, "Receiver"));
+
+            var certificateHack = Configuration.GetValue("CertificateHack", false);
+
+            if (certificateHack)
+                ServicePointManager.ServerCertificateValidationCallback += (_, __, ___, ____) =>
+                true;
+
         }
     }
 }

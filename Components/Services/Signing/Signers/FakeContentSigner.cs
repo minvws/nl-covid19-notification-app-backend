@@ -14,6 +14,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
         public byte[] GetSignature(byte[] content)
         {
+            if (content == null) throw new ArgumentNullException(nameof(content));
+
             var result = new byte[LengthBytes];
             new Random().NextBytes(result);
             return result;

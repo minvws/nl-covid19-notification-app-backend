@@ -41,17 +41,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ScheduledTaskEngine
 
             try
             {
-                Log.Information("Starting service");
+                Log.Information("Starting scheduled task engine.");
                 await serviceProvider.GetService<App>().Run(args);
-                Log.Information("Ending service");
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Error running service");
-                throw ex;
+                Log.Fatal(ex.ToString());
+                throw;
             }
             finally
             {
+                Log.Information("Exiting.");
                 Log.CloseAndFlush();
             }
         }

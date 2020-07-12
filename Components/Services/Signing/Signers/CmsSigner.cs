@@ -47,6 +47,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
         public byte[] GetSignature(byte[] content)
         {
+            if (content == null) throw new ArgumentNullException(nameof(content));
+
             var certificate = _Provider.GetCertificate();
 
             if (certificate == null)
