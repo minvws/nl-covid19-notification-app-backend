@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
         {
             private const string Prefix = "/CaregiversPortalApi/v1";
             public const string LabConfirmation = Prefix + "/labconfirm";
-            public const string LabUploaded = Prefix + "/labverify";
+            public const string LabVerify = Prefix + "/labverify";
         }
 
         public static class DevOps

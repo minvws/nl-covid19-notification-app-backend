@@ -44,8 +44,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi.Controllers
         }
         
         [HttpPost, Authorize(AuthenticationSchemes = "icc_jwt")]
-        [Route(EndPointNames.CaregiversPortalApi.LabUploaded)]
-        public async Task<IActionResult> PostKeysAreUploaded([FromBody] AuthorisationArgs args, [FromServices] HttpPostCheckKeysUploaded command)
+        [Route(EndPointNames.CaregiversPortalApi.LabVerify)]
+        public async Task<IActionResult> PostKeysAreUploaded([FromBody] LabVerifyArgs args, [FromServices] HttpPostLabVerify command)
         {
             return await command.Execute(args);
         }

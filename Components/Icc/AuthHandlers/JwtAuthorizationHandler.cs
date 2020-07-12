@@ -48,7 +48,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
                 _Logger.LogCritical(e.ToString());
                 return AuthenticateResult.Fail("Invalid Jwt");
             }

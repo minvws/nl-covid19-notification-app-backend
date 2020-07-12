@@ -206,9 +206,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             services.AddScoped<AppConfigValidator, AppConfigValidator>();
 
             services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
-            services.AddScoped<HttpPostCheckKeysUploaded, HttpPostCheckKeysUploaded>();
+            services.AddScoped<HttpPostLabVerify, HttpPostLabVerify>();
             services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();
-            services.AddScoped<KeysUploadedChecker, KeysUploadedChecker>();
+            services.AddScoped<LabVerifyChecker, LabVerifyChecker>();
+            services.AddScoped<PollTokenGenerator, PollTokenGenerator>();
 
             services.AddScoped<IBasicAuthenticationConfig, BasicAuthenticationConfig>();
             services.AddBasicAuthentication();

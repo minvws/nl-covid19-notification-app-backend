@@ -83,9 +83,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
                 .AddScheme<AuthenticationSchemeOptions, JwtAuthorizationHandler>("icc_jwt", null);
 
             services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
-            services.AddScoped<HttpPostCheckKeysUploaded, HttpPostCheckKeysUploaded>();
+            services.AddScoped<HttpPostLabVerify, HttpPostLabVerify>();
             services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();
-            services.AddScoped<KeysUploadedChecker, KeysUploadedChecker>();
+            services.AddScoped<LabVerifyChecker, LabVerifyChecker>();
             
             
             
