@@ -53,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
         //Also used for the data api where necessary
         public static class CdnApi
         {
-            private const string Prefix = "/v1";
+            private const string Prefix = "/v01";
             public const string Manifest = Prefix + "/manifest";
             public const string AppConfig = Prefix + "/appconfig";
             public const string ResourceBundle = Prefix + "/resourcebundle";

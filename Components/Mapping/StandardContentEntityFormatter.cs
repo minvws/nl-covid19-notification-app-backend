@@ -25,7 +25,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 
         public async Task<TContentEntity> Fill<TContentEntity, TContent>(TContentEntity e, TContent c) where TContentEntity : ContentEntity
         {
-            e.Content = Encoding.UTF8.GetBytes(_JsonSerializer.Serialize(c));
+            var j = _JsonSerializer.Serialize(c);
+            e.Content = Encoding.UTF8.GetBytes(j);
             e.PublishingId = _PublishingId.Create(e.Content);
             e.ContentTypeName = MediaTypeNames.Application.Json;
             e.SignedContent = await _SignedFormatter.SignedContentPacket(e.Content);

@@ -25,7 +25,6 @@ namespace CdnDataReceiver2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //TODO ensure this is removed once BD finally get the certs.
             var certificateHack = (bool)_Configuration.GetValue(typeof(bool), "CertificateHack", false);
             if (certificateHack)
                 ServicePointManager.ServerCertificateValidationCallback += (_, __, ___, ____) =>
