@@ -64,6 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             services.AddSingleton<IPublishingId>(new StandardPublishingIdFormatter());
             services.AddSingleton<IGaenContentConfig>(new GaenContentConfig(Configuration));
 
+            //TODO change to use same algorithm with a test cert and remove FakeContentSigner.
             if (CurrentEnvironment.IsProduction() || CurrentEnvironment.IsStaging())
             {
                 services.AddSingleton<IContentSigner, CmsSigner>();
@@ -72,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             }
             else
             {
-                services.AddSingleton<IContentSigner, FakeContentSigner>();
+                services.AddSingleton<IContentSigner, FakeContentSigner>(); 
             }
 
             services.AddScoped(x =>

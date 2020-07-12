@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
@@ -18,17 +19,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     {
         private readonly IReader<T> _SafeReader;
         private readonly IPublishingId _PublishingId;
+        private readonly ILogger _Logger;
 
-        public HttpGetBinaryContentCommand(IReader<T> safeReader, IPublishingId publishingId)
+        public HttpGetBinaryContentCommand(IReader<T> safeReader, IPublishingId publishingId, ILogger logger)
         {
             _SafeReader = safeReader;
             _PublishingId = publishingId;
+            _Logger = logger;
         }
 
-        public async Task<IActionResult> Execute(string id, HttpContext httpContext)
+        public async Task<IActionResult> Execute(string id)
         {
             if (!_PublishingId.Validate(id))
             {
+                _Logger.Error($"Invalid Publishing Id ({typeof(T).Name}): {id}.");
                 return new BadRequestResult();
             }
 
@@ -36,6 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             if (e == null)
             {
+                _Logger.Error($"Content not found ({typeof(T).Name}): {id}.");
                 return new NotFoundResult();
             }
 
@@ -49,6 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 SignedContent = e.SignedContent
             };
 
+            _Logger.Information($"Content found ({typeof(T).Name}): {id}.");
             return new OkObjectResult(r);
         }
     }

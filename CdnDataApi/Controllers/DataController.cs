@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
@@ -13,6 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
 {
@@ -23,27 +23,52 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
     {
         [HttpGet]
         [Route(EndPointNames.CdnApi.Manifest)]
-        public async Task<IActionResult> GetCurrentManifest([FromServices]HttpGetManifestBinaryContentCommand command)
-            => await command.Execute(HttpContext);
+        public async Task<IActionResult> GetCurrentManifest([FromServices]HttpGetManifestBinaryContentCommand command, [FromServices] ILogger logger)
+        {
+            if (command == null) throw new ArgumentNullException(nameof(command));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            logger.Information("GET manifest triggered.");
+            return await command.Execute();
+        }
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.ExposureKeySet + "/{id}")]
-        public async Task<IActionResult> GetExposureKeySet(string id, [FromServices]HttpGetBinaryContentCommand<ExposureKeySetContentEntity> command)
-            => await command.Execute(id, HttpContext);
+        public async Task<IActionResult> GetExposureKeySet(string id, [FromServices] HttpGetBinaryContentCommand<ExposureKeySetContentEntity> command, [FromServices] ILogger logger)
+        {
+            if (command == null) throw new ArgumentNullException(nameof(command));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            logger.Information("GET ExposureKeySet triggered.");
+            return await command.Execute(id);
+        }
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.ResourceBundle + "/{id}")]
-        public async Task<IActionResult> GetResourceBundle(string id, [FromServices]HttpGetBinaryContentCommand<ResourceBundleContentEntity> command)
-            => await command.Execute(id, HttpContext);
+        public async Task<IActionResult> GetResourceBundle(string id, [FromServices]HttpGetBinaryContentCommand<ResourceBundleContentEntity> command, [FromServices] ILogger logger)
+        {
+            if (command == null) throw new ArgumentNullException(nameof(command));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            logger.Information("GET ResourceBundle triggered.");
+            return await command.Execute(id);
+        }
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.RiskCalculationParameters + "/{id}")]
-        public async Task<IActionResult> GetRiskCalculationParameters(string id, [FromServices] HttpGetBinaryContentCommand<RiskCalculationContentEntity> command)
-            => await command.Execute(id, HttpContext);
+        public async Task<IActionResult> GetRiskCalculationParameters(string id, [FromServices] HttpGetBinaryContentCommand<RiskCalculationContentEntity> command, [FromServices] ILogger logger)
+        {
+            if (command == null) throw new ArgumentNullException(nameof(command));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            logger.Information("GET RiskCalculationParameters triggered.");
+            return await command.Execute(id);
+        }
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.AppConfig + "/{id}")]
-        public async Task<IActionResult> GetAppConfig(string id, [FromServices] HttpGetBinaryContentCommand<AppConfigContentEntity> command)
-            => await command.Execute(id, HttpContext);
+        public async Task<IActionResult> GetAppConfig(string id, [FromServices] HttpGetBinaryContentCommand<AppConfigContentEntity> command, [FromServices] ILogger logger)
+        {
+            if (command == null) throw new ArgumentNullException(nameof(command));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            logger.Information("GET AppConfig triggered.");
+            return await command.Execute(id);
+        }
     }
 }

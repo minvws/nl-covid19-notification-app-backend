@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
@@ -13,16 +14,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     public class HttpGetManifestBinaryContentCommand
     {
         private readonly DynamicManifestReader _DynamicManifestReader;
+        private readonly ILogger _Logger; //Actually not used.
 
-        public HttpGetManifestBinaryContentCommand(DynamicManifestReader dynamicManifestReader)
+        public HttpGetManifestBinaryContentCommand(DynamicManifestReader dynamicManifestReader, ILogger logger)
         {
-            _DynamicManifestReader = dynamicManifestReader;
+            _DynamicManifestReader = dynamicManifestReader ?? throw new ArgumentNullException(nameof(dynamicManifestReader));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<IActionResult> Execute(HttpContext httpContext)
+        public async Task<IActionResult> Execute()
         {
             var e = await _DynamicManifestReader.Execute();
-
             var r = new BinaryContentResponse
             {
                 LastModified = e.Release,
@@ -32,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 SignedContentTypeName = e.SignedContentTypeName,
                 SignedContent = e.SignedContent
             };
-
+            _Logger.Information("Return new manifest.");
             return new OkObjectResult(r);
         }
     }

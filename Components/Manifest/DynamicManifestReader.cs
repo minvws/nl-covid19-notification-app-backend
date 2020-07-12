@@ -8,6 +8,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
@@ -16,15 +17,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
     {
         private readonly ManifestBuilder _ManifestBuilder;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly IPublishingId _PublishingId;
         private readonly IContentSigner _ContentSigner;
+        private readonly ILogger _Logger; //Actually not used.
 
-        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId, IContentSigner contentSigner)
+        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IContentSigner contentSigner, ILogger logger)
         {
             _ManifestBuilder = manifestBuilder;
             _DateTimeProvider = dateTimeProvider;
-            _PublishingId = publishingId;
             _ContentSigner = contentSigner;
+            _Logger = logger;
         }
 
         public async Task<ManifestEntity?> Execute()
@@ -33,9 +34,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             {
                 Release = _DateTimeProvider.Now(),
             };
+            _Logger.Debug("Build new manifest.");
             var content = _ManifestBuilder.Execute();
+            //TODO should be injected...
+            _Logger.Debug("Format and sign new manifest.");
             var formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_ContentSigner), new StandardPublishingIdFormatter());
-            await formatter.Fill(e, content);
+            await formatter.Fill(e, content); //TODO add release date as a parameter
             return e;
         }
     }
