@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
@@ -24,61 +25,80 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         private readonly ITekWriter _Writer;
         private readonly WorkflowDbContext _DbContextProvider;
         private readonly IJsonSerializer _JsonSerializer;
+        private readonly ILogger _Logger;
 
-        public HttpPostReleaseTeksCommand(
-            IReleaseTeksValidator keyValidator, 
-            ISignatureValidator signatureValidator, 
-            ITekWriter writer, 
-            WorkflowDbContext dbContextProvider,
-            IJsonSerializer jsonSerializer
-            )
+        public HttpPostReleaseTeksCommand(IReleaseTeksValidator keyValidator, ISignatureValidator signatureValidator, ITekWriter writer, WorkflowDbContext dbContextProvider, IJsonSerializer jsonSerializer, ILogger logger)
         {
-            _KeyValidator = keyValidator;
-            _SignatureValidator = signatureValidator;
-            _Writer = writer;
-            _DbContextProvider = dbContextProvider;
-            _JsonSerializer = jsonSerializer;
+            _KeyValidator = keyValidator ?? throw new ArgumentNullException(nameof(keyValidator));
+            _SignatureValidator = signatureValidator ?? throw new ArgumentNullException(nameof(signatureValidator));
+            _Writer = writer ?? throw new ArgumentNullException(nameof(writer));
+            _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
+            _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task Execute(byte[] signature, HttpRequest request)
+        public async Task<IActionResult> Execute(byte[] signature, HttpRequest request)
         {
-            if (signature == null)
-                throw new ArgumentNullException(nameof(signature));
+            await InnerExecute(signature, request);
+            return new OkResult();
+        }
 
-            if (signature.Length == 0)
-                throw new ArgumentException("Zero length.", nameof(signature));
-
-            using var reader = new StreamReader(request.Body);
-            var payload = await reader.ReadToEndAsync();
-            var args = _JsonSerializer.Deserialize<ReleaseTeksArgs>(payload);
-
-            var workflow = _DbContextProvider
-                .KeyReleaseWorkflowStates
-                .FirstOrDefault(x => x.BucketId == args.BucketId);
-
-            if (workflow == null)
+        private async Task InnerExecute(byte[] signature, HttpRequest request)
+        {
+            try
             {
-                Log.Warning("Matching workflow not found.");
-                return;
-            }
+                if (signature == null)
+                {
+                    _Logger.Error("Signature error: null.");
+                    return;
+                }
 
-            if (!_KeyValidator.Validate(args, workflow))
+                if (signature.Length == 0)
+                {
+                    _Logger.Error("Signature error: Zero length.");
+                    return;
+                }
+
+                using var reader = new StreamReader(request.Body);
+                var payload = await reader.ReadToEndAsync();
+                var args = _JsonSerializer.Deserialize<ReleaseTeksArgs>(payload);
+
+                _Logger.Debug($"Body: {args}.");
+
+                var workflow = _DbContextProvider
+                    .KeyReleaseWorkflowStates
+                    .FirstOrDefault(x => x.BucketId == args.BucketId);
+
+                if (workflow == null)
+                {
+                    _Logger.Error("Matching workflow not found.");
+                    return;
+                }
+
+                _Logger.Debug("Matching workflow found.");
+
+                if (!_KeyValidator.Validate(args, workflow))
+                {
+                    _Logger.Error("Keys not valid.");
+                    return;
+                }
+
+                if (!_SignatureValidator.Valid(signature, workflow, Encoding.UTF8.GetBytes(payload)))
+                {
+                    _Logger.Error($"Signature not valid: {Convert.ToBase64String(signature)}.");
+                    return;
+                }
+
+                _Logger.Debug("Writing.");
+                await _Writer.Execute(args);
+                _Logger.Debug("Committing.");
+                _DbContextProvider.SaveAndCommit();
+                _Logger.Debug("Committed.");
+            }
+            catch (Exception e)
             {
-                Log.Warning("Keys args not valid.");
-                return;
+                _Logger.Error(e.ToString());
             }
-
-            if (!_SignatureValidator.Valid(signature, workflow, Encoding.UTF8.GetBytes(payload)))
-            {
-                Log.Warning($"Signature '{Convert.ToBase64String(signature)}' not valid.");
-                return;
-            }
-
-            Log.Information("Writing start.");
-            await _Writer.Execute(args);
-            Log.Information("Committing.");
-            _DbContextProvider.SaveAndCommit();
-            Log.Information("Committed.");
         }
     }
 }

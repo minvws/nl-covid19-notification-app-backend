@@ -20,10 +20,10 @@ namespace CdnDataPurge
         }
 
         [FunctionName("PurgeFunction")]
-        public async Task Run([TimerTrigger("%PurgeJobTriggerTime%")] TimerInfo myTimer, ILogger log)
+        public async Task Run([TimerTrigger("%PurgeJobTriggerTime%")] TimerInfo _, ILogger log)
         {
+            log.LogInformation($"CdnDataPurge triggered.");
             await _Command.Execute();
-            log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
         }
     }
 }

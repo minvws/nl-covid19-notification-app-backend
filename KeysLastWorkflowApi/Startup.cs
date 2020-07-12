@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,6 +21,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Register
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
 {
@@ -29,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
 
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public IConfiguration Configuration { get; }
@@ -50,6 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
                 result.BeginTransaction();
                 return result;
             });
+
             services.AddScoped<JwtService, JwtService>();
             services.AddAuthentication("icc_jwt")
                 .AddScheme<AuthenticationSchemeOptions, JwtAuthorizationHandler>("icc_jwt", null);
@@ -63,12 +66,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
             
             services.AddScoped<IReleaseTeksValidator, ReleaseTeksValidator>();
 
-            var sigValOn = (bool)Configuration.GetValue(typeof(bool), "ValidatePostKeysSignature", true);
-
+            var sigValOn = Configuration.GetValue("ValidatePostKeysSignature", true);
             if (sigValOn)
+            {
+                Log.Information("Signature validation of POST postkeys enabled : true");
                 services.AddScoped<ISignatureValidator, SignatureValidator>();
+            }
             else
-                services.AddScoped<ISignatureValidator, FakeSignatureValidator>();
+            {
+                Log.Warning("Signature validation of POST postkeys enabled : false");
+                services.AddScoped<ISignatureValidator, DoNotValidateSignatureValidator>();
+            }
 
             services.AddScoped<HttpPostRegisterSecret, HttpPostRegisterSecret>();
             services.AddScoped<ISecretWriter, SecretWriter>();

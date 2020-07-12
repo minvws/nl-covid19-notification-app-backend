@@ -22,13 +22,17 @@ namespace CdnDataReceiver.Controllers
 
         public CdnDataReceiverFunctions(IContentPathProvider contentPathProvider)
         {
-            _ContentPathProvider = contentPathProvider;
+            _ContentPathProvider = contentPathProvider ?? throw new ArgumentNullException(nameof(contentPathProvider));
         }
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.Manifest)]
         public async Task<IActionResult> HttpPostManifest([FromBody] ReceiveContentArgs args, [FromServices]ManifestBlobWriter blobWriter, [FromServices]IQueueSender<StorageAccountSyncMessage> qSender)
         {
+            if (args == null) throw new ArgumentNullException(nameof(args));
+            if (blobWriter == null) throw new ArgumentNullException(nameof(blobWriter));
+            if (qSender == null) throw new ArgumentNullException(nameof(qSender));
+
             var command = new HttpPostContentReciever2(blobWriter, qSender);
             return await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.Manifest, Name = EndPointNames.ManifestName});
         }
@@ -36,21 +40,41 @@ namespace CdnDataReceiver.Controllers
         [HttpPost]
         [Route(EndPointNames.CdnApi.AppConfig)]
         public async Task<IActionResult> HttpPostAppConfig([FromBody] ReceiveContentArgs args, [FromServices] HttpPostContentReciever2 command)
-            => await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.AppConfig, Name = args.PublishingId });
+        {
+            if (args == null) throw new ArgumentNullException(nameof(args));
+            if (command == null) throw new ArgumentNullException(nameof(command));
+
+            return await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.AppConfig, Name = args.PublishingId});
+        }
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.ResourceBundle)]
         public async Task<IActionResult> HttpPostResourceBundle([FromBody] ReceiveContentArgs args, [FromServices] HttpPostContentReciever2 command)
-            => await command.Execute(args, new DestinationArgs { Path = _ContentPathProvider.ResourceBundle, Name = args.PublishingId });
+        {
+            if (args == null) throw new ArgumentNullException(nameof(args));
+            if (command == null) throw new ArgumentNullException(nameof(command));
+
+            return await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.ResourceBundle, Name = args.PublishingId});
+        }
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.RiskCalculationParameters)]
         public async Task<IActionResult> HttpPostCalcConfig([FromBody] ReceiveContentArgs args, [FromServices] HttpPostContentReciever2 command)
-            => await command.Execute(args, new DestinationArgs { Path = _ContentPathProvider.RiskCalculationParameters, Name = args.PublishingId });
+        {
+            if (args == null) throw new ArgumentNullException(nameof(args));
+            if (command == null) throw new ArgumentNullException(nameof(command));
+
+            return await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.RiskCalculationParameters, Name = args.PublishingId});
+        }
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.ExposureKeySet)]
         public async Task<IActionResult> HttpPostEks([FromBody] ReceiveContentArgs args, [FromServices] HttpPostContentReciever2 command)
-            => await command.Execute(args, new DestinationArgs { Path = _ContentPathProvider.ExposureKeySet, Name = args.PublishingId });
+        {
+            if (args == null) throw new ArgumentNullException(nameof(args));
+            if (command == null) throw new ArgumentNullException(nameof(command));
+
+            return await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.ExposureKeySet, Name = args.PublishingId});
+        }
     }
 }
