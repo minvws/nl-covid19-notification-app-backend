@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
@@ -76,7 +77,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
                     x.GetService<WorkflowDbContext>(),
                     x.GetService<ExposureContentDbContext>(),
                     x.GetService<IUtcDateTimeProvider>(),
-                    x.GetService<IPublishingId>()
+                    x.GetService<IPublishingId>(),
+                    x.GetService<ILogger>()
                 ));
 
             services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
@@ -86,7 +88,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
                     new EcdSaSigner(new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:GA"))),
                     new CmsSigner(new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"))), 
                     x.GetService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
-                    new GeneratedProtobufContentFormatter()
+                    new GeneratedProtobufContentFormatter(),
+                    x.GetService<ILogger>()
                 ));
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
             services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();

@@ -15,6 +15,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
 {
@@ -41,8 +42,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly ExposureContentDbContext _ContentDbContext;
 
         private readonly IPublishingId _PublishingId;
+        private readonly ILogger _Logger;
 
-        public ExposureKeySetBatchJobMk2(/*IExposureKeySetBatchJobConfig jobConfig,*/ IGaenContentConfig gaenContentConfig, IExposureKeySetBuilder builder, WorkflowDbContext workflowDbContext, ExposureContentDbContext contentDbContext, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId)
+        public ExposureKeySetBatchJobMk2(/*IExposureKeySetBatchJobConfig jobConfig,*/ IGaenContentConfig gaenContentConfig, IExposureKeySetBuilder builder, WorkflowDbContext workflowDbContext, ExposureContentDbContext contentDbContext, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId, ILogger logger)
         {
             //_JobConfig = jobConfig;
             _GaenContentConfig = gaenContentConfig;
@@ -50,6 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _WorkflowDbContext = workflowDbContext;
             _ContentDbContext = contentDbContext;
             _PublishingId = publishingId;
+            _Logger = logger;
             _Used = new List<EksCreateJobInputEntity>(_GaenContentConfig.ExposureKeySetCapacity); //
             _Start = dateTimeProvider.Now();
             JobName = $"ExposureKeySetsJob_{_Start:u}".Replace(" ", "_").Replace(":", "_");
@@ -60,16 +63,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             if (_Disposed)
                 throw new ObjectDisposedException(JobName);
 
+            _Logger.Information($"{JobName} started.");
+            
             _WorkflowDbContext.EnsureNoChangesOrTransaction();
             _ContentDbContext.EnsureNoChangesOrTransaction();
 
             await CopyInput(useAllKeys);
             await BuildBatches();
             await CommitResults();
+
+            _Logger.Information($"{JobName} complete.");
         }
 
         private async Task BuildBatches()
         {
+            _Logger.Debug($"Build batches.");
+
             const int size = 100;
             var count = 0;
             var keys = GetInputBatch(count, size); //TODO page or otherwise close the data reader before writing in Build
@@ -101,6 +110,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         private async Task Build()
         {
+            _Logger.Debug($"Build EKS.");
+
             var args = _KeyBatch.ToArray();
             
             var content = await _SetBuilder.BuildAsync(args);
@@ -121,6 +132,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         private async Task WriteOutput(EksCreateJobOutputEntity e)
         {
+            _Logger.Information($"Write EKS {e.CreatingJobQualifier}.");
+
             await using (_ContentDbContext.BeginTransaction())
             {
                 await _ContentDbContext.AddAsync(e);
@@ -139,6 +152,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         public async Task CopyInput(bool useAllKeys = false)
         {
+            _Logger.Debug($"Copy input TEKs.");
+
             await using (_WorkflowDbContext.BeginTransaction())
             {
                 await _ContentDbContext.EksInput.BatchDeleteAsync(); //TODO truncate instead
@@ -165,11 +180,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         public EksCreateJobInputEntity[] GetInputBatch(int skip, int take)
         {
+            _Logger.Debug($"Read input batch - skip {skip}, take {take}.");
             return _ContentDbContext.EksInput.OrderBy(x => x.KeyData).Skip(skip).Take(take).ToArray();
         }
 
         public async Task WriteUsed(EksCreateJobInputEntity[] used)
         {
+            _Logger.Debug($"Mark used, count {used.Length}.");
+
             foreach (var i in used)
             {
                 i.Used = true;
@@ -183,6 +201,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         public async Task CommitResults()
         {
+            _Logger.Information($"Commit results - publish EKSs.");
+
             await using (_ContentDbContext.BeginTransaction())
             {
                 var move = _ContentDbContext.EksOutput.Select(
@@ -200,6 +220,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 _ContentDbContext.ExposureKeySetContent.AddRange(move);
                 _ContentDbContext.SaveAndCommit();
             }
+
+            _Logger.Information($"Commit results - Mark TEKs as Published.");
 
             await using (_ContentDbContext.BeginTransaction()) //Read-only
             {
@@ -239,6 +261,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     _WorkflowDbContext.SaveAndCommit();
                 }
 
+                _Logger.Information($"Cleanup job tables.");
                 await _ContentDbContext.EksInput.BatchDeleteAsync();
                 await _ContentDbContext.EksOutput.BatchDeleteAsync();
                 _ContentDbContext.SaveAndCommit();

@@ -25,19 +25,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IContentFormatter _ContentFormatter;
         private readonly IExposureKeySetHeaderInfoConfig _Config;
+        private ILogger _Logger;
 
         public ExposureKeySetBuilderV1(
             IExposureKeySetHeaderInfoConfig headerInfoConfig,
             IContentSigner gaenContentSigner,
             IContentSigner nlContentSigner,
-            IUtcDateTimeProvider dateTimeProvider, 
-            IContentFormatter contentFormatter)
+            IUtcDateTimeProvider dateTimeProvider,
+            IContentFormatter contentFormatter,
+            ILogger logger
+            )
         {
-            _GaenContentSigner = gaenContentSigner;
-            _NlContentSigner = nlContentSigner;
-            _DateTimeProvider = dateTimeProvider;
-            _ContentFormatter = contentFormatter;
-            _Config = headerInfoConfig;
+            _GaenContentSigner = gaenContentSigner ?? throw new ArgumentNullException(nameof(gaenContentSigner));
+            _NlContentSigner = nlContentSigner ?? throw new ArgumentNullException(nameof(nlContentSigner));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _ContentFormatter = contentFormatter ?? throw new ArgumentNullException(nameof(contentFormatter));
+            _Config = headerInfoConfig ?? throw new ArgumentNullException(nameof(headerInfoConfig));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<byte[]> BuildAsync(TemporaryExposureKeyArgs[] keys)
@@ -62,7 +66,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             var nlSig = _NlContentSigner.GetSignature(contentBytes);
             var gaenSig = _GaenContentSigner.GetSignature(contentBytes);
 
-            var gaenSigB64 = Convert.ToBase64String(gaenSig);
+            _Logger.Debug($"GAEN Sig: {Convert.ToBase64String(gaenSig)}.");
+            _Logger.Debug($"NL Sig: {Convert.ToBase64String(nlSig)}.");
 
             var signatures = new ExposureKeySetSignaturesContentArgs
             {

@@ -15,6 +15,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using Serilog;
 using TemporaryExposureKeyArgs = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.TemporaryExposureKeyArgs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
@@ -34,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             var builder = new ExposureKeySetBuilderV1(new FakeExposureKeySetHeaderInfoConfig(), 
                 new EcdSaSigner(new ResourceCertificateProvider2("TestCert2.p12")), 
                 new CmsSigner(new ResourceCertificateProvider("FakeRSA.p12")), 
-                new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter());
+                new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter(), Log.Logger);
 
             var actual = builder.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
             Assert.IsTrue(actual.Length > 0);

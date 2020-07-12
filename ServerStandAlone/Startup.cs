@@ -42,6 +42,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 using NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 {
@@ -118,7 +119,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                     x.GetService<WorkflowDbContext>(),
                     x.GetService<ExposureContentDbContext>(),
                     x.GetService<IUtcDateTimeProvider>(),
-                    x.GetService<IPublishingId>()
+                    x.GetService<IPublishingId>(),
+                    x.GetService<ILogger>()
                 ));
 
             services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
@@ -128,7 +130,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                     new EcdSaSigner(new ResourceCertificateProvider("FakeECDSA.p12")),
                     new CmsSigner(new ResourceCertificateProvider("FakeRSA.p12")),
                     x.GetService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
-                    new GeneratedProtobufContentFormatter()
+                    new GeneratedProtobufContentFormatter(),
+                    x.GetService<ILogger>()
                 ));
 
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
@@ -140,7 +143,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                     new FakeContentSigner(),
                     new FakeContentSigner(),
                     x.GetService<IUtcDateTimeProvider>(),
-                    new GeneratedProtobufContentFormatter()
+                    new GeneratedProtobufContentFormatter(),
+                    x.GetService<ILogger>()
                 ));
 
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
