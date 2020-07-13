@@ -32,18 +32,26 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services
             _builder = new JwtBuilder()
                 .WithAlgorithm(new HMACSHA256Algorithm())
                 .WithSecret(_secret)
-                .MustVerifySignature()
-                .AddClaim("exp", value: DateTimeOffset.UtcNow.AddHours(3).ToUnixTimeSeconds());
-            //
-            // IJwtAlgorithm algorithm = new HMACSHA256Algorithm(); // symmetric
-            // IJsonSerializer serializer = new JsonNetSerializer();
-            // IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
-            // IJwtEncoder encoder = new JwtEncoder(algorithm, serializer, urlEncoder);
+                .MustVerifySignature();
         }
 
+        public string GenerateCustomJwt(long exp, Dictionary<string, object>? claims = null)
+        {
+            _builder.AddClaim("exp", exp.ToString());
+            if (claims != null)
+            {
+                foreach (KeyValuePair<string, object> keyValuePair in claims)
+                {
+                    _builder.AddClaim(keyValuePair.Key, keyValuePair.Value);
+                }
+            }
+
+            return _builder.Encode();
+        }
 
         public string GenerateJwt(ClaimsPrincipal user)
         {
+            _builder.AddClaim("exp", DateTimeOffset.UtcNow.AddHours(3).ToUnixTimeSeconds()); // default
             // add identityhub claims
             var claims = user.Claims.ToList();
             // _builder.AddClaims();
@@ -59,14 +67,15 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services
             _builder.AddClaim("email", claims.FirstOrDefault(c =>
                     c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"))
                 ?.Value);
-            
-            
+
+
             return _builder.Encode();
         }
 
         public bool IsValidJwt(string token)
         {
             var payload = DecodeJwt(token);
+
             return payload.Keys.Contains("access_token") && payload["access_token"].ToString().Length > 0;
         }
 
