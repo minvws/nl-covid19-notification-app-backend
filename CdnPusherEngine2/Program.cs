@@ -18,9 +18,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 {
     internal class Program
     {
-        protected Program()
+        public Program()
         {
+            AppDomain.CurrentDomain.UnhandledException += AppDomainExceptinHandler;
+        }
 
+        private void AppDomainExceptinHandler(object sender, UnhandledExceptionEventArgs e)
+        {
+            Log.Fatal(e.ExceptionObject.ToString());
         }
 
         public static IConfigurationRoot Configuration { get; private set; }
@@ -46,11 +51,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
                 var pushIt = serviceProvider.GetService<PusherTask>();
                 await pushIt.PushIt();
             }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex.ToString());
-                throw;
-            }
             finally
             {
                 Log.Information("Exiting.");
@@ -68,12 +68,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             services.AddSingleton<IDataApiUrls>(new DataApiUrls(Configuration, "DataApi"));
             services.AddSingleton<IReceiverConfig>(new ReceiverConfig(Configuration, "Receiver"));
 
+            
             var certificateHack = Configuration.GetValue("CertificateHack", false);
-
             if (certificateHack)
+            {
+                Log.Warning("Unproven hack for self-signed certificates is enabled.");
                 ServicePointManager.ServerCertificateValidationCallback += (_, __, ___, ____) =>
-                true;
-
+                    true;
+            }
         }
     }
 }

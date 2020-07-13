@@ -20,6 +20,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
@@ -48,6 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
             });
 
             services.AddSeriLog(Configuration);
+            services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(Log.Logger)));
             services.AddBasicAuthentication();
 
             services.AddScoped(x =>

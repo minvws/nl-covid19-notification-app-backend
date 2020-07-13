@@ -15,9 +15,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ScheduledTaskEngine
 {
     internal class Program
     {
-        protected Program()
+        public Program()
         {
-            
+            AppDomain.CurrentDomain.UnhandledException += AppDomainExceptinHandler;
+        }
+
+        private void AppDomainExceptinHandler(object sender, UnhandledExceptionEventArgs e)
+        {
+            Log.Fatal(e.ExceptionObject.ToString());
         }
 
         public static IConfigurationRoot Configuration { get; private set; }
@@ -36,18 +41,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ScheduledTaskEngine
             // add the framework services
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
-
-            IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
             try
             {
                 Log.Information("Starting scheduled task engine.");
                 await serviceProvider.GetService<App>().Run(args);
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex.ToString());
-                throw;
             }
             finally
             {

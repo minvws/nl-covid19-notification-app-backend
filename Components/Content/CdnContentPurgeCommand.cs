@@ -35,7 +35,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             await DeleteContent<ResourceBundleContentEntity>(_Config.ContentLifetimeDays);
             await DeleteContent<AppConfigContentEntity>(_Config.ContentLifetimeDays);
             await DeleteContent<ExposureKeySetContentEntity>(_Config.ExposureKeySetLifetimeDays);
-
             _ContentDbContext.SaveAndCommit();
         }
 

@@ -13,7 +13,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.BackgroundJobs;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowStateEngineApi
 {
@@ -35,6 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowStateEngineApi
 
             services.AddControllers();
             services.AddSeriLog(Configuration);
+            services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(Log.Logger)));
 
             services.AddScoped(x =>
             {

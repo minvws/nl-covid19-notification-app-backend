@@ -15,14 +15,13 @@ using Microsoft.Extensions.Configuration;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services
 {
+    // TODO needs a code review - mostly dead code????
     public class JwtService
     {
         private IConfiguration _Configuration;
 
-
         private string _secret;
         private JwtBuilder _builder;
-
 
         public JwtService(IConfiguration configuration)
         {
@@ -41,9 +40,10 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services
             // IJwtEncoder encoder = new JwtEncoder(algorithm, serializer, urlEncoder);
         }
 
-
         public string GenerateJwt(ClaimsPrincipal user)
         {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
             // add identityhub claims
             var claims = user.Claims.ToList();
             // _builder.AddClaims();
@@ -60,18 +60,20 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services
                     c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"))
                 ?.Value);
             
-            
             return _builder.Encode();
         }
 
         public bool IsValidJwt(string token)
         {
+            //TODO if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
+
             var payload = DecodeJwt(token);
             return payload.Keys.Contains("access_token") && payload["access_token"].ToString().Length > 0;
         }
 
         public IDictionary<string, object> DecodeJwt(string token)
         {
+            //TODO if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
             return _builder.Decode<IDictionary<string, object>>(token);
         }
     }

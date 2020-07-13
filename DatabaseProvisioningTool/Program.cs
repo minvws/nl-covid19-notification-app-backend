@@ -17,9 +17,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
 {
     internal class Program
     {
-        protected Program()
+        public Program()
         {
-            
+            AppDomain.CurrentDomain.UnhandledException += AppDomainExceptinHandler;
+        }
+
+        private void AppDomainExceptinHandler(object sender, UnhandledExceptionEventArgs e)
+        {
+            Log.Fatal(e.ExceptionObject.ToString());
         }
 
         public static IConfigurationRoot Configuration { get; private set; }
@@ -38,8 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
             // add the framework services
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
-
-            IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
             try
             {
@@ -48,11 +52,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
                 Log.Information("Ending service");
                 Console.WriteLine("Press any key to exit...");
                 Console.ReadLine();
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "Error running service");
-                throw ex;
             }
             finally
             {

@@ -6,13 +6,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks;
 using Serilog;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace CdnDataReceiver2
 {
@@ -34,8 +33,9 @@ namespace CdnDataReceiver2
                 throw new ArgumentNullException(nameof(services));
 
             services.AddSeriLog(_Configuration);
+            services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(Log.Logger)));
 
-            Log.Information($"Active environment name: {_Environment.EnvironmentName}"); //TODO obsolete?
+            Log.Logger.Information($"Active environment name: {_Environment.EnvironmentName}"); //TODO obsolete?
 
             var certificateHack = _Configuration.GetValue("CertificateHack", false);
             if (certificateHack)
@@ -103,4 +103,5 @@ namespace CdnDataReceiver2
 
         }
     }
+
 }

@@ -18,10 +18,13 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Services;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
@@ -29,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public IConfiguration Configuration { get; }
@@ -37,6 +40,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+
+            services.AddSeriLog(Configuration);
+            services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(Log.Logger)));
+
             ComponentsContainerHelper.RegisterDefaultServices(services);
 
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
@@ -99,6 +107,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            if (app == null) throw new ArgumentNullException(nameof(app));
+            if (env == null) throw new ArgumentNullException(nameof(env));
+
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS
             
             app.UseSwagger();

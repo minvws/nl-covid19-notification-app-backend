@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
+using Serilog;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
@@ -20,39 +20,30 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
     [Route("[controller]")]
     public class RedeemIccController : ControllerBase
     {
-        private readonly ILogger<RedeemIccController> _Logger;
-        private readonly ActionExecutedContext _Context;
+        private readonly ILogger _Logger;
         private readonly IIccService _IccService;
         private readonly AppBackendService _AppBackendService;
         private readonly IccBackendContentDbContext _DbContext;
 
-        public RedeemIccController(IIccService iccService, ILogger<RedeemIccController> logger,
-            AppBackendService appBackendService, IccBackendContentDbContext dbContext)
+        public RedeemIccController(ILogger logger, IIccService iccService, AppBackendService appBackendService, IccBackendContentDbContext dbContext)
         {
-            _IccService = iccService;
-            _AppBackendService = appBackendService;
-            _Logger = logger;
-            _DbContext = dbContext;
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _IccService = iccService ?? throw new ArgumentNullException(nameof(iccService));
+            _AppBackendService = appBackendService ?? throw new ArgumentNullException(nameof(appBackendService));
+            _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
         [HttpPost, Authorize]
         public async Task<ActionResult<object>> PostRedeemIcc(ConfirmLabConfirmationIdModel confirmLabConfirmationIdModel)
         {
+            _Logger.Information("POST RedeemIcc triggered.");
             // Make Icc Used, so it can only be used once 
-            var infectionConfirmationCodeEntity = await _IccService.RedeemIcc(User.Identity.Name);
+            var infectionConfirmationCodeEntity = await _IccService.RedeemIcc(User.Identity.Name); //TODO never used?
             _DbContext.SaveAndCommit();
 
             // POST /labresult call on App Backend
-            bool isValid = false;
-            try
-            {
-                isValid = await _AppBackendService.LabConfirmationIdIsValid(confirmLabConfirmationIdModel);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            var isValid = await _AppBackendService.LabConfirmationIdIsValid(confirmLabConfirmationIdModel);
+
             if (isValid)
             {
                 return new JsonResult(new
@@ -62,10 +53,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
                 });
             }
 
+            //TODO style - guard against bad outcomes with if()...
             return BadRequest(new
                 {ok = false, status = "400", message = "Invalid LabConfirmationId", payload = confirmLabConfirmationIdModel});
         }
-        
-
     }
 }
