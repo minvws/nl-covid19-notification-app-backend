@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi</RootNamespace>
+    <UserSecretsId>7f49c0c8-23da-4285-91fd-4599c11321e0</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

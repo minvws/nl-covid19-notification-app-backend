@@ -3,6 +3,7 @@
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 		<AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngineApi</AssemblyName>
 		<RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngineApi</RootNamespace>
+		<UserSecretsId>170b1f58-9095-42ca-84ab-92fb11b12b22</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>

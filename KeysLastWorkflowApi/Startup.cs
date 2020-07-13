@@ -55,13 +55,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
                 result.BeginTransaction();
                 return result;
             });
-            
+
+            services.AddSingleton<ILogger>(Log.Logger);
+
+
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<IGeanTekListValidationConfig, StandardGeanCommonWorkflowConfig>();
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
 
             services.AddScoped<HttpPostReleaseTeksCommand, HttpPostReleaseTeksCommand>();
+
+            services.AddScoped<PollTokenGenerator, PollTokenGenerator>();
 
             services.AddScoped<IReleaseTeksValidator, ReleaseTeksValidator>();
             services.AddScoped<ISignatureValidator, SignatureValidator>();

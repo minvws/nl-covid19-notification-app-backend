@@ -37,6 +37,4 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             return result;
         }
     }
-
-
 }
