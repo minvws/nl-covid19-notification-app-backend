@@ -50,5 +50,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi.Controllers
             logger.Information("POST lab confirmation triggered.");
             return await command.Execute(args);
         }
+        
+        [HttpPost, Authorize(AuthenticationSchemes = "icc_jwt")]
+        [Route(EndPointNames.CaregiversPortalApi.LabVerify)]
+        public async Task<IActionResult> PostKeysAreUploaded([FromBody] LabVerifyArgs args, [FromServices] HttpPostLabVerify command, [FromServices] ILogger logger)
+        {
+            if (command == null) throw new ArgumentNullException(nameof(command));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+
+            logger.Information("POST labverify triggered.");
+            return await command.Execute(args);
+        }
     }
 }

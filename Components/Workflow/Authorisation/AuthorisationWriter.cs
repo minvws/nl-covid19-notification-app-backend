@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
                 .SingleOrDefault(x => x.LabConfirmationId == args.LabConfirmationId);
 
             if (e == null)
-                throw new LabConfirmationIdNotFoundException();
+                throw new LabFlowNotFoundException();
 
             e.AuthorisedByCaregiver = true;
             e.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
@@ -44,7 +44,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         }
     }
 
-    public class LabConfirmationIdNotFoundException : Exception
-    {
-    }
+ 
 }

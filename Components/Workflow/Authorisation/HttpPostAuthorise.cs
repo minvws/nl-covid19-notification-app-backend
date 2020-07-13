@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
@@ -15,30 +14,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     {
         private readonly IAuthorisationWriter _AuthorisationWriter;
         private readonly WorkflowDbContext _DbContextProvider;
-        private readonly ILogger _Logger;
+        private readonly PollTokenGenerator _PollTokenGenerator;
 
-        public HttpPostAuthorise(IAuthorisationWriter authorisationWriter, WorkflowDbContext dbContextProvider, ILogger logger)
+        public HttpPostAuthorise(IAuthorisationWriter authorisationWriter, WorkflowDbContext dbContextProvider,
+            PollTokenGenerator pollTokenGenerator)
         {
-            _AuthorisationWriter = authorisationWriter ?? throw new ArgumentNullException(nameof(authorisationWriter));
-            _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _AuthorisationWriter = authorisationWriter;
+            _DbContextProvider = dbContextProvider;
+            _PollTokenGenerator = pollTokenGenerator;
         }
 
         public async Task<IActionResult> Execute(AuthorisationArgs args)
         {
-            if (args == null) throw new ArgumentNullException(nameof(args));
-
             try
             {
-                _Logger.Debug($"Authorisation - {args.LabConfirmationId}.");
                 await _AuthorisationWriter.Execute(args);
+                var state = await _PollTokenGenerator.ExecuteGenerationByLabConfirmationId(args.LabConfirmationId);
                 _DbContextProvider.SaveAndCommit();
-                _Logger.Debug($"Authorisation complete - Valid:true.");
-                return new OkObjectResult(new AuthorisationResponse {Valid = true});
+
+                return new OkObjectResult(new AuthorisationResponse {Valid = true, PollToken = state.PollToken});
             }
-            catch (Exception e) //TODO general catch -> specific or just branch on invalid/unauthorised.
+            catch (LabFlowNotFoundException e)
             {
-                _Logger.Error(e.ToString());
                 return new OkObjectResult(new AuthorisationResponse {Valid = false});
             }
         }

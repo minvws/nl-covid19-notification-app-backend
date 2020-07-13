@@ -15,66 +15,69 @@ using Microsoft.Extensions.Configuration;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services
 {
-    // TODO needs a code review - mostly dead code????
     public class JwtService
     {
-        private IConfiguration _Configuration;
-
-        private string _secret;
-        private JwtBuilder _builder;
+        private readonly JwtBuilder _JwtBuilder;
 
         public JwtService(IConfiguration configuration)
         {
-            _Configuration = configuration;
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-            _secret = _Configuration.GetSection("IccPortalConfig:Jwt:secret").Value;
-            _builder = new JwtBuilder()
+            var secret = configuration.GetSection("IccPortalConfig:Jwt:secret").Value; //TODO Not a section!
+            _JwtBuilder = new JwtBuilder()
                 .WithAlgorithm(new HMACSHA256Algorithm())
-                .WithSecret(_secret)
-                .MustVerifySignature()
-                .AddClaim("exp", value: DateTimeOffset.UtcNow.AddHours(3).ToUnixTimeSeconds());
-            //
-            // IJwtAlgorithm algorithm = new HMACSHA256Algorithm(); // symmetric
-            // IJsonSerializer serializer = new JsonNetSerializer();
-            // IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
-            // IJwtEncoder encoder = new JwtEncoder(algorithm, serializer, urlEncoder);
+                .WithSecret(secret)
+                .MustVerifySignature();
+        }
+
+        public string GenerateCustomJwt(long exp, Dictionary<string, object>? claims = null)
+        {
+            _JwtBuilder.AddClaim("exp", exp.ToString());
+            if (claims != null)
+            {
+                foreach (KeyValuePair<string, object> keyValuePair in claims)
+                {
+                    _JwtBuilder.AddClaim(keyValuePair.Key, keyValuePair.Value);
+                }
+            }
+
+            return _JwtBuilder.Encode();
         }
 
         public string GenerateJwt(ClaimsPrincipal user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
+            _JwtBuilder.AddClaim("exp", DateTimeOffset.UtcNow.AddHours(3).ToUnixTimeSeconds()); // default
             // add identityhub claims
             var claims = user.Claims.ToList();
             // _builder.AddClaims();
-            _builder.AddClaim("access_token", claims.FirstOrDefault(c =>
+            _JwtBuilder.AddClaim("access_token", claims.FirstOrDefault(c =>
                     c.Type.Equals("http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken"))
                 ?.Value);
-            _builder.AddClaim("id", claims.FirstOrDefault(c =>
+            _JwtBuilder.AddClaim("id", claims.FirstOrDefault(c =>
                     c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"))
                 ?.Value);
-            _builder.AddClaim("name", claims.FirstOrDefault(c =>
+            _JwtBuilder.AddClaim("name", claims.FirstOrDefault(c =>
                     c.Type.Equals("http://schemas.u2uconsult.com/ws/2014/04/identity/claims/displayname"))
                 ?.Value);
-            _builder.AddClaim("email", claims.FirstOrDefault(c =>
+            _JwtBuilder.AddClaim("email", claims.FirstOrDefault(c =>
                     c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"))
                 ?.Value);
-            
-            return _builder.Encode();
+
+
+            return _JwtBuilder.Encode();
         }
 
-        public bool IsValidJwt(string token)
+        public bool IsValidJwt(string token) //TODO nulls allowed?
         {
-            //TODO if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
-
             var payload = DecodeJwt(token);
             return payload.Keys.Contains("access_token") && payload["access_token"].ToString().Length > 0;
         }
 
-        public IDictionary<string, object> DecodeJwt(string token)
+        public IDictionary<string, object> DecodeJwt(string token) //TODO nulls allowed?
         {
-            //TODO if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
-            return _builder.Decode<IDictionary<string, object>>(token);
+            return _JwtBuilder.Decode<IDictionary<string, object>>(token);
         }
     }
 }
