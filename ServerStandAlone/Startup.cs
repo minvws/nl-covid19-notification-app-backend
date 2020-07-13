@@ -67,7 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 });
 
             services.AddSeriLog(Configuration);
-
+            services.AddSingleton<ILogger>(Log.Logger);
 
             ComponentsContainerHelper.RegisterDefaultServices(services);
 
