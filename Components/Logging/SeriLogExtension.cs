@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -12,6 +13,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
     {
         public static void AddSeriLog(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
+            if (serviceCollection == null) throw new ArgumentNullException(nameof(serviceCollection));
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
             // Initialize serilog logger
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)

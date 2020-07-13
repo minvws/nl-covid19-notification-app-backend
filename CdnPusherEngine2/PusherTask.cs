@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using Serilog;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
@@ -17,20 +16,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
     {
         private readonly IDataApiUrls _DataApiConfig;
         private readonly IReceiverConfig _ReceiverConfig;
-        private readonly ILogger<PusherTask> _Logger;
+        private readonly ILogger _Logger;
         private readonly IJsonSerializer _JsonSerializer;
 
-        public PusherTask(ILogger<PusherTask> logger, IDataApiUrls dataApiConfig, IReceiverConfig receiverConfig, IJsonSerializer jsonSerializer)
+        public PusherTask(IDataApiUrls dataApiConfig, IReceiverConfig receiverConfig, ILogger logger, IJsonSerializer jsonSerializer)
         {
-            _Logger = logger;
-            _ReceiverConfig = receiverConfig;
-            _DataApiConfig = dataApiConfig;
-            _JsonSerializer = jsonSerializer;
+            _DataApiConfig = dataApiConfig ?? throw new ArgumentNullException(nameof(dataApiConfig));
+            _ReceiverConfig = receiverConfig ?? throw new ArgumentNullException(nameof(receiverConfig));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
         }
 
         public async Task PushIt()
         {
-            _Logger.LogInformation("Running.");
+            _Logger.Information("Running.");
 
             //Read manifest
             var bcr = await GetContent(_DataApiConfig.Manifest);
@@ -40,26 +39,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             if (manifest == null)
                 throw new InvalidOperationException("Unable to read manifest.");
 
-            _Logger.LogInformation("Read Manifest.");
+            _Logger.Information("Read Manifest.");
 
             bool writtenToDb;
             //Push all manifest items
             if (!string.IsNullOrWhiteSpace(manifest.AppConfig))
             {
                 writtenToDb = await PushItGood(string.Format(_DataApiConfig.AppConfig, manifest.AppConfig), _ReceiverConfig.AppConfig);
-                _Logger.LogInformation($"Pushed AppConfig {manifest.AppConfig} - New item:{writtenToDb}.");
+                _Logger.Information($"Pushed AppConfig {manifest.AppConfig} - New item:{writtenToDb}.");
             }
 
             if (!string.IsNullOrWhiteSpace(manifest.ResourceBundle))
             {
                 writtenToDb = await PushItGood(string.Format(_DataApiConfig.ResourceBundle, manifest.ResourceBundle), _ReceiverConfig.ResourceBundle);
-                _Logger.LogInformation($"Pushed ResourceBundle {manifest.ResourceBundle} - New item:{writtenToDb}.");
+                _Logger.Information($"Pushed ResourceBundle {manifest.ResourceBundle} - New item:{writtenToDb}.");
             }
 
             if (!string.IsNullOrWhiteSpace(manifest.RiskCalculationParameters))
             {
                 writtenToDb = await PushItGood(string.Format(_DataApiConfig.RiskCalculationParameters, manifest.RiskCalculationParameters), _ReceiverConfig.RiskCalculationParameters);
-                _Logger.LogInformation($"Pushed RiskCalculationParameters {manifest.RiskCalculationParameters} - New item:{writtenToDb}.");
+                _Logger.Information($"Pushed RiskCalculationParameters {manifest.RiskCalculationParameters} - New item:{writtenToDb}.");
             }
 
             foreach (var i in manifest.ExposureKeySets)
@@ -67,25 +66,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
                 if (!string.IsNullOrWhiteSpace(i))
                 {
                     writtenToDb = await PushItGood(string.Format(_DataApiConfig.ExposureKeySet, i), _ReceiverConfig.ExposureKeySet);
-                    _Logger.LogInformation($"Pushed ExposureKeySet {i} - New item:{writtenToDb}.");
+                    _Logger.Information($"Pushed ExposureKeySet {i} - New item:{writtenToDb}.");
                 }
             }
 
-            writtenToDb = await new SubKeyAuthPostBytesToUrl(_ReceiverConfig).Execute(_ReceiverConfig.Manifest, MapSignedContent(bcr));
-            _Logger.LogInformation($"Pushed manifest - New item:{writtenToDb}.");
+            writtenToDb = await new SubKeyAuthPostBytesToUrl(_ReceiverConfig, _Logger).Execute(_ReceiverConfig.Manifest, MapSignedContent(bcr));
+            _Logger.Information($"Pushed manifest - New item:{writtenToDb}.");
 
-            _Logger.LogInformation("Completed.");
+            _Logger.Information("Completed.");
         }
 
         private async Task<bool> PushItGood(string fromUri, string toUri)
         {
             var bcr = await GetContent(fromUri);
-            return await new SubKeyAuthPostBytesToUrl(_ReceiverConfig).Execute(toUri, MapSignedContent(bcr));
+            return await new SubKeyAuthPostBytesToUrl(_ReceiverConfig, _Logger).Execute(toUri, MapSignedContent(bcr));
         }
 
         private async Task<BinaryContentResponse> GetContent(string fromUri)
         {
-            var content = await new BasicAuthDataApiReader(_DataApiConfig).Read(fromUri);
+            var content = await new BasicAuthDataApiReader(_DataApiConfig, _Logger).Read(fromUri);
             var contentBytes = Encoding.UTF8.GetString(content);
             return _JsonSerializer.Deserialize<BinaryContentResponse>(contentBytes);
         }

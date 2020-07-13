@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
@@ -18,10 +19,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 
         public ManifestBuilder(GetActiveExposureKeySetsListCommand exposureKeySetsListCommand, GetLatestContentCommand<ResourceBundleContentEntity> resourceBundleFinder, GetLatestContentCommand<RiskCalculationContentEntity> workflowCalcParametersFinder, GetLatestContentCommand<AppConfigContentEntity> appConfigFinder)
         {
-            _ExposureKeySetsListCommand = exposureKeySetsListCommand;
-            _ResourceBundleFinder = resourceBundleFinder;
-            _WorkflowCalcParametersFinder = workflowCalcParametersFinder;
-            _AppConfigFinder = appConfigFinder;
+            _ExposureKeySetsListCommand = exposureKeySetsListCommand ?? throw new ArgumentNullException(nameof(exposureKeySetsListCommand));
+            _ResourceBundleFinder = resourceBundleFinder ?? throw new ArgumentNullException(nameof(resourceBundleFinder));
+            _WorkflowCalcParametersFinder = workflowCalcParametersFinder ?? throw new ArgumentNullException(nameof(workflowCalcParametersFinder));
+            _AppConfigFinder = appConfigFinder ?? throw new ArgumentNullException(nameof(appConfigFinder));
         }
 
         public ManifestContent Execute()
