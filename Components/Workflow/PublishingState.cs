@@ -7,7 +7,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
     public enum PublishingState
     {
         Unpublished,
-        Processing,
+        //Processing, //NB not needed cos job table.
         Published
     }
 }

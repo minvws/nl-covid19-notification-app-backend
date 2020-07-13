@@ -10,11 +10,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
 {
     public class RandomNumberGenerator : IRandomNumberGenerator
     {
-        private readonly RNGCryptoServiceProvider csp;
+        private readonly RNGCryptoServiceProvider _Csp;
 
         public RandomNumberGenerator()
         {
-            csp = new RNGCryptoServiceProvider();
+            _Csp = new RNGCryptoServiceProvider();
         }
 
         public string GenerateToken(int length = 6)
@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             max -= 1;
 
             var bytes = new byte[sizeof(int)]; // 4 bytes
-            csp.GetNonZeroBytes(bytes);
+            _Csp.GetNonZeroBytes(bytes);
             var val = BitConverter.ToInt32(bytes);
             // constrain our values to between our min and max
             // https://stackoverflow.com/a/3057867/86411
@@ -52,7 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
         public byte[] GenerateKey(int keyLength = 32)
         {
             var randomBytes = new byte[keyLength];
-            csp.GetBytes(randomBytes);
+            _Csp.GetBytes(randomBytes);
             return randomBytes;
         }
     }

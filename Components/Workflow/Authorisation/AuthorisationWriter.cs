@@ -14,14 +14,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     public class AuthorisationWriter : IAuthorisationWriter
     {
         private readonly WorkflowDbContext _DbContextProvider;
-
         public AuthorisationWriter(WorkflowDbContext dbContextProvider)
         {
-            _DbContextProvider = dbContextProvider;
+            _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
         }
 
         public Task Execute(AuthorisationArgs args)
         {
+            if (args == null) throw new ArgumentNullException(nameof(args));
+
             var e = _DbContextProvider
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Keys)

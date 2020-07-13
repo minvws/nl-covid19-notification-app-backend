@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             if (wf == null)
             {
-                _Logger.LogInformation($"Workflow with bucketId {args.BucketId} not found.");
+                _Logger.LogWarning($"Workflow not found: bucketId:{args.BucketId}.");
                 return;
             }
 

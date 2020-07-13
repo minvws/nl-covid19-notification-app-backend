@@ -8,6 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
     {
         public int TemporaryExposureKeyCountMin => 1;
         public int TemporaryExposureKeyCountMax => 21;
-        public int GracePeriod => 30;
+        public int GracePeriodMinutes => 30;
     }
 }

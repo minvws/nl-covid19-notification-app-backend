@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _NumberGenerator = numberGenerator ?? throw new ArgumentNullException(nameof(numberGenerator));
-            _Logger = logger;
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<EnrollmentResponse> Execute()
