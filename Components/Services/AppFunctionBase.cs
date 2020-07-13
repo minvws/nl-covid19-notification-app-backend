@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 
@@ -9,6 +10,8 @@ namespace CdnRegionSync
 
         protected void SetConfig(ExecutionContext context)
         {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
             if (Configuration != null)
                 return;
 

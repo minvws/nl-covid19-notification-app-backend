@@ -38,6 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
             await _InsertDbCommand.Execute(args);
             _Logger.Debug("Committing.");
             _Context.SaveAndCommit();
+            _Logger.Information($"Committed.");
             return new OkResult();
         }
     }

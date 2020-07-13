@@ -21,6 +21,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             return result;
         }
 
-        public int LengthBytes => 256 / 8;
+        private const int LengthBytes = 256 / 8;
     }
 }

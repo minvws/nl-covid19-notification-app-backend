@@ -80,6 +80,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
     {
         public byte[] Format(byte[] value)
         {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
             var buffer = new byte[72];
 
             var r = new byte[32];

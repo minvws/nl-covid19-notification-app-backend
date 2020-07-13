@@ -30,9 +30,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
             return result.ToString();
         }
 
-        //Earlier version corrected value from uri in base64
-        public string ParseUri(string uri) => uri;
-
         //d65b6d0fb08646e8b947f460aa9d2998d22709c459bac9859189a7ae9727e494
         public bool Validate(string id)
         {

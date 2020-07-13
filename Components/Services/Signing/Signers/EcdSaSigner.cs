@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
         public EcdSaSigner(ICertificateProvider provider)
         {
-            _Provider = provider;
+            _Provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
 
         public string SignatureOid => SignatureAlgorithmDescription;
@@ -42,7 +42,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             var notTheResult = cert.GetECDsaPrivateKey().SignData(content, HashAlgorithmName.SHA256);
             return new X962PackagingFix().Format(notTheResult);
         }
-
-        public int LengthBytes => 32; //TODO N/A
     }
 }

@@ -42,7 +42,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 httpContext.Response.StatusCode = 400; //TODO!
             }
 
-            var parsed = _PublishingId.ParseUri(id);
             if (typeof(T) != typeof(ManifestEntity) && !_PublishingId.Validate(id))
             {
                 _Logger.Error($"Invalid content id - {id}.");
@@ -50,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 httpContext.Response.ContentLength = 0;
             }
 
-            var content = await _SafeReader.Execute(parsed);
+            var content = await _SafeReader.Execute(id);
             
             if (content == null)
             {

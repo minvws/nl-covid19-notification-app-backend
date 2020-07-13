@@ -4,7 +4,6 @@ using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 
 namespace CdnRegionSync
 {

@@ -14,6 +14,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
         public ResourceCertificateProvider(string resourceName)
         {
+            if (string.IsNullOrWhiteSpace(resourceName))
+                throw new ArgumentException(nameof(resourceName));
+
             _ResourceName = resourceName;
         }
 
@@ -21,6 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
         {
             var a = System.Reflection.Assembly.GetExecutingAssembly();
             using var s = a.GetManifestResourceStream($"NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Resources.{_ResourceName}");
+
             if (s == null)
                 return null;
 
@@ -38,6 +42,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
         public ResourceCertificateProvider2(string resourceName)
         {
+            if (string.IsNullOrWhiteSpace(resourceName))
+                throw new ArgumentException(nameof(resourceName));
+
             _ResourceName = resourceName;
         }
 
