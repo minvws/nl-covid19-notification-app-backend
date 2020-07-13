@@ -24,13 +24,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authenticatio
             UrlEncoder encoder,
             ISystemClock clock, IBasicAuthenticationConfig configuration) : base(options, logger, encoder, clock)
         {
-            _Configuration = configuration;
+            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!Request.Headers.ContainsKey("Authorization"))
+            {
+                Logger.LogWarning("Missing Authorization Header");
                 return AuthenticateResult.Fail("Missing Authorization Header");
+            }
 
             bool authenticated;
             string username;
@@ -45,11 +48,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authenticatio
             }
             catch
             {
+                Logger.LogWarning("Invalid Authorization Header");
                 return AuthenticateResult.Fail("Invalid Authorization Header");
             }
 
             if (!authenticated)
             {
+                Logger.LogWarning("Invalid Username or Password");
                 await Task.Delay(1000);
                 return AuthenticateResult.Fail("Invalid Username or Password");
             }

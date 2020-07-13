@@ -11,14 +11,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration
     /// <summary>
     /// Just for command line apps
     /// </summary>
-    public static class ConfigFromJsonFiles
+    public static class ConfigFromJsonFiles //TODO wire this up in the repeated code in Console Apps!
     {
-        public static IConfigurationRoot GetConfigurationRoot()
+        public static IConfigurationRoot GetConfigurationRoot(string envName)
         {
+            if (string.IsNullOrWhiteSpace(envName))
+                    throw new ArgumentException(nameof(envName));
+
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
                 .AddJsonFile("appsettings.json", false, false)
-                .AddJsonFile("appsettings.Development.json", true, false)
+                .AddJsonFile($"appsettings.{envName}.json", true, false)
                 //Any more?
                 .Build();
             return config;

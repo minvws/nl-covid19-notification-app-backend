@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
@@ -16,8 +17,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
         public GetLatestContentCommand(ExposureContentDbContext dbConfig, IUtcDateTimeProvider dateTimeProvider)
         {
-            _DbConfig = dbConfig;
-            _DateTimeProvider = dateTimeProvider;
+            _DbConfig = dbConfig ?? throw new ArgumentNullException(nameof(dbConfig));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
 
         public string Execute()

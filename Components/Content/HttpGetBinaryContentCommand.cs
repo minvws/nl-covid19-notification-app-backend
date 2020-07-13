@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,9 +24,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
         public HttpGetBinaryContentCommand(IReader<T> safeReader, IPublishingId publishingId, ILogger logger)
         {
-            _SafeReader = safeReader;
-            _PublishingId = publishingId;
-            _Logger = logger;
+            _SafeReader = safeReader ?? throw new ArgumentNullException(nameof(safeReader));
+            _PublishingId = publishingId ?? throw new ArgumentNullException(nameof(publishingId));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<IActionResult> Execute(string id)

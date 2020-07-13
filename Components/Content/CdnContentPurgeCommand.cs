@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
@@ -13,6 +14,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
@@ -21,21 +23,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         private readonly ExposureContentDbContext _ContentDbContext;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly ICdnContentConfig _Config;
+        private readonly ILogger _Logger;
 
-        public CdnContentPurgeCommand(ExposureContentDbContext contentDbContext, IUtcDateTimeProvider dateTimeProvider, ICdnContentConfig config)
+        public CdnContentPurgeCommand(ExposureContentDbContext contentDbContext, IUtcDateTimeProvider dateTimeProvider, ICdnContentConfig config, ILogger logger)
         {
-            _ContentDbContext = contentDbContext;
-            _DateTimeProvider = dateTimeProvider;
-            _Config = config;
+            _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _Config = config ?? throw new ArgumentNullException(nameof(config));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task Execute()
         {
+            _Logger.Information($"Cleanup start.");
             await DeleteContent<RiskCalculationContentEntity>(_Config.ContentLifetimeDays);
             await DeleteContent<ResourceBundleContentEntity>(_Config.ContentLifetimeDays);
             await DeleteContent<AppConfigContentEntity>(_Config.ContentLifetimeDays);
             await DeleteContent<ExposureKeySetContentEntity>(_Config.ExposureKeySetLifetimeDays);
             _ContentDbContext.SaveAndCommit();
+            _Logger.Information($"Cleanup complete.");
         }
 
         private async Task DeleteContent<T>(double lifetime) where T : ContentEntity
@@ -44,13 +50,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             var dbSet = _ContentDbContext.Set<T>();
 
+            //TODO review this and how it works for EKS??? Will this leave 1 EKS alive?
             var exceptEntity = dbSet
                 .Where(x => x.Release <= now)
                 .OrderByDescending(x => x.Release)
                 .FirstOrDefault();
 
+            _Logger.Warning($"No published entity - {typeof(T).Name}.");
+
             if (exceptEntity != null)
             {
+                _Logger.Debug($"Current published entity - {typeof(T).Name}, Id:{exceptEntity.PublishingId}.");
+
                 var id = exceptEntity.Id;
 
                 var recordToDelete = dbSet
@@ -58,6 +69,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                     .Where(x => x.Id != id)
                     .OrderByDescending(x => x.Release)
                     .ToList();
+
+                foreach (var i in recordToDelete)
+                {
+                    _Logger.Information($"Cleanup - {typeof(T).Name}, Id:{i.PublishingId}.");
+                }
 
                 await _ContentDbContext.BulkDeleteAsync(recordToDelete);
             }

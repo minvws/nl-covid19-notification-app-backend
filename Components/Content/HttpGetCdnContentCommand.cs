@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
@@ -20,17 +21,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     {
         private readonly IReader<T> _SafeReader;
         private readonly IPublishingId _PublishingId;
+        private readonly ILogger _Logger;
 
-        public HttpGetCdnContentCommand(IReader<T> safeReader, IPublishingId publishingId)
+        public HttpGetCdnContentCommand(IReader<T> safeReader, IPublishingId publishingId, ILogger logger)
         {
-            _SafeReader = safeReader;
-            _PublishingId = publishingId;
+            _SafeReader = safeReader ?? throw new ArgumentNullException(nameof(safeReader));
+            _PublishingId = publishingId ?? throw new ArgumentNullException(nameof(publishingId));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task Execute(HttpContext httpContext, string id)
         {
-            if (httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
+            if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
+
+            //This looked like a bug?
+            if (!httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
             {
+                _Logger.Error($"Required request header missing - if-none-match.");
                 httpContext.Response.ContentLength = 0;
                 httpContext.Response.StatusCode = 400; //TODO!
             }
@@ -38,6 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             var parsed = _PublishingId.ParseUri(id);
             if (typeof(T) != typeof(ManifestEntity) && !_PublishingId.Validate(id))
             {
+                _Logger.Error($"Invalid content id - {id}.");
                 httpContext.Response.StatusCode = 400;
                 httpContext.Response.ContentLength = 0;
             }
@@ -47,6 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             if (content == null)
             {
                 //TODO tell CDN to ignore hunting?
+                _Logger.Error($"Content not found - {id}.");
                 httpContext.Response.StatusCode = 404;
                 httpContext.Response.ContentLength = 0;
                 return;
@@ -54,6 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             if (etagValue == content.PublishingId)
             {
+                _Logger.Warning($"Matching etag found, responding with 304 - {id}.");
                 httpContext.Response.StatusCode = 304;
                 httpContext.Response.ContentLength = 0;
                 return;
@@ -65,6 +75,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             if (!signedResponse && !accepts.Contains(content.ContentTypeName))
             {
+                _Logger.Warning($"Cannot give acceptable response, responding with 406 - {id}.");
                 httpContext.Response.StatusCode = 406;
                 httpContext.Response.ContentLength = 0;
                 return;

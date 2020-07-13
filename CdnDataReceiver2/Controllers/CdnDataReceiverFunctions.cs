@@ -10,6 +10,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
+using Serilog;
 
 namespace CdnDataReceiver.Controllers
 {
@@ -27,13 +28,13 @@ namespace CdnDataReceiver.Controllers
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.Manifest)]
-        public async Task<IActionResult> HttpPostManifest([FromBody] ReceiveContentArgs args, [FromServices]ManifestBlobWriter blobWriter, [FromServices]IQueueSender<StorageAccountSyncMessage> qSender)
+        public async Task<IActionResult> HttpPostManifest([FromBody] ReceiveContentArgs args, [FromServices]ManifestBlobWriter blobWriter, [FromServices]IQueueSender<StorageAccountSyncMessage> qSender, ILogger logger)
         {
             if (args == null) throw new ArgumentNullException(nameof(args));
             if (blobWriter == null) throw new ArgumentNullException(nameof(blobWriter));
             if (qSender == null) throw new ArgumentNullException(nameof(qSender));
 
-            var command = new HttpPostContentReciever2(blobWriter, qSender);
+            var command = new HttpPostContentReciever2(blobWriter, qSender, logger);
             return await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.Manifest, Name = EndPointNames.ManifestName});
         }
 

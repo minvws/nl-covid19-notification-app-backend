@@ -36,6 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         [Route(EndPointNames.ContentAdminPortalDataApi.AppConfig)]
         public async Task<IActionResult> Post([FromBody]AppConfigArgs args, [FromServices]HttpPostAppConfigCommand command)
         {
+
             return await command.Execute(args);
         }
     }
