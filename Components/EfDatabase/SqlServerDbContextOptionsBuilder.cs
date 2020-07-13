@@ -14,6 +14,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 
         public SqlServerDbContextOptionsBuilder(IEfDbConfig efDbConfig)
         {
+            if (efDbConfig == null) throw new ArgumentNullException(nameof(efDbConfig));
+
             _ConnectionStringBuilder = new SqlConnectionStringBuilder(efDbConfig.ConnectionString) 
             {
                     MultipleActiveResultSets = true
@@ -23,6 +25,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
         //TODO use the other ctor...
         public SqlServerDbContextOptionsBuilder(string connectionString)
         {
+            if (string.IsNullOrWhiteSpace(connectionString)) throw new ArgumentException(nameof(connectionString));
+
             _ConnectionStringBuilder = new SqlConnectionStringBuilder(connectionString) 
             {
                 MultipleActiveResultSets = true

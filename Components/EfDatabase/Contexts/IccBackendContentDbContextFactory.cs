@@ -9,7 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
 {
     public class IccBackendContentDbContextFactory : IDesignTimeDbContextFactory<IccBackendContentDbContext>
     {
-        public IccBackendContentDbContext CreateDbContext(string[] args)
+        public IccBackendContentDbContext CreateDbContext(string[] _)
         {
             var optionsBuilder = new DbContextOptionsBuilder<IccBackendContentDbContext>();
             optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=Icc;Integrated Security=true",o =>

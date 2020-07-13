@@ -10,14 +10,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 {
     public static class DbContextExtras
     {
-
         /// <summary>
         /// Most likely called by batch jobs running in web applications where the context starts a TX at the beginning of the request.
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public static T EnsureNoChangesOrTransaction<T>(this T context) where T: DbContext
-        { 
+        {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
             if (context.ChangeTracker.HasChanges())
                 throw new InvalidOperationException("Db context has unsaved changes.");
 
@@ -29,6 +30,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 
         public static IDbContextTransaction BeginTransaction(this DbContext context)
         {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
             if (context.Database.CurrentTransaction != null)
                 throw new InvalidOperationException("Database has existing transaction.");
 
@@ -37,6 +40,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 
         public static void SaveAndCommit(this DbContext context)
         {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
             if (context.Database.CurrentTransaction == null)
                 throw new InvalidOperationException("No current transaction.");
 

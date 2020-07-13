@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
@@ -13,18 +14,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         public ExposureKeySetSafeReadCommand(ExposureContentDbContext dbConfig)
         {
-            _DbConfig = dbConfig;
+            _DbConfig = dbConfig ?? throw new ArgumentNullException(nameof(dbConfig));
         }
 
         /// <summary>
         /// Returns null if not found.
         /// </summary>
-        /// <param name="exposureKeySetId"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public ExposureKeySetContentEntity Execute(string exposureKeySetId)
+        public ExposureKeySetContentEntity Execute(string id)
         {
+            if (string.IsNullOrWhiteSpace(id)) throw new ArgumentException(nameof(id));
+
             return _DbConfig.Set<ExposureKeySetContentEntity>()
-                .Where(x => x.PublishingId == exposureKeySetId)
+                .Where(x => x.PublishingId == id)
                 .Take(1)
                 .ToArray()
                 .SingleOrDefault();

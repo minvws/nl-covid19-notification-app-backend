@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -9,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
 {
     public class ExposureContentContextFactory : IDesignTimeDbContextFactory<ExposureContentDbContext>
     {
-        public ExposureContentDbContext CreateDbContext(string[] args)
+        public ExposureContentDbContext CreateDbContext(string[] _)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ExposureContentDbContext>();
             optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=Content;Integrated Security=true", o =>

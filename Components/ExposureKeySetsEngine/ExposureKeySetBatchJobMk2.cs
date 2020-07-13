@@ -63,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             if (_Disposed)
                 throw new ObjectDisposedException(JobName);
 
-            _Logger.Information($"{JobName} started.");
+            _Logger.Information($"{JobName} started - useAllKeys:{useAllKeys}");
             
             _WorkflowDbContext.EnsureNoChangesOrTransaction();
             _ContentDbContext.EnsureNoChangesOrTransaction();

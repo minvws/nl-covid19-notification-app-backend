@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
         public HttpPostGenerateExposureKeySetsCommand(ExposureKeySetBatchJobMk2 job)
         {
-            _Job = job;
+            _Job = job ?? throw new ArgumentNullException(nameof(job));
         }
 
         public async Task<IActionResult> Execute(bool useAllKeys = false)
