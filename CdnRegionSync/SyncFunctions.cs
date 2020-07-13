@@ -1,15 +1,11 @@
+using Microsoft.Azure.ServiceBus;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.ServiceBus;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
-using Serilog.Settings.Configuration;
 
 namespace CdnRegionSync
 {

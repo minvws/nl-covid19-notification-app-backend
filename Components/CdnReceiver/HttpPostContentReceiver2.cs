@@ -12,13 +12,13 @@ using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver
 {
-    public class HttpPostContentReciever2
+    public class HttpPostContentReceiver2
     {
         private readonly IBlobWriter _BlobWriter;
         private readonly IQueueSender<StorageAccountSyncMessage> _QueueSender;
         private readonly ILogger _Logger;
 
-        public HttpPostContentReciever2(IBlobWriter blobWriter, IQueueSender<StorageAccountSyncMessage> queueSender, ILogger logger)
+        public HttpPostContentReceiver2(IBlobWriter blobWriter, IQueueSender<StorageAccountSyncMessage> queueSender, ILogger logger)
         {
             _BlobWriter = blobWriter ?? throw new ArgumentNullException(nameof(blobWriter));
             _QueueSender = queueSender ?? throw new ArgumentNullException(nameof(queueSender));

@@ -17,10 +17,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ScheduledTaskEngine
     {
         public Program()
         {
-            AppDomain.CurrentDomain.UnhandledException += AppDomainExceptinHandler;
+            AppDomain.CurrentDomain.UnhandledException += AppDomainExceptionHandler;
         }
 
-        private void AppDomainExceptinHandler(object sender, UnhandledExceptionEventArgs e)
+        private void AppDomainExceptionHandler(object sender, UnhandledExceptionEventArgs e)
         {
             Log.Fatal(e.ExceptionObject.ToString());
         }

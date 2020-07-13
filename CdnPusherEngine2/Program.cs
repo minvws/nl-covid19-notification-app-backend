@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using Serilog;
 
@@ -30,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 
         public static IConfigurationRoot Configuration { get; private set; }
 
-        private static async Task Main(string[] args)
+        private static async Task Main()
         {
             var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
@@ -63,11 +61,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             ComponentsContainerHelper.RegisterDefaultServices(services);
 
             services.AddSeriLog(Configuration);
+            services.AddSingleton(Log.Logger);
             services.AddSingleton<IConfiguration>(Configuration);
             services.AddSingleton<PusherTask>();
             services.AddSingleton<IDataApiUrls>(new DataApiUrls(Configuration, "DataApi"));
             services.AddSingleton<IReceiverConfig>(new ReceiverConfig(Configuration, "Receiver"));
-
             
             var certificateHack = Configuration.GetValue("CertificateHack", false);
             if (certificateHack)

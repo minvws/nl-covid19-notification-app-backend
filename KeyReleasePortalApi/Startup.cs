@@ -18,6 +18,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Authoris
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
+using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
 using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleaseApi
@@ -56,6 +57,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleaseApi
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
+            services.AddScoped<JwtService, JwtService>();
+            services.AddScoped<PollTokenGenerator, PollTokenGenerator>();
             services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
             services.AddScoped<ISignatureValidator, SignatureValidator>();
             services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();

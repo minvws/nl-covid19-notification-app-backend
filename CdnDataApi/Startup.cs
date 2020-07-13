@@ -52,6 +52,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             services.AddSeriLog(Configuration);
             services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(Log.Logger)));
 
+            services.AddSingleton<ILogger>(Log.Logger);
+            
             services.AddControllers().AddJsonOptions(_ =>
             {
                 // This configures the serializer for ASP.Net, StandardContentEntityFormatter does that for ad-hoc occurrences.
@@ -141,26 +143,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            app.UseDeveloperExceptionPage();
             app.UseSwagger();
-            app.UseSwaggerUI(o =>
-            {
-                o.ConfigObject.ShowExtensions = true;
-                o.SwaggerEndpoint("../swagger/v1/swagger.json", Title);
-            });
-            app.UseHttpsRedirection();
+            app.UseSwaggerUI(o => { o.SwaggerEndpoint("/swagger/v1/swagger.json", Title); });
+
+            if (!env.IsDevelopment())
+                app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
+
             app.UseRouting();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

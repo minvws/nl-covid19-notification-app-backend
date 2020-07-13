@@ -46,7 +46,7 @@ namespace CdnDataReceiver2
             }
 
             services.AddControllers();
-            services.AddScoped<HttpPostContentReciever2>();
+            services.AddScoped<HttpPostContentReceiver2>();
             services.AddScoped<IBlobWriter, StandardBlobWriter>();
             services.AddScoped<ManifestBlobWriter>();
             services.AddSingleton<IStorageAccountConfig>(new StorageAccountAppSettings(_Configuration, "Local"));
