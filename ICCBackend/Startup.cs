@@ -67,6 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<AppBackendService, AppBackendService>();
             services.AddAuthentication("IccAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, IccAuthenticationHandler>("IccAuthentication", null);
+            services.AddSingleton<ILogger>(Log.Logger);
 
             services.AddCors();
 
