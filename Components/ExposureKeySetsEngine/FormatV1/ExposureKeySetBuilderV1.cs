@@ -51,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 Header = Header,
                 Region = "NL",
                 BatchNum = 1,
-                BatchSize = keys.Length,
+                BatchSize = 1,
                 SignatureInfos = new[] {securityInfo},
                 StartTimestamp = now.AddDays(-1).ToUnixTime(), //TODO real values?
                 EndTimestamp = now.ToUnixTime(), //TODO real values?
