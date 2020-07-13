@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -25,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IContentFormatter _ContentFormatter;
         private readonly IExposureKeySetHeaderInfoConfig _Config;
-        private ILogger _Logger;
+        private readonly ILogger _Logger;
 
         public ExposureKeySetBuilderV1(
             IExposureKeySetHeaderInfoConfig headerInfoConfig,
@@ -46,6 +47,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         public async Task<byte[]> BuildAsync(TemporaryExposureKeyArgs[] keys)
         {
+            if (keys == null) throw new ArgumentNullException(nameof(keys));
+            if (keys.Any(x => x == null)) throw new ArgumentException("At least one key in null.", nameof(keys));
+
             var securityInfo = GetGaenSignatureInfo();
 
             var now = _DateTimeProvider.Now();

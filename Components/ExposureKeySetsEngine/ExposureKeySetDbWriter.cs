@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Linq;
 using EFCore.BulkExtensions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -19,8 +20,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     {
         public ExposureKeySetDbWriter(ExposureContentDbContext dbContext, IPublishingId publishingId)
         {
-            _DbContext = dbContext;
-            _PublishingId = publishingId;
+            _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _PublishingId = publishingId ?? throw new ArgumentNullException(nameof(publishingId));
         }
 
         private readonly ExposureContentDbContext _DbContext;
@@ -28,6 +29,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         public void Write(ExposureKeySetEntity[] things)
         {
+            if (things == null) throw new ArgumentNullException(nameof(things));
+            if (things.Any(x => x == null)) throw new ArgumentNullException(nameof(things));
+
             var entities = things.Select(x => new ExposureKeySetContentEntity
             {
                 Content = x.Content,

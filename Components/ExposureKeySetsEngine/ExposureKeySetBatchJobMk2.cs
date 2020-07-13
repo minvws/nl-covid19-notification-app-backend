@@ -47,12 +47,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         public ExposureKeySetBatchJobMk2(/*IExposureKeySetBatchJobConfig jobConfig,*/ IGaenContentConfig gaenContentConfig, IExposureKeySetBuilder builder, WorkflowDbContext workflowDbContext, ExposureContentDbContext contentDbContext, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId, ILogger logger)
         {
             //_JobConfig = jobConfig;
-            _GaenContentConfig = gaenContentConfig;
-            _SetBuilder = builder;
-            _WorkflowDbContext = workflowDbContext;
-            _ContentDbContext = contentDbContext;
+            _GaenContentConfig = gaenContentConfig ?? throw new ArgumentNullException(nameof(gaenContentConfig));
+            _SetBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
+            _WorkflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
+            _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _PublishingId = publishingId;
-            _Logger = logger;
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _Used = new List<EksCreateJobInputEntity>(_GaenContentConfig.ExposureKeySetCapacity); //
             _Start = dateTimeProvider.Now();
             JobName = $"ExposureKeySetsJob_{_Start:u}".Replace(" ", "_").Replace(":", "_");

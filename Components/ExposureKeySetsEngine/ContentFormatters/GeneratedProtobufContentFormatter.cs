@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     {
         public byte[] GetBytes(ExposureKeySetContentArgs content)
         {
+            if (content == null) throw new ArgumentNullException(nameof(content));
+
             var result = new TemporaryExposureKeyExport
             {
                 Region = content.Region,
@@ -47,6 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         public byte[] GetBytes(ExposureKeySetSignaturesContentArgs arg)
         {
+            if (arg == null) throw new ArgumentNullException(nameof(arg));
             var result = new TEKSignatureList
             {
                 Signatures = { arg.Items.Select(Map).ToArray() }
@@ -66,12 +70,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             };
         }
         private static SignatureInfo Map(SignatureInfoArgs arg)
-            => new SignatureInfo
+        {
+            if (arg == null) throw new ArgumentNullException(nameof(arg)); //Cos its checking contents of a collection.
+            return new SignatureInfo
             {
                 SignatureAlgorithm = arg.SignatureAlgorithm,
                 VerificationKeyId = arg.VerificationKeyId,
                 VerificationKeyVersion = arg.VerificationKeyVersion
             };
-
+        }
     }
 }
