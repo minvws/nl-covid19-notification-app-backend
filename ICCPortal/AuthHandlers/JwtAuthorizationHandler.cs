@@ -10,14 +10,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NL.Rijksoverheid.ExposureNotification.IccBackend;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers
 {
     public class JwtAuthorizationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        private JwtService _JwtService;
+        private readonly JwtService _JwtService;
         private readonly ILogger<JwtAuthorizationHandler> _Logger;
 
         public JwtAuthorizationHandler(

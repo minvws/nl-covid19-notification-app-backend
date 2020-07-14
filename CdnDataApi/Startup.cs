@@ -52,7 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             services.AddSeriLog(Configuration);
             services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(Log.Logger)));
 
-            services.AddSingleton<ILogger>(Log.Logger);
+            services.AddSingleton(Log.Logger);
             
             services.AddControllers().AddJsonOptions(_ =>
             {

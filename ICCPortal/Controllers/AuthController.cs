@@ -2,14 +2,10 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
@@ -17,8 +13,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
     [Authorize]
     public class AuthController : Controller
     {
-        private FrontendService _FrontendService;
-        private JwtService _JwtService;
+        private readonly FrontendService _FrontendService;
+        private readonly JwtService _JwtService;
 
         private static readonly List<string> ClaimTypeBlackList = new List<string>()
         {
@@ -47,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
 
         private Dictionary<string, string> GetClaims()
         {
-            Dictionary<string, string> result = new Dictionary<string, string>();
+            var result = new Dictionary<string, string>();
             User.Claims.Where(c => !ClaimTypeBlackList.Contains(c.Type)).ToList()
                 .ForEach((c) => { result.Add(c.Type, c.Value); });
             return result;

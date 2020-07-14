@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _Logger;
-        private FrontendService _FrontendService;
+        private readonly FrontendService _FrontendService;
 
         public HomeController(ILogger<HomeController> logger, FrontendService frontendService)
         {

@@ -56,7 +56,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
                 return result;
             });
 
-            services.AddSingleton<ILogger>(Log.Logger);
+            services.AddSingleton(Log.Logger);
 
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();

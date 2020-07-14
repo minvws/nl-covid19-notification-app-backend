@@ -19,7 +19,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
@@ -67,7 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<AppBackendService, AppBackendService>();
             services.AddAuthentication("IccAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, IccAuthenticationHandler>("IccAuthentication", null);
-            services.AddSingleton<ILogger>(Log.Logger);
+            services.AddSingleton(Log.Logger);
 
             services.AddCors();
 
