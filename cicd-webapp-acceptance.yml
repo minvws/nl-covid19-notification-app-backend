@@ -27,4 +27,4 @@ extends:
     webAppNameSecundary: 'vwssa-app-service'
     webEnvironment: 'Staging'
     # ============================================
-    projectName: '$(System.DefaultWorkingDirectory)/CdnDataReceiver2/CdnDataReceiver2.csproj'
+    projectName: '$(System.DefaultWorkingDirectory)/ExposureNotification.Backend.DataReceiver.sln'
