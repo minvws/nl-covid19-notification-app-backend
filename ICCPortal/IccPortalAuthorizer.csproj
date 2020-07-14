@@ -48,19 +48,6 @@
       <ProjectReference Include="..\ICCBackend\IccBackend.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Content Update="appsettings.Development.ggdghor.json">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </Content>
-      <Content Update="appsettings.Development.ggdghor.acc.json">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </Content>
-    </ItemGroup>
-
 
 </Project>
 
