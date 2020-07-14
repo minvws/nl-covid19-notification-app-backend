@@ -9,7 +9,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Migrations.WorkflowDbContext
 {
-    [DbContext(typeof(WorkflowDbContext))]
+    [DbContext(typeof(NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts.WorkflowDbContext))]
     [Migration("20200714091147_AddPollTokenToWorkflowState")]
     partial class AddPollTokenToWorkflowState
     {
