@@ -27,4 +27,4 @@ extends:
     webAppNameSecundary: 'vwssp-app-service'
     webEnvironment: 'Production'
     # ============================================
-    projectName: '$(System.DefaultWorkingDirectory)/ExposureNotification.Backend.DataReceiver.sln'
+    projectName: '$(System.DefaultWorkingDirectory)/ExposureNotification.Backend.CdnDataReceiver.sln'
