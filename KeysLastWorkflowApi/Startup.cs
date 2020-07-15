@@ -104,6 +104,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
 
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
