@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,15 +16,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi.Controllers
     [Authorize]
     public class EngineController : ControllerBase
     {
+        private readonly ILogger _Logger;
+
+        public EngineController(ILogger<EngineController> logger)
+        {
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
         /// <summary>
         /// Generate new ExposureKeySets.
         /// </summary>
         /// <returns></returns>
         [HttpPost]
         [Route("/v1/execute")]
-        public async Task<IActionResult> ExposureKeySets([FromQuery] bool useAllKeys, [FromServices] HttpPostGenerateExposureKeySetsCommand command, [FromServices] ILogger<EngineController> logger)
+        public async Task<IActionResult> ExposureKeySets([FromQuery] bool useAllKeys, [FromServices] HttpPostGenerateExposureKeySetsCommand command)
         {
-            logger.LogInformation("EKS Engine triggered.");
+            _Logger.LogInformation("EKS Engine triggered.");
             return await command.Execute(useAllKeys);
         }
     }

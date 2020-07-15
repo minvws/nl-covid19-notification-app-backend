@@ -32,6 +32,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             services.AddSingleton<PusherTask>();
             services.AddSingleton<IDataApiUrls>(new DataApiUrls(configuration, "DataApi"));
             services.AddSingleton<IReceiverConfig>(new ReceiverConfig(configuration, "Receiver"));
+            services.AddScoped<BasicAuthDataApiReader, BasicAuthDataApiReader>();
+            services.AddScoped<SubKeyAuthPostBytesToUrl, SubKeyAuthPostBytesToUrl>();
         }
 
         public PusherTask(IDataApiUrls dataApiConfig, IReceiverConfig receiverConfig, ILogger<PusherTask> logger, IJsonSerializer jsonSerializer, IServiceProvider serviceProvider)
