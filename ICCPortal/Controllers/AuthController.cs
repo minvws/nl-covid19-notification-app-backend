@@ -40,18 +40,13 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
             // temporary claim payload redirect solution for demo purposes
             return Redirect(_FrontendService.RedirectSuccesfullLogin(jwtToken));
         }
-
+        
         private Dictionary<string, string> GetClaims()
         {
             var result = new Dictionary<string, string>();
             User.Claims.Where(c => !ClaimTypeBlackList.Contains(c.Type)).ToList()
                 .ForEach((c) => { result.Add(c.Type, c.Value); });
             return result;
-        }
-
-        public IActionResult Introspection()
-        {
-            return new JsonResult(GetClaims());
         }
     }
 }

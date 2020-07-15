@@ -40,37 +40,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
             _JsonSerializer = jsonSerializer;
         }
 
-        public async Task Run(string[] args)
+        public async Task Run(bool seed)
         {
             _Logger.LogInformation("Running...");
 
-            switch (args[0])
+            if (seed)
             {
-                case "seed":
-                    {
-                        _Logger.LogInformation("Seeding ExposureContent...");
+                _Logger.LogInformation("Seeding ExposureContent...");
 
-                        var certificateProvider =
-                            new HsmCertificateProvider(new CertificateProviderConfig(_Configuration,
-                                "ExposureKeySets:Signing:NL"));
-                        var db = new CreateContentDatabase(_ExposureContentDbContext, new StandardUtcDateTimeProvider(), new CmsSigner(certificateProvider), _JsonSerializer);
-                        await db.DropExampleContent();
-                        await db.AddExampleContent();
-                        break;
-                    }
-                default:
-                    {
-                        _Logger.LogInformation("Apply WorkflowDb Migrations...");
-                        await _WorkflowDbContext.Database.MigrateAsync();
+                var certificateProvider =
+                    new HsmCertificateProvider(new CertificateProviderConfig(_Configuration,
+                        "ExposureKeySets:Signing:NL"));
+                var db = new CreateContentDatabase(_ExposureContentDbContext, new StandardUtcDateTimeProvider(), new CmsSigner(certificateProvider), _JsonSerializer);
+                await db.DropExampleContent();
+                await db.AddExampleContent();
+            }
+            else
+            {
+                _Logger.LogInformation("Apply WorkflowDb Migrations...");
+                await _WorkflowDbContext.Database.MigrateAsync();
 
-                        _Logger.LogInformation("Apply ExposureContentDb Migrations...");
-                        await _ExposureContentDbContext.Database.MigrateAsync();
+                _Logger.LogInformation("Apply ExposureContentDb Migrations...");
+                await _ExposureContentDbContext.Database.MigrateAsync();
 
-                        _Logger.LogInformation("Apply ICCBackedContentDbContext Migrations...");
-                        await _IccBackendContentDbContext.Database.MigrateAsync();
-
-                        break;
-                    }
+                _Logger.LogInformation("Apply ICCBackedContentDbContext Migrations...");
+                await _IccBackendContentDbContext.Database.MigrateAsync();
             }
 
             _Logger.LogInformation("Completed...");

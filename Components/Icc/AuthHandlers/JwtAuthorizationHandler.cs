@@ -63,7 +63,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers
             var jwtPayload = _JwtService.DecodeJwt(jwtToken);
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, jwtPayload["name"].ToString())
+                new Claim(ClaimTypes.Name, jwtPayload["name"].ToString()),
+                new Claim(ClaimTypes.NameIdentifier, jwtPayload["id"].ToString()),
+                new Claim(ClaimTypes.Email, jwtPayload["email"].ToString())
             };
             var identity = new ClaimsIdentity(claims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);
