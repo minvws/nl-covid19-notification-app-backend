@@ -79,9 +79,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
             // CaregiverPortal scopes
 
             services.AddScoped<JwtService, JwtService>();
+            services.AddScoped<PollTokenGenerator, PollTokenGenerator>();
             services.AddAuthentication("icc_jwt")
                 .AddScheme<AuthenticationSchemeOptions, JwtAuthorizationHandler>("icc_jwt", null);
 
+            
+            
             services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
             services.AddScoped<HttpPostLabVerify, HttpPostLabVerify>();
             services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();
