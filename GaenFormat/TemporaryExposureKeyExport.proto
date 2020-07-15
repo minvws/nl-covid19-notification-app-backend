@@ -1,4 +1,5 @@
 ﻿syntax = "proto2";
+
 message TemporaryExposureKeyExport {
   // Time window of keys in this batch based on arrival to server, in UTC seconds.
   optional fixed64 start_timestamp = 1;
@@ -20,10 +21,12 @@ message TemporaryExposureKeyExport {
   // or have been revoked.
   repeated TemporaryExposureKey revised_keys = 8;
 }
+
 message SignatureInfo {
-  // The first two fields have been deprecated
-  reserved 1, 2;
-  reserved "app_bundle_id", "android_package";
+  // No longer needed by Google: App Store app bundle ID.
+  optional string app_bundle_id = 1;
+  // No longer needed by Google: Android App package name
+  optional string android_package = 2;
   // Key version for rollovers
   // Must be in character class [a-zA-Z0-9_]. For example, 'v1'
   optional string verification_key_version = 3;
@@ -34,6 +37,7 @@ message SignatureInfo {
   // ASN.1 OID for Algorithm Identifier. For example, `1.2.840.10045.4.3.2'
   optional string signature_algorithm = 5;
 }
+
 message TemporaryExposureKey {
   // Key of infected user
   optional bytes key_data = 1;
@@ -64,6 +68,7 @@ message TemporaryExposureKey {
 message TEKSignatureList {
 	repeated TEKSignature signatures = 1;
 }
+
 message TEKSignature {
 	// Info about the signing key, version, algorithm, and so on.
 	optional SignatureInfo signature_info = 1;

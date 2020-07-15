@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using Google.Protobuf;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters
 {
@@ -65,6 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 SignatureInfo = Map(args.SignatureInfo)
             };
         }
+
         private static SignatureInfo Map(SignatureInfoArgs arg)
             => new SignatureInfo
             {
