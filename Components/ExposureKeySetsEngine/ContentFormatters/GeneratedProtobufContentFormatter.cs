@@ -70,7 +70,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             {
                 SignatureAlgorithm = arg.SignatureAlgorithm,
                 VerificationKeyId = arg.VerificationKeyId,
-                VerificationKeyVersion = arg.VerificationKeyVersion
+                VerificationKeyVersion = arg.VerificationKeyVersion,
+                AppBundleId = arg.AppBundleId
+                
             };
 
     }

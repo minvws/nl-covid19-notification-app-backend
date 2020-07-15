@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
     [Obsolete("Use this class only for testing purposes")]
     public class FakeExposureKeySetHeaderInfoConfig : IExposureKeySetHeaderInfoConfig
     {
-        public string AppBundleId => "nl.rijksoverheid.samensterk";
+        public string AppBundleId => "nl.rijksoverheid.en";
         public string AndroidPackage => "nl.rijksoverheid.samensterkpoc";
         public string VerificationKeyId => "ServerNL";
         public string VerificationKeyVersion => "v1";
