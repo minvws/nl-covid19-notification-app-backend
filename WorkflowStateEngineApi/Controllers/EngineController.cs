@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.BackgroundJobs;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowStateEngineApi.Controllers
 {
@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowStateEngineApi.C
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-            logger.Information("GET v1/execute to Purge Expired Secrets.");
+            logger.LogInformation("GET v1/execute to Purge Expired Secrets.");
             return await command.Execute();
         }
     }

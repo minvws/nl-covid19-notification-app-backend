@@ -9,7 +9,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
@@ -37,10 +37,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             {
                 Release = _DateTimeProvider.Now(),
             };
-            _Logger.Debug("Build new manifest.");
+            _Logger.LogDebug("Build new manifest.");
             var content = _ManifestBuilder.Execute();
             //TODO should be injected...
-            _Logger.Debug("Format and sign new manifest.");
+            _Logger.LogDebug("Format and sign new manifest.");
             var formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_ContentSigner), new StandardPublishingIdFormatter(), _JsonSerializer);
             await formatter.Fill(e, content); //TODO add release date as a parameter
             return e;

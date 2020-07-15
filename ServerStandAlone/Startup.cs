@@ -42,7 +42,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 using NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
 {
@@ -67,7 +67,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                 });
 
             services.AddSeriLog(Configuration);
-            services.AddSingleton<ILogger>(Log.Logger);
 
             ComponentsContainerHelper.RegisterDefaultServices(services);
 

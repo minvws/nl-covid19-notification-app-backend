@@ -19,7 +19,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleaseApi
 {
@@ -42,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleaseApi
             services.AddControllers();
 
             services.AddSeriLog(Configuration);
-            services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(Log.Logger)));
+            //services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(_Logger.Logger)));
 
             services.AddBasicAuthentication();
 

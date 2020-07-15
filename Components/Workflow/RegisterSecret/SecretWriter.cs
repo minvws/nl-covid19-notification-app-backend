@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
 {
@@ -39,11 +39,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
                 ValidUntil = new DateTime(validDate.Year, validDate.Month, validDate.Day, 4, 0, 0, DateTimeKind.Local) //TODO smells like a setting
             };
 
-            _Logger.Debug("Writing.");
+            _Logger.LogDebug("Writing.");
             await _DbContextProvider.KeyReleaseWorkflowStates.AddAsync(entity);
-            _Logger.Debug("Committing.");
+            _Logger.LogDebug("Committing.");
             _DbContextProvider.SaveAndCommit();
-            _Logger.Debug("Committed.");
+            _Logger.LogDebug("Committed.");
 
             return new EnrollmentResponse
             {

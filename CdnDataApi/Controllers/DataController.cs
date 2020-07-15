@@ -12,7 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
 {
@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.Information("GET manifest triggered.");
+            logger.LogInformation("GET manifest triggered.");
             return await command.Execute();
         }
 
@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.Information("GET ExposureKeySet triggered.");
+            logger.LogInformation("GET ExposureKeySet triggered.");
             return await command.Execute(id);
         }
 
@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.Information("GET ResourceBundle triggered.");
+            logger.LogInformation("GET ResourceBundle triggered.");
             return await command.Execute(id);
         }
 
@@ -57,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.Information("GET RiskCalculationParameters triggered.");
+            logger.LogInformation("GET RiskCalculationParameters triggered.");
             return await command.Execute(id);
         }
 
@@ -67,7 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.Information("GET AppConfig triggered.");
+            logger.LogInformation("GET AppConfig triggered.");
             return await command.Execute(id);
         }
     }

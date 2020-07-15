@@ -26,7 +26,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
@@ -50,9 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             ComponentsContainerHelper.RegisterDefaultServices(services);
 
             services.AddSeriLog(Configuration);
-            services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(Log.Logger)));
-
-            services.AddSingleton(Log.Logger);
+            //services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(_Logger.Logger)));
             
             services.AddControllers().AddJsonOptions(_ =>
             {

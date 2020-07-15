@@ -10,7 +10,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi.Controllers
 {
@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi.Controllers
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-            logger.Information("POST postkeys triggered.");
+            logger.LogInformation("POST postkeys triggered.");
             return await command.Execute(sig, Request);
         }
 
@@ -36,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi.Controllers
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-            logger.Information("POST register triggered.");
+            logger.LogInformation("POST register triggered.");
             return await command.Execute();
         }
 
@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi.Controllers
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-            logger.Information("POST lab confirmation triggered.");
+            logger.LogInformation("POST lab confirmation triggered.");
             return await command.Execute(args);
         }
         
@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi.Controllers
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-            logger.Information("POST labverify triggered.");
+            logger.LogInformation("POST labverify triggered.");
             return await command.Execute(args);
         }
     }

@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 {
@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                _Logger.Error($"Read from CDN Data API failed - HttpStatus:{response.StatusCode}, Body:{response.Content}.");
+                _Logger.LogError($"Read from CDN Data API failed - HttpStatus:{response.StatusCode}, Body:{response.Content}.");
                 throw new InvalidOperationException("Read failed.");
             }
 

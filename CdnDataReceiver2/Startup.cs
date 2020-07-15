@@ -11,7 +11,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace CdnDataReceiver2
 {
@@ -25,25 +25,19 @@ namespace CdnDataReceiver2
 
         private readonly IConfiguration _Configuration;
         private readonly IWebHostEnvironment _Environment;
+        private bool _RegionSyncEnabled;
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// NB. Cannot log in this method.
+        /// </summary>
+        /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
             services.AddSeriLog(_Configuration);
-            services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(Log.Logger)));
-
-            Log.Logger.Information($"Active environment name: {_Environment.EnvironmentName}"); //TODO obsolete?
-
-            var certificateHack = _Configuration.GetValue("CertificateHack", false);
-            if (certificateHack)
-            {
-                Log.Warning("Unproven hack for self-signed certificates is enabled.");
-                ServicePointManager.ServerCertificateValidationCallback += (_, __, ___, ____) =>
-                    true;
-            }
+            //services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(_Logger.Logger)));
 
             services.AddControllers();
             services.AddScoped<HttpPostContentReceiver2>();
@@ -54,16 +48,14 @@ namespace CdnDataReceiver2
             services.AddSingleton<IContentPathProvider>(new ContentPathProvider(_Configuration));
 
             //Queues
-            var regionSyncEnabled = _Configuration.GetValue("RegionSync", true);
-            if (regionSyncEnabled)
+            _RegionSyncEnabled = _Configuration.GetValue("RegionSync", true);
+            if (_RegionSyncEnabled)
             {
-                Log.Information($"Writing to queue for sync across regions is enabled: true.");
                 services.AddScoped<IQueueSender<StorageAccountSyncMessage>, QueueSendCommand<StorageAccountSyncMessage>>();
                 services.AddSingleton<IServiceBusConfig>(new ServiceBusConfig(_Configuration, "ServiceBus"));
             }
             else
             {
-                Log.Warning($"Writing to queue for sync across regions is enabled: false.");
                 services.AddScoped<IQueueSender<StorageAccountSyncMessage>, NotAQueueSender<StorageAccountSyncMessage>>();
             }
 
@@ -78,12 +70,30 @@ namespace CdnDataReceiver2
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger logger)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            var certificateHack = _Configuration.GetValue("CertificateHack", false);
+            if (certificateHack)
+            {
+                logger.LogWarning("Unproven hack for self-signed certificates is enabled.");
+                ServicePointManager.ServerCertificateValidationCallback += (_, __, ___, ____) =>
+                    true;
+            }
+
+            if (_RegionSyncEnabled)
+            {
+                logger.LogInformation($"Writing to queue for sync across regions is enabled: true.");
+            }
+            else
+            {
+                logger.LogWarning($"Writing to queue for sync across regions is enabled: false.");
+            }
+
 
             app.UseHttpsRedirection();
 

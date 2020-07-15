@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig
 {
@@ -30,15 +30,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculati
         {
             if (!_Validator.Valid(args))
             {
-                _Logger.Warning("Invalid args.");
+                _Logger.LogWarning("Invalid args.");
                 return new BadRequestResult();
             }
 
-            _Logger.Debug("Writing DB.");
+            _Logger.LogDebug("Writing DB.");
             await _Writer.Execute(args);
-            _Logger.Debug("Committing.");
+            _Logger.LogDebug("Committing.");
             _ContextProvider.SaveAndCommit();
-            _Logger.Information($"Committed.");
+            _Logger.LogInformation($"Committed.");
             return new OkResult();
         }
     }

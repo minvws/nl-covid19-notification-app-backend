@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks
 {
@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcH
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            _Logger.Error(context.Exception.ToString());
+            _Logger.LogError(context.Exception.ToString());
             context.ExceptionHandled = false;
             return Task.CompletedTask;
         }

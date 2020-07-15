@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 SignedContentTypeName = e.SignedContentTypeName,
                 SignedContent = e.SignedContent
             };
-            _Logger.Information("Return new manifest.");
+            _Logger.LogInformation("Return new manifest.");
             return new OkObjectResult(r);
         }
     }

@@ -5,8 +5,12 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using Serilog;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 
@@ -19,6 +23,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         private readonly ILogger _Logger;
         private readonly IJsonSerializer _JsonSerializer;
 
+        public static void ConfigureServices(IServiceCollection services, IConfigurationRoot Configuration)
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            ComponentsContainerHelper.RegisterDefaultServices(services);
+            services.AddSeriLog(Configuration);
+            services.AddSingleton<IConfiguration>(Configuration);
+            services.AddSingleton<PusherTask>();
+            services.AddSingleton<IDataApiUrls>(new DataApiUrls(Configuration, "DataApi"));
+            services.AddSingleton<IReceiverConfig>(new ReceiverConfig(Configuration, "Receiver"));
+        }
+
         public PusherTask(IDataApiUrls dataApiConfig, IReceiverConfig receiverConfig, ILogger logger, IJsonSerializer jsonSerializer)
         {
             _DataApiConfig = dataApiConfig ?? throw new ArgumentNullException(nameof(dataApiConfig));
@@ -29,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 
         public async Task PushIt()
         {
-            _Logger.Information("Running.");
+            _Logger.LogInformation("Running.");
 
             //Read manifest
             var bcr = await GetContent(_DataApiConfig.Manifest);
@@ -39,26 +54,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             if (manifest == null)
                 throw new InvalidOperationException("Unable to read manifest.");
 
-            _Logger.Information("Read Manifest.");
+            _Logger.LogInformation("Read Manifest.");
 
             bool writtenToDb;
             //Push all manifest items
             if (!string.IsNullOrWhiteSpace(manifest.AppConfig))
             {
                 writtenToDb = await PushItGood(string.Format(_DataApiConfig.AppConfig, manifest.AppConfig), _ReceiverConfig.AppConfig);
-                _Logger.Information($"Pushed AppConfig {manifest.AppConfig} - New item:{writtenToDb}.");
+                _Logger.LogInformation($"Pushed AppConfig {manifest.AppConfig} - New item:{writtenToDb}.");
             }
 
             if (!string.IsNullOrWhiteSpace(manifest.ResourceBundle))
             {
                 writtenToDb = await PushItGood(string.Format(_DataApiConfig.ResourceBundle, manifest.ResourceBundle), _ReceiverConfig.ResourceBundle);
-                _Logger.Information($"Pushed ResourceBundle {manifest.ResourceBundle} - New item:{writtenToDb}.");
+                _Logger.LogInformation($"Pushed ResourceBundle {manifest.ResourceBundle} - New item:{writtenToDb}.");
             }
 
             if (!string.IsNullOrWhiteSpace(manifest.RiskCalculationParameters))
             {
                 writtenToDb = await PushItGood(string.Format(_DataApiConfig.RiskCalculationParameters, manifest.RiskCalculationParameters), _ReceiverConfig.RiskCalculationParameters);
-                _Logger.Information($"Pushed RiskCalculationParameters {manifest.RiskCalculationParameters} - New item:{writtenToDb}.");
+                _Logger.LogInformation($"Pushed RiskCalculationParameters {manifest.RiskCalculationParameters} - New item:{writtenToDb}.");
             }
 
             foreach (var i in manifest.ExposureKeySets)
@@ -66,14 +81,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
                 if (!string.IsNullOrWhiteSpace(i))
                 {
                     writtenToDb = await PushItGood(string.Format(_DataApiConfig.ExposureKeySet, i), _ReceiverConfig.ExposureKeySet);
-                    _Logger.Information($"Pushed ExposureKeySet {i} - New item:{writtenToDb}.");
+                    _Logger.LogInformation($"Pushed ExposureKeySet {i} - New item:{writtenToDb}.");
                 }
             }
 
             writtenToDb = await new SubKeyAuthPostBytesToUrl(_ReceiverConfig, _Logger).Execute(_ReceiverConfig.Manifest, MapSignedContent(bcr));
-            _Logger.Information($"Pushed manifest - New item:{writtenToDb}.");
+            _Logger.LogInformation($"Pushed manifest - New item:{writtenToDb}.");
 
-            _Logger.Information("Completed.");
+            _Logger.LogInformation("Completed.");
         }
 
         private async Task<bool> PushItGood(string fromUri, string toUri)

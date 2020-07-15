@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         {
             if (!_PublishingId.Validate(id))
             {
-                _Logger.Error($"Invalid Publishing Id ({typeof(T).Name}): {id}.");
+                _Logger.LogError($"Invalid Publishing Id ({typeof(T).Name}): {id}.");
                 return new BadRequestResult();
             }
 
@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             if (e == null)
             {
-                _Logger.Error($"Content not found ({typeof(T).Name}): {id}.");
+                _Logger.LogError($"Content not found ({typeof(T).Name}): {id}.");
                 return new NotFoundResult();
             }
 
@@ -55,7 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 SignedContent = e.SignedContent
             };
 
-            _Logger.Information($"Content found ({typeof(T).Name}): {id}.");
+            _Logger.LogInformation($"Content found ({typeof(T).Name}): {id}.");
             return new OkObjectResult(r);
         }
     }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
@@ -36,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         [HttpPost, Authorize]
         public async Task<ActionResult<object>> PostRedeemIcc(ConfirmLabConfirmationIdModel confirmLabConfirmationIdModel)
         {
-            _Logger.Information("POST RedeemIcc triggered.");
+            _Logger.LogInformation("POST RedeemIcc triggered.");
             // Make Icc Used, so it can only be used once 
             var infectionConfirmationCodeEntity = await _IccService.RedeemIcc(User.Identity.Name); //TODO never used?
             _DbContext.SaveAndCommit();

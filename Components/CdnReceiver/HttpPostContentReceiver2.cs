@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver
 {
@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
 
             if (!result.ItemAddedOrOverwritten)
             {
-                _Logger.Information("Content Added Or Overwritten.");
+                _Logger.LogInformation("Content Added Or Overwritten.");
                 return new ConflictResult();
             }
 
@@ -48,12 +48,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
             //Disambiguate sources of 404 errors
             try
             {
-                _Logger.Debug($"Sending to queue - Path: {path} Mutable:{mutable}.");
+                _Logger.LogDebug($"Sending to queue - Path: {path} Mutable:{mutable}.");
                 await _QueueSender.Send(new StorageAccountSyncMessage { RelativePath = path, MutableContent = mutable });
             }
             catch (Exception ex)
             {
-                _Logger.Error(ex.ToString());
+                _Logger.LogError(ex.ToString());
                 return new StatusCodeResult(500);
             }
             return new OkResult();

@@ -14,7 +14,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
@@ -49,13 +49,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             {
                 if (signature == null)
                 {
-                    _Logger.Error("Signature error: null.");
+                    _Logger.LogError("Signature error: null.");
                     return;
                 }
 
                 if (signature.Length == 0)
                 {
-                    _Logger.Error("Signature error: Zero length.");
+                    _Logger.LogError("Signature error: Zero length.");
                     return;
                 }
 
@@ -63,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 var payload = await reader.ReadToEndAsync();
                 var args = _JsonSerializer.Deserialize<ReleaseTeksArgs>(payload);
 
-                _Logger.Debug($"Body: {args}.");
+                _Logger.LogDebug($"Body: {args}.");
 
                 var workflow = _DbContextProvider
                     .KeyReleaseWorkflowStates
@@ -71,33 +71,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
                 if (workflow == null)
                 {
-                    _Logger.Error("Matching workflow not found.");
+                    _Logger.LogError("Matching workflow not found.");
                     return;
                 }
 
-                _Logger.Debug("Matching workflow found.");
+                _Logger.LogDebug("Matching workflow found.");
 
                 if (!_KeyValidator.Validate(args, workflow))
                 {
-                    _Logger.Error("Keys not valid.");
+                    _Logger.LogError("Keys not valid.");
                     return;
                 }
 
                 if (!_SignatureValidator.Valid(signature, workflow, Encoding.UTF8.GetBytes(payload)))
                 {
-                    _Logger.Error($"Signature not valid: {Convert.ToBase64String(signature)}.");
+                    _Logger.LogError($"Signature not valid: {Convert.ToBase64String(signature)}.");
                     return;
                 }
 
-                _Logger.Debug("Writing.");
+                _Logger.LogDebug("Writing.");
                 await _Writer.Execute(args);
-                _Logger.Debug("Committing.");
+                _Logger.LogDebug("Committing.");
                 _DbContextProvider.SaveAndCommit();
-                _Logger.Debug("Committed.");
+                _Logger.LogDebug("Committed.");
             }
             catch (Exception e)
             {
-                _Logger.Error(e.ToString());
+                _Logger.LogError(e.ToString());
             }
         }
     }

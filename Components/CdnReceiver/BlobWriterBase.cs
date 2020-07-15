@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver
 {
@@ -40,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
             var splits = args.Path.Split("/", StringSplitOptions.RemoveEmptyEntries);
             if (splits.Length == 0)
             {
-                Logger.Error($"Path invalid: {args.Path}");
+                Logger.LogError($"Path invalid: {args.Path}");
                 throw new InvalidOperationException("Path invalid.");
             }
 

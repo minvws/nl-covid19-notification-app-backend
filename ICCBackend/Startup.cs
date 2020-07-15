@@ -23,7 +23,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Services;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
@@ -42,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             if (services == null) throw new ArgumentNullException(nameof(services));
 
             services.AddSeriLog(Configuration);
-            services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(Log.Logger)));
+            //services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(_Logger.Logger)));
 
             ComponentsContainerHelper.RegisterDefaultServices(services);
 
@@ -66,7 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<AppBackendService, AppBackendService>();
             services.AddAuthentication("IccAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, IccAuthenticationHandler>("IccAuthentication", null);
-            services.AddSingleton(Log.Logger);
+            //services.AddSingleton(_Logger.Logger);
 
             services.AddCors();
 

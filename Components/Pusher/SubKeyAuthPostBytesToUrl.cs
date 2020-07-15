@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 {
@@ -52,7 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
                 case HttpStatusCode.Conflict:
                     return false;
                 default:
-                    _Logger.Error($"Status not handled - {response.StatusCode}, {response.ReasonPhrase}.");
+                    _Logger.LogError($"Status not handled - {response.StatusCode}, {response.ReasonPhrase}.");
                     throw new InvalidOperationException($"Status not handled.");
             };
         }

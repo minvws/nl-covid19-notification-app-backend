@@ -14,7 +14,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
@@ -35,13 +35,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
         public async Task Execute()
         {
-            _Logger.Information($"Cleanup start.");
+            _Logger.LogInformation($"Cleanup start.");
             await DeleteContent<RiskCalculationContentEntity>(_Config.ContentLifetimeDays);
             await DeleteContent<ResourceBundleContentEntity>(_Config.ContentLifetimeDays);
             await DeleteContent<AppConfigContentEntity>(_Config.ContentLifetimeDays);
             await DeleteContent<ExposureKeySetContentEntity>(_Config.ExposureKeySetLifetimeDays);
             _ContentDbContext.SaveAndCommit();
-            _Logger.Information($"Cleanup complete.");
+            _Logger.LogInformation($"Cleanup complete.");
         }
 
         private async Task DeleteContent<T>(double lifetime) where T : ContentEntity
@@ -56,11 +56,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 .OrderByDescending(x => x.Release)
                 .FirstOrDefault();
 
-            _Logger.Warning($"No published entity - {typeof(T).Name}.");
+            _Logger.LogWarning($"No published entity - {typeof(T).Name}.");
 
             if (exceptEntity != null)
             {
-                _Logger.Debug($"Current published entity - {typeof(T).Name}, Id:{exceptEntity.PublishingId}.");
+                _Logger.LogDebug($"Current published entity - {typeof(T).Name}, Id:{exceptEntity.PublishingId}.");
 
                 var id = exceptEntity.Id;
 
@@ -72,7 +72,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
                 foreach (var i in recordToDelete)
                 {
-                    _Logger.Information($"Cleanup - {typeof(T).Name}, Id:{i.PublishingId}.");
+                    _Logger.LogInformation($"Cleanup - {typeof(T).Name}, Id:{i.PublishingId}.");
                 }
 
                 await _ContentDbContext.BulkDeleteAsync(recordToDelete);

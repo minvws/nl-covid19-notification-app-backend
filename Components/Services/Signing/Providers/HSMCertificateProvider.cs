@@ -6,13 +6,14 @@ using System;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers
 {
     public class HsmCertificateProvider : ICertificateProvider
     {
         private readonly IThumbprintConfig _ThumbprintConfig;
+        private ILogger _Logger;
 
         public HsmCertificateProvider(IThumbprintConfig thumbprintConfig)
         {
@@ -24,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             store.Open(OpenFlags.ReadOnly);
 
-            Log.Information($"Finding certificate - Thumbprint:{_ThumbprintConfig.Thumbprint}, RootTrusted:{_ThumbprintConfig.RootTrusted}.");
+            _Logger.LogInformation($"Finding certificate - Thumbprint:{_ThumbprintConfig.Thumbprint}, RootTrusted:{_ThumbprintConfig.RootTrusted}.");
 
             var result = store.Certificates
                 .Find(X509FindType.FindByThumbprint, _ThumbprintConfig.Thumbprint, _ThumbprintConfig.RootTrusted)
@@ -32,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
                 .FirstOrDefault();
 
             if (result == null)
-                Log.Fatal($"Certificate not found: {_ThumbprintConfig.Thumbprint}");
+                _Logger.LogCritical($"Certificate not found: {_ThumbprintConfig.Thumbprint}"); //TODO throw exception?
 
             return result;
         }

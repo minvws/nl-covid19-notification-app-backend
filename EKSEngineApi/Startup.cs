@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
@@ -49,8 +49,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
             });
 
             services.AddSeriLog(Configuration);
-            services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(Log.Logger)));
+            //services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(_Logger.Logger)));
             services.AddBasicAuthentication();
+
+            //services.AddSingleton<ILogger>(_Logger.Logger);
 
             services.AddScoped(x =>
             {

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace CdnDataReceiver.Controllers
 {

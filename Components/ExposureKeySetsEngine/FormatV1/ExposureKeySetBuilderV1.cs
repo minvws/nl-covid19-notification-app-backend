@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1
 {
@@ -70,8 +70,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             var nlSig = _NlContentSigner.GetSignature(contentBytes);
             var gaenSig = _GaenContentSigner.GetSignature(contentBytes);
 
-            _Logger.Debug($"GAEN Sig: {Convert.ToBase64String(gaenSig)}.");
-            _Logger.Debug($"NL Sig: {Convert.ToBase64String(nlSig)}.");
+            _Logger.LogDebug($"GAEN Sig: {Convert.ToBase64String(gaenSig)}.");
+            _Logger.LogDebug($"NL Sig: {Convert.ToBase64String(nlSig)}.");
 
             var signatures = new ExposureKeySetSignaturesContentArgs
             {

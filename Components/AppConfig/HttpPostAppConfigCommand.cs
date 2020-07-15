@@ -5,9 +5,9 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
 {
@@ -30,15 +30,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
         {
             if (!_Validator.Valid(args))
             {
-                _Logger.Warning("Bad request.");
+                _Logger.LogWarning("Bad request.");
                 return new BadRequestResult();
             }
 
-            _Logger.Debug("Writing DB.");
+            _Logger.LogDebug("Writing DB.");
             await _InsertDbCommand.Execute(args);
-            _Logger.Debug("Committing.");
+            _Logger.LogDebug("Committing.");
             _Context.SaveAndCommit();
-            _Logger.Information($"Committed.");
+            _Logger.LogInformation($"Committed.");
             return new OkResult();
         }
     }

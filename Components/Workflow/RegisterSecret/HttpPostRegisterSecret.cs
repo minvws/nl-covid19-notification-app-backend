@@ -5,7 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
 {
@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             }
             catch (Exception e)
             {
-                _Logger.Error(e.ToString());
+                _Logger.LogError(e.ToString());
                 //TODO positive indication of an error to clients? Empty response? Or just 500?
                 return new OkObjectResult(new EnrollmentResponse { Validity = -1 });
             }

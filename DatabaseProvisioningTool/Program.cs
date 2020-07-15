@@ -11,52 +11,40 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
 {
-    internal class Program
+    public static class ConfiguationRootBuilder
     {
-        public Program()
-        {
-            AppDomain.CurrentDomain.UnhandledException += AppDomainExceptinHandler;
-        }
-
-        private void AppDomainExceptinHandler(object sender, UnhandledExceptionEventArgs e)
-        {
-            Log.Fatal(e.ExceptionObject.ToString());
-        }
-
-        public static IConfigurationRoot Configuration { get; private set; }
-
-        private static async Task Main(string[] args)
+        public static IConfigurationRoot Build()
         {
             var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-
-            // Build configuration
-            Configuration = new ConfigurationBuilder()
+            return new ConfigurationBuilder()
                 .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
                 .AddJsonFile("appsettings.json", false)
                 .AddJsonFile($"appsettings.{environmentName}.json", true, true)
                 .Build();
+        }
+    }
 
-            // add the framework services
+    public static class Program
+    {
+        public static IConfigurationRoot Configuration { get; private set; }
+
+        public static async Task Main(params string[] args)
+        {
+            Configuration = ConfiguationRootBuilder.Build();
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
             var serviceProvider = serviceCollection.BuildServiceProvider();
-
-            try
-            {
-                Log.Information("Starting service");
-                await serviceProvider.GetService<App>().Run(args);
-                Log.Information("Ending service");
-                Console.WriteLine("Press any key to exit...");
-                Console.ReadLine();
-            }
-            finally
-            {
-                Log.CloseAndFlush();
-            }
+            var logger = serviceProvider.GetService<ILogger>();
+            AppDomain.CurrentDomain.UnhandledException += (o,e) => logger.LogCritical(e?.ExceptionObject?.ToString());
+            logger.LogInformation("Starting service");
+            await serviceProvider.GetService<App>().Run(args);
+            logger.LogInformation("Ending service");
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadLine();
         }
 
         public static void ConfigureServices(IServiceCollection services)

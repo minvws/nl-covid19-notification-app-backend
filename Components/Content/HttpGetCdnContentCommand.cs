@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
@@ -37,14 +37,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             //This looked like a bug?
             if (!httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
             {
-                _Logger.Error($"Required request header missing - if-none-match.");
+                _Logger.LogError($"Required request header missing - if-none-match.");
                 httpContext.Response.ContentLength = 0;
                 httpContext.Response.StatusCode = 400; //TODO!
             }
 
             if (typeof(T) != typeof(ManifestEntity) && !_PublishingId.Validate(id))
             {
-                _Logger.Error($"Invalid content id - {id}.");
+                _Logger.LogError($"Invalid content id - {id}.");
                 httpContext.Response.StatusCode = 400;
                 httpContext.Response.ContentLength = 0;
             }
@@ -54,7 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             if (content == null)
             {
                 //TODO tell CDN to ignore hunting?
-                _Logger.Error($"Content not found - {id}.");
+                _Logger.LogError($"Content not found - {id}.");
                 httpContext.Response.StatusCode = 404;
                 httpContext.Response.ContentLength = 0;
                 return;
@@ -62,7 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             if (etagValue == content.PublishingId)
             {
-                _Logger.Warning($"Matching etag found, responding with 304 - {id}.");
+                _Logger.LogWarning($"Matching etag found, responding with 304 - {id}.");
                 httpContext.Response.StatusCode = 304;
                 httpContext.Response.ContentLength = 0;
                 return;
@@ -74,7 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             if (!signedResponse && !accepts.Contains(content.ContentTypeName))
             {
-                _Logger.Warning($"Cannot give acceptable response, responding with 406 - {id}.");
+                _Logger.LogWarning($"Cannot give acceptable response, responding with 406 - {id}.");
                 httpContext.Response.StatusCode = 406;
                 httpContext.Response.ContentLength = 0;
                 return;

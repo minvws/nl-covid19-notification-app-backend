@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -23,12 +24,14 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Register
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
 {
     public class Startup
     {
+        private bool _SignatureValidationEnabled;
         private const string Title = "MSS Workflow Api";
 
         public Startup(IConfiguration configuration)
@@ -45,7 +48,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
 
             services.AddControllers();
             services.AddSeriLog(Configuration);
-            services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(Log.Logger)));
+
+            //services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(services)));
 
             services.AddScoped(x =>
             {
@@ -55,9 +59,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
                 result.BeginTransaction();
                 return result;
             });
-
-            services.AddSingleton(Log.Logger);
-
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<IGeanTekListValidationConfig, StandardGeanCommonWorkflowConfig>();
@@ -71,15 +72,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
             services.AddScoped<IReleaseTeksValidator, ReleaseTeksValidator>();
             services.AddScoped<ISignatureValidator, SignatureValidator>();
 
-            var sigValOn = Configuration.GetValue("ValidatePostKeysSignature", true);
-            if (sigValOn)
+            _SignatureValidationEnabled = Configuration.GetValue("ValidatePostKeysSignature", true);
+            if (_SignatureValidationEnabled)
             {
-                Log.Information("Signature validation of POST postkeys enabled : true");
                 services.AddScoped<ISignatureValidator, SignatureValidator>();
             }
             else
             {
-                Log.Warning("Signature validation of POST postkeys enabled : false");
                 services.AddScoped<ISignatureValidator, DoNotValidateSignatureValidator>();
             }
 
@@ -100,15 +99,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
             services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();
             services.AddScoped<LabVerifyChecker, LabVerifyChecker>();
             
-            
-            
             services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services)
         {
             app.UseDeveloperExceptionPage();
+
+            var logger = services.GetService<Microsoft.Extensions.Logging.ILogger>();
+            if (_SignatureValidationEnabled)
+            {
+                logger.LogInformation("Signature validation of POST postkeys enabled : true");
+            }
+            else
+            {
+                logger.LogWarning("Signature validation of POST postkeys enabled : false");
+            }
+
+
             app.UseSwagger();
             app.UseSwaggerUI(o => { o.SwaggerEndpoint("/swagger/v1/swagger.json", Title); });
 

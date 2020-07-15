@@ -12,7 +12,7 @@
 //using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 //using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 //using ProtoBuf;
-//using Serilog;
+//using Microsoft.Extensions.Logging;
 
 //namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver
 //{

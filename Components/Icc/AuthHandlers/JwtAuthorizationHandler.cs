@@ -11,35 +11,29 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
-using ILogger = Serilog.ILogger;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers
 {
     public class JwtAuthorizationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        public ILogger SeriLogger { get; }
         private readonly JwtService _JwtService;
-        private readonly Serilog.ILogger _SeriLogger;
 
         public JwtAuthorizationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory loggerFactory,
-            ILogger seriLogger,
             UrlEncoder encoder,
             ISystemClock clock,
             JwtService jwtService) : base(options, loggerFactory, encoder, clock)
         {
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
-            SeriLogger = seriLogger;
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
-            _SeriLogger = seriLogger;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!Request.Headers.ContainsKey("Authorization"))
             {
-                _SeriLogger.Information($"Missing authorization header.");
+                Logger.LogInformation($"Missing authorization header.");
                 return AuthenticateResult.Fail("Missing authorization header.");
             }
 
@@ -54,13 +48,13 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers
             }
             catch (Exception e) //TODO shouldnt need this at all.
             {
-                _SeriLogger.Error(e.ToString());
+                Logger.LogError(e.ToString());
                 return AuthenticateResult.Fail("Error invalid jwt.");
             }
 
             if (!isValidJwt)
             {
-                _SeriLogger.Warning($"Invalid jwt - {jwtToken}.");
+                Logger.LogWarning($"Invalid jwt - {jwtToken}.");
                 return AuthenticateResult.Fail("Invalid jwt.");
             }
 

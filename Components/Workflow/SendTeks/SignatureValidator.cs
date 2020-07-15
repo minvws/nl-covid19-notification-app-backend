@@ -5,7 +5,7 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks

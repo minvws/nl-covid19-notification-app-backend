@@ -3,7 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver
 {
@@ -23,13 +23,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
         public async Task Send(T args)
         {
             var queueClient = new QueueClient(_SbConfig.ConnectionString, _SbConfig.QueueName);
-            _Logger.Debug($"Writing to queue - Endpoint:{queueClient.ServiceBusConnection.Endpoint}, {queueClient.Path}.");
+            _Logger.LogDebug($"Writing to queue - Endpoint:{queueClient.ServiceBusConnection.Endpoint}, {queueClient.Path}.");
             try
             {
                 var m = new Message(Encoding.UTF8.GetBytes(_JsonSerializer.Serialize(args)));
                 m.SessionId = Guid.NewGuid().ToString();
                 await queueClient.SendAsync(m);
-                _Logger.Information("Items written to queue.");
+                _Logger.LogInformation("Items written to queue.");
             }
             finally
             {
