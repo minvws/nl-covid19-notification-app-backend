@@ -1,5 +1,8 @@
 ﻿syntax = "proto2";
 
+// Use our namespace
+option csharp_namespace = "NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat";
+
 message TemporaryExposureKeyExport {
   // Time window of keys in this batch based on arrival to server, in UTC seconds.
   optional fixed64 start_timestamp = 1;

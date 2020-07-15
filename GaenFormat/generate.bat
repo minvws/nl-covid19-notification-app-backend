@@ -1,2 +1,2 @@
- protoc --csharp_out=. --csharp_opt=base_namespace= TemporaryExposureKeyExport.proto
+ protoc --csharp_out=. TemporaryExposureKeyExport.proto
  
