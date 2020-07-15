@@ -20,6 +20,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
 
         public static async Task Main(params string[] args)
         {
+            var seed = false;
+            if (args != null && args.Length > 0)
+            {
+                var parseArg0 = bool.TryParse(args[0], out seed);
+                if (parseArg0)
+                {
+
+                }
+                else
+                {
+                    Console.WriteLine("Unable to parse the argument " + args[0] +
+                                      "', please use 'True' if you wish to seed the database and nothing if you don't.");
+                    Environment.Exit(1);
+                }
+            }
+
             Configuration = ConfiguationRootBuilder.Build();
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
@@ -27,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
             var logger = serviceProvider.GetService<ILogger>() ?? throw new InvalidOperationException("Could not resolve ILogger.");
             AppDomain.CurrentDomain.UnhandledException += (o,e) => logger.LogCritical(e?.ExceptionObject?.ToString());
             logger.LogInformation("Starting service");
-            await serviceProvider.GetService<App>().Run(args);
+            await serviceProvider.GetService<App>().Run(seed);
             logger.LogInformation("Ending service");
             Console.WriteLine("Press any key to exit...");
             Console.ReadLine();
