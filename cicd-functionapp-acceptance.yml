@@ -27,4 +27,4 @@ extends:
     functionAppNameSecundary: 'vwssa-function-app'
     webEnvironment: 'Staging'
     # ============================================
-    projectName: '$(System.DefaultWorkingDirectory)/CdnRegionSync/CdnRegionSync.csproj'
+    projectName: '$(System.DefaultWorkingDirectory)/ExposureNotification.Backend.CdnRegionSync.sln'
