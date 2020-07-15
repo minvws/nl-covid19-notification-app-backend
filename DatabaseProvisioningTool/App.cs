@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
 {
     public class App
     {
-        private readonly ILogger<App> _Logger;
+        private readonly ILogger _Logger;
         private readonly WorkflowDbContext _WorkflowDbContext;
         private readonly ExposureContentDbContext _ExposureContentDbContext;
         private readonly IccBackendContentDbContext _IccBackendContentDbContext;

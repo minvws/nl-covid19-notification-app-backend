@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         private readonly ILogger _Logger; //Actually not used.
         private readonly IJsonSerializer _JsonSerializer;
 
-        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IContentSigner contentSigner, ILogger logger, IJsonSerializer jsonSerializer)
+        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IContentSigner contentSigner, ILogger<DynamicManifestReader> logger, IJsonSerializer jsonSerializer)
         {
             _ManifestBuilder = manifestBuilder ?? throw new ArgumentNullException(nameof(manifestBuilder));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));

@@ -12,15 +12,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 {
     public sealed class ConsoleAppRunner
     {
-        private ILogger _Logger;
-        private IConfigurationRoot _Configuration;
-
         public void Execute(string[] args, Action<IServiceCollection, IConfigurationRoot> configure, Action<IServiceProvider> start)
         {
             var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
             // Build configuration
-            _Configuration = new ConfigurationBuilder()
+            var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
                 .AddJsonFile("appsettings.json", false)
                 .AddJsonFile($"appsettings.{environmentName}.json", true, true)
@@ -28,16 +25,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
 
             // Add the framework services
             var serviceCollection = new ServiceCollection();
-            configure(serviceCollection, _Configuration);
+            configure(serviceCollection, configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
-            _Logger = serviceProvider.GetService<ILogger>();
-            AppDomain.CurrentDomain.UnhandledException += AppDomainExceptinHandler;
+            var logger = serviceProvider.GetService<ILogger<ConsoleAppRunner>>();
+            AppDomain.CurrentDomain.UnhandledException += (o,e) => logger.LogCritical(e.ExceptionObject.ToString()); ;
             start(serviceProvider);
-        }
-
-        private void AppDomainExceptinHandler(object sender, UnhandledExceptionEventArgs e)
-        {
-            _Logger.LogCritical(e.ExceptionObject.ToString());
         }
     }
 }

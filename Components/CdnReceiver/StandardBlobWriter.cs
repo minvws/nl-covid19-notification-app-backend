@@ -9,7 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
 {
     public class StandardBlobWriter : BlobWriterBase
     {
-        public StandardBlobWriter(IStorageAccountConfig storageAccountConfig, ILogger logger) : base(storageAccountConfig, logger)
+        public StandardBlobWriter(IStorageAccountConfig storageAccountConfig, ILogger<StandardBlobWriter> logger) : base(storageAccountConfig, logger)
         {
         }
 

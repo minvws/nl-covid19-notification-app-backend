@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
         private readonly IJsonSerializer _JsonSerializer;
         private readonly ILogger _Logger;
 
-        public QueueSendCommand(IServiceBusConfig sbConfig, IJsonSerializer jsonSerializer, ILogger logger)
+        public QueueSendCommand(IServiceBusConfig sbConfig, IJsonSerializer jsonSerializer, ILogger<QueueSendCommand<T>> logger)
         {
             _SbConfig = sbConfig ?? throw new ArgumentNullException(nameof(sbConfig));
             _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));

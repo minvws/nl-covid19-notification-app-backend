@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         private readonly IDataApiUrls _Config;
         private readonly ILogger _Logger;
 
-        public BasicAuthDataApiReader(IDataApiUrls config, ILogger logger)
+        public BasicAuthDataApiReader(IDataApiUrls config, ILogger<BasicAuthDataApiReader> logger)
         {
             _Config = config ?? throw new ArgumentNullException(nameof(config));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));

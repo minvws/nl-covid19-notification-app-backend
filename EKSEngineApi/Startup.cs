@@ -82,7 +82,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
                     x.GetService<ExposureContentDbContext>(),
                     x.GetService<IUtcDateTimeProvider>(),
                     x.GetService<IPublishingId>(),
-                    x.GetService<ILogger>()
+                    x.GetService<ILogger<ExposureKeySetBatchJobMk2>>()
                 ));
 
             services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
@@ -93,7 +93,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
                     new CmsSigner(new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"))), 
                     x.GetService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
                     new GeneratedProtobufContentFormatter(),
-                    x.GetService<ILogger>()
+                    x.GetService<ILogger<ExposureKeySetBuilderV1>>()
                 ));
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
             services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();

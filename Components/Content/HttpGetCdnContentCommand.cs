@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         private readonly IPublishingId _PublishingId;
         private readonly ILogger _Logger;
 
-        public HttpGetCdnContentCommand(IReader<T> safeReader, IPublishingId publishingId, ILogger logger)
+        public HttpGetCdnContentCommand(IReader<T> safeReader, IPublishingId publishingId, ILogger<HttpGetCdnContentCommand<T>> logger)
         {
             _SafeReader = safeReader ?? throw new ArgumentNullException(nameof(safeReader));
             _PublishingId = publishingId ?? throw new ArgumentNullException(nameof(publishingId));

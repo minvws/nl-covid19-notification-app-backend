@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
     public class GenerateIccController
     {
         private readonly IIccService _IccService;
-        private readonly ILogger<GenerateIccController> _Logger;
+        private readonly ILogger _Logger;
         private readonly IConfiguration _Configuration;
         private readonly IccBackendContentDbContext _DbContext;
         

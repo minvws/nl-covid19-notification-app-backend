@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
         private readonly IQueueSender<StorageAccountSyncMessage> _QueueSender;
         private readonly ILogger _Logger;
 
-        public HttpPostContentReceiver2(IBlobWriter blobWriter, IQueueSender<StorageAccountSyncMessage> queueSender, ILogger logger)
+        public HttpPostContentReceiver2(IBlobWriter blobWriter, IQueueSender<StorageAccountSyncMessage> queueSender, ILogger<HttpPostContentReceiver2> logger)
         {
             _BlobWriter = blobWriter ?? throw new ArgumentNullException(nameof(blobWriter));
             _QueueSender = queueSender ?? throw new ArgumentNullException(nameof(queueSender));

@@ -14,12 +14,12 @@ using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers
 {
-    public class JwtAuthorizationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    public class IccJwtAuthorizationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         private readonly JwtService _JwtService;
-        private readonly ILogger<JwtAuthorizationHandler> _Logger;
+        private readonly ILogger _Logger;
 
-        public JwtAuthorizationHandler(
+        public IccJwtAuthorizationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers
             JwtService jwtService) : base(options, logger, encoder, clock)
         {
             _JwtService = jwtService;
-            _Logger = logger.CreateLogger<JwtAuthorizationHandler>();
+            _Logger = logger.CreateLogger<ILogger<IccJwtAuthorizationHandler>>(); //TODO there was resolve warning here cos the name clashed with JwtAuthorizationHandler in lib namespace
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()

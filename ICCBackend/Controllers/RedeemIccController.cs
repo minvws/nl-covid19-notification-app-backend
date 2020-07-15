@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         private readonly AppBackendService _AppBackendService;
         private readonly IccBackendContentDbContext _DbContext;
 
-        public RedeemIccController(ILogger logger, IIccService iccService, AppBackendService appBackendService, IccBackendContentDbContext dbContext)
+        public RedeemIccController(ILogger<RedeemIccController> logger, IIccService iccService, AppBackendService appBackendService, IccBackendContentDbContext dbContext)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _IccService = iccService ?? throw new ArgumentNullException(nameof(iccService));

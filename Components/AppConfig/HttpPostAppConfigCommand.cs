@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
         private readonly ExposureContentDbContext _Context;
         private readonly ILogger _Logger;
 
-        public HttpPostAppConfigCommand(AppConfigInsertDbCommand insertDbCommand, AppConfigValidator validator, ExposureContentDbContext context, ILogger logger)
+        public HttpPostAppConfigCommand(AppConfigInsertDbCommand insertDbCommand, AppConfigValidator validator, ExposureContentDbContext context, ILogger<HttpPostAppConfigCommand> logger)
         {
             _InsertDbCommand = insertDbCommand ?? throw new ArgumentNullException(nameof(insertDbCommand));
             _Validator = validator ?? throw new ArgumentNullException(nameof(validator));

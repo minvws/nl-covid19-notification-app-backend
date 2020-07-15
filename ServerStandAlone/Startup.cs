@@ -119,7 +119,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                     x.GetService<ExposureContentDbContext>(),
                     x.GetService<IUtcDateTimeProvider>(),
                     x.GetService<IPublishingId>(),
-                    x.GetService<ILogger>()
+                    x.GetService<ILogger<ExposureKeySetBatchJobMk2>>()
                 ));
 
             services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
@@ -130,21 +130,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
                     new CmsSigner(new ResourceCertificateProvider("FakeRSA.p12")),
                     x.GetService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
                     new GeneratedProtobufContentFormatter(),
-                    x.GetService<ILogger>()
+                    x.GetService<ILogger<ExposureKeySetBuilderV1>>()
                 ));
 
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
             services.AddSingleton<ISignatureValidator>(new DoNotValidateSignatureValidator());
 
-            services.AddScoped(x =>
-                new ExposureKeySetBuilderV1(
-                    x.GetService<ExposureKeySetHeaderInfoConfig>(),
-                    new FakeContentSigner(),
-                    new FakeContentSigner(),
-                    x.GetService<IUtcDateTimeProvider>(),
-                    new GeneratedProtobufContentFormatter(),
-                    x.GetService<ILogger>()
-                ));
+            ////TODO why is this still here?
+            //services.AddScoped(x =>
+            //    new ExposureKeySetBuilderV1(
+            //        x.GetService<ExposureKeySetHeaderInfoConfig>(),
+            //        new FakeContentSigner(),
+            //        new FakeContentSigner(),
+            //        x.GetService<IUtcDateTimeProvider>(),
+            //        new GeneratedProtobufContentFormatter(),
+            //        x.GetService<ILogger<ExposureKeySetBuilderV1>>()
+            //    ));
 
             services.AddScoped<ManifestBuilder, ManifestBuilder>();
             services.AddScoped<GetActiveExposureKeySetsListCommand, GetActiveExposureKeySetsListCommand>();

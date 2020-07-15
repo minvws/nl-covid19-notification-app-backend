@@ -9,6 +9,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 
 namespace CdnDataPurge
 {
+    //TODO Dead code walking?
+
     public class PurgeFunction
     {
         private readonly CdnContentPurgeCommand _Command;
@@ -19,7 +21,7 @@ namespace CdnDataPurge
         }
 
         [FunctionName("PurgeFunction")]
-        public async Task Run([TimerTrigger("%PurgeJobTriggerTime%")] TimerInfo _, ILogger log)
+        public async Task Run([TimerTrigger("%PurgeJobTriggerTime%")] TimerInfo _, ILogger<PurgeFunction> log)
         {
             log.LogInformation($"CdnDataPurge triggered.");
             await _Command.Execute();

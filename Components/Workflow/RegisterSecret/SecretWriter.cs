@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
         private readonly RandomNumberGenerator _NumberGenerator;
         private readonly ILogger _Logger;
 
-        public SecretWriter(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, RandomNumberGenerator numberGenerator, ILogger logger)
+        public SecretWriter(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, RandomNumberGenerator numberGenerator, ILogger<SecretWriter> logger)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));

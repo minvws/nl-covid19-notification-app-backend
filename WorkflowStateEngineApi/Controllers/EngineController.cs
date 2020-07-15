@@ -16,14 +16,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowStateEngineApi.C
     [Authorize]
     public class EngineController : ControllerBase
     {
+        private readonly ILogger _Logger;
+        public EngineController(ILogger logger)
+        {
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
         [HttpGet] //TODO POST!
         [Route("/v1/execute")]
-        public async Task<IActionResult> Purge([FromServices] PurgeExpiredSecretsDbCommand command, ILogger logger)
+        public async Task<IActionResult> Purge([FromServices] PurgeExpiredSecretsDbCommand command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-            logger.LogInformation("GET v1/execute to Purge Expired Secrets.");
+            _Logger.LogInformation("GET v1/execute to Purge Expired Secrets.");
             return await command.Execute();
         }
     }

@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
     {
         private readonly IIccService _IccService;
         private readonly IccBackendContentDbContext _DbContext;
-        private readonly ILogger<IccAuthenticationHandler> _Logger;
+        private readonly ILogger _Logger;
 
         public IccAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         {
             _DbContext = dbContext;
             _IccService = iccService;
-            _Logger = logger.CreateLogger<IccAuthenticationHandler>();
+            _Logger = logger.CreateLogger<IccAuthenticationHandler>(); //TODO ??
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()

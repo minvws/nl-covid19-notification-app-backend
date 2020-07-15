@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IContentFormatter _ContentFormatter;
         private readonly IExposureKeySetHeaderInfoConfig _Config;
-        private readonly ILogger _Logger;
+        private readonly ILogger<ExposureKeySetBuilderV1> _Logger;
 
         public ExposureKeySetBuilderV1(
             IExposureKeySetHeaderInfoConfig headerInfoConfig,
@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             IContentSigner nlContentSigner,
             IUtcDateTimeProvider dateTimeProvider,
             IContentFormatter contentFormatter,
-            ILogger logger
+            ILogger<ExposureKeySetBuilderV1> logger
             )
         {
             _GaenContentSigner = gaenContentSigner ?? throw new ArgumentNullException(nameof(gaenContentSigner));

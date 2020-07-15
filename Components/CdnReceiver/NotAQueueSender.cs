@@ -9,7 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
     {
         private readonly ILogger _Logger;
 
-        public NotAQueueSender(ILogger logger)
+        public NotAQueueSender(ILogger<NotAQueueSender<T>> logger)
         {
             _Logger = logger;
         }

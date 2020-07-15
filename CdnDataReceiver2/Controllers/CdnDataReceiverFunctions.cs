@@ -15,7 +15,7 @@ namespace CdnDataReceiver.Controllers
         private readonly IContentPathProvider _ContentPathProvider;
         private readonly ILogger _Logger;
 
-        public CdnDataReceiverFunctions(IContentPathProvider contentPathProvider, ILogger logger)
+        public CdnDataReceiverFunctions(IContentPathProvider contentPathProvider, ILogger<CdnDataReceiverFunctions> logger)
         {
             _ContentPathProvider = contentPathProvider ?? throw new ArgumentNullException(nameof(contentPathProvider));
             _Logger = logger;
@@ -23,13 +23,19 @@ namespace CdnDataReceiver.Controllers
 
         [HttpPost]
         [Route(EndPointNames.CdnApi.Manifest)]
-        public async Task<IActionResult> HttpPostManifest([FromBody] ReceiveContentArgs args, [FromServices]ManifestBlobWriter blobWriter, [FromServices]IQueueSender<StorageAccountSyncMessage> qSender)
+        public async Task<IActionResult> HttpPostManifest([FromBody] ReceiveContentArgs args, 
+            [FromServices]ManifestBlobWriter blobWriter, 
+            [FromServices]IQueueSender<StorageAccountSyncMessage> qSender, 
+            [FromServices] ILogger<HttpPostContentReceiver2> logger)
         {
             if (args == null) throw new ArgumentNullException(nameof(args));
             if (blobWriter == null) throw new ArgumentNullException(nameof(blobWriter));
             if (qSender == null) throw new ArgumentNullException(nameof(qSender));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-            var command = new HttpPostContentReceiver2(blobWriter, qSender, _Logger);
+            _Logger.LogInformation("POST manifest triggered.");
+
+            var command = new HttpPostContentReceiver2(blobWriter, qSender, logger);
             return await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.Manifest, Name = EndPointNames.ManifestName});
         }
 
@@ -40,6 +46,7 @@ namespace CdnDataReceiver.Controllers
             if (args == null) throw new ArgumentNullException(nameof(args));
             if (command == null) throw new ArgumentNullException(nameof(command));
 
+            _Logger.LogInformation("POST AppConfig triggered.");
             return await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.AppConfig, Name = args.PublishingId});
         }
 
@@ -50,6 +57,7 @@ namespace CdnDataReceiver.Controllers
             if (args == null) throw new ArgumentNullException(nameof(args));
             if (command == null) throw new ArgumentNullException(nameof(command));
 
+            _Logger.LogInformation("POST ResourceBundle triggered.");
             return await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.ResourceBundle, Name = args.PublishingId});
         }
 
@@ -60,6 +68,7 @@ namespace CdnDataReceiver.Controllers
             if (args == null) throw new ArgumentNullException(nameof(args));
             if (command == null) throw new ArgumentNullException(nameof(command));
 
+            _Logger.LogInformation("POST RiskCalculationParameters triggered.");
             return await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.RiskCalculationParameters, Name = args.PublishingId});
         }
 
@@ -70,6 +79,7 @@ namespace CdnDataReceiver.Controllers
             if (args == null) throw new ArgumentNullException(nameof(args));
             if (command == null) throw new ArgumentNullException(nameof(command));
 
+            _Logger.LogInformation("POST ExposureKeySet triggered.");
             return await command.Execute(args, new DestinationArgs {Path = _ContentPathProvider.ExposureKeySet, Name = args.PublishingId});
         }
     }

@@ -19,7 +19,7 @@ namespace CdnRegionSync
         private readonly IStorageAccountConfig _DestinationStorageAccountConfig;
         private readonly ILogger _Logger;
 
-        public ImmutableBlobCopyCommand(IStorageAccountConfig sourceStorageAccountConfig, IStorageAccountConfig destinationStorageAccountConfig, ILogger logger)
+        public ImmutableBlobCopyCommand(IStorageAccountConfig sourceStorageAccountConfig, IStorageAccountConfig destinationStorageAccountConfig, ILogger<ImmutableBlobCopyCommand> logger)
         {
             _SourceStorageAccountConfig = sourceStorageAccountConfig ?? throw new ArgumentNullException(nameof(sourceStorageAccountConfig));
             _DestinationStorageAccountConfig = destinationStorageAccountConfig ?? throw new ArgumentNullException(nameof(destinationStorageAccountConfig));

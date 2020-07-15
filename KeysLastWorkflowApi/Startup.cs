@@ -107,7 +107,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
         {
             app.UseDeveloperExceptionPage();
 
-            var logger = services.GetService<Microsoft.Extensions.Logging.ILogger>();
+            var logger = services.GetService<ILogger<Startup>>();
             if (_SignatureValidationEnabled)
             {
                 logger.LogInformation("Signature validation of POST postkeys enabled : true");

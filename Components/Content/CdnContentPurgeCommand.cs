@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         private readonly ICdnContentConfig _Config;
         private readonly ILogger _Logger;
 
-        public CdnContentPurgeCommand(ExposureContentDbContext contentDbContext, IUtcDateTimeProvider dateTimeProvider, ICdnContentConfig config, ILogger logger)
+        public CdnContentPurgeCommand(ExposureContentDbContext contentDbContext, IUtcDateTimeProvider dateTimeProvider, ICdnContentConfig config, ILogger<CdnContentPurgeCommand> logger)
         {
             _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));

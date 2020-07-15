@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
     public class TekWriter : ITekWriter
     {
         private readonly WorkflowDbContext _DbContextProvider;
-        private readonly ILogger<WorkflowDbContext> _Logger;
+        private readonly ILogger _Logger;
 
         public TekWriter(WorkflowDbContext dbContextProvider, ILogger<WorkflowDbContext> logger)
         {

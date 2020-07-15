@@ -18,47 +18,56 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi.Controllers
     [Route("[controller]")]
     public class WorkflowController : ControllerBase
     {
+
+        private readonly ILogger _Logger;
+
+        public WorkflowController(ILogger<WorkflowController> logger)
+        {
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
+
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.ReleaseTeks)]
-        public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand command, [FromServices]ILogger logger)
+        public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (_Logger == null) throw new ArgumentNullException(nameof(_Logger));
 
-            logger.LogInformation("POST postkeys triggered.");
+            _Logger.LogInformation("POST postkeys triggered.");
             return await command.Execute(sig, Request);
         }
 
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.RegisterSecret)]
-        public async Task<IActionResult> PostSecret([FromServices]HttpPostRegisterSecret command, [FromServices] ILogger logger)
+        public async Task<IActionResult> PostSecret([FromServices]HttpPostRegisterSecret command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (_Logger == null) throw new ArgumentNullException(nameof(_Logger));
 
-            logger.LogInformation("POST register triggered.");
+            _Logger.LogInformation("POST register triggered.");
             return await command.Execute();
         }
 
         [HttpPost, Authorize(AuthenticationSchemes = "icc_jwt")]
         [Route(EndPointNames.CaregiversPortalApi.LabConfirmation)]
-        public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args, [FromServices] HttpPostAuthorise command, [FromServices] ILogger logger)
+        public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args, [FromServices] HttpPostAuthorise command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (_Logger == null) throw new ArgumentNullException(nameof(_Logger));
 
-            logger.LogInformation("POST lab confirmation triggered.");
+            _Logger.LogInformation("POST lab confirmation triggered.");
             return await command.Execute(args);
         }
         
         [HttpPost, Authorize(AuthenticationSchemes = "icc_jwt")]
         [Route(EndPointNames.CaregiversPortalApi.LabVerify)]
-        public async Task<IActionResult> PostKeysAreUploaded([FromBody] LabVerifyArgs args, [FromServices] HttpPostLabVerify command, [FromServices] ILogger logger)
+        public async Task<IActionResult> PostKeysAreUploaded([FromBody] LabVerifyArgs args, [FromServices] HttpPostLabVerify command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (_Logger == null) throw new ArgumentNullException(nameof(_Logger));
 
-            logger.LogInformation("POST labverify triggered.");
+            _Logger.LogInformation("POST labverify triggered.");
             return await command.Execute(args);
         }
     }

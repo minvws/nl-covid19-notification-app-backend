@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculati
         private readonly RiskCalculationConfigValidator _Validator;
         private readonly ILogger _Logger;
 
-        public HttpPostRiskCalculationConfigCommand(ExposureContentDbContext contextProvider, RiskCalculationConfigInsertDbCommand writer, RiskCalculationConfigValidator validator, ILogger logger)
+        public HttpPostRiskCalculationConfigCommand(ExposureContentDbContext contextProvider, RiskCalculationConfigInsertDbCommand writer, RiskCalculationConfigValidator validator, ILogger<HttpPostRiskCalculationConfigCommand> logger)
         {
             _ContextProvider = contextProvider ?? throw new ArgumentNullException(nameof(contextProvider));
             _Writer = writer ?? throw new ArgumentNullException(nameof(writer));

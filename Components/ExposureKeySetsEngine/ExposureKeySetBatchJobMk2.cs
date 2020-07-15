@@ -44,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly IPublishingId _PublishingId;
         private readonly ILogger _Logger;
 
-        public ExposureKeySetBatchJobMk2(/*IExposureKeySetBatchJobConfig jobConfig,*/ IGaenContentConfig gaenContentConfig, IExposureKeySetBuilder builder, WorkflowDbContext workflowDbContext, ExposureContentDbContext contentDbContext, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId, ILogger logger)
+        public ExposureKeySetBatchJobMk2(/*IExposureKeySetBatchJobConfig jobConfig,*/ IGaenContentConfig gaenContentConfig, IExposureKeySetBuilder builder, WorkflowDbContext workflowDbContext, ExposureContentDbContext contentDbContext, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId, ILogger<ExposureKeySetBatchJobMk2> logger)
         {
             //_JobConfig = jobConfig;
             _GaenContentConfig = gaenContentConfig ?? throw new ArgumentNullException(nameof(gaenContentConfig));

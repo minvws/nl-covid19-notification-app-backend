@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         private readonly IReceiverConfig _Config;
         private readonly ILogger _Logger;
 
-        public SubKeyAuthPostBytesToUrl(IReceiverConfig config, ILogger logger)
+        public SubKeyAuthPostBytesToUrl(IReceiverConfig config, ILogger<SubKeyAuthPostBytesToUrl> logger)
         {
             _Config = config ?? throw new ArgumentNullException(nameof(config));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));

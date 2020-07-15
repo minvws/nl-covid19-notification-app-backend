@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         private readonly IJsonSerializer _JsonSerializer;
         private readonly ILogger _Logger;
 
-        public HttpPostReleaseTeksCommand(IReleaseTeksValidator keyValidator, ISignatureValidator signatureValidator, ITekWriter writer, WorkflowDbContext dbContextProvider, IJsonSerializer jsonSerializer, ILogger logger)
+        public HttpPostReleaseTeksCommand(IReleaseTeksValidator keyValidator, ISignatureValidator signatureValidator, ITekWriter writer, WorkflowDbContext dbContextProvider, IJsonSerializer jsonSerializer, ILogger<HttpPostReleaseTeksCommand> logger)
         {
             _KeyValidator = keyValidator ?? throw new ArgumentNullException(nameof(keyValidator));
             _SignatureValidator = signatureValidator ?? throw new ArgumentNullException(nameof(signatureValidator));

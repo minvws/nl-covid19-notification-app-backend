@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("/v1/execute")]
-        public async Task<IActionResult> ExposureKeySets([FromQuery] bool useAllKeys, [FromServices] HttpPostGenerateExposureKeySetsCommand command, [FromServices] ILogger logger)
+        public async Task<IActionResult> ExposureKeySets([FromQuery] bool useAllKeys, [FromServices] HttpPostGenerateExposureKeySetsCommand command, [FromServices] ILogger<EngineController> logger)
         {
             logger.LogInformation("EKS Engine triggered.");
             return await command.Execute(useAllKeys);

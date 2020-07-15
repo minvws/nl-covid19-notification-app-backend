@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         private readonly DynamicManifestReader _DynamicManifestReader;
         private readonly ILogger _Logger; //Actually not used.
 
-        public HttpGetManifestBinaryContentCommand(DynamicManifestReader dynamicManifestReader, ILogger logger)
+        public HttpGetManifestBinaryContentCommand(DynamicManifestReader dynamicManifestReader, ILogger<HttpGetManifestBinaryContentCommand> logger)
         {
             _DynamicManifestReader = dynamicManifestReader ?? throw new ArgumentNullException(nameof(dynamicManifestReader));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));

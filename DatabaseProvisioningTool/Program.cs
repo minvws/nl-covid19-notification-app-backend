@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,19 +14,6 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
 {
-    public static class ConfiguationRootBuilder
-    {
-        public static IConfigurationRoot Build()
-        {
-            var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            return new ConfigurationBuilder()
-                .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
-                .AddJsonFile("appsettings.json", false)
-                .AddJsonFile($"appsettings.{environmentName}.json", true, true)
-                .Build();
-        }
-    }
-
     public static class Program
     {
         public static IConfigurationRoot Configuration { get; private set; }
@@ -38,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
             var serviceProvider = serviceCollection.BuildServiceProvider();
-            var logger = serviceProvider.GetService<ILogger>();
+            var logger = serviceProvider.GetService<ILogger>() ?? throw new InvalidOperationException("Could not resolve ILogger.");
             AppDomain.CurrentDomain.UnhandledException += (o,e) => logger.LogCritical(e?.ExceptionObject?.ToString());
             logger.LogInformation("Starting service");
             await serviceProvider.GetService<App>().Run(args);

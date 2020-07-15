@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
     {
         private readonly IGeanTekListValidationConfig _Config;
         private readonly ITemporaryExposureKeyValidator _TemporaryExposureKeyValidator;
-        private readonly ILogger<ReleaseTeksValidator> _Logger;
+        private readonly ILogger _Logger;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
         public ReleaseTeksValidator(

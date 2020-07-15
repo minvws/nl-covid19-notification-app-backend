@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ScheduledTaskEngine
 {
     public class ScheduledTaskKicker
     {
-        private readonly ILogger<ScheduledTaskKicker> _Logger;
+        private readonly ILogger _Logger;
 
         public ScheduledTaskKicker(ILogger<ScheduledTaskKicker> logger)
         {

@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
         private readonly IRandomNumberGenerator _RandomGenerator;
         private readonly ILogger _Logger;
 
-        public IccService(IccBackendContentDbContext dbContext, IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider, IRandomNumberGenerator randomGenerator, ILogger logger)
+        public IccService(IccBackendContentDbContext dbContext, IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider, IRandomNumberGenerator randomGenerator, ILogger<IccService> logger)
         {
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));

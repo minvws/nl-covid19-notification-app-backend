@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
     {
         [HttpGet]
         [Route(EndPointNames.CdnApi.Manifest)]
-        public async Task<IActionResult> GetCurrentManifest([FromServices]HttpGetManifestBinaryContentCommand command, [FromServices] ILogger logger)
+        public async Task<IActionResult> GetCurrentManifest([FromServices]HttpGetManifestBinaryContentCommand command, [FromServices] ILogger<DataController> logger)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.ExposureKeySet + "/{id}")]
-        public async Task<IActionResult> GetExposureKeySet(string id, [FromServices] HttpGetBinaryContentCommand<ExposureKeySetContentEntity> command, [FromServices] ILogger logger)
+        public async Task<IActionResult> GetExposureKeySet(string id, [FromServices] HttpGetBinaryContentCommand<ExposureKeySetContentEntity> command, [FromServices] ILogger<DataController> logger)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
@@ -43,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.ResourceBundle + "/{id}")]
-        public async Task<IActionResult> GetResourceBundle(string id, [FromServices]HttpGetBinaryContentCommand<ResourceBundleContentEntity> command, [FromServices] ILogger logger)
+        public async Task<IActionResult> GetResourceBundle(string id, [FromServices]HttpGetBinaryContentCommand<ResourceBundleContentEntity> command, [FromServices] ILogger<DataController> logger)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
@@ -53,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.RiskCalculationParameters + "/{id}")]
-        public async Task<IActionResult> GetRiskCalculationParameters(string id, [FromServices] HttpGetBinaryContentCommand<RiskCalculationContentEntity> command, [FromServices] ILogger logger)
+        public async Task<IActionResult> GetRiskCalculationParameters(string id, [FromServices] HttpGetBinaryContentCommand<RiskCalculationContentEntity> command, [FromServices] ILogger<DataController> logger)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
@@ -63,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi.Controllers
 
         [HttpGet]
         [Route(EndPointNames.CdnApi.AppConfig + "/{id}")]
-        public async Task<IActionResult> GetAppConfig(string id, [FromServices] HttpGetBinaryContentCommand<AppConfigContentEntity> command, [FromServices] ILogger logger)
+        public async Task<IActionResult> GetAppConfig(string id, [FromServices] HttpGetBinaryContentCommand<AppConfigContentEntity> command, [FromServices] ILogger<DataController> logger)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (logger == null) throw new ArgumentNullException(nameof(logger));

@@ -18,7 +18,7 @@ namespace CdnRegionSync
         private CloudBlockBlob? _Source;
         private CloudBlockBlob? _Destination;
 
-        public MutableBlobCopyCommand(IStorageAccountConfig sourceStorageAccountConfig, IStorageAccountConfig destinationStorageAccountConfig, ILogger logger)
+        public MutableBlobCopyCommand(IStorageAccountConfig sourceStorageAccountConfig, IStorageAccountConfig destinationStorageAccountConfig, ILogger<MutableBlobCopyCommand> logger)
         {
             _SourceStorageAccountConfig = sourceStorageAccountConfig ?? throw new ArgumentNullException(nameof(sourceStorageAccountConfig));
             _DestinationStorageAccountConfig = destinationStorageAccountConfig ?? throw new ArgumentNullException(nameof(destinationStorageAccountConfig));
