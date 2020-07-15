@@ -9,6 +9,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
     /// </summary>
     public class SecretArgs
     {
-        public byte[]? Padding { get; set; }
+        /// <summary>
+        /// Padding is provided by the frontend to control request sizes, it is ignored here further
+        /// </summary>
+        public string? Padding { get; set; }
     }
 }

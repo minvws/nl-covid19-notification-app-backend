@@ -10,8 +10,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
     public class ReleaseTeksArgs
     {
         public string BucketId { get; set; }
+
         public TemporaryExposureKeyArgs[] Keys { get; set; }
-        public byte[]? Padding { get; set; }
+
+        /// <summary>
+        /// Padding is provided by the frontend to control request sizes, it is ignored here further
+        /// </summary>
+        public string? Padding { get; set; }
     }
 }
 
