@@ -34,13 +34,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
                 .Include(x => x.Keys)
                 .FirstOrDefaultAsync(state =>
                     state.PollToken == args.PollToken);
+            
             if (wf == null)
                 throw new KeyReleaseWorkflowStateNotFoundException();
 
             string refreshedToken = _PollTokenGenerator.GenerateToken();
             wf.PollToken = refreshedToken;
-
-            await _DbContextProvider.KeyReleaseWorkflowStates.BatchUpdateAsync(wf);
 
             return new LabVerifyResponse()
                 {PollToken = refreshedToken, Valid = wf.Keys != null && wf.Keys.Any()};

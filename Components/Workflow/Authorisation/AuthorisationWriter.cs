@@ -48,7 +48,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             string pollToken = _PollTokenGenerator.GenerateToken();
             wf.PollToken = pollToken;
             
-            await _DbContextProvider.KeyReleaseWorkflowStates.BatchUpdateAsync(wf);
             return pollToken;
         }
     }
