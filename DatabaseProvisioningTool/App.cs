@@ -2,9 +2,11 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -24,13 +26,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
         private readonly IccBackendContentDbContext _IccBackendContentDbContext;
         private readonly IConfigurationRoot _Configuration;
         private readonly IJsonSerializer _JsonSerializer;
+        private readonly IServiceProvider _ServiceProvider;
 
         public App(ILogger<App> logger,
             WorkflowDbContext workflowDbContext,
             ExposureContentDbContext exposureContentDbContext,
             IccBackendContentDbContext iccBackedBackendContentDb,
             IConfigurationRoot configuration,
-            IJsonSerializer jsonSerializer)
+            IJsonSerializer jsonSerializer,
+            IServiceProvider serviceProvider
+            )
         {
             _Logger = logger;
             _WorkflowDbContext = workflowDbContext;
@@ -38,6 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
             _IccBackendContentDbContext = iccBackedBackendContentDb;
             _Configuration = configuration;
             _JsonSerializer = jsonSerializer;
+            _ServiceProvider = serviceProvider;
         }
 
         public async Task Run(bool seed)
@@ -49,8 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
                 _Logger.LogInformation("Seeding ExposureContent...");
 
                 var certificateProvider =
-                    new HsmCertificateProvider(new CertificateProviderConfig(_Configuration,
-                        "ExposureKeySets:Signing:NL"));
+                    new HsmCertificateProvider(new CertificateProviderConfig(_Configuration, "ExposureKeySets:Signing:NL"), _ServiceProvider.GetService<ILogger<HsmCertificateProvider>>());
                 var db = new CreateContentDatabase(_ExposureContentDbContext, new StandardUtcDateTimeProvider(), new CmsSigner(certificateProvider), _JsonSerializer);
                 await db.DropExampleContent();
                 await db.AddExampleContent();

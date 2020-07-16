@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
                 _.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
 
-            services.AddBasicAuthentication();
+            //services.AddBasicAuthentication();
 
             services.AddScoped<HttpGetManifestBinaryContentCommand, HttpGetManifestBinaryContentCommand>();
             services.AddScoped<DynamicManifestReader, DynamicManifestReader>();
@@ -76,7 +76,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             }
             else
             {
-                services.AddSingleton<IContentSigner, FakeContentSigner>(); 
+                services.AddSingleton<IContentSigner, FakeContentSigner>();
             }
 
             services.AddScoped(x =>
@@ -112,14 +112,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
                     Version = "v1",
                 });
 
-                o.AddSecurityDefinition("basic", new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "basic",
-                    In = ParameterLocation.Header,
-                    Description = "Basic Authorization header using the Bearer scheme."
-                });
+                //o.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+                //{
+                //    Name = "Authorization",
+                //    Type = SecuritySchemeType.Http,
+                //    Scheme = "basic",
+                //    In = ParameterLocation.Header,
+                //    Description = "Basic Authorization header using the Bearer scheme."
+                //});
 
                 o.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
@@ -141,15 +141,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI(o => { o.SwaggerEndpoint("/swagger/v1/swagger.json", Title); });
 
-            if (!env.IsDevelopment())
+
+            if (env.IsDevelopment() || env.IsEnvironment("Test"))
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
                 app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
+            }
 
             app.UseRouting();
-
+            //app.UseAuthentication();
+            //app.UseAuthorization();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }

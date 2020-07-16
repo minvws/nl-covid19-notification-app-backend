@@ -1,7 +1,8 @@
 {
   "profiles": {
     "DatabaseProvisioningTool": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "true"
     }
   }
 }

@@ -13,11 +13,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
     public class HsmCertificateProvider : ICertificateProvider
     {
         private readonly IThumbprintConfig _ThumbprintConfig;
-        private ILogger _Logger;
+        private readonly ILogger _Logger;
 
-        public HsmCertificateProvider(IThumbprintConfig thumbprintConfig)
+        public HsmCertificateProvider(IThumbprintConfig thumbprintConfig, ILogger<HsmCertificateProvider> logger)
         {
             _ThumbprintConfig = thumbprintConfig ?? throw new ArgumentNullException(nameof(thumbprintConfig));
+            _Logger = logger;
         }
 
         public X509Certificate2? GetCertificate()

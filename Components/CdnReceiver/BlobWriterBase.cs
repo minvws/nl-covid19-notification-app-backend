@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
         private readonly IStorageAccountConfig _StorageAccountConfig;
         protected ILogger Logger { get; }
 
-        public BlobWriterBase(IStorageAccountConfig storageAccountConfig, ILogger logger)
+        protected BlobWriterBase(IStorageAccountConfig storageAccountConfig, ILogger logger)
         {
             _StorageAccountConfig = storageAccountConfig ?? throw new ArgumentNullException(nameof(storageAccountConfig));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));

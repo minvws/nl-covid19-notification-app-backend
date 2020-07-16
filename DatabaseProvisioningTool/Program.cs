@@ -40,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
             var serviceProvider = serviceCollection.BuildServiceProvider();
-            var logger = serviceProvider.GetService<ILogger>() ?? throw new InvalidOperationException("Could not resolve ILogger.");
+            var logger = serviceProvider.GetService<ILogger<App>>() ?? throw new InvalidOperationException("Could not resolve ILogger.");
             AppDomain.CurrentDomain.UnhandledException += (o,e) => logger.LogCritical(e?.ExceptionObject?.ToString());
             logger.LogInformation("Starting service");
             await serviceProvider.GetService<App>().Run(seed);
