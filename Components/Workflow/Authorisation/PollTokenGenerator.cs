@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             _JwtService = jwtService;
         }
 
-        private string Generate()
+        public string GenerateToken()
         {
             return _JwtService.GenerateCustomJwt(DateTimeOffset.UtcNow.AddSeconds(30).ToUnixTimeSeconds(),
                 new Dictionary<string, object>()
@@ -34,53 +34,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
                 });
         }
 
-        /// <summary>
-        /// Get WorkflowState from DB by PollToken or LabConfirmationId identifier
-        /// </summary>
-        /// <param name="identifier">PollToken or LabConfirmationId identifier</param>
-        /// <returns></returns>
-        /// <exception cref="KeyReleaseWorkflowStateNotFoundException"></exception>
-        private async Task<KeyReleaseWorkflowState> GetWfByIdentifier(string identifier)
+        public bool Verify(string token)
         {
-            var wf = await _DbContextProvider.KeyReleaseWorkflowStates
-                .Include(x => x.Keys)
-                .FirstOrDefaultAsync(state =>
-                    state.PollToken == identifier || state.LabConfirmationId == identifier);
-
-            if (wf != null)
-            {
-                return wf;
-            }
-
-            throw new KeyReleaseWorkflowStateNotFoundException();
+            return _JwtService.IsValidJwt(token,"payload");
         }
-
-        private async Task<string> RefreshPollToken(KeyReleaseWorkflowState wf)
-        {
-            if (wf.Authorised && wf.LabConfirmationId != "")
-                wf.LabConfirmationId = ""; // clear labconf.id when still full
-
-            // generate new PollToken
-            string newToken = Generate();
-
-            wf.PollToken = newToken;
-            await _DbContextProvider.KeyReleaseWorkflowStates.BatchUpdateAsync(wf);
-            return newToken;
-        }
-
-
-        public async Task<string> ExecuteGenerationByLabConfirmationId(string identifier)
-        {
-            var wf = await GetWfByIdentifier(identifier);
-            return await RefreshPollToken(wf);
-        }
-
-        public async Task<KeyReleaseWorkflowState> ExecuteGenerationByPollToken(string identifier)
-        {
-            _JwtService.IsValidJwt(identifier);
-            var wf = await GetWfByIdentifier(identifier);
-            await RefreshPollToken(wf);
-            return wf;
-        }
+        
     }
 }

@@ -4,9 +4,9 @@
 
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
+using JWT.Exceptions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation.Exceptions;
 
@@ -23,23 +23,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             _PollTokenGenerator = pollTokenGenerator;
         }
 
-        public async Task<string> Execute(LabVerifyArgs args)
+        public async Task<LabVerifyResponse> Execute(LabVerifyArgs args)
         {
-            // check if polltoken is valid by querying on KeyReleaseWorkflowStates polltoken
-            var wf = await _PollTokenGenerator.ExecuteGenerationByPollToken(args.PollToken);
-            var keyCount = 0;
-            if (wf != null)
+            if (!_PollTokenGenerator.Verify(args.PollToken))
             {
-                keyCount = wf.Keys.Count;
-            }
-            _DbContextProvider.SaveAndCommit();
-
-            if (wf != null && keyCount > 0)
-            {
-                return wf.PollToken; // positive
+                throw new InvalidTokenPartsException("payload");
             }
 
-            throw new LabVerifyKeysEmptyException(wf.PollToken);
+            var wf = await _DbContextProvider.KeyReleaseWorkflowStates
+                .Include(x => x.Keys)
+                .FirstOrDefaultAsync(state =>
+                    state.PollToken == args.PollToken);
+            if (wf == null)
+                throw new KeyReleaseWorkflowStateNotFoundException();
+
+            string refreshedToken = _PollTokenGenerator.GenerateToken();
+            wf.PollToken = refreshedToken;
+
+            await _DbContextProvider.KeyReleaseWorkflowStates.BatchUpdateAsync(wf);
+
+            return new LabVerifyResponse()
+                {PollToken = refreshedToken, Valid = wf.Keys != null && wf.Keys.Any()};
         }
     }
 }

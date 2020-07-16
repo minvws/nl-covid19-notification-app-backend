@@ -30,20 +30,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         {
             try
             {
-                await _LabVerifyChecker.Execute(args);
-                // no exceptions so no empty bucket
-                return new OkObjectResult(new AuthorisationResponse {Valid = true});
+                LabVerifyResponse response = await _LabVerifyChecker.Execute(args);
+                
+                _DbContextProvider.SaveAndCommit();
+                
+                return new OkObjectResult(response);
             }
-            catch (LabVerifyKeysEmptyException exception)
-            {
-                return new OkObjectResult(new AuthorisationResponse
-                    {Valid = false, PollToken = exception.FreshPollToken});
-            }
-            catch (TokenExpiredException e)
+            catch (InvalidTokenPartsException)
             {
                 return new UnauthorizedObjectResult(new AuthorisationResponse {Valid = false});
             }
-            catch (KeyReleaseWorkflowStateNotFoundException e)
+            catch (TokenExpiredException)
+            {
+                return new UnauthorizedObjectResult(new AuthorisationResponse {Valid = false});
+            }
+            catch (KeyReleaseWorkflowStateNotFoundException)
             {
                 return new NotFoundObjectResult(new AuthorisationResponse {Valid = false});
             }

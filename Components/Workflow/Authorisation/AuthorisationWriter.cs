@@ -16,13 +16,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     public class AuthorisationWriter : IAuthorisationWriter
     {
         private readonly WorkflowDbContext _DbContextProvider;
+        private readonly PollTokenGenerator _PollTokenGenerator;
 
-        public AuthorisationWriter(WorkflowDbContext dbContextProvider)
+        public AuthorisationWriter(WorkflowDbContext dbContextProvider, PollTokenGenerator pollTokenGenerator)
         {
             _DbContextProvider = dbContextProvider;
+            _PollTokenGenerator = pollTokenGenerator;
         }
 
-        public async Task Execute(AuthorisationArgs args)
+        public async Task<string> Execute(AuthorisationArgs args)
         {
             var wf = await  _DbContextProvider
                 .KeyReleaseWorkflowStates
@@ -40,7 +42,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
                 wf.Authorised = true;
             }
 
+            wf.LabConfirmationId = "";
+            
+            // create polltoken
+            string pollToken = _PollTokenGenerator.GenerateToken();
+            wf.PollToken = pollToken;
+            
             await _DbContextProvider.KeyReleaseWorkflowStates.BatchUpdateAsync(wf);
+            return pollToken;
         }
     }
 

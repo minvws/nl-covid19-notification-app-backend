@@ -29,9 +29,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         {
             try
             {
-                await _AuthorisationWriter.Execute(args);
-                string pollToken = await _PollTokenGenerator.ExecuteGenerationByLabConfirmationId(args.LabConfirmationId);
-                
+                string pollToken = await _AuthorisationWriter.Execute(args);
+
                 _DbContextProvider.SaveAndCommit();
 
                 return new OkObjectResult(new AuthorisationResponse {Valid = true, PollToken = pollToken});
