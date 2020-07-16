@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
         private string Generate()
         {
-            return _JwtService.GenerateCustomJwt(DateTimeOffset.UtcNow.AddSeconds(20).ToUnixTimeSeconds());
+            return _JwtService.GenerateCustomJwt(DateTimeOffset.UtcNow.AddSeconds(30).ToUnixTimeSeconds(),
+                new Dictionary<string, object>()
+                {
+                    ["payload"] = Guid.NewGuid().ToString() // make polltoken unique
+                });
         }
 
         private async Task<KeyReleaseWorkflowState?> ProcessId(string identifier)
