@@ -5,9 +5,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation.Exceptions;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
@@ -20,26 +22,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             _DbContextProvider = dbContextProvider;
         }
 
-        public Task Execute(AuthorisationArgs args)
+        public async Task Execute(AuthorisationArgs args)
         {
-            var e = _DbContextProvider
+            var wf = await  _DbContextProvider
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Keys)
-                .SingleOrDefault(x => x.LabConfirmationId == args.LabConfirmationId);
+                .FirstOrDefaultAsync(x => x.LabConfirmationId == args.LabConfirmationId);
 
-            if (e == null)
-                throw new LabFlowNotFoundException();
+            if (wf == null)
+                throw new KeyReleaseWorkflowStateNotFoundException();
 
-            e.AuthorisedByCaregiver = true;
-            e.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
+            wf.AuthorisedByCaregiver = true;
+            wf.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
 
-            if (e.Keys != null && e.Keys.Any())
+            if (wf.Keys != null && wf.Keys.Any())
             {
-                e.Authorised = true;
+                wf.Authorised = true;
             }
 
-            _DbContextProvider.KeyReleaseWorkflowStates.Update(e);
-            return Task.CompletedTask;
+            await _DbContextProvider.KeyReleaseWorkflowStates.BatchUpdateAsync(wf);
         }
     }
 

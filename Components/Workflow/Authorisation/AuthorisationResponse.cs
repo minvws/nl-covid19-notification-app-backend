@@ -3,6 +3,6 @@
     public class AuthorisationResponse
     {
         public bool Valid { get; set; }
-        public string PollToken { get; set; }
+        public string? PollToken { get; set; }
     }
 }

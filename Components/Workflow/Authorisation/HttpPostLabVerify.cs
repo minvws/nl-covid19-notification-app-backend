@@ -8,6 +8,7 @@ using JWT.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation.Exceptions;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
@@ -29,22 +30,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         {
             try
             {
-                var keyReleaseWorkflowState = await _LabVerifyChecker.Execute(args);
-                // _DbContextProvider.SaveAndCommit();
-                return new OkObjectResult(new AuthorisationResponse {Valid = true, PollToken = keyReleaseWorkflowState.PollToken});
+                await _LabVerifyChecker.Execute(args);
+                // no exceptions so no empty bucket
+                return new OkObjectResult(new AuthorisationResponse {Valid = true});
             }
-            catch (KeysUploadedNotValidException e)
+            catch (LabVerifyKeysEmptyException exception)
             {
                 return new OkObjectResult(new AuthorisationResponse
-                    {Valid = false, PollToken = e.KeyReleaseWorkflowState.PollToken});
+                    {Valid = false, PollToken = exception.FreshPollToken});
             }
             catch (TokenExpiredException e)
             {
-                return new OkObjectResult(new AuthorisationResponse {Valid = false});
+                return new UnauthorizedObjectResult(new AuthorisationResponse {Valid = false});
             }
-            catch (LabFlowNotFoundException e)
+            catch (KeyReleaseWorkflowStateNotFoundException e)
             {
-                return new OkObjectResult(new AuthorisationResponse {Valid = false});
+                return new NotFoundObjectResult(new AuthorisationResponse {Valid = false});
             }
         }
     }

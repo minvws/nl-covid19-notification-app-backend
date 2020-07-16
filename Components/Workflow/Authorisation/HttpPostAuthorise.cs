@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation.Exceptions;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
@@ -29,12 +30,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             try
             {
                 await _AuthorisationWriter.Execute(args);
-                var state = await _PollTokenGenerator.ExecuteGenerationByLabConfirmationId(args.LabConfirmationId);
+                string pollToken = await _PollTokenGenerator.ExecuteGenerationByLabConfirmationId(args.LabConfirmationId);
+                
                 _DbContextProvider.SaveAndCommit();
 
-                return new OkObjectResult(new AuthorisationResponse {Valid = true, PollToken = state.PollToken});
+                return new OkObjectResult(new AuthorisationResponse {Valid = true, PollToken = pollToken});
             }
-            catch (LabFlowNotFoundException e)
+            catch (KeyReleaseWorkflowStateNotFoundException e)
             {
                 return new OkObjectResult(new AuthorisationResponse {Valid = false});
             }

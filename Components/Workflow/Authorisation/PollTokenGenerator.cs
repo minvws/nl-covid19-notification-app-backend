@@ -6,8 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation.Exceptions;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
@@ -32,34 +34,53 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
                 });
         }
 
-        private async Task<KeyReleaseWorkflowState?> ProcessId(string identifier)
+        /// <summary>
+        /// Get WorkflowState from DB by PollToken or LabConfirmationId identifier
+        /// </summary>
+        /// <param name="identifier">PollToken or LabConfirmationId identifier</param>
+        /// <returns></returns>
+        /// <exception cref="KeyReleaseWorkflowStateNotFoundException"></exception>
+        private async Task<KeyReleaseWorkflowState> GetWfByIdentifier(string identifier)
         {
-            var e = await _DbContextProvider.KeyReleaseWorkflowStates.Include(x => x.Keys).SingleOrDefaultAsync(state =>
-                state.PollToken == identifier || state.LabConfirmationId == identifier);
-            if (e != null)
+            var wf = await _DbContextProvider.KeyReleaseWorkflowStates
+                .Include(x => x.Keys)
+                .FirstOrDefaultAsync(state =>
+                    state.PollToken == identifier || state.LabConfirmationId == identifier);
+
+            if (wf != null)
             {
-                if (e.Authorised && e.LabConfirmationId != "")
-                    e.LabConfirmationId = ""; // clear labconf.id when still full
-
-
-                // generate new PollToken
-                e.PollToken = Generate();
-                _DbContextProvider.KeyReleaseWorkflowStates.Update(e);
+                return wf;
             }
 
-            return e;
+            throw new KeyReleaseWorkflowStateNotFoundException();
         }
 
-
-        public async Task<KeyReleaseWorkflowState?> ExecuteGenerationByLabConfirmationId(string identifier)
+        private async Task<string> RefreshPollToken(KeyReleaseWorkflowState wf)
         {
-            return await ProcessId(identifier);
+            if (wf.Authorised && wf.LabConfirmationId != "")
+                wf.LabConfirmationId = ""; // clear labconf.id when still full
+
+            // generate new PollToken
+            string newToken = Generate();
+
+            wf.PollToken = newToken;
+            await _DbContextProvider.KeyReleaseWorkflowStates.BatchUpdateAsync(wf);
+            return newToken;
         }
 
-        public async Task<KeyReleaseWorkflowState?> ExecuteGenerationByPollToken(string identifier)
+
+        public async Task<string> ExecuteGenerationByLabConfirmationId(string identifier)
+        {
+            var wf = await GetWfByIdentifier(identifier);
+            return await RefreshPollToken(wf);
+        }
+
+        public async Task<KeyReleaseWorkflowState> ExecuteGenerationByPollToken(string identifier)
         {
             _JwtService.IsValidJwt(identifier);
-            return await ProcessId(identifier);
+            var wf = await GetWfByIdentifier(identifier);
+            await RefreshPollToken(wf);
+            return wf;
         }
     }
 }

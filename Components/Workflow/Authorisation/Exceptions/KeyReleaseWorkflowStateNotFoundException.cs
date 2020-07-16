@@ -4,9 +4,9 @@
 
 using System;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation.Exceptions
 {
-    public class LabFlowNotFoundException : Exception
+    public class KeyReleaseWorkflowStateNotFoundException : Exception
     {
     }
 }
