@@ -27,7 +27,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
         private static async Task Main(string[] args)
         {
             var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            
+            var seed = false;
+            if (args != null && args.Length > 0)
+            {
+                var parseArg0 = bool.TryParse(args[0], out seed);
+                if (parseArg0)
+                {
+                   
+                } else
+                {
+                    Console.WriteLine("Unable to parse the argument " + args[0] +
+                                      "', please use 'True' if you wish to seed the database and nothing if you don't.");
+                    Environment.Exit(1);
+                }
+            }
 
+            Console.WriteLine("Seeding: " + seed);
+            
             // Build configuration
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
@@ -44,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
             try
             {
                 Log.Information("Starting service");
-                await serviceProvider.GetService<App>().Run(args);
+                await serviceProvider.GetService<App>().Run(seed);
                 Log.Information("Ending service");
                 Console.WriteLine("Press any key to exit...");
                 Console.ReadLine();
@@ -52,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
             catch (Exception ex)
             {
                 Log.Fatal(ex, "Error running service");
-                throw ex;
+                throw;
             }
             finally
             {

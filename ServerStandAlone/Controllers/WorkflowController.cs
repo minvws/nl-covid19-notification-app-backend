@@ -12,6 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authoris
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.BackgroundJobs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers
 {
@@ -23,7 +24,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         [Route(EndPointNames.MobileAppApi.ReleaseTeks)] 
         public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand command)
         {
-            await command.Execute(sig, Request);
+            try
+            {
+                await command.Execute(sig, Request);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.ToString());
+            }
             return Ok();
         }
 
@@ -37,6 +45,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         [HttpPost, Authorize(AuthenticationSchemes = "icc_jwt")]
         [Route(EndPointNames.CaregiversPortalApi.LabConfirmation)]
         public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args, [FromServices] HttpPostAuthorise command)
+        {
+            return await command.Execute(args);
+        }
+        
+        [HttpPost, Authorize(AuthenticationSchemes = "icc_jwt")]
+        [Route(EndPointNames.CaregiversPortalApi.LabVerify)]
+        public async Task<IActionResult> PostKeysAreUploaded([FromBody] LabVerifyArgs args, [FromServices] HttpPostLabVerify command)
         {
             return await command.Execute(args);
         }

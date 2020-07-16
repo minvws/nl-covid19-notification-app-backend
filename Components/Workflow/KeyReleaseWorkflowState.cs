@@ -20,6 +20,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         public string? LabConfirmationId { get; set; }
 
         /// <summary>
+        /// PollToken to be used in Labverify Proces
+        /// </summary>
+        public string? PollToken { get; set; }
+        
+        /// <summary>
         /// TODO Add uq
         /// </summary>
         public string? ConfirmationKey { get; set; }

@@ -2,12 +2,14 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1
 {
@@ -49,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 Header = Header,
                 Region = "NL",
                 BatchNum = 1,
-                BatchSize = keys.Length,
+                BatchSize = 1,
                 SignatureInfos = new[] {securityInfo},
                 StartTimestamp = now.AddDays(-1).ToUnixTime(), //TODO real values?
                 EndTimestamp = now.ToUnixTime(), //TODO real values?
@@ -57,7 +59,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             };
 
             var contentBytes = _ContentFormatter.GetBytes(content);
-            
+            var nlSig = _NlContentSigner.GetSignature(contentBytes);
+            var gaenSig = _GaenContentSigner.GetSignature(contentBytes);
+
+            var gaenSigB64 = Convert.ToBase64String(gaenSig);
+
             var signatures = new ExposureKeySetSignaturesContentArgs
             {
                 Items = new[]
@@ -65,16 +71,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     new ExposureKeySetSignatureContentArgs
                     {
                         SignatureInfo = securityInfo,
-                        Signature = _GaenContentSigner.GetSignature(contentBytes),
+                        Signature = gaenSig,
                         BatchSize = content.BatchSize,
                         BatchNum = content.BatchNum
                     },
                 }
             };
 
-            var nlSig = _NlContentSigner.GetSignature(contentBytes);
-
-            return await CreateZipArchive(contentBytes, _ContentFormatter.GetBytes(signatures), nlSig);
+            var gaenSigFile = _ContentFormatter.GetBytes(signatures);
+            return await CreateZipArchive(contentBytes, gaenSigFile, nlSig);
         }
 
         private SignatureInfoArgs GetGaenSignatureInfo()
