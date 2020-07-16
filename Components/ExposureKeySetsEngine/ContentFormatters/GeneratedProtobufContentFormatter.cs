@@ -65,12 +65,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 SignatureInfo = Map(args.SignatureInfo)
             };
         }
+
         private static SignatureInfo Map(SignatureInfoArgs arg)
             => new SignatureInfo
             {
                 SignatureAlgorithm = arg.SignatureAlgorithm,
                 VerificationKeyId = arg.VerificationKeyId,
-                VerificationKeyVersion = arg.VerificationKeyVersion
+                VerificationKeyVersion = arg.VerificationKeyVersion,
+                AppBundleId = arg.AppBundleId
+                
             };
 
     }
