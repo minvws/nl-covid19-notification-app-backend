@@ -6,6 +6,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CdnRegionSync
 {
