@@ -5,41 +5,51 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation.Exceptions;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
     public class AuthorisationWriter : IAuthorisationWriter
     {
         private readonly WorkflowDbContext _DbContextProvider;
+        private readonly PollTokenGenerator _PollTokenGenerator;
 
-        public AuthorisationWriter(WorkflowDbContext dbContextProvider)
+        public AuthorisationWriter(WorkflowDbContext dbContextProvider, PollTokenGenerator pollTokenGenerator)
         {
             _DbContextProvider = dbContextProvider;
+            _PollTokenGenerator = pollTokenGenerator;
         }
 
-        public Task Execute(AuthorisationArgs args)
+        public async Task<string> Execute(AuthorisationArgs args)
         {
-            var e = _DbContextProvider
+            var wf = await  _DbContextProvider
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Keys)
-                .SingleOrDefault(x => x.LabConfirmationId == args.LabConfirmationId);
+                .FirstOrDefaultAsync(x => x.LabConfirmationId == args.LabConfirmationId);
 
-            if (e == null)
-                throw new LabFlowNotFoundException();
+            if (wf == null)
+                throw new KeyReleaseWorkflowStateNotFoundException();
 
-            e.AuthorisedByCaregiver = true;
-            e.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
+            wf.AuthorisedByCaregiver = true;
+            wf.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
 
-            if (e.Keys != null && e.Keys.Any())
+            if (wf.Keys != null && wf.Keys.Any())
             {
-                e.Authorised = true;
+                wf.Authorised = true;
             }
 
-            _DbContextProvider.KeyReleaseWorkflowStates.Update(e);
-            return Task.CompletedTask;
+            wf.LabConfirmationId = "";
+            
+            // create polltoken
+            string pollToken = _PollTokenGenerator.GenerateToken();
+            wf.PollToken = pollToken;
+            
+            await _DbContextProvider.KeyReleaseWorkflowStates.BatchUpdateAsync(wf);
+            return pollToken;
         }
     }
 

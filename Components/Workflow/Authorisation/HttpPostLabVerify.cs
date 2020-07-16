@@ -8,6 +8,7 @@ using JWT.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation.Exceptions;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
@@ -29,22 +30,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         {
             try
             {
-                var keyReleaseWorkflowState = await _LabVerifyChecker.Execute(args);
-                // _DbContextProvider.SaveAndCommit();
-                return new OkObjectResult(new AuthorisationResponse {Valid = true, PollToken = keyReleaseWorkflowState.PollToken});
+                LabVerifyResponse response = await _LabVerifyChecker.Execute(args);
+                
+                _DbContextProvider.SaveAndCommit();
+                
+                return new OkObjectResult(response);
             }
-            catch (KeysUploadedNotValidException e)
+            catch (InvalidTokenPartsException)
             {
-                return new OkObjectResult(new AuthorisationResponse
-                    {Valid = false, PollToken = e.KeyReleaseWorkflowState.PollToken});
+                return new UnauthorizedObjectResult(new AuthorisationResponse {Valid = false});
             }
-            catch (TokenExpiredException e)
+            catch (TokenExpiredException)
             {
-                return new OkObjectResult(new AuthorisationResponse {Valid = false});
+                return new UnauthorizedObjectResult(new AuthorisationResponse {Valid = false});
             }
-            catch (LabFlowNotFoundException e)
+            catch (KeyReleaseWorkflowStateNotFoundException)
             {
-                return new OkObjectResult(new AuthorisationResponse {Valid = false});
+                return new NotFoundObjectResult(new AuthorisationResponse {Valid = false});
             }
         }
     }

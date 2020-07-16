@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models
     public class ConfirmLabConfirmationIdModel
     {
         [Required, MinLength(6), MaxLength(6)]
-        public string? LabConfirmationId { get; set; }
+        public string LabConfirmationId { get; set; }
 
         public DateTime DateOfSymptomsOnset { get; set; } 
     }

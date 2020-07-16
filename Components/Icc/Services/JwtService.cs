@@ -72,11 +72,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services
             return _builder.Encode();
         }
 
-        public bool IsValidJwt(string token)
+        public bool IsValidJwt(string token, string checkElement= "access_token")
         {
             var payload = DecodeJwt(token);
 
-            return payload.Keys.Contains("access_token") && payload["access_token"].ToString().Length > 0;
+            return payload.Keys.Contains(checkElement) && payload[checkElement].ToString().Length > 0;
         }
 
         public IDictionary<string, object> DecodeJwt(string token)
