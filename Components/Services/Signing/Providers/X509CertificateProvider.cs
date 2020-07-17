@@ -10,12 +10,12 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers
 {
-    public class HsmCertificateProvider : ICertificateProvider
+    public class X509CertificateProvider : ICertificateProvider
     {
         private readonly IThumbprintConfig _ThumbprintConfig;
         private readonly ILogger _Logger;
 
-        public HsmCertificateProvider(IThumbprintConfig thumbprintConfig, ILogger<HsmCertificateProvider> logger)
+        public X509CertificateProvider(IThumbprintConfig thumbprintConfig, ILogger<X509CertificateProvider> logger)
         {
             _ThumbprintConfig = thumbprintConfig ?? throw new ArgumentNullException(nameof(thumbprintConfig));
             _Logger = logger;

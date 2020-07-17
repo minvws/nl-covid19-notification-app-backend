@@ -55,7 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
                 _Logger.LogInformation("Seeding ExposureContent...");
 
                 var certificateProvider =
-                    new HsmCertificateProvider(new CertificateProviderConfig(_Configuration, "ExposureKeySets:Signing:NL"), _ServiceProvider.GetService<ILogger<HsmCertificateProvider>>());
+                    new X509CertificateProvider(new CertificateProviderConfig(_Configuration, "ExposureKeySets:Signing:NL"), _ServiceProvider.GetService<ILogger<X509CertificateProvider>>());
                 var db = new CreateContentDatabase(_ExposureContentDbContext, new StandardUtcDateTimeProvider(), new CmsSigner(certificateProvider), _JsonSerializer);
                 await db.DropExampleContent();
                 await db.AddExampleContent();

@@ -68,6 +68,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CdnDataReceiver2", "CdnData
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CdnPusherEngine2", "CdnPusherEngine2\CdnPusherEngine2.csproj", "{530339FC-CB01-4EAA-A03C-CC7894CE03CF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CdnApi", "CdnApi\CdnApi.csproj", "{E9B743F3-6643-4BD6-A136-2887F64A5BEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -142,6 +144,10 @@ Global
 		{530339FC-CB01-4EAA-A03C-CC7894CE03CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{530339FC-CB01-4EAA-A03C-CC7894CE03CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{530339FC-CB01-4EAA-A03C-CC7894CE03CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9B743F3-6643-4BD6-A136-2887F64A5BEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9B743F3-6643-4BD6-A136-2887F64A5BEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9B743F3-6643-4BD6-A136-2887F64A5BEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9B743F3-6643-4BD6-A136-2887F64A5BEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -168,6 +174,7 @@ Global
 		{2C3D61AA-A484-47DF-97B1-513C6ECF1898} = {F4AF3CCD-B69E-4054-A4C7-02868129DA42}
 		{CAF2ECF2-A9CF-4027-9B5F-5D8615DDBCB1} = {F4AF3CCD-B69E-4054-A4C7-02868129DA42}
 		{530339FC-CB01-4EAA-A03C-CC7894CE03CF} = {9E29551B-5B8B-4628-9C51-64E24BA82E52}
+		{E9B743F3-6643-4BD6-A136-2887F64A5BEB} = {F4AF3CCD-B69E-4054-A4C7-02868129DA42}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}

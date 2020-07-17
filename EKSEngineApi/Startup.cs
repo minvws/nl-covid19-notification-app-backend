@@ -10,7 +10,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -88,8 +87,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
             services.AddScoped<IExposureKeySetBuilder>(x =>
                 new ExposureKeySetBuilderV1(
                     x.GetService<IExposureKeySetHeaderInfoConfig>(),
-                    new EcdSaSigner(new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:GA"), x.GetService<ILogger<HsmCertificateProvider>>())),
-                    new CmsSigner  (new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"), x.GetService<ILogger<HsmCertificateProvider>>())),
+                    new EcdSaSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:GA"), x.GetService<ILogger<X509CertificateProvider>>())),
+                    new CmsSigner  (new X509CertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"), x.GetService<ILogger<X509CertificateProvider>>())),
                     x.GetService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
                     new GeneratedProtobufContentFormatter(),
                     x.GetService<ILogger<ExposureKeySetBuilderV1>>()

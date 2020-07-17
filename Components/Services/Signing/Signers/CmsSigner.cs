@@ -56,8 +56,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
             var chain = GetChainWithoutRoot();
 
-            ContentInfo contentInfo = new ContentInfo(content);
-            SignedCms signedCms = new SignedCms(contentInfo, true);
+            var contentInfo = new ContentInfo(content);
+            var signedCms = new SignedCms(contentInfo, true);
             var signer = new System.Security.Cryptography.Pkcs.CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, certificate);
             signedCms.Certificates.AddRange(chain);
             signedCms.ComputeSignature(signer);
