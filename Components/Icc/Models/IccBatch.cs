@@ -18,7 +18,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models
             Batch = new List<InfectionConfirmationCodeEntity>();
         }
 
-        public string Id { get; set; }
+        public string Id { get; }
+
         public List<InfectionConfirmationCodeEntity> Batch { get; }
         public void AddIcc(InfectionConfirmationCodeEntity icc)
         {

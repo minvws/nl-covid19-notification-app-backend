@@ -40,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             var refreshedToken = _PollTokenGenerator.GenerateToken();
             wf.PollToken = refreshedToken;
 
-            return new LabVerifyResponse()
+            return new LabVerifyResponse
                 {PollToken = refreshedToken, Valid = wf.Keys != null && wf.Keys.Any()};
         }
     }

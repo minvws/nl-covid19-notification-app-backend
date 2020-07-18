@@ -41,6 +41,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
         /// <summary>
         /// TODO
         /// </summary>
-        public string iOSMinimumKillVersion { get; set; }
+        public string IosMinimumKillVersion { get; set; }
     }
 }

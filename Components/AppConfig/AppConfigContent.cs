@@ -2,6 +2,8 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Text.Json.Serialization;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
 {
     public class AppConfigContent
@@ -23,6 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
         /// Minimum Android Version
         /// </summary>
         public int AndroidMinimumKillVersion { get; set; }
+
         /// <summary>
         /// Minimum iOS Version
         /// </summary>

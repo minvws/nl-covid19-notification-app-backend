@@ -44,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
                 ManifestFrequency = args.ManifestFrequency,
                 Version = args.Version,
                 AndroidMinimumKillVersion = args.AndroidMinimumKillVersion,
-                iOSMinimumKillVersion = args.iOSMinimumKillVersion
+                iOSMinimumKillVersion = args.IosMinimumKillVersion
             };
 
         ///// <summary>

@@ -45,19 +45,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             }
         }
 
-        private TemporaryExposureKeyArgs[] GetRandomKeys(int WorkflowCount, int seed)
+        private TemporaryExposureKeyArgs[] GetRandomKeys(int workflowCount, int seed)
         {
             var random = new Random(seed);
-            var WorkflowKeyValidatorConfig = new DefaultGaenTekValidatorConfig();
-            var WorkflowValidatorConfig = new DefaultGeanTekListValidationConfig();
+            var workflowKeyValidatorConfig = new DefaultGaenTekValidatorConfig();
+            var workflowValidatorConfig = new DefaultGeanTekListValidationConfig();
 
-            var result = new List<TemporaryExposureKeyArgs>(WorkflowCount * WorkflowValidatorConfig.TemporaryExposureKeyCountMax);
-            var keyBuffer = new byte[WorkflowKeyValidatorConfig.DailyKeyByteCount];
+            var result = new List<TemporaryExposureKeyArgs>(workflowCount * workflowValidatorConfig.TemporaryExposureKeyCountMax);
+            var keyBuffer = new byte[workflowKeyValidatorConfig.DailyKeyByteCount];
 
-            for (var i = 0; i < WorkflowCount; i++)
+            for (var i = 0; i < workflowCount; i++)
             {
 
-                var keyCount = 1 + random.Next(WorkflowValidatorConfig.TemporaryExposureKeyCountMax - 1);
+                var keyCount = 1 + random.Next(workflowValidatorConfig.TemporaryExposureKeyCountMax - 1);
                 var keys = new List<TemporaryExposureKeyArgs>(keyCount);
                 for (var j = 0; j < keyCount; j++)
                 {
@@ -65,7 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                     keys.Add(new TemporaryExposureKeyArgs
                     {
                         KeyData = keyBuffer,
-                        RollingStartNumber = WorkflowKeyValidatorConfig.RollingPeriodMin + j,
+                        RollingStartNumber = workflowKeyValidatorConfig.RollingPeriodMin + j,
                         RollingPeriod = 11,
                         TransmissionRiskLevel = 2
                     });

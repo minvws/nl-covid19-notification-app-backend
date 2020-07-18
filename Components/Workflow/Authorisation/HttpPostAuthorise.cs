@@ -14,14 +14,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     {
         private readonly IAuthorisationWriter _AuthorisationWriter;
         private readonly WorkflowDbContext _DbContextProvider;
-        private readonly PollTokenGenerator _PollTokenGenerator;
 
-        public HttpPostAuthorise(IAuthorisationWriter authorisationWriter, WorkflowDbContext dbContextProvider,
-            PollTokenGenerator pollTokenGenerator)
+        public HttpPostAuthorise(IAuthorisationWriter authorisationWriter, WorkflowDbContext dbContextProvider)
         {
             _AuthorisationWriter = authorisationWriter;
             _DbContextProvider = dbContextProvider;
-            _PollTokenGenerator = pollTokenGenerator;
         }
 
         public async Task<IActionResult> Execute(AuthorisationArgs args)
@@ -34,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
                 return new OkObjectResult(new AuthorisationResponse {Valid = true, PollToken = pollToken});
             }
-            catch (KeyReleaseWorkflowStateNotFoundException e)
+            catch (KeyReleaseWorkflowStateNotFoundException)
             {
                 return new OkObjectResult(new AuthorisationResponse {Valid = false});
             }

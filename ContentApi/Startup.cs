@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -27,25 +28,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IHostingEnvironment currentEnvironment, IConfiguration configuration)
         {
-            Configuration = configuration;
-            CurrentEnvironment = env;
+            _CurrentEnvironment = currentEnvironment ?? throw new ArgumentNullException(nameof(currentEnvironment));
+            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public IHostingEnvironment CurrentEnvironment { get; set; }
-
-        public IConfiguration Configuration { get; }
+        private readonly IHostingEnvironment _CurrentEnvironment;
+        private readonly IConfiguration _Configuration;
 
         public void ConfigureServices(IServiceCollection services)
         {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+
             ComponentsContainerHelper.RegisterDefaultServices(services);
 
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
             services.AddScoped(x =>
             {
-                var config = new StandardEfDbConfig(Configuration, "Content");
+                var config = new StandardEfDbConfig(_Configuration, "Content");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new ExposureContentDbContext(builder.Build());
                 result.BeginTransaction();
@@ -64,11 +66,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
 
             services.AddSingleton<IUtcDateTimeProvider>(new StandardUtcDateTimeProvider());
             services.AddSingleton<IPublishingId>(new StandardPublishingIdFormatter());
-            services.AddSingleton<IGaenContentConfig>(new GaenContentConfig(Configuration));
+            services.AddSingleton<IGaenContentConfig>(new GaenContentConfig(_Configuration));
 
             //TODO change to use same algorithm with a test cert and remove FakeContentSigner.
             services.AddSingleton<IContentSigner, CmsSigner>();
-            if (CurrentEnvironment.IsProduction() || CurrentEnvironment.IsStaging())
+            if (_CurrentEnvironment.IsProduction() || _CurrentEnvironment.IsStaging())
             {
                 services.AddSingleton<ICertificateProvider, X509CertificateProvider>();
                 services.AddSingleton<IThumbprintConfig>(x => new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"));

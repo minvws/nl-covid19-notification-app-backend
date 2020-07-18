@@ -6,6 +6,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 {
     public class LabVerifyResponse : AuthorisationResponse
     {
-        public string PollToken { get; set; }
     }
 }

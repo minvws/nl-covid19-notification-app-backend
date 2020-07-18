@@ -68,7 +68,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
         /// Generate Icc with configuration length and A-Z, 0-9 characters
         /// </summary>
         /// <param name="userId"></param>
-        /// <param name="save"></param>
         /// <param name="batchId"></param>
         /// <returns></returns>
         public async Task<InfectionConfirmationCodeEntity> GenerateIcc(string userId, string batchId)
@@ -138,19 +137,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
                 await _DbContext.InfectionConfirmationCodes.Where(i => i.BatchId == revokeBatchInput.BatchId)
                     .ToListAsync();
 
-            //TODO LINQ
-            if (iccList.Count > 0)
-            {
-                foreach (var infectionConfirmationCodeEntity in iccList)
-                {
-                    infectionConfirmationCodeEntity.Revoked =
-                        revokeBatchInput.RevokeDateTime ?? _DateTimeProvider.Now(); //TODO time moves... snapshot a value before all the comparisons
-                }
+            if (iccList.Count <= 0) 
+                return false;
 
-                return true;
+            var revoked = revokeBatchInput.RevokeDateTime ?? _DateTimeProvider.Now();
+            foreach (var i in iccList)
+            {
+                //TODO this isn't written to the DB?????
+                i.Revoked = revoked;
             }
 
-            return false;
+            return true;
+
         }
     }
 }

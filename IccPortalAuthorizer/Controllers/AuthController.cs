@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
@@ -17,18 +18,12 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
         private readonly FrontendService _FrontendService;
         private readonly JwtService _JwtService;
 
-        private static readonly List<string> ClaimTypeBlackList = new List<string>()
-        {
-            "http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken",
-            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
-            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-        };
-
         public AuthController(FrontendService frontendService, JwtService jwtService)
         {
-            _FrontendService = frontendService;
-            _JwtService = jwtService;
+            _FrontendService = frontendService ?? throw new ArgumentNullException(nameof(frontendService));
+            _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
         }
+
 
         public IActionResult Logout()
         {
@@ -40,14 +35,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
             var jwtToken = _JwtService.GenerateJwt(User);
             // temporary claim payload redirect solution for demo purposes
             return Redirect(_FrontendService.RedirectSuccesfullLogin(jwtToken));
-        }
-        
-        private Dictionary<string, string> GetClaims()
-        {
-            var result = new Dictionary<string, string>();
-            User.Claims.Where(c => !ClaimTypeBlackList.Contains(c.Type)).ToList()
-                .ForEach((c) => { result.Add(c.Type, c.Value); });
-            return result;
         }
     }
 }

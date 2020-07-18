@@ -80,6 +80,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         {
             var a = System.Reflection.Assembly.GetExecutingAssembly();
             var manifestResourceStream = a.GetManifestResourceStream($"NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.{resourceName}");
+
+            if (manifestResourceStream == null)
+                throw new InvalidOperationException("Resource not found.");
+
             using var s = new StreamReader(manifestResourceStream);
             var jsonString = s.ReadToEnd();
             var args = _JsonSerializer.Deserialize<T>(jsonString);

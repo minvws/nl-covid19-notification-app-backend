@@ -19,7 +19,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
     public class IccAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         private readonly IIccService _IccService;
-        private readonly IccBackendContentDbContext _DbContext;
         private readonly ILogger _Logger;
 
         public IccAuthenticationHandler(
@@ -27,11 +26,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             ILoggerFactory logger,
             UrlEncoder encoder,
             IIccService iccService,
-            IccBackendContentDbContext dbContext,
             ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
-            _DbContext = dbContext;
             _IccService = iccService;
             _Logger = logger.CreateLogger<IccAuthenticationHandler>(); //TODO ??
         }

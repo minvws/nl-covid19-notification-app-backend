@@ -25,15 +25,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
                 .MustVerifySignature();
         }
 
-        public string GenerateCustomJwt(long exp, Dictionary<string, object>? claims = null)
+        public string GenerateCustomJwt(long exp, Dictionary<string, object> claims)
         {
             _Builder.AddClaim("exp", exp.ToString());
-            if (claims != null)
+
+            foreach (var (key, value) in claims)
             {
-                foreach (var keyValuePair in claims)
-                {
-                    _Builder.AddClaim(keyValuePair.Key, keyValuePair.Value);
-                }
+                _Builder.AddClaim(key, value);
             }
 
             return _Builder.Encode();

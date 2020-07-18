@@ -9,11 +9,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 {
     public class TemporaryExposureKeyValidatorConfig : AppSettingsReader, ITemporaryExposureKeyValidatorConfig
     {
-        public TemporaryExposureKeyValidatorConfig(IConfiguration config) : base(config)
+        public TemporaryExposureKeyValidatorConfig(IConfiguration config, string prefix = DefaultPrefix) : base(config, prefix)
         {
         }
 
-        private const string Prefix = "Validation:TemporaryExposureKey:";
+        private const string DefaultPrefix = "Validation:TemporaryExposureKey:";
 
         public int RollingPeriodMin => GetValueInt32(Prefix+nameof(RollingPeriodMin), 1);
         public int RollingPeriodMax => GetValueInt32(Prefix + nameof(RollingPeriodMax), 32768);

@@ -40,8 +40,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
         public void RangeTest()
         {
             var random = new RandomNumberGenerator();
-            var minValue = 8;
-            var maxValue = 5;
+            const int minValue = 8;
+            const int maxValue = 5;
             random.Next(minValue, maxValue);
         }
     }

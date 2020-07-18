@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
     [TestClass]
     public class ContentSignerTest
     {
-        static Random rd = new Random();
+        private static readonly Random _Random = new Random();
 
         [DataRow(500)]
         [DataRow(1000)]
@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
 
             for (var i = 0; i < stringLength; i++)
             {
-                chars[i] = allowedChars[rd.Next(0, allowedChars.Length)];
+                chars[i] = allowedChars[_Random.Next(0, allowedChars.Length)];
             }
 
             return new string(chars);

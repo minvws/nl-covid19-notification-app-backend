@@ -28,14 +28,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
     public class Startup
     {
         private bool _SignatureValidationEnabled;
-        private const string Title = "MSS Workflow Api";
+        private const string Title = "Mobile App API";
 
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public IConfiguration Configuration { get; }
+        private readonly IConfiguration _Configuration;
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
             services.AddScoped(x =>
             {
-                var config = new StandardEfDbConfig(Configuration, "WorkFlow");
+                var config = new StandardEfDbConfig(_Configuration, "WorkFlow");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new WorkflowDbContext(builder.Build());
                 result.BeginTransaction();
@@ -64,7 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddScoped<IReleaseTeksValidator, ReleaseTeksValidator>();
             services.AddScoped<ISignatureValidator, SignatureValidator>();
 
-            _SignatureValidationEnabled = Configuration.GetValue("ValidatePostKeysSignature", true);
+            _SignatureValidationEnabled = _Configuration.GetValue("ValidatePostKeysSignature", true);
             if (_SignatureValidationEnabled)
             {
                 services.AddScoped<ISignatureValidator, SignatureValidator>();

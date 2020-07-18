@@ -20,14 +20,12 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
     public class RedeemIccController : ControllerBase
     {
         private readonly ILogger _Logger;
-        private readonly IIccService _IccService;
         private readonly AppBackendService _AppBackendService;
         private readonly IccBackendContentDbContext _DbContext;
 
-        public RedeemIccController(ILogger<RedeemIccController> logger, IIccService iccService, AppBackendService appBackendService, IccBackendContentDbContext dbContext)
+        public RedeemIccController(ILogger<RedeemIccController> logger, AppBackendService appBackendService, IccBackendContentDbContext dbContext)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _IccService = iccService ?? throw new ArgumentNullException(nameof(iccService));
             _AppBackendService = appBackendService ?? throw new ArgumentNullException(nameof(appBackendService));
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }

@@ -9,13 +9,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration
 {
     public abstract class AppSettingsReader
     {
-        private readonly IConfiguration _Config;
-        protected IConfiguration Config => _Config;
+        protected IConfiguration Config { get; }
+
         protected virtual string Prefix { get; }
 
         protected AppSettingsReader(IConfiguration config, string? prefix = null)
         {
-            _Config = config ?? throw new ArgumentNullException(nameof(config));
+            Config = config ?? throw new ArgumentNullException(nameof(config));
 
             if (string.IsNullOrWhiteSpace(prefix) || prefix != prefix.Trim())
                 Prefix = string.Empty;

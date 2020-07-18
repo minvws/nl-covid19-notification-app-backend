@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
         public int Next(int min, int max)
         {
             if (min >= max)
-                throw new ArgumentOutOfRangeException("minValue must be lower than maxExclusiveValue");
+                throw new ArgumentOutOfRangeException(nameof(min), "min must be lower than max");
 
             // match Next of Random
             // where max is exclusive

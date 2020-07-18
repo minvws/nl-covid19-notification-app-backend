@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     public sealed class ExposureKeySetBatchJobMk2 : IDisposable
     {
         private bool _Disposed;
-        public string JobName { get; }
+        private readonly string _JobName;
 
         //private readonly IExposureKeySetBatchJobConfig _JobConfig;
         private readonly IGaenContentConfig _GaenContentConfig;
@@ -55,15 +55,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _Used = new List<EksCreateJobInputEntity>(_GaenContentConfig.ExposureKeySetCapacity); //
             _Start = dateTimeProvider.Now();
-            JobName = $"ExposureKeySetsJob_{_Start:u}".Replace(" ", "_").Replace(":", "_");
+            _JobName = $"ExposureKeySetsJob_{_Start:u}".Replace(" ", "_").Replace(":", "_");
         }
 
         public async Task Execute(bool useAllKeys = false)
         {
             if (_Disposed)
-                throw new ObjectDisposedException(JobName);
+                throw new ObjectDisposedException(_JobName);
 
-            _Logger.LogInformation($"{JobName} started - useAllKeys:{useAllKeys}");
+            _Logger.LogInformation($"{_JobName} started - useAllKeys:{useAllKeys}");
             
             _WorkflowDbContext.EnsureNoChangesOrTransaction();
             _ContentDbContext.EnsureNoChangesOrTransaction();
@@ -72,7 +72,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             await BuildBatches();
             await CommitResults();
 
-            _Logger.LogInformation($"{JobName} complete.");
+            _Logger.LogInformation($"{_JobName} complete.");
         }
 
         private async Task BuildBatches()
@@ -119,7 +119,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             {
                 Region = DefaultValues.Region,
                 Release = _Start,
-                CreatingJobName = JobName,
+                CreatingJobName = _JobName,
                 CreatingJobQualifier = ++_Counter,
                 Content = content, 
             };
@@ -150,7 +150,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             //TODO _JobDatabase?.Dispose();
         }
 
-        public async Task CopyInput(bool useAllKeys = false)
+        private async Task CopyInput(bool useAllKeys = false)
         {
             _Logger.LogDebug($"Copy input TEKs.");
 
@@ -178,13 +178,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             }
         }
 
-        public EksCreateJobInputEntity[] GetInputBatch(int skip, int take)
+        private EksCreateJobInputEntity[] GetInputBatch(int skip, int take)
         {
             _Logger.LogDebug($"Read input batch - skip {skip}, take {take}.");
             return _ContentDbContext.EksInput.OrderBy(x => x.KeyData).Skip(skip).Take(take).ToArray();
         }
 
-        public async Task WriteUsed(EksCreateJobInputEntity[] used)
+        private async Task WriteUsed(EksCreateJobInputEntity[] used)
         {
             _Logger.LogDebug($"Mark used, count {used.Length}.");
 
@@ -199,7 +199,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             }
         }
 
-        public async Task CommitResults()
+        private async Task CommitResults()
         {
             _Logger.LogInformation($"Commit results - publish EKSs.");
 
@@ -246,7 +246,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                             i.PublishingState = PublishingState.Published;
                         }
 
-                        await _WorkflowDbContext.BulkUpdateAsync(zap, x => x.PropertiesToInclude = new List<string>() {nameof(TemporaryExposureKeyEntity.PublishingState)});
+                        await _WorkflowDbContext.BulkUpdateAsync(zap, x => x.PropertiesToInclude = new List<string> {nameof(TemporaryExposureKeyEntity.PublishingState)});
 
                         count += used.Length;
 

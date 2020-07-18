@@ -12,20 +12,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     /// </summary>
     public class AuthorisationArgs
     {
-        public AuthorisationArgs()
-        {
-            
-        }
-
+        //TODO make a mapper
         public AuthorisationArgs(ConfirmLabConfirmationIdModel confirmLabConfirmationIdModel)
         {
             LabConfirmationId = confirmLabConfirmationIdModel.LabConfirmationId.Replace("-",string.Empty);
             DateOfSymptomsOnset = confirmLabConfirmationIdModel.DateOfSymptomsOnset;
         }
         
-        /// <summary>
-        /// Identifier for Workflow item - Tan1?
-        /// </summary>
         public string LabConfirmationId { get; set; }
         
         public DateTime DateOfSymptomsOnset { get; set; }

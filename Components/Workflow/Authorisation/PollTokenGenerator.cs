@@ -11,19 +11,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 {
     public class PollTokenGenerator
     {
-        private readonly WorkflowDbContext _DbContextProvider;
         private readonly JwtService _JwtService;
 
-        public PollTokenGenerator(WorkflowDbContext dbContextProvider, JwtService jwtService)
+        public PollTokenGenerator(JwtService jwtService)
         {
-            _DbContextProvider = dbContextProvider;
             _JwtService = jwtService;
         }
 
         public string GenerateToken()
         {
             return _JwtService.GenerateCustomJwt(DateTimeOffset.UtcNow.AddSeconds(30).ToUnixTimeSeconds(),
-                new Dictionary<string, object>()
+                new Dictionary<string, object>
                 {
                     ["payload"] = Guid.NewGuid().ToString() // make polltoken unique
                 });

@@ -60,6 +60,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
             _Logger.LogInformation("POST batch triggered.");
             var iccBatch = await _IccService.GenerateBatch(generateIccInputModel.UserId); //TODO take the whole argument else null ref exception
             _DbContext.SaveAndCommit();
+            
+            //TODO explicit response type!
             return new JsonResult(new
             {
                 ok = true,
