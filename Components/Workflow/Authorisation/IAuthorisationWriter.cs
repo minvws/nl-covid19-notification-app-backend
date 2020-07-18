@@ -8,6 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 {
     public interface IAuthorisationWriter
     {
-        Task Execute(AuthorisationArgs args);
+        Task<string> Execute(AuthorisationArgs args);
     }
 }

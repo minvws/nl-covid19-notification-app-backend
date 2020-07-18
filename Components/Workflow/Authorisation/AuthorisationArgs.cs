@@ -14,24 +14,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     {
         public AuthorisationArgs()
         {
+            
         }
 
-        /// <summary>
-        /// TODO this is mapping
-        /// </summary>
-        /// <param name="confirmLabConfirmationIdModel"></param>
         public AuthorisationArgs(ConfirmLabConfirmationIdModel confirmLabConfirmationIdModel)
         {
-            if (confirmLabConfirmationIdModel == null) throw new ArgumentNullException(nameof(confirmLabConfirmationIdModel));
-
-            LabConfirmationId = confirmLabConfirmationIdModel.LabConfirmationId?.Replace("-",string.Empty);
+            LabConfirmationId = confirmLabConfirmationIdModel.LabConfirmationId.Replace("-",string.Empty);
             DateOfSymptomsOnset = confirmLabConfirmationIdModel.DateOfSymptomsOnset;
         }
         
         /// <summary>
         /// Identifier for Workflow item - Tan1?
         /// </summary>
-        public string? LabConfirmationId { get; set; }
+        public string LabConfirmationId { get; set; }
         
         public DateTime DateOfSymptomsOnset { get; set; }
     }

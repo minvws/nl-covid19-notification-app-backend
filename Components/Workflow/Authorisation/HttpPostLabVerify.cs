@@ -8,39 +8,45 @@ using JWT.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation.Exceptions;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
     public class HttpPostLabVerify
     {
         private readonly LabVerifyChecker _LabVerifyChecker;
+        private readonly WorkflowDbContext _DbContextProvider;
+        private readonly PollTokenGenerator _PollTokenGenerator;
 
-        public HttpPostLabVerify(LabVerifyChecker labVerifyChecker)
+        public HttpPostLabVerify(LabVerifyChecker labVerifyChecker, WorkflowDbContext dbContextProvider,
+            PollTokenGenerator pollTokenGenerator)
         {
-            _LabVerifyChecker = labVerifyChecker ?? throw new ArgumentNullException(nameof(labVerifyChecker));
+            _LabVerifyChecker = labVerifyChecker;
+            _DbContextProvider = dbContextProvider;
+            _PollTokenGenerator = pollTokenGenerator;
         }
 
         public async Task<IActionResult> Execute(LabVerifyArgs args)
         {
-            if (args == null) throw new ArgumentNullException(nameof(args));
             try
             {
-                var keyReleaseWorkflowState = await _LabVerifyChecker.Execute(args);
-                // _DbContextProvider.SaveAndCommit();
-                return new OkObjectResult(new AuthorisationResponse {Valid = true, PollToken = keyReleaseWorkflowState.PollToken});
+                LabVerifyResponse response = await _LabVerifyChecker.Execute(args);
+                
+                _DbContextProvider.SaveAndCommit();
+                
+                return new OkObjectResult(response);
             }
-            catch (KeysUploadedNotValidException e)
+            catch (InvalidTokenPartsException)
             {
-                return new OkObjectResult(new AuthorisationResponse
-                    {Valid = false, PollToken = e.KeyReleaseWorkflowState.PollToken});
+                return new UnauthorizedObjectResult(new AuthorisationResponse {Valid = false});
             }
-            catch (TokenExpiredException e) //TODO e not used.
+            catch (TokenExpiredException)
             {
-                return new OkObjectResult(new AuthorisationResponse {Valid = false});
+                return new UnauthorizedObjectResult(new AuthorisationResponse {Valid = false});
             }
-            catch (LabFlowNotFoundException e) //TODO e not used.
+            catch (KeyReleaseWorkflowStateNotFoundException)
             {
-                return new OkObjectResult(new AuthorisationResponse {Valid = false});
+                return new NotFoundObjectResult(new AuthorisationResponse {Valid = false});
             }
         }
     }

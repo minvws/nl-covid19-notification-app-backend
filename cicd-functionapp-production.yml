@@ -27,4 +27,4 @@ extends:
     functionAppNameSecundary: 'vwssp-function-app'
     webEnvironment: 'Production'
     # ============================================
-    projectName: '$(System.DefaultWorkingDirectory)/CdnRegionSync/CdnRegionSync.csproj'
+    projectName: '$(System.DefaultWorkingDirectory)/ExposureNotification.Backend.CdnRegionSync.sln'

@@ -9,399 +9,1557 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat {
 
-#region Messages
-public sealed partial class TemporaryExposureKeyExport : pb::IMessage<TemporaryExposureKeyExport> {
-  private static readonly pb::MessageParser<TemporaryExposureKeyExport> _parser = new pb::MessageParser<TemporaryExposureKeyExport>(() => new TemporaryExposureKeyExport());
-  private pb::UnknownFieldSet _unknownFields;
-  private int _hasBits0;
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public static pb::MessageParser<TemporaryExposureKeyExport> Parser { get { return _parser; } }
+  /// <summary>Holder for reflection information generated from TemporaryExposureKeyExport.proto</summary>
+  public static partial class TemporaryExposureKeyExportReflection {
 
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public static pbr::MessageDescriptor Descriptor {
-    get { return global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKeyExportReflection.Descriptor.MessageTypes[0]; }
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  pbr::MessageDescriptor pb::IMessage.Descriptor {
-    get { return Descriptor; }
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public TemporaryExposureKeyExport() {
-    OnConstruction();
-  }
-
-  partial void OnConstruction();
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public TemporaryExposureKeyExport(TemporaryExposureKeyExport other) : this() {
-    _hasBits0 = other._hasBits0;
-    startTimestamp_ = other.startTimestamp_;
-    endTimestamp_ = other.endTimestamp_;
-    region_ = other.region_;
-    batchNum_ = other.batchNum_;
-    batchSize_ = other.batchSize_;
-    signatureInfos_ = other.signatureInfos_.Clone();
-    keys_ = other.keys_.Clone();
-    revisedKeys_ = other.revisedKeys_.Clone();
-    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public TemporaryExposureKeyExport Clone() {
-    return new TemporaryExposureKeyExport(this);
-  }
-
-  /// <summary>Field number for the "start_timestamp" field.</summary>
-  public const int StartTimestampFieldNumber = 1;
-  private readonly static ulong StartTimestampDefaultValue = 0UL;
-
-  private ulong startTimestamp_;
-  /// <summary>
-  /// Time window of keys in this batch based on arrival to server, in UTC seconds.
-  /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public ulong StartTimestamp {
-    get { if ((_hasBits0 & 1) != 0) { return startTimestamp_; } else { return StartTimestampDefaultValue; } }
-    set {
-      _hasBits0 |= 1;
-      startTimestamp_ = value;
+    #region Descriptor
+    /// <summary>File descriptor for TemporaryExposureKeyExport.proto</summary>
+    public static pbr::FileDescriptor Descriptor {
+      get { return descriptor; }
     }
-  }
-  /// <summary>Gets whether the "start_timestamp" field is set</summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public bool HasStartTimestamp {
-    get { return (_hasBits0 & 1) != 0; }
-  }
-  /// <summary>Clears the value of the "start_timestamp" field</summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void ClearStartTimestamp() {
-    _hasBits0 &= ~1;
-  }
+    private static pbr::FileDescriptor descriptor;
 
-  /// <summary>Field number for the "end_timestamp" field.</summary>
-  public const int EndTimestampFieldNumber = 2;
-  private readonly static ulong EndTimestampDefaultValue = 0UL;
+    static TemporaryExposureKeyExportReflection() {
+      byte[] descriptorData = global::System.Convert.FromBase64String(
+          string.Concat(
+            "CiBUZW1wb3JhcnlFeHBvc3VyZUtleUV4cG9ydC5wcm90byL+AQoaVGVtcG9y",
+            "YXJ5RXhwb3N1cmVLZXlFeHBvcnQSFwoPc3RhcnRfdGltZXN0YW1wGAEgASgG",
+            "EhUKDWVuZF90aW1lc3RhbXAYAiABKAYSDgoGcmVnaW9uGAMgASgJEhEKCWJh",
+            "dGNoX251bRgEIAEoBRISCgpiYXRjaF9zaXplGAUgASgFEicKD3NpZ25hdHVy",
+            "ZV9pbmZvcxgGIAMoCzIOLlNpZ25hdHVyZUluZm8SIwoEa2V5cxgHIAMoCzIV",
+            "LlRlbXBvcmFyeUV4cG9zdXJlS2V5EisKDHJldmlzZWRfa2V5cxgIIAMoCzIV",
+            "LlRlbXBvcmFyeUV4cG9zdXJlS2V5IpsBCg1TaWduYXR1cmVJbmZvEhUKDWFw",
+            "cF9idW5kbGVfaWQYASABKAkSFwoPYW5kcm9pZF9wYWNrYWdlGAIgASgJEiAK",
+            "GHZlcmlmaWNhdGlvbl9rZXlfdmVyc2lvbhgDIAEoCRIbChN2ZXJpZmljYXRp",
+            "b25fa2V5X2lkGAQgASgJEhsKE3NpZ25hdHVyZV9hbGdvcml0aG0YBSABKAki",
+            "7AIKFFRlbXBvcmFyeUV4cG9zdXJlS2V5EhAKCGtleV9kYXRhGAEgASgMEiMK",
+            "F3RyYW5zbWlzc2lvbl9yaXNrX2xldmVsGAIgASgFQgIYARIlCh1yb2xsaW5n",
+            "X3N0YXJ0X2ludGVydmFsX251bWJlchgDIAEoBRIbCg5yb2xsaW5nX3Blcmlv",
+            "ZBgEIAEoBToDMTQ0EjUKC3JlcG9ydF90eXBlGAUgASgOMiAuVGVtcG9yYXJ5",
+            "RXhwb3N1cmVLZXkuUmVwb3J0VHlwZRIkChxkYXlzX3NpbmNlX29uc2V0X29m",
+            "X3N5bXB0b21zGAYgASgRInwKClJlcG9ydFR5cGUSCwoHVU5LTk9XThAAEhIK",
+            "DkNPTkZJUk1FRF9URVNUEAESIAocQ09ORklSTUVEX0NMSU5JQ0FMX0RJQUdO",
+            "T1NJUxACEg8KC1NFTEZfUkVQT1JUEAMSDQoJUkVDVVJTSVZFEAQSCwoHUkVW",
+            "T0tFRBAFIjUKEFRFS1NpZ25hdHVyZUxpc3QSIQoKc2lnbmF0dXJlcxgBIAMo",
+            "CzINLlRFS1NpZ25hdHVyZSJwCgxURUtTaWduYXR1cmUSJgoOc2lnbmF0dXJl",
+            "X2luZm8YASABKAsyDi5TaWduYXR1cmVJbmZvEhEKCWJhdGNoX251bRgCIAEo",
+            "BRISCgpiYXRjaF9zaXplGAMgASgFEhEKCXNpZ25hdHVyZRgEIAEoDEJEqgJB",
+            "TkwuUmlqa3NvdmVyaGVpZC5FeHBvc3VyZU5vdGlmaWNhdGlvbi5CYWNrRW5k",
+            "LkdlbmVyYXRlZEdhZW5Gb3JtYXQ="));
+      descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
+          new pbr::FileDescriptor[] { },
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKeyExport), global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKeyExport.Parser, new[]{ "StartTimestamp", "EndTimestamp", "Region", "BatchNum", "BatchSize", "SignatureInfos", "Keys", "RevisedKeys" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo), global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo.Parser, new[]{ "AppBundleId", "AndroidPackage", "VerificationKeyVersion", "VerificationKeyId", "SignatureAlgorithm" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey), global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Parser, new[]{ "KeyData", "TransmissionRiskLevel", "RollingStartIntervalNumber", "RollingPeriod", "ReportType", "DaysSinceOnsetOfSymptoms" }, null, new[]{ typeof(global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Types.ReportType) }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TEKSignatureList), global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TEKSignatureList.Parser, new[]{ "Signatures" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TEKSignature), global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TEKSignature.Parser, new[]{ "SignatureInfo", "BatchNum", "BatchSize", "Signature" }, null, null, null, null)
+          }));
+    }
+    #endregion
 
-  private ulong endTimestamp_;
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public ulong EndTimestamp {
-    get { if ((_hasBits0 & 2) != 0) { return endTimestamp_; } else { return EndTimestampDefaultValue; } }
-    set {
-      _hasBits0 |= 2;
-      endTimestamp_ = value;
-    }
   }
-  /// <summary>Gets whether the "end_timestamp" field is set</summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public bool HasEndTimestamp {
-    get { return (_hasBits0 & 2) != 0; }
-  }
-  /// <summary>Clears the value of the "end_timestamp" field</summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void ClearEndTimestamp() {
-    _hasBits0 &= ~2;
-  }
+  #region Messages
+  public sealed partial class TemporaryExposureKeyExport : pb::IMessage<TemporaryExposureKeyExport> {
+    private static readonly pb::MessageParser<TemporaryExposureKeyExport> _parser = new pb::MessageParser<TemporaryExposureKeyExport>(() => new TemporaryExposureKeyExport());
+    private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<TemporaryExposureKeyExport> Parser { get { return _parser; } }
 
-  /// <summary>Field number for the "region" field.</summary>
-  public const int RegionFieldNumber = 3;
-  private readonly static string RegionDefaultValue = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKeyExportReflection.Descriptor.MessageTypes[0]; }
+    }
 
-  private string region_;
-  /// <summary>
-  /// Region for which these keys came from, such as country.
-  /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public string Region {
-    get { return region_ ?? RegionDefaultValue; }
-    set {
-      region_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
     }
-  }
-  /// <summary>Gets whether the "region" field is set</summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public bool HasRegion {
-    get { return region_ != null; }
-  }
-  /// <summary>Clears the value of the "region" field</summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void ClearRegion() {
-    region_ = null;
-  }
 
-  /// <summary>Field number for the "batch_num" field.</summary>
-  public const int BatchNumFieldNumber = 4;
-  private readonly static int BatchNumDefaultValue = 0;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public TemporaryExposureKeyExport() {
+      OnConstruction();
+    }
 
-  private int batchNum_;
-  /// <summary>
-  /// For example, file 2 in batch size of 10. Ordinal, 1-based numbering.
-  /// Note: Not yet supported on iOS.
-  /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public int BatchNum {
-    get { if ((_hasBits0 & 4) != 0) { return batchNum_; } else { return BatchNumDefaultValue; } }
-    set {
-      _hasBits0 |= 4;
-      batchNum_ = value;
-    }
-  }
-  /// <summary>Gets whether the "batch_num" field is set</summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public bool HasBatchNum {
-    get { return (_hasBits0 & 4) != 0; }
-  }
-  /// <summary>Clears the value of the "batch_num" field</summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void ClearBatchNum() {
-    _hasBits0 &= ~4;
-  }
+    partial void OnConstruction();
 
-  /// <summary>Field number for the "batch_size" field.</summary>
-  public const int BatchSizeFieldNumber = 5;
-  private readonly static int BatchSizeDefaultValue = 0;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public TemporaryExposureKeyExport(TemporaryExposureKeyExport other) : this() {
+      _hasBits0 = other._hasBits0;
+      startTimestamp_ = other.startTimestamp_;
+      endTimestamp_ = other.endTimestamp_;
+      region_ = other.region_;
+      batchNum_ = other.batchNum_;
+      batchSize_ = other.batchSize_;
+      signatureInfos_ = other.signatureInfos_.Clone();
+      keys_ = other.keys_.Clone();
+      revisedKeys_ = other.revisedKeys_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
 
-  private int batchSize_;
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public int BatchSize {
-    get { if ((_hasBits0 & 8) != 0) { return batchSize_; } else { return BatchSizeDefaultValue; } }
-    set {
-      _hasBits0 |= 8;
-      batchSize_ = value;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public TemporaryExposureKeyExport Clone() {
+      return new TemporaryExposureKeyExport(this);
     }
-  }
-  /// <summary>Gets whether the "batch_size" field is set</summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public bool HasBatchSize {
-    get { return (_hasBits0 & 8) != 0; }
-  }
-  /// <summary>Clears the value of the "batch_size" field</summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void ClearBatchSize() {
-    _hasBits0 &= ~8;
-  }
 
-  /// <summary>Field number for the "signature_infos" field.</summary>
-  public const int SignatureInfosFieldNumber = 6;
-  private static readonly pb::FieldCodec<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo> _repeated_signatureInfos_codec
-      = pb::FieldCodec.ForMessage(50, global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo.Parser);
-  private readonly pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo> signatureInfos_ = new pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo>();
-  /// <summary>
-  /// Information about associated signatures
-  /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo> SignatureInfos {
-    get { return signatureInfos_; }
-  }
+    /// <summary>Field number for the "start_timestamp" field.</summary>
+    public const int StartTimestampFieldNumber = 1;
+    private readonly static ulong StartTimestampDefaultValue = 0UL;
 
-  /// <summary>Field number for the "keys" field.</summary>
-  public const int KeysFieldNumber = 7;
-  private static readonly pb::FieldCodec<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> _repeated_keys_codec
-      = pb::FieldCodec.ForMessage(58, global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Parser);
-  private readonly pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> keys_ = new pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey>();
-  /// <summary>
-  /// The TemporaryExposureKeys for initial release of keys.
-  /// Keys should be included in this list for initial release,
-  /// whereas revised or revoked keys should go in revised_keys.
-  /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> Keys {
-    get { return keys_; }
-  }
+    private ulong startTimestamp_;
+    /// <summary>
+    /// Time window of keys in this batch based on arrival to server, in UTC seconds.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ulong StartTimestamp {
+      get { if ((_hasBits0 & 1) != 0) { return startTimestamp_; } else { return StartTimestampDefaultValue; } }
+      set {
+        _hasBits0 |= 1;
+        startTimestamp_ = value;
+      }
+    }
+    /// <summary>Gets whether the "start_timestamp" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasStartTimestamp {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "start_timestamp" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearStartTimestamp() {
+      _hasBits0 &= ~1;
+    }
 
-  /// <summary>Field number for the "revised_keys" field.</summary>
-  public const int RevisedKeysFieldNumber = 8;
-  private static readonly pb::FieldCodec<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> _repeated_revisedKeys_codec
-      = pb::FieldCodec.ForMessage(66, global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Parser);
-  private readonly pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> revisedKeys_ = new pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey>();
-  /// <summary>
-  /// TemporaryExposureKeys that have changed status.
-  /// Keys should be included in this list if they have changed status
-  /// or have been revoked.
-  /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> RevisedKeys {
-    get { return revisedKeys_; }
-  }
+    /// <summary>Field number for the "end_timestamp" field.</summary>
+    public const int EndTimestampFieldNumber = 2;
+    private readonly static ulong EndTimestampDefaultValue = 0UL;
 
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public override bool Equals(object other) {
-    return Equals(other as TemporaryExposureKeyExport);
-  }
+    private ulong endTimestamp_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ulong EndTimestamp {
+      get { if ((_hasBits0 & 2) != 0) { return endTimestamp_; } else { return EndTimestampDefaultValue; } }
+      set {
+        _hasBits0 |= 2;
+        endTimestamp_ = value;
+      }
+    }
+    /// <summary>Gets whether the "end_timestamp" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasEndTimestamp {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "end_timestamp" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearEndTimestamp() {
+      _hasBits0 &= ~2;
+    }
 
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public bool Equals(TemporaryExposureKeyExport other) {
-    if (ReferenceEquals(other, null)) {
-      return false;
-    }
-    if (ReferenceEquals(other, this)) {
-      return true;
-    }
-    if (StartTimestamp != other.StartTimestamp) return false;
-    if (EndTimestamp != other.EndTimestamp) return false;
-    if (Region != other.Region) return false;
-    if (BatchNum != other.BatchNum) return false;
-    if (BatchSize != other.BatchSize) return false;
-    if(!signatureInfos_.Equals(other.signatureInfos_)) return false;
-    if(!keys_.Equals(other.keys_)) return false;
-    if(!revisedKeys_.Equals(other.revisedKeys_)) return false;
-    return Equals(_unknownFields, other._unknownFields);
-  }
+    /// <summary>Field number for the "region" field.</summary>
+    public const int RegionFieldNumber = 3;
+    private readonly static string RegionDefaultValue = "";
 
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public override int GetHashCode() {
-    int hash = 1;
-    if (HasStartTimestamp) hash ^= StartTimestamp.GetHashCode();
-    if (HasEndTimestamp) hash ^= EndTimestamp.GetHashCode();
-    if (HasRegion) hash ^= Region.GetHashCode();
-    if (HasBatchNum) hash ^= BatchNum.GetHashCode();
-    if (HasBatchSize) hash ^= BatchSize.GetHashCode();
-    hash ^= signatureInfos_.GetHashCode();
-    hash ^= keys_.GetHashCode();
-    hash ^= revisedKeys_.GetHashCode();
-    if (_unknownFields != null) {
-      hash ^= _unknownFields.GetHashCode();
+    private string region_;
+    /// <summary>
+    /// Region for which these keys came from, such as country.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Region {
+      get { return region_ ?? RegionDefaultValue; }
+      set {
+        region_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
     }
-    return hash;
-  }
+    /// <summary>Gets whether the "region" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasRegion {
+      get { return region_ != null; }
+    }
+    /// <summary>Clears the value of the "region" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearRegion() {
+      region_ = null;
+    }
 
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public override string ToString() {
-    return pb::JsonFormatter.ToDiagnosticString(this);
-  }
+    /// <summary>Field number for the "batch_num" field.</summary>
+    public const int BatchNumFieldNumber = 4;
+    private readonly static int BatchNumDefaultValue = 0;
 
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void WriteTo(pb::CodedOutputStream output) {
-    if (HasStartTimestamp) {
-      output.WriteRawTag(9);
-      output.WriteFixed64(StartTimestamp);
+    private int batchNum_;
+    /// <summary>
+    /// For example, file 2 in batch size of 10. Ordinal, 1-based numbering.
+    /// Note: Not yet supported on iOS.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int BatchNum {
+      get { if ((_hasBits0 & 4) != 0) { return batchNum_; } else { return BatchNumDefaultValue; } }
+      set {
+        _hasBits0 |= 4;
+        batchNum_ = value;
+      }
     }
-    if (HasEndTimestamp) {
-      output.WriteRawTag(17);
-      output.WriteFixed64(EndTimestamp);
+    /// <summary>Gets whether the "batch_num" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasBatchNum {
+      get { return (_hasBits0 & 4) != 0; }
     }
-    if (HasRegion) {
-      output.WriteRawTag(26);
-      output.WriteString(Region);
+    /// <summary>Clears the value of the "batch_num" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearBatchNum() {
+      _hasBits0 &= ~4;
     }
-    if (HasBatchNum) {
-      output.WriteRawTag(32);
-      output.WriteInt32(BatchNum);
-    }
-    if (HasBatchSize) {
-      output.WriteRawTag(40);
-      output.WriteInt32(BatchSize);
-    }
-    signatureInfos_.WriteTo(output, _repeated_signatureInfos_codec);
-    keys_.WriteTo(output, _repeated_keys_codec);
-    revisedKeys_.WriteTo(output, _repeated_revisedKeys_codec);
-    if (_unknownFields != null) {
-      _unknownFields.WriteTo(output);
-    }
-  }
 
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public int CalculateSize() {
-    int size = 0;
-    if (HasStartTimestamp) {
-      size += 1 + 8;
-    }
-    if (HasEndTimestamp) {
-      size += 1 + 8;
-    }
-    if (HasRegion) {
-      size += 1 + pb::CodedOutputStream.ComputeStringSize(Region);
-    }
-    if (HasBatchNum) {
-      size += 1 + pb::CodedOutputStream.ComputeInt32Size(BatchNum);
-    }
-    if (HasBatchSize) {
-      size += 1 + pb::CodedOutputStream.ComputeInt32Size(BatchSize);
-    }
-    size += signatureInfos_.CalculateSize(_repeated_signatureInfos_codec);
-    size += keys_.CalculateSize(_repeated_keys_codec);
-    size += revisedKeys_.CalculateSize(_repeated_revisedKeys_codec);
-    if (_unknownFields != null) {
-      size += _unknownFields.CalculateSize();
-    }
-    return size;
-  }
+    /// <summary>Field number for the "batch_size" field.</summary>
+    public const int BatchSizeFieldNumber = 5;
+    private readonly static int BatchSizeDefaultValue = 0;
 
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void MergeFrom(TemporaryExposureKeyExport other) {
-    if (other == null) {
-      return;
+    private int batchSize_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int BatchSize {
+      get { if ((_hasBits0 & 8) != 0) { return batchSize_; } else { return BatchSizeDefaultValue; } }
+      set {
+        _hasBits0 |= 8;
+        batchSize_ = value;
+      }
     }
-    if (other.HasStartTimestamp) {
-      StartTimestamp = other.StartTimestamp;
+    /// <summary>Gets whether the "batch_size" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasBatchSize {
+      get { return (_hasBits0 & 8) != 0; }
     }
-    if (other.HasEndTimestamp) {
-      EndTimestamp = other.EndTimestamp;
+    /// <summary>Clears the value of the "batch_size" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearBatchSize() {
+      _hasBits0 &= ~8;
     }
-    if (other.HasRegion) {
-      Region = other.Region;
-    }
-    if (other.HasBatchNum) {
-      BatchNum = other.BatchNum;
-    }
-    if (other.HasBatchSize) {
-      BatchSize = other.BatchSize;
-    }
-    signatureInfos_.Add(other.signatureInfos_);
-    keys_.Add(other.keys_);
-    revisedKeys_.Add(other.revisedKeys_);
-    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-  }
 
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void MergeFrom(pb::CodedInputStream input) {
-    uint tag;
-    while ((tag = input.ReadTag()) != 0) {
-      switch(tag) {
-        default:
-          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-          break;
-        case 9: {
-          StartTimestamp = input.ReadFixed64();
-          break;
-        }
-        case 17: {
-          EndTimestamp = input.ReadFixed64();
-          break;
-        }
-        case 26: {
-          Region = input.ReadString();
-          break;
-        }
-        case 32: {
-          BatchNum = input.ReadInt32();
-          break;
-        }
-        case 40: {
-          BatchSize = input.ReadInt32();
-          break;
-        }
-        case 50: {
-          signatureInfos_.AddEntriesFrom(input, _repeated_signatureInfos_codec);
-          break;
-        }
-        case 58: {
-          keys_.AddEntriesFrom(input, _repeated_keys_codec);
-          break;
-        }
-        case 66: {
-          revisedKeys_.AddEntriesFrom(input, _repeated_revisedKeys_codec);
-          break;
+    /// <summary>Field number for the "signature_infos" field.</summary>
+    public const int SignatureInfosFieldNumber = 6;
+    private static readonly pb::FieldCodec<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo> _repeated_signatureInfos_codec
+        = pb::FieldCodec.ForMessage(50, global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo.Parser);
+    private readonly pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo> signatureInfos_ = new pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo>();
+    /// <summary>
+    /// Information about associated signatures
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo> SignatureInfos {
+      get { return signatureInfos_; }
+    }
+
+    /// <summary>Field number for the "keys" field.</summary>
+    public const int KeysFieldNumber = 7;
+    private static readonly pb::FieldCodec<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> _repeated_keys_codec
+        = pb::FieldCodec.ForMessage(58, global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Parser);
+    private readonly pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> keys_ = new pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey>();
+    /// <summary>
+    /// The TemporaryExposureKeys for initial release of keys.
+    /// Keys should be included in this list for initial release,
+    /// whereas revised or revoked keys should go in revised_keys.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> Keys {
+      get { return keys_; }
+    }
+
+    /// <summary>Field number for the "revised_keys" field.</summary>
+    public const int RevisedKeysFieldNumber = 8;
+    private static readonly pb::FieldCodec<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> _repeated_revisedKeys_codec
+        = pb::FieldCodec.ForMessage(66, global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Parser);
+    private readonly pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> revisedKeys_ = new pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey>();
+    /// <summary>
+    /// TemporaryExposureKeys that have changed status.
+    /// Keys should be included in this list if they have changed status
+    /// or have been revoked.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> RevisedKeys {
+      get { return revisedKeys_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as TemporaryExposureKeyExport);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(TemporaryExposureKeyExport other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (StartTimestamp != other.StartTimestamp) return false;
+      if (EndTimestamp != other.EndTimestamp) return false;
+      if (Region != other.Region) return false;
+      if (BatchNum != other.BatchNum) return false;
+      if (BatchSize != other.BatchSize) return false;
+      if(!signatureInfos_.Equals(other.signatureInfos_)) return false;
+      if(!keys_.Equals(other.keys_)) return false;
+      if(!revisedKeys_.Equals(other.revisedKeys_)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (HasStartTimestamp) hash ^= StartTimestamp.GetHashCode();
+      if (HasEndTimestamp) hash ^= EndTimestamp.GetHashCode();
+      if (HasRegion) hash ^= Region.GetHashCode();
+      if (HasBatchNum) hash ^= BatchNum.GetHashCode();
+      if (HasBatchSize) hash ^= BatchSize.GetHashCode();
+      hash ^= signatureInfos_.GetHashCode();
+      hash ^= keys_.GetHashCode();
+      hash ^= revisedKeys_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (HasStartTimestamp) {
+        output.WriteRawTag(9);
+        output.WriteFixed64(StartTimestamp);
+      }
+      if (HasEndTimestamp) {
+        output.WriteRawTag(17);
+        output.WriteFixed64(EndTimestamp);
+      }
+      if (HasRegion) {
+        output.WriteRawTag(26);
+        output.WriteString(Region);
+      }
+      if (HasBatchNum) {
+        output.WriteRawTag(32);
+        output.WriteInt32(BatchNum);
+      }
+      if (HasBatchSize) {
+        output.WriteRawTag(40);
+        output.WriteInt32(BatchSize);
+      }
+      signatureInfos_.WriteTo(output, _repeated_signatureInfos_codec);
+      keys_.WriteTo(output, _repeated_keys_codec);
+      revisedKeys_.WriteTo(output, _repeated_revisedKeys_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (HasStartTimestamp) {
+        size += 1 + 8;
+      }
+      if (HasEndTimestamp) {
+        size += 1 + 8;
+      }
+      if (HasRegion) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Region);
+      }
+      if (HasBatchNum) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(BatchNum);
+      }
+      if (HasBatchSize) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(BatchSize);
+      }
+      size += signatureInfos_.CalculateSize(_repeated_signatureInfos_codec);
+      size += keys_.CalculateSize(_repeated_keys_codec);
+      size += revisedKeys_.CalculateSize(_repeated_revisedKeys_codec);
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(TemporaryExposureKeyExport other) {
+      if (other == null) {
+        return;
+      }
+      if (other.HasStartTimestamp) {
+        StartTimestamp = other.StartTimestamp;
+      }
+      if (other.HasEndTimestamp) {
+        EndTimestamp = other.EndTimestamp;
+      }
+      if (other.HasRegion) {
+        Region = other.Region;
+      }
+      if (other.HasBatchNum) {
+        BatchNum = other.BatchNum;
+      }
+      if (other.HasBatchSize) {
+        BatchSize = other.BatchSize;
+      }
+      signatureInfos_.Add(other.signatureInfos_);
+      keys_.Add(other.keys_);
+      revisedKeys_.Add(other.revisedKeys_);
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 9: {
+            StartTimestamp = input.ReadFixed64();
+            break;
+          }
+          case 17: {
+            EndTimestamp = input.ReadFixed64();
+            break;
+          }
+          case 26: {
+            Region = input.ReadString();
+            break;
+          }
+          case 32: {
+            BatchNum = input.ReadInt32();
+            break;
+          }
+          case 40: {
+            BatchSize = input.ReadInt32();
+            break;
+          }
+          case 50: {
+            signatureInfos_.AddEntriesFrom(input, _repeated_signatureInfos_codec);
+            break;
+          }
+          case 58: {
+            keys_.AddEntriesFrom(input, _repeated_keys_codec);
+            break;
+          }
+          case 66: {
+            revisedKeys_.AddEntriesFrom(input, _repeated_revisedKeys_codec);
+            break;
+          }
         }
       }
     }
+
   }
 
+  public sealed partial class SignatureInfo : pb::IMessage<SignatureInfo> {
+    private static readonly pb::MessageParser<SignatureInfo> _parser = new pb::MessageParser<SignatureInfo>(() => new SignatureInfo());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<SignatureInfo> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKeyExportReflection.Descriptor.MessageTypes[1]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SignatureInfo() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SignatureInfo(SignatureInfo other) : this() {
+      appBundleId_ = other.appBundleId_;
+      androidPackage_ = other.androidPackage_;
+      verificationKeyVersion_ = other.verificationKeyVersion_;
+      verificationKeyId_ = other.verificationKeyId_;
+      signatureAlgorithm_ = other.signatureAlgorithm_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SignatureInfo Clone() {
+      return new SignatureInfo(this);
+    }
+
+    /// <summary>Field number for the "app_bundle_id" field.</summary>
+    public const int AppBundleIdFieldNumber = 1;
+    private readonly static string AppBundleIdDefaultValue = "";
+
+    private string appBundleId_;
+    /// <summary>
+    /// No longer needed by Google: App Store app bundle ID.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string AppBundleId {
+      get { return appBundleId_ ?? AppBundleIdDefaultValue; }
+      set {
+        appBundleId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "app_bundle_id" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasAppBundleId {
+      get { return appBundleId_ != null; }
+    }
+    /// <summary>Clears the value of the "app_bundle_id" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearAppBundleId() {
+      appBundleId_ = null;
+    }
+
+    /// <summary>Field number for the "android_package" field.</summary>
+    public const int AndroidPackageFieldNumber = 2;
+    private readonly static string AndroidPackageDefaultValue = "";
+
+    private string androidPackage_;
+    /// <summary>
+    /// No longer needed by Google: Android App package name
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string AndroidPackage {
+      get { return androidPackage_ ?? AndroidPackageDefaultValue; }
+      set {
+        androidPackage_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "android_package" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasAndroidPackage {
+      get { return androidPackage_ != null; }
+    }
+    /// <summary>Clears the value of the "android_package" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearAndroidPackage() {
+      androidPackage_ = null;
+    }
+
+    /// <summary>Field number for the "verification_key_version" field.</summary>
+    public const int VerificationKeyVersionFieldNumber = 3;
+    private readonly static string VerificationKeyVersionDefaultValue = "";
+
+    private string verificationKeyVersion_;
+    /// <summary>
+    /// Key version for rollovers
+    /// Must be in character class [a-zA-Z0-9_]. For example, 'v1'
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string VerificationKeyVersion {
+      get { return verificationKeyVersion_ ?? VerificationKeyVersionDefaultValue; }
+      set {
+        verificationKeyVersion_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "verification_key_version" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasVerificationKeyVersion {
+      get { return verificationKeyVersion_ != null; }
+    }
+    /// <summary>Clears the value of the "verification_key_version" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearVerificationKeyVersion() {
+      verificationKeyVersion_ = null;
+    }
+
+    /// <summary>Field number for the "verification_key_id" field.</summary>
+    public const int VerificationKeyIdFieldNumber = 4;
+    private readonly static string VerificationKeyIdDefaultValue = "";
+
+    private string verificationKeyId_;
+    /// <summary>
+    /// Alias with which to identify public key to be used for verification
+    /// Must be in character class [a-zA-Z0-9_.]
+    /// For example, the domain of your server: gov.health.foo
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string VerificationKeyId {
+      get { return verificationKeyId_ ?? VerificationKeyIdDefaultValue; }
+      set {
+        verificationKeyId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "verification_key_id" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasVerificationKeyId {
+      get { return verificationKeyId_ != null; }
+    }
+    /// <summary>Clears the value of the "verification_key_id" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearVerificationKeyId() {
+      verificationKeyId_ = null;
+    }
+
+    /// <summary>Field number for the "signature_algorithm" field.</summary>
+    public const int SignatureAlgorithmFieldNumber = 5;
+    private readonly static string SignatureAlgorithmDefaultValue = "";
+
+    private string signatureAlgorithm_;
+    /// <summary>
+    /// ASN.1 OID for Algorithm Identifier. For example, `1.2.840.10045.4.3.2'
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string SignatureAlgorithm {
+      get { return signatureAlgorithm_ ?? SignatureAlgorithmDefaultValue; }
+      set {
+        signatureAlgorithm_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "signature_algorithm" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasSignatureAlgorithm {
+      get { return signatureAlgorithm_ != null; }
+    }
+    /// <summary>Clears the value of the "signature_algorithm" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearSignatureAlgorithm() {
+      signatureAlgorithm_ = null;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as SignatureInfo);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(SignatureInfo other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (AppBundleId != other.AppBundleId) return false;
+      if (AndroidPackage != other.AndroidPackage) return false;
+      if (VerificationKeyVersion != other.VerificationKeyVersion) return false;
+      if (VerificationKeyId != other.VerificationKeyId) return false;
+      if (SignatureAlgorithm != other.SignatureAlgorithm) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (HasAppBundleId) hash ^= AppBundleId.GetHashCode();
+      if (HasAndroidPackage) hash ^= AndroidPackage.GetHashCode();
+      if (HasVerificationKeyVersion) hash ^= VerificationKeyVersion.GetHashCode();
+      if (HasVerificationKeyId) hash ^= VerificationKeyId.GetHashCode();
+      if (HasSignatureAlgorithm) hash ^= SignatureAlgorithm.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (HasAppBundleId) {
+        output.WriteRawTag(10);
+        output.WriteString(AppBundleId);
+      }
+      if (HasAndroidPackage) {
+        output.WriteRawTag(18);
+        output.WriteString(AndroidPackage);
+      }
+      if (HasVerificationKeyVersion) {
+        output.WriteRawTag(26);
+        output.WriteString(VerificationKeyVersion);
+      }
+      if (HasVerificationKeyId) {
+        output.WriteRawTag(34);
+        output.WriteString(VerificationKeyId);
+      }
+      if (HasSignatureAlgorithm) {
+        output.WriteRawTag(42);
+        output.WriteString(SignatureAlgorithm);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (HasAppBundleId) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(AppBundleId);
+      }
+      if (HasAndroidPackage) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(AndroidPackage);
+      }
+      if (HasVerificationKeyVersion) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(VerificationKeyVersion);
+      }
+      if (HasVerificationKeyId) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(VerificationKeyId);
+      }
+      if (HasSignatureAlgorithm) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(SignatureAlgorithm);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(SignatureInfo other) {
+      if (other == null) {
+        return;
+      }
+      if (other.HasAppBundleId) {
+        AppBundleId = other.AppBundleId;
+      }
+      if (other.HasAndroidPackage) {
+        AndroidPackage = other.AndroidPackage;
+      }
+      if (other.HasVerificationKeyVersion) {
+        VerificationKeyVersion = other.VerificationKeyVersion;
+      }
+      if (other.HasVerificationKeyId) {
+        VerificationKeyId = other.VerificationKeyId;
+      }
+      if (other.HasSignatureAlgorithm) {
+        SignatureAlgorithm = other.SignatureAlgorithm;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            AppBundleId = input.ReadString();
+            break;
+          }
+          case 18: {
+            AndroidPackage = input.ReadString();
+            break;
+          }
+          case 26: {
+            VerificationKeyVersion = input.ReadString();
+            break;
+          }
+          case 34: {
+            VerificationKeyId = input.ReadString();
+            break;
+          }
+          case 42: {
+            SignatureAlgorithm = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class TemporaryExposureKey : pb::IMessage<TemporaryExposureKey> {
+    private static readonly pb::MessageParser<TemporaryExposureKey> _parser = new pb::MessageParser<TemporaryExposureKey>(() => new TemporaryExposureKey());
+    private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<TemporaryExposureKey> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKeyExportReflection.Descriptor.MessageTypes[2]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public TemporaryExposureKey() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public TemporaryExposureKey(TemporaryExposureKey other) : this() {
+      _hasBits0 = other._hasBits0;
+      keyData_ = other.keyData_;
+      transmissionRiskLevel_ = other.transmissionRiskLevel_;
+      rollingStartIntervalNumber_ = other.rollingStartIntervalNumber_;
+      rollingPeriod_ = other.rollingPeriod_;
+      reportType_ = other.reportType_;
+      daysSinceOnsetOfSymptoms_ = other.daysSinceOnsetOfSymptoms_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public TemporaryExposureKey Clone() {
+      return new TemporaryExposureKey(this);
+    }
+
+    /// <summary>Field number for the "key_data" field.</summary>
+    public const int KeyDataFieldNumber = 1;
+    private readonly static pb::ByteString KeyDataDefaultValue = pb::ByteString.Empty;
+
+    private pb::ByteString keyData_;
+    /// <summary>
+    /// Key of infected user
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString KeyData {
+      get { return keyData_ ?? KeyDataDefaultValue; }
+      set {
+        keyData_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "key_data" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasKeyData {
+      get { return keyData_ != null; }
+    }
+    /// <summary>Clears the value of the "key_data" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearKeyData() {
+      keyData_ = null;
+    }
+
+    /// <summary>Field number for the "transmission_risk_level" field.</summary>
+    public const int TransmissionRiskLevelFieldNumber = 2;
+    private readonly static int TransmissionRiskLevelDefaultValue = 0;
+
+    private int transmissionRiskLevel_;
+    /// <summary>
+    /// Varying risk associated with a key depending on diagnosis method
+    /// </summary>
+    [global::System.ObsoleteAttribute]
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int TransmissionRiskLevel {
+      get { if ((_hasBits0 & 1) != 0) { return transmissionRiskLevel_; } else { return TransmissionRiskLevelDefaultValue; } }
+      set {
+        _hasBits0 |= 1;
+        transmissionRiskLevel_ = value;
+      }
+    }
+    /// <summary>Gets whether the "transmission_risk_level" field is set</summary>
+    [global::System.ObsoleteAttribute]
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasTransmissionRiskLevel {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "transmission_risk_level" field</summary>
+    [global::System.ObsoleteAttribute]
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearTransmissionRiskLevel() {
+      _hasBits0 &= ~1;
+    }
+
+    /// <summary>Field number for the "rolling_start_interval_number" field.</summary>
+    public const int RollingStartIntervalNumberFieldNumber = 3;
+    private readonly static int RollingStartIntervalNumberDefaultValue = 0;
+
+    private int rollingStartIntervalNumber_;
+    /// <summary>
+    /// The interval number since epoch for which a key starts
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int RollingStartIntervalNumber {
+      get { if ((_hasBits0 & 2) != 0) { return rollingStartIntervalNumber_; } else { return RollingStartIntervalNumberDefaultValue; } }
+      set {
+        _hasBits0 |= 2;
+        rollingStartIntervalNumber_ = value;
+      }
+    }
+    /// <summary>Gets whether the "rolling_start_interval_number" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasRollingStartIntervalNumber {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "rolling_start_interval_number" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearRollingStartIntervalNumber() {
+      _hasBits0 &= ~2;
+    }
+
+    /// <summary>Field number for the "rolling_period" field.</summary>
+    public const int RollingPeriodFieldNumber = 4;
+    private readonly static int RollingPeriodDefaultValue = 144;
+
+    private int rollingPeriod_;
+    /// <summary>
+    /// Increments of 10 minutes describing how long a key is valid
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int RollingPeriod {
+      get { if ((_hasBits0 & 4) != 0) { return rollingPeriod_; } else { return RollingPeriodDefaultValue; } }
+      set {
+        _hasBits0 |= 4;
+        rollingPeriod_ = value;
+      }
+    }
+    /// <summary>Gets whether the "rolling_period" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasRollingPeriod {
+      get { return (_hasBits0 & 4) != 0; }
+    }
+    /// <summary>Clears the value of the "rolling_period" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearRollingPeriod() {
+      _hasBits0 &= ~4;
+    }
+
+    /// <summary>Field number for the "report_type" field.</summary>
+    public const int ReportTypeFieldNumber = 5;
+    private readonly static global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Types.ReportType ReportTypeDefaultValue = global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Types.ReportType.Unknown;
+
+    private global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Types.ReportType reportType_;
+    /// <summary>
+    /// Type of diagnosis associated with a key.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Types.ReportType ReportType {
+      get { if ((_hasBits0 & 8) != 0) { return reportType_; } else { return ReportTypeDefaultValue; } }
+      set {
+        _hasBits0 |= 8;
+        reportType_ = value;
+      }
+    }
+    /// <summary>Gets whether the "report_type" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasReportType {
+      get { return (_hasBits0 & 8) != 0; }
+    }
+    /// <summary>Clears the value of the "report_type" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearReportType() {
+      _hasBits0 &= ~8;
+    }
+
+    /// <summary>Field number for the "days_since_onset_of_symptoms" field.</summary>
+    public const int DaysSinceOnsetOfSymptomsFieldNumber = 6;
+    private readonly static int DaysSinceOnsetOfSymptomsDefaultValue = 0;
+
+    private int daysSinceOnsetOfSymptoms_;
+    /// <summary>
+    /// Number of days elapsed between symptom onset and the TEK being used.
+    /// E.g. 2 means TEK is 2 days after onset of symptoms.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int DaysSinceOnsetOfSymptoms {
+      get { if ((_hasBits0 & 16) != 0) { return daysSinceOnsetOfSymptoms_; } else { return DaysSinceOnsetOfSymptomsDefaultValue; } }
+      set {
+        _hasBits0 |= 16;
+        daysSinceOnsetOfSymptoms_ = value;
+      }
+    }
+    /// <summary>Gets whether the "days_since_onset_of_symptoms" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasDaysSinceOnsetOfSymptoms {
+      get { return (_hasBits0 & 16) != 0; }
+    }
+    /// <summary>Clears the value of the "days_since_onset_of_symptoms" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearDaysSinceOnsetOfSymptoms() {
+      _hasBits0 &= ~16;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as TemporaryExposureKey);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(TemporaryExposureKey other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (KeyData != other.KeyData) return false;
+      if (TransmissionRiskLevel != other.TransmissionRiskLevel) return false;
+      if (RollingStartIntervalNumber != other.RollingStartIntervalNumber) return false;
+      if (RollingPeriod != other.RollingPeriod) return false;
+      if (ReportType != other.ReportType) return false;
+      if (DaysSinceOnsetOfSymptoms != other.DaysSinceOnsetOfSymptoms) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (HasKeyData) hash ^= KeyData.GetHashCode();
+      if (HasTransmissionRiskLevel) hash ^= TransmissionRiskLevel.GetHashCode();
+      if (HasRollingStartIntervalNumber) hash ^= RollingStartIntervalNumber.GetHashCode();
+      if (HasRollingPeriod) hash ^= RollingPeriod.GetHashCode();
+      if (HasReportType) hash ^= ReportType.GetHashCode();
+      if (HasDaysSinceOnsetOfSymptoms) hash ^= DaysSinceOnsetOfSymptoms.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (HasKeyData) {
+        output.WriteRawTag(10);
+        output.WriteBytes(KeyData);
+      }
+      if (HasTransmissionRiskLevel) {
+        output.WriteRawTag(16);
+        output.WriteInt32(TransmissionRiskLevel);
+      }
+      if (HasRollingStartIntervalNumber) {
+        output.WriteRawTag(24);
+        output.WriteInt32(RollingStartIntervalNumber);
+      }
+      if (HasRollingPeriod) {
+        output.WriteRawTag(32);
+        output.WriteInt32(RollingPeriod);
+      }
+      if (HasReportType) {
+        output.WriteRawTag(40);
+        output.WriteEnum((int) ReportType);
+      }
+      if (HasDaysSinceOnsetOfSymptoms) {
+        output.WriteRawTag(48);
+        output.WriteSInt32(DaysSinceOnsetOfSymptoms);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (HasKeyData) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(KeyData);
+      }
+      if (HasTransmissionRiskLevel) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(TransmissionRiskLevel);
+      }
+      if (HasRollingStartIntervalNumber) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(RollingStartIntervalNumber);
+      }
+      if (HasRollingPeriod) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(RollingPeriod);
+      }
+      if (HasReportType) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) ReportType);
+      }
+      if (HasDaysSinceOnsetOfSymptoms) {
+        size += 1 + pb::CodedOutputStream.ComputeSInt32Size(DaysSinceOnsetOfSymptoms);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(TemporaryExposureKey other) {
+      if (other == null) {
+        return;
+      }
+      if (other.HasKeyData) {
+        KeyData = other.KeyData;
+      }
+      if (other.HasTransmissionRiskLevel) {
+        TransmissionRiskLevel = other.TransmissionRiskLevel;
+      }
+      if (other.HasRollingStartIntervalNumber) {
+        RollingStartIntervalNumber = other.RollingStartIntervalNumber;
+      }
+      if (other.HasRollingPeriod) {
+        RollingPeriod = other.RollingPeriod;
+      }
+      if (other.HasReportType) {
+        ReportType = other.ReportType;
+      }
+      if (other.HasDaysSinceOnsetOfSymptoms) {
+        DaysSinceOnsetOfSymptoms = other.DaysSinceOnsetOfSymptoms;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            KeyData = input.ReadBytes();
+            break;
+          }
+          case 16: {
+            TransmissionRiskLevel = input.ReadInt32();
+            break;
+          }
+          case 24: {
+            RollingStartIntervalNumber = input.ReadInt32();
+            break;
+          }
+          case 32: {
+            RollingPeriod = input.ReadInt32();
+            break;
+          }
+          case 40: {
+            ReportType = (global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Types.ReportType) input.ReadEnum();
+            break;
+          }
+          case 48: {
+            DaysSinceOnsetOfSymptoms = input.ReadSInt32();
+            break;
+          }
+        }
+      }
+    }
+
+    #region Nested types
+    /// <summary>Container for nested types declared in the TemporaryExposureKey message type.</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static partial class Types {
+      /// <summary>
+      /// Data type representing why this key was published.
+      /// </summary>
+      public enum ReportType {
+        /// <summary>
+        /// Never returned by the client API.
+        /// </summary>
+        [pbr::OriginalName("UNKNOWN")] Unknown = 0,
+        [pbr::OriginalName("CONFIRMED_TEST")] ConfirmedTest = 1,
+        [pbr::OriginalName("CONFIRMED_CLINICAL_DIAGNOSIS")] ConfirmedClinicalDiagnosis = 2,
+        [pbr::OriginalName("SELF_REPORT")] SelfReport = 3,
+        /// <summary>
+        /// Reserved for future use.
+        /// </summary>
+        [pbr::OriginalName("RECURSIVE")] Recursive = 4,
+        /// <summary>
+        /// Used to revoke a key, never returned by client API.
+        /// </summary>
+        [pbr::OriginalName("REVOKED")] Revoked = 5,
+      }
+
+    }
+    #endregion
+
+  }
+
+  public sealed partial class TEKSignatureList : pb::IMessage<TEKSignatureList> {
+    private static readonly pb::MessageParser<TEKSignatureList> _parser = new pb::MessageParser<TEKSignatureList>(() => new TEKSignatureList());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<TEKSignatureList> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKeyExportReflection.Descriptor.MessageTypes[3]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public TEKSignatureList() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public TEKSignatureList(TEKSignatureList other) : this() {
+      signatures_ = other.signatures_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public TEKSignatureList Clone() {
+      return new TEKSignatureList(this);
+    }
+
+    /// <summary>Field number for the "signatures" field.</summary>
+    public const int SignaturesFieldNumber = 1;
+    private static readonly pb::FieldCodec<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TEKSignature> _repeated_signatures_codec
+        = pb::FieldCodec.ForMessage(10, global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TEKSignature.Parser);
+    private readonly pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TEKSignature> signatures_ = new pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TEKSignature>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TEKSignature> Signatures {
+      get { return signatures_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as TEKSignatureList);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(TEKSignatureList other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!signatures_.Equals(other.signatures_)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= signatures_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      signatures_.WriteTo(output, _repeated_signatures_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      size += signatures_.CalculateSize(_repeated_signatures_codec);
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(TEKSignatureList other) {
+      if (other == null) {
+        return;
+      }
+      signatures_.Add(other.signatures_);
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            signatures_.AddEntriesFrom(input, _repeated_signatures_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class TEKSignature : pb::IMessage<TEKSignature> {
+    private static readonly pb::MessageParser<TEKSignature> _parser = new pb::MessageParser<TEKSignature>(() => new TEKSignature());
+    private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<TEKSignature> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKeyExportReflection.Descriptor.MessageTypes[4]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public TEKSignature() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public TEKSignature(TEKSignature other) : this() {
+      _hasBits0 = other._hasBits0;
+      signatureInfo_ = other.signatureInfo_ != null ? other.signatureInfo_.Clone() : null;
+      batchNum_ = other.batchNum_;
+      batchSize_ = other.batchSize_;
+      signature_ = other.signature_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public TEKSignature Clone() {
+      return new TEKSignature(this);
+    }
+
+    /// <summary>Field number for the "signature_info" field.</summary>
+    public const int SignatureInfoFieldNumber = 1;
+    private global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo signatureInfo_;
+    /// <summary>
+    /// Info about the signing key, version, algorithm, and so on.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo SignatureInfo {
+      get { return signatureInfo_; }
+      set {
+        signatureInfo_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "batch_num" field.</summary>
+    public const int BatchNumFieldNumber = 2;
+    private readonly static int BatchNumDefaultValue = 0;
+
+    private int batchNum_;
+    /// <summary>
+    /// For example, file 2 in batch size of 10. Ordinal, 1-based numbering.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int BatchNum {
+      get { if ((_hasBits0 & 1) != 0) { return batchNum_; } else { return BatchNumDefaultValue; } }
+      set {
+        _hasBits0 |= 1;
+        batchNum_ = value;
+      }
+    }
+    /// <summary>Gets whether the "batch_num" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasBatchNum {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "batch_num" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearBatchNum() {
+      _hasBits0 &= ~1;
+    }
+
+    /// <summary>Field number for the "batch_size" field.</summary>
+    public const int BatchSizeFieldNumber = 3;
+    private readonly static int BatchSizeDefaultValue = 0;
+
+    private int batchSize_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int BatchSize {
+      get { if ((_hasBits0 & 2) != 0) { return batchSize_; } else { return BatchSizeDefaultValue; } }
+      set {
+        _hasBits0 |= 2;
+        batchSize_ = value;
+      }
+    }
+    /// <summary>Gets whether the "batch_size" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasBatchSize {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "batch_size" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearBatchSize() {
+      _hasBits0 &= ~2;
+    }
+
+    /// <summary>Field number for the "signature" field.</summary>
+    public const int SignatureFieldNumber = 4;
+    private readonly static pb::ByteString SignatureDefaultValue = pb::ByteString.Empty;
+
+    private pb::ByteString signature_;
+    /// <summary>
+    /// Signature in X9.62 format (ASN.1 SEQUENCE of two INTEGER fields)
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Signature {
+      get { return signature_ ?? SignatureDefaultValue; }
+      set {
+        signature_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "signature" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasSignature {
+      get { return signature_ != null; }
+    }
+    /// <summary>Clears the value of the "signature" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearSignature() {
+      signature_ = null;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as TEKSignature);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(TEKSignature other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(SignatureInfo, other.SignatureInfo)) return false;
+      if (BatchNum != other.BatchNum) return false;
+      if (BatchSize != other.BatchSize) return false;
+      if (Signature != other.Signature) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (signatureInfo_ != null) hash ^= SignatureInfo.GetHashCode();
+      if (HasBatchNum) hash ^= BatchNum.GetHashCode();
+      if (HasBatchSize) hash ^= BatchSize.GetHashCode();
+      if (HasSignature) hash ^= Signature.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (signatureInfo_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(SignatureInfo);
+      }
+      if (HasBatchNum) {
+        output.WriteRawTag(16);
+        output.WriteInt32(BatchNum);
+      }
+      if (HasBatchSize) {
+        output.WriteRawTag(24);
+        output.WriteInt32(BatchSize);
+      }
+      if (HasSignature) {
+        output.WriteRawTag(34);
+        output.WriteBytes(Signature);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (signatureInfo_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(SignatureInfo);
+      }
+      if (HasBatchNum) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(BatchNum);
+      }
+      if (HasBatchSize) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(BatchSize);
+      }
+      if (HasSignature) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Signature);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(TEKSignature other) {
+      if (other == null) {
+        return;
+      }
+      if (other.signatureInfo_ != null) {
+        if (signatureInfo_ == null) {
+          SignatureInfo = new global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo();
+        }
+        SignatureInfo.MergeFrom(other.SignatureInfo);
+      }
+      if (other.HasBatchNum) {
+        BatchNum = other.BatchNum;
+      }
+      if (other.HasBatchSize) {
+        BatchSize = other.BatchSize;
+      }
+      if (other.HasSignature) {
+        Signature = other.Signature;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            if (signatureInfo_ == null) {
+              SignatureInfo = new global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo();
+            }
+            input.ReadMessage(SignatureInfo);
+            break;
+          }
+          case 16: {
+            BatchNum = input.ReadInt32();
+            break;
+          }
+          case 24: {
+            BatchSize = input.ReadInt32();
+            break;
+          }
+          case 34: {
+            Signature = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  #endregion
+
 }
-
-#endregion
-
 
 #endregion Designer generated code

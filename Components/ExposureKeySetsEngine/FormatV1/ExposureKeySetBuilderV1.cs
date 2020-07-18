@@ -96,7 +96,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             {
                 SignatureAlgorithm = _GaenContentSigner.SignatureOid,
                 VerificationKeyId = _Config.VerificationKeyId,
-                VerificationKeyVersion = _Config.VerificationKeyVersion
+                VerificationKeyVersion = _Config.VerificationKeyVersion,
+                AppBundleId = _Config.AppBundleId
             };
 
         private static async Task<byte[]> CreateZipArchive(byte[] content, byte[] gaenSig, byte[] nlSig)
