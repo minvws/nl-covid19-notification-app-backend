@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.Controllers
 {
@@ -27,11 +28,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [Route("/v1/execute")]
+        [Route("/v1/eksengineexecute")]
         public async Task<IActionResult> ExposureKeySets([FromQuery] bool useAllKeys, [FromServices] HttpPostGenerateExposureKeySetsCommand command)
         {
             _Logger.LogInformation("EKS Engine triggered.");
             return await command.Execute(useAllKeys);
+        }
+
+        /// <summary>
+        /// Generate new ExposureKeySets.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("/v1/manifestengineexecute")]
+        public async Task<IActionResult> Manifest([FromServices] ManifestBatchJob command)
+        {
+            _Logger.LogInformation("Manifest Engine triggered.");
+            await command.Execute();
+            return new OkResult();
         }
     }
 }

@@ -36,7 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5CB694
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentApi", "ContentApi\ContentApi.csproj", "{E9B743F3-6643-4BD6-A136-2887F64A5BEB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{36D1DBCA-6BB4-46DC-80DF-2C38EC9153F4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Environments", "Environments", "{36D1DBCA-6BB4-46DC-80DF-2C38EC9153F4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EksEngine", "EksEngine\EksEngine.csproj", "{48F9CA7D-BE9A-423F-8F9C-4387271A96FD}"
 EndProject

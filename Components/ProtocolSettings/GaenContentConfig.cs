@@ -9,11 +9,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSetti
 {
     public class GaenContentConfig : AppSettingsReader, IGaenContentConfig
     {
-        public GaenContentConfig(IConfiguration config) : base(config) { }
-
-        public int ExposureKeySetCapacity => GetValueInt32("Gaen:ExposureKeySet:CapacityKeyCount", 21);
-        public double ManifestLifetimeHours { get; set; }
-        public int ExposureKeySetLifetimeDays => GetValueInt32("Gaen:ExposureKeySet:LifetimeDays", 21);
-        public int SecretLifetimeDays => GetValueInt32("Gaen:Workflow:LifetimeDays", 12);
+        public GaenContentConfig(IConfiguration config, string prefix = "Gaen:ExposureKeySet") : base(config, prefix) { }
+        public int ExposureKeySetCapacity => GetValueInt32("CapacityKeyCount", 21);
+        public int ExposureKeySetLifetimeDays => GetValueInt32("LifetimeDays", 21);
     }
 }

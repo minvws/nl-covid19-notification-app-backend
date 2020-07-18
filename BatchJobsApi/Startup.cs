@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -10,13 +11,18 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
@@ -30,13 +36,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
 
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public IConfiguration Configuration { get; }
+        private readonly IConfiguration _Configuration;
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogging();
+
             ComponentsContainerHelper.RegisterDefaultServices(services);
 
             services.AddControllers(options =>
@@ -46,7 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
 
             services.AddScoped(x =>
             {
-                var config = new StandardEfDbConfig(Configuration, "WorkFlow");
+                var config = new StandardEfDbConfig(_Configuration, "WorkFlow");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new WorkflowDbContext(builder.Build());
                 return result;
@@ -54,7 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
 
             services.AddScoped(x =>
             {
-                var config = new StandardEfDbConfig(Configuration, "Content");
+                var config = new StandardEfDbConfig(_Configuration, "Content");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new ContentDbContext(builder.Build());
                 return result;
@@ -87,6 +95,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
 
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
             services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();
+
+            services.AddLogging();
+            services.AddSingleton(_Configuration);
+            services.AddScoped<ManifestBatchJob>();
+            services.AddScoped<DynamicManifestReader>();
+
+            services.AddScoped<ManifestBuilder>();
+
+            services.AddScoped<IContentSigner>(x => new CmsSigner(new ResourceCertificateProvider3(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"))));
+
+            services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
+            services.AddScoped<GetActiveExposureKeySetsListCommand>();
+            services.AddScoped<GetLatestContentCommand<RiskCalculationContentEntity>>();
+            services.AddScoped<GetLatestContentCommand<AppConfigContentEntity>>();
 
             services.AddSwaggerGen(o =>
             {
