@@ -25,6 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
         /// Minimum Android Version
         /// </summary>
         public int AndroidMinimumKillVersion { get; set; }
+
         /// <summary>
         /// Minimum iOS Version
         /// </summary>

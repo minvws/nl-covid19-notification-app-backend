@@ -6,14 +6,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSetti
 {
     public interface IGaenContentConfig
     {
-        int SecretLifetimeDays { get; }
-        
         int ExposureKeySetLifetimeDays { get; }
-        
-        /// <summary>
-        /// TODO Key count - rename
-        /// </summary>
         int ExposureKeySetCapacity { get; }
-        double ManifestLifetimeHours { get; set; }
     }
 }

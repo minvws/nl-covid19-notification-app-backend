@@ -5,7 +5,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models
 {
     [Table("InfectionConfirmationCodes")]
     public class InfectionConfirmationCodeEntity
@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models
         /// <summary>
         /// User Guid from generator user
         /// </summary>
-        public String GeneratedBy { get; set; }
+        public string GeneratedBy { get; set; }
 
         /// <summary>
         /// Default NULL, if Datetime => Revoked = true
@@ -43,11 +43,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models
         /// <summary>
         /// User Guid from user that used the Code
         /// </summary>
-        public String? UsedBy { get; set; }
+        public string? UsedBy { get; set; }
         
         public bool IsValid()
         {
-            return (Used == null && (Revoked == null || Revoked > DateTime.Now));
+            return Used == null && (Revoked == null || Revoked > DateTime.Now);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright © 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
     [TestClass]
     public class ContentSignerTest
     {
-        static Random rd = new Random();
+        private static readonly Random _Random = new Random();
 
         [DataRow(500)]
         [DataRow(1000)]
@@ -23,20 +23,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
         [DataTestMethod]
         public void Build(int length)
         {
-            var signer = new CmsSigner(new ResourceCertificateProvider("FakeRSA.p12"));
+            var signer = new CmsSigner(new ResourceCertificateProvider3(new HardCodedCertificateLocationConfig("FakeRSA.p12", "Covid19!"))); //Not a secret.
             var content = Encoding.UTF8.GetBytes(CreateString(length));
-            var signature = signer.GetSignature(content);
             //TODO must have an Assert.IsTrue(signature.Length == signer.LengthBytes);
         }
 
         internal static string CreateString(int stringLength)
         {
             const string allowedChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789!@$?_-";
-            char[] chars = new char[stringLength];
+            var chars = new char[stringLength];
 
-            for (int i = 0; i < stringLength; i++)
+            for (var i = 0; i < stringLength; i++)
             {
-                chars[i] = allowedChars[rd.Next(0, allowedChars.Length)];
+                chars[i] = allowedChars[_Random.Next(0, allowedChars.Length)];
             }
 
             return new string(chars);

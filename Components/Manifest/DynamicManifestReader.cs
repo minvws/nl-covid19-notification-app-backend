@@ -4,12 +4,10 @@
 
 using System;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
-using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
@@ -31,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
         }
 
-        public async Task<ManifestEntity?> Execute()
+        public async Task<ManifestEntity> Execute()
         {
             var e = new ManifestEntity
             {

@@ -5,10 +5,9 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {

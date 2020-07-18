@@ -9,13 +9,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration
 {
     public abstract class AppSettingsReader
     {
-        private readonly IConfiguration _Config;
-        protected IConfiguration Config => _Config;
+        protected IConfiguration Config { get; }
+
         protected virtual string Prefix { get; }
 
         protected AppSettingsReader(IConfiguration config, string? prefix = null)
         {
-            _Config = config ?? throw new ArgumentNullException(nameof(config));
+            Config = config ?? throw new ArgumentNullException(nameof(config));
 
             if (string.IsNullOrWhiteSpace(prefix) || prefix != prefix.Trim())
                 Prefix = string.Empty;
@@ -23,35 +23,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration
                 Prefix = prefix + ":";
         }
 
-        protected int GetValueInt32(string path, int defaultValue = int.MinValue)
-        {
-            if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException(nameof(path));
+        protected int GetValueInt32(string path, int defaultValue = default(int))
+            => Config.GetValue($"{Prefix}{path}", defaultValue);
 
-            var found = _Config[$"{Prefix}{path}"];
-            return string.IsNullOrWhiteSpace(found) ? defaultValue : Convert.ToInt32(found);
-        }
-        protected double GetValueDouble(string path, double defaultValue = 0)
-        {
-            if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException(nameof(path));
+        protected double GetValueDouble(string path, double defaultValue = default(double))
+            => Config.GetValue($"{Prefix}{path}", defaultValue);
 
-            var found = _Config[$"{Prefix}{path}"];
-            return string.IsNullOrWhiteSpace(found) ? defaultValue : Convert.ToDouble(found);
-        }
-
-        protected string GetValue(string path, string defaultValue = "Unspecified default")
-        {
-            if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException(nameof(path));
-
-            var found = _Config[$"{Prefix}{path}"];
-            return string.IsNullOrWhiteSpace(found) ? defaultValue : found;
-        }
+        protected string GetValue(string path, string defaultValue = "Unspecified default!")
+            => Config.GetValue($"{Prefix}{path}", defaultValue);
 
         protected bool GetValueBool(string path, bool defaultValue = false)
-        {
-            if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException(nameof(path));
-
-            var found = _Config[$"{Prefix}{path}"];
-            return string.IsNullOrWhiteSpace(found) ? defaultValue : Convert.ToBoolean(found);
-        }
+            => Config.GetValue($"{Prefix}{path}", defaultValue);
     }
 }

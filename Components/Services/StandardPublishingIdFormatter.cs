@@ -6,16 +6,11 @@ using System;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
-using System.Web;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {
     public class StandardPublishingIdFormatter : IPublishingId
     {
-        public StandardPublishingIdFormatter()
-        {
-        }
-
         public string Create(byte[] contents)
         {
             if (contents == null) throw new ArgumentNullException(nameof(contents));

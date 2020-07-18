@@ -5,7 +5,6 @@
 using System;
 using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 
@@ -38,13 +37,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             return content;
         }
 
-        public static ResourceBundleContent ToContent(this ResourceBundleArgs args)
-            => new ResourceBundleContent
-            {
-                Text = args.Text,
-                IsolationPeriodDays = args.IsolationPeriodDays,
-            };
-
         public static AppConfigContent ToContent(this AppConfigArgs args)
             => new AppConfigContent
             {
@@ -52,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
                 ManifestFrequency = args.ManifestFrequency,
                 Version = args.Version,
                 AndroidMinimumKillVersion = args.AndroidMinimumKillVersion,
-                iOSMinimumKillVersion = args.iOSMinimumKillVersion
+                iOSMinimumKillVersion = args.IosMinimumKillVersion
             };
 
         ///// <summary>

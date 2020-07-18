@@ -5,13 +5,12 @@
 using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
 {
     [Obsolete("Use this class only for testing purposes")]
     public class FakeExposureKeySetHeaderInfoConfig : IExposureKeySetHeaderInfoConfig
     {
         public string AppBundleId => "nl.rijksoverheid.en";
-        public string AndroidPackage => "nl.rijksoverheid.samensterkpoc";
         public string VerificationKeyId => "ServerNL";
         public string VerificationKeyVersion => "v1";
     }

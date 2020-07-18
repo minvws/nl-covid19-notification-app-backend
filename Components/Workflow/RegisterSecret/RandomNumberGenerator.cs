@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
         public int Next(int min, int max)
         {
             if (min >= max)
-                throw new ArgumentOutOfRangeException("minValue must be lower than maxExclusiveValue");
+                throw new ArgumentOutOfRangeException(nameof(min), "min must be lower than max");
 
             // match Next of Random
             // where max is exclusive
@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             var val = BitConverter.ToInt32(bytes);
             // constrain our values to between our min and max
             // https://stackoverflow.com/a/3057867/86411
-            var result = ((val - min) % (max - min + 1) + (max - min + 1)) % (max - min + 1) + min;
+            var result = ((val - min) % (max - min + 1) + max - min + 1) % (max - min + 1) + min;
             return result;
         }
 

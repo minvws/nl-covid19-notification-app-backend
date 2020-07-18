@@ -2,7 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using System.Threading.Tasks;
 using JWT.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -16,21 +15,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     {
         private readonly LabVerifyChecker _LabVerifyChecker;
         private readonly WorkflowDbContext _DbContextProvider;
-        private readonly PollTokenGenerator _PollTokenGenerator;
 
-        public HttpPostLabVerify(LabVerifyChecker labVerifyChecker, WorkflowDbContext dbContextProvider,
-            PollTokenGenerator pollTokenGenerator)
+        public HttpPostLabVerify(LabVerifyChecker labVerifyChecker, WorkflowDbContext dbContextProvider)
         {
             _LabVerifyChecker = labVerifyChecker;
             _DbContextProvider = dbContextProvider;
-            _PollTokenGenerator = pollTokenGenerator;
         }
 
         public async Task<IActionResult> Execute(LabVerifyArgs args)
         {
             try
             {
-                LabVerifyResponse response = await _LabVerifyChecker.Execute(args);
+                var response = await _LabVerifyChecker.Execute(args);
                 
                 _DbContextProvider.SaveAndCommit();
                 

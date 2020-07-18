@@ -1,4 +1,4 @@
-﻿// Copyright  De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -8,11 +8,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps
 {
     public sealed class ConsoleAppRunner
     {
-        public void Execute(string[] args, Action<IServiceCollection, IConfigurationRoot> configure, Action<IServiceProvider> start)
+        public void Execute(string[] args, Action<IServiceCollection, IConfigurationRoot> configure, Action<IServiceProvider, string[]> start)
         {
             var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
@@ -28,8 +28,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
             configure(serviceCollection, configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var logger = serviceProvider.GetService<ILogger<ConsoleAppRunner>>();
-            AppDomain.CurrentDomain.UnhandledException += (o,e) => logger.LogCritical(e.ExceptionObject.ToString()); ;
-            start(serviceProvider);
+            AppDomain.CurrentDomain.UnhandledException += (o,e) => logger.LogCritical(e.ExceptionObject.ToString());
+            start(serviceProvider, args);
         }
     }
 }

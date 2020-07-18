@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Diagnostics;
 using System.Text.Json;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping

@@ -5,7 +5,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models
 {
     public class ConfirmLabConfirmationIdModel
     {

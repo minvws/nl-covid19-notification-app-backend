@@ -6,16 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
-using Microsoft.Extensions.Logging;
 using TemporaryExposureKeyArgs = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.TemporaryExposureKeyArgs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
@@ -33,8 +31,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         public void Build(int keyCount, int seed)
         {
             var builder = new ExposureKeySetBuilderV1(new FakeExposureKeySetHeaderInfoConfig(), 
-                new EcdSaSigner(new ResourceCertificateProvider2("TestCert2.p12")), 
-                new CmsSigner(new ResourceCertificateProvider("FakeRSA.p12")), 
+                new EcdSaSigner(new ResourceCertificateProvider3(new HardCodedCertificateLocationConfig("TestCert2.p12", ""))), 
+                new CmsSigner(new ResourceCertificateProvider3(new HardCodedCertificateLocationConfig("FakeRSA.p12", "Covid-19!"))), 
                 new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter(), new LoggerFactory().CreateLogger<ExposureKeySetBuilderV1>());
 
             var actual = builder.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
@@ -47,19 +45,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             }
         }
 
-        private TemporaryExposureKeyArgs[] GetRandomKeys(int WorkflowCount, int seed)
+        private TemporaryExposureKeyArgs[] GetRandomKeys(int workflowCount, int seed)
         {
             var random = new Random(seed);
-            var WorkflowKeyValidatorConfig = new DefaultGaenTekValidatorConfig();
-            var WorkflowValidatorConfig = new DefaultGeanTekListValidationConfig();
+            var workflowKeyValidatorConfig = new DefaultGaenTekValidatorConfig();
+            var workflowValidatorConfig = new DefaultGeanTekListValidationConfig();
 
-            var result = new List<TemporaryExposureKeyArgs>(WorkflowCount * WorkflowValidatorConfig.TemporaryExposureKeyCountMax);
-            var keyBuffer = new byte[WorkflowKeyValidatorConfig.DailyKeyByteCount];
+            var result = new List<TemporaryExposureKeyArgs>(workflowCount * workflowValidatorConfig.TemporaryExposureKeyCountMax);
+            var keyBuffer = new byte[workflowKeyValidatorConfig.DailyKeyByteCount];
 
-            for (var i = 0; i < WorkflowCount; i++)
+            for (var i = 0; i < workflowCount; i++)
             {
 
-                var keyCount = 1 + random.Next(WorkflowValidatorConfig.TemporaryExposureKeyCountMax - 1);
+                var keyCount = 1 + random.Next(workflowValidatorConfig.TemporaryExposureKeyCountMax - 1);
                 var keys = new List<TemporaryExposureKeyArgs>(keyCount);
                 for (var j = 0; j < keyCount; j++)
                 {
@@ -67,7 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                     keys.Add(new TemporaryExposureKeyArgs
                     {
                         KeyData = keyBuffer,
-                        RollingStartNumber = WorkflowKeyValidatorConfig.RollingPeriodMin + j,
+                        RollingStartNumber = workflowKeyValidatorConfig.RollingPeriodMin + j,
                         RollingPeriod = 11,
                         TransmissionRiskLevel = 2
                     });

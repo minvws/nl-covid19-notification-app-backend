@@ -4,31 +4,24 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EFCore.BulkExtensions;
-using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation.Exceptions;
-using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
     public class PollTokenGenerator
     {
-        private readonly WorkflowDbContext _DbContextProvider;
         private readonly JwtService _JwtService;
 
-        public PollTokenGenerator(WorkflowDbContext dbContextProvider, JwtService jwtService)
+        public PollTokenGenerator(JwtService jwtService)
         {
-            _DbContextProvider = dbContextProvider;
             _JwtService = jwtService;
         }
 
         public string GenerateToken()
         {
             return _JwtService.GenerateCustomJwt(DateTimeOffset.UtcNow.AddSeconds(30).ToUnixTimeSeconds(),
-                new Dictionary<string, object>()
+                new Dictionary<string, object>
                 {
                     ["payload"] = Guid.NewGuid().ToString() // make polltoken unique
                 });

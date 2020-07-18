@@ -6,12 +6,11 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
@@ -21,14 +20,12 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
     public class RedeemIccController : ControllerBase
     {
         private readonly ILogger _Logger;
-        private readonly IIccService _IccService;
         private readonly AppBackendService _AppBackendService;
         private readonly IccBackendContentDbContext _DbContext;
 
-        public RedeemIccController(ILogger<RedeemIccController> logger, IIccService iccService, AppBackendService appBackendService, IccBackendContentDbContext dbContext)
+        public RedeemIccController(ILogger<RedeemIccController> logger, AppBackendService appBackendService, IccBackendContentDbContext dbContext)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _IccService = iccService ?? throw new ArgumentNullException(nameof(iccService));
             _AppBackendService = appBackendService ?? throw new ArgumentNullException(nameof(appBackendService));
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
@@ -38,7 +35,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         {
             _Logger.LogInformation("POST RedeemIcc triggered.");
             // Make Icc Used, so it can only be used once 
-            var infectionConfirmationCodeEntity = await _IccService.RedeemIcc(User.Identity.Name); //TODO never used?
             _DbContext.SaveAndCommit();
 
             // POST /labresult call on App Backend

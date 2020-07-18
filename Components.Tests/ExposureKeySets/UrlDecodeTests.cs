@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         [DataTestMethod]
         public void MatchUriToDb(string uri, string db)
         {
-            var decoded = HttpUtility.UrlDecode(uri).Replace(" ", "+");
+            var decoded = HttpUtility.UrlDecode(uri)?.Replace(" ", "+");
             Assert.AreEqual(db, decoded);
         }
     }

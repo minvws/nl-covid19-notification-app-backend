@@ -18,13 +18,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     /// </summary>
     public class ExposureKeySetDbWriter : IExposureKeySetWriter
     {
-        public ExposureKeySetDbWriter(ExposureContentDbContext dbContext, IPublishingId publishingId)
+        public ExposureKeySetDbWriter(ContentDbContext dbContext, IPublishingId publishingId)
         {
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _PublishingId = publishingId ?? throw new ArgumentNullException(nameof(publishingId));
         }
 
-        private readonly ExposureContentDbContext _DbContext;
+        private readonly ContentDbContext _DbContext;
         private readonly IPublishingId _PublishingId;
 
         public void Write(ExposureKeySetEntity[] things)

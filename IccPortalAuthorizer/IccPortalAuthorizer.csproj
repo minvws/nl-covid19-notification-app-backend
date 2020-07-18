@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortalAuthorizer</AssemblyName>
+        <RootNamespace>NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer</RootNamespace>
+        <UserSecretsId>8c0e7ee9-ab0d-4115-88d5-b73313a302d0</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="JWT" Version="7.2.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.5" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.5" />
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.5">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.5">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" />
+        <PackageReference Include="TheIdentityHub.AspNetCore.Authentication" Version="3.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ValidationScriptsPartial.cshtml" />
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewStart.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Shared\Error.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Shared\_Layout.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Shared\_LoginPartial.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Shared\_ValidationScriptsPartial.cshtml" />
+        <_ContentIncludedByDefault Remove="ClientApp\angular.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\e2e\tsconfig.e2e.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\package-lock.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\package.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\src\tsconfig.app.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\src\tsconfig.server.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\src\tsconfig.spec.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\src\tslint.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\tsconfig.json" />
+        <_ContentIncludedByDefault Remove="ClientApp\tslint.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ICCBackend\IccBackend.csproj" />
+    </ItemGroup>
+
+
+</Project>
+

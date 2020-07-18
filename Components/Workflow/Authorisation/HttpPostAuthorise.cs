@@ -2,7 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -15,27 +14,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     {
         private readonly IAuthorisationWriter _AuthorisationWriter;
         private readonly WorkflowDbContext _DbContextProvider;
-        private readonly PollTokenGenerator _PollTokenGenerator;
 
-        public HttpPostAuthorise(IAuthorisationWriter authorisationWriter, WorkflowDbContext dbContextProvider,
-            PollTokenGenerator pollTokenGenerator)
+        public HttpPostAuthorise(IAuthorisationWriter authorisationWriter, WorkflowDbContext dbContextProvider)
         {
             _AuthorisationWriter = authorisationWriter;
             _DbContextProvider = dbContextProvider;
-            _PollTokenGenerator = pollTokenGenerator;
         }
 
         public async Task<IActionResult> Execute(AuthorisationArgs args)
         {
             try
             {
-                string pollToken = await _AuthorisationWriter.Execute(args);
+                var pollToken = await _AuthorisationWriter.Execute(args);
 
                 _DbContextProvider.SaveAndCommit();
 
                 return new OkObjectResult(new AuthorisationResponse {Valid = true, PollToken = pollToken});
             }
-            catch (KeyReleaseWorkflowStateNotFoundException e)
+            catch (KeyReleaseWorkflowStateNotFoundException)
             {
                 return new OkObjectResult(new AuthorisationResponse {Valid = false});
             }

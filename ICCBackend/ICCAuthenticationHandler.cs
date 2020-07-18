@@ -11,16 +11,14 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
     public class IccAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         private readonly IIccService _IccService;
-        private readonly IccBackendContentDbContext _DbContext;
         private readonly ILogger _Logger;
 
         public IccAuthenticationHandler(
@@ -28,11 +26,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             ILoggerFactory logger,
             UrlEncoder encoder,
             IIccService iccService,
-            IccBackendContentDbContext dbContext,
             ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
-            _DbContext = dbContext;
             _IccService = iccService;
             _Logger = logger.CreateLogger<IccAuthenticationHandler>(); //TODO ??
         }

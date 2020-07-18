@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {

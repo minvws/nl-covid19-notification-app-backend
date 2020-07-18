@@ -5,17 +5,16 @@
 using System;
 using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     public class GetLatestContentCommand<T> where T:ContentEntity
     {
-        private readonly ExposureContentDbContext _DbConfig;
+        private readonly ContentDbContext _DbConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public GetLatestContentCommand(ExposureContentDbContext dbConfig, IUtcDateTimeProvider dateTimeProvider)
+        public GetLatestContentCommand(ContentDbContext dbConfig, IUtcDateTimeProvider dateTimeProvider)
         {
             _DbConfig = dbConfig ?? throw new ArgumentNullException(nameof(dbConfig));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
