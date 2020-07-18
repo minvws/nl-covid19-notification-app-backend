@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <AssemblyName>NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer</AssemblyName>
+        <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortalAuthorizer</AssemblyName>
         <RootNamespace>NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer</RootNamespace>
         <UserSecretsId>8c0e7ee9-ab0d-4115-88d5-b73313a302d0</UserSecretsId>
     </PropertyGroup>

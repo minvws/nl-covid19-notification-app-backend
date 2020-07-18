@@ -33,8 +33,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         public void Build(int keyCount, int seed)
         {
             var builder = new ExposureKeySetBuilderV1(new FakeExposureKeySetHeaderInfoConfig(), 
-                new EcdSaSigner(new ResourceCertificateProvider2("TestCert2.p12")), 
-                new CmsSigner(new ResourceCertificateProvider("FakeRSA.p12")), 
+                new EcdSaSigner(new ResourceCertificateProvider3(new HardCodedCertificateLocationConfig("TestCert2.p12", ""))), 
+                new CmsSigner(new ResourceCertificateProvider3(new HardCodedCertificateLocationConfig("FakeRSA.p12", "Covid-19!"))), 
                 new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter(), new LoggerFactory().CreateLogger<ExposureKeySetBuilderV1>());
 
             var actual = builder.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();

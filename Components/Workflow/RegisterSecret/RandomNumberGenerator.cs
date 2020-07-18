@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             var val = BitConverter.ToInt32(bytes);
             // constrain our values to between our min and max
             // https://stackoverflow.com/a/3057867/86411
-            var result = ((val - min) % (max - min + 1) + (max - min + 1)) % (max - min + 1) + min;
+            var result = ((val - min) % (max - min + 1) + max - min + 1) % (max - min + 1) + min;
             return result;
         }
 

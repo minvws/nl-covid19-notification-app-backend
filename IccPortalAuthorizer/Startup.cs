@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
 using TheIdentityHub.AspNetCore.Authentication;
@@ -48,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer
                 {
                     if (Configuration.GetSection("IccPortalConfig:IdentityHub:base_url")
                             .Exists() &&
-                        !String.IsNullOrEmpty(Configuration.GetSection("IccPortalConfig:IdentityHub:base_url").Value))
+                        !string.IsNullOrWhiteSpace(Configuration.GetSection("IccPortalConfig:IdentityHub:base_url").Value))
                     {
                         options.TheIdentityHubUrl =
                             new Uri(Configuration.GetSection("IccPortalConfig:IdentityHub:base_url").Value);

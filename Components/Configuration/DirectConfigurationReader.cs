@@ -5,7 +5,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 
-namespace CdnDataReceiver2
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration
 {
     public static class DirectConfigurationReader
     {

@@ -4,9 +4,8 @@
 
 using System;
 using System.Collections.Generic;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models
 {
     public class IccBatch
     {

@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 
-namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.AuthHandlers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
     public class JwtAuthorizationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {

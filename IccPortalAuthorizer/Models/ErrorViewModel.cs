@@ -2,7 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-namespace IccPortal.Models
+namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Models
 {
     public class ErrorViewModel
     {

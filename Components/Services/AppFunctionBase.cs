@@ -2,7 +2,7 @@ using System;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 
-namespace CdnRegionSync
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {
     public abstract class AppFunctionBase
     {

@@ -3,17 +3,14 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using JWT;
 using JWT.Algorithms;
 using JWT.Builder;
-using JWT.Serializers;
 using Microsoft.Extensions.Configuration;
 
-namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
 {
     public class JwtService
     {

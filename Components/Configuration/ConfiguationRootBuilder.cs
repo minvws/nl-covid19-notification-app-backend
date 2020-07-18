@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DatabaseProvisioningTool
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration
 {
     public static class ConfiguationRootBuilder
     {

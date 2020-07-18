@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.WorkflowApi
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 {
     public class Program
     {

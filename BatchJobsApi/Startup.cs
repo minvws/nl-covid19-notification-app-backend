@@ -22,7 +22,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
 {
     public class Startup
     {

@@ -4,12 +4,11 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]

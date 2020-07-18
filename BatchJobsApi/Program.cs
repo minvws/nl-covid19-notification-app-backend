@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
 {
     public class Program
     {

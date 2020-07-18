@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Diagnostics;
-using IccPortal.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Models;
 using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Controllers
