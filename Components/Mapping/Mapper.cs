@@ -38,13 +38,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             return content;
         }
 
-        public static ResourceBundleContent ToContent(this ResourceBundleArgs args)
-            => new ResourceBundleContent
-            {
-                Text = args.Text,
-                IsolationPeriodDays = args.IsolationPeriodDays,
-            };
-
         public static AppConfigContent ToContent(this AppConfigArgs args)
             => new AppConfigContent
             {

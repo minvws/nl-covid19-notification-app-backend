@@ -25,7 +25,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public DbSet<ManifestEntity> ManifestContent { get; set; }
         public DbSet<ExposureKeySetContentEntity> ExposureKeySetContent { get; set; }
         public DbSet<RiskCalculationContentEntity> RiskCalculationContent { get; set; }
-        public DbSet<ResourceBundleContentEntity> ResourceBundleContent { get; set; }
         public DbSet<AppConfigContentEntity> AppConfigContent { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,7 +36,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             modelBuilder.ApplyConfiguration(new Configuration.Content.ExposureKeySetContent());
             modelBuilder.ApplyConfiguration(new Configuration.Content.Manifest());
             modelBuilder.ApplyConfiguration(new Configuration.Content.RiskCalculationContent());
-            modelBuilder.ApplyConfiguration(new Configuration.Content.ResourceBundleContent());
             modelBuilder.ApplyConfiguration(new Configuration.Content.AppConfigContent());
         }
     }

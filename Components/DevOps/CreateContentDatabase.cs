@@ -58,9 +58,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             foreach (var e in _DbContextProvider.AppConfigContent)
                 _DbContextProvider.AppConfigContent.Remove(e);
 
-            foreach (var e in _DbContextProvider.ResourceBundleContent)
-                _DbContextProvider.ResourceBundleContent.Remove(e);
-
             foreach (var e in _DbContextProvider.RiskCalculationContent)
                 _DbContextProvider.RiskCalculationContent.Remove(e);
             _DbContextProvider.SaveAndCommit();
@@ -69,32 +66,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         public async Task AddExampleContent()
         {
             await using var tx = await _DbContextProvider.Database.BeginTransactionAsync();
-
-            await Write(
-                new ResourceBundleArgs
-                {
-                    Release = _DateTimeProvider.Now(),
-                    Text = new Dictionary<string, Dictionary<string, string>>
-                    {
-                        {
-                            "en-GB", new Dictionary<string, string>()
-                            {
-                                {"InfectedMessage", "You're possibly infected"}
-                            }
-                        },
-                        {
-                            "nl-NL", new Dictionary<string, string>
-                            {
-                                {"InfectedMessage", "U bent mogelijk geïnfecteerd"}
-                            }
-                        }
-                    }
-                }
-            );
-
-            var rbd = ReadFromResource<ResourceBundleArgs>("ResourceBundleDefaults.json");
-            rbd.Release = _DateTimeProvider.Now();
-            await Write(rbd);
 
             var rcd = ReadFromResource<RiskCalculationConfigArgs>("RiskCalcDefaults.json");
             rcd.Release = _DateTimeProvider.Now();
@@ -126,15 +97,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             await _Formatter.Fill(e4, a4.ToContent());
             await _DbContextProvider.AddAsync(e4);
         }
-        private async Task Write(ResourceBundleArgs a4)
-        {
-            var e4 = new ResourceBundleContentEntity
-            {
-                Release = a4.Release
-            };
-            await _Formatter.Fill(e4, a4.ToContent());
-            await _DbContextProvider.AddAsync(e4);
-        }
+
         private async Task Write(AppConfigArgs a4)
         {
             var e4 = new AppConfigContentEntity

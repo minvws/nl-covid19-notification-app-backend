@@ -12,10 +12,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {
     public class StandardPublishingIdFormatter : IPublishingId
     {
-        public StandardPublishingIdFormatter()
-        {
-        }
-
         public string Create(byte[] contents)
         {
             if (contents == null) throw new ArgumentNullException(nameof(contents));

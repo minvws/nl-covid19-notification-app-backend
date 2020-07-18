@@ -8,7 +8,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Services
 {
-    [TestClass()]
+    [TestClass]
     public class CorrectingGaenSigFormat
     {
 //

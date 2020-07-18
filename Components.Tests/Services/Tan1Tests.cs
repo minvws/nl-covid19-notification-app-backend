@@ -8,10 +8,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Services
 {
-    [TestClass()]
+    [TestClass]
     public class Tan1Tests
     {
-        [TestMethod()]
+        [TestMethod]
         public void Examples()
         {
             var r = new Random();

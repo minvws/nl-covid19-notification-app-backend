@@ -12,18 +12,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Services;
-using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
@@ -40,9 +36,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         public void ConfigureServices(IServiceCollection services)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
-
-            services.AddSeriLog(Configuration);
-            //services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(_Logger.Logger)));
 
             ComponentsContainerHelper.RegisterDefaultServices(services);
 
@@ -61,7 +54,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<ProvisionDatabasesCommandIcc, ProvisionDatabasesCommandIcc>();
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
-            services.AddScoped<IBasicAuthenticationConfig, BasicAuthenticationConfig>();
             services.AddScoped<IIccService, IccService>();
             services.AddScoped<AppBackendService, AppBackendService>();
             services.AddAuthentication("IccAuthentication")

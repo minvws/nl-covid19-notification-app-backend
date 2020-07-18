@@ -38,7 +38,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         {
             _Logger.LogInformation("POST RedeemIcc triggered.");
             // Make Icc Used, so it can only be used once 
-            var infectionConfirmationCodeEntity = await _IccService.RedeemIcc(User.Identity.Name); //TODO never used?
             _DbContext.SaveAndCommit();
 
             // POST /labresult call on App Backend

@@ -2,8 +2,10 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
-{
+//TODO dead code walking
+
+//namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
+//{
     ///// <summary>
     ///// NB Careful of size limits as this holds the same data in 2 different formats
     ///// </summary>
@@ -15,4 +17,4 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     //    public string DebugContentJson { get; set; }
     //    public byte[] AgContent { get; set; }
     //}
-}
+//}

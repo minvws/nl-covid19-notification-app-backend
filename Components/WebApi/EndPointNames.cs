@@ -9,7 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
         public static class MobileAppApi
         {
                 private const string Prefix = "/v1";
-                public const string RegisterSecret = Prefix + "/register";
+                public const string Register = Prefix + "/register";
                 public const string ReleaseTeks = Prefix + "/postkeys";
                 public const string RandomNoise = Prefix + "/stopkeys";
         }
@@ -27,38 +27,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
         public static class DevOps
         {
             private const string DevOpsPrefix = "/devops";
-
             public const string NukeAndPave = DevOpsPrefix + "/nukeandpavedb"; 
             public const string NukeAndPaveIcc = DevOpsPrefix + "/nukeandpavedb/icc"; 
-
             public const string ExposureKeySetsCreate = DevOpsPrefix + "/exposurekeysets/runbatchjob";
-
-
             public const string TekSetsGenerateRandom = DevOpsPrefix + "/teks/random";
             public const string TekSetsAuthorise = DevOpsPrefix + "/teks/authorise";
         }
 
-        public static class ContentAdminPortalDataApi
-        {
-            private const string Prefix = "/ContentAdmin/v1";
-
-            public const string AppConfig = Prefix + "/appconfig";
-            public const string ResourceBundle = Prefix + "/resourcebundle";
-            public const string ExposureKeySet = Prefix + "/exposurekeyset";
-            public const string RiskCalculationParameters = Prefix + "/riskcalculationparameters";
-        }
-
         public const string ManifestName = "manifest";
+        public const string AppConfigName = "appconfig";
+        public const string ExposureKeySetName = "exposurekeyset"; //TODO rollups elsewhere?
+        public const string RiskCalculationParametersName = "riskcalculationparameters";
 
         //Also used for the data api where necessary
-        public static class CdnApi
+        public static class ContentApi
         {
-            private const string Prefix = "/v01";
-            public const string Manifest = Prefix + "/manifest";
-            public const string AppConfig = Prefix + "/appconfig";
-            public const string ResourceBundle = Prefix + "/resourcebundle";
-            public const string ExposureKeySet = Prefix + "/exposurekeyset";
-            public const string RiskCalculationParameters = Prefix + "/riskcalculationparameters";
+            private const string Prefix = "/v1";
+            public const string Manifest = Prefix + "/" + ManifestName;
+            public const string AppConfig = Prefix + "/" + AppConfigName;
+            public const string ExposureKeySet = Prefix + "/" + ExposureKeySetName;
+            public const string RiskCalculationParameters = Prefix + "/" + RiskCalculationParametersName;
         }
     }
 }

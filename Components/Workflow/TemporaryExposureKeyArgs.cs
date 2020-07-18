@@ -23,7 +23,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         /// Currently fixed at 144? e.g. 10mins
         /// </summary>
         public int RollingPeriod { get; set; }
-
-        public string[] RegionsOfInterest { get; set; }
     }
 }

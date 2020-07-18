@@ -8,10 +8,10 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Services
 {
-    [TestClass()]
+    [TestClass]
     public class StandardUtcDateTimeProviderTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void NowTest()
         {
             Assert.IsTrue(new StandardUtcDateTimeProvider().Now().Kind == DateTimeKind.Utc);

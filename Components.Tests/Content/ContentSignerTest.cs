@@ -25,7 +25,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
         {
             var signer = new CmsSigner(new ResourceCertificateProvider("FakeRSA.p12"));
             var content = Encoding.UTF8.GetBytes(CreateString(length));
-            var signature = signer.GetSignature(content);
             //TODO must have an Assert.IsTrue(signature.Length == signer.LengthBytes);
         }
 

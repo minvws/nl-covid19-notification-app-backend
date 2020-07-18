@@ -12,11 +12,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 {
     public class SignatureValidator : ISignatureValidator
     {
-
-        public SignatureValidator()
-        {
-        }
-
         public bool Valid(byte[] signature, KeyReleaseWorkflowState workflow, byte[] data)
         {
             if (signature == null) throw new ArgumentNullException(nameof(signature));

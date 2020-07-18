@@ -6,15 +6,16 @@ using System;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
+    //TODO Replace with validator that returns bool (+ messages if needed for UI)
     public class KeysUploadedNotValidException : Exception
     {
         public KeyReleaseWorkflowState KeyReleaseWorkflowState { get; } //TODO can be null????
 
-        public KeysUploadedNotValidException() : base()
+        public KeysUploadedNotValidException()
         {
         }
 
-        public KeysUploadedNotValidException(KeyReleaseWorkflowState state) : base()
+        public KeysUploadedNotValidException(KeyReleaseWorkflowState state)
         {
             KeyReleaseWorkflowState = state ?? throw new ArgumentNullException(nameof(state));
         }
