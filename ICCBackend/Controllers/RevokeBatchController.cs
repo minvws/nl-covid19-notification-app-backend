@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         [HttpPost, Authorize]
         public async Task<IActionResult> PostRevokeBatch([FromBody] RevokeBatchInput revokeBatchInput)
         {
-            bool result = await _IccService.RevokeBatch(revokeBatchInput);
+            var result = await _IccService.RevokeBatch(revokeBatchInput);
 
             _DbContext.SaveAndCommit();
 

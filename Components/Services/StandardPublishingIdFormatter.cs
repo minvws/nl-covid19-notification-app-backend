@@ -6,7 +6,6 @@ using System;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
-using System.Web;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {

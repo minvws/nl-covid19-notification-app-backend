@@ -3,17 +3,17 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Exceptions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
-using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
 {
@@ -100,8 +100,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
             //TODO if(string.IsNullOrWhiteSpace(userId) ???
             //TODO if(count <= 0) ???
 
-            string batchId = _RandomGenerator.GenerateToken();
-            IccBatch batch = new IccBatch(batchId);
+            var batchId = _RandomGenerator.GenerateToken();
+            var batch = new IccBatch(batchId);
 
             for (var i = 0; i < count; i++)
             {
@@ -134,14 +134,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
         {
             //TODO if (revokeBatchInput == null) throw new ArgumentNullException(nameof(revokeBatchInput)); ???
 
-            List<InfectionConfirmationCodeEntity> iccList =
+            var iccList =
                 await _DbContext.InfectionConfirmationCodes.Where(i => i.BatchId == revokeBatchInput.BatchId)
                     .ToListAsync();
 
             //TODO LINQ
             if (iccList.Count > 0)
             {
-                foreach (InfectionConfirmationCodeEntity infectionConfirmationCodeEntity in iccList)
+                foreach (var infectionConfirmationCodeEntity in iccList)
                 {
                     infectionConfirmationCodeEntity.Revoked =
                         revokeBatchInput.RevokeDateTime ?? _DateTimeProvider.Now(); //TODO time moves... snapshot a value before all the comparisons

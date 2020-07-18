@@ -4,7 +4,6 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using EFCore.BulkExtensions;
 using JWT.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -38,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             if (wf == null)
                 throw new KeyReleaseWorkflowStateNotFoundException();
 
-            string refreshedToken = _PollTokenGenerator.GenerateToken();
+            var refreshedToken = _PollTokenGenerator.GenerateToken();
             wf.PollToken = refreshedToken;
 
             return new LabVerifyResponse()

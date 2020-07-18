@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
             _Builder.AddClaim("exp", exp.ToString());
             if (claims != null)
             {
-                foreach (KeyValuePair<string, object> keyValuePair in claims)
+                foreach (var keyValuePair in claims)
                 {
                     _Builder.AddClaim(keyValuePair.Key, keyValuePair.Value);
                 }

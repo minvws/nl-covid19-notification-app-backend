@@ -2,7 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using System.Threading.Tasks;
 using JWT.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         {
             try
             {
-                LabVerifyResponse response = await _LabVerifyChecker.Execute(args);
+                var response = await _LabVerifyChecker.Execute(args);
                 
                 _DbContextProvider.SaveAndCommit();
                 

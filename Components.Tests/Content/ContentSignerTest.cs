@@ -1,4 +1,4 @@
-﻿// Copyright © 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -31,9 +31,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
         internal static string CreateString(int stringLength)
         {
             const string allowedChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789!@$?_-";
-            char[] chars = new char[stringLength];
+            var chars = new char[stringLength];
 
-            for (int i = 0; i < stringLength; i++)
+            for (var i = 0; i < stringLength; i++)
             {
                 chars[i] = allowedChars[rd.Next(0, allowedChars.Length)];
             }

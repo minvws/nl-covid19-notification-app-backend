@@ -2,7 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -29,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         {
             try
             {
-                string pollToken = await _AuthorisationWriter.Execute(args);
+                var pollToken = await _AuthorisationWriter.Execute(args);
 
                 _DbContextProvider.SaveAndCommit();
 

@@ -4,7 +4,6 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models
 {
