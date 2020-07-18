@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
     public class CreateContentDatabase
     {
-        private readonly ExposureContentDbContext _DbContextProvider;
+        private readonly ContentDbContext _DbContextProvider;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly StandardContentEntityFormatter _Formatter;
         private readonly IJsonSerializer _JsonSerializer;
@@ -31,11 +31,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
             var config = new StandardEfDbConfig(configuration, "Content");
             var builder = new SqlServerDbContextOptionsBuilder(config);
-            _DbContextProvider = new ExposureContentDbContext(builder.Build());
+            _DbContextProvider = new ContentDbContext(builder.Build());
             _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter(), jsonSerializer);
         }
 
-        public CreateContentDatabase(ExposureContentDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IContentSigner signer, IJsonSerializer jsonSerializer)
+        public CreateContentDatabase(ContentDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IContentSigner signer, IJsonSerializer jsonSerializer)
         {
             _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));

@@ -13,10 +13,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
     public class GetActiveExposureKeySetsListCommand
     {
-        private readonly ExposureContentDbContext _DbConfig;
+        private readonly ContentDbContext _DbConfig;
         private readonly IGaenContentConfig _GaenContentConfig;
 
-        public GetActiveExposureKeySetsListCommand(ExposureContentDbContext dbConfig, IGaenContentConfig gaenContentConfig)
+        public GetActiveExposureKeySetsListCommand(ContentDbContext dbConfig, IGaenContentConfig gaenContentConfig)
         {
             _DbConfig = dbConfig ?? throw new ArgumentNullException(nameof(dbConfig));
             _GaenContentConfig = gaenContentConfig ?? throw new ArgumentNullException(nameof(gaenContentConfig));

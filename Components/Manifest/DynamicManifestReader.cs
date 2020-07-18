@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
         }
 
-        public async Task<ManifestEntity?> Execute()
+        public async Task<ManifestEntity> Execute()
         {
             var e = new ManifestEntity
             {

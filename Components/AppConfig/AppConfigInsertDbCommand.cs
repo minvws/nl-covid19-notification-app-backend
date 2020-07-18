@@ -11,10 +11,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
 {
     public class AppConfigInsertDbCommand
     {
-        private readonly ExposureContentDbContext _DbContext;
+        private readonly ContentDbContext _DbContext;
         private readonly IContentEntityFormatter _Formatter;
 
-        public AppConfigInsertDbCommand(ExposureContentDbContext context, IContentEntityFormatter formatter)
+        public AppConfigInsertDbCommand(ContentDbContext context, IContentEntityFormatter formatter)
         {
             _DbContext = context ?? throw new ArgumentNullException(nameof(context));
             _Formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));

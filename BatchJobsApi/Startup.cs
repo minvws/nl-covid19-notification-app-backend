@@ -56,34 +56,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
             {
                 var config = new StandardEfDbConfig(Configuration, "Content");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new ExposureContentDbContext(builder.Build());
+                var result = new ContentDbContext(builder.Build());
                 return result;
             });
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-
             services.AddScoped<HttpPostGenerateExposureKeySetsCommand, HttpPostGenerateExposureKeySetsCommand>();
-
             services.AddScoped(x =>
                 new ExposureKeySetBatchJobMk2(
                     x.GetService<IGaenContentConfig>(),
                     x.GetService<IExposureKeySetBuilder>(),
                     x.GetService<WorkflowDbContext>(),
-                    x.GetService<ExposureContentDbContext>(),
+                    x.GetService<ContentDbContext>(),
                     x.GetService<IUtcDateTimeProvider>(),
                     x.GetService<IPublishingId>(),
                     x.GetService<ILogger<ExposureKeySetBatchJobMk2>>()
                 ));
 
             services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
+
             services.AddScoped<IExposureKeySetBuilder>(x =>
                 new ExposureKeySetBuilderV1(
-                    x.GetService<IExposureKeySetHeaderInfoConfig>(),
-                    new EcdSaSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:GA"), x.GetService<ILogger<X509CertificateProvider>>())),
-                    new CmsSigner  (new X509CertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"), x.GetService<ILogger<X509CertificateProvider>>())),
-                    x.GetService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
+                    x.GetRequiredService<IExposureKeySetHeaderInfoConfig>(),
+                    new EcdSaSigner(new ResourceCertificateProvider3(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), "Signing:GA"))),
+                    new CmsSigner(new ResourceCertificateProvider3(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), "Signing:NL"))),
+                    x.GetRequiredService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
                     new GeneratedProtobufContentFormatter(),
-                    x.GetService<ILogger<ExposureKeySetBuilderV1>>()
+                    x.GetRequiredService<ILogger<ExposureKeySetBuilderV1>>()
                 ));
 
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
@@ -92,30 +91,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
             services.AddSwaggerGen(o =>
             {
                 o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" });
-
-                //o.AddSecurityDefinition("basic", new OpenApiSecurityScheme
-                //{
-                //    Name = "Authorization",
-                //    Type = SecuritySchemeType.Http,
-                //    Scheme = "basic",
-                //    In = ParameterLocation.Header,
-                //    Description = "Basic Authorization header using the Bearer scheme."
-                //});
-
-                o.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "basic"
-                            }
-                        },
-                        new string[] {}
-                    }
-                });
             });
         }
 
@@ -129,13 +104,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
                 o.SwaggerEndpoint("../swagger/v1/swagger.json", Title);
             });
 
-            if (!env.IsDevelopment()) 
-                app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
-            
             app.UseRouting();
-            //app.UseAuthentication();
-            //app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

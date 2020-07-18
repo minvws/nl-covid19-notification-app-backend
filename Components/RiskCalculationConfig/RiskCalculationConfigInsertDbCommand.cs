@@ -11,10 +11,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculati
 {
     public class RiskCalculationConfigInsertDbCommand
     {
-        private readonly ExposureContentDbContext _DbContextProvider;
+        private readonly ContentDbContext _DbContextProvider;
         private readonly IContentEntityFormatter _Formatter;
 
-        public RiskCalculationConfigInsertDbCommand(ExposureContentDbContext dbContextProvider, IContentEntityFormatter formatter)
+        public RiskCalculationConfigInsertDbCommand(ContentDbContext dbContextProvider, IContentEntityFormatter formatter)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _Formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));

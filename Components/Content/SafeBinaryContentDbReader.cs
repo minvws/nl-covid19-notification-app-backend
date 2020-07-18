@@ -12,9 +12,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     public class SafeBinaryContentDbReader<T> : IReader<T> where T : ContentEntity
     {
-        private readonly ExposureContentDbContext _DbContextProvider;
+        private readonly ContentDbContext _DbContextProvider;
 
-        public SafeBinaryContentDbReader(ExposureContentDbContext dbContextProvider)
+        public SafeBinaryContentDbReader(ContentDbContext dbContextProvider)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
         }

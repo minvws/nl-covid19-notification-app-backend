@@ -49,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             {
                 var config = new StandardEfDbConfig(_Configuration, "Content");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new ExposureContentDbContext(builder.Build());
+                var result = new ContentDbContext(builder.Build());
                 result.BeginTransaction();
                 return result;
             });

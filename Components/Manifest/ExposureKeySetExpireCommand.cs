@@ -16,12 +16,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
     public class ExposureKeySetExpireCommand
     {
-        private readonly ExposureContentDbContext _DbConfig;
+        private readonly ContentDbContext _DbConfig;
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
         private readonly IGaenContentConfig _GaenContentConfig;
         private readonly ILogger _Logger;
 
-        public ExposureKeySetExpireCommand(ExposureContentDbContext dbConfig, IUtcDateTimeProvider utcDateTimeProvider, IGaenContentConfig gaenContentConfig, ILogger logger)
+        public ExposureKeySetExpireCommand(ContentDbContext dbConfig, IUtcDateTimeProvider utcDateTimeProvider, IGaenContentConfig gaenContentConfig, ILogger logger)
         {
             _DbConfig = dbConfig ?? throw new ArgumentNullException(nameof(dbConfig));
             _UtcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));

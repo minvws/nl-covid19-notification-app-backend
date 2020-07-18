@@ -12,9 +12,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationCo
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts
 {
-    public class ExposureContentDbContext : DbContext
+    public class ContentDbContext : DbContext
     {
-        public ExposureContentDbContext(DbContextOptions options)
+        public ContentDbContext(DbContextOptions options)
             : base(options)
         {
         }

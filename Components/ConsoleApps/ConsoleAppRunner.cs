@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps
 {
     public sealed class ConsoleAppRunner
     {
-        public void Execute(string[] args, Action<IServiceCollection, IConfigurationRoot> configure, Action<IServiceProvider> start)
+        public void Execute(string[] args, Action<IServiceCollection, IConfigurationRoot> configure, Action<IServiceProvider, string[]> start)
         {
             var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var logger = serviceProvider.GetService<ILogger<ConsoleAppRunner>>();
             AppDomain.CurrentDomain.UnhandledException += (o,e) => logger.LogCritical(e.ExceptionObject.ToString());
-            start(serviceProvider);
+            start(serviceProvider, args);
         }
     }
 }

@@ -10,8 +10,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculati
 {
     public class SafeGetRiskCalculationConfigDbCommand
     {
-        private readonly ExposureContentDbContext _DbContextProvider;
-        public SafeGetRiskCalculationConfigDbCommand(ExposureContentDbContext dbContextProvider)
+        private readonly ContentDbContext _DbContextProvider;
+        public SafeGetRiskCalculationConfigDbCommand(ContentDbContext dbContextProvider)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
         }

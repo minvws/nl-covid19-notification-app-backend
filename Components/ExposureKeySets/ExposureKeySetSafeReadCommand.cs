@@ -10,9 +10,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 {
     public class ExposureKeySetSafeReadCommand
     {
-        private readonly ExposureContentDbContext _DbConfig;
+        private readonly ContentDbContext _DbConfig;
 
-        public ExposureKeySetSafeReadCommand(ExposureContentDbContext dbConfig)
+        public ExposureKeySetSafeReadCommand(ContentDbContext dbConfig)
         {
             _DbConfig = dbConfig ?? throw new ArgumentNullException(nameof(dbConfig));
         }
