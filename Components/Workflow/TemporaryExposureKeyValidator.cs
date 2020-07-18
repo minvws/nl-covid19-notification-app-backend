@@ -15,8 +15,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 
         public TemporaryExposureKeyValidator(ITemporaryExposureKeyValidatorConfig config, ILogger<ReleaseTeksValidator> logger)
         {
-            _Config = config;
-            _Logger = logger;
+            _Config = config ?? throw new ArgumentNullException(nameof(config));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public bool Valid(TemporaryExposureKeyArgs value)

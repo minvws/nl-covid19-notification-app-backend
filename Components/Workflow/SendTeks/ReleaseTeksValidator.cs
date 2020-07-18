@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
     {
         private readonly IGeanTekListValidationConfig _Config;
         private readonly ITemporaryExposureKeyValidator _TemporaryExposureKeyValidator;
-        private readonly ILogger<ReleaseTeksValidator> _Logger;
+        private readonly ILogger _Logger;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
         public ReleaseTeksValidator(
@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             if (args == null)
                 return false;
 
-            if (workflow.ValidUntil.AddMinutes(_Config.GracePeriod) <= _DateTimeProvider.Now()) //30 minutes grace period
+            if (workflow.ValidUntil.AddMinutes(_Config.GracePeriodMinutes) <= _DateTimeProvider.Now()) //30 minutes grace period
             {
                 _Logger.LogWarning($"Workflow is not valid anymore: {args.BucketId}");
                 return false;

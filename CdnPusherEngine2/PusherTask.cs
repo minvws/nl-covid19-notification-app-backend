@@ -3,11 +3,14 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 
@@ -17,25 +20,34 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
     {
         private readonly IDataApiUrls _DataApiConfig;
         private readonly IReceiverConfig _ReceiverConfig;
-        private readonly ILogger<PusherTask> _Logger;
+        private readonly ILogger _Logger;
         private readonly IJsonSerializer _JsonSerializer;
-
-        public PusherTask(ILogger<PusherTask> logger, IDataApiUrls dataApiConfig, IReceiverConfig receiverConfig, IJsonSerializer jsonSerializer)
+        private readonly IServiceProvider _ServiceProvider; //Yuk!
+        public static void ConfigureServices(IServiceCollection services, IConfigurationRoot configuration)
         {
-            _Logger = logger;
-            _ReceiverConfig = receiverConfig;
-            _DataApiConfig = dataApiConfig;
-            _JsonSerializer = jsonSerializer;
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            ComponentsContainerHelper.RegisterDefaultServices(services);
+            services.AddSeriLog(configuration);
+            services.AddSingleton<IConfiguration>(configuration);
+            services.AddSingleton<PusherTask>();
+            services.AddSingleton<IDataApiUrls>(new DataApiUrls(configuration, "DataApi"));
+            services.AddSingleton<IReceiverConfig>(new ReceiverConfig(configuration, "Receiver"));
+            services.AddScoped<BasicAuthDataApiReader, BasicAuthDataApiReader>();
+            services.AddScoped<SubKeyAuthPostBytesToUrl, SubKeyAuthPostBytesToUrl>();
+        }
+
+        public PusherTask(IDataApiUrls dataApiConfig, IReceiverConfig receiverConfig, ILogger<PusherTask> logger, IJsonSerializer jsonSerializer, IServiceProvider serviceProvider)
+        {
+            _DataApiConfig = dataApiConfig ?? throw new ArgumentNullException(nameof(dataApiConfig));
+            _ReceiverConfig = receiverConfig ?? throw new ArgumentNullException(nameof(receiverConfig));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
+            _ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
         public async Task PushIt()
         {
             _Logger.LogInformation("Running.");
-            //var certificateHack = (bool)_Configuration.GetValue(typeof(bool), "CertificateHack", false);
-            //if (certificateHack)
-
-            ServicePointManager.ServerCertificateValidationCallback += (_, __, ___, ____) =>
-                true;
 
             //Read manifest
             var bcr = await GetContent(_DataApiConfig.Manifest);
@@ -76,7 +88,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
                 }
             }
 
-            writtenToDb = await new SubKeyAuthPostBytesToUrl(_ReceiverConfig).Execute(_ReceiverConfig.Manifest, MapSignedContent(bcr));
+            //writtenToDb = await new SubKeyAuthPostBytesToUrl(_ReceiverConfig, _Logger).Execute(_ReceiverConfig.Manifest, MapSignedContent(bcr));
+            writtenToDb = await _ServiceProvider.GetService<SubKeyAuthPostBytesToUrl>().Execute(_ReceiverConfig.Manifest, MapSignedContent(bcr));
+
             _Logger.LogInformation($"Pushed manifest - New item:{writtenToDb}.");
 
             _Logger.LogInformation("Completed.");
@@ -85,12 +99,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentPusherEngine
         private async Task<bool> PushItGood(string fromUri, string toUri)
         {
             var bcr = await GetContent(fromUri);
-            return await new SubKeyAuthPostBytesToUrl(_ReceiverConfig).Execute(toUri, MapSignedContent(bcr));
+            return await _ServiceProvider.GetService<SubKeyAuthPostBytesToUrl>().Execute(toUri, MapSignedContent(bcr));
         }
 
         private async Task<BinaryContentResponse> GetContent(string fromUri)
         {
-            var content = await new BasicAuthDataApiReader(_DataApiConfig).Read(fromUri);
+            var content = await _ServiceProvider.GetService<BasicAuthDataApiReader>().Read(fromUri);
             var contentBytes = Encoding.UTF8.GetString(content);
             return _JsonSerializer.Deserialize<BinaryContentResponse>(contentBytes);
         }

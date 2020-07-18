@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -15,25 +16,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
         public SafeBinaryContentDbReader(ExposureContentDbContext dbContextProvider)
         {
-            _DbContextProvider = dbContextProvider;
+            _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
         }
 
         public async Task<T?> Execute(string id)
         {
-
             return _DbContextProvider.Set<T>()
                 .SingleOrDefault(x => x.PublishingId == id);
-
-            //if (e == null)
-            //    return null;
-
-            //return new BinaryContentResponse
-            //{
-            //    LastModified = e.Release,
-            //    PublishingId = e.PublishingId,
-            //    ContentTypeName = e.ContentTypeName,
-            //    Content = e.Content
-            //};
         }
     }
 }

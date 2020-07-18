@@ -22,9 +22,11 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
+using Microsoft.Extensions.Logging;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
@@ -48,14 +50,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             ComponentsContainerHelper.RegisterDefaultServices(services);
 
             services.AddSeriLog(Configuration);
-
+            //services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(_Logger.Logger)));
+            
             services.AddControllers().AddJsonOptions(_ =>
             {
                 // This configures the serializer for ASP.Net, StandardContentEntityFormatter does that for ad-hoc occurrences.
                 _.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
 
-            services.AddBasicAuthentication();
+            //services.AddBasicAuthentication();
 
             services.AddScoped<HttpGetManifestBinaryContentCommand, HttpGetManifestBinaryContentCommand>();
             services.AddScoped<DynamicManifestReader, DynamicManifestReader>();
@@ -64,10 +67,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
             services.AddSingleton<IPublishingId>(new StandardPublishingIdFormatter());
             services.AddSingleton<IGaenContentConfig>(new GaenContentConfig(Configuration));
 
+            //TODO change to use same algorithm with a test cert and remove FakeContentSigner.
             if (CurrentEnvironment.IsProduction() || CurrentEnvironment.IsStaging())
             {
                 services.AddSingleton<IContentSigner, CmsSigner>();
-                services.AddSingleton<ICertificateProvider, HsmCertificateProvider>();
+                services.AddSingleton<ICertificateProvider, X509CertificateProvider>();
                 services.AddSingleton<IThumbprintConfig>(x => new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"));
             }
             else
@@ -108,14 +112,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
                     Version = "v1",
                 });
 
-                o.AddSecurityDefinition("basic", new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "basic",
-                    In = ParameterLocation.Header,
-                    Description = "Basic Authorization header using the Bearer scheme."
-                });
+                //o.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+                //{
+                //    Name = "Authorization",
+                //    Type = SecuritySchemeType.Http,
+                //    Scheme = "basic",
+                //    In = ParameterLocation.Header,
+                //    Description = "Basic Authorization header using the Bearer scheme."
+                //});
 
                 o.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
@@ -137,26 +141,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.CdnDataApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            app.UseSwagger();
+            app.UseSwaggerUI(o => { o.SwaggerEndpoint("/swagger/v1/swagger.json", Title); });
+
+
+            if (env.IsDevelopment() || env.IsEnvironment("Test"))
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseSwagger();
-            app.UseSwaggerUI(o =>
+            else
             {
-                o.ConfigObject.ShowExtensions = true;
-                o.SwaggerEndpoint("../swagger/v1/swagger.json", Title);
-            });
-            app.UseHttpsRedirection();
+                app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
+            }
+
             app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            //app.UseAuthentication();
+            //app.UseAuthorization();
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

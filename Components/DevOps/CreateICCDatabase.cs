@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -15,6 +16,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
         public CreateIccDatabase(IConfiguration configuration)
         {
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
             var config = new StandardEfDbConfig(configuration, "Icc");
             var builder = new SqlServerDbContextOptionsBuilder(config);
             _Provider = new IccBackendContentDbContext(builder.Build());

@@ -11,13 +11,4 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataRece
     {
         Task Send(T message);
     }
-
-    public class NotAQueueSender<T> : IQueueSender<T>
-    {
-        public Task Send(T message)
-        {
-            //Not a sausage.
-            return Task.CompletedTask;
-        }
-    }
 }

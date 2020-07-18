@@ -10,6 +10,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
     {
         public int RollingPeriodMin => 1;
         public int RollingPeriodMax => Int32.MaxValue;
-        public int DailyKeyByteCount => 32;
+        public int DailyKeyByteCount => 16;
     }
 }

@@ -18,6 +18,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 
         public string Create(byte[] contents)
         {
+            if (contents == null) throw new ArgumentNullException(nameof(contents));
+
             using var hasher = SHA256.Create();
             var id = hasher.ComputeHash(contents);
 
@@ -27,10 +29,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 
             return result.ToString();
         }
-
-        [Obsolete("Not sure this are a problem now")]
-        public string ParseUri(string uri)
-            => HttpUtility.UrlDecode(uri).Replace(" ", "+");
 
         //d65b6d0fb08646e8b947f460aa9d2998d22709c459bac9859189a7ae9727e494
         public bool Validate(string id)

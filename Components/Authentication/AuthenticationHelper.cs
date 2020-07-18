@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authenticatio
     {
         public static void AddBasicAuthentication(this IServiceCollection services)
         {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+
             services.AddSingleton<IBasicAuthenticationConfig, BasicAuthenticationConfig>();
 
             services.AddAuthentication("BasicAuthentication")

@@ -373,4 +373,4 @@ MigrationBackup/
 
 # Publishing stuff
 /publish/
-publishlog.txt
+publish_Logger.txt

@@ -2,20 +2,23 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers
 {
-    public class HsmCertificateProvider : ICertificateProvider
+    public class X509CertificateProvider : ICertificateProvider
     {
         private readonly IThumbprintConfig _ThumbprintConfig;
+        private readonly ILogger _Logger;
 
-        public HsmCertificateProvider(IThumbprintConfig thumbprintConfig)
+        public X509CertificateProvider(IThumbprintConfig thumbprintConfig, ILogger<X509CertificateProvider> logger)
         {
-            _ThumbprintConfig = thumbprintConfig;
+            _ThumbprintConfig = thumbprintConfig ?? throw new ArgumentNullException(nameof(thumbprintConfig));
+            _Logger = logger;
         }
 
         public X509Certificate2? GetCertificate()
@@ -23,17 +26,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             store.Open(OpenFlags.ReadOnly);
 
+            _Logger.LogInformation($"Finding certificate - Thumbprint:{_ThumbprintConfig.Thumbprint}, RootTrusted:{_ThumbprintConfig.RootTrusted}.");
+
             var result = store.Certificates
                 .Find(X509FindType.FindByThumbprint, _ThumbprintConfig.Thumbprint, _ThumbprintConfig.RootTrusted)
                 .OfType<X509Certificate2>()
                 .FirstOrDefault();
 
             if (result == null)
-                Log.Fatal($"Certificate not found: {_ThumbprintConfig.Thumbprint}");
+                _Logger.LogCritical($"Certificate not found: {_ThumbprintConfig.Thumbprint}"); //TODO throw exception?
 
             return result;
         }
     }
-
-
 }

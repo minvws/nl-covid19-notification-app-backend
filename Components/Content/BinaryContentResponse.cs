@@ -23,11 +23,4 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         [ProtoMember(6)]
         public byte[]? SignedContent { get; set; }
     }
-
-    public class ReceiveContentArgs
-    {
-        public string PublishingId { get; set; }
-        public DateTime LastModified { get; set; }
-        public byte[]? SignedContent { get; set; }
-    }
 }

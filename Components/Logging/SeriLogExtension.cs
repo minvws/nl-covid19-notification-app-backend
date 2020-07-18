@@ -12,13 +12,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
     {
         public static void AddSeriLog(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            // Initialize serilog logger
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                .CreateLogger();
-
             serviceCollection.AddLogging(logger =>
             {
+                // Initialize serilog logger
+                Log.Logger = new LoggerConfiguration()
+                    .ReadFrom.Configuration(configuration)
+                    .CreateLogger();
+
                 logger.AddSerilog(dispose: true);
             });
         }

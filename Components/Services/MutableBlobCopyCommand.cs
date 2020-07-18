@@ -1,61 +1,87 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 
 namespace CdnRegionSync
 {
     /// <summary>
-    /// For the manifest
+    /// For the manifest.
     /// </summary>
     public class MutableBlobCopyCommand
     {
         private readonly IStorageAccountConfig _SourceStorageAccountConfig;
         private readonly IStorageAccountConfig _DestinationStorageAccountConfig;
+        private readonly ILogger _Logger;
         private CloudBlockBlob? _Source;
         private CloudBlockBlob? _Destination;
 
-        public MutableBlobCopyCommand(IStorageAccountConfig sourceStorageAccountConfig, IStorageAccountConfig destinationStorageAccountConfig)
+        public MutableBlobCopyCommand(IStorageAccountConfig sourceStorageAccountConfig, IStorageAccountConfig destinationStorageAccountConfig, ILogger logger)
         {
-            _SourceStorageAccountConfig = sourceStorageAccountConfig;
-            _DestinationStorageAccountConfig = destinationStorageAccountConfig;
+            _SourceStorageAccountConfig = sourceStorageAccountConfig ?? throw new ArgumentNullException(nameof(sourceStorageAccountConfig));
+            _DestinationStorageAccountConfig = destinationStorageAccountConfig ?? throw new ArgumentNullException(nameof(destinationStorageAccountConfig));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task Execute(string relativePath)
         {
+            if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentException(nameof(relativePath));
+
+            _Logger.LogDebug($"Source storage account: {CloudStorageAccount.Parse(_SourceStorageAccountConfig.ConnectionString).BlobEndpoint.AbsoluteUri}");
+            _Logger.LogDebug($"Destination storage account: {CloudStorageAccount.Parse(_DestinationStorageAccountConfig.ConnectionString).BlobEndpoint.AbsoluteUri}");
+            _Logger.LogDebug($"Copying {relativePath}.");
+
             _Source = _SourceStorageAccountConfig.GetBlobDirect(relativePath);
 
             if (_Source == null)
-                return; //TODO log
+            {
+                _Logger.LogError($"Could not make reference to source blob: {relativePath}.");
+                return;
+            }
 
             try
             {
                 await _Source.AcquireLeaseAsync(null); //Lease Id not used - cannot lease the source blob of a copy
 
                 if (!_Source.Exists())
-                    return; //TODO log
+                {
+                    _Logger.LogError($"Source blob does not exist: {relativePath}.");
+                    return;
+                }
 
                 _Destination = _DestinationStorageAccountConfig.GetBlobIndirect(relativePath);
 
-                if (!_Destination.Exists())
-                { 
-                    //Create on first copy
-                    _Destination.StartCopy(_Source);
-                    return; //TODO log
+                if (_Destination == null)
+                {
+                    _Logger.LogError($"Could not make reference to destination blob: {relativePath}.");
+                    return;
                 }
 
-                //Update
-                if (await _Source.ContentSame(_Destination))
-                    return; //TODO log - already updated
+                if (!_Destination.Exists())
+                {
+                    _Logger.LogWarning($"Destination blob did not exist: {relativePath}.");
+                    _Destination.StartCopy(_Source);
+                    return;
+                }
 
+                if (await _Source.ContentSame(_Destination))
+                {
+                    _Logger.LogInformation($"Destination blob already up to date.");
+                    return;
+                }
+
+                _Logger.LogInformation($"Updating.");
                 var destinationLease = await _Destination.AcquireLeaseAsync(null);
                 _Destination.StartCopy(_Source, destAccessCondition: AccessCondition.GenerateLeaseCondition(destinationLease));
-            }  
+                _Logger.LogInformation($"Updated.");
+            }
             finally
             {
                 await _Source.ReleaseLease();
                 await _Destination.ReleaseLease();
+                _Logger.LogInformation($"Leases released.");
             }
         }
     }

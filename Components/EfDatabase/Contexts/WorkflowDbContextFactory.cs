@@ -9,7 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
 {
     public class WorkflowDbContextFactory : IDesignTimeDbContextFactory<WorkflowDbContext>
     {
-        public WorkflowDbContext CreateDbContext(string[] args)
+        public WorkflowDbContext CreateDbContext(string[] _)
         {
             var optionsBuilder = new DbContextOptionsBuilder<WorkflowDbContext>();
             optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=WorkFlow;Integrated Security=true",o =>

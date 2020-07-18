@@ -6,7 +6,6 @@ using System;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {
-
     /// <summary>
     /// TODO has the definition of Epoch changed yet again?
     /// </summary>

@@ -15,6 +15,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ICC.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
 {
@@ -24,13 +25,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
         private readonly IConfiguration _Configuration;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IRandomNumberGenerator _RandomGenerator;
+        private readonly ILogger _Logger;
 
-        public IccService(IccBackendContentDbContext dbContext, IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider,  IRandomNumberGenerator randomGenerator)
+        public IccService(IccBackendContentDbContext dbContext, IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider, IRandomNumberGenerator randomGenerator, ILogger<IccService> logger)
         {
-            _DbContext = dbContext;
-            _Configuration = configuration;
-            _DateTimeProvider = dateTimeProvider;
-            _RandomGenerator = randomGenerator;
+            _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _RandomGenerator = randomGenerator ?? throw new ArgumentNullException(nameof(randomGenerator));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -41,6 +44,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
         /// <exception cref="IccNotFoundException"></exception>
         public async Task<InfectionConfirmationCodeEntity> Get(string icc)
         {
+            //TODO if(string.IsNullOrWhiteSpace(icc) ???
+
             var infectionConfirmationCodeEntity = await _DbContext.InfectionConfirmationCodes.FindAsync(icc);
             if (infectionConfirmationCodeEntity == null) throw new IccNotFoundException();
             return infectionConfirmationCodeEntity;
@@ -53,6 +58,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
         /// <returns>Icc if valid else null</returns>
         public async Task<InfectionConfirmationCodeEntity> Validate(string iccCodeString)
         {
+            //TODO if(string.IsNullOrWhiteSpace(iccCodeString) ???
+
             var infectionConfirmationCodeEntity = await Get(iccCodeString);
             if (infectionConfirmationCodeEntity != null && infectionConfirmationCodeEntity.IsValid())
                 return infectionConfirmationCodeEntity;
@@ -68,7 +75,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
         /// <returns></returns>
         public async Task<InfectionConfirmationCodeEntity> GenerateIcc(string userId, string batchId)
         {
-            var length = Convert.ToInt32(_Configuration.GetSection("IccConfig:Code:Length").Value);
+            //TODO if(string.IsNullOrWhiteSpace(userId) ???
+            //TODO if(string.IsNullOrWhiteSpace(batchId) ???
+
+            var length = Convert.ToInt32(_Configuration.GetSection("IccConfig:Code:Length").Value); //TODO default if not present?
             var generatedIcc = _RandomGenerator.GenerateToken(length);
 
             var icc = new InfectionConfirmationCodeEntity
@@ -87,9 +97,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
         /// <param name="userId"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public async Task<IccBatch> GenerateBatch(string userId, int count = 20)
+        public async Task<IccBatch> GenerateBatch(string userId, int count = 20) //TODO configuration for default
         {
-            string batchId = _RandomGenerator.GenerateToken(6);
+            //TODO if(string.IsNullOrWhiteSpace(userId) ???
+            //TODO if(count <= 0) ???
+
+            string batchId = _RandomGenerator.GenerateToken();
             IccBatch batch = new IccBatch(batchId);
 
             for (var i = 0; i < count; i++)
@@ -102,6 +115,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
 
         public async Task<List<InfectionConfirmationCodeEntity>> GetBatchItems(string batchId)
         {
+            //TODO if(string.IsNullOrWhiteSpace(batchId) ???
+
             var batch = await _DbContext.InfectionConfirmationCodes.Where(_ => _.BatchId == batchId).ToListAsync();
 
             return batch ?? new List<InfectionConfirmationCodeEntity>();
@@ -109,6 +124,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
 
         public async Task<InfectionConfirmationCodeEntity> RedeemIcc(string icc)
         {
+            //TODO if(string.IsNullOrWhiteSpace(icc) ???
+
             var infectionConfirmationCodeEntity = await Get(icc);
             infectionConfirmationCodeEntity.Used = _DateTimeProvider.Now();
 
@@ -117,16 +134,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
 
         public async Task<bool> RevokeBatch(RevokeBatchInput revokeBatchInput)
         {
+            //TODO if (revokeBatchInput == null) throw new ArgumentNullException(nameof(revokeBatchInput)); ???
+
             List<InfectionConfirmationCodeEntity> iccList =
                 await _DbContext.InfectionConfirmationCodes.Where(i => i.BatchId == revokeBatchInput.BatchId)
                     .ToListAsync();
 
+            //TODO LINQ
             if (iccList.Count > 0)
             {
                 foreach (InfectionConfirmationCodeEntity infectionConfirmationCodeEntity in iccList)
                 {
                     infectionConfirmationCodeEntity.Revoked =
-                        revokeBatchInput.RevokeDateTime ?? _DateTimeProvider.Now();
+                        revokeBatchInput.RevokeDateTime ?? _DateTimeProvider.Now(); //TODO time moves... snapshot a value before all the comparisons
                 }
 
                 return true;

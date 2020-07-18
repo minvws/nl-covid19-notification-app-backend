@@ -11,6 +11,9 @@ namespace CdnRegionSync
     {
         public static async Task<bool> ContentSame(this CloudBlockBlob left, CloudBlockBlob right)
         {
+            if (left == null) throw new ArgumentNullException(nameof(left));
+            if (right == null) throw new ArgumentNullException(nameof(right));
+
             await left.FetchAttributesAsync();
             await right.FetchAttributesAsync();
             return left.Properties.ContentMD5 == right.Properties.ContentMD5;
@@ -31,6 +34,9 @@ namespace CdnRegionSync
         /// </summary>
         public static CloudBlockBlob GetBlobIndirect(this IStorageAccountConfig config, string relativePath)
         {
+            if (config == null) throw new ArgumentNullException(nameof(config));
+            if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentException(nameof(relativePath));
+
             var destinationAccount = CloudStorageAccount.Parse(config.ConnectionString);
             var destinationBlobClient = destinationAccount.CreateCloudBlobClient();
             var containerName = relativePath.Split("/", StringSplitOptions.RemoveEmptyEntries)[0];
@@ -44,6 +50,9 @@ namespace CdnRegionSync
         /// </summary>
         public static CloudBlockBlob? GetBlobDirect(this IStorageAccountConfig config, string relativePath, AccessCondition? ac = null)
         {
+            if (config == null) throw new ArgumentNullException(nameof(config));
+            if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentException(nameof(relativePath));
+
             var sourceAccount = CloudStorageAccount.Parse(config.ConnectionString);
             var sourceBlobClient = sourceAccount.CreateCloudBlobClient();
             return sourceBlobClient.GetBlobReferenceFromServer(

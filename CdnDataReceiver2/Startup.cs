@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using CdnDataReceiver.Controllers;
 using Microsoft.AspNetCore.Builder;
@@ -7,7 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.CdnDataReceiver;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks;
+using Microsoft.Extensions.Logging;
 
 namespace CdnDataReceiver2
 {
@@ -15,42 +19,44 @@ namespace CdnDataReceiver2
     {
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
-            _Configuration = configuration;
-            _Environment = environment;
+            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _Environment = environment ?? throw new ArgumentNullException(nameof(environment));
         }
 
         private readonly IConfiguration _Configuration;
         private readonly IWebHostEnvironment _Environment;
+        private bool _RegionSyncEnabled;
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// NB. Cannot log in this method.
+        /// </summary>
+        /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            var certificateHack = (bool)_Configuration.GetValue(typeof(bool), "CertificateHack", false);
-            if (certificateHack)
-                ServicePointManager.ServerCertificateValidationCallback += (_, __, ___, ____) =>
-                    true;
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services.AddSeriLog(_Configuration);
+            //services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(_Logger.Logger)));
 
             services.AddControllers();
-            services.AddScoped<HttpPostContentReciever2>();
-            
+            services.AddScoped<HttpPostContentReceiver2>();
             services.AddScoped<IBlobWriter, StandardBlobWriter>();
             services.AddScoped<ManifestBlobWriter>();
             services.AddSingleton<IStorageAccountConfig>(new StorageAccountAppSettings(_Configuration, "Local"));
-
             services.AddSingleton<IJsonSerializer, StandardJsonSerializer>();
             services.AddSingleton<IContentPathProvider>(new ContentPathProvider(_Configuration));
 
             //Queues
-            var regionSync = (bool)_Configuration.GetValue(typeof(bool), "RegionSync", true);
-            if ((_Environment.IsDevelopment() || _Environment.IsStaging()) && !regionSync) //NB Staging == Acc
+            _RegionSyncEnabled = _Configuration.GetValue("RegionSync", true);
+            if (_RegionSyncEnabled)
             {
-                services.AddScoped<IQueueSender<StorageAccountSyncMessage>, NotAQueueSender<StorageAccountSyncMessage>>();
+                services.AddScoped<IQueueSender<StorageAccountSyncMessage>, QueueSendCommand<StorageAccountSyncMessage>>();
+                services.AddSingleton<IServiceBusConfig>(new ServiceBusConfig(_Configuration, "ServiceBus"));
             }
             else
             {
-                //Test and Prod
-                services.AddScoped<IQueueSender<StorageAccountSyncMessage>, QueueSendCommand<StorageAccountSyncMessage>>();
-                services.AddSingleton<IServiceBusConfig>(new ServiceBusConfig(_Configuration, "ServiceBus"));
+                services.AddScoped<IQueueSender<StorageAccountSyncMessage>, NotAQueueSender<StorageAccountSyncMessage>>();
             }
 
             services.AddSwaggerGen(o =>
@@ -64,12 +70,30 @@ namespace CdnDataReceiver2
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            var certificateHack = _Configuration.GetValue("CertificateHack", false);
+            if (certificateHack)
+            {
+                logger.LogWarning("Unproven hack for self-signed certificates is enabled.");
+                ServicePointManager.ServerCertificateValidationCallback += (_, __, ___, ____) =>
+                    true;
+            }
+
+            if (_RegionSyncEnabled)
+            {
+                logger.LogInformation($"Writing to queue for sync across regions is enabled: true.");
+            }
+            else
+            {
+                logger.LogWarning($"Writing to queue for sync across regions is enabled: false.");
+            }
+
 
             app.UseHttpsRedirection();
 
@@ -89,4 +113,5 @@ namespace CdnDataReceiver2
 
         }
     }
+
 }

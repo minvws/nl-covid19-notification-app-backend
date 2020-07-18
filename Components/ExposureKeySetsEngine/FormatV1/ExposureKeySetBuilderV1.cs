@@ -5,11 +5,12 @@
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1
 {
@@ -25,23 +26,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IContentFormatter _ContentFormatter;
         private readonly IExposureKeySetHeaderInfoConfig _Config;
+        private readonly ILogger<ExposureKeySetBuilderV1> _Logger;
 
         public ExposureKeySetBuilderV1(
             IExposureKeySetHeaderInfoConfig headerInfoConfig,
             IContentSigner gaenContentSigner,
             IContentSigner nlContentSigner,
-            IUtcDateTimeProvider dateTimeProvider, 
-            IContentFormatter contentFormatter)
+            IUtcDateTimeProvider dateTimeProvider,
+            IContentFormatter contentFormatter,
+            ILogger<ExposureKeySetBuilderV1> logger
+            )
         {
-            _GaenContentSigner = gaenContentSigner;
-            _NlContentSigner = nlContentSigner;
-            _DateTimeProvider = dateTimeProvider;
-            _ContentFormatter = contentFormatter;
-            _Config = headerInfoConfig;
+            _GaenContentSigner = gaenContentSigner ?? throw new ArgumentNullException(nameof(gaenContentSigner));
+            _NlContentSigner = nlContentSigner ?? throw new ArgumentNullException(nameof(nlContentSigner));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _ContentFormatter = contentFormatter ?? throw new ArgumentNullException(nameof(contentFormatter));
+            _Config = headerInfoConfig ?? throw new ArgumentNullException(nameof(headerInfoConfig));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<byte[]> BuildAsync(TemporaryExposureKeyArgs[] keys)
         {
+            if (keys == null) throw new ArgumentNullException(nameof(keys));
+            if (keys.Any(x => x == null)) throw new ArgumentException("At least one key in null.", nameof(keys));
+
             var securityInfo = GetGaenSignatureInfo();
 
             var now = _DateTimeProvider.Now();
@@ -62,7 +70,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             var nlSig = _NlContentSigner.GetSignature(contentBytes);
             var gaenSig = _GaenContentSigner.GetSignature(contentBytes);
 
-            var gaenSigB64 = Convert.ToBase64String(gaenSig);
+            _Logger.LogDebug($"GAEN Sig: {Convert.ToBase64String(gaenSig)}.");
+            _Logger.LogDebug($"NL Sig: {Convert.ToBase64String(nlSig)}.");
 
             var signatures = new ExposureKeySetSignaturesContentArgs
             {

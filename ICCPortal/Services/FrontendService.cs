@@ -8,7 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services
 {
     public class FrontendService
     {
-        private IConfiguration _Configuration;
+        private readonly IConfiguration _Configuration;
 
         public FrontendService(IConfiguration configuration)
         {

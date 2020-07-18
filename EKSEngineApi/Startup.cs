@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Authentication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -47,7 +47,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
             });
 
             services.AddSeriLog(Configuration);
-            services.AddBasicAuthentication();
+            //services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(_Logger.Logger)));
+            //services.AddBasicAuthentication();
+
+            //services.AddSingleton<ILogger>(_Logger.Logger);
 
             services.AddScoped(x =>
             {
@@ -76,18 +79,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
                     x.GetService<WorkflowDbContext>(),
                     x.GetService<ExposureContentDbContext>(),
                     x.GetService<IUtcDateTimeProvider>(),
-                    x.GetService<IPublishingId>()
+                    x.GetService<IPublishingId>(),
+                    x.GetService<ILogger<ExposureKeySetBatchJobMk2>>()
                 ));
 
             services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
             services.AddScoped<IExposureKeySetBuilder>(x =>
                 new ExposureKeySetBuilderV1(
                     x.GetService<IExposureKeySetHeaderInfoConfig>(),
-                    new EcdSaSigner(new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:GA"))),
-                    new CmsSigner(new HsmCertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"))), 
+                    new EcdSaSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:GA"), x.GetService<ILogger<X509CertificateProvider>>())),
+                    new CmsSigner  (new X509CertificateProvider(new CertificateProviderConfig(x.GetService<IConfiguration>(), "ExposureKeySets:Signing:NL"), x.GetService<ILogger<X509CertificateProvider>>())),
                     x.GetService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
-                    new GeneratedProtobufContentFormatter()
+                    new GeneratedProtobufContentFormatter(),
+                    x.GetService<ILogger<ExposureKeySetBuilderV1>>()
                 ));
+
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
             services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();
 
@@ -95,14 +101,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
             {
                 o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" });
 
-                o.AddSecurityDefinition("basic", new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "basic",
-                    In = ParameterLocation.Header,
-                    Description = "Basic Authorization header using the Bearer scheme."
-                });
+                //o.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+                //{
+                //    Name = "Authorization",
+                //    Type = SecuritySchemeType.Http,
+                //    Scheme = "basic",
+                //    In = ParameterLocation.Header,
+                //    Description = "Basic Authorization header using the Bearer scheme."
+                //});
 
                 o.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
@@ -135,8 +141,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EKSEngineApi
                 app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
             
             app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
+            //app.UseAuthentication();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

@@ -2,6 +2,8 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
@@ -22,6 +24,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 
         public TContent Deserialize<TContent>(string input)
         {
+            if (string.IsNullOrWhiteSpace(input))
+                throw new ArgumentException(nameof(input)); //Standardising.
+
             return JsonSerializer.Deserialize<TContent>(input, _SerializerOptions);
         }
     }

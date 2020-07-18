@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
     [Route("[controller]")]
     public class RevokeBatchController : ControllerBase
     {
-        private readonly ILogger<RevokeBatchController> _Logger;
+        private readonly ILogger _Logger;
         private readonly ActionExecutedContext _Context;
         private readonly IIccService _IccService;
         private readonly AppBackendService _AppBackendService;

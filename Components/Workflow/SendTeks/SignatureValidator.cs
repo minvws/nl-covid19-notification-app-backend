@@ -12,27 +12,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 {
     public class SignatureValidator : ISignatureValidator
     {
-        private readonly ILogger<SignatureValidator> _Logger;
 
-        public SignatureValidator(ILogger<SignatureValidator> logger)
+        public SignatureValidator()
         {
-            _Logger = logger;
         }
 
         public bool Valid(byte[] signature, KeyReleaseWorkflowState workflow, byte[] data)
         {
-            if (signature == null)
-                return false;
+            if (signature == null) throw new ArgumentNullException(nameof(signature));
+            if (workflow == null) throw new ArgumentNullException(nameof(workflow));
+            if (data == null) throw new ArgumentNullException(nameof(data));
 
             using var hmac = new HMACSHA256(Convert.FromBase64String(workflow.ConfirmationKey));
             var hash = hmac.ComputeHash(data);
 
-            var result = hash.SequenceEqual(signature);
-            
-            if (!result)
-                _Logger.LogInformation($"Invalid signature for BucketId: {workflow.BucketId}");
-
-            return result;
+            return hash.SequenceEqual(signature);
         }
     }
 }

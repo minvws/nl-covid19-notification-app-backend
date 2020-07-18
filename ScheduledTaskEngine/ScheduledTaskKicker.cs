@@ -7,22 +7,35 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ScheduledTaskEngine
 {
-    public class App
+    public class ScheduledTaskKicker
     {
-        private readonly ILogger<App> _Logger;
+        private readonly ILogger _Logger;
 
-        public App(ILogger<App> logger)
+        public ScheduledTaskKicker(ILogger<ScheduledTaskKicker> logger)
         {
             _Logger = logger;
         }
 
+        public static void ConfigureServices(IServiceCollection services, IConfigurationRoot configuration)
+        {
+            ComponentsContainerHelper.RegisterDefaultServices(services);
+
+            services.AddSeriLog(configuration);
+            services.AddSingleton(configuration);
+            services.AddTransient<ScheduledTaskKicker>();
+        }
+
         public async Task Run(string[] args)
         {
-            _Logger.LogInformation("Running...");
+            _Logger.LogInformation("Running.");
 
             var arguments = GetArguments(args);
 
@@ -39,10 +52,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ScheduledTaskEngine
                 var result = await client.SendAsync(requestMessage);
                 result.EnsureSuccessStatusCode();
 
-                _Logger.LogInformation("Completed...");
+                _Logger.LogInformation("Completed.");
             }
             else
-                _Logger.LogWarning("Arguments not valid...");
+                _Logger.LogWarning("Arguments not valid.");
         }
 
         private static StartArguments GetArguments(IReadOnlyList<string> args)

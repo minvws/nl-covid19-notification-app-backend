@@ -7,10 +7,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Authoris
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
-    [Obsolete("Use this class only for testing purposes")]
-    public class FakeSignatureValidator : ISignatureValidator
+    public class DoNotValidateSignatureValidator : ISignatureValidator
     {
-        //public bool Valid(byte[] signature, KeyReleaseWorkflowState workflow, byte[] data) => signature != null && workflow != null && data != null;
         public bool Valid(byte[] signature, KeyReleaseWorkflowState workflow, byte[] data) => true;
     }
 }

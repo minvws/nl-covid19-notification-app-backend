@@ -25,23 +25,24 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
     public class GenerateIccController
     {
         private readonly IIccService _IccService;
-        private readonly ILogger<GenerateIccController> _Logger;
+        private readonly ILogger _Logger;
         private readonly IConfiguration _Configuration;
         private readonly IccBackendContentDbContext _DbContext;
         
         public GenerateIccController(ILogger<GenerateIccController> logger, IConfiguration configuration,
             IIccService iccService, IccBackendContentDbContext dbContext)
         {
-            _Logger = logger;
-            _Configuration = configuration;
-            _IccService = iccService;
-            _DbContext = dbContext;
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _IccService = iccService ?? throw new ArgumentNullException(nameof(iccService));
+            _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
 
         [HttpPost("single")]
         public async Task<JsonResult> PostGenerateIcc(GenerateIccInputModel generateIccInputModel)
         {
+            _Logger.LogInformation("POST single triggered.");
             var infectionConfirmationCodeEntity =
                 await _IccService.GenerateIcc(generateIccInputModel.UserId, null!);
             _DbContext.SaveAndCommit();
@@ -57,14 +58,15 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         [HttpPost("batch")]
         public async Task<JsonResult> PostGenerateBatchIcc(GenerateIccInputModel generateIccInputModel)
         {
-            var iccBatch = await _IccService.GenerateBatch(generateIccInputModel.UserId);
+            _Logger.LogInformation("POST batch triggered.");
+            var iccBatch = await _IccService.GenerateBatch(generateIccInputModel.UserId); //TODO take the whole argument else null ref exception
             _DbContext.SaveAndCommit();
             return new JsonResult(new
             {
                 ok = true,
                 status = 200,
                 length = _Configuration.GetSection("IccConfig:Code:Length").Value,
-                iccBatch = iccBatch
+                iccBatch = iccBatch 
             });
         }
 

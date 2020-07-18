@@ -59,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer
                     options.ClientSecret = Configuration.GetSection("IccPortalConfig:IdentityHub:client_secret").Value;
                 });
             services.AddAuthentication("jwt")
-                .AddScheme<AuthenticationSchemeOptions, JwtAuthorizationHandler>("jwt", null);
+                .AddScheme<AuthenticationSchemeOptions, IccJwtAuthorizationHandler>("jwt", null);
             // services.AddAuthorization(options =>
             // {
             //     // options.AddPolicy("TelefonistRole",

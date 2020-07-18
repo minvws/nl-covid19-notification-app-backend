@@ -12,7 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authoris
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.BackgroundJobs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Controllers
 {
@@ -24,15 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.Control
         [Route(EndPointNames.MobileAppApi.ReleaseTeks)] 
         public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand command)
         {
-            try
-            {
-                await command.Execute(sig, Request);
-            }
-            catch (Exception e)
-            {
-                Log.Error(e.ToString());
-            }
-            return Ok();
+            return await command.Execute(sig, Request);
         }
 
         [HttpPost]

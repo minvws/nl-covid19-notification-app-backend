@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.Extensions.Configuration;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
@@ -13,7 +14,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 
         public StandardEfDbConfig(IConfiguration configuration, string connStringName)
         {
-            _Configuration = configuration;
+            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            if (string.IsNullOrWhiteSpace(connStringName)) throw new ArgumentException(nameof(connStringName));
             _ConnStringName = connStringName;
         }
 

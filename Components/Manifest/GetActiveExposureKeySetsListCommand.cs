@@ -18,8 +18,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 
         public GetActiveExposureKeySetsListCommand(ExposureContentDbContext dbConfig, IGaenContentConfig gaenContentConfig)
         {
-            _DbConfig = dbConfig;
-            _GaenContentConfig = gaenContentConfig;
+            _DbConfig = dbConfig ?? throw new ArgumentNullException(nameof(dbConfig));
+            _GaenContentConfig = gaenContentConfig ?? throw new ArgumentNullException(nameof(gaenContentConfig));
         }
 
         public string[] Execute()

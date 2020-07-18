@@ -2,11 +2,13 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundle;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
@@ -18,17 +20,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     {
         private readonly IReader<T> _SafeReader;
         private readonly IPublishingId _PublishingId;
+        private readonly ILogger _Logger;
 
-        public HttpGetBinaryContentCommand(IReader<T> safeReader, IPublishingId publishingId)
+        public HttpGetBinaryContentCommand(IReader<T> safeReader, IPublishingId publishingId, ILogger<HttpGetBinaryContentCommand<T>> logger)
         {
-            _SafeReader = safeReader;
-            _PublishingId = publishingId;
+            _SafeReader = safeReader ?? throw new ArgumentNullException(nameof(safeReader));
+            _PublishingId = publishingId ?? throw new ArgumentNullException(nameof(publishingId));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<IActionResult> Execute(string id, HttpContext httpContext)
+        public async Task<IActionResult> Execute(string id)
         {
             if (!_PublishingId.Validate(id))
             {
+                _Logger.LogError($"Invalid Publishing Id ({typeof(T).Name}): {id}.");
                 return new BadRequestResult();
             }
 
@@ -36,6 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             if (e == null)
             {
+                _Logger.LogError($"Content not found ({typeof(T).Name}): {id}.");
                 return new NotFoundResult();
             }
 
@@ -49,6 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 SignedContent = e.SignedContent
             };
 
+            _Logger.LogInformation($"Content found ({typeof(T).Name}): {id}.");
             return new OkObjectResult(r);
         }
     }

@@ -10,6 +10,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
@@ -18,12 +19,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         private readonly ExposureContentDbContext _DbConfig;
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
         private readonly IGaenContentConfig _GaenContentConfig;
+        private readonly ILogger _Logger;
 
-        public ExposureKeySetExpireCommand(ExposureContentDbContext config, IUtcDateTimeProvider utcDateTimeProvider, IGaenContentConfig gaenContentConfig)
+        public ExposureKeySetExpireCommand(ExposureContentDbContext dbConfig, IUtcDateTimeProvider utcDateTimeProvider, IGaenContentConfig gaenContentConfig, ILogger logger)
         {
-            _DbConfig = config;
-            _UtcDateTimeProvider = utcDateTimeProvider;
-            _GaenContentConfig = gaenContentConfig;
+            _DbConfig = dbConfig ?? throw new ArgumentNullException(nameof(dbConfig));
+            _UtcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
+            _GaenContentConfig = gaenContentConfig ?? throw new ArgumentNullException(nameof(gaenContentConfig));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task Execute()
@@ -33,6 +36,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             var timeToDie = _DbConfig.Set<ExposureKeySetContentEntity>()
                 .Where(x => x.Release < now - TimeSpan.FromDays(_GaenContentConfig.ExposureKeySetLifetimeDays))
                 .ToList();
+
+            foreach (var i in timeToDie)
+            {
+                _Logger.LogInformation($"Deleting EKS - {i.PublishingId}.");
+            }
 
             await _DbConfig.BulkDeleteAsync(timeToDie);
         }

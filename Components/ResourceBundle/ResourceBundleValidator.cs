@@ -33,6 +33,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ResourceBundl
 
         public static bool CultureExists(string cultureName)
         {
+            if (string.IsNullOrWhiteSpace(cultureName))
+                return false;
+
             return CultureInfo.GetCultures(CultureTypes.AllCultures).Any(culture => string.Equals(culture.Name, cultureName, StringComparison.CurrentCultureIgnoreCase));
         }
 

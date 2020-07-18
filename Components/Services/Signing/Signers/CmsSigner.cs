@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
         public CmsSigner(ICertificateProvider provider)
         {
-            _Provider = provider;
+            _Provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
 
         public string SignatureOid => "2.16.840.1.101.3.4.2.1";
@@ -47,6 +47,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
         public byte[] GetSignature(byte[] content)
         {
+            if (content == null) throw new ArgumentNullException(nameof(content));
+
             var certificate = _Provider.GetCertificate();
 
             if (certificate == null)
@@ -54,15 +56,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
             var chain = GetChainWithoutRoot();
 
-            ContentInfo contentInfo = new ContentInfo(content);
-            SignedCms signedCms = new SignedCms(contentInfo, true);
+            var contentInfo = new ContentInfo(content);
+            var signedCms = new SignedCms(contentInfo, true);
             var signer = new System.Security.Cryptography.Pkcs.CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, certificate);
             signedCms.Certificates.AddRange(chain);
             signedCms.ComputeSignature(signer);
 
             return signedCms.Encode();
         }
-
-        public int LengthBytes => 1510;
     }
 }

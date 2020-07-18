@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Back
 
         public PurgeExpiredSecretsDbCommand(WorkflowDbContext dbContextProvider)
         {
-            _DbContextProvider = dbContextProvider;
+            _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
         }
 
         public async Task<IActionResult> Execute()
@@ -28,7 +28,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Back
             var query = $"DELETE FROM [{schema}].[{tableName}] WHERE {nameof(KeyReleaseWorkflowState.ValidUntil)} <= GETDATE()";
             await _DbContextProvider.Database.ExecuteSqlRawAsync(query);
             _DbContextProvider.SaveAndCommit();
-
             return new OkObjectResult(true);
         }
     }

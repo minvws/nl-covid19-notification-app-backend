@@ -15,8 +15,11 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
+using NL.Rijksoverheid.ExposureNotification.IccPortalAuthorizer.Services;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleaseApi
 {
@@ -39,6 +42,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleaseApi
             services.AddControllers();
 
             services.AddSeriLog(Configuration);
+            //services.AddMvc(options => options.Filters.Add(new SerilogServiceExceptionInterceptor(_Logger.Logger)));
+
             services.AddBasicAuthentication();
 
             services.AddScoped(x =>
@@ -52,6 +57,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.KeyReleaseApi
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
+            services.AddScoped<JwtService, JwtService>();
+            services.AddScoped<PollTokenGenerator, PollTokenGenerator>();
             services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
             services.AddScoped<ISignatureValidator, SignatureValidator>();
             services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();

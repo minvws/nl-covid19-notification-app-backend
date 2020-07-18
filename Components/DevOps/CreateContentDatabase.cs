@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -26,20 +27,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
         public CreateContentDatabase(IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider, IContentSigner signer, IJsonSerializer jsonSerializer)
         {
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+            _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+
             var config = new StandardEfDbConfig(configuration, "Content");
             var builder = new SqlServerDbContextOptionsBuilder(config);
             _DbContextProvider = new ExposureContentDbContext(builder.Build());
-            _DateTimeProvider = dateTimeProvider;
-            _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter());
-            _JsonSerializer = jsonSerializer;
+            _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter(), jsonSerializer);
         }
 
         public CreateContentDatabase(ExposureContentDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IContentSigner signer, IJsonSerializer jsonSerializer)
         {
-            _DbContextProvider = dbContextProvider;
-            _DateTimeProvider = dateTimeProvider;
-            _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter());
-            _JsonSerializer = jsonSerializer;
+            _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
+            _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter(), jsonSerializer);
         }
 
 

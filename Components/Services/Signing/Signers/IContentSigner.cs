@@ -9,6 +9,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
         //https://docs.microsoft.com/en-us/windows/win32/api/wincrypt/ns-wincrypt-crypt_algorithm_identifier
         string SignatureOid { get; }
         byte[] GetSignature(byte[] content);
-        int LengthBytes { get; }
     }
 }

@@ -16,6 +16,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 [assembly: FunctionsStartup(typeof(Startup))]
 namespace CdnDataPurge
 {
+    //
     public class Startup : FunctionsStartup
     {
         public override void Configure(IFunctionsHostBuilder builder)
