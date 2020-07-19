@@ -5,18 +5,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Content
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.PublishingJob
 {
-    public class Manifest : IEntityTypeConfiguration<ManifestEntity>
+    public class EksCreateJobOutputEtc : IEntityTypeConfiguration<EksCreateJobOutputEntity>
     {
-        public void Configure(EntityTypeBuilder<ManifestEntity> builder)
+        public void Configure(EntityTypeBuilder<EksCreateJobOutputEntity> builder)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
-            builder.ToTable("Manifest");
+            builder.ToTable("EksCreateJobOutput");
             builder.Property(u => u.Id).UseHiLo();
-            builder.Property(u => u.PublishingId).HasMaxLength(64);
         }
     }
 }

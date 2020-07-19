@@ -23,6 +23,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration
         }
 
         protected T GetConfigValue<T>(string path, T defaultValue = default(T))
-            => _Config.GetConfigValue($"{_Prefix}{path}", defaultValue);
+            => _Config.GetValue($"{_Prefix}{path}", defaultValue);
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
@@ -62,12 +63,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
                 return result;
             });
 
+            services.AddScoped(x =>
+            {
+                var config = new StandardEfDbConfig(_Configuration, "PublishingJob");
+                var builder = new SqlServerDbContextOptionsBuilder(config);
+                var result = new PublishingJobDbContext(builder.Build());
+                return result;
+            });
+
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddTransient(x =>
                 new ExposureKeySetBatchJobMk2(
                     x.GetService<IGaenContentConfig>(),
                     x.GetService<IExposureKeySetBuilder>(),
                     x.GetService<WorkflowDbContext>(),
+                    x.GetService<PublishingJobDbContext>(),
                     x.GetService<ContentDbContext>(),
                     x.GetService<IUtcDateTimeProvider>(),
                     x.GetService<IPublishingId>(),
@@ -139,8 +149,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
             services.AddSingleton(_Configuration);
 
-            services.AddTransient<CreateWorkflowDatabase>();
-            services.AddTransient<CreateContentDatabase>();
+            services.AddTransient<WorkflowDatabaseCreateCommand>();
+            services.AddTransient<ContentDatabaseCreateCommand>();
             services.AddTransient<ProvisionDatabasesCommand>();
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddTransient<IPublishingId, StandardPublishingIdFormatter>();

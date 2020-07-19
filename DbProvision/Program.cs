@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
@@ -49,19 +50,38 @@ namespace DbProvision
                 var result = new WorkflowDbContext(builder.Build());
                 return result;
             });
+            
+            services.AddScoped(x =>
+            {
+                var config = new StandardEfDbConfig(configuration, "Icc");
+                var builder = new SqlServerDbContextOptionsBuilder(config);
+                var result = new IccBackendContentDbContext(builder.Build());
+                return result;
+            });
 
-            services.AddTransient<CreateWorkflowDatabase>();
-            services.AddTransient<CreateContentDatabase>();
+            services.AddScoped(x =>
+            {
+                var config = new StandardEfDbConfig(configuration, "PublishingJob");
+                var builder = new SqlServerDbContextOptionsBuilder(config);
+                var result = new PublishingJobDbContext(builder.Build());
+                return result;
+            });
+
+            services.AddTransient<WorkflowDatabaseCreateCommand>();
+            services.AddTransient<PublishingJobDatabaseCreateCommand>();
+            services.AddTransient<IccDatabaseCreateCommand>();
+            services.AddTransient<ContentDatabaseCreateCommand>();
+
             services.AddLogging();
             services.AddSingleton<IConfiguration>(configuration);
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
-            services.AddScoped<ProvisionDatabasesCommand>();
+            services.AddTransient<ProvisionDatabasesCommand>();
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<IGaenContentConfig, StandardGaenContentConfig>();
-            services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();
-            services.AddScoped<GenericContentValidator>();
-            services.AddScoped<ContentInsertDbCommand>();
-            services.AddScoped<ZippedSignedContentFormatter>();
+            services.AddTransient<IPublishingId, StandardPublishingIdFormatter>();
+            services.AddTransient<GenericContentValidator>();
+            services.AddTransient<ContentInsertDbCommand>();
+            services.AddTransient<ZippedSignedContentFormatter>();
 
             if (configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", true))
             {

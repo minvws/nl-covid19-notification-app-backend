@@ -8,12 +8,16 @@ using Microsoft.Extensions.Configuration;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration
 {
-    public static class ConfiguationRootBuilder
+    public static class ConfigurationRootBuilder
     {
         public static IConfigurationRoot Build()
         {
             var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            return new ConfigurationBuilder()
+            
+            if (string.IsNullOrWhiteSpace(environmentName)) 
+                environmentName = "Development";
+
+            return  new ConfigurationBuilder()
                 .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
                 .AddJsonFile("appsettings.json", false)
                 .AddJsonFile($"appsettings.{environmentName}.json", true, true)

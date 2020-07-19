@@ -12,7 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
-    public class CreateContentDatabase
+    public class ContentDatabaseCreateCommand
     {
         private readonly ContentDbContext _DbContextProvider;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         private readonly ContentInsertDbCommand _InsertDbCommand;
         private readonly DateTime _Snapshot;
 
-        public CreateContentDatabase(ContentDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, GenericContentValidator validator, ContentInsertDbCommand insertDbCommand)
+        public ContentDatabaseCreateCommand(ContentDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, GenericContentValidator validator, ContentInsertDbCommand insertDbCommand)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
@@ -34,17 +34,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             await _DbContextProvider.Database.EnsureDeletedAsync();
             await _DbContextProvider.Database.EnsureCreatedAsync();
         }
-
-        //public async Task DropExampleContent()
-        //{
-        //    await using var tx = await _DbContextProvider.Database.BeginTransactionAsync();
-        //    foreach (var e in _DbContextProvider.AppConfigContent)
-        //        _DbContextProvider.AppConfigContent.Remove(e);
-
-        //    foreach (var e in _DbContextProvider.RiskCalculationContent)
-        //        _DbContextProvider.RiskCalculationContent.Remove(e);
-        //    _DbContextProvider.SaveAndCommit();
-        //}
 
         public async Task AddExampleContent()
         {

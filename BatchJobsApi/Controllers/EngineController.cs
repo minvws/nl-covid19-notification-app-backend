@@ -6,7 +6,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 
@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.Controllers
         [Route("/v1/nukeandpavedb")]
         public async Task<IActionResult> NakeAndPaveDb([FromServices] ProvisionDatabasesCommand command)
         {
-            _Logger.LogInformation("Manifest Engine triggered.");
+            _Logger.LogInformation("Provision Databases triggered.");
             await command.Execute();
             return new OkResult();
         }

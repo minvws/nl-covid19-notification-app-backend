@@ -9,7 +9,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Content
 {
-    public class ExposureKeySetContent : IEntityTypeConfiguration<ExposureKeySetContentEntity>
+    public class ExposureKeySetContentEtc : IEntityTypeConfiguration<ExposureKeySetContentEntity>
     {
         public void Configure(EntityTypeBuilder<ExposureKeySetContentEntity> builder)
         {

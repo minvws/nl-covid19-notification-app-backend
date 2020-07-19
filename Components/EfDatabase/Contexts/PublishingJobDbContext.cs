@@ -4,6 +4,7 @@
 
 using System;
 using Microsoft.EntityFrameworkCore;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.PublishingJob;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 
@@ -23,11 +24,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
             if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
             modelBuilder.HasDefaultSchema("dbo");
-            modelBuilder.ApplyConfiguration(new Configuration.Content.EksCreateJobInput());
-            modelBuilder.ApplyConfiguration(new Configuration.Content.EksCreateJobOutput());
-            modelBuilder.ApplyConfiguration(new Configuration.Content.ExposureKeySetContent());
-            modelBuilder.ApplyConfiguration(new Configuration.Content.Manifest());
-            modelBuilder.ApplyConfiguration(new Configuration.Content.GenericContentConfig());
+            modelBuilder.ApplyConfiguration(new EksCreateJobInputEtc());
+            modelBuilder.ApplyConfiguration(new EksCreateJobOutputEtc());
         }
     }
 }

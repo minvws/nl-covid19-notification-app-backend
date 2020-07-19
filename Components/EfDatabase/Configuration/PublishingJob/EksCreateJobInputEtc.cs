@@ -5,16 +5,16 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Workflow
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.PublishingJob
 {
-    public class TemporaryExposureKeyConfig : IEntityTypeConfiguration<TemporaryExposureKeyEntity>
+    public class EksCreateJobInputEtc : IEntityTypeConfiguration<EksCreateJobInputEntity>
     {
-        public void Configure(EntityTypeBuilder<TemporaryExposureKeyEntity> builder)
+        public void Configure(EntityTypeBuilder<EksCreateJobInputEntity> builder)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
-            builder.Property(u => u.Id).UseHiLo();
+            builder.ToTable("EksCreateJobInput");
         }
     }
 }

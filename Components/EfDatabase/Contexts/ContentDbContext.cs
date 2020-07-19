@@ -5,7 +5,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 
@@ -18,10 +17,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
         }
 
-        //TODO MOVE
-        public DbSet<EksCreateJobInputEntity> EksInput { get; set; }
-        //TODO MOVE
-        public DbSet<EksCreateJobOutputEntity> EksOutput { get; set; }
         public DbSet<ManifestEntity> ManifestContent { get; set; }
         public DbSet<ExposureKeySetContentEntity> ExposureKeySetContent { get; set; }
         public DbSet<GenericContentEntity> GenericContent { get; set; }
@@ -30,11 +25,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
             if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
             modelBuilder.HasDefaultSchema("dbo");
-            modelBuilder.ApplyConfiguration(new Configuration.Content.EksCreateJobInput());
-            modelBuilder.ApplyConfiguration(new Configuration.Content.EksCreateJobOutput());
-            modelBuilder.ApplyConfiguration(new Configuration.Content.ExposureKeySetContent());
-            modelBuilder.ApplyConfiguration(new Configuration.Content.Manifest());
-            modelBuilder.ApplyConfiguration(new Configuration.Content.GenericContentConfig());
+            modelBuilder.ApplyConfiguration(new Configuration.Content.ExposureKeySetContentEtc());
+            modelBuilder.ApplyConfiguration(new Configuration.Content.ManifestEtc());
+            modelBuilder.ApplyConfiguration(new Configuration.Content.GenericContentEtc());
         }
     }
 }

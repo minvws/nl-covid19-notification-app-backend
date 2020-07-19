@@ -5,17 +5,16 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration
 {
-    public class CreateWorkflowDatabase
+    public class WorkflowDatabaseCreateCommand
     {
         private readonly WorkflowDbContext _Provider;
 
-        public CreateWorkflowDatabase(IConfiguration configuration)
+        public WorkflowDatabaseCreateCommand(IConfiguration configuration)
         {
             var config = new StandardEfDbConfig(configuration, "Workflow");
             var builder = new SqlServerDbContextOptionsBuilder(config);
@@ -30,6 +29,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 
         public async Task AddExampleContent()
         {
+            var r = new Random();
+
             await using var tx = await _Provider.Database.BeginTransactionAsync();
 
             var wfs1 = new KeyReleaseWorkflowState
@@ -47,9 +48,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 RollingPeriod = 1,
                 RollingStartNumber = 1,
                 TransmissionRiskLevel = 0,
-                KeyData = new byte[0],
+                KeyData = new byte[16],
                 Region = "NL"
             };
+
+            r.NextBytes(key1.KeyData);
 
             var key2 = new TemporaryExposureKeyEntity
             {
@@ -58,9 +61,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 RollingPeriod = 1,
                 RollingStartNumber = 1,
                 TransmissionRiskLevel = 0,
-                KeyData = new byte[0],
+                KeyData = new byte[16],
                 Region = "NL"
             };
+
+            r.NextBytes(key1.KeyData);
 
             await _Provider.KeyReleaseWorkflowStates.AddAsync(wfs1);
             await _Provider.TemporaryExposureKeys.AddRangeAsync(key1, key2);

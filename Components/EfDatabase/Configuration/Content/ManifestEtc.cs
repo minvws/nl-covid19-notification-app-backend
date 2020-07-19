@@ -5,24 +5,18 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Content
 {
-    public class GenericContentConfig : IEntityTypeConfiguration<GenericContentEntity>
+    public class ManifestEtc : IEntityTypeConfiguration<ManifestEntity>
     {
-        public void Configure(EntityTypeBuilder<GenericContentEntity> builder)
+        public void Configure(EntityTypeBuilder<ManifestEntity> builder)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
-            builder.ToTable("GenericContent");
-            builder.Property(u => u.PublishingId).HasMaxLength(64);
-
-            builder.HasIndex(u => u.PublishingId);
-            builder.HasIndex(u => u.GenericType);
-            builder.HasIndex(u => u.Release);
-            builder.HasIndex(u => u.SignedContentTypeName);
-
+            builder.ToTable("Manifest");
             builder.Property(u => u.Id).UseHiLo();
+            builder.Property(u => u.PublishingId).HasMaxLength(64);
         }
     }
 }

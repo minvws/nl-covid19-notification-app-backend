@@ -24,22 +24,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         /// </summary>
         public string? PollToken { get; set; }
         
-        /// <summary>
-        /// TODO Add uq
-        /// </summary>
         public string? ConfirmationKey { get; set; }
 
-        /// <summary>
-        /// TODO Add uq
-        /// </summary>
         public string? BucketId { get; set; }
 
-        /// <summary>
-        /// TODO Add index?
-        /// </summary>
         public bool Authorised { get; set; }
 
-
+        /// <summary>
+        /// Explain to me what this is? Why different to Authorised?
+        /// </summary>
         public bool AuthorisedByCaregiver { get; set; }
 
         /// <summary>
@@ -52,6 +45,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         /// </summary>
         public DateTime DateOfSymptomsOnset { get; set; }
 
-        public ICollection<TemporaryExposureKeyEntity> Keys { get; set; }
+        public ICollection<TemporaryExposureKeyEntity> Keys { get; set; } = new List<TemporaryExposureKeyEntity>();
     }
 }

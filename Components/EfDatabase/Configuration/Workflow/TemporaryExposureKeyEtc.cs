@@ -9,18 +9,14 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Workflow
 {
-    public class KeyReleaseWorkflowStateConfig : IEntityTypeConfiguration<KeyReleaseWorkflowState>
+    public class TemporaryExposureKeyEtc : IEntityTypeConfiguration<TemporaryExposureKeyEntity>
     {
-        public void Configure(EntityTypeBuilder<KeyReleaseWorkflowState> builder)
+        public void Configure(EntityTypeBuilder<TemporaryExposureKeyEntity> builder)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
-            builder.ToTable("KeyReleaseWorkflowState");
             builder.Property(u => u.Id).UseHiLo();
-            builder
-                .HasMany(x => x.Keys)
-                .WithOne(x => x.Owner)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasIndex(u => u.PublishingState);
+            builder.HasIndex(u => u.Region);
         }
     }
 }

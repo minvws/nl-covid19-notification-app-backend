@@ -16,6 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         }
 
         public DbSet<InfectionConfirmationCodeEntity> InfectionConfirmationCodes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));

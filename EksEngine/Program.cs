@@ -38,6 +38,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
         {
             var _Configuration = configuration; //Temp hack before extension method.
 
+            services.AddLogging();
+
             services.AddScoped(x =>
             {
                 var config = new StandardEfDbConfig(configuration, "Content");
@@ -46,12 +48,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                 return result;
             });
 
+            services.AddScoped(x =>
+            {
+                var config = new StandardEfDbConfig(configuration, "PublishingJob");
+                var builder = new SqlServerDbContextOptionsBuilder(config);
+                var result = new PublishingJobDbContext(builder.Build());
+                return result;
+            });
+
+            services.AddScoped(x =>
+            {
+                var config = new StandardEfDbConfig(configuration, "Workflow");
+                var builder = new SqlServerDbContextOptionsBuilder(config);
+                var result = new WorkflowDbContext(builder.Build());
+                return result;
+            });
+
+            services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddScoped(x =>
                 new ExposureKeySetBatchJobMk2(
                     x.GetRequiredService<IGaenContentConfig>(),
                     x.GetRequiredService<IExposureKeySetBuilder>(),
                     x.GetRequiredService<WorkflowDbContext>(),
+                    x.GetRequiredService<PublishingJobDbContext>(),
                     x.GetRequiredService<ContentDbContext>(),
                     x.GetRequiredService<IUtcDateTimeProvider>(),
                     x.GetRequiredService<IPublishingId>(),
@@ -110,14 +130,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
                 services.AddScoped<IContentSigner>(x => new CmsSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>())));
             }
-
-
-
-
-
-
-
-
         }
     }
 }

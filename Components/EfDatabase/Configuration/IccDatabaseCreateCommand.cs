@@ -5,16 +5,15 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration
 {
-    public class CreateIccDatabase
+    public class IccDatabaseCreateCommand
     {
         private readonly IccBackendContentDbContext _Provider;
 
-        public CreateIccDatabase(IConfiguration configuration)
+        public IccDatabaseCreateCommand(IConfiguration configuration)
         {
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
