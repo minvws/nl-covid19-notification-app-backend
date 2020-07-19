@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
         [DataTestMethod]
         public void Build(int length)
         {
-            var signer = new CmsSigner(new ResourceCertificateProvider3(new HardCodedCertificateLocationConfig("FakeRSA.p12", "Covid19!"))); //Not a secret.
+            var signer = new CmsSigner(new LocalResourceCertificateProvider(new HardCodedCertificateLocationConfig("FakeRSA.p12", "Covid19!"))); //Not a secret.
             var content = Encoding.UTF8.GetBytes(CreateString(length));
             //TODO must have an Assert.IsTrue(signature.Length == signer.LengthBytes);
         }

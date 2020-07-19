@@ -62,7 +62,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             if (configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", false))
             {
-                services.AddScoped<IContentSigner>(x => new CmsSigner(new ResourceCertificateProvider3(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
+                if (configuration.GetValue("DevelopmentFlags:Azure", false))
+                    services.AddScoped<IContentSigner>(x => new CmsSigner(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
+                else
+                    services.AddScoped<IContentSigner>(x => new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
             }
             else
             {

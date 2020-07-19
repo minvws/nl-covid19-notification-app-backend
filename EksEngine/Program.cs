@@ -32,6 +32,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
+            var _Configuration = configuration; //Temp hack before extension method.
+
             services.AddScoped(x =>
             {
                 var config = new StandardEfDbConfig(configuration, "Content");
@@ -53,18 +55,64 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                 ));
 
             services.AddSingleton<IGaenContentConfig, StandardGaenContentConfig>();
-            services.AddScoped<IExposureKeySetBuilder>(x =>
-                new ExposureKeySetBuilderV1(
-                    x.GetRequiredService<IExposureKeySetHeaderInfoConfig>(),
-                    new EcdSaSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Signing:GA"), x.GetRequiredService<ILogger<X509CertificateProvider>>())),
-                    new CmsSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Signing:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>())),
-                    x.GetRequiredService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
-                    new GeneratedProtobufContentFormatter(),
-                    x.GetRequiredService<ILogger<ExposureKeySetBuilderV1>>()
-                ));
-
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
             services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();
+
+            if (_Configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", true))
+            {
+                if (_Configuration.GetValue("DevelopmentFlags:Azure", false))
+                {
+                    //AZURE
+                    services.AddScoped<IExposureKeySetBuilder>(x =>
+                        new ExposureKeySetBuilderV1(
+                            x.GetRequiredService<IExposureKeySetHeaderInfoConfig>(),
+                            new EcdSaSigner(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:GA"))),
+                            new CmsSigner(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"))),
+                            x.GetRequiredService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
+                            new GeneratedProtobufContentFormatter(),
+                            x.GetRequiredService<ILogger<ExposureKeySetBuilderV1>>()
+                        ));
+
+                    services.AddScoped<IContentSigner>(x => new CmsSigner(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"))));
+                }
+                else
+                {
+                    //UNIT TESTS, LOCAL DEBUG
+                    services.AddScoped<IExposureKeySetBuilder>(x =>
+                        new ExposureKeySetBuilderV1(
+                            x.GetRequiredService<IExposureKeySetHeaderInfoConfig>(),
+                            new EcdSaSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), "Certificates:GA"))),
+                            new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"))),
+                            x.GetRequiredService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
+                            new GeneratedProtobufContentFormatter(),
+                            x.GetRequiredService<ILogger<ExposureKeySetBuilderV1>>()
+                        ));
+
+                    services.AddScoped<IContentSigner>(x => new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"))));
+                }
+            }
+            else
+            {
+                //PROD
+                services.AddScoped<IExposureKeySetBuilder>(x =>
+                    new ExposureKeySetBuilderV1(
+                        x.GetRequiredService<IExposureKeySetHeaderInfoConfig>(),
+                        new EcdSaSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:GA"), x.GetRequiredService<ILogger<X509CertificateProvider>>())),
+                        new CmsSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>())),
+                        x.GetRequiredService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
+                        new GeneratedProtobufContentFormatter(),
+                        x.GetRequiredService<ILogger<ExposureKeySetBuilderV1>>()
+                    ));
+
+                services.AddScoped<IContentSigner>(x => new CmsSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>())));
+            }
+
+
+
+
+
+
+
 
         }
     }

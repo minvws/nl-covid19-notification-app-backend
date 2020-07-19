@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroup')]/providers/Microsoft.Sql/servers/sql-test-cam/databases/content",
+      "type": "mssql.azure",
+      "connectionId": "Content",
+      "secretStore": "AzureAppSettings"
+    }
+  }
+}
