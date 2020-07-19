@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             _Logger = logger;
         }
 
-        public X509Certificate2? GetCertificate()
+        public X509Certificate2 GetCertificate()
         {
             using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             store.Open(OpenFlags.ReadOnly);

@@ -3,14 +3,13 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content.NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     /// <summary>
     /// Differs to the generic Cdn get as it will be different data on the same URI.
@@ -56,7 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content.NL.Ri
             httpContext.Response.Headers.Add("content-type", content.SignedContentTypeName);
             httpContext.Response.Headers.Add("x-vws-signed", true.ToString());
             httpContext.Response.StatusCode = 200;
-            httpContext.Response.ContentLength = content.SignedContent.Length;
+            httpContext.Response.ContentLength = content.SignedContent?.Length ?? throw new InvalidOperationException("SignedContent empty.");
             await httpContext.Response.Body.WriteAsync(content.SignedContent);
         }
     }

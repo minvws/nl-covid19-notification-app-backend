@@ -1,20 +1,86 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ContentLoading;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
-namespace DbProvision
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 {
     class Program
     {
-        private const string conn = "Data Source=.;Initial Catalog={0};Integrated Security=True";
-
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
-            await new ContentDbContext(new SqlServerDbContextOptionsBuilder(string.Format(conn, "content")).Build()).Database.EnsureCreatedAsync();
-            await new WorkflowDbContext(new SqlServerDbContextOptionsBuilder(string.Format(conn, "workflow")).Build()).Database.EnsureCreatedAsync();
-            await new IccBackendContentDbContext(new SqlServerDbContextOptionsBuilder(string.Format(conn, "icc")).Build()).Database.EnsureCreatedAsync();
+            new ConsoleAppRunner().Execute(args, Configure, Start);
+        }
+
+        private static void Start(IServiceProvider services, string[] _)
+        {
+            services.GetRequiredService<ProvisionDatabasesCommand>().Execute().GetAwaiter().GetResult();
+        }
+
+        private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
+        {
+            services.AddScoped(x =>
+            {
+                var config = new StandardEfDbConfig(configuration, "Content");
+                var builder = new SqlServerDbContextOptionsBuilder(config);
+                var result = new ContentDbContext(builder.Build());
+                return result;
+            });
+
+            services.AddScoped(x =>
+            {
+                var config = new StandardEfDbConfig(configuration, "Content");
+                var builder = new SqlServerDbContextOptionsBuilder(config);
+                var result = new WorkflowDbContext(builder.Build());
+                return result;
+            });
+
+            services.AddTransient<CreateWorkflowDatabase>();
+            services.AddTransient<CreateContentDatabase>();
+            services.AddLogging();
+            services.AddSingleton<IConfiguration>(configuration);
+            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
+            services.AddScoped<ProvisionDatabasesCommand>();
+            services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.AddSingleton<IGaenContentConfig, StandardGaenContentConfig>();
+            services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();
+            services.AddScoped<GenericContentValidator>();
+            services.AddScoped<ContentInsertDbCommand>();
+            services.AddScoped<ZippedSignedContentFormatter>();
+
+            if (configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", true))
+            {
+                if (configuration.GetValue("DevelopmentFlags:Azure", false))
+                {
+                    //AZURE
+                    services.AddScoped<IContentSigner>(x => new CmsSigner(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
+                }
+                else
+                {
+                    //UNIT TESTS, LOCAL DEBUG
+                    services.AddScoped<IContentSigner>(x => new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
+                }
+            }
+            else
+            {
+                services.AddScoped<IContentSigner>(x => new CmsSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>())));
+            }
         }
     }
 }

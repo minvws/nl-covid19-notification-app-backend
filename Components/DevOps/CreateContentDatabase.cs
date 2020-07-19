@@ -6,11 +6,10 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ContentLoading;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
@@ -20,29 +19,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
     {
         private readonly ContentDbContext _DbContextProvider;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly StandardContentEntityFormatter _Formatter;
-        private readonly IJsonSerializer _JsonSerializer;
+        private readonly GenericContentValidator _Validator;
+        private readonly ContentInsertDbCommand _InsertDbCommand;
+        private readonly DateTime _Snapshot;
 
-        public CreateContentDatabase(IConfiguration configuration, IUtcDateTimeProvider dateTimeProvider, IContentSigner signer, IJsonSerializer jsonSerializer)
+        public CreateContentDatabase(ContentDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, GenericContentValidator validator, ContentInsertDbCommand insertDbCommand)
         {
-            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
-            _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-
-            var config = new StandardEfDbConfig(configuration, "Content");
-            var builder = new SqlServerDbContextOptionsBuilder(config);
-            _DbContextProvider = new ContentDbContext(builder.Build());
-            _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter(), jsonSerializer);
-        }
-
-        public CreateContentDatabase(ContentDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IContentSigner signer, IJsonSerializer jsonSerializer)
-        {
-            _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
-            _Formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(signer), new StandardPublishingIdFormatter(), jsonSerializer);
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _Validator = validator ?? throw new ArgumentNullException(nameof(validator));
+            _InsertDbCommand = insertDbCommand ?? throw new ArgumentNullException(nameof(insertDbCommand));
+            _Snapshot = _DateTimeProvider.Now();
         }
-
 
         public async Task Execute()
         {
@@ -50,66 +38,48 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             await _DbContextProvider.Database.EnsureCreatedAsync();
         }
 
-        public async Task DropExampleContent()
-        {
-            await using var tx = await _DbContextProvider.Database.BeginTransactionAsync();
-            foreach (var e in _DbContextProvider.AppConfigContent)
-                _DbContextProvider.AppConfigContent.Remove(e);
+        //public async Task DropExampleContent()
+        //{
+        //    await using var tx = await _DbContextProvider.Database.BeginTransactionAsync();
+        //    foreach (var e in _DbContextProvider.AppConfigContent)
+        //        _DbContextProvider.AppConfigContent.Remove(e);
 
-            foreach (var e in _DbContextProvider.RiskCalculationContent)
-                _DbContextProvider.RiskCalculationContent.Remove(e);
-            _DbContextProvider.SaveAndCommit();
-        }
+        //    foreach (var e in _DbContextProvider.RiskCalculationContent)
+        //        _DbContextProvider.RiskCalculationContent.Remove(e);
+        //    _DbContextProvider.SaveAndCommit();
+        //}
 
         public async Task AddExampleContent()
         {
             await using var tx = await _DbContextProvider.Database.BeginTransactionAsync();
-
-            var rcd = ReadFromResource<RiskCalculationConfigArgs>("RiskCalcDefaults.json");
-            rcd.Release = _DateTimeProvider.Now();
-            await Write(rcd);
-
-            var acd = ReadFromResource<AppConfigArgs>("AppConfigDefaults.json");
-            acd.Release = _DateTimeProvider.Now();
-            await Write(acd);
-
+            await Write(GenericContentTypes.RiskCalculationParameters, "RiskCalcDefaults.json");
+            await Write(GenericContentTypes.AppConfig, "AppConfigDefaults.json");
             _DbContextProvider.SaveAndCommit();
         }
 
-        private T ReadFromResource<T>(string resourceName)
+        private string ReadFromResource(string resourceName)
         {
             var a = System.Reflection.Assembly.GetExecutingAssembly();
-            var manifestResourceStream = a.GetManifestResourceStream($"NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps.{resourceName}");
+            var manifestResourceStream = a.GetManifestResourceStream($"NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Resources.{resourceName}");
 
             if (manifestResourceStream == null)
                 throw new InvalidOperationException("Resource not found.");
 
             using var s = new StreamReader(manifestResourceStream);
-            var jsonString = s.ReadToEnd();
-            var args = _JsonSerializer.Deserialize<T>(jsonString);
-            return args;
+            return s.ReadToEnd();
         }
 
-        private async Task Write(RiskCalculationConfigArgs a4)
+        private async Task Write(string type, string resource)
         {
-            var e4 = new RiskCalculationContentEntity
+            var rcd = ReadFromResource(resource);
+            var args = new GenericContentArgs
             {
-                Created = _DateTimeProvider.Now(), //TODO audit stamp
-                Release = a4.Release
+                Release = _Snapshot,
+                GenericContentType = type,
+                Json = rcd
             };
-            await _Formatter.Fill(e4, a4.ToContent());
-            await _DbContextProvider.AddAsync(e4);
-        }
-
-        private async Task Write(AppConfigArgs a4)
-        {
-            var e4 = new AppConfigContentEntity
-            {
-                Created = _DateTimeProvider.Now(), //TODO audit stamp
-                Release = a4.Release
-            };
-            await _Formatter.Fill(e4, a4.ToContent());
-            await _DbContextProvider.AddAsync(e4);
+            if (!_Validator.IsValid(args)) throw new InvalidOperationException();
+            await _InsertDbCommand.Execute(args);
         }
     }
 }

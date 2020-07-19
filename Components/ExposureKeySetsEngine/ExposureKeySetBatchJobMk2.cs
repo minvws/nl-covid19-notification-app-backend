@@ -156,8 +156,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             await using (_WorkflowDbContext.BeginTransaction())
             {
-                await _ContentDbContext.EksInput.BatchDeleteAsync(); //TODO truncate instead
-                await _ContentDbContext.EksOutput.BatchDeleteAsync();
+                await _ContentDbContext.Set<EksCreateJobInputEntity>().BatchDeleteAsync(); //TODO truncate instead
+                await _ContentDbContext.Set<EksCreateJobOutputEntity>().BatchDeleteAsync();
 
                 var read = _WorkflowDbContext.TemporaryExposureKeys
                     .Where(x => (x.Owner.Authorised || useAllKeys) && x.PublishingState == PublishingState.Unpublished) 
@@ -181,7 +181,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private EksCreateJobInputEntity[] GetInputBatch(int skip, int take)
         {
             _Logger.LogDebug($"Read input batch - skip {skip}, take {take}.");
-            return _ContentDbContext.EksInput.OrderBy(x => x.KeyData).Skip(skip).Take(take).ToArray();
+            return _ContentDbContext.Set<EksCreateJobInputEntity>().OrderBy(x => x.KeyData).Skip(skip).Take(take).ToArray();
         }
 
         private async Task WriteUsed(EksCreateJobInputEntity[] used)
@@ -205,7 +205,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             await using (_ContentDbContext.BeginTransaction())
             {
-                var move = _ContentDbContext.EksOutput.Select(
+                var move = _ContentDbContext.Set<EksCreateJobOutputEntity>().Select(
                     x => new ExposureKeySetContentEntity
                     {
                         Created = _Start,
@@ -216,7 +216,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                         CreatingJobQualifier = x.CreatingJobQualifier,
                         PublishingId = _PublishingId.Create(x.Content)
                     }).ToArray();
-                _ContentDbContext.ExposureKeySetContent.AddRange(move);
+                _ContentDbContext.Set<ExposureKeySetContentEntity>().AddRange(move);
                 _ContentDbContext.SaveAndCommit();
             }
 
@@ -261,8 +261,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 }
 
                 _Logger.LogInformation($"Cleanup job tables.");
-                await _ContentDbContext.EksInput.BatchDeleteAsync();
-                await _ContentDbContext.EksOutput.BatchDeleteAsync();
+                await _ContentDbContext.Set<EksCreateJobInputEntity>().BatchDeleteAsync();
+                await _ContentDbContext.Set<EksCreateJobOutputEntity>().BatchDeleteAsync();
                 _ContentDbContext.SaveAndCommit();
             }
         }

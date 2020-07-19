@@ -1,17 +1,13 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
-// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
-// SPDX-License-Identifier: EUPL-1.2
-
-using System;
+﻿using System;
 using System.Security.Cryptography.X509Certificates;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers
 {
-    public class LocalResourceCertificateProvider : ICertificateProvider
+    public class AzureResourceCertificateProvider : ICertificateProvider
     {
         private readonly ICertificateLocationConfig _Config;
 
-        public LocalResourceCertificateProvider(ICertificateLocationConfig config)
+        public AzureResourceCertificateProvider(ICertificateLocationConfig config)
         {
             _Config = config ?? throw new ArgumentNullException(nameof(config));
         }
@@ -27,7 +23,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             var bytes = new byte[s.Length];
             s.Read(bytes, 0, bytes.Length);
 
-            return new X509Certificate2(bytes, _Config.Password, X509KeyStorageFlags.Exportable);
+            return new X509Certificate2(bytes, _Config.Password, 
+                X509KeyStorageFlags.MachineKeySet |
+                X509KeyStorageFlags.PersistKeySet |
+                X509KeyStorageFlags.Exportable 
+            );
         }
     }
 }

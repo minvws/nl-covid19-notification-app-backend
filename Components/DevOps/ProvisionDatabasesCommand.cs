@@ -14,30 +14,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
     public class ProvisionDatabasesCommand
     {
-        private readonly IConfiguration _Configuration;
-        private readonly IContentSigner _ContentSigner;
-        private readonly IJsonSerializer _JsonSerializer;
+        private readonly CreateWorkflowDatabase _Workflow;
+        private readonly CreateContentDatabase _Content;
 
-        public ProvisionDatabasesCommand(IConfiguration configuration, IContentSigner contentSigner, IJsonSerializer jsonSerializer)
+        public ProvisionDatabasesCommand(CreateWorkflowDatabase workflow, CreateContentDatabase content)
         {
-            _Configuration = configuration;
-            _ContentSigner = contentSigner;
-            _JsonSerializer = jsonSerializer;
+            _Workflow = workflow ?? throw new ArgumentNullException(nameof(workflow));
+            _Content = content ?? throw new ArgumentNullException(nameof(content));
         }
 
-        public async Task<IActionResult> Execute()
+        public async Task Execute()
         {
-            var db2 = new CreateWorkflowDatabase(_Configuration);
-            await db2.Execute();
-            await db2.AddExampleContent();
+            await _Workflow.Execute();
+            await _Workflow.AddExampleContent();
 
-            var db3 = new CreateContentDatabase(_Configuration, new StandardUtcDateTimeProvider(), _ContentSigner, _JsonSerializer);
-            await db3.Execute();
-            await db3.AddExampleContent();
-
+            await _Content.Execute();
+            await _Content.AddExampleContent();
             Console.WriteLine("Completed.");
-
-            return new OkResult();
         }
     }
 }

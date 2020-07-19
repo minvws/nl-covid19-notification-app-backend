@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ContentLoading;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -17,22 +18,36 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     /// Includes mitigations for CDN cache miss/stale item edge cases.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class HttpGetCdnContentCommand<T> where T: ContentEntity
+    public class HttpGetCdnGenericContentCommand
     {
         private readonly ContentDbContext _DbContext;
         private readonly IPublishingId _PublishingId;
         private readonly ILogger _Logger;
 
-        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingId publishingId, ILogger<HttpGetCdnContentCommand<T>> logger)
+        public HttpGetCdnGenericContentCommand(ContentDbContext dbContext, IPublishingId publishingId, ILogger<HttpGetCdnGenericContentCommand> logger)
         {
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _PublishingId = publishingId ?? throw new ArgumentNullException(nameof(publishingId));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task Execute(HttpContext httpContext, string id)
+        public async Task Execute(HttpContext httpContext, string genericContentName, string id)
         {
             if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
+
+            if (!GenericContentTypes.IsValid(genericContentName))
+            {
+                _Logger.LogError($"Invalid generic content type - {id}.");
+                httpContext.Response.StatusCode = 400;
+                httpContext.Response.ContentLength = 0;
+            }
+
+            if (!_PublishingId.Validate(id))
+            {
+                _Logger.LogError($"Invalid content id - {id}.");
+                httpContext.Response.StatusCode = 400;
+                httpContext.Response.ContentLength = 0;
+            }
 
             //This looked like a bug?
             if (!httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
@@ -42,14 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 httpContext.Response.StatusCode = 400; //TODO!
             }
 
-            if (typeof(T) != typeof(ManifestEntity) && !_PublishingId.Validate(id))
-            {
-                _Logger.LogError($"Invalid content id - {id}.");
-                httpContext.Response.StatusCode = 400;
-                httpContext.Response.ContentLength = 0;
-            }
-
-            var content = await _DbContext.SafeGetContent<T>(id);
+            var content = await _DbContext.SafeGetGenericContent(genericContentName, id);
             
             if (content == null)
             {

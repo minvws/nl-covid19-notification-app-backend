@@ -5,18 +5,24 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ContentLoading;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Content
 {
-    public class RiskCalculationContent : IEntityTypeConfiguration<RiskCalculationContentEntity>
+    public class GenericContentConfig : IEntityTypeConfiguration<GenericContentEntity>
     {
-        public void Configure(EntityTypeBuilder<RiskCalculationContentEntity> builder)
+        public void Configure(EntityTypeBuilder<GenericContentEntity> builder)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
-            builder.ToTable("RiskCalculationContent");
-            builder.Property(u => u.Id).UseHiLo();
+            builder.ToTable("GenericContent");
             builder.Property(u => u.PublishingId).HasMaxLength(64);
+
+            builder.HasIndex(u => u.PublishingId);
+            builder.HasIndex(u => u.GenericType);
+            builder.HasIndex(u => u.Release);
+            builder.HasIndex(u => u.SignedContentTypeName);
+
+            builder.Property(u => u.Id).UseHiLo();
         }
     }
 }

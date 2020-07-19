@@ -4,10 +4,15 @@
 
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ContentLoading
 {
-    public class AppConfigContentEntity : ContentEntity
-    {
-        
+
+
+
+
+    public class GenericContentEntity : ContentEntity
+    { 
+        public string GenericType { get; set; }
     }
 }
+;

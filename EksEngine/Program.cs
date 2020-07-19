@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -26,8 +27,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             new ConsoleAppRunner().Execute(args, Configure, Start);
         }
 
-        private static void Start(IServiceProvider arg1, string[] arg2)
+        private static void Start(IServiceProvider serviceProvider, string[] args)
         {
+            var useAllKeys = args.Length > 0 && bool.TryParse(args[0], out var value) && value;
+            using var job = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk2>();
+            job.Execute(useAllKeys).GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
