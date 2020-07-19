@@ -9,20 +9,22 @@ FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-parse --short HEAD`) DO (
   SET suffix= "%suffix%-%%F"  
 )
 
-REM Publish all of the deployable projects
-dotnet publish CdnDataApi\CdnDataApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\BZ\CdnDataApi --version-suffix %suffix%
-dotnet publish CdnDataPurge\CdnDataPurge.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Azure\CdnDataPurge --version-suffix %suffix%
-dotnet publish CdnDataReceiver2\CdnDataReceiver2.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Azure\CdnDataReceiver2 --version-suffix %suffix%
-dotnet publish CdnPusherEngine2\CdnPusherEngine2.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\DMZ\CdnPusherEngine2 --version-suffix %suffix%
-dotnet publish CdnRegionSync\CdnRegionSync.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Azure\CdnRegionSync --version-suffix %suffix%
-dotnet publish DatabaseProvisioningTool\DatabaseProvisioningTool.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\DatabaseProvisioningTool --version-suffix %suffix%
-dotnet publish EKSEngineApi\EKSEngineApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\BZ\EKSEngineApi --version-suffix %suffix%
-dotnet publish ICCBackend\ICCBackend.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\BZ\ICCBackend --version-suffix %suffix%
-dotnet publish ICCPortal\IccPortalAuthorizer.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\DMZ\IccPortalAuthorizer --version-suffix %suffix%
-dotnet publish KeyReleasePortalApi\KeyReleaseApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\BZ\KeyReleasePortalApi --version-suffix %suffix%
-dotnet publish KeysLastWorkflowApi\WorkflowApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\BZ\KeysLastWorkflowApi --version-suffix %suffix%
-dotnet publish ScheduledTaskEngine\ScheduledTaskEngine.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\ScheduledTaskEngine --version-suffix %suffix%
-dotnet publish WorkflowStateEngineApi\WorkflowStateEngineApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\BZ\WorkflowStateEngineApi --version-suffix %suffix%
+REM Publish websites
+dotnet publish BatchJobsApi\BatchJobsApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\BatchJobsApi --version-suffix %suffix%
+dotnet publish ContentApi\ContentApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\ContentApi --version-suffix %suffix%
+dotnet publish ICCBackend\ICCBackend.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\ICCBackend --version-suffix %suffix%
+dotnet publish MobileAppApi\MobileAppApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\MobileAppApi --version-suffix %suffix%
+
+REM Publish command-line
+dotnet publish EksEngine\EksEngine.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\EksEngine --version-suffix %suffix%
+dotnet publish ManifestEngine\ManifestEngine.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\ManifestEngine --version-suffix %suffix%
+
+REM Publish tools
+dotnet publish DbProvision\DbProvision.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\DbProvision --version-suffix %suffix%
+dotnet publish GenTeks\GenTeks.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\GenTeks --version-suffix %suffix%
+
+REM Publish stand-alone server
+REM dotnet publish ServerStandAlone\ServerStandAlone.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\ServerStandAlone --version-suffix %suffix%
 
 @echo on
 
