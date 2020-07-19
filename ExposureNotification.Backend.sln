@@ -27,8 +27,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BatchJobsApi", "BatchJobsAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccBackend", "ICCBackend\IccBackend.csproj", "{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccPortalAuthorizer", "IccPortalAuthorizer\IccPortalAuthorizer.csproj", "{2E5FC398-C354-4D0E-84F3-804411340C65}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5CB694D0-78E1-4347-BF78-A557E0780125}"
 	ProjectSection(SolutionItems) = preProject
 		docker\README.md = docker\README.md
@@ -78,10 +76,6 @@ Global
 		{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2E5FC398-C354-4D0E-84F3-804411340C65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2E5FC398-C354-4D0E-84F3-804411340C65}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2E5FC398-C354-4D0E-84F3-804411340C65}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2E5FC398-C354-4D0E-84F3-804411340C65}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E9B743F3-6643-4BD6-A136-2887F64A5BEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E9B743F3-6643-4BD6-A136-2887F64A5BEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9B743F3-6643-4BD6-A136-2887F64A5BEB}.Release|Any CPU.ActiveCfg = Release|Any CPU

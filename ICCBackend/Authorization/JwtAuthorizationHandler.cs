@@ -10,26 +10,24 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 
-namespace NL.Rijksoverheid.ExposureNotification.IccBackend
+namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Authorization
 {
-    public class IccAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    public class JwtAuthorizationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        private readonly IIccService _IccService;
+        private readonly JwtService _JwtService;
         private readonly ILogger _Logger;
 
-        public IccAuthenticationHandler(
+        public JwtAuthorizationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            IIccService iccService,
-            ISystemClock clock)
-            : base(options, logger, encoder, clock)
+            ISystemClock clock,
+            JwtService jwtService) : base(options, logger, encoder, clock)
         {
-            _IccService = iccService;
-            _Logger = logger.CreateLogger<IccAuthenticationHandler>(); //TODO ??
+            _JwtService = jwtService;
+            _Logger = logger.CreateLogger<ILogger<JwtAuthorizationHandler>>(); //TODO there was resolve warning here cos the name clashed with JwtAuthorizationHandler in lib namespace
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -38,25 +36,31 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             {
                 return AuthenticateResult.Fail("Missing Authorization Header");
             }
-                
-            InfectionConfirmationCodeEntity infectionConfirmationCodeEntity;
+
+            bool isValidJwt;
+            string jwtToken;
             try
             {
                 var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
                 var authHeaderString = authHeader.ToString();
-                infectionConfirmationCodeEntity = await _IccService.Validate(authHeaderString);
+                jwtToken = authHeaderString.Replace("Bearer ", "").Trim();
+                isValidJwt = _JwtService.IsValidJwt(jwtToken);
             }
-            catch(Exception e)
-            {    
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
                 _Logger.LogCritical(e.ToString());
-                return AuthenticateResult.Fail("Invalid Icc");
+                return AuthenticateResult.Fail("Invalid Jwt");
             }
 
-            if (infectionConfirmationCodeEntity == null) return AuthenticateResult.Fail("Invalid Icc");
+            if (!isValidJwt) return AuthenticateResult.Fail("Invalid Jwt");
 
+            // TODO: Add other payload items as well to current claims
+            
+            var jwtPayload = _JwtService.DecodeJwt(jwtToken);
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, infectionConfirmationCodeEntity.Code)
+                new Claim(ClaimTypes.Name, jwtPayload["name"].ToString())
             };
             var identity = new ClaimsIdentity(claims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);

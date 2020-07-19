@@ -2,11 +2,13 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.IO;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,19 +18,34 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using NL.Rijksoverheid.ExposureNotification.IccBackend.Authorization;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Services;
+using System;
+using System.IO;
+using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private string BaseUrl
         {
-            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            get
+            {
+                var configSection = _Configuration.GetSection("IccPortalConfig:IdentityHub:base_url");
+
+                return configSection.Exists() ? configSection.Value : string.Empty;
+            }
         }
 
-        public IConfiguration Configuration { get; }
+        public Startup(IConfiguration configuration)
+        {
+            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        }
+
+        private readonly IConfiguration _Configuration;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -44,19 +61,33 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             // Database Scoping
             services.AddScoped(x =>
             {
-                var config = new StandardEfDbConfig(Configuration, "Icc");
+                var config = new StandardEfDbConfig(_Configuration, "WorkFlow");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new IccBackendContentDbContext(builder.Build());
+                var result = new WorkflowDbContext(builder.Build());
                 result.BeginTransaction();
                 return result;
             });
 
+            services.AddScoped<FrontendService, FrontendService>();
+            services.AddScoped<HttpPostAuthorise, HttpPostAuthorise>();
+            services.AddScoped<HttpPostLabVerify, HttpPostLabVerify>();
+            services.AddScoped<IAuthorisationWriter, AuthorisationWriter>();
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
-            services.AddScoped<IIccService, IccService>();
-            services.AddScoped<AppBackendService, AppBackendService>();
-            services.AddAuthentication("IccAuthentication")
-                .AddScheme<AuthenticationSchemeOptions, IccAuthenticationHandler>("IccAuthentication", null);
+            services.AddScoped<JwtService, JwtService>();
+            services.AddScoped<LabVerifyChecker, LabVerifyChecker>();
+            services.AddScoped<PollTokenGenerator, PollTokenGenerator>();
+
+            services.AddMvc(config =>
+            {
+                config.EnableEndpointRouting = false;
+                var policy = new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(TheIdentityHubDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser()
+                    .Build();
+                config.Filters.Add(new AuthorizeFilter(policy));
+                // .RequireClaim(ClaimTypes.Role)
+            });
 
             services.AddCors();
 
@@ -92,6 +123,37 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 o.OperationFilter<SecurityRequirementsOperationFilter>();
 
             });
+
+                        services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
+            // TODO: Make service for adding authentication + configuration model
+            services
+                .AddAuthentication(auth => {
+                    auth.DefaultChallengeScheme = TheIdentityHubDefaults.AuthenticationScheme;
+                    auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
+                .AddCookie()
+                .AddTheIdentityHubAuthentication(options =>
+                {
+                    if (!string.IsNullOrWhiteSpace(BaseUrl))
+                    {
+                        options.TheIdentityHubUrl = new Uri(BaseUrl);
+                    }
+
+                    options.Tenant = _Configuration.GetSection("IccPortalConfig:IdentityHub:tenant").Value;
+                    options.ClientId = _Configuration.GetSection("IccPortalConfig:IdentityHub:client_id").Value;
+                    options.ClientSecret = _Configuration.GetSection("IccPortalConfig:IdentityHub:client_secret").Value;
+                });
+
+            services
+                .AddAuthentication("jwt")
+                .AddScheme<AuthenticationSchemeOptions, JwtAuthorizationHandler>("jwt", null);
         }
 
         
@@ -100,10 +162,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             if (app == null) throw new ArgumentNullException(nameof(app));
             if (env == null) throw new ArgumentNullException(nameof(env));
 
-            app.UseCors(options => options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS
+            app.UseCors(options => 
+                options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS
             
             app.UseSwagger();
-            app.UseSwaggerUI(o => { o.SwaggerEndpoint("../swagger/v1/swagger.json", "Icc Back-end Server V1"); });
+            app.UseSwaggerUI(o => { o.SwaggerEndpoint("../swagger/v1/swagger.json", "GGD Portal Backend V1"); });
 
             if (env.IsDevelopment())
             {
@@ -116,6 +179,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseCookiePolicy();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
