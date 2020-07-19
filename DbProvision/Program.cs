@@ -44,7 +44,7 @@ namespace DbProvision
 
             services.AddScoped(x =>
             {
-                var config = new StandardEfDbConfig(configuration, "Content");
+                var config = new StandardEfDbConfig(configuration, "Workflow");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new WorkflowDbContext(builder.Build());
                 return result;

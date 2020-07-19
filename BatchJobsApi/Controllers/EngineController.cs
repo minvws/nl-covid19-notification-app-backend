@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 
@@ -23,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.Controllers
         }
 
         [HttpPost]
-        [Route("/v1/eksengineexecute")]
+        [Route("/v1/eksengine")]
         public async Task<IActionResult> ExposureKeySets([FromQuery] bool useAllKeys, [FromServices] ExposureKeySetBatchJobMk2 command)
         {
             _Logger.LogInformation("EKS Engine triggered.");
@@ -32,8 +33,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.Controllers
         }
 
         [HttpPost]
-        [Route("/v1/manifestengineexecute")]
+        [Route("/v1/manifestengine")]
         public async Task<IActionResult> Manifest([FromServices] ManifestBatchJob command)
+        {
+            _Logger.LogInformation("Manifest Engine triggered.");
+            await command.Execute();
+            return new OkResult();
+        }
+
+        [HttpPost]
+        [Route("/v1/nukeandpavedb")]
+        public async Task<IActionResult> NakeAndPaveDb([FromServices] ProvisionDatabasesCommand command)
         {
             _Logger.LogInformation("Manifest Engine triggered.");
             await command.Execute();

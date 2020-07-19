@@ -9,11 +9,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
@@ -39,8 +41,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
         {
             services.AddLogging();
 
-            services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
-
             services.AddControllers(options =>
             {
                 options.RespectBrowserAcceptHeader = true;
@@ -63,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
             });
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddScoped(x =>
+            services.AddTransient(x =>
                 new ExposureKeySetBatchJobMk2(
                     x.GetService<IGaenContentConfig>(),
                     x.GetService<IExposureKeySetBuilder>(),
@@ -73,8 +73,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
                     x.GetService<IPublishingId>(),
                     x.GetService<ILogger<ExposureKeySetBatchJobMk2>>()
                 ));
-
-            services.AddSingleton<IGaenContentConfig, StandardGaenContentConfig>();
 
             if (_Configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", true))
             {
@@ -127,22 +125,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
                 services.AddScoped<IContentSigner>(x => new CmsSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>())));
             }
 
-
-
-
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
             services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();
 
             services.AddLogging();
             services.AddSingleton(_Configuration);
-            services.AddScoped<ManifestBatchJob>();
-            services.AddScoped<ManifestBuilder>();
-            services.AddScoped<ManifestBuilderAndFormatter>();
-            services.AddScoped<IContentEntityFormatter, StandardContentEntityFormatter>();
-            services.AddScoped<ZippedSignedContentFormatter>();
+            services.AddTransient<ManifestBatchJob>();
+            services.AddTransient<ManifestBuilder>();
+            services.AddTransient<ManifestBuilderAndFormatter>();
+            services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
+            services.AddTransient<ZippedSignedContentFormatter>();
+            services.AddSingleton<IGaenContentConfig, StandardGaenContentConfig>();
+            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
+            services.AddSingleton(_Configuration);
 
-
-            services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
+            services.AddTransient<CreateWorkflowDatabase>();
+            services.AddTransient<CreateContentDatabase>();
+            services.AddTransient<ProvisionDatabasesCommand>();
+            services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.AddTransient<IPublishingId, StandardPublishingIdFormatter>();
+            services.AddTransient<GenericContentValidator>();
+            services.AddTransient<ContentInsertDbCommand>();
+            services.AddTransient<ZippedSignedContentFormatter>();
 
             services.AddSwaggerGen(o =>
             {
