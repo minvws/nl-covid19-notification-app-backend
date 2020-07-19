@@ -3,13 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ContentLoading;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
@@ -23,12 +21,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         private readonly ContentDbContext _DbContext;
         private readonly IPublishingId _PublishingId;
         private readonly ILogger _Logger;
+        private readonly IHttpResponseHeaderConfig _HttpResponseHeaderConfig;
 
-        public HttpGetCdnGenericContentCommand(ContentDbContext dbContext, IPublishingId publishingId, ILogger<HttpGetCdnGenericContentCommand> logger)
+        public HttpGetCdnGenericContentCommand(ContentDbContext dbContext, IPublishingId publishingId, ILogger<HttpGetCdnGenericContentCommand> logger, IHttpResponseHeaderConfig httpResponseHeaderConfig)
         {
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _PublishingId = publishingId ?? throw new ArgumentNullException(nameof(publishingId));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _HttpResponseHeaderConfig = httpResponseHeaderConfig ?? throw new ArgumentNullException(nameof(httpResponseHeaderConfig));
         }
 
         public async Task Execute(HttpContext httpContext, string genericContentName, string id)
@@ -90,6 +90,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             httpContext.Response.Headers.Add("etag", content.PublishingId);
             httpContext.Response.Headers.Add("last-modified", content.Release.ToUniversalTime().ToString("r"));
             httpContext.Response.Headers.Add("content-type", content.SignedContentTypeName);
+            httpContext.Response.Headers.Add("cache-control", _HttpResponseHeaderConfig.ImmutableContentCacheControl);
             httpContext.Response.StatusCode = 200;
             httpContext.Response.ContentLength = content.SignedContent?.Length ?? throw new InvalidOperationException("SignedContent empty.");
             await httpContext.Response.Body.WriteAsync(content.SignedContent);

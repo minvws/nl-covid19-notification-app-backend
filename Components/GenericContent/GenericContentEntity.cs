@@ -4,7 +4,7 @@
 
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ContentLoading
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent
 {
 
 

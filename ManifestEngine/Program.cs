@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -33,14 +37,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
         {
             services.AddLogging();
             services.AddSingleton<IConfiguration>(configuration);
-            services.AddScoped<ManifestBatchJob>();
-            services.AddScoped<ManifestBuilderAndFormatter>();
-            services.AddScoped<StandardContentEntityFormatter>();
-            services.AddScoped<ZippedSignedContentFormatter>();
+            services.AddTransient<ManifestBatchJob>();
+            services.AddTransient<ManifestBuilderAndFormatter>();
+            services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
+            services.AddTransient<ZippedSignedContentFormatter>();
+            services.AddTransient<IPublishingId, StandardPublishingIdFormatter>();
 
-            services.AddScoped<HttpGetCdnManifestCommand>();
-            services.AddScoped<HttpGetCdnGenericContentCommand>();
-            services.AddScoped<HttpGetCdnContentCommand<ExposureKeySetContentEntity>>();
+            services.AddTransient<HttpGetCdnManifestCommand>();
+            services.AddTransient<HttpGetCdnGenericContentCommand>();
+            services.AddTransient<HttpGetCdnContentCommand<ExposureKeySetContentEntity>>();
 
             services.AddScoped(x =>
             {
@@ -49,23 +54,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
                 var result = new ContentDbContext(builder.Build());
                 return result;
             });
-            services.AddScoped<ManifestBuilder>();
+            services.AddTransient<ManifestBuilder>();
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             if (configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", false))
             {
                 if (configuration.GetValue("DevelopmentFlags:Azure", false))
-                    services.AddScoped<IContentSigner>(x => new CmsSigner(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
+                    services.AddTransient<IContentSigner>(x => new CmsSigner(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
                 else
-                    services.AddScoped<IContentSigner>(x => new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
+                    services.AddTransient<IContentSigner>(x => new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
             }
             else
             {
-                services.AddScoped<IContentSigner>(x
+                services.AddTransient<IContentSigner>(x
                     => new CmsSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"),
                         x.GetRequiredService<ILogger<X509CertificateProvider>>())));
             }
-            services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
-            services.AddScoped<IGaenContentConfig, StandardGaenContentConfig>();
+            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
+            services.AddSingleton<IGaenContentConfig, StandardGaenContentConfig>();
         }
     }
 }

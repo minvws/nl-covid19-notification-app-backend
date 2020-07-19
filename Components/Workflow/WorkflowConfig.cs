@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         {
         }
 
-        public double SecretLifetimeDays => GetValueDouble(nameof(SecretLifetimeDays), WorkflowTokenTtlDaysDefault);
-        public double AuthorisationWindowDurationMinutes => GetValueDouble(nameof(AuthorisationWindowDurationMinutes), WorkflowTokenTtlDaysDefault);
+        public double SecretLifetimeDays => GetConfigValue(nameof(SecretLifetimeDays), (double) WorkflowTokenTtlDaysDefault);
+        public double AuthorisationWindowDurationMinutes => GetConfigValue(nameof(AuthorisationWindowDurationMinutes), (double) WorkflowTokenTtlDaysDefault);
     }
 }

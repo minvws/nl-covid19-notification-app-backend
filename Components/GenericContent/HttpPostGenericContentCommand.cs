@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ContentLoading
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent
 {
     public class HttpPostGenericContentCommand
     {

@@ -6,25 +6,18 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts
 {
-    public class ContentDbContext : DbContext
+    public class PublishingJobDbContext : DbContext
     {
-        public ContentDbContext(DbContextOptions options)
+        public PublishingJobDbContext(DbContextOptions options)
             : base(options)
         {
         }
 
-        //TODO MOVE
         public DbSet<EksCreateJobInputEntity> EksInput { get; set; }
-        //TODO MOVE
         public DbSet<EksCreateJobOutputEntity> EksOutput { get; set; }
-        public DbSet<ManifestEntity> ManifestContent { get; set; }
-        public DbSet<ExposureKeySetContentEntity> ExposureKeySetContent { get; set; }
-        public DbSet<GenericContentEntity> GenericContent { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

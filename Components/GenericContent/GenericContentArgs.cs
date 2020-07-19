@@ -4,7 +4,7 @@
 
 using System;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ContentLoading
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent
 {
     public class GenericContentArgs
     {

@@ -1,3 +1,7 @@
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
 using Google.Protobuf.Reflection;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat
@@ -13,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat
         private static FileDescriptor descriptor;
 
         static TemporaryExposureKeyExportReflection() {
-            byte[] descriptorData = global::System.Convert.FromBase64String(
+            var descriptorData = System.Convert.FromBase64String(
                 string.Concat(
                     "CiBUZW1wb3JhcnlFeHBvc3VyZUtleUV4cG9ydC5wcm90byL+AQoaVGVtcG9y",
                     "YXJ5RXhwb3N1cmVLZXlFeHBvcnQSFwoPc3RhcnRfdGltZXN0YW1wGAEgASgG",
@@ -42,11 +46,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat
             descriptor = FileDescriptor.FromGeneratedCode(descriptorData,
                 new FileDescriptor[] { },
                 new GeneratedClrTypeInfo(null, null, new GeneratedClrTypeInfo[] {
-                    new GeneratedClrTypeInfo(typeof(global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKeyExport), global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKeyExport.Parser, new[]{ "StartTimestamp", "EndTimestamp", "Region", "BatchNum", "BatchSize", "SignatureInfos", "Keys", "RevisedKeys" }, null, null, null, null),
-                    new GeneratedClrTypeInfo(typeof(global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo), global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo.Parser, new[]{ "AppBundleId", "AndroidPackage", "VerificationKeyVersion", "VerificationKeyId", "SignatureAlgorithm" }, null, null, null, null),
-                    new GeneratedClrTypeInfo(typeof(global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey), global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Parser, new[]{ "KeyData", "TransmissionRiskLevel", "RollingStartIntervalNumber", "RollingPeriod", "ReportType", "DaysSinceOnsetOfSymptoms" }, null, new[]{ typeof(global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Types.ReportType) }, null, null),
-                    new GeneratedClrTypeInfo(typeof(global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TEKSignatureList), global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TEKSignatureList.Parser, new[]{ "Signatures" }, null, null, null, null),
-                    new GeneratedClrTypeInfo(typeof(global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TEKSignature), global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TEKSignature.Parser, new[]{ "SignatureInfo", "BatchNum", "BatchSize", "Signature" }, null, null, null, null)
+                    new GeneratedClrTypeInfo(typeof(TemporaryExposureKeyExport), TemporaryExposureKeyExport.Parser, new[]{ "StartTimestamp", "EndTimestamp", "Region", "BatchNum", "BatchSize", "SignatureInfos", "Keys", "RevisedKeys" }, null, null, null, null),
+                    new GeneratedClrTypeInfo(typeof(SignatureInfo), SignatureInfo.Parser, new[]{ "AppBundleId", "AndroidPackage", "VerificationKeyVersion", "VerificationKeyId", "SignatureAlgorithm" }, null, null, null, null),
+                    new GeneratedClrTypeInfo(typeof(TemporaryExposureKey), TemporaryExposureKey.Parser, new[]{ "KeyData", "TransmissionRiskLevel", "RollingStartIntervalNumber", "RollingPeriod", "ReportType", "DaysSinceOnsetOfSymptoms" }, null, new[]{ typeof(TemporaryExposureKey.Types.ReportType) }, null, null),
+                    new GeneratedClrTypeInfo(typeof(TEKSignatureList), TEKSignatureList.Parser, new[]{ "Signatures" }, null, null, null, null),
+                    new GeneratedClrTypeInfo(typeof(TEKSignature), TEKSignature.Parser, new[]{ "SignatureInfo", "BatchNum", "BatchSize", "Signature" }, null, null, null, null)
                 }));
         }
         #endregion

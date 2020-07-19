@@ -7,7 +7,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
     public class DefaultGeanTekListValidationConfig : IGeanTekListValidationConfig
     {
         public int TemporaryExposureKeyCountMin => 1;
-        public int TemporaryExposureKeyCountMax => 21;
+        public int TemporaryExposureKeyCountMax => 64;
         public int GracePeriodMinutes => 30;
     }
 }

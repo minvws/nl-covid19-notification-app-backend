@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
         {
         }
 
-        public string Path => GetValue(nameof(Path));
-        public string Password => GetValue(nameof(Password));
+        public string Path => GetConfigValue(nameof(Path), "Unspecified default!");
+        public string Password => GetConfigValue(nameof(Password), "Unspecified default!");
     }
 }

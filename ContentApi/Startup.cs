@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
 
             services.AddLogging();
 
-            services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
+            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
 
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
@@ -48,8 +48,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
                 return result;
             });
 
+            services.AddTransient<IHttpResponseHeaderConfig, HttpResponseHeaderConfig>();
             services.AddSingleton<IUtcDateTimeProvider>(new StandardUtcDateTimeProvider());
-            services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();
+            services.AddTransient<IPublishingId, StandardPublishingIdFormatter>();
 
             services.AddScoped<HttpGetCdnManifestCommand>();
             services.AddScoped<HttpGetCdnGenericContentCommand>();

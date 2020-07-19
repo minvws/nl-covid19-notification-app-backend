@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
@@ -36,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
                 Release = now,
             };
             _Logger.LogDebug("Build new manifest.");
-            var content = _ManifestBuilder.Execute();
+            var content = await _ManifestBuilder.Execute();
             _Logger.LogDebug("Format and sign new manifest.");
             await _Formatter.Fill(e, content); //TODO add release date as a parameter
             return e;
