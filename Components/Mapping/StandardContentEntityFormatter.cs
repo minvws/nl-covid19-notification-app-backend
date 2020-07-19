@@ -29,11 +29,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             if (e == null) throw new ArgumentNullException(nameof(e));
             if (c == null) throw new ArgumentNullException(nameof(c));
 
-            var j = _JsonSerializer.Serialize(c);
-            e.Content = Encoding.UTF8.GetBytes(j);
-            e.PublishingId = _PublishingId.Create(e.Content);
-            e.ContentTypeName = MediaTypeNames.Application.Json;
-            e.SignedContent = await _SignedFormatter.SignedContentPacket(e.Content);
+            var contentJson = _JsonSerializer.Serialize(c);
+            var contentBytes = Encoding.UTF8.GetBytes(contentJson);
+            e.PublishingId = _PublishingId.Create(contentBytes);
+            e.SignedContent = await _SignedFormatter.SignedContentPacket(contentBytes);
             e.SignedContentTypeName = MediaTypeNames.Application.Zip;
             return e;
         }
