@@ -18,14 +18,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
     [Route("[controller]")]
     public class WorkflowController : ControllerBase
     {
-
         private readonly ILogger _Logger;
 
         public WorkflowController(ILogger<WorkflowController> logger)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-
 
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.ReleaseTeks)]

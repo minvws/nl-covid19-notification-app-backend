@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
         {
             services.AddLogging();
 
-            ComponentsContainerHelper.RegisterDefaultServices(services);
+            services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
 
             services.AddControllers(options =>
             {
@@ -69,7 +69,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
             });
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddScoped<HttpPostGenerateExposureKeySetsCommand, HttpPostGenerateExposureKeySetsCommand>();
             services.AddScoped(x =>
                 new ExposureKeySetBatchJobMk2(
                     x.GetService<IGaenContentConfig>(),
@@ -81,7 +80,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
                     x.GetService<ILogger<ExposureKeySetBatchJobMk2>>()
                 ));
 
-            services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
+            services.AddSingleton<IGaenContentConfig, StandardGaenContentConfig>();
 
             services.AddScoped<IExposureKeySetBuilder>(x =>
                 new ExposureKeySetBuilderV1(
@@ -99,16 +98,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
             services.AddLogging();
             services.AddSingleton(_Configuration);
             services.AddScoped<ManifestBatchJob>();
-            services.AddScoped<DynamicManifestReader>();
-
             services.AddScoped<ManifestBuilder>();
+            services.AddScoped<ManifestBuilderAndFormatter>();
+            services.AddScoped<IContentEntityFormatter, StandardContentEntityFormatter>();
+            services.AddScoped<ZippedSignedContentFormatter>();
 
             services.AddScoped<IContentSigner>(x => new CmsSigner(new ResourceCertificateProvider3(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"))));
-
             services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
-            services.AddScoped<GetActiveExposureKeySetsListCommand>();
-            services.AddScoped<GetLatestContentCommand<RiskCalculationContentEntity>>();
-            services.AddScoped<GetLatestContentCommand<AppConfigContentEntity>>();
 
             services.AddSwaggerGen(o =>
             {
@@ -123,7 +119,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
             app.UseSwagger();
             app.UseSwaggerUI(o =>
             {
-                o.SwaggerEndpoint("../swagger/v1/swagger.json", Title);
+                o.SwaggerEndpoint("v1/swagger.json", Title);
             });
 
             app.UseRouting();

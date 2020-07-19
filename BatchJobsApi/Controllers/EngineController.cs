@@ -6,14 +6,13 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    //[Authorize]
     public class EngineController : ControllerBase
     {
         private readonly ILogger _Logger;
@@ -23,22 +22,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.Controllers
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        /// <summary>
-        /// Generate new ExposureKeySets.
-        /// </summary>
-        /// <returns></returns>
         [HttpPost]
         [Route("/v1/eksengineexecute")]
-        public async Task<IActionResult> ExposureKeySets([FromQuery] bool useAllKeys, [FromServices] HttpPostGenerateExposureKeySetsCommand command)
+        public async Task<IActionResult> ExposureKeySets([FromQuery] bool useAllKeys, [FromServices] ExposureKeySetBatchJobMk2 command)
         {
             _Logger.LogInformation("EKS Engine triggered.");
-            return await command.Execute(useAllKeys);
+            await command.Execute(useAllKeys);
+            return new OkResult();
         }
 
-        /// <summary>
-        /// Generate new ExposureKeySets.
-        /// </summary>
-        /// <returns></returns>
         [HttpPost]
         [Route("/v1/manifestengineexecute")]
         public async Task<IActionResult> Manifest([FromServices] ManifestBatchJob command)

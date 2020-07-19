@@ -10,15 +10,14 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
-
     public class ManifestBatchJob
     {
-        private readonly DynamicManifestReader _Reader;
+        private readonly ManifestBuilderAndFormatter _BuilderAndFormatter;
         private readonly ContentDbContext _ContentDb;
 
-        public ManifestBatchJob(DynamicManifestReader reader, ContentDbContext contentDb)
+        public ManifestBatchJob(ManifestBuilderAndFormatter builderAndFormatter, ContentDbContext contentDb)
         {
-            _Reader = reader ?? throw new ArgumentNullException(nameof(reader));
+            _BuilderAndFormatter = builderAndFormatter ?? throw new ArgumentNullException(nameof(builderAndFormatter));
             _ContentDb = contentDb ?? throw new ArgumentNullException(nameof(contentDb));
         }
 
@@ -27,8 +26,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             try
             {
                 _ContentDb.BeginTransaction();
-                var e = await _Reader.Execute();
-                var current = await new SafeBinaryContentDbReader<ManifestEntity>(_ContentDb).Execute(e.PublishingId);
+                var e = await _BuilderAndFormatter.Execute();
+                var current = await _BuilderAndFormatter.Execute();
                 if (current == null)
                     return;
 

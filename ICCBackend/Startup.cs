@@ -16,6 +16,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Services;
@@ -36,7 +37,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
-            ComponentsContainerHelper.RegisterDefaultServices(services);
+            services.AddLogging();
+
+            services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
 
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
@@ -49,15 +52,13 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 result.BeginTransaction();
                 return result;
             });
-            services.AddScoped<IEfDbConfig>(x => new StandardEfDbConfig(Configuration, "Icc"));
-            services.AddScoped<ProvisionDatabasesCommandIcc, ProvisionDatabasesCommandIcc>();
+
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
             services.AddScoped<IIccService, IccService>();
             services.AddScoped<AppBackendService, AppBackendService>();
             services.AddAuthentication("IccAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, IccAuthenticationHandler>("IccAuthentication", null);
-            //services.AddSingleton(_Logger.Logger);
 
             services.AddCors();
 

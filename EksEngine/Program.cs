@@ -52,7 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                     x.GetRequiredService<ILogger<ExposureKeySetBatchJobMk2>>()
                 ));
 
-            services.AddSingleton<IGaenContentConfig, GaenContentConfig>();
+            services.AddSingleton<IGaenContentConfig, StandardGaenContentConfig>();
             services.AddScoped<IExposureKeySetBuilder>(x =>
                 new ExposureKeySetBuilderV1(
                     x.GetRequiredService<IExposureKeySetHeaderInfoConfig>(),

@@ -3,32 +3,40 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
     public class ManifestBuilder
     {
-        private readonly GetActiveExposureKeySetsListCommand _ExposureKeySetsListCommand;
-        private readonly GetLatestContentCommand<RiskCalculationContentEntity> _WorkflowCalcParametersFinder;
-        private readonly GetLatestContentCommand<AppConfigContentEntity> _AppConfigFinder;
+        private readonly ContentDbContext _ContentDbContext;
+        private readonly IGaenContentConfig _GaenContentConfig;
+        private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public ManifestBuilder(GetActiveExposureKeySetsListCommand exposureKeySetsListCommand, GetLatestContentCommand<RiskCalculationContentEntity> workflowCalcParametersFinder, GetLatestContentCommand<AppConfigContentEntity> appConfigFinder)
+        public ManifestBuilder(ContentDbContext contentDbContext, IGaenContentConfig gaenContentConfig, IUtcDateTimeProvider dateTimeProvider)
         {
-            _ExposureKeySetsListCommand = exposureKeySetsListCommand ?? throw new ArgumentNullException(nameof(exposureKeySetsListCommand));
-            _WorkflowCalcParametersFinder = workflowCalcParametersFinder ?? throw new ArgumentNullException(nameof(workflowCalcParametersFinder));
-            _AppConfigFinder = appConfigFinder ?? throw new ArgumentNullException(nameof(appConfigFinder));
+            _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
+            _GaenContentConfig = gaenContentConfig ?? throw new ArgumentNullException(nameof(gaenContentConfig));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
 
-        public ManifestContent Execute()
+        public async Task<ManifestContent> Execute()
         {
+            var now = _DateTimeProvider.Now();
+            var lo = now - TimeSpan.FromDays(_GaenContentConfig.ExposureKeySetLifetimeDays);
+
             return new ManifestContent
             { 
-                ExposureKeySets = _ExposureKeySetsListCommand.Execute(),
-                RiskCalculationParameters = _WorkflowCalcParametersFinder.Execute(),
-                AppConfig = _AppConfigFinder.Execute()
+                ExposureKeySets = await _ContentDbContext.SafeGetActiveContentIdList<ExposureKeySetContentEntity>(lo, now),
+                RiskCalculationParameters = (await _ContentDbContext.SafeGetLatestContent<RiskCalculationContentEntity>(now))?.PublishingId ?? "",
+                AppConfig = (await _ContentDbContext.SafeGetLatestContent<AppConfigContentEntity>(now))?.PublishingId ?? ""
             };
         }
     }

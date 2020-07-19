@@ -16,6 +16,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
@@ -39,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            ComponentsContainerHelper.RegisterDefaultServices(services);
+            services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
 
             services.AddControllers();
 
@@ -80,8 +81,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddScoped<ITekWriter, TekWriter>();
             services.AddScoped<RandomNumberGenerator, RandomNumberGenerator>();
 
-            // CaregiverPortal scopes
-
             services.AddScoped<JwtService, JwtService>();
             services.AddScoped<PollTokenGenerator, PollTokenGenerator>();
             services.AddAuthentication("icc_jwt")
@@ -111,7 +110,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
 
             app.UseSwagger();
-            app.UseSwaggerUI(o => { o.SwaggerEndpoint("/swagger/v1/swagger.json", Title); });
+            app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
 
             if (!env.IsDevelopment())
                 app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
