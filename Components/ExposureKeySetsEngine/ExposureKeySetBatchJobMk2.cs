@@ -208,9 +208,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 var move = _ContentDbContext.EksOutput.Select(
                     x => new ExposureKeySetContentEntity
                     {
+                        Created = _Start,
                         Release = x.Release,
-                        Content = null,
-                        ContentTypeName = null,
                         SignedContentTypeName = MediaTypeNames.Application.Zip,
                         SignedContent = x.Content,
                         CreatingJobName = x.CreatingJobName,

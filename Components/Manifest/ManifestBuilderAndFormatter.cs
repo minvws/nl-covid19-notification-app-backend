@@ -29,9 +29,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 
         public async Task<ManifestEntity> Execute()
         {
+            var now = _DateTimeProvider.Now();
             var e = new ManifestEntity
             {
-                Release = _DateTimeProvider.Now(),
+                Created = now,
+                Release = now,
             };
             _Logger.LogDebug("Build new manifest.");
             var content = _ManifestBuilder.Execute();

@@ -11,10 +11,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     {
         [Key]
         public int Id { get; set; }
+        public DateTime Created { get; set; }
         public DateTime Release { get; set; }
         public string? PublishingId { get; set; }
-        public byte[]? Content { get; set; }
-        public string? ContentTypeName { get; set; }
         public byte[]? SignedContent { get; set; }
         public string? SignedContentTypeName { get; set; }
     }

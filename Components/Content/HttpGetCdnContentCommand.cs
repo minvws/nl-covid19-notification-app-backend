@@ -68,26 +68,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 return;
             }
 
-            var accepts = httpContext.Request.Headers["accept"].ToHashSet();
+            //var accepts = httpContext.Request.Headers["accept"].ToHashSet();
+            //var signedResponse = content.SignedContentTypeName != null && accepts.Contains(content.SignedContentTypeName);
 
-            var signedResponse = content.SignedContentTypeName != null && accepts.Contains(content.SignedContentTypeName);
-
-            if (!signedResponse && !accepts.Contains(content.ContentTypeName))
-            {
-                _Logger.LogWarning($"Cannot give acceptable response, responding with 406 - {id}.");
-                httpContext.Response.StatusCode = 406;
-                httpContext.Response.ContentLength = 0;
-                return;
-            }
+            //if (!signedResponse && !accepts.Contains(content.ContentTypeName))
+            //{
+            //    _Logger.LogWarning($"Cannot give acceptable response, responding with 406 - {id}.");
+            //    httpContext.Response.StatusCode = 406;
+            //    httpContext.Response.ContentLength = 0;
+            //    return;
+            //}
 
             httpContext.Response.Headers.Add("etag", content.PublishingId);
             httpContext.Response.Headers.Add("last-modified", content.Release.ToUniversalTime().ToString("r"));
-            httpContext.Response.Headers.Add("content-type", signedResponse ? content.SignedContentTypeName : content.ContentTypeName);
-            httpContext.Response.Headers.Add("x-vws-signed", signedResponse.ToString());
-
+            httpContext.Response.Headers.Add("content-type", content.SignedContentTypeName);
             httpContext.Response.StatusCode = 200;
-            httpContext.Response.ContentLength = (signedResponse ? content.SignedContent : content.Content).Length;
-            await httpContext.Response.Body.WriteAsync(signedResponse ? content.SignedContent : content.Content);
+            httpContext.Response.ContentLength = content.SignedContent.Length;
+            await httpContext.Response.Body.WriteAsync(content.SignedContent);
         }
     }
 }

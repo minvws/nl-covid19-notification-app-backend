@@ -27,8 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             {
                 _ContentDb.BeginTransaction();
                 var e = await _BuilderAndFormatter.Execute();
-                var current = await _BuilderAndFormatter.Execute();
-                if (current == null)
+                if (e == null)
                     return;
 
                 _ContentDb.Add(e);

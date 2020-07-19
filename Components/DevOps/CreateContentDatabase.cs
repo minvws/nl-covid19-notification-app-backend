@@ -94,6 +94,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         {
             var e4 = new RiskCalculationContentEntity
             {
+                Created = _DateTimeProvider.Now(), //TODO audit stamp
                 Release = a4.Release
             };
             await _Formatter.Fill(e4, a4.ToContent());
@@ -104,6 +105,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         {
             var e4 = new AppConfigContentEntity
             {
+                Created = _DateTimeProvider.Now(), //TODO audit stamp
                 Release = a4.Release
             };
             await _Formatter.Fill(e4, a4.ToContent());
