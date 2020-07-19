@@ -6,9 +6,11 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content.NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
@@ -40,7 +42,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddLogging();
             services.AddSingleton<IConfiguration>(configuration);
             services.AddScoped<ManifestBatchJob>();
-            services.AddScoped<DynamicManifestReader>();
+            services.AddScoped<ManifestBuilderAndFormatter>();
+            services.AddScoped<StandardContentEntityFormatter>();
+            services.AddScoped<ZippedSignedContentFormatter>();
+
+            services.AddScoped<HttpGetCdnManifestCommand>();
+            services.AddScoped<HttpGetCdnContentCommand<AppConfigContentEntity>>();
+            services.AddScoped<HttpGetCdnContentCommand<RiskCalculationContentEntity>>();
+            services.AddScoped<HttpGetCdnContentCommand<ExposureKeySetContentEntity>>();
+
             services.AddScoped(x =>
             {
                 var config = new StandardEfDbConfig(configuration, "Content");
@@ -61,10 +71,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
                         x.GetRequiredService<ILogger<X509CertificateProvider>>())));
             }
             services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
-            services.AddScoped<GetActiveExposureKeySetsListCommand>();
-            services.AddScoped<GetLatestContentCommand<RiskCalculationContentEntity>>();
-            services.AddScoped<GetLatestContentCommand<AppConfigContentEntity>>();
-            services.AddScoped<IGaenContentConfig, GaenContentConfig>();
+            services.AddScoped<IGaenContentConfig, StandardGaenContentConfig>();
         }
     }
 }

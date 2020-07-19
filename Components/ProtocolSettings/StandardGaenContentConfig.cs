@@ -7,9 +7,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings
 {
-    public class GaenContentConfig : AppSettingsReader, IGaenContentConfig
+    public class StandardGaenContentConfig : AppSettingsReader, IGaenContentConfig
     {
-        public GaenContentConfig(IConfiguration config, string prefix = "Gaen:ExposureKeySet") : base(config, prefix) { }
+        public StandardGaenContentConfig(IConfiguration config, string prefix = "Gaen:ExposureKeySet") : base(config, prefix) { }
         public int ExposureKeySetCapacity => GetValueInt32("CapacityKeyCount", 21);
         public int ExposureKeySetLifetimeDays => GetValueInt32("LifetimeDays", 21);
     }

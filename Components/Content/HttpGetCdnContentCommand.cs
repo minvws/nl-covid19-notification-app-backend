@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
@@ -18,13 +19,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     /// <typeparam name="T"></typeparam>
     public class HttpGetCdnContentCommand<T> where T: ContentEntity
     {
-        private readonly IReader<T> _SafeReader;
+        private readonly ContentDbContext _DbContext;
         private readonly IPublishingId _PublishingId;
         private readonly ILogger _Logger;
 
-        public HttpGetCdnContentCommand(IReader<T> safeReader, IPublishingId publishingId, ILogger<HttpGetCdnContentCommand<T>> logger)
+        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingId publishingId, ILogger<HttpGetCdnContentCommand<T>> logger)
         {
-            _SafeReader = safeReader ?? throw new ArgumentNullException(nameof(safeReader));
+            _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _PublishingId = publishingId ?? throw new ArgumentNullException(nameof(publishingId));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -48,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 httpContext.Response.ContentLength = 0;
             }
 
-            var content = await _SafeReader.Execute(id);
+            var content = await _DbContext.SafeGetContent<T>(id);
             
             if (content == null)
             {

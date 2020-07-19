@@ -12,21 +12,19 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
     //Reads and formats...
-    public class DynamicManifestReader
+    public class ManifestBuilderAndFormatter
     {
         private readonly ManifestBuilder _ManifestBuilder;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly IContentSigner _ContentSigner;
-        private readonly ILogger _Logger; //Actually not used.
-        private readonly IJsonSerializer _JsonSerializer;
+        private readonly ILogger _Logger;
+        private readonly IContentEntityFormatter _Formatter; //new StandardContentEntityFormatter(new ZippedSignedContentFormatter(contentSigner), new StandardPublishingIdFormatter(), jsonSerializer1);
 
-        public DynamicManifestReader(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, IContentSigner contentSigner, ILogger<DynamicManifestReader> logger, IJsonSerializer jsonSerializer)
+        public ManifestBuilderAndFormatter(ManifestBuilder manifestBuilder, IUtcDateTimeProvider dateTimeProvider, ILogger<ManifestBuilderAndFormatter> logger, IContentEntityFormatter formatter)
         {
             _ManifestBuilder = manifestBuilder ?? throw new ArgumentNullException(nameof(manifestBuilder));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _ContentSigner = contentSigner ?? throw new ArgumentNullException(nameof(contentSigner));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
+            _Formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
         }
 
         public async Task<ManifestEntity> Execute()
@@ -37,10 +35,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             };
             _Logger.LogDebug("Build new manifest.");
             var content = _ManifestBuilder.Execute();
-            //TODO should be injected...
             _Logger.LogDebug("Format and sign new manifest.");
-            var formatter = new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_ContentSigner), new StandardPublishingIdFormatter(), _JsonSerializer);
-            await formatter.Fill(e, content); //TODO add release date as a parameter
+            await _Formatter.Fill(e, content); //TODO add release date as a parameter
             return e;
         }
     }
