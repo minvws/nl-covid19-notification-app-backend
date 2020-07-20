@@ -5,20 +5,21 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
+using NL.Rijksoverheid.ExposureNotification.IccBackend;
 
-namespace NL.Rijksoverheid.ExposureNotification.IccBackend
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
     public class IccPortalConfig : AppSettingsReader, IIccPortalConfig
     {
         public IccPortalConfig(IConfiguration config, string? prefix = null) : base(config, prefix)
         {
+            IdentityHubConfig = new IccIdentityHubConfig(config, "IccPortalConfig:IdentityHub");
         }
 
-        public string BaseUrl => GetConfigValue(nameof(BaseUrl), String.Empty);
-        public string Tenant => GetConfigValue(nameof(Tenant), String.Empty);
-        public string ClientId => GetConfigValue("Client:Id", String.Empty);
-        public string ClientSecret => GetConfigValue("Client:Secret", String.Empty);
+        public IIccIdentityHubConfig IdentityHubConfig { get; }
         public string JwtSecret => GetConfigValue("Jwt:Secret", String.Empty);
         public double ClaimLifetimeHours => GetConfigValue(nameof(ClaimLifetimeHours), 3.0);
+        
+        public string FrontendBaseUrl => GetConfigValue(nameof(FrontendBaseUrl), "TODO Sensible default!!!!");
     }
 }

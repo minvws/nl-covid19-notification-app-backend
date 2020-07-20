@@ -85,8 +85,4 @@
 	  <Resource Include="Resources\TestCert.p12" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Icc\Exceptions\" />
-	</ItemGroup>
-
 </Project>
