@@ -19,15 +19,14 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 
         public WorkflowController(ILogger<WorkflowController> logger)
         {
-            _Logger = logger;
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [HttpPost]
         [Route(EndPointNames.CaregiversPortalApi.LabConfirmation)]
-        public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args, [FromServices] HttpPostAuthorise command)
+        public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args, [FromServices] HttpPostAuthoriseCommand command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-            if (_Logger == null) throw new ArgumentNullException(nameof(_Logger));
 
             _Logger.LogInformation("POST lab confirmation triggered.");
             return await command.Execute(args);
@@ -35,10 +34,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         
         [HttpPost]
         [Route(EndPointNames.CaregiversPortalApi.LabVerify)]
-        public async Task<IActionResult> PostKeysAreUploaded([FromBody] LabVerifyArgs args, [FromServices] HttpPostLabVerify command)
+        public async Task<IActionResult> PostKeysAreUploaded([FromBody] LabVerifyArgs args, [FromServices] HttpPostLabVerifyCommand command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-            if (_Logger == null) throw new ArgumentNullException(nameof(_Logger));
 
             _Logger.LogInformation("POST labverify triggered.");
             return await command.Execute(args);
