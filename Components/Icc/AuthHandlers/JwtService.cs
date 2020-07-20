@@ -11,16 +11,17 @@ using JWT.Builder;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.IccBackend;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
-    public class JwtService //TODO interface
+    public class JwtService : IJwtService
     {
         private readonly IIccPortalConfig _IccPortalConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public JwtService(IIccPortalConfig iccPortalConfig)
+        public JwtService(IIccPortalConfig iccPortalConfig, IUtcDateTimeProvider utcDateTimeProvider)
         {
             _IccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
+            _DateTimeProvider = utcDateTimeProvider;
         }
 
         private JwtBuilder CreateBuilder()

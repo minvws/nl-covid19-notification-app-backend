@@ -7,9 +7,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 {
     public class HttpGetLogoutCommand
     {
-        private readonly IConfiguration _Configuration;
+        private readonly IIccPortalConfig _Configuration;
 
-        public HttpGetLogoutCommand(IConfiguration configuration)
+        public HttpGetLogoutCommand(IIccPortalConfig configuration)
         {
             _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
                 throw new ArgumentNullException(nameof(httpContext));
 
             httpContext.Response.Cookies.Delete(".AspNetCore.Cookies");
-            return new RedirectResult(_Configuration.GetValue("IccPortal:FrontendHost", "TODO Sensible default!!!!"));
+            return new RedirectResult(_Configuration.FrontendBaseUrl);
         }
     }
 }

@@ -2,15 +2,18 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
     public interface IIccPortalConfig
     {
-        string BaseUrl { get; }
-        string Tenant { get; }
-        string ClientId { get; }
-        string ClientSecret { get; }
+        
+        IIccIdentityHubConfig IdentityHubConfig { get; }
+        string FrontendBaseUrl { get; }
         string JwtSecret { get; }
         double ClaimLifetimeHours { get; }
+        
+        
     }
 }

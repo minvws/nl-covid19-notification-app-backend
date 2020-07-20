@@ -15,7 +15,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
@@ -23,6 +22,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Register
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Authorization;
 using System;
 using System.IO;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers;
 using TheIdentityHub.AspNetCore.Authentication;
@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
-            IIccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration, "IccPortalConfig:IdentityHub");
+            IIccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration, "IccPortalConfig");
             
             services.AddSingleton(iccPortalConfig);
 
@@ -69,6 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<LabVerificationAuthorisationCommand>();
             services.AddScoped<PollTokens>();
             services.AddScoped<HttpGetLogoutCommand>();
+            services.AddScoped<HttpGetUserClaimCommand>();
             services.AddScoped<HttpGetAuthorisationRedirectCommand>();
             
             services.AddMvc(config =>
@@ -134,15 +135,15 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 .AddCookie()
                 .AddTheIdentityHubAuthentication(options =>
                 {
-                    if (!string.IsNullOrWhiteSpace(iccPortalConfig.BaseUrl))
+                    if (!string.IsNullOrWhiteSpace(iccPortalConfig.IdentityHubConfig.BaseUrl))
                     {
-                        options.TheIdentityHubUrl = new Uri(iccPortalConfig.BaseUrl);
+                        options.TheIdentityHubUrl = new Uri(iccPortalConfig.IdentityHubConfig.BaseUrl);
                     }
 
                     //TODO if the Url is not set is there any sense to setting these?
-                    options.Tenant = iccPortalConfig.Tenant;
-                    options.ClientId = iccPortalConfig.ClientId;
-                    options.ClientSecret = iccPortalConfig.ClientSecret;
+                    options.Tenant = iccPortalConfig.IdentityHubConfig.Tenant;
+                    options.ClientId = iccPortalConfig.IdentityHubConfig.ClientId;
+                    options.ClientSecret = iccPortalConfig.IdentityHubConfig.ClientSecret;
                 });
             
             services.AddMvc(config =>
