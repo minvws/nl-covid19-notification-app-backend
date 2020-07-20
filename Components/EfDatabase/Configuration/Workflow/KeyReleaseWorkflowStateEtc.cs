@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             builder.ToTable("KeyReleaseWorkflowState");
-            builder.Property(u => u.Id).UseHiLo();
+            builder.Property(u => u.Id).UseIdentityColumn();
 
             builder.HasIndex(x => x.BucketId) /*.IsUnique()*/; //TODO genteks... 
             builder.HasIndex(x => x.ConfirmationKey)/*.IsUnique()*/; //TODO genteks... 
