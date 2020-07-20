@@ -14,59 +14,50 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
-    public class JwtAuthorizationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    public class StandardJwtAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
+        private const string AccessTokenElement = "access_token";
+
         private readonly JwtService _JwtService;
 
-        public JwtAuthorizationHandler(
+        public StandardJwtAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory loggerFactory,
             UrlEncoder encoder,
             ISystemClock clock,
             JwtService jwtService) : base(options, loggerFactory, encoder, clock)
         {
-            if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if (!Request.Headers.ContainsKey("Authorization"))
+            if (!Request.Headers.TryGetValue("Authorization", out var headerValue))
             {
-                Logger.LogInformation($"Missing authorization header.");
+                Logger.LogInformation("Missing authorization header.");
                 return AuthenticateResult.Fail("Missing authorization header.");
             }
 
-            bool isValidJwt;
-            string jwtToken;
-            try
+            if (!AuthenticationHeaderValue.TryParse(headerValue, out var authHeader))
             {
-                var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]); //TODO if this was the exception, use the try/find pattern
-                var authHeaderString = authHeader.ToString();
-                jwtToken = authHeaderString.Replace("Bearer ", "").Trim();
-                isValidJwt = _JwtService.IsValidJwt(jwtToken);
-            }
-            catch (Exception e) //TODO shouldnt need this at all.
-            {
-                Logger.LogError(e.ToString());
-                return AuthenticateResult.Fail("Error invalid jwt.");
+                Logger.LogInformation("Invalid authorization header.");
+                return AuthenticateResult.Fail("Invalid authorization header.");
             }
 
-            if (!isValidJwt)
+            var cleaned = authHeader.ToString().Replace("Bearer ", "").Trim();
+            var decodedClaims = _JwtService.Decode(cleaned);
+
+            if (!_JwtService.IsValid(decodedClaims, AccessTokenElement))
             {
-                Logger.LogWarning($"Invalid jwt - {jwtToken}.");
-                return AuthenticateResult.Fail("Invalid jwt.");
+                Logger.LogWarning($"Invalid jwt token - {cleaned}.");
+                return AuthenticateResult.Fail("Invalid jwt token.");
             }
 
-            // TODO: Add other payload items as well to current claims
-
-            var jwtPayload = _JwtService.DecodeJwt(jwtToken);
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, jwtPayload["name"].ToString()),
-                new Claim(ClaimTypes.NameIdentifier, jwtPayload["id"].ToString()),
-                new Claim(ClaimTypes.Email, jwtPayload["email"].ToString())
+                new Claim(ClaimTypes.NameIdentifier, decodedClaims["id"]),
             };
+
             var identity = new ClaimsIdentity(claims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);
             var ticket = new AuthenticationTicket(principal, Scheme.Name);

@@ -6,27 +6,20 @@ using System;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {
-    /// <summary>
-    /// TODO has the definition of Epoch changed yet again?
-    /// </summary>
+    //TODO convert DateTimes to DateTimeOffsets?
     public static class UnixTimeConverter
     {
-        public static readonly DateTime EpochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
         public static DateTime FromUnixTime(this long value)
         {
             if (value < 0)
                 throw new ArgumentException(nameof(value));
 
-            return EpochStart.AddSeconds(value);
+            return DateTimeOffset.UnixEpoch.AddSeconds(value).DateTime;
         }
 
         public static ulong ToUnixTime(this DateTime value)
         {
-            if (value < EpochStart)
-                throw new ArgumentException(nameof(value));
-
-            return Convert.ToUInt64(Math.Floor((value - EpochStart).TotalSeconds));
+            return Convert.ToUInt64(Math.Floor((value - DateTimeOffset.UnixEpoch).TotalSeconds));
         }
     }
 }
