@@ -4,12 +4,11 @@
 
 using System;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
@@ -31,12 +30,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         {
             var now = _DateTimeProvider.Now();
             var lo = now - TimeSpan.FromDays(_GaenContentConfig.ExposureKeySetLifetimeDays);
-
             return new ManifestContent
             { 
                 ExposureKeySets = await _ContentDbContext.SafeGetActiveContentIdList<ExposureKeySetContentEntity>(lo, now),
-                RiskCalculationParameters = (await _ContentDbContext.SafeGetLatestContent<RiskCalculationContentEntity>(now))?.PublishingId ?? "",
-                AppConfig = (await _ContentDbContext.SafeGetLatestContent<AppConfigContentEntity>(now))?.PublishingId ?? ""
+                RiskCalculationParameters = await _ContentDbContext.SafeGetLatestGenericContentId(GenericContentTypes.RiskCalculationParameters, now),
+                AppConfig = await _ContentDbContext.SafeGetLatestGenericContentId(GenericContentTypes.AppConfig, now)
             };
         }
     }

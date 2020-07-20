@@ -14,8 +14,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         public StandardGeanCommonWorkflowConfig(IConfiguration config) : base(config, "Validation:KeyCount:")
         {
         }
-        public int TemporaryExposureKeyCountMin => GetValueInt32("Min", _Defaults.TemporaryExposureKeyCountMin);
-        public int TemporaryExposureKeyCountMax => GetValueInt32("Max", _Defaults.TemporaryExposureKeyCountMax);
-        public int GracePeriodMinutes => GetValueInt32(nameof(GracePeriodMinutes), _Defaults.TemporaryExposureKeyCountMax);
+        public int TemporaryExposureKeyCountMin => GetConfigValue("TekCount:Min", _Defaults.TemporaryExposureKeyCountMin);
+        public int TemporaryExposureKeyCountMax => GetConfigValue("TekCount:Max", _Defaults.TemporaryExposureKeyCountMax);
+        public int GracePeriodMinutes => GetConfigValue(nameof(GracePeriodMinutes), _Defaults.TemporaryExposureKeyCountMax);
     }
 }

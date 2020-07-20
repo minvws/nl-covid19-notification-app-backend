@@ -9,30 +9,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration
 {
     public abstract class AppSettingsReader
     {
-        protected IConfiguration Config { get; }
-
-        protected virtual string Prefix { get; }
+        private readonly IConfiguration _Config;
+        private readonly string _Prefix;
 
         protected AppSettingsReader(IConfiguration config, string? prefix = null)
         {
-            Config = config ?? throw new ArgumentNullException(nameof(config));
+            _Config = config ?? throw new ArgumentNullException(nameof(config));
 
             if (string.IsNullOrWhiteSpace(prefix) || prefix != prefix.Trim())
-                Prefix = string.Empty;
+                _Prefix = string.Empty;
             else
-                Prefix = prefix + ":";
+                _Prefix = prefix + ":";
         }
 
-        protected int GetValueInt32(string path, int defaultValue = default(int))
-            => Config.GetValue($"{Prefix}{path}", defaultValue);
-
-        protected double GetValueDouble(string path, double defaultValue = default(double))
-            => Config.GetValue($"{Prefix}{path}", defaultValue);
-
-        protected string GetValue(string path, string defaultValue = "Unspecified default!")
-            => Config.GetValue($"{Prefix}{path}", defaultValue);
-
-        protected bool GetValueBool(string path, bool defaultValue = false)
-            => Config.GetValue($"{Prefix}{path}", defaultValue);
+        protected T GetConfigValue<T>(string path, T defaultValue = default(T))
+            => _Config.GetValue($"{_Prefix}{path}", defaultValue);
     }
 }

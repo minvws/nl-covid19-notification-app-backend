@@ -15,6 +15,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
         {
         }
 
-        public int ByteCount => GetValueInt32(nameof(ByteCount), _Defaults.ByteCount);
+        public int ByteCount => GetConfigValue(nameof(ByteCount), _Defaults.ByteCount);
     }
 }

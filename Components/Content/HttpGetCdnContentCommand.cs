@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -83,7 +82,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             httpContext.Response.Headers.Add("last-modified", content.Release.ToUniversalTime().ToString("r"));
             httpContext.Response.Headers.Add("content-type", content.SignedContentTypeName);
             httpContext.Response.StatusCode = 200;
-            httpContext.Response.ContentLength = content.SignedContent.Length;
+            httpContext.Response.ContentLength = content.SignedContent?.Length ?? throw new InvalidOperationException("SignedContent empty.");
             await httpContext.Response.Body.WriteAsync(content.SignedContent);
         }
     }

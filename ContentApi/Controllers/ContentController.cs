@@ -4,11 +4,9 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content.NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
@@ -26,16 +24,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
 
         [HttpGet]
         [Route(EndPointNames.ContentApi.AppConfig + "/{id}")]
-        public async Task GetAppConfig(string id, [FromServices] HttpGetCdnContentCommand<AppConfigContentEntity> command)
+        public async Task GetAppConfig(string id, [FromServices] HttpGetCdnGenericContentCommand command)
         {
-            await command.Execute(HttpContext, id);
+            await command.Execute(HttpContext, GenericContentTypes.AppConfig, id);
         }
 
         [HttpGet]
         [Route(EndPointNames.ContentApi.RiskCalculationParameters + "/{id}")]
-        public async Task GetRiskCalculationParameters(string id, [FromServices]HttpGetCdnContentCommand<RiskCalculationContentEntity> command)
+        public async Task GetRiskCalculationParameters(string id, [FromServices] HttpGetCdnGenericContentCommand command)
         {
-            await command.Execute(HttpContext, id);
+            await command.Execute(HttpContext, GenericContentTypes.RiskCalculationParameters, id);
         }
 
         [HttpGet]

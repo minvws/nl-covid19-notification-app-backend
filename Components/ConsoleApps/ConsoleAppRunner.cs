@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps
 {
@@ -14,15 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps
     {
         public void Execute(string[] args, Action<IServiceCollection, IConfigurationRoot> configure, Action<IServiceProvider, string[]> start)
         {
-            var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
-
-            // Build configuration
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
-                .AddJsonFile("appsettings.json", false)
-                .AddJsonFile($"appsettings.{environmentName}.json", true, true)
-                .Build();
-
+            var configuration = ConfigurationRootBuilder.Build();
             // Add the framework services
             var serviceCollection = new ServiceCollection();
             configure(serviceCollection, configuration);

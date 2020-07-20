@@ -15,8 +15,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 
         private const string DefaultPrefix = "Validation:TemporaryExposureKey:";
 
-        public int RollingPeriodMin => GetValueInt32(Prefix+nameof(RollingPeriodMin), 1);
-        public int RollingPeriodMax => GetValueInt32(Prefix + nameof(RollingPeriodMax), 32768);
-        public int DailyKeyByteCount => GetValueInt32(Prefix + nameof(DailyKeyByteCount), 16);
+        public int RollingPeriodMin => GetConfigValue("RollingPeriod:Min", 1);
+        public int RollingPeriodMax => GetConfigValue("RollingPeriod:Max", 1);
+        public int DailyKeyByteCount => GetConfigValue(nameof(DailyKeyByteCount), 16);
     }
 }

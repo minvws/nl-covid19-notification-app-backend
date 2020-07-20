@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers

@@ -22,8 +22,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
             if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
             modelBuilder.HasDefaultSchema("dbo");
-            modelBuilder.ApplyConfiguration(new Configuration.Workflow.KeyReleaseWorkflowStateConfig());
-            modelBuilder.ApplyConfiguration(new Configuration.Workflow.TemporaryExposureKeyConfig());
+            modelBuilder.ApplyConfiguration(new Configuration.Workflow.KeyReleaseWorkflowStateEtc());
+            modelBuilder.ApplyConfiguration(new Configuration.Workflow.TemporaryExposureKeyEtc());
         }
     }
 }

@@ -9,15 +9,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.AppConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content.NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.RiskCalculationConfig;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
@@ -39,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
 
             services.AddLogging();
 
-            services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
+            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
 
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
@@ -52,12 +48,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
                 return result;
             });
 
+            services.AddTransient<IHttpResponseHeaderConfig, HttpResponseHeaderConfig>();
             services.AddSingleton<IUtcDateTimeProvider>(new StandardUtcDateTimeProvider());
-            services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();
+            services.AddTransient<IPublishingId, StandardPublishingIdFormatter>();
 
             services.AddScoped<HttpGetCdnManifestCommand>();
-            services.AddScoped<HttpGetCdnContentCommand<AppConfigContentEntity>>();
-            services.AddScoped<HttpGetCdnContentCommand<RiskCalculationContentEntity>>();
+            services.AddScoped<HttpGetCdnGenericContentCommand>();
             services.AddScoped<HttpGetCdnContentCommand<ExposureKeySetContentEntity>>();
 
             services.AddSwaggerGen(o =>

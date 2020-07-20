@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
@@ -18,7 +18,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             return await dbContextProvider.Set<T>().SingleOrDefaultAsync(x => x.PublishingId == id);
         }
 
-        public static async Task<T?> SafeGetLatestContent<T>(this DbContext dbContextProvider, DateTime now) where T : ContentEntity
+        public static async Task<GenericContentEntity> SafeGetGenericContent(this DbContext dbContextProvider, string genericType, string id)
+        {
+            if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
+            return await dbContextProvider.Set<GenericContentEntity>().SingleOrDefaultAsync(x => x.PublishingId == id && x.GenericType == genericType);
+        }
+
+        public static async Task<T> SafeGetLatestContent<T>(this DbContext dbContextProvider, DateTime now) where T:ContentEntity
         {
             if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
             return await dbContextProvider.Set<T>()
@@ -26,6 +32,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 .OrderByDescending(x => x.Release)
                 .Take(1)
                 .SingleOrDefaultAsync();
+        }
+
+        public static async Task<string> SafeGetLatestGenericContentId(this DbContext dbContextProvider, string genericType, DateTime now)
+        {
+            if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
+            return await dbContextProvider.Set<GenericContentEntity>()
+                .Where(x => x.Release < now && x.GenericType == genericType)
+                .OrderByDescending(x => x.Release)
+                .Take(1)
+                .Select(x => x.PublishingId)
+                .SingleOrDefaultAsync() ?? string.Empty;
         }
 
         public static async Task<string[]> SafeGetActiveContentIdList<T>(this DbContext dbContextProvider, DateTime from, DateTime to) where T : ContentEntity

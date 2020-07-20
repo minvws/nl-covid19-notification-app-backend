@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Services;
