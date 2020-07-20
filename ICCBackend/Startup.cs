@@ -187,9 +187,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             app.UseCookiePolicy();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }
