@@ -31,12 +31,14 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
     public class Startup
     {
-        public Startup()
-        { 
+        public Startup(IConfiguration configuration)
+        {
+            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
+        private readonly IConfiguration _Configuration;
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        public void ConfigureServices(IServiceCollection services)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
@@ -44,13 +46,13 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
-            IIccPortalConfig iccPortalConfig = new IccPortalConfig(configuration, "IdentityHub");
+            IIccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration, "IdentityHub");
             services.AddSingleton(iccPortalConfig);
 
             // Database Scoping
             services.AddScoped(x =>
             {
-                var config = new StandardEfDbConfig(configuration, "WorkFlow");
+                var config = new StandardEfDbConfig(_Configuration, "WorkFlow");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new WorkflowDbContext(builder.Build());
                 result.BeginTransaction();
@@ -114,7 +116,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             });
 
-                        services.Configure<CookiePolicyOptions>(options =>
+            services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
@@ -133,7 +135,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 {
                     if (!string.IsNullOrWhiteSpace(iccPortalConfig.BaseUrl))
                     {
-                        //TODO would not be set because??
                         options.TheIdentityHubUrl = new Uri(iccPortalConfig.BaseUrl);
                     }
 
@@ -142,6 +143,17 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     options.ClientId = iccPortalConfig.ClientId;
                     options.ClientSecret = iccPortalConfig.ClientSecret;
                 });
+            
+            services.AddMvc(config =>
+            {
+                config.EnableEndpointRouting = false;
+                var policy = new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(TheIdentityHubDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser()
+                    .Build();
+                config.Filters.Add(new AuthorizeFilter(policy));
+                // .RequireClaim(ClaimTypes.Role)
+            });
 
             services
                 .AddAuthentication("jwt")
@@ -173,7 +185,10 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             app.UseAuthorization();
 
             app.UseCookiePolicy();
-
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+            });
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
