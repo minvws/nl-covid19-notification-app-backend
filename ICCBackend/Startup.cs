@@ -46,7 +46,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
-            IIccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration, "IdentityHub");
+            IIccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration, "IccPortalConfig:IdentityHub");
+            
             services.AddSingleton(iccPortalConfig);
 
             // Database Scoping

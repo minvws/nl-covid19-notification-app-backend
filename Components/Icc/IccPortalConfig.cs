@@ -16,8 +16,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
         public string BaseUrl => GetConfigValue(nameof(BaseUrl), String.Empty);
         public string Tenant => GetConfigValue(nameof(Tenant), String.Empty);
-        public string ClientId => GetConfigValue("Client:Id", String.Empty);
-        public string ClientSecret => GetConfigValue("Client:Secret", String.Empty);
+        public string ClientId => GetConfigValue("client_id", String.Empty);
+        public string ClientSecret => GetConfigValue("client_secret", String.Empty);
         public string JwtSecret => GetConfigValue("Jwt:Secret", String.Empty);
         public double ClaimLifetimeHours => GetConfigValue(nameof(ClaimLifetimeHours), 3.0);
     }
