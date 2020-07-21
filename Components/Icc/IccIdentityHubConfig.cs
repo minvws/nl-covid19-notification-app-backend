@@ -5,7 +5,6 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
-using NL.Rijksoverheid.ExposureNotification.IccBackend;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
