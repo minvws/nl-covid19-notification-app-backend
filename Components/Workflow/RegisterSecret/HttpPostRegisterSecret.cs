@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
     {
         private readonly ISecretWriter _Writer;
         private readonly ILogger _Logger;
-
+        
         public HttpPostRegisterSecret(ISecretWriter writer, ILogger<HttpPostRegisterSecret> logger)
         {
             _Writer = writer ?? throw new ArgumentNullException(nameof(writer));
