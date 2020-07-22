@@ -30,6 +30,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5CB694D0-78E1-4347-BF78-A557E0780125}"
 	ProjectSection(SolutionItems) = preProject
 		docker\README.md = docker\README.md
+		docker\docker-compose.yml = docker\docker-compose.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentApi", "ContentApi\ContentApi.csproj", "{E9B743F3-6643-4BD6-A136-2887F64A5BEB}"
@@ -45,6 +46,22 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenTeks", "GenTeks\GenTeks.csproj", "{0417A9FB-86E7-4AEF-90DE-6D715BC9C7DB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{3F8DB099-3B7E-4314-87AC-637EE6346FAF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "icc_backend", "icc_backend", "{44BFDC95-5BCB-46DC-AEC6-BCB25BA075E3}"
+ProjectSection(SolutionItems) = preProject
+	docker\icc_backend\Dockerfile = docker\icc_backend\Dockerfile
+	docker\icc_backend\.dockerignore = docker\icc_backend\.dockerignore
+	docker\icc_backend\appsettings.Development.json = docker\icc_backend\appsettings.Development.json
+	docker\icc_backend\start.sh = docker\icc_backend\start.sh
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "standalone", "standalone", "{E993652A-E681-4157-935C-64364EA02E10}"
+ProjectSection(SolutionItems) = preProject
+	docker\standalone\Dockerfile = docker\standalone\Dockerfile
+	docker\standalone\.dockerignore = docker\standalone\.dockerignore
+	docker\standalone\appsettings.Development.json = docker\standalone\appsettings.Development.json
+	docker\standalone\start.sh = docker\standalone\start.sh
+EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,6 +123,8 @@ Global
 		{C9AA366C-852A-4D11-9842-96E9841B2291} = {36D1DBCA-6BB4-46DC-80DF-2C38EC9153F4}
 		{30BA20ED-FB39-43FC-885A-FE7A3D6B7937} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 		{0417A9FB-86E7-4AEF-90DE-6D715BC9C7DB} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
+		{44BFDC95-5BCB-46DC-AEC6-BCB25BA075E3} = {5CB694D0-78E1-4347-BF78-A557E0780125}
+		{E993652A-E681-4157-935C-64364EA02E10} = {5CB694D0-78E1-4347-BF78-A557E0780125}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}
