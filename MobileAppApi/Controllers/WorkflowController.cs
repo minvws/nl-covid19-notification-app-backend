@@ -48,12 +48,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
 
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.RandomNoise)]
-        public async Task<IActionResult> StopKeys([FromQuery] byte[] sig, [FromServices] HttpPostDecoyKeysCommand command)
+        public async Task<IActionResult> StopKeys([FromServices] HttpPostDecoyKeysCommand command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (_Logger == null) throw new ArgumentNullException(nameof(_Logger));
 
-            _Logger.LogInformation("POST stopkeys  triggered.");
+            _Logger.LogInformation("POST stopkeys triggered.");
             return await command.Execute();
         }
     }
