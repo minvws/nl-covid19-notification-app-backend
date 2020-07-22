@@ -17,11 +17,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
         public void Execute_takes_at_least_N_milliseconds(int n)
         {
             // Assemble
-            var config = new DefaultDecoyKeysConfig();
-            var logger = new TestLogger<HttpPostDecoyKeysCommand>();
-            var rng = new TestRng(n);
+            var command = new HttpPostDecoyKeysCommand(new TestLogger<HttpPostDecoyKeysCommand>(), new TestRng(n), new DefaultDecoyKeysConfig());
             var timer = new Stopwatch();
-            var command = new HttpPostDecoyKeysCommand(logger, rng, config);
 
             // Act
             timer.Start();
@@ -30,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.IsTrue(timer.ElapsedMilliseconds >= rng.Next(0, 0));
+            Assert.IsTrue(timer.ElapsedMilliseconds >= n);
         }
 
         private class TestRng : IRandomNumberGenerator
