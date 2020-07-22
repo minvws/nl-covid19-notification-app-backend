@@ -3,7 +3,7 @@
 REM Create package directory. This is needed because CI server can only publish artifacts by directory
 mkdir packages
 
-REM Remove any confifugration files which have sneaked in to the packages
+REM Remove any configuration files which have sneaked in to the packages
 cd publish
 del /S *.config
 del /S appsettings.json
