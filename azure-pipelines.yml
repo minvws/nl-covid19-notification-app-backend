@@ -35,6 +35,6 @@ steps:
 # Save the published files into the artifact repository
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)\publish\packages'
+    PathtoPublish: '$(Build.SourcesDirectory)\packages'
     ArtifactName: 'drop'
     publishLocation: 'Container'
