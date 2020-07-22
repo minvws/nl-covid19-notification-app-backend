@@ -373,4 +373,5 @@ MigrationBackup/
 
 # Publishing stuff
 /publish/
+/packages/
 publish_Logger.txt
