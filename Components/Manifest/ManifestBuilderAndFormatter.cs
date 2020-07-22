@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
@@ -26,10 +27,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             _Formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
         }
 
-        public async Task<ManifestEntity> Execute()
+        public async Task<ContentEntity> Execute()
         {
             var now = _DateTimeProvider.Now();
-            var e = new ManifestEntity
+            var e = new ContentEntity
             {
                 Created = now,
                 Release = now,

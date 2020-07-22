@@ -4,16 +4,16 @@
 
 using System.Text.Json;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
-    public class GenericContentValidator
+    public class ContentValidator
     {
-        public bool IsValid(GenericContentArgs args)
+        public bool IsValid(ContentArgs args)
         {
             if (args == null)
                 return false;
 
-            if (!GenericContentTypes.IsValid(args.GenericContentType))
+            if (!ContentTypes.IsValid(args.ContentType))
                 return false;
 
             if (!IsValidJson(args.Json))

@@ -32,8 +32,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             var contentJson = _JsonSerializer.Serialize(c);
             var contentBytes = Encoding.UTF8.GetBytes(contentJson);
             e.PublishingId = _PublishingId.Create(contentBytes);
-            e.SignedContent = await _SignedFormatter.SignedContentPacket(contentBytes);
-            e.SignedContentTypeName = MediaTypeNames.Application.Zip;
+            e.Content = await _SignedFormatter.SignedContentPacket(contentBytes);
+            e.ContentTypeName = MediaTypeNames.Application.Zip;
             return e;
         }
     }
