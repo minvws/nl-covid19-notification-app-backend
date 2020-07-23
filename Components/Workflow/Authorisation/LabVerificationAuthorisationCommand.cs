@@ -19,7 +19,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         private readonly PollTokens _PollTokens;
         private readonly ILogger _Logger;
 
-        public LabVerificationAuthorisationCommand(WorkflowDbContext dbContextProvider, PollTokens pollTokens, ILogger<LabVerificationAuthorisationCommand> logger)
+        public LabVerificationAuthorisationCommand(WorkflowDbContext dbContextProvider, PollTokens pollTokens,
+            ILogger<LabVerificationAuthorisationCommand> logger)
         {
             _DbContextProvider = dbContextProvider;
             _PollTokens = pollTokens;
@@ -34,7 +35,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             if (string.IsNullOrWhiteSpace(args.PollToken))
                 return false;
 
-            return _PollTokens.Validate(args.PollToken);
+            try
+            {
+                return _PollTokens.Validate(args.PollToken);
+            }
+            catch (TokenExpiredException e)
+            {
+                return false;
+            }
         }
 
         public async Task<LabVerifyAuthorisationResponse> Execute(LabVerifyArgs args)
@@ -61,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
             _Logger.LogInformation($"Committed - new PollToken:{wf.PollToken}.");
             return new LabVerifyAuthorisationResponse
-                { PollToken = refreshedToken, Valid = wf.Keys?.Any() ?? false};
+                {PollToken = refreshedToken, Valid = wf.Keys?.Any() ?? false};
         }
     }
 }

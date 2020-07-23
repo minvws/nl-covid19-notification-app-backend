@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
         public async Task<IActionResult> Execute(LabVerifyArgs args)
         {
-            if (_LabVerificationAuthorisationCommand.Validate(args))
+            if (!_LabVerificationAuthorisationCommand.Validate(args))
                 return new BadRequestResult();
 
             var result = await _LabVerificationAuthorisationCommand.Execute(args);

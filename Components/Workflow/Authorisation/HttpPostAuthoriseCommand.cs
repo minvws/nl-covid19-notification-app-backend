@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
         public async Task<IActionResult> Execute(AuthorisationArgs args)
         {
-            if (_AuthorisationWriter.Validate(args))
+            if (!_AuthorisationWriter.Validate(args))
                 return new BadRequestResult();
 
             var result = await _AuthorisationWriter.Execute(args);
