@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
@@ -33,8 +32,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             return new ManifestContent
             { 
                 ExposureKeySets = await _ContentDbContext.SafeGetActiveContentIdList<ExposureKeySetContentEntity>(lo, now),
-                RiskCalculationParameters = await _ContentDbContext.SafeGetLatestGenericContentId(GenericContentTypes.RiskCalculationParameters, now),
-                AppConfig = await _ContentDbContext.SafeGetLatestGenericContentId(GenericContentTypes.AppConfig, now)
+                RiskCalculationParameters = await _ContentDbContext.SafeGetLatestContentId(ContentTypes.RiskCalculationParameters, now),
+                AppConfig = await _ContentDbContext.SafeGetLatestContentId(ContentTypes.AppConfig, now)
             };
         }
     }

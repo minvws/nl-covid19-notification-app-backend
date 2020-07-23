@@ -11,8 +11,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     {
         public long Id { get; set; }
         public DateTime Created { get; set; }
-        public string CreatingJobName { get; set; }
-        public int CreatingJobQualifier { get; set; }
         //public string DebugContentJson { get; set; }
         public byte[] Content { get; set; }
         public string Region { get; set; } = DefaultValues.Region;

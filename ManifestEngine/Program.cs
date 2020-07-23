@@ -44,8 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddTransient<IPublishingId, StandardPublishingIdFormatter>();
 
             services.AddTransient<HttpGetCdnManifestCommand>();
-            services.AddTransient<HttpGetCdnGenericContentCommand>();
-            services.AddTransient<HttpGetCdnContentCommand<ExposureKeySetContentEntity>>();
+            services.AddTransient<HttpGetCdnContentCommand>();
 
             services.AddScoped(x =>
             {

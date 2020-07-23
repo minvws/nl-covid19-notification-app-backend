@@ -5,9 +5,9 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
@@ -16,11 +16,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
     {
         private readonly ContentDbContext _DbContextProvider;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly GenericContentValidator _Validator;
+        private readonly ContentValidator _Validator;
         private readonly ContentInsertDbCommand _InsertDbCommand;
         private readonly DateTime _Snapshot;
 
-        public ContentDatabaseCreateCommand(ContentDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, GenericContentValidator validator, ContentInsertDbCommand insertDbCommand)
+        public ContentDatabaseCreateCommand(ContentDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, ContentValidator validator, ContentInsertDbCommand insertDbCommand)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
@@ -38,8 +38,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         public async Task AddExampleContent()
         {
             await using var tx = await _DbContextProvider.Database.BeginTransactionAsync();
-            await Write(GenericContentTypes.RiskCalculationParameters, "RiskCalcDefaults.json");
-            await Write(GenericContentTypes.AppConfig, "AppConfigDefaults.json");
+            await Write(ContentTypes.RiskCalculationParameters, "RiskCalcDefaults.json");
+            await Write(ContentTypes.AppConfig, "AppConfigDefaults.json");
             _DbContextProvider.SaveAndCommit();
         }
 
@@ -58,10 +58,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         private async Task Write(string type, string resource)
         {
             var rcd = ReadFromResource(resource);
-            var args = new GenericContentArgs
+            var args = new ContentArgs
             {
                 Release = _Snapshot,
-                GenericContentType = type,
+                ContentType = type,
                 Json = rcd
             };
             if (!_Validator.IsValid(args)) throw new InvalidOperationException();

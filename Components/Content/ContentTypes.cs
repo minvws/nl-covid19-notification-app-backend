@@ -2,9 +2,9 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
-    public static class GenericContentTypes
+    public static class ContentTypes
     {
         public const string AppConfig = nameof(AppConfig);
         public const string RiskCalculationParameters = nameof(RiskCalculationParameters); //TODO API version?
