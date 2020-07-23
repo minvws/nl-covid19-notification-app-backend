@@ -6,6 +6,14 @@
         <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccBackend</AssemblyName>
         <UserSecretsId>0caed3b4-1e4a-402f-a697-c35c966064d0</UserSecretsId>
     </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <DocumentationFile>$(SolutionDir)\ICCBackend\NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccBackend.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <DocumentationFile>$(SolutionDir)\ICCBackend\NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccBackend.xml</DocumentationFile>
+    </PropertyGroup>
     <ItemGroup>
       <_ContentIncludedByDefault Remove="wwwroot\css\site.css" />
       <_ContentIncludedByDefault Remove="wwwroot\favicon.ico" />
