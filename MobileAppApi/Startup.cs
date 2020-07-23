@@ -74,6 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddScoped<ISecretConfig, StandardSecretConfig>();
             services.AddScoped<ITekWriter, TekWriter>();
             services.AddScoped<RandomNumberGenerator, RandomNumberGenerator>();
+            services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
 
             services.AddScoped<HttpPostDecoyKeysCommand, HttpPostDecoyKeysCommand>();
             services.AddScoped<IDecoyKeysConfig, StandardDecoyKeysConfig>();
