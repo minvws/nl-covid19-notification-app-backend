@@ -150,6 +150,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
             services.AddSingleton(_Configuration);
 
             services.AddTransient<WorkflowDatabaseCreateCommand>();
+            services.AddTransient<PublishingJobDatabaseCreateCommand>();
+            services.AddTransient<IccDatabaseCreateCommand>();
             services.AddTransient<ContentDatabaseCreateCommand>();
             services.AddTransient<ProvisionDatabasesCommand>();
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
