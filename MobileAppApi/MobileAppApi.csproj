@@ -7,6 +7,14 @@
     <UserSecretsId>045384c8-5b24-4f13-98d7-c4b2f51f1c12</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>$(SolutionDir)\MobileAppApi\NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>$(SolutionDir)\MobileAppApi\NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Components\Components.csproj" />
   </ItemGroup>

@@ -370,6 +370,10 @@ MigrationBackup/
 /ICCPortal/appsettings.Development.personal.json
 /ICCPortal/appsettings.Development.ggdghor.acc.json
 /ICCPortal/appsettings.Development.ggdghor.json
+/ICCBackend/NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccBackend.xml
+/BatchJobsApi/NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.xml
+/ContentApi/NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.xml
+/MobileAppApi/NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.xml
 
 # Publishing stuff
 /publish/
