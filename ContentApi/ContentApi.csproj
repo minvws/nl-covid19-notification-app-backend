@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C$(SolutionDir)\ContentApi\NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.xml</DocumentationFile>
+    <DocumentationFile>$(SolutionDir)\ContentApi\NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

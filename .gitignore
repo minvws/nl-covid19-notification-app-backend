@@ -363,17 +363,16 @@ MigrationBackup/
 # MacOS
 .DS_Store
 
-/ServerStandAlone/NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone.xml
-/Components/NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml
-/Components/D:/Repos/VWS/MSS-nl-covid19-notification-app-backend/Components/NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml
+# Some tooling
 *dotnet-tools.json
+
+# ICC config
 /ICCPortal/appsettings.Development.personal.json
 /ICCPortal/appsettings.Development.ggdghor.acc.json
 /ICCPortal/appsettings.Development.ggdghor.json
-/ICCBackend/NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccBackend.xml
-/BatchJobsApi/NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.xml
-/ContentApi/NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.xml
-/MobileAppApi/NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.xml
+
+# Generated XML files
+**/NL.Rijksoverheid.ExposureNotification.BackEnd.*.xml
 
 # Publishing stuff
 /publish/
