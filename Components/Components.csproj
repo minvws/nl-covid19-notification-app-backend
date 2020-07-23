@@ -13,11 +13,12 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<WarningsAsErrors>NU1605;CS8625</WarningsAsErrors>
-		<DocumentationFile>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml</DocumentationFile>
+		<DocumentationFile>$(SolutionDir)\Components\NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml</DocumentationFile>
 		<NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<WarningsAsErrors>CS8625</WarningsAsErrors>
+		<DocumentationFile>$(SolutionDir)\Components\NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml</DocumentationFile>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="BleCalibration\**" />
