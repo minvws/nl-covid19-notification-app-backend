@@ -2,13 +2,14 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
+using System;
+using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
 {
@@ -42,6 +43,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
             if (_Logger == null) throw new ArgumentNullException(nameof(_Logger));
 
             _Logger.LogInformation("POST register triggered.");
+            return await command.Execute();
+        }
+
+        [HttpPost]
+        [Route(EndPointNames.MobileAppApi.RandomNoise)]
+        public async Task<IActionResult> StopKeys([FromServices] HttpPostDecoyKeysCommand command)
+        {
+            if (command == null) throw new ArgumentNullException(nameof(command));
+            if (_Logger == null) throw new ArgumentNullException(nameof(_Logger));
+
+            _Logger.LogInformation("POST stopkeys triggered.");
             return await command.Execute();
         }
     }

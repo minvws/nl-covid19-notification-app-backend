@@ -1,10 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi</RootNamespace>
     <UserSecretsId>6ed3ed32-c60c-4e42-9889-58044293730a</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>$(SolutionDir)\ContentApi\NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>$(SolutionDir)\ContentApi\NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
