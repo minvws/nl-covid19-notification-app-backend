@@ -83,7 +83,7 @@ namespace DbProvision
             services.AddTransient<ContentInsertDbCommand>();
             services.AddTransient<ZippedSignedContentFormatter>();
 
-            if (configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", true))
+            if (configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", false))
             {
                 if (configuration.GetValue("DevelopmentFlags:Azure", false))
                 {

@@ -9,7 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     public class HttpResponseHeaderConfig : AppSettingsReader, IHttpResponseHeaderConfig
     {
-        public HttpResponseHeaderConfig(IConfiguration config, string? prefix = null) : base(config, prefix)
+        public HttpResponseHeaderConfig(IConfiguration config, string? prefix = "HttpResponseHeaders") : base(config, prefix)
         {
         }
 

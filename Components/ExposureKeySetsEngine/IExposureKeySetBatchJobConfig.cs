@@ -6,7 +6,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 {
     public interface IExposureKeySetBatchJobConfig
     {
-        bool DeleteJobDatabase { get; }
-        int InputListCapacity { get; }
+        //TODO min size etc.
     }
 }

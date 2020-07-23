@@ -84,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
                     x.GetService<ILogger<ExposureKeySetBatchJobMk2>>()
                 ));
 
-            if (_Configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", true))
+            if (_Configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", false))
             {
                 if (_Configuration.GetValue("DevelopmentFlags:Azure", false))
                 {
