@@ -13,7 +13,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         {
         }
 
-        public bool DeleteJobDatabase => GetConfigValue(nameof(DeleteJobDatabase), false);
-        public int InputListCapacity => GetConfigValue(nameof(InputListCapacity), 1000);
     }
 }

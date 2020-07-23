@@ -11,11 +11,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
     {
         private const int WorkflowTokenTtlDaysDefault = 14;
 
-        public WorkflowConfig(IConfiguration config) : base(config, "Workflow")
+        public WorkflowConfig(IConfiguration config, string prefix = "Workflow") : base(config, prefix)
         {
         }
 
-        public double SecretLifetimeDays => GetConfigValue(nameof(SecretLifetimeDays), (double) WorkflowTokenTtlDaysDefault);
-        public double AuthorisationWindowDurationMinutes => GetConfigValue(nameof(AuthorisationWindowDurationMinutes), (double) WorkflowTokenTtlDaysDefault);
     }
 }

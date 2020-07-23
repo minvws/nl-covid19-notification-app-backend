@@ -11,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Deco
     {
         private static readonly IDecoyKeysConfig Defaults = new DefaultDecoyKeysConfig();
 
-        public StandardDecoyKeysConfig(IConfiguration config, string? prefix = null) : base(config, prefix)
+        public StandardDecoyKeysConfig(IConfiguration config, string? prefix = "Workflow:Decoys") : base(config, prefix)
         {
         }
 

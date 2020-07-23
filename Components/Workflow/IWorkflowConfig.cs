@@ -6,7 +6,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 {
     public interface IWorkflowConfig
     {
-        double SecretLifetimeDays { get; }
-        double AuthorisationWindowDurationMinutes { get; }
+        //TODO
     }
 }
