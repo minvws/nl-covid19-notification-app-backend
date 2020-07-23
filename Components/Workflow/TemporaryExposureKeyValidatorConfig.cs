@@ -13,10 +13,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         {
         }
 
-        private const string DefaultPrefix = "Validation:TemporaryExposureKey";
+        private const string DefaultPrefix = "Workflow:PostKeys:TemporaryExposureKeys";
 
         public int RollingPeriodMin => GetConfigValue("RollingPeriod:Min", 1);
-        public int RollingPeriodMax => GetConfigValue("RollingPeriod:Max", 1);
+        public int RollingPeriodMax => GetConfigValue("RollingPeriod:Max", int.MaxValue);
         public int DailyKeyByteCount => GetConfigValue(nameof(DailyKeyByteCount), 16);
     }
 }

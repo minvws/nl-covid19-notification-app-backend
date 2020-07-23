@@ -53,8 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             services.AddTransient<IPublishingId, StandardPublishingIdFormatter>();
 
             services.AddScoped<HttpGetCdnManifestCommand>();
-            services.AddScoped<HttpGetCdnGenericContentCommand>();
-            services.AddScoped<HttpGetCdnContentCommand<ExposureKeySetContentEntity>>();
+            services.AddScoped<HttpGetCdnContentCommand>();
 
             services.AddSwaggerGen(o =>
             {

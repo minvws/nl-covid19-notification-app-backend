@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     public class ExposureKeySetHeaderInfoConfig : AppSettingsReader, IExposureKeySetHeaderInfoConfig
     {
         public ExposureKeySetHeaderInfoConfig(IConfiguration config, string? prefix = "ExposureKeySets:SignatureHeader") : base(config, prefix) { }
-        public string AppBundleId => GetConfigValue(nameof(VerificationKeyId), "nl.rijksoverheid.en");
+        public string AppBundleId => GetConfigValue(nameof(AppBundleId), "nl.rijksoverheid.en");
         public string VerificationKeyId => GetConfigValue(nameof(VerificationKeyId), "204");
         public string VerificationKeyVersion => GetConfigValue(nameof(VerificationKeyVersion), "v1");
     }

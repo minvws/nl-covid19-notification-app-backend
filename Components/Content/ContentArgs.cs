@@ -4,12 +4,12 @@
 
 using System;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
-    public class GenericContentArgs
+    public class ContentArgs
     {
         public DateTime Release { get; set; }
-        public string GenericContentType { get; set; }
+        public string ContentType { get; set; }
         
         public string Json { get; set; }
     }

@@ -42,7 +42,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManifestEngine", "ManifestE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbProvision", "DbProvision\DbProvision.csproj", "{30BA20ED-FB39-43FC-885A-FE7A3D6B7937}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenTeks", "GenTeks\GenTeks.csproj", "{0417A9FB-86E7-4AEF-90DE-6D715BC9C7DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenTeks", "GenTeks\GenTeks.csproj", "{0417A9FB-86E7-4AEF-90DE-6D715BC9C7DB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{3F8DB099-3B7E-4314-87AC-637EE6346FAF}"
 EndProject

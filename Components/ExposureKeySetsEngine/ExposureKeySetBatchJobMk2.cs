@@ -217,8 +217,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     {
                         Created = _Start,
                         Release = x.Release,
-                        SignedContentTypeName = MediaTypeNames.Application.Zip,
-                        SignedContent = x.Content,
+                        ContentTypeName = MediaTypeNames.Application.Zip,
+                        Content = x.Content,
                         CreatingJobName = x.CreatingJobName,
                         CreatingJobQualifier = x.CreatingJobQualifier,
                         PublishingId = _PublishingId.Create(x.Content)

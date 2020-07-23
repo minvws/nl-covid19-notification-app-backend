@@ -4,9 +4,8 @@
 
 using System;
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Content;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts
 {
@@ -17,17 +16,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
         }
 
-        public DbSet<ManifestEntity> ManifestContent { get; set; }
-        public DbSet<ExposureKeySetContentEntity> ExposureKeySetContent { get; set; }
-        public DbSet<GenericContentEntity> GenericContent { get; set; }
+        public DbSet<ContentEntity> Content { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
             modelBuilder.HasDefaultSchema("dbo");
-            modelBuilder.ApplyConfiguration(new Configuration.Content.ExposureKeySetContentEtc());
-            modelBuilder.ApplyConfiguration(new Configuration.Content.ManifestEtc());
-            modelBuilder.ApplyConfiguration(new Configuration.Content.GenericContentEtc());
+            modelBuilder.ApplyConfiguration(new ContentEtc());
         }
     }
 }

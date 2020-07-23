@@ -82,7 +82,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
             services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();
 
-            if (_Configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", true))
+            if (_Configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", false))
             {
                 if (_Configuration.GetValue("DevelopmentFlags:Azure", false))
                 {

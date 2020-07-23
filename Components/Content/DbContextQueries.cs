@@ -6,22 +6,21 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     public static class DbContextQueries
     {
-        public static async Task<T?> SafeGetContent<T>(this DbContext dbContextProvider, string id) where T : ContentEntity
+        public static async Task<ContentEntity?> SafeGetContent(this DbContext dbContextProvider, string id)
         {
             if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
-            return await dbContextProvider.Set<T>().SingleOrDefaultAsync(x => x.PublishingId == id);
+            return await dbContextProvider.Set<ContentEntity>().SingleOrDefaultAsync(x => x.PublishingId == id);
         }
 
-        public static async Task<GenericContentEntity> SafeGetGenericContent(this DbContext dbContextProvider, string genericType, string id)
+        public static async Task<ContentEntity> SafeGetContent(this DbContext dbContextProvider, string type, string id)
         {
             if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
-            return await dbContextProvider.Set<GenericContentEntity>().SingleOrDefaultAsync(x => x.PublishingId == id && x.GenericType == genericType);
+            return await dbContextProvider.Set<ContentEntity>().SingleOrDefaultAsync(x => x.PublishingId == id && x.Type == type);
         }
 
         public static async Task<T> SafeGetLatestContent<T>(this DbContext dbContextProvider, DateTime now) where T:ContentEntity
@@ -34,11 +33,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 .SingleOrDefaultAsync();
         }
 
-        public static async Task<string> SafeGetLatestGenericContentId(this DbContext dbContextProvider, string genericType, DateTime now)
+        public static async Task<string> SafeGetLatestContentId(this DbContext dbContextProvider, string type, DateTime now)
         {
             if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
-            return await dbContextProvider.Set<GenericContentEntity>()
-                .Where(x => x.Release < now && x.GenericType == genericType)
+            return await dbContextProvider.Set<ContentEntity>()
+                .Where(x => x.Release < now && x.Type == type)
                 .OrderByDescending(x => x.Release)
                 .Take(1)
                 .Select(x => x.PublishingId)
