@@ -14,15 +14,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         private readonly WorkflowDatabaseCreateCommand _Workflow;
         private readonly ContentDatabaseCreateCommand _Content;
         private readonly PublishingJobDatabaseCreateCommand _Job;
-        private readonly IccDatabaseCreateCommand _Icc;
         private readonly ILogger _Logger;
 
-        public ProvisionDatabasesCommand(WorkflowDatabaseCreateCommand workflow, ContentDatabaseCreateCommand content, PublishingJobDatabaseCreateCommand job, IccDatabaseCreateCommand icc, ILogger<ProvisionDatabasesCommand> logger)
+        public ProvisionDatabasesCommand(WorkflowDatabaseCreateCommand workflow, ContentDatabaseCreateCommand content, PublishingJobDatabaseCreateCommand job, ILogger<ProvisionDatabasesCommand> logger)
         {
             _Workflow = workflow ?? throw new ArgumentNullException(nameof(workflow));
             _Content = content ?? throw new ArgumentNullException(nameof(content));
             _Job = job ?? throw new ArgumentNullException(nameof(job));
-            _Icc = icc ?? throw new ArgumentNullException(nameof(icc));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -40,10 +38,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
 
             _Logger.LogInformation("Job...");
             await _Job.Execute();
-
-            _Logger.LogInformation("Icc...");
-            await _Icc.Execute();
-            //await _Icc.AddExampleContent();
 
             _Logger.LogInformation("Complete.");
         }

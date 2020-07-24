@@ -30,9 +30,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         [DataTestMethod]
         public void Build(int keyCount, int seed)
         {
+            var lf = new LoggerFactory();
+
             var builder = new ExposureKeySetBuilderV1(new FakeExposureKeySetHeaderInfoConfig(), 
-                new EcdSaSigner(new LocalResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestCert2.p12", ""))), 
-                new CmsSigner(new LocalResourceCertificateProvider(new HardCodedCertificateLocationConfig("FakeRSA.p12", "Covid-19!"))), 
+                new EcdSaSigner(new LocalResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestCert2.p12", ""), lf.CreateLogger<LocalResourceCertificateProvider>())), 
+                new CmsSigner(new LocalResourceCertificateProvider(new HardCodedCertificateLocationConfig("FakeRSA.p12", "Covid-19!"), lf.CreateLogger<LocalResourceCertificateProvider>())), 
                 new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter(), new LoggerFactory().CreateLogger<ExposureKeySetBuilderV1>());
 
             var actual = builder.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();

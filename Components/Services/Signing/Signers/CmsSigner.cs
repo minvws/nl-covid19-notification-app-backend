@@ -27,8 +27,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
             var a = System.Reflection.Assembly.GetExecutingAssembly();
             using var s = a.GetManifestResourceStream("NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Resources.certs.p7b");
+
             if (s == null)
-                return certList.ToArray();
+            {
+                throw new InvalidOperationException("Root certificates not found - resource certs.p7b missing.");
+            }
 
             var bytes = new byte[s.Length];
             s.Read(bytes, 0, bytes.Length);
