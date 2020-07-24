@@ -43,14 +43,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
                 return AuthenticateResult.Fail("Invalid authorization header.");
             }
 
-            var cleaned = authHeader.ToString().Replace("Bearer ", "").Trim();
-            var decodedClaims = _JwtService.Decode(cleaned);
-
-            if (!_JwtService.IsValid(decodedClaims, AccessTokenElement))
+            var jwt = authHeader.ToString().Replace("Bearer ", "").Trim();
+            // AccessTokenElement
+            if (!_JwtService.IsValid(jwt))
             {
-                Logger.LogWarning($"Invalid jwt token - {cleaned}.");
+                Logger.LogWarning($"Invalid jwt token.");
                 return AuthenticateResult.Fail("Invalid jwt token.");
             }
+            var decodedClaims = _JwtService.Decode(jwt);
 
             var claims = new[]
             {

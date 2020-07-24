@@ -34,9 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
         public bool Validate(string token)
         {
-// todo: split decode & validate
-            var decodedToken = _JwtService.Decode(token);
-            return _JwtService.IsValid(decodedToken, PayloadElement);
+            return _JwtService.IsValid(token);
         }
     }
 }

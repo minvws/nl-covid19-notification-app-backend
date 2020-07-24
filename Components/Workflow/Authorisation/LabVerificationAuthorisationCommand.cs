@@ -35,17 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             if (string.IsNullOrWhiteSpace(args.PollToken))
                 return false;
 
-            //
-            // if(_PollTokens.)
-            
-            try
-            {
-                return _PollTokens.Validate(args.PollToken);
-            }
-            catch (TokenExpiredException e)
-            {
-                return false;
-            }
+            return _PollTokens.Validate(args.PollToken);
         }
 
         public async Task<LabVerifyAuthorisationResponse> Execute(LabVerifyArgs args)

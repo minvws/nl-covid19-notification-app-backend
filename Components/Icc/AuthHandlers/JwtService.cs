@@ -6,8 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
+using JWT;
 using JWT.Algorithms;
 using JWT.Builder;
+using JWT.Serializers;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.IccBackend;
 
@@ -17,11 +21,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
     {
         private readonly IIccPortalConfig _IccPortalConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly ILogger<JwtService> _Logger;
 
-        public JwtService(IIccPortalConfig iccPortalConfig, IUtcDateTimeProvider utcDateTimeProvider)
+        public JwtService(IIccPortalConfig iccPortalConfig, IUtcDateTimeProvider utcDateTimeProvider,
+            ILogger<JwtService> logger)
         {
             _IccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
-            _DateTimeProvider = utcDateTimeProvider;
+            _DateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         private JwtBuilder CreateBuilder()
@@ -58,29 +65,88 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             builder.AddClaim("exp", _DateTimeProvider.Now().AddHours(_IccPortalConfig.ClaimLifetimeHours).ToUnixTime());
             builder.AddClaim("id", GetClaimValue(claimsPrincipal, ClaimTypes.NameIdentifier));
             builder.AddClaim("email", GetClaimValue(claimsPrincipal, ClaimTypes.Email));
-            builder.AddClaim("access_token", GetClaimValue(claimsPrincipal, "http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken"));
-            builder.AddClaim("name", GetClaimValue(claimsPrincipal, "http://schemas.u2uconsult.com/ws/2014/04/identity/claims/displayname"));
+            builder.AddClaim("access_token",
+                GetClaimValue(claimsPrincipal, "http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken"));
+            builder.AddClaim("name",
+                GetClaimValue(claimsPrincipal, "http://schemas.u2uconsult.com/ws/2014/04/identity/claims/displayname"));
             return builder.Encode();
         }
 
-        private string? GetClaimValue(ClaimsPrincipal cp, string claimType) => cp.Claims.FirstOrDefault(c => c.Type.Equals(claimType))?.Value;
-
-        public bool IsValid(IDictionary<string, string> tokens, string checkElement)
+        private string? GetClaimValue(ClaimsPrincipal cp, string claimType) =>
+            cp.Claims.FirstOrDefault(c => c.Type.Equals(claimType))?.Value;
+        
+        public bool IsValid(string token)
         {
-            if (string.IsNullOrWhiteSpace(checkElement))
-                throw new ArgumentException(nameof(checkElement));
+            if (string.IsNullOrWhiteSpace(token))
+                throw new ArgumentException(nameof(token));
 
-            if (tokens == null)
+            if (token == null)
                 return false;
 
-            return tokens.TryGetValue(checkElement, out var checkElementValue) && !string.IsNullOrWhiteSpace(checkElementValue);
+            IJsonSerializer serializer = new JsonNetSerializer();
+            var provider = new UtcDateTimeProvider();
+            var urlEncoder = new JwtBase64UrlEncoder();
+            var decoder = new JwtDecoder(serializer, urlEncoder);
+            var algFactory = new HMACSHAAlgorithmFactory();
+            IJwtValidator validator = new JwtValidator(serializer, provider);
+
+            var jwt = new JwtParts(token);
+
+            var decodedPayload = EncodingHelper.GetString(urlEncoder.Decode(jwt.Payload));
+            var decodedSignature = urlEncoder.Decode(jwt.Signature);
+
+            var header = decoder.DecodeHeader<JwtHeader>(jwt);
+            var alg = algFactory.Create(JwtDecoderContext.Create(header, decodedPayload, jwt)) ?? throw new ArgumentNullException("algFactory.Create(JwtDecoderContext.Create(header, decodedPayload, jwt))");
+
+            var bytesToSign = EncodingHelper.GetBytes(String.Concat(jwt.Header, ".", jwt.Payload));
+
+            bool result;
+            string[] secret = {_IccPortalConfig.JwtSecret};
+            if (alg is IAsymmetricAlgorithm asymmAlg)
+            {
+                result = validator.TryValidate(decodedPayload, asymmAlg, bytesToSign, decodedSignature, out var ex);
+                if (ex != null)
+                    _Logger.LogWarning(ex.Message + " – token validation");
+            }
+            else
+            {
+                // the signature on the token, with the leading =
+                var rawSignature = Convert.ToBase64String(decodedSignature);
+
+                // the signatures re-created by the algorithm, with the leading =
+
+                var keys = secret.Select(s => EncodingHelper.GetBytes(s)).ToArray();
+                
+                var recreatedSignatures = keys.Select(key => alg.Sign(key, bytesToSign))
+                    .Select(sd => Convert.ToBase64String(sd))
+                    .ToArray();
+
+                result = validator.TryValidate(decodedPayload, rawSignature, recreatedSignatures, out var ex);
+                if (ex != null)
+                    _Logger.LogWarning(ex.Message + " – token validation");
+            }
+
+            return result;
         }
 
         public IDictionary<string, string> Decode(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
                 throw new ArgumentException(nameof(token));
-            return CreateBuilder().Decode<IDictionary<string, object>>(token).ToDictionary(x => x.Key, x=> x.Value.ToString());
+            return CreateBuilder().Decode<IDictionary<string, object>>(token)
+                .ToDictionary(x => x.Key, x => x.Value.ToString());
         }
+    }
+
+    static class EncodingHelper
+    {
+        internal static byte[] GetBytes(string input) =>
+            Encoding.UTF8.GetBytes(input);
+
+        internal static byte[][] GetBytes(IEnumerable<string> input) =>
+            input.Select(GetBytes).ToArray();
+
+        internal static string GetString(byte[] bytes) =>
+            Encoding.UTF8.GetString(bytes);
     }
 }
