@@ -18,36 +18,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         private readonly WorkflowDbContext _DbContextProvider;
         private readonly PollTokens _PollTokens;
         private readonly ILogger _Logger;
+        private readonly AuthorisationArgsValidator _AuthorisationArgsValidator;
 
         public AuthorisationWriterCommand(WorkflowDbContext dbContextProvider, PollTokens pollTokens,
-            ILogger<AuthorisationWriterCommand> logger)
+            ILogger<AuthorisationWriterCommand> logger, AuthorisationArgsValidator authorisationArgsValidator)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _PollTokens = pollTokens ?? throw new ArgumentNullException(nameof(pollTokens));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _AuthorisationArgsValidator = authorisationArgsValidator ?? throw new ArgumentNullException(nameof(authorisationArgsValidator));
         }
 
-        public bool Validate(AuthorisationArgs args)
-        {
-            if (args == null)
-                return false;
-
-            if (string.IsNullOrWhiteSpace(args.LabConfirmationId))
-                return false;
-            if (args.LabConfirmationId.Length != 6)
-                return false;
-            if (!Regex.IsMatch(args.LabConfirmationId, "^[BCFGJLQRSTUVXYZ23456789]"))
-                return false;
-            
-            // TODO check SymptonsOnDate is valid date in !past!
-
-            return true;
-        }
-
+       
         public async Task<AuthorisationResponse> Execute(AuthorisationArgs args)
         {
-            if (!Validate(args))
-                throw new ArgumentException("Not valid.", nameof(args));
+            if (!_AuthorisationArgsValidator.Validate(args))
+                throw new ArgumentException("Args not valid.", nameof(args));
 
             var wf = await _DbContextProvider
                 .KeyReleaseWorkflowStates

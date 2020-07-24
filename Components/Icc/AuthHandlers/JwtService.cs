@@ -80,7 +80,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         {
             if (string.IsNullOrWhiteSpace(token))
                 throw new ArgumentException(nameof(token));
-
             return CreateBuilder().Decode<IDictionary<string, object>>(token).ToDictionary(x => x.Key, x=> x.Value.ToString());
         }
     }

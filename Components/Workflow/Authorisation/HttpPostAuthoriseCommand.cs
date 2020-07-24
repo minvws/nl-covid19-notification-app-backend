@@ -11,15 +11,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     public class HttpPostAuthoriseCommand
     {
         private readonly AuthorisationWriterCommand _AuthorisationWriter;
+        private readonly AuthorisationArgsValidator _AuthorisationArgsValidator;
 
-        public HttpPostAuthoriseCommand(AuthorisationWriterCommand authorisationWriter)
+        public HttpPostAuthoriseCommand(AuthorisationWriterCommand authorisationWriter,AuthorisationArgsValidator authorisationArgsValidator)
         {
             _AuthorisationWriter = authorisationWriter ?? throw new ArgumentNullException(nameof(authorisationWriter));
+            _AuthorisationArgsValidator = authorisationArgsValidator ?? throw new ArgumentNullException(nameof(authorisationArgsValidator));
         }
 
         public async Task<IActionResult> Execute(AuthorisationArgs args)
         {
-            if (!_AuthorisationWriter.Validate(args))
+            if (!_AuthorisationArgsValidator.Validate(args))
                 return new BadRequestResult();
 
             var result = await _AuthorisationWriter.Execute(args);
