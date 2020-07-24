@@ -58,7 +58,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
             for (var i = 0; i < workflowCount; i++)
             {
-
                 var keyCount = 1 + random.Next(workflowValidatorConfig.TemporaryExposureKeyCountMax - 1);
                 var keys = new List<TemporaryExposureKeyArgs>(keyCount);
                 for (var j = 0; j < keyCount; j++)

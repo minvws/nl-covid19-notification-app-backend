@@ -28,11 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
             _Logger.LogInformation($"Finding certificate - Thumbprint:{_ThumbprintConfig.Thumbprint}, RootTrusted:{_ThumbprintConfig.RootTrusted}.");
 
-            var result = store.Certificates
-                .Find(X509FindType.FindByThumbprint, _ThumbprintConfig.Thumbprint, _ThumbprintConfig.RootTrusted)
-                .OfType<X509Certificate2>()
-                .FirstOrDefault();
-
+            var result = ReadCertFromStore(store);
             if (result == null)
             {
                 _Logger.LogCritical($"Certificate not found: {_ThumbprintConfig.Thumbprint}");
@@ -41,5 +37,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
             return result;
         }
+        X509Certificate2 ReadCertFromStore(X509Store x509Store)
+        {
+            try
+            {
+                return x509Store.Certificates
+                    .Find(X509FindType.FindByThumbprint, _ThumbprintConfig.Thumbprint, _ThumbprintConfig.RootTrusted)
+                    .OfType<X509Certificate2>()
+                    .FirstOrDefault();
+            }
+            catch (Exception e)
+            {
+                _Logger.LogError($"Error reading certificate store: {e}");
+                throw;
+            }
+        }
+
     }
 }

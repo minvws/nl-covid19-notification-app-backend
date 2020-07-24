@@ -54,8 +54,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
             var certificate = _Provider.GetCertificate();
 
-            if (certificate == null)
-                throw new InvalidOperationException("Certificate not found.");
+            if (!certificate.HasPrivateKey)
+                throw new InvalidOperationException($"Certificate {certificate.Subject}/{certificate.Thumbprint} does not have a private key.");
 
             var chain = GetChainWithoutRoot();
 
