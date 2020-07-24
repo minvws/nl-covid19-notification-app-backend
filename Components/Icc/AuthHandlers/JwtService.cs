@@ -86,12 +86,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             if (token == null)
                 return false;
 
-            IJsonSerializer serializer = new JsonNetSerializer();
+            var serializer = new JsonNetSerializer();
             var provider = new UtcDateTimeProvider();
             var urlEncoder = new JwtBase64UrlEncoder();
             var decoder = new JwtDecoder(serializer, urlEncoder);
             var algFactory = new HMACSHAAlgorithmFactory();
-            IJwtValidator validator = new JwtValidator(serializer, provider);
+            var validator = new JwtValidator(serializer, provider);
 
             var jwt = new JwtParts(token);
 
