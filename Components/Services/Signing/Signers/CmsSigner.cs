@@ -55,7 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             var certificate = _Provider.GetCertificate();
 
             if (!certificate.HasPrivateKey)
-                throw new InvalidOperationException($"Certificate {certificate.Subject}/{certificate.Thumbprint} does not have a private key.");
+                throw new InvalidOperationException($"Certificate does not have a private key - Subject:{certificate.Subject} Thumbprint:{certificate.Thumbprint}.");
 
             var chain = GetChainWithoutRoot();
 
