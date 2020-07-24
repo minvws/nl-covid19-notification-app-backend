@@ -7,7 +7,7 @@ trigger:
 - master
 
 pool:
-  vmImage: 'windows-latest'
+  name: 'CIBG-BuildRelease-O'
 
 variables:
   solution: '**/*.sln'
@@ -23,18 +23,39 @@ steps:
 
 # Execute the publish script
 - task: BatchScript@1
+  displayName: run build.bat
   inputs:
     filename: build.bat
     arguments: $(Build.BuildId)
 
+- task: replacetokens@3
+  inputs:
+    rootDirectory: '$(Build.ArtifactStagingDirectory)'
+    targetFiles: 'package-CIBG.bat'
+    encoding: 'auto'
+    writeBOM: true
+    actionOnMissing: 'warn'
+    keepToken: false
+    tokenPrefix: '#{'
+    tokenSuffix: '}#'
+    useLegacyPattern: false
+    enableTelemetry: true
+
 # Execute the publish script
 - task: BatchScript@1
   inputs:
-    filename: package.bat
+    filename: 'package-CIBG.bat'
+    workingFolder: '$(Build.ArtifactStagingDirectory)'
+    
+# Execute the publish script
+- task: BatchScript@1
+  inputs:
+    filename: 'copy-CIBG-configs.bat'
+    workingFolder: '$(Build.ArtifactStagingDirectory)'
 
 # Save the published files into the artifact repository
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)\packages'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
     ArtifactName: 'drop'
     publishLocation: 'Container'
