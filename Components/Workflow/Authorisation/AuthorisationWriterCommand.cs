@@ -33,8 +33,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
         public async Task<AuthorisationResponse> Execute(AuthorisationArgs args)
         {
+            if (args == null) 
+                throw new ArgumentNullException(nameof(args));
             if (!_AuthorisationArgsValidator.Validate(args))
-                throw new ArgumentException("Not valid.");
+                throw new ArgumentException("Not valid.", nameof(args));
 
             var wf = await _DbContextProvider
                 .KeyReleaseWorkflowStates
