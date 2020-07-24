@@ -74,7 +74,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
         private string? GetClaimValue(ClaimsPrincipal cp, string claimType) =>
             cp.Claims.FirstOrDefault(c => c.Type.Equals(claimType))?.Value;
-        
+
+        private static byte[][] GetBytes(IEnumerable<string> input) =>
+            input.Select(b => Encoding.UTF8.GetBytes(b)).ToArray();
+
         public bool IsValid(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
@@ -92,16 +95,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
             var jwt = new JwtParts(token);
 
-            var decodedPayload = EncodingHelper.GetString(urlEncoder.Decode(jwt.Payload));
+            var decodedPayload = Encoding.UTF8.GetString(urlEncoder.Decode(jwt.Payload));
             var decodedSignature = urlEncoder.Decode(jwt.Signature);
 
             var header = decoder.DecodeHeader<JwtHeader>(jwt);
-            var alg = algFactory.Create(JwtDecoderContext.Create(header, decodedPayload, jwt)) ?? throw new ArgumentNullException("algFactory.Create(JwtDecoderContext.Create(header, decodedPayload, jwt))");
-
-            var bytesToSign = EncodingHelper.GetBytes(String.Concat(jwt.Header, ".", jwt.Payload));
-
+            var alg = algFactory.Create(JwtDecoderContext.Create(header, decodedPayload, jwt)) ??
+                      throw new ArgumentNullException(
+                          "algFactory.Create(JwtDecoderContext.Create(header, decodedPayload, jwt))");
+            
+            var bytesToSign = Encoding.UTF8.GetBytes((String.Concat(jwt.Header, ".", jwt.Payload)));
             bool result;
-            string[] secret = {_IccPortalConfig.JwtSecret};
+            var secret = new[] {_IccPortalConfig.JwtSecret};
             if (alg is IAsymmetricAlgorithm asymmAlg)
             {
                 result = validator.TryValidate(decodedPayload, asymmAlg, bytesToSign, decodedSignature, out var ex);
@@ -115,8 +119,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
                 // the signatures re-created by the algorithm, with the leading =
 
-                var keys = secret.Select(s => EncodingHelper.GetBytes(s)).ToArray();
-                
+                var keys = secret.Select(s => Encoding.UTF8.GetBytes(s)).ToArray();
+
                 var recreatedSignatures = keys.Select(key => alg.Sign(key, bytesToSign))
                     .Select(sd => Convert.ToBase64String(sd))
                     .ToArray();
@@ -136,17 +140,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             return CreateBuilder().Decode<IDictionary<string, object>>(token)
                 .ToDictionary(x => x.Key, x => x.Value.ToString());
         }
-    }
-
-    static class EncodingHelper
-    {
-        internal static byte[] GetBytes(string input) =>
-            Encoding.UTF8.GetBytes(input);
-
-        internal static byte[][] GetBytes(IEnumerable<string> input) =>
-            input.Select(GetBytes).ToArray();
-
-        internal static string GetString(byte[] bytes) =>
-            Encoding.UTF8.GetString(bytes);
     }
 }

@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             // AccessTokenElement
             if (!_JwtService.IsValid(jwt))
             {
-                Logger.LogWarning($"Invalid jwt token.");
+                Logger.LogWarning($"Invalid jwt token - {jwt}.");
                 return AuthenticateResult.Fail("Invalid jwt token.");
             }
             var decodedClaims = _JwtService.Decode(jwt);

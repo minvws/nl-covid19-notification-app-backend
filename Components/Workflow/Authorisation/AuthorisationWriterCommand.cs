@@ -26,14 +26,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _PollTokens = pollTokens ?? throw new ArgumentNullException(nameof(pollTokens));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _AuthorisationArgsValidator = authorisationArgsValidator ?? throw new ArgumentNullException(nameof(authorisationArgsValidator));
+            _AuthorisationArgsValidator = authorisationArgsValidator ??
+                                          throw new ArgumentNullException(nameof(authorisationArgsValidator));
         }
 
-       
+
         public async Task<AuthorisationResponse> Execute(AuthorisationArgs args)
         {
             if (!_AuthorisationArgsValidator.Validate(args))
-                throw new ArgumentException("Args not valid.", nameof(args));
+                throw new ArgumentException("Not valid.");
 
             var wf = await _DbContextProvider
                 .KeyReleaseWorkflowStates
