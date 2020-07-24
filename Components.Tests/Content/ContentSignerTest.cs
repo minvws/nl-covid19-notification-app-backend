@@ -4,6 +4,7 @@
 
 using System;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
@@ -23,7 +24,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
         [DataTestMethod]
         public void Build(int length)
         {
-            var signer = new CmsSigner(new LocalResourceCertificateProvider(new HardCodedCertificateLocationConfig("FakeRSA.p12", "Covid19!"))); //Not a secret.
+            var lf = new LoggerFactory();
+            var signer = new CmsSigner(new LocalResourceCertificateProvider(new HardCodedCertificateLocationConfig("FakeRSA.p12", "Covid19!"), lf.CreateLogger<LocalResourceCertificateProvider>())); //Not a secret.
             var content = Encoding.UTF8.GetBytes(CreateString(length));
             //TODO must have an Assert.IsTrue(signature.Length == signer.LengthBytes);
         }
