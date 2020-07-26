@@ -40,9 +40,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
         public async Task<LabVerifyAuthorisationResponse> Execute(LabVerifyArgs args)
         {
-            if (!_PollTokens.Validate(args.PollToken))
-                throw new ArgumentException("Not valid.", nameof(args));
-
             var wf = await _DbContextProvider.KeyReleaseWorkflowStates
                 .Include(x => x.Keys)
                 .FirstOrDefaultAsync(state =>
