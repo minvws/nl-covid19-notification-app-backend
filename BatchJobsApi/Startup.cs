@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
@@ -16,7 +17,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
@@ -84,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
                     x.GetService<ILogger<ExposureKeySetBatchJobMk2>>()
                 ));
 
-            if (_Configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", true))
+            if (_Configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", false))
             {
                 if (_Configuration.GetValue("DevelopmentFlags:Azure", false))
                 {
@@ -156,7 +156,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
             services.AddTransient<ProvisionDatabasesCommand>();
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddTransient<IPublishingId, StandardPublishingIdFormatter>();
-            services.AddTransient<GenericContentValidator>();
+            services.AddTransient<ContentValidator>();
             services.AddTransient<ContentInsertDbCommand>();
             services.AddTransient<ZippedSignedContentFormatter>();
 

@@ -8,16 +8,16 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
-    public class HttpPostGenericContentCommand
+    public class HttpPostContentCommand
     {
-        private readonly GenericContentValidator _Validator;
+        private readonly ContentValidator _Validator;
         private readonly ContentInsertDbCommand _InsertDbCommand;
         private readonly ContentDbContext _DbContext;
         private readonly ILogger _Logger;
 
-        public HttpPostGenericContentCommand(GenericContentValidator validator, ContentInsertDbCommand insertDbCommand, ContentDbContext dbContext, ILogger logger)
+        public HttpPostContentCommand(ContentValidator validator, ContentInsertDbCommand insertDbCommand, ContentDbContext dbContext, ILogger logger)
         {
             _Validator = validator;
             _InsertDbCommand = insertDbCommand;
@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericConten
             _Logger = logger;
         }
 
-        public async Task<IActionResult> Execute(GenericContentArgs args)
+        public async Task<IActionResult> Execute(ContentArgs args)
         {
             if (!_Validator.IsValid(args))
             {

@@ -10,7 +10,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericContent
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     public class ContentInsertDbCommand
     {
@@ -27,20 +27,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.GenericConten
             _SignedFormatter = signedFormatter ?? throw new ArgumentNullException(nameof(signedFormatter));
         }
 
-        public async Task Execute(GenericContentArgs args)
+        public async Task Execute(ContentArgs args)
         {
             if (args == null) throw new ArgumentNullException(nameof(args));
 
             var contentBytes = Encoding.UTF8.GetBytes(args.Json);
 
-            var e = new GenericContentEntity
+            var e = new ContentEntity
             {
                 Created= _DateTimeProvider.Now(), //TODO audit stamp
                 Release = args.Release,
-                GenericType = args.GenericContentType,
+                Type = args.ContentType,
                 PublishingId = _PublishingId.Create(contentBytes),
-                SignedContent = await _SignedFormatter.SignedContentPacket(contentBytes),
-                SignedContentTypeName = MediaTypeNames.Application.Zip
+                Content = await _SignedFormatter.SignedContentPacket(contentBytes),
+                ContentTypeName = MediaTypeNames.Application.Zip
             };
 
             await _DbContext.AddAsync(e);
