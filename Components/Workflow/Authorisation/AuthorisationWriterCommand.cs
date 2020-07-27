@@ -16,15 +16,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     public class AuthorisationWriterCommand
     {
         private readonly WorkflowDbContext _DbContextProvider;
-        private readonly PollTokens _PollTokens;
+        private readonly PollTokenService _PollTokenService;
         private readonly ILogger _Logger;
         private readonly AuthorisationArgsValidator _AuthorisationArgsValidator;
 
-        public AuthorisationWriterCommand(WorkflowDbContext dbContextProvider, PollTokens pollTokens,
+        public AuthorisationWriterCommand(WorkflowDbContext dbContextProvider, PollTokenService pollTokenService,
             ILogger<AuthorisationWriterCommand> logger, AuthorisationArgsValidator authorisationArgsValidator)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
-            _PollTokens = pollTokens ?? throw new ArgumentNullException(nameof(pollTokens));
+            _PollTokenService = pollTokenService ?? throw new ArgumentNullException(nameof(pollTokenService));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _AuthorisationArgsValidator = authorisationArgsValidator ??
                                           throw new ArgumentNullException(nameof(authorisationArgsValidator));
@@ -55,7 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
             wf.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
             wf.LabConfirmationId = null;
-            wf.PollToken = _PollTokens.GenerateToken();
+            wf.PollToken = _PollTokenService.GenerateToken();
 
             _Logger.LogDebug($"Committing.");
             _DbContextProvider.SaveAndCommit();

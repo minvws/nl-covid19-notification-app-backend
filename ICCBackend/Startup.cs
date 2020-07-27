@@ -64,12 +64,13 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<HttpPostAuthoriseCommand>();
             services.AddScoped<HttpPostLabVerifyCommand>();
             services.AddScoped<AuthorisationArgsValidator>();
+            services.AddScoped<LabVerifyArgsValidator>();
             services.AddScoped<AuthorisationWriterCommand>();
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
             services.AddScoped<IJwtService>();
             services.AddScoped<LabVerificationAuthorisationCommand>();
-            services.AddScoped<PollTokens>();
+            services.AddScoped<PollTokenService>();
             services.AddScoped<HttpGetLogoutCommand>();
             services.AddScoped<HttpGetUserClaimCommand>();
             services.AddScoped<HttpGetAuthorisationRedirectCommand>();

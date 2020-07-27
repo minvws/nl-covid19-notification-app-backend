@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
     [TestClass]
     public class AuthorisationArgsValidatorTests
     {
-        [DataRow(null)]
+        
         [TestMethod]
         public void Validate_checks_null(AuthorisationArgs args)
         {
@@ -56,8 +56,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             // Assert
             Assert.IsFalse(result);
         }
-
-        
         
         [DataRow("ABCF23")]
         [DataRow("BCAD10")]
