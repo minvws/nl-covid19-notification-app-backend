@@ -9,9 +9,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
     public class HttpGetAuthorisationRedirectCommand
     {
         private readonly IIccPortalConfig _Configuration;
-        private readonly JwtService _JwtService;
+        private readonly IJwtService _JwtService;
 
-        public HttpGetAuthorisationRedirectCommand(IIccPortalConfig configuration, JwtService jwtService)
+        public HttpGetAuthorisationRedirectCommand(IIccPortalConfig configuration, IJwtService jwtService)
         {
             _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));

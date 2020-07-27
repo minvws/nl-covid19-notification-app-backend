@@ -13,10 +13,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     {
         private const string PayloadElement = "payload";
 
-        private readonly JwtService _JwtService;
+        private readonly IJwtService _JwtService;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public PollTokens(JwtService jwtService, IUtcDateTimeProvider dateTimeProvider)
+        public PollTokens(IJwtService jwtService, IUtcDateTimeProvider dateTimeProvider)
         {
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
