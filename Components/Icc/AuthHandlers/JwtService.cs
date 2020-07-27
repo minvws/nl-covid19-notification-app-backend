@@ -74,65 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
         private string? GetClaimValue(ClaimsPrincipal cp, string claimType) =>
             cp.Claims.FirstOrDefault(c => c.Type.Equals(claimType))?.Value;
-
-        private static byte[][] GetBytes(IEnumerable<string> input) =>
-            input.Select(b => Encoding.UTF8.GetBytes(b)).ToArray();
-
-        public bool IsValid(string token)
-        {
-            if (string.IsNullOrWhiteSpace(token))
-                throw new ArgumentException(nameof(token));
-
-            if (token == null)
-                return false;
-
-            var serializer = new JsonNetSerializer();
-            var provider = new UtcDateTimeProvider();
-            var urlEncoder = new JwtBase64UrlEncoder();
-            var decoder = new JwtDecoder(serializer, urlEncoder);
-            var algFactory = new HMACSHAAlgorithmFactory();
-            var validator = new JwtValidator(serializer, provider);
-
-            var jwt = new JwtParts(token);
-
-            var decodedPayload = Encoding.UTF8.GetString(urlEncoder.Decode(jwt.Payload));
-            var decodedSignature = urlEncoder.Decode(jwt.Signature);
-
-            var header = decoder.DecodeHeader<JwtHeader>(jwt);
-            var alg = algFactory.Create(JwtDecoderContext.Create(header, decodedPayload, jwt)) ??
-                      throw new ArgumentNullException(
-                          "algFactory.Create(JwtDecoderContext.Create(header, decodedPayload, jwt))");
-            
-            var bytesToSign = Encoding.UTF8.GetBytes((String.Concat(jwt.Header, ".", jwt.Payload)));
-            bool result;
-            var secret = new[] {_IccPortalConfig.JwtSecret};
-            if (alg is IAsymmetricAlgorithm asymmAlg)
-            {
-                result = validator.TryValidate(decodedPayload, asymmAlg, bytesToSign, decodedSignature, out var ex);
-                if (ex != null)
-                    _Logger.LogWarning(ex.Message + " – token validation");
-            }
-            else
-            {
-                // the signature on the token, with the leading =
-                var rawSignature = Convert.ToBase64String(decodedSignature);
-
-                // the signatures re-created by the algorithm, with the leading =
-
-                var keys = secret.Select(s => Encoding.UTF8.GetBytes(s)).ToArray();
-
-                var recreatedSignatures = keys.Select(key => alg.Sign(key, bytesToSign))
-                    .Select(sd => Convert.ToBase64String(sd))
-                    .ToArray();
-
-                result = validator.TryValidate(decodedPayload, rawSignature, recreatedSignatures, out var ex);
-                if (ex != null)
-                    _Logger.LogWarning(ex.Message + " – token validation");
-            }
-
-            return result;
-        }
-
+        
         public IDictionary<string, string> Decode(string token)
         {
             if (string.IsNullOrWhiteSpace(token))

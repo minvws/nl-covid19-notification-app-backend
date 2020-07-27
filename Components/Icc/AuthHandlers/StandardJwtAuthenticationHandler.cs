@@ -17,16 +17,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
     {
         private const string AccessTokenElement = "access_token";
 
-        private readonly JwtService _JwtService;
+        private readonly IJwtService _JwtService;
+        private readonly IJwtValidatorService _JwtValidatorService;
 
         public StandardJwtAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory loggerFactory,
             UrlEncoder encoder,
             ISystemClock clock,
-            JwtService jwtService) : base(options, loggerFactory, encoder, clock)
+            JwtService jwtService, IJwtValidatorService jwtValidatorService) : base(options, loggerFactory, encoder, clock)
         {
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
+            _JwtValidatorService = jwtValidatorService ?? throw new ArgumentNullException(nameof(jwtValidatorService));
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -45,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
             var jwt = authHeader.ToString().Replace("Bearer ", "").Trim();
             // AccessTokenElement
-            if (!_JwtService.IsValid(jwt))
+            if (!_JwtValidatorService.IsValid(jwt))
             {
                 Logger.LogWarning($"Invalid jwt token - {jwt}.");
                 return AuthenticateResult.Fail("Invalid jwt token.");

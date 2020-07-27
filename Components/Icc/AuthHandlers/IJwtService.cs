@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
     {
         string Generate(ulong exp, Dictionary<string, object> claims);
         string Generate(ClaimsPrincipal claimsPrincipal);
-        bool IsValid(string token);
+        
         IDictionary<string, string> Decode(string token);
     }
 }

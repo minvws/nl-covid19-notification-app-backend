@@ -26,6 +26,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers;
 using TheIdentityHub.AspNetCore.Authentication;
+using IJsonSerializer = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping.IJsonSerializer;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
@@ -66,7 +67,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<AuthorisationWriterCommand>();
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
-            services.AddScoped<JwtService>();
+            services.AddScoped<IJwtService>();
+            services.AddScoped<IJwtValidatorService>();
             services.AddScoped<LabVerificationAuthorisationCommand>();
             services.AddScoped<PollTokens>();
             services.AddScoped<HttpGetLogoutCommand>();
