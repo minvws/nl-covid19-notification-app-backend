@@ -34,7 +34,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
                 .FirstOrDefault();
 
             if (result == null)
-                _Logger.LogCritical($"Certificate not found: {_ThumbprintConfig.Thumbprint}"); //TODO throw exception?
+            {
+                _Logger.LogCritical($"Certificate not found: {_ThumbprintConfig.Thumbprint}");
+                throw new InvalidOperationException("Certificate not found.");
+            }
 
             return result;
         }

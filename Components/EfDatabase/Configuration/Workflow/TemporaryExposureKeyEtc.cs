@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public void Configure(EntityTypeBuilder<TemporaryExposureKeyEntity> builder)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
-            builder.Property(u => u.Id).UseHiLo();
+            builder.Property(u => u.Id).UseIdentityColumn();
             builder.HasIndex(u => u.PublishingState);
             builder.HasIndex(u => u.Region);
         }

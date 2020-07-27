@@ -5,20 +5,24 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Content
 {
-    public class ExposureKeySetContentEtc : IEntityTypeConfiguration<ExposureKeySetContentEntity>
+    public class ContentEtc : IEntityTypeConfiguration<ContentEntity>
     {
-        public void Configure(EntityTypeBuilder<ExposureKeySetContentEntity> builder)
+        public void Configure(EntityTypeBuilder<ContentEntity> builder)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
-            builder.ToTable("ExposureKeySetContent");
-            builder.Property(u => u.Id).UseHiLo();
+            builder.ToTable("Content");
             builder.Property(u => u.PublishingId).HasMaxLength(64);
-            builder.Property(x => x.CreatingJobName).IsRequired(false);
-            builder.Property(x => x.CreatingJobQualifier).IsRequired(false);
+
+            builder.HasIndex(u => u.PublishingId);
+            builder.HasIndex(u => u.Type);
+            builder.HasIndex(u => u.Release);
+            builder.HasIndex(u => u.ContentTypeName);
+
+            builder.Property(u => u.Id).UseHiLo();
         }
     }
 }

@@ -11,11 +11,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
     {
         private readonly IGeanTekListValidationConfig _Defaults = new DefaultGeanTekListValidationConfig();
 
-        public StandardGeanCommonWorkflowConfig(IConfiguration config) : base(config, "Validation:KeyCount:")
+        public StandardGeanCommonWorkflowConfig(IConfiguration config, string prefix = "Workflow:PostKeys:TemporaryExposureKeys") : base(config, prefix)
         {
         }
-        public int TemporaryExposureKeyCountMin => GetConfigValue("TekCount:Min", _Defaults.TemporaryExposureKeyCountMin);
-        public int TemporaryExposureKeyCountMax => GetConfigValue("TekCount:Max", _Defaults.TemporaryExposureKeyCountMax);
+        
+        public int TemporaryExposureKeyCountMin => GetConfigValue("Count:Min", _Defaults.TemporaryExposureKeyCountMin);
+        public int TemporaryExposureKeyCountMax => GetConfigValue("Count:Max", _Defaults.TemporaryExposureKeyCountMax);
         public int GracePeriodMinutes => GetConfigValue(nameof(GracePeriodMinutes), _Defaults.TemporaryExposureKeyCountMax);
     }
 }

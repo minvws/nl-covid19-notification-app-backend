@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
@@ -36,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             //}
 
             var now = _DateTimeProvider.Now();
-            var e = await _ContentDb.SafeGetLatestContent<ManifestEntity>(now);
+            var e = await _ContentDb.SafeGetLatestContent<ContentEntity>(now);
             if (e == null)
             {
                 httpContext.Response.StatusCode = 200;
@@ -53,12 +52,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             httpContext.Response.Headers.Add("etag", e.PublishingId);
             httpContext.Response.Headers.Add("last-modified", e.Release.ToUniversalTime().ToString("r"));
-            httpContext.Response.Headers.Add("content-type", e.SignedContentTypeName);
+            httpContext.Response.Headers.Add("content-type", e.ContentTypeName);
             httpContext.Response.Headers.Add("cache-control", _HttpResponseHeaderConfig.ManifestCacheControl);
             httpContext.Response.Headers.Add("x-vws-signed", true.ToString());
             httpContext.Response.StatusCode = 200;
-            httpContext.Response.ContentLength = e.SignedContent?.Length ?? throw new InvalidOperationException("SignedContent empty.");
-            await httpContext.Response.Body.WriteAsync(e.SignedContent);
+            httpContext.Response.ContentLength = e.Content?.Length ?? throw new InvalidOperationException("SignedContent empty.");
+            await httpContext.Response.Body.WriteAsync(e.Content);
         }
     }
 }
