@@ -65,7 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<AuthorisationWriterCommand>();
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
-            services.AddScoped<JwtService>();
+            services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<LabVerificationAuthorisationCommand>();
             services.AddScoped<PollTokens>();
             services.AddScoped<HttpGetLogoutCommand>();

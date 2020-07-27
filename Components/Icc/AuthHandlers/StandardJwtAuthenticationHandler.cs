@@ -17,14 +17,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
     {
         private const string AccessTokenElement = "access_token";
 
-        private readonly JwtService _JwtService;
+        private readonly IJwtService _JwtService;
 
         public StandardJwtAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory loggerFactory,
             UrlEncoder encoder,
             ISystemClock clock,
-            JwtService jwtService) : base(options, loggerFactory, encoder, clock)
+            IJwtService jwtService) : base(options, loggerFactory, encoder, clock)
         {
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
         }
