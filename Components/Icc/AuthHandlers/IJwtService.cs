@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Security.Claims;
-using JWT.Builder;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {

@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             ILoggerFactory loggerFactory,
             UrlEncoder encoder,
             ISystemClock clock,
-            JwtService jwtService) : base(options, loggerFactory, encoder,
+            IJwtService jwtService) : base(options, loggerFactory, encoder,
             clock)
         {
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
