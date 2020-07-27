@@ -53,14 +53,6 @@ namespace DbProvision
             
             services.AddScoped(x =>
             {
-                var config = new StandardEfDbConfig(configuration, "Icc");
-                var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new IccBackendContentDbContext(builder.Build());
-                return result;
-            });
-
-            services.AddScoped(x =>
-            {
                 var config = new StandardEfDbConfig(configuration, "PublishingJob");
                 var builder = new SqlServerDbContextOptionsBuilder(config);
                 var result = new PublishingJobDbContext(builder.Build());
@@ -69,7 +61,6 @@ namespace DbProvision
 
             services.AddTransient<WorkflowDatabaseCreateCommand>();
             services.AddTransient<PublishingJobDatabaseCreateCommand>();
-            services.AddTransient<IccDatabaseCreateCommand>();
             services.AddTransient<ContentDatabaseCreateCommand>();
 
             services.AddLogging();
@@ -93,7 +84,7 @@ namespace DbProvision
                 else
                 {
                     //UNIT TESTS, LOCAL DEBUG
-                    services.AddScoped<IContentSigner>(x => new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
+                    services.AddScoped<IContentSigner>(x => new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())));
                 }
             }
             else

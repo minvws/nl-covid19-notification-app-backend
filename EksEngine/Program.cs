@@ -105,14 +105,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                     services.AddScoped<IExposureKeySetBuilder>(x =>
                         new ExposureKeySetBuilderV1(
                             x.GetRequiredService<IExposureKeySetHeaderInfoConfig>(),
-                            new EcdSaSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), "Certificates:GA"))),
-                            new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"))),
+                            new EcdSaSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), "Certificates:GA"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())),
+                            new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())),
                             x.GetRequiredService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
                             new GeneratedProtobufContentFormatter(),
                             x.GetRequiredService<ILogger<ExposureKeySetBuilderV1>>()
                         ));
 
-                    services.AddScoped<IContentSigner>(x => new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"))));
+                    services.AddScoped<IContentSigner>(x => new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())));
                 }
             }
             else
