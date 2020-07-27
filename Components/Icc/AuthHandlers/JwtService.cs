@@ -10,7 +10,9 @@ using System.Text;
 using JWT;
 using JWT.Algorithms;
 using JWT.Builder;
+using JWT.Exceptions;
 using JWT.Serializers;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.IccBackend;
@@ -75,12 +77,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         private string? GetClaimValue(ClaimsPrincipal cp, string claimType) =>
             cp.Claims.FirstOrDefault(c => c.Type.Equals(claimType))?.Value;
         
-        public IDictionary<string, string> Decode(string token)
+        public bool TryDecode(string token, out IDictionary<string, string> payload)
         {
             if (string.IsNullOrWhiteSpace(token))
                 throw new ArgumentException(nameof(token));
-            return CreateBuilder().Decode<IDictionary<string, object>>(token)
-                .ToDictionary(x => x.Key, x => x.Value.ToString());
+
+            try
+            {
+                payload = CreateBuilder().Decode<IDictionary<string, object>>(token)
+                    .ToDictionary(x => x.Key, x => x.Value.ToString());
+                return true;
+            }
+            catch (FormatException e)
+            {
+                _Logger.LogWarning($"Invalid jwt token, FormatException - {token}");
+            }
+            catch (TokenExpiredException e)
+            {
+                _Logger.LogWarning($"Invalid jwt token, TokenExpiredException - {token}");
+            }
+            catch (SignatureVerificationException e)
+            {
+                _Logger.LogWarning($"Invalid jwt token, SignatureVerificationException - {token}");
+            }
+
+            payload = new Dictionary<string, string>();
+            return false;
         }
     }
 }

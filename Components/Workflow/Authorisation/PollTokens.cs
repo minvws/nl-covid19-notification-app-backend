@@ -14,13 +14,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         private const string PayloadElement = "payload";
 
         private readonly IJwtService _JwtService;
-        private readonly IJwtValidatorService _JwtValidatorService;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public PollTokens(IJwtService jwtService, IJwtValidatorService jwtValidatorService, IUtcDateTimeProvider dateTimeProvider)
+        public PollTokens(IJwtService jwtService, IUtcDateTimeProvider dateTimeProvider)
         {
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
-            _JwtValidatorService = jwtValidatorService ?? throw new ArgumentNullException(nameof(jwtValidatorService));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
 
@@ -34,9 +32,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
                 });
         }
 
-        public bool Validate(string token)
+        public bool Validate(string argsPollToken)
         {
-            return _JwtValidatorService.IsValid(token);
+            return _JwtService.TryDecode(argsPollToken, out _);
         }
     }
 }

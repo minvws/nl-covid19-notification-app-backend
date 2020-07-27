@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using JWT.Exceptions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -18,17 +19,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         private const string AccessTokenElement = "access_token";
 
         private readonly IJwtService _JwtService;
-        private readonly IJwtValidatorService _JwtValidatorService;
 
         public StandardJwtAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory loggerFactory,
             UrlEncoder encoder,
             ISystemClock clock,
-            JwtService jwtService, IJwtValidatorService jwtValidatorService) : base(options, loggerFactory, encoder, clock)
+            JwtService jwtService) : base(options, loggerFactory, encoder,
+            clock)
         {
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
-            _JwtValidatorService = jwtValidatorService ?? throw new ArgumentNullException(nameof(jwtValidatorService));
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -46,13 +46,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             }
 
             var jwt = authHeader.ToString().Replace("Bearer ", "").Trim();
-            // AccessTokenElement
-            if (!_JwtValidatorService.IsValid(jwt))
+
+            if (!_JwtService.TryDecode(jwt, out var decodedClaims))
             {
-                Logger.LogWarning($"Invalid jwt token - {jwt}.");
-                return AuthenticateResult.Fail("Invalid jwt token.");
+                return AuthenticateResult.Fail("Invalid jwt token");
             }
-            var decodedClaims = _JwtService.Decode(jwt);
+
 
             var claims = new[]
             {
