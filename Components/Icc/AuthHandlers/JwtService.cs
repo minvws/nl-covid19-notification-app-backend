@@ -92,6 +92,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             {
                 _Logger.LogWarning($"Invalid jwt token, FormatException - {token}");
             }
+            catch (InvalidTokenPartsException)
+            {
+                _Logger.LogWarning($"Invalid jwt token, InvalidTokenPartsException - {token}");
+            }
             catch (TokenExpiredException e)
             {
                 _Logger.LogWarning($"Invalid jwt token, TokenExpiredException - {token}");
