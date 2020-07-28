@@ -11,6 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     /// <summary>
     /// TODO incomplete.
     /// </summary>
+    [Table("EksCreateJobOutput")]
     public class EksCreateJobOutputEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

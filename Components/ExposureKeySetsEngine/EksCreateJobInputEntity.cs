@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
 {
-
+    [Table("EksCreateJobInput")]
     public class EksCreateJobInputEntity
     {
         /// <summary>

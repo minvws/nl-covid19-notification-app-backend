@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30104.148
@@ -29,6 +28,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccBackend", "ICCBackend\Ic
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5CB694D0-78E1-4347-BF78-A557E0780125}"
 	ProjectSection(SolutionItems) = preProject
+		docker\docker-compose.yml = docker\docker-compose.yml
 		docker\README.md = docker\README.md
 	EndProjectSection
 EndProject
@@ -46,7 +46,31 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenTeks", "GenTeks\GenTeks.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{3F8DB099-3B7E-4314-87AC-637EE6346FAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileAppApi.Tests", "MobileAppApi.Tests\MobileAppApi.Tests.csproj", "{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "icc_backend", "icc_backend", "{44BFDC95-5BCB-46DC-AEC6-BCB25BA075E3}"
+	ProjectSection(SolutionItems) = preProject
+		docker\icc_backend\.dockerignore = docker\icc_backend\.dockerignore
+		docker\icc_backend\appsettings.Development.json = docker\icc_backend\appsettings.Development.json
+		docker\icc_backend\Dockerfile = docker\icc_backend\Dockerfile
+		docker\icc_backend\start.sh = docker\icc_backend\start.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "standalone", "standalone", "{E993652A-E681-4157-935C-64364EA02E10}"
+	ProjectSection(SolutionItems) = preProject
+		docker\standalone\.dockerignore = docker\standalone\.dockerignore
+		docker\standalone\appsettings.Development.json = docker\standalone\appsettings.Development.json
+		docker\standalone\Dockerfile = docker\standalone\Dockerfile
+		docker\standalone\start.sh = docker\standalone\start.sh
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Tests", "MobileAppApi.Tests\MobileAppApi.Tests.csproj", "{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{634AE71C-8CB8-44DF-BAD2-1925B32178B4}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Content.Sql", "SQL\Content.Sql\Content.Sql.sqlproj", "{90CDC165-0082-44B3-9A97-4FEE917C3E7A}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Workflow.Sql", "SQL\Workflow.Sql\Workflow.Sql.sqlproj", "{78008382-C936-458C-B11D-802009D7238C}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "PublishingJob.Sql", "SQL\PublishingJob.Sql\PublishingJob.Sql.sqlproj", "{5FD4F4E5-8207-4224-98AA-F473AABBF7E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,6 +126,24 @@ Global
 		{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90CDC165-0082-44B3-9A97-4FEE917C3E7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90CDC165-0082-44B3-9A97-4FEE917C3E7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90CDC165-0082-44B3-9A97-4FEE917C3E7A}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{90CDC165-0082-44B3-9A97-4FEE917C3E7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90CDC165-0082-44B3-9A97-4FEE917C3E7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90CDC165-0082-44B3-9A97-4FEE917C3E7A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{78008382-C936-458C-B11D-802009D7238C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78008382-C936-458C-B11D-802009D7238C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78008382-C936-458C-B11D-802009D7238C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{78008382-C936-458C-B11D-802009D7238C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78008382-C936-458C-B11D-802009D7238C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78008382-C936-458C-B11D-802009D7238C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{5FD4F4E5-8207-4224-98AA-F473AABBF7E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FD4F4E5-8207-4224-98AA-F473AABBF7E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FD4F4E5-8207-4224-98AA-F473AABBF7E7}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{5FD4F4E5-8207-4224-98AA-F473AABBF7E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FD4F4E5-8207-4224-98AA-F473AABBF7E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FD4F4E5-8207-4224-98AA-F473AABBF7E7}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,6 +154,11 @@ Global
 		{C9AA366C-852A-4D11-9842-96E9841B2291} = {36D1DBCA-6BB4-46DC-80DF-2C38EC9153F4}
 		{30BA20ED-FB39-43FC-885A-FE7A3D6B7937} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 		{0417A9FB-86E7-4AEF-90DE-6D715BC9C7DB} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
+		{44BFDC95-5BCB-46DC-AEC6-BCB25BA075E3} = {5CB694D0-78E1-4347-BF78-A557E0780125}
+		{E993652A-E681-4157-935C-64364EA02E10} = {5CB694D0-78E1-4347-BF78-A557E0780125}
+		{90CDC165-0082-44B3-9A97-4FEE917C3E7A} = {634AE71C-8CB8-44DF-BAD2-1925B32178B4}
+		{78008382-C936-458C-B11D-802009D7238C} = {634AE71C-8CB8-44DF-BAD2-1925B32178B4}
+		{5FD4F4E5-8207-4224-98AA-F473AABBF7E7} = {634AE71C-8CB8-44DF-BAD2-1925B32178B4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}
