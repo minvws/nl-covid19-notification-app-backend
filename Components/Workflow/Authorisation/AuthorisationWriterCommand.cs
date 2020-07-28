@@ -6,10 +6,12 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using JWT;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
@@ -18,6 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         private readonly WorkflowDbContext _DbContextProvider;
         private readonly PollTokenService _PollTokenService;
         private readonly ILogger _Logger;
+        private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly AuthorisationArgsValidator _AuthorisationArgsValidator;
 
         public AuthorisationWriterCommand(WorkflowDbContext dbContextProvider, PollTokenService pollTokenService,
@@ -50,11 +53,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
                 return new AuthorisationResponse {Valid = false};
             }
 
-            wf.AuthorisedByCaregiver = true; //TODO but wf.LabConfirmationId = null will suffice?
-            wf.Authorised = wf.Keys?.Any() ?? false;
-
+            wf.AuthorisedByCaregiver = _DateTimeProvider.Now();
+            wf.LabConfirmationId = null; //Clear from usable key range
             wf.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
-            wf.LabConfirmationId = null;
             wf.PollToken = _PollTokenService.GenerateToken();
 
             _Logger.LogDebug($"Committing.");

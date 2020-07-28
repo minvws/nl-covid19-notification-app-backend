@@ -6,8 +6,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 {
     public interface ITemporaryExposureKeyValidatorConfig
     {
+        int DailyKeyByteCount { get; }
         int RollingPeriodMin { get; }
         int RollingPeriodMax { get; }
-        int DailyKeyByteCount { get; }
     }
 }

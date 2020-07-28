@@ -7,11 +7,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
     /// <summary>
     /// Diagnosis key
     /// </summary>
-    public class ReleaseTeksArgs
+    public class PostTeksArgs
     {
+        /// <summary>
+        /// byte array encoded as base64
+        /// </summary>
         public string BucketId { get; set; }
 
-        public TemporaryExposureKeyArgs[] Keys { get; set; }
+        public PostTeksItemArgs[] Keys { get; set; }
 
         /// <summary>
         /// Padding is provided by the frontend to control request sizes, it is ignored here further

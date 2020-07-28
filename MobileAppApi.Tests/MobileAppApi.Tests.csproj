@@ -20,9 +20,11 @@
 
     <ItemGroup>
       <None Remove="payload.json" />
+      <None Remove="Resources\payload-short.json" />
     </ItemGroup>
 
     <ItemGroup>
+      <EmbeddedResource Include="Resources\payload-short.json" />
       <EmbeddedResource Include="Resources\payload.json" />
     </ItemGroup>
 

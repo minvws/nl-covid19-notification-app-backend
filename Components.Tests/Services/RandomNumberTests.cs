@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
         [TestMethod]
         public void Valid()
         {
-            var random = new RandomNumberGenerator();
+            var random = new StandardRandomNumberGenerator();
             const int minValue = 1;
             const int maxValue = 99999999;
 
@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
         [DataTestMethod]
         public void GenerateToken(int length)
         {
-            var random = new RandomNumberGenerator();
+            var random = new StandardRandomNumberGenerator();
             var result = random.GenerateToken(length);
             Assert.IsTrue(result.Length == length);
         }
@@ -39,10 +39,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
         [ExpectedException(typeof(ArgumentOutOfRangeException), "Min value is higher than max value")]
         public void RangeTest()
         {
-            var random = new RandomNumberGenerator();
+            var random = new StandardRandomNumberGenerator();
             const int minValue = 8;
             const int maxValue = 5;
             random.Next(minValue, maxValue);
-        }
+        } //ncrunch: no coverage
     }
 }

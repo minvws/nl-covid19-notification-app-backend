@@ -38,39 +38,41 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         {
             for (var i = 0; i < _Args.WorkflowCount; i++)
             {
-                var workflow = new KeyReleaseWorkflowState
+                var workflow = new TekReleaseWorkflowStateEntity
                 {
-                    LabConfirmationId = "2L2587", //TODO
-                    BucketId = "2", //TODO
-                    ConfirmationKey = "3", //TODO
+                    LabConfirmationId = _Args.Authorised ? null : "2L2587",
+                    BucketId = new byte[32], //TODO from consts/settings
+                    ConfirmationKey = new byte[32], //TODO from consts/settings
                     Created = DateTime.Now - TimeSpan.FromMinutes(_Random.Next(14 * 24 * 60 * 60)),
-                    Authorised = _Args.Authorised
+                    AuthorisedByCaregiver = DateTime.Now
                 };
-                _WorkflowDb.Set<KeyReleaseWorkflowState>().Add(workflow);
+                _Random.NextBytes(workflow.BucketId);
+                _Random.NextBytes(workflow.ConfirmationKey);
+
+                _WorkflowDb.Set<TekReleaseWorkflowStateEntity>().Add(workflow);
                 GenTeks(workflow);
             }
 
         }
 
-        private void GenTeks(KeyReleaseWorkflowState workflow)
+        private void GenTeks(TekReleaseWorkflowStateEntity workflow)
         {
             var count = _Random.Next(1, _Args.TekCountPerWorkflow);
 
             for (var i = 0; i < count; i++)
             {
-                var k = new TemporaryExposureKeyEntity
+                var k = new TekEntity
                 {
                     Owner = workflow,
                     PublishingState = PublishingState.Unpublished,
                     RollingPeriod = 1,
                     RollingStartNumber = 1,
-                    TransmissionRiskLevel = 0,
                     KeyData = new byte[16],
                     Region = "NL"
                 };
                 _Random.NextBytes(k.KeyData);
                 workflow.Keys.Add(k);
-                _WorkflowDb.Set<TemporaryExposureKeyEntity>().Add(k);
+                _WorkflowDb.Set<TekEntity>().Add(k);
             }
         }
     }

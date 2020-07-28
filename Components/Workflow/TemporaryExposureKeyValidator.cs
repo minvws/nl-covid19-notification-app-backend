@@ -3,7 +3,14 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Buffers.Text;
+using System.Collections.Generic;
+using System.Text;
+using Microsoft.Azure.Amqp.Serialization;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
@@ -11,55 +18,43 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
     public class TemporaryExposureKeyValidator : ITemporaryExposureKeyValidator
     {
         private readonly ITemporaryExposureKeyValidatorConfig _Config;
-        private readonly ILogger<ReleaseTeksValidator> _Logger;
+        //private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public TemporaryExposureKeyValidator(ITemporaryExposureKeyValidatorConfig config, ILogger<ReleaseTeksValidator> logger)
+        public TemporaryExposureKeyValidator(ITemporaryExposureKeyValidatorConfig config /*, IUtcDateTimeProvider dateTimeProvider*/)
         {
-            _Config = config ?? throw new ArgumentNullException(nameof(config));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _Config = config;
+            //_DateTimeProvider = dateTimeProvider;
         }
 
-        public bool Valid(TemporaryExposureKeyArgs value)
+        public string[] Valid(PostTeksItemArgs value)
         {
             if (value == null)
-            {
-                _Logger.LogWarning("Tek is null");
-                return false;
-            }
+                return new [] {"Value is null."};
+
+            var result = new List<string>();
+
+            //TODO define minimum
+            //TODO move to EKS Engine?
+            //var now = _DateTimeProvider.Now().Date;
+            //var rollingStartNumberMin = now.AddDays(-14).ToRollingPeriodNumber(); //TODO setting
+            //var rollingStartNumberMax = now.AddDays(1).ToRollingPeriodNumber(); //TODO setting
+            //if (rollingStartNumberMin > value.RollingStartNumber || value.RollingStartNumber > rollingStartNumberMax)
+            //    result.Add($"RollingStart out of range - {value.RollingStartNumber}.");
 
             if (_Config.RollingPeriodMin > value.RollingPeriod || value.RollingPeriod > _Config.RollingPeriodMax)
-            {
-                _Logger.LogWarning("Tek RollingPeriod out of range.");
-                return false;
-            }
-
-            //TODO valid values epoch size, currently 10mins, for value.RollingStartNumber 
+                result.Add($"RollingPeriod out of range - {value.RollingPeriod}.");
 
             if (string.IsNullOrEmpty(value.KeyData))
-            {
-                _Logger.LogWarning("Tek keydata is empty.");
-                return false;
-            }
+                result.Add("KeyData is empty.");
 
-            try
-            {
-                //GUARANTEES a successful conversion at the point of creating the exposure key set
-                //by using the same function in both instances
-                var bytes = Convert.FromBase64String(value.KeyData);
+            var buffer = new Span<byte>(new byte[_Config.DailyKeyByteCount]);
+            if (!Convert.TryFromBase64String(value.KeyData, buffer, out int count))
+                result.Add("KeyData is not valid base64.");
 
-                if (bytes.Length != _Config.DailyKeyByteCount)
-                {
-                    _Logger.LogWarning("Tek keydata wrong length.");
-                    return false;
-                }
-            }
-            catch (FormatException)
-            {
-                _Logger.LogWarning("Tek keydata not valid.");
-                return false;
-            }
+            if (_Config.DailyKeyByteCount != count)
+                result.Add($"KeyData length incorrect - {count}.");
 
-            return true;
+            return result.ToArray();
         }
     }
 }

@@ -1,5 +1,9 @@
 ﻿<ProjectConfiguration>
   <Settings>
-    <DefaultTestTimeout>30000</DefaultTestTimeout>
+    <IgnoredTests>
+      <FixtureTestSelector>
+        <FixtureName>MobileAppApi.Tests.Controllers.WorkflowControllerStopKeysTests</FixtureName>
+      </FixtureTestSelector>
+    </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

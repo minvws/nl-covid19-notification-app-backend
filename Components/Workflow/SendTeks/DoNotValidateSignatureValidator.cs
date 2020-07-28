@@ -8,6 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 {
     public class DoNotValidateSignatureValidator : ISignatureValidator
     {
-        public bool Valid(byte[] signature, KeyReleaseWorkflowState workflow, byte[] data) => true;
+        public bool Valid(byte[] signature, byte[] confirmationKey, byte[] data) => true;
     }
 }

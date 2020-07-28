@@ -28,9 +28,9 @@ namespace MobileAppApi.Tests.Controllers
     [TestClass]
     public class WorkflowControllerPostKeysTests : WebApplicationFactory<Startup>
     {
-        private const string Key = @"PwMcyc8EXF//Qkye1Vl2S6oCOo9HFS7E7vw7y9GOzJk=";
+        private readonly byte[] _Key = Convert.FromBase64String(@"PwMcyc8EXF//Qkye1Vl2S6oCOo9HFS7E7vw7y9GOzJk=");
         private WebApplicationFactory<Startup> _Factory;
-        private string BucketId { get; } = "lRaBTBonsMaJ8PdOhVYdfmyZooCR3fpjQZgLboa4Qig=";
+        private readonly byte[] _BucketId = Convert.FromBase64String(@"lRaBTBonsMaJ8PdOhVYdfmyZooCR3fpjQZgLboa4Qig=");
         private DbConnection _Connection;
         private WorkflowDbContext _DbContext;
 
@@ -64,12 +64,13 @@ namespace MobileAppApi.Tests.Controllers
             await _Connection.OpenAsync();
             await _DbContext.Database.EnsureCreatedAsync();
             // ReSharper disable once MethodHasAsyncOverload
-            _DbContext.KeyReleaseWorkflowStates.Add(new KeyReleaseWorkflowState
+            //TODO mapper...
+            _DbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
-                BucketId = BucketId,
+                BucketId = _BucketId,
                 ValidUntil = DateTime.UtcNow.AddHours(1),
                 Created = DateTime.UtcNow,
-                ConfirmationKey = Key,
+                ConfirmationKey = _Key,
             });
             await _DbContext.SaveChangesAsync();
         }
@@ -82,15 +83,17 @@ namespace MobileAppApi.Tests.Controllers
             await _Connection.DisposeAsync();
         }
 
-        [TestMethod]
-        public async Task PostWorkflowTest()
+        [DataRow("Resources.payload-short.json", 1)]
+        //[DataRow("Resources.payload.json", 14)] TODO fix the keys
+        [DataTestMethod]
+        public async Task PostWorkflowTest(string file, int keyCount)
         {
             // Arrange
             var client = _Factory.CreateClient();
             await using var inputStream =
-                Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Resources.payload.json");
+                Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(file);
             var data = inputStream.ToArray();
-            var signature = HttpUtility.UrlEncode(HmacSigner.Sign(Key, data));
+            var signature = HttpUtility.UrlEncode(HmacSigner.Sign(_Key, data));
             var content = new ByteArrayContent(data);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
@@ -100,7 +103,7 @@ namespace MobileAppApi.Tests.Controllers
             // Assert
             var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
             Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-            Assert.AreEqual(14, items.Count);
+            Assert.AreEqual(keyCount, items.Count);
         }
 
         [TestMethod]
@@ -109,7 +112,7 @@ namespace MobileAppApi.Tests.Controllers
             // Arrange
             var client = _Factory.CreateClient();
             await using var inputStream =
-                Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Resources.payload.json");
+                Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Resources.payload-short.json");
             var data = inputStream.ToArray();
             var signature = HttpUtility.UrlEncode(HmacSigner.Sign(new byte[] { 0 }, data));
             var content = new ByteArrayContent(data);

@@ -19,7 +19,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         /// Set when the exposure key set it written
         /// </summary>
         public bool Used { get; set; }
-
         public byte[] KeyData { get; set; }
         public int RollingStartNumber { get; set; }
         public int RollingPeriod { get; set; }

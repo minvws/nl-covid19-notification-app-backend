@@ -7,7 +7,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
     public interface IGeanTekListValidationConfig
     {
         int TemporaryExposureKeyCountMin { get; }
+
+        /// <summary>
+        /// Anti-spam only
+        /// </summary>
         int TemporaryExposureKeyCountMax { get; }
+
+        //TODO move!
         int GracePeriodMinutes { get; }
     }
 }

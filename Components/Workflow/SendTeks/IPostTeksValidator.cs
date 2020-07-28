@@ -4,8 +4,8 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
-    public interface IReleaseTeksValidator
+    public interface IPostTeksValidator
     {
-        bool Validate(ReleaseTeksArgs args, KeyReleaseWorkflowState workflow);
+        string[] Validate(PostTeksArgs args);
     }
 }

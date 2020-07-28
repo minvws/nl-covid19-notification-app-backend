@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration
 {
@@ -31,36 +32,36 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
             var r = new Random();
 
+            var r2 = new StandardRandomNumberGenerator();
+
             await using var tx = await _Provider.Database.BeginTransactionAsync();
 
-            var wfs1 = new KeyReleaseWorkflowState
+            var wfs1 = new TekReleaseWorkflowStateEntity
             {
                 LabConfirmationId = "2L2587",
-                BucketId = "2",
-                ConfirmationKey = "3",
+                BucketId = r2.GenerateKey(),
+                ConfirmationKey = r2.GenerateKey(),
                 Created = new DateTime(2020, 5, 1),
             };
 
-            var key1 = new TemporaryExposureKeyEntity
+            var key1 = new TekEntity
             {
                 Owner = wfs1,
                 PublishingState = PublishingState.Unpublished,
                 RollingPeriod = 1,
                 RollingStartNumber = 1,
-                TransmissionRiskLevel = 0,
                 KeyData = new byte[16],
                 Region = "NL"
             };
 
             r.NextBytes(key1.KeyData);
 
-            var key2 = new TemporaryExposureKeyEntity
+            var key2 = new TekEntity
             {
                 Owner = wfs1,
                 PublishingState = PublishingState.Unpublished,
                 RollingPeriod = 1,
                 RollingStartNumber = 1,
-                TransmissionRiskLevel = 0,
                 KeyData = new byte[16],
                 Region = "NL"
             };

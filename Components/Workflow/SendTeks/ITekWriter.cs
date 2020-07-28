@@ -8,6 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 {
     public interface ITekWriter
     {
-        Task Execute(ReleaseTeksArgs args);
+        Task Execute(TekWriteArgs args);
     }
 }

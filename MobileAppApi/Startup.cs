@@ -56,8 +56,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
             services.AddScoped<HttpPostReleaseTeksCommand, HttpPostReleaseTeksCommand>();
 
-            services.AddScoped<IReleaseTeksValidator, ReleaseTeksValidator>();
+            services.AddScoped<IPostTeksValidator, PostTeksArgsValidator>();
             services.AddScoped<ISignatureValidator, SignatureValidator>();
+            services.AddScoped<INewTeksValidator, NewTeksValidator>();
+           
 
             _SignatureValidationEnabled = _Configuration.GetValue("ValidatePostKeysSignature", true);
             if (_SignatureValidationEnabled)
@@ -72,8 +74,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddScoped<HttpPostRegisterSecret, HttpPostRegisterSecret>();
             services.AddScoped<ISecretWriter, SecretWriter>();
             services.AddScoped<ITekWriter, TekWriter>();
-            services.AddScoped<RandomNumberGenerator, RandomNumberGenerator>();
-            services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
+            services.AddScoped<StandardRandomNumberGenerator, StandardRandomNumberGenerator>();
+            services.AddScoped<IRandomNumberGenerator, StandardRandomNumberGenerator>();
 
             services.AddScoped<HttpPostDecoyKeysCommand, HttpPostDecoyKeysCommand>();
             services.AddScoped<IDecoyKeysConfig, StandardDecoyKeysConfig>();

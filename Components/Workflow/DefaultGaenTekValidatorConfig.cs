@@ -7,7 +7,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
     public class DefaultGaenTekValidatorConfig : ITemporaryExposureKeyValidatorConfig
     {
         public int RollingPeriodMin => 1;
-        public int RollingPeriodMax => int.MaxValue;
+        public int RollingPeriodMax => 144;
         public int DailyKeyByteCount => 16;
     }
 }

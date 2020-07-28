@@ -9,14 +9,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 {
     public class TemporaryExposureKeyValidatorConfig : AppSettingsReader, ITemporaryExposureKeyValidatorConfig
     {
+
+        private static readonly DefaultGaenTekValidatorConfig Defaults = new DefaultGaenTekValidatorConfig();
+
         public TemporaryExposureKeyValidatorConfig(IConfiguration config, string prefix = DefaultPrefix) : base(config, prefix)
         {
         }
 
         private const string DefaultPrefix = "Workflow:PostKeys:TemporaryExposureKeys";
 
-        public int RollingPeriodMin => GetConfigValue("RollingPeriod:Min", 1);
-        public int RollingPeriodMax => GetConfigValue("RollingPeriod:Max", int.MaxValue);
-        public int DailyKeyByteCount => GetConfigValue(nameof(DailyKeyByteCount), 16);
+        public int RollingPeriodMin => GetConfigValue("RollingPeriod:Min", Defaults.RollingPeriodMin);
+        public int RollingPeriodMax => GetConfigValue("RollingPeriod:Max", Defaults.RollingPeriodMax);
+        public int DailyKeyByteCount => GetConfigValue(nameof(DailyKeyByteCount), Defaults.DailyKeyByteCount);
     }
 }

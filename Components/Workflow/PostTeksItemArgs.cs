@@ -4,24 +4,10 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 {
-
-    public class TemporaryExposureKeyArgs
+    public class PostTeksItemArgs
     {
-        /// <summary>
-        /// TemporaryExposureKey
-        /// The 'ephemeral key' is called the RollingProximityIdentifier
-        /// </summary>
         public string KeyData { get; set; }
-        
-        /// <summary>
-        /// Equivalent of Dp3T Epoch
-        /// </summary>
         public int RollingStartNumber { get; set; }
-
-        /// <summary>
-        /// Number of epochs in 24hours
-        /// Currently fixed at 144? e.g. 10mins
-        /// </summary>
         public int RollingPeriod { get; set; }
     }
 }

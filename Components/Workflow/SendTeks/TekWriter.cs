@@ -13,33 +13,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
     public class TekWriter : ITekWriter
     {
         private readonly WorkflowDbContext _DbContextProvider;
-        private readonly ILogger _Logger;
 
         public TekWriter(WorkflowDbContext dbContextProvider, ILogger<WorkflowDbContext> logger)
         {
             _DbContextProvider = dbContextProvider;
-            _Logger = logger;
         }
 
-        public async Task Execute(ReleaseTeksArgs args)
+        public async Task Execute(TekWriteArgs args)
         {
-            var wf = _DbContextProvider
-                .KeyReleaseWorkflowStates
-                .FirstOrDefault(x => x.BucketId == args.BucketId);
-
-            if (wf == null)
-            {
-                _Logger.LogWarning($"Workflow not found: bucketId:{args.BucketId}.");
-                return;
-            }
-
-            var entities = args.Keys.ToEntities();
+            var entities = args.NewItems.Select(Mapper.MapToEntity).ToArray();
             
             foreach (var e in entities)
-                e.Owner = wf;
-
-            if (wf.AuthorisedByCaregiver)
-                wf.Authorised = true;
+                e.Owner = args.WorkflowStateEntityEntity;
 
             await _DbContextProvider.TemporaryExposureKeys.AddRangeAsync(entities);
         }

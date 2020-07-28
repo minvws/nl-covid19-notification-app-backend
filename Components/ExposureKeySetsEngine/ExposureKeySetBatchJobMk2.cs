@@ -167,13 +167,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             await using (_WorkflowDbContext.BeginTransaction())
             {
                 var read = _WorkflowDbContext.TemporaryExposureKeys
-                    .Where(x => (x.Owner.Authorised || useAllKeys) && x.PublishingState == PublishingState.Unpublished) 
+                    .Where(x => (x.Owner.AuthorisedByCaregiver!=null || useAllKeys) && x.PublishingState == PublishingState.Unpublished) 
                     .Select(x => new EksCreateJobInputEntity
                     {
                         Id = x.Id,
                         RollingPeriod = x.RollingPeriod,
                         KeyData = x.KeyData,
-                        TransmissionRiskLevel = x.TransmissionRiskLevel,
+                        //TODO TransmissionRiskLevel = x.TransmissionRiskLevel, ///calculation ????
                         RollingStartNumber = x.RollingStartNumber,
                     }).ToList();
 
@@ -256,7 +256,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                             i.PublishingState = PublishingState.Published;
                         }
 
-                        await _WorkflowDbContext.BulkUpdateAsync(zap, x => x.PropertiesToInclude = new List<string> {nameof(TemporaryExposureKeyEntity.PublishingState)});
+                        await _WorkflowDbContext.BulkUpdateAsync(zap, x => x.PropertiesToInclude = new List<string> {nameof(TekEntity.PublishingState)});
 
                         count += used.Length;
 

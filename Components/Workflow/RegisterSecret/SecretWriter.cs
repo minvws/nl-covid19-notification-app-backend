@@ -15,10 +15,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
     {
         private readonly WorkflowDbContext _DbContextProvider;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly RandomNumberGenerator _NumberGenerator;
+        private readonly StandardRandomNumberGenerator _NumberGenerator;
         private readonly ILogger _Logger;
 
-        public SecretWriter(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, RandomNumberGenerator numberGenerator, ILogger<SecretWriter> logger)
+        public SecretWriter(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, StandardRandomNumberGenerator numberGenerator, ILogger<SecretWriter> logger)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
@@ -30,12 +30,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
         {
             var validDate = _DateTimeProvider.Now().AddDays(1); //TODO smells like a setting
 
-            var entity = new KeyReleaseWorkflowState
+            var entity = new TekReleaseWorkflowStateEntity
             {
                 LabConfirmationId = _NumberGenerator.GenerateToken(),
                 Created = _DateTimeProvider.Now(),
-                BucketId = Convert.ToBase64String(_NumberGenerator.GenerateKey()),
-                ConfirmationKey = Convert.ToBase64String(_NumberGenerator.GenerateKey()),
+                BucketId = _NumberGenerator.GenerateKey(),
+                ConfirmationKey = _NumberGenerator.GenerateKey(),
                 ValidUntil = new DateTime(validDate.Year, validDate.Month, validDate.Day, 4, 0, 0, DateTimeKind.Local) //TODO smells like a setting
             };
 
@@ -47,11 +47,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
 
             return new EnrollmentResponse
             {
-                ConfirmationKey = entity.ConfirmationKey,
-                BucketId = entity.BucketId,
+                ConfirmationKey = Convert.ToBase64String(entity.ConfirmationKey),
+                BucketId = Convert.ToBase64String(entity.BucketId),
                 LabConfirmationId = $"{entity.LabConfirmationId.Substring(0, 3)}-{entity.LabConfirmationId.Substring(3, 3)}", //TODO UI concern in DB!
                 Validity = (long)(entity.ValidUntil - _DateTimeProvider.Now()).TotalSeconds
             };
         }
+
+
+
     }
 }
