@@ -48,6 +48,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{3F8DB099
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileAppApi.Tests", "MobileAppApi.Tests\MobileAppApi.Tests.csproj", "{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagementPortal", "ManagementPortal\ManagementPortal.csproj", "{404E47C8-957B-48AC-B7B4-B5A286B448BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +104,10 @@ Global
 		{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{404E47C8-957B-48AC-B7B4-B5A286B448BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{404E47C8-957B-48AC-B7B4-B5A286B448BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{404E47C8-957B-48AC-B7B4-B5A286B448BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{404E47C8-957B-48AC-B7B4-B5A286B448BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
