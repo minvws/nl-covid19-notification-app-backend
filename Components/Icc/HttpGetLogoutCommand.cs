@@ -1,9 +1,8 @@
 using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
-namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
     public class HttpGetLogoutCommand
     {

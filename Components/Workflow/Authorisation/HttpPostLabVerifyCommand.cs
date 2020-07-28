@@ -11,15 +11,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     public class HttpPostLabVerifyCommand
     {
         private readonly LabVerificationAuthorisationCommand _LabVerificationAuthorisationCommand;
+        private readonly LabVerifyArgsValidator _LabVerifyArgsValidator;
 
-        public HttpPostLabVerifyCommand(LabVerificationAuthorisationCommand labVerificationAuthorisationCommand)
+        public HttpPostLabVerifyCommand(LabVerificationAuthorisationCommand labVerificationAuthorisationCommand, LabVerifyArgsValidator labVerifyArgsValidator)
         {
             _LabVerificationAuthorisationCommand = labVerificationAuthorisationCommand;
+            _LabVerifyArgsValidator = labVerifyArgsValidator;
         }
 
         public async Task<IActionResult> Execute(LabVerifyArgs args)
         {
-            if (_LabVerificationAuthorisationCommand.Validate(args))
+            if (!_LabVerifyArgsValidator.Validate(args))
                 return new BadRequestResult();
 
             var result = await _LabVerificationAuthorisationCommand.Execute(args);

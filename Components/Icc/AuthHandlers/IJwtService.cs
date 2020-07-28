@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Security.Claims;
-using JWT.Builder;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
@@ -12,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
     {
         string Generate(ulong exp, Dictionary<string, object> claims);
         string Generate(ClaimsPrincipal claimsPrincipal);
-        bool IsValid(IDictionary<string, string> tokens, string checkElement);
-        IDictionary<string, string> Decode(string token);
+        
+        bool TryDecode(string token, out IDictionary<string, string> payload);
     }
 }

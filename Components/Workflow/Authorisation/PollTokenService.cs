@@ -9,14 +9,14 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
-    public class PollTokens
+    public class PollTokenService
     {
         private const string PayloadElement = "payload";
 
         private readonly IJwtService _JwtService;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-
-        public PollTokens(IJwtService jwtService, IUtcDateTimeProvider dateTimeProvider)
+        
+        public PollTokenService(IJwtService jwtService, IUtcDateTimeProvider dateTimeProvider)
         {
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
@@ -32,9 +32,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
                 });
         }
 
-        public bool Validate(string token)
+        public bool Validate(string argsPollToken)
         {
-            return _JwtService.IsValid(_JwtService.Decode(token), PayloadElement);
+            return _JwtService.TryDecode(argsPollToken, out _);
         }
     }
 }

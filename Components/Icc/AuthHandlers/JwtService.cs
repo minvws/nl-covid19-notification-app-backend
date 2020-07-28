@@ -8,8 +8,9 @@ using System.Linq;
 using System.Security.Claims;
 using JWT.Algorithms;
 using JWT.Builder;
+using JWT.Exceptions;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.IccBackend;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
@@ -17,11 +18,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
     {
         private readonly IIccPortalConfig _IccPortalConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly ILogger<JwtService> _Logger;
 
-        public JwtService(IIccPortalConfig iccPortalConfig, IUtcDateTimeProvider utcDateTimeProvider)
+        public JwtService(IIccPortalConfig iccPortalConfig, IUtcDateTimeProvider utcDateTimeProvider,
+            ILogger<JwtService> logger)
         {
             _IccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
-            _DateTimeProvider = utcDateTimeProvider;
+            _DateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         private JwtBuilder CreateBuilder()
@@ -58,30 +62,46 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             builder.AddClaim("exp", _DateTimeProvider.Now().AddHours(_IccPortalConfig.ClaimLifetimeHours).ToUnixTime());
             builder.AddClaim("id", GetClaimValue(claimsPrincipal, ClaimTypes.NameIdentifier));
             builder.AddClaim("email", GetClaimValue(claimsPrincipal, ClaimTypes.Email));
-            builder.AddClaim("access_token", GetClaimValue(claimsPrincipal, "http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken"));
-            builder.AddClaim("name", GetClaimValue(claimsPrincipal, "http://schemas.u2uconsult.com/ws/2014/04/identity/claims/displayname"));
+            builder.AddClaim("access_token",
+                GetClaimValue(claimsPrincipal, "http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken"));
+            builder.AddClaim("name",
+                GetClaimValue(claimsPrincipal, "http://schemas.u2uconsult.com/ws/2014/04/identity/claims/displayname"));
             return builder.Encode();
         }
 
-        private string? GetClaimValue(ClaimsPrincipal cp, string claimType) => cp.Claims.FirstOrDefault(c => c.Type.Equals(claimType))?.Value;
-
-        public bool IsValid(IDictionary<string, string> tokens, string checkElement)
+        private string? GetClaimValue(ClaimsPrincipal cp, string claimType) =>
+            cp.Claims.FirstOrDefault(c => c.Type.Equals(claimType))?.Value;
+        
+        public bool TryDecode(string token, out IDictionary<string, string> payload)
         {
-            if (string.IsNullOrWhiteSpace(checkElement))
-                throw new ArgumentException(nameof(checkElement));
-
-            if (tokens == null)
+            payload = new Dictionary<string, string>();
+            if (string.IsNullOrWhiteSpace(token))
                 return false;
 
-            return tokens.TryGetValue(checkElement, out var checkElementValue) && !string.IsNullOrWhiteSpace(checkElementValue);
-        }
+            try
+            {
+                payload = CreateBuilder().Decode<IDictionary<string, object>>(token)
+                    .ToDictionary(x => x.Key, x => x.Value.ToString());
+                return true;
+            }
+            catch (FormatException e)
+            {
+                _Logger.LogWarning($"Invalid jwt token, FormatException - {token}");
+            }
+            catch (InvalidTokenPartsException)
+            {
+                _Logger.LogWarning($"Invalid jwt token, InvalidTokenPartsException - {token}");
+            }
+            catch (TokenExpiredException e)
+            {
+                _Logger.LogWarning($"Invalid jwt token, TokenExpiredException - {token}");
+            }
+            catch (SignatureVerificationException e)
+            {
+                _Logger.LogWarning($"Invalid jwt token, SignatureVerificationException - {token}");
+            }
 
-        public IDictionary<string, string> Decode(string token)
-        {
-            if (string.IsNullOrWhiteSpace(token))
-                throw new ArgumentException(nameof(token));
-
-            return CreateBuilder().Decode<IDictionary<string, object>>(token).ToDictionary(x => x.Key, x=> x.Value.ToString());
+            return false;
         }
     }
 }

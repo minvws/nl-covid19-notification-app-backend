@@ -24,7 +24,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             ILoggerFactory loggerFactory,
             UrlEncoder encoder,
             ISystemClock clock,
-            IJwtService jwtService) : base(options, loggerFactory, encoder, clock)
+            IJwtService jwtService) : base(options, loggerFactory, encoder,
+            clock)
         {
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
         }
@@ -43,13 +44,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
                 return AuthenticateResult.Fail("Invalid authorization header.");
             }
 
-            var cleaned = authHeader.ToString().Replace("Bearer ", "").Trim();
-            var decodedClaims = _JwtService.Decode(cleaned);
+            var jwt = authHeader.ToString().Replace("Bearer ", "").Trim();
 
-            if (!_JwtService.IsValid(decodedClaims, AccessTokenElement))
+            if (!_JwtService.TryDecode(jwt, out var decodedClaims))
             {
-                Logger.LogWarning($"Invalid jwt token - {cleaned}.");
-                return AuthenticateResult.Fail("Invalid jwt token.");
+                return AuthenticateResult.Fail("Invalid jwt token");
             }
 
             var claims = new[]

@@ -3,9 +3,9 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers;
 
-namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
     public class HttpGetUserClaimCommand
     {

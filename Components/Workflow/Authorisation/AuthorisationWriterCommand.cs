@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -15,39 +16,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     public class AuthorisationWriterCommand
     {
         private readonly WorkflowDbContext _DbContextProvider;
-        private readonly PollTokens _PollTokens;
+        private readonly PollTokenService _PollTokenService;
         private readonly ILogger _Logger;
+        private readonly AuthorisationArgsValidator _AuthorisationArgsValidator;
 
-        public AuthorisationWriterCommand(WorkflowDbContext dbContextProvider, PollTokens pollTokens, ILogger<AuthorisationWriterCommand> logger)
+        public AuthorisationWriterCommand(WorkflowDbContext dbContextProvider, PollTokenService pollTokenService,
+            ILogger<AuthorisationWriterCommand> logger, AuthorisationArgsValidator authorisationArgsValidator)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
-            _PollTokens = pollTokens ?? throw new ArgumentNullException(nameof(pollTokens));
+            _PollTokenService = pollTokenService ?? throw new ArgumentNullException(nameof(pollTokenService));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _AuthorisationArgsValidator = authorisationArgsValidator ??
+                                          throw new ArgumentNullException(nameof(authorisationArgsValidator));
         }
 
-        public bool Validate(AuthorisationArgs args)
-        {
-            if (args == null)
-                return false;
-
-            if (string.IsNullOrWhiteSpace(args.LabConfirmationId))
-                return false;
-
-            //TODO 6 char, correct range, strip -
-
-            //TODO
-            //if (string.IsNullOrWhiteSpace(args.DateOfSymptomsOnset))
-            //    return false;
-
-            return true;
-        }
 
         public async Task<AuthorisationResponse> Execute(AuthorisationArgs args)
         {
-            if (!Validate(args))
+            if (args == null) 
+                throw new ArgumentNullException(nameof(args));
+            if (!_AuthorisationArgsValidator.Validate(args))
                 throw new ArgumentException("Not valid.", nameof(args));
 
-            var wf = await  _DbContextProvider
+            var wf = await _DbContextProvider
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Keys)
                 .FirstOrDefaultAsync(x => x.LabConfirmationId == args.LabConfirmationId);
@@ -56,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             {
                 var message = $"KeyReleaseWorkflowState not found - LabConfirmationId:{args.LabConfirmationId}.";
                 _Logger.LogError(message);
-                return new AuthorisationResponse { Valid = false };
+                return new AuthorisationResponse {Valid = false};
             }
 
             wf.AuthorisedByCaregiver = true; //TODO but wf.LabConfirmationId = null will suffice?
@@ -64,13 +55,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
             wf.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
             wf.LabConfirmationId = null;
-            wf.PollToken = _PollTokens.GenerateToken();
+            wf.PollToken = _PollTokenService.GenerateToken();
 
             _Logger.LogDebug($"Committing.");
             _DbContextProvider.SaveAndCommit();
-            
+
             _Logger.LogInformation($"Committed - new PollToken:{wf.PollToken}.");
-            return new AuthorisationResponse { PollToken = wf.PollToken };
+            return new AuthorisationResponse {Valid = true, PollToken = wf.PollToken};
         }
     }
 }

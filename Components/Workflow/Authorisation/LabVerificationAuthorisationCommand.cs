@@ -16,32 +16,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     public class LabVerificationAuthorisationCommand
     {
         private readonly WorkflowDbContext _DbContextProvider;
-        private readonly PollTokens _PollTokens;
+        private readonly PollTokenService _PollTokenService;
         private readonly ILogger _Logger;
 
-        public LabVerificationAuthorisationCommand(WorkflowDbContext dbContextProvider, PollTokens pollTokens, ILogger<LabVerificationAuthorisationCommand> logger)
+        public LabVerificationAuthorisationCommand(WorkflowDbContext dbContextProvider, PollTokenService pollTokenService,
+            ILogger<LabVerificationAuthorisationCommand> logger)
         {
             _DbContextProvider = dbContextProvider;
-            _PollTokens = pollTokens;
+            _PollTokenService = pollTokenService;
             _Logger = logger;
         }
-
-        public bool Validate(LabVerifyArgs args)
-        {
-            if (args == null)
-                return false;
-
-            if (string.IsNullOrWhiteSpace(args.PollToken))
-                return false;
-
-            return _PollTokens.Validate(args.PollToken);
-        }
-
         public async Task<LabVerifyAuthorisationResponse> Execute(LabVerifyArgs args)
         {
-            if (!_PollTokens.Validate(args.PollToken))
-                throw new ArgumentException("Not valid.", nameof(args));
-
             var wf = await _DbContextProvider.KeyReleaseWorkflowStates
                 .Include(x => x.Keys)
                 .FirstOrDefaultAsync(state =>
@@ -54,14 +40,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
                 return new LabVerifyAuthorisationResponse {Error = "Workflow not found.", Valid = false};
             }
 
-            var refreshedToken = _PollTokens.GenerateToken();
+            var refreshedToken = _PollTokenService.GenerateToken();
             wf.PollToken = refreshedToken;
             _Logger.LogDebug($"Committing.");
             _DbContextProvider.SaveAndCommit();
 
             _Logger.LogInformation($"Committed - new PollToken:{wf.PollToken}.");
             return new LabVerifyAuthorisationResponse
-                { PollToken = refreshedToken, Valid = wf.Keys?.Any() ?? false};
+                {PollToken = refreshedToken, Valid = wf.Keys?.Any() ?? false};
         }
     }
 }
