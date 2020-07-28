@@ -74,8 +74,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         
         public bool TryDecode(string token, out IDictionary<string, string> payload)
         {
+            payload = new Dictionary<string, string>();
             if (string.IsNullOrWhiteSpace(token))
-                throw new ArgumentException(nameof(token));
+                return false;
 
             try
             {
@@ -100,7 +101,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
                 _Logger.LogWarning($"Invalid jwt token, SignatureVerificationException - {token}");
             }
 
-            payload = new Dictionary<string, string>();
             return false;
         }
     }
