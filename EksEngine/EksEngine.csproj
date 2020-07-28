@@ -11,15 +11,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ApplicationDefinition Include="appsettings.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Components\Components.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy $(ProjectDir)appsettings.*.json $(OutDir) /Y" />
   </Target>
+
+  <ItemGroup>
+    <ApplicationDefinition Include="appsettings.json" />
+  </ItemGroup>
 
 </Project>

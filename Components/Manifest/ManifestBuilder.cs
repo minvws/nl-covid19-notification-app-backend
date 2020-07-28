@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
@@ -31,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             var lo = now - TimeSpan.FromDays(_GaenContentConfig.ExposureKeySetLifetimeDays);
             return new ManifestContent
             { 
-                ExposureKeySets = await _ContentDbContext.SafeGetActiveContentIdList<ExposureKeySetContentEntity>(lo, now),
+                ExposureKeySets = await _ContentDbContext.SafeGetActiveContentIdList(ContentTypes.ExposureKeySet, lo, now),
                 RiskCalculationParameters = await _ContentDbContext.SafeGetLatestContentId(ContentTypes.RiskCalculationParameters, now),
                 AppConfig = await _ContentDbContext.SafeGetLatestContentId(ContentTypes.AppConfig, now)
             };

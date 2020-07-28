@@ -34,6 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             {
                 Created = now,
                 Release = now,
+                Type = ContentTypes.Manifest
             };
             _Logger.LogDebug("Build new manifest.");
             var content = await _ManifestBuilder.Execute();

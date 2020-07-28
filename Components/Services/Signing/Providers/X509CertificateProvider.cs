@@ -35,6 +35,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
                 throw new InvalidOperationException("Certificate not found.");
             }
 
+            if (!result.HasPrivateKey)
+            {
+                _Logger.LogCritical($"Certificate has no private key: {_ThumbprintConfig.Thumbprint}");
+                throw new InvalidOperationException("Private key not found.");
+            }
+
             return result;
         }
         X509Certificate2 ReadCertFromStore(X509Store x509Store)

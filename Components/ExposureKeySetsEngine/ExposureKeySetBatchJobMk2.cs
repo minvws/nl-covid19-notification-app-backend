@@ -9,6 +9,7 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
@@ -213,20 +214,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             await using (_PublishingDbContext.BeginTransaction())
             {
                 var move = _PublishingDbContext.Set<EksCreateJobOutputEntity>().Select(
-                    x => new ExposureKeySetContentEntity
+                    x => new ContentEntity
                     {
                         Created = _Start,
                         Release = x.Release,
                         ContentTypeName = MediaTypeNames.Application.Zip,
                         Content = x.Content,
-                        CreatingJobName = x.CreatingJobName,
-                        CreatingJobQualifier = x.CreatingJobQualifier,
+                        Type = ContentTypes.ExposureKeySet,
+                        //CreatingJobName = x.CreatingJobName,
+                        //CreatingJobQualifier = x.CreatingJobQualifier,
                         PublishingId = _PublishingId.Create(x.Content)
                     }).ToArray();
 
                 await using (_ContentDbContext.BeginTransaction())
                 {
-                    _ContentDbContext.Set<ExposureKeySetContentEntity>().AddRange(move);
+                    _ContentDbContext.Set<ContentEntity>().AddRange(move);
                     _ContentDbContext.SaveAndCommit();
                 }
             }

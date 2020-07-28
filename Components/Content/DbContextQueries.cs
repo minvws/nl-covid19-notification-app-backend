@@ -44,10 +44,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 .SingleOrDefaultAsync() ?? string.Empty;
         }
 
-        public static async Task<string[]> SafeGetActiveContentIdList<T>(this DbContext dbContextProvider, DateTime from, DateTime to) where T : ContentEntity
+        public static async Task<string[]> SafeGetActiveContentIdList(this DbContext dbContextProvider, string type, DateTime from, DateTime to)
         {
-            var result = (await dbContextProvider.Set<T>()
-                .Where(x => x.Release >= from && x.Release <= to)
+            var result = (await dbContextProvider.Set<ContentEntity>()
+                .Where(x => x.Release >= from && x.Release <= to && x.Type == type)
                 .Select(x => x.PublishingId)
                 .ToArrayAsync());
 
