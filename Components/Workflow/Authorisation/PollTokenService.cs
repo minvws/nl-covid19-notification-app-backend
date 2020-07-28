@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
         private readonly IJwtService _JwtService;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-
+        
         public PollTokenService(IJwtService jwtService, IUtcDateTimeProvider dateTimeProvider)
         {
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
