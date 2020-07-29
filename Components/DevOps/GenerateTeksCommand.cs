@@ -71,7 +71,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                     Region = "NL"
                 };
                 _Random.NextBytes(k.KeyData);
-                workflow.Keys.Add(k);
+                workflow.Teks.Add(k);
                 _WorkflowDb.Set<TekEntity>().Add(k);
             }
         }

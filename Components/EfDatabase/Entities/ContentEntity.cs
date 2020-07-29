@@ -11,14 +11,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     [Table("Content")]
     public class ContentEntity
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public DateTime Created { get; set; }
         public DateTime Release { get; set; }
         
         [MaxLength(64)]
-        public string? PublishingId { get; set; }
-        public byte[]? Content { get; set; }
-        public string? ContentTypeName { get; set; }
+        public string PublishingId { get; set; }
+        public byte[] Content { get; set; }
+        public string ContentTypeName { get; set; }
         public string Type { get; set; }
     }
 }

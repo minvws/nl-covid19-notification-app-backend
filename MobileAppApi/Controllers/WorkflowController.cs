@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
 
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.ReleaseTeks)]
-        public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand command)
+        public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand2 command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (_Logger == null) throw new ArgumentNullException(nameof(_Logger));

@@ -35,10 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         public string Region { get; set; } = DefaultValues.Region;
 
         public PublishingState PublishingState { get; set; } = PublishingState.Unpublished;
-        public DateTime? PublishAfter { get; set; }
-
-
-
+        public DateTime PublishAfter { get; set; }
         public bool SameTime(Tek other)
         {
             return RollingStartNumber == other.RollingStartNumber && RollingPeriod == other.RollingPeriod;

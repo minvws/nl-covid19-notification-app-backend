@@ -49,12 +49,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         private Tek[] Publish(DateTime runTime)
         {
             var authorised = _Workflows
-                .Where(x => x.LabConfirmation != null)
+                .Where(x => x.AuthorisedByCaregiver != null)
                 .ToArray();
 
             var result = authorised
-                .SelectMany(x => x.Keys)
-                .Where(x => x.PublishingState == PublishingState.Unpublished && (x.PublishAfter ?? DateTime.MinValue) <= runTime)
+                .SelectMany(x => x.Teks)
+                .Where(x => x.PublishingState == PublishingState.Unpublished && x.PublishAfter <= runTime)
                 .ToArray();
 
             foreach (var i in result)
@@ -71,7 +71,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 _Workflows.Add(workflow);
 
             foreach (var i in arts.Select(Mapper.MapToEntity))
-                workflow.Keys.Add(i);
+                workflow.Teks.Add(i);
         }
 
         Tek GenerateTek(int m, int d, int q)
@@ -93,9 +93,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 ValidUntil = new DateTime(2020, 9, 15, 4, 0, 0),
             };
             Write(w, new Tek[0]);
-            var fr = new NewTeksFilter(new FakedNow(new DateTime(2020, 9, 14, 9, 35, 0))).Validate(deviceTeks.ToArray(), w);
-            Assert.AreEqual(14, fr.Valid.Length);
-            Write(w, fr.Valid); //These will be lost cos they don't get GGD authorisation
+            var fr = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(new DateTime(2020, 9, 14, 9, 35, 0))).Validate(deviceTeks.ToArray(), w);
+            Assert.AreEqual(14, fr.Items.Length);
+            Write(w, fr.Items); //These will be lost cos they don't get GGD authorisation
             Assert.AreEqual(0, Publish(new DateTime(2020, 9, 14, 9, 36, 0)).Length);
 
             deviceTeks.Add(GenerateTek(9, 14, 2));
@@ -118,11 +118,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             Assert.AreEqual(0, Publish(new DateTime(2020, 9, 14, 9, 36, 0)).Length);
 
             //Post
-            w.LabConfirmation = new DateTime(2020, 9, 15, 11, 0, 0);
-            fr = new NewTeksFilter(new FakedNow(new DateTime(2020, 9, 15, 11, 5, 0))).Validate(deviceTeks.ToArray(), w);
+            w.AuthorisedByCaregiver = new DateTime(2020, 9, 15, 11, 0, 0);
+            fr = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(new DateTime(2020, 9, 15, 11, 5, 0))).Validate(deviceTeks.ToArray(), w);
             Assert.AreEqual(2, fr.Messages.Length);
-            Assert.AreEqual(14, fr.Valid.Length);
-            Write(w, fr.Valid);
+            Assert.AreEqual(14, fr.Items.Length);
+            Write(w, fr.Items);
             //Get after post
             deviceTeks.Add(GenerateTek(9, 15, 3));
             Assert.AreEqual(17, deviceTeks.Count);
@@ -131,11 +131,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             //TODO has to be later
             //Only 14.
             Assert.AreEqual(14, Publish(new DateTime(2020, 9, 15, 13, 6, 0)).Length);
-            Assert.AreEqual(14, w.Keys.Count(x => x.PublishingState == PublishingState.Published));
+            Assert.AreEqual(14, w.Teks.Count(x => x.PublishingState == PublishingState.Published));
 
             //14.00h - POST - Server silently discards all keys as they arrive > 120 minutes after GGD code
-            fr = new NewTeksFilter(new FakedNow(new DateTime(2020, 9, 15, 14, 0, 0))).Validate(deviceTeks.ToArray(), w);
-            Assert.AreEqual(0, fr.Valid.Length); 
+            fr = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(new DateTime(2020, 9, 15, 14, 0, 0))).Validate(deviceTeks.ToArray(), w);
+            Assert.AreEqual(0, fr.Items.Length); 
             Assert.AreEqual(17, fr.Messages.Length); //14.00h Server silently discards all keys as they arrive > 120 minutes after GGD code
 
             deviceTeks.Add(GenerateTek(9, 15, 4));
@@ -153,8 +153,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             //POST
             // - ignores the keys it already has
             // - K0916.1 is discarded because it's a key for today and the bucket doesn't accept same day keys after midnight.
-            fr = new NewTeksFilter(new FakedNow(new DateTime(2020, 9, 16, 0, 30, 0))).Validate(deviceTeks.ToArray(), w);
-            Assert.AreEqual(0, fr.Valid.Length);
+            fr = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(new DateTime(2020, 9, 16, 0, 30, 0))).Validate(deviceTeks.ToArray(), w);
+            Assert.AreEqual(0, fr.Items.Length);
             Assert.AreEqual(18, fr.Messages.Length);
             Assert.AreEqual(0, Publish(new DateTime(2020, 9, 16, 0, 31, 0)).Length);
         }
@@ -174,10 +174,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             //Hold back todays key(s)???
             var send = keysOnDevice.Where(x => x.End <= T.ToRollingPeriodStart()).ToArray();
-            var fr = new NewTeksFilter(new FakedNow(T)).Validate(send, w);
+            var fr = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(T)).Validate(send, w);
             Assert.AreEqual(0, fr.Messages.Length);
-            Assert.AreEqual(13, fr.Valid.Length);
-            Write(w, fr.Valid);
+            Assert.AreEqual(13, fr.Items.Length);
+            Write(w, fr.Items);
             Assert.AreEqual(14, keysOnDevice.Count);
 
             T = new DateTime(2020, 9, 14, 23, 59, 0);
@@ -191,10 +191,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             //Sep 15 00:30
             T = new DateTime(2020, 9, 15, 0, 30, 0);
-            fr = new NewTeksFilter(new FakedNow(T)).Validate(new[] { lastOfSet }, w);
-            Assert.AreEqual(1, fr.Valid.Length);
+            fr = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(T)).Validate(new[] { lastOfSet }, w);
+            Assert.AreEqual(1, fr.Items.Length);
             Assert.AreEqual(0, fr.Messages.Length);
-            Write(w, fr.Valid);
+            Write(w, fr.Items);
 
             T = new DateTime(2020, 9, 15, 9, 59, 0);
             //Still not published
@@ -210,11 +210,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             //Sep 15 11:00
             T = new DateTime(2020, 9, 15, 11, 0, 0);
-            w.LabConfirmation = T;
-            fr = new NewTeksFilter(new FakedNow(T)).Validate(keysOnDevice.Take(keysOnDevice.Count-1).ToArray(), w);
+            w.AuthorisedByCaregiver = T;
+            fr = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(T)).Validate(keysOnDevice.Take(keysOnDevice.Count-1).ToArray(), w);
             Assert.AreEqual(0, fr.Messages.Length);
-            Write(w, fr.Valid);
-            Assert.AreEqual(keysOnDevice.Count-1, w.Keys.Count);
+            Write(w, fr.Items);
+            Assert.AreEqual(keysOnDevice.Count-1, w.Teks.Count);
 
 
             //Sep 15 11:20 Server publishes K0902.1 through K0915.2 to the CDN.
@@ -230,8 +230,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             //Sausage fingers again - but later than the document cos Publish delayed
             T = new DateTime(2020, 9, 15, 13, 30, 0);
-            fr = new NewTeksFilter(new FakedNow(T)).Validate(keysOnDevice.Take(keysOnDevice.Count - 1).ToArray(), w);
-            Assert.AreEqual(0, fr.Valid.Length);
+            fr = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(T)).Validate(keysOnDevice.Take(keysOnDevice.Count - 1).ToArray(), w);
+            Assert.AreEqual(0, fr.Items.Length);
             Assert.AreEqual(13, fr.Messages.Length);
             Assert.AreEqual(14, keysOnDevice.Count);
 
@@ -245,10 +245,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             //The nightly batch uploads all keys, including now K0915.1 to bucket B ???
 
             T = new DateTime(2020, 9, 16, 0, 30, 0);
-            fr = new NewTeksFilter(new FakedNow(T)).Validate(keysOnDevice.ToArray(), w);
-            Assert.AreEqual(1, fr.Valid.Length);
+            fr = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(T)).Validate(keysOnDevice.ToArray(), w);
+            Assert.AreEqual(1, fr.Items.Length);
             Assert.AreEqual(13, fr.Messages.Length);
-            Write(w, fr.Valid);
+            Write(w, fr.Items);
 
             T = new DateTime(2020, 9, 16, 2, 30, 0);
             Assert.AreEqual(1, Publish(T).Length);

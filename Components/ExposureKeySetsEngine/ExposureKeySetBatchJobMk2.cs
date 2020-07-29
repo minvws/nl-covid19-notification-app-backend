@@ -172,7 +172,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             await using (_WorkflowDbContext.BeginTransaction())
             {
                 var read = _WorkflowDbContext.TemporaryExposureKeys
-                    .Where(x => (x.Owner.AuthorisedByCaregiver!=null || useAllKeys) && x.PublishingState == PublishingState.Unpublished) 
+                    .Where(x => (x.Owner.AuthorisedByCaregiver!=null || useAllKeys) && x.PublishingState == PublishingState.Unpublished && x.PublishAfter <= _Start)
                     .Select(x => new EksCreateJobInputEntity
                     {
                         Id = x.Id,

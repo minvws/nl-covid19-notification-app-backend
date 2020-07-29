@@ -43,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
             var wf = await _DbContextProvider
                 .KeyReleaseWorkflowStates
-                .Include(x => x.Keys)
+                .Include(x => x.Teks)
                 .FirstOrDefaultAsync(x => x.LabConfirmationId == args.LabConfirmationId);
 
             if (wf == null)

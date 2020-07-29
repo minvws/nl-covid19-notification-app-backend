@@ -54,12 +54,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
 
-            services.AddScoped<HttpPostReleaseTeksCommand, HttpPostReleaseTeksCommand>();
+            services.AddScoped<HttpPostReleaseTeksCommand2>();
 
             services.AddScoped<IPostTeksValidator, PostTeksArgsValidator>();
             services.AddScoped<ISignatureValidator, SignatureValidator>();
-            services.AddScoped<INewTeksValidator, NewTeksValidator>();
-           
+            services.AddScoped<ITekListWorkflowFilter, BackwardCompatibleV15TekListWorkflowFilter>();
 
             _SignatureValidationEnabled = _Configuration.GetValue("ValidatePostKeysSignature", true);
             if (_SignatureValidationEnabled)

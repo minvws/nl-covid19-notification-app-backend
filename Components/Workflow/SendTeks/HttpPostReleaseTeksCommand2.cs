@@ -19,7 +19,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Authoris
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
-    public class HttpPostReleaseTeksCommand
+    public class HttpPostReleaseTeksCommand2
     {
         private readonly ILogger _Logger;
         private readonly WorkflowDbContext _DbContextProvider;
@@ -28,22 +28,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         private readonly ITekWriter _Writer;
         private readonly IJsonSerializer _JsonSerializer;
         private readonly ISignatureValidator _SignatureValidator;
-
-        private readonly INewTeksValidator _NewTeksValidator;
+        private readonly ITekListWorkflowFilter _TekListWorkflowFilter;
 
         private PostTeksArgs _ArgsObject;
         private byte[] _BucketIdBytes;
         private byte[] _BodyBytes;
+        //ILogger<HttpPostReleaseTeksCommand2> logger
 
-        public HttpPostReleaseTeksCommand(IPostTeksValidator keyValidator, ITekWriter writer, WorkflowDbContext dbContextProvider, IJsonSerializer jsonSerializer, INewTeksValidator newTeksValidator, ILogger<HttpPostReleaseTeksCommand> logger, ISignatureValidator signatureValidator)
+        public HttpPostReleaseTeksCommand2(ILogger<HttpPostReleaseTeksCommand2> logger, WorkflowDbContext dbContextProvider, IPostTeksValidator keyValidator, ITekWriter writer, IJsonSerializer jsonSerializer, ISignatureValidator signatureValidator, ITekListWorkflowFilter tekListWorkflowFilter)
         {
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _KeyValidator = keyValidator ?? throw new ArgumentNullException(nameof(keyValidator));
             _Writer = writer ?? throw new ArgumentNullException(nameof(writer));
-            _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
-            _NewTeksValidator = newTeksValidator ?? throw new ArgumentNullException(nameof(newTeksValidator));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _SignatureValidator = signatureValidator ?? throw new ArgumentNullException(nameof(signatureValidator));
+            _TekListWorkflowFilter = tekListWorkflowFilter ?? throw new ArgumentNullException(nameof(tekListWorkflowFilter));
         }
 
         public async Task<IActionResult> Execute(byte[] signature, HttpRequest request)
@@ -111,18 +111,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 return;
             }
 
-            if (_Logger.LogValidationMessages(_NewTeksValidator.Validate(teks, workflow)))
+            var filterResults = _TekListWorkflowFilter.Validate(teks, workflow);
+            _Logger.LogValidationMessages(filterResults.Messages);
+
+            if (filterResults.Items.Length == 0)
+            {
+                _Logger.LogInformation("No teks survived the workflow filter.");
                 return;
+            }
 
             _Logger.LogDebug("Writing.");
             var writeArgs = new TekWriteArgs
             {
                 WorkflowStateEntityEntity = workflow,
-                NewItems = teks
+                NewItems = filterResults.Items
             };
             await _Writer.Execute(writeArgs);
             _DbContextProvider.SaveAndCommit();
             _Logger.LogDebug("Committed.");
+
+            if (filterResults.Items.Length != 0)
+            {
+                _Logger.LogInformation($"Teks added - Count:{filterResults.Items.Length}.");
+            }
         }
     }
 }

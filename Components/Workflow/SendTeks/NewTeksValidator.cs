@@ -8,6 +8,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Authoris
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
+    [Obsolete("Use filter approach.")]
     public class NewTeksValidator : INewTeksValidator
     {
         private readonly IGeanTekListValidationConfig _Config;
@@ -25,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             if (workflow.ValidUntil.AddMinutes(_Config.GracePeriodMinutes) <= _DateTimeProvider.Now())
                 return new[] { "Key upload window has expired." };
 
-            var lastExistingTekEnd = workflow.Keys.OrderBy(x => x.RollingStartNumber).LastOrDefault()?.MapToTek()?.End ?? 0;
+            var lastExistingTekEnd = workflow.Teks.OrderBy(x => x.RollingStartNumber).LastOrDefault()?.MapToTek()?.End ?? 0;
             var firstNewTek = newKeys.OrderBy(x => x.RollingStartNumber).First();
             if (lastExistingTekEnd >= firstNewTek.RollingStartNumber)
                 return new[] { "First new TEK overlaps with last, previously-existing TEK." };

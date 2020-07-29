@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         public async Task<LabVerifyAuthorisationResponse> Execute(LabVerifyArgs args)
         {
             var wf = await _DbContextProvider.KeyReleaseWorkflowStates
-                .Include(x => x.Keys)
+                .Include(x => x.Teks)
                 .FirstOrDefaultAsync(state =>
                     state.PollToken == args.PollToken);
 
@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
             _Logger.LogInformation($"Committed - new PollToken:{wf.PollToken}.");
             return new LabVerifyAuthorisationResponse
-                {PollToken = refreshedToken, Valid = wf.Keys?.Any() ?? false};
+                {PollToken = refreshedToken, Valid = wf.Teks?.Any() ?? false};
         }
     }
 }

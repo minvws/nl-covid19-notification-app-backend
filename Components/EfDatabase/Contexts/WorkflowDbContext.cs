@@ -22,24 +22,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
             if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
 
-            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.BucketId) /*.IsUnique()*/; //TODO genteks... 
+            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.BucketId)/*.IsUnique()*/; //TODO genteks... 
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.ConfirmationKey)/*.IsUnique()*/; //TODO genteks... 
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.LabConfirmationId)/*.IsUnique()*/; //TODO genteks... 
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.PollToken)/*.IsUnique()*/; //TODO genteks... 
 
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.ValidUntil);
-            //modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.Authorised);
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.AuthorisedByCaregiver);
 
             //TODO ensure cleanup jobs check the Published column of the Teks before deleting.
             modelBuilder
                 .Entity<TekReleaseWorkflowStateEntity>()
-                .HasMany(x => x.Keys)
+                .HasMany(x => x.Teks)
                 .WithOne(x => x.Owner)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<TekEntity>().HasIndex(u => u.PublishingState);
+            modelBuilder.Entity<TekEntity>().HasIndex(u => u.PublishAfter);
             modelBuilder.Entity<TekEntity>().HasIndex(u => u.Region);
         }
     }

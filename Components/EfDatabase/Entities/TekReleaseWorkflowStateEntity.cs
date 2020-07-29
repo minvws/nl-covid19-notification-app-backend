@@ -4,18 +4,26 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 {
+    [Table("TekReleaseWorkflowState")]
     public class TekReleaseWorkflowStateEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public DateTime Created { get; set; }
         public DateTime ValidUntil { get; set; }
+
+        [MinLength(6), MaxLength(6)]
         public string? LabConfirmationId { get; set; }
+        
+        [MinLength(32), MaxLength(32)]
         public byte[] ConfirmationKey { get; set; }
+
+        [MinLength(32), MaxLength(32)]
         public byte[] BucketId { get; set; }
 
         //public bool CanPublish { get; set; } // == Has Keys + AuthorisedByCaregiver != null
@@ -35,8 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         /// </summary>
         public string? PollToken { get; set; }
 
-        public virtual ICollection<TekEntity> Keys { get; set; } = new List<TekEntity>();
+        public virtual ICollection<TekEntity> Teks { get; set; } = new List<TekEntity>();
 
-        public DateTime? LabConfirmation { get; set; }
     }
 }

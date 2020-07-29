@@ -10,11 +10,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
     {
         public Results(T[] valid, string[] messages)
         {
-            Valid = valid ?? throw new ArgumentNullException(nameof(valid));
+            Items = valid ?? throw new ArgumentNullException(nameof(valid));
             Messages = messages ?? throw new ArgumentNullException(nameof(messages));
         }
 
-        public T[] Valid { get; }
+        public T[] Items { get; }
         public string[] Messages { get; }
     }
 }
