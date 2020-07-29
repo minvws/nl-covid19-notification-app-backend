@@ -1,0 +1,50 @@
+@using NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat
+@using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
+@model object
+
+@{
+    ViewBag.Title = "Data View";
+    Layout = "_Layout";
+}
+
+<h2>TEKS</h2>
+<p>Viewing all tekst currently available in the TemporaryExporeKeysTable</p>
+<table>
+    <tr>
+        <td>Id</td>
+        <td>Owner</td>
+        <td>RollingPeriod</td>
+    </tr>
+    @foreach (var tek in (List<TemporaryExposureKeyEntity>) ViewData["teks"])
+    {
+        <tr>
+            <td>@tek.Id.ToString()</td>
+            <td>@tek.Owner.Id.ToString()</td>
+            <td>@tek.RollingPeriod.ToString()</td>
+        </tr>
+    }
+</table>
+<br>/br>
+
+<h2>Workflows</h2>
+<p>Viewing all workflows currently available in the KeyReleaseWorkflowState Table</p>
+<table>
+    <tr>
+        <th>Id</th>
+        <th>Authorised</th>
+        <th>BucketId</th>
+    </tr>
+    @foreach (var tek in (List<KeyReleaseWorkflowState>) ViewData["wf"])
+    {
+        <tr>
+            <td>@tek.Id.ToString()</td>
+            <td>@tek.Authorised.ToString()</td>
+            <td>
+                @if (tek.BucketId != null)
+                {
+                    @tek.BucketId.ToString()
+                }
+            </td>
+        </tr>
+    }
+</table>

@@ -2,14 +2,17 @@
 
 @{
     ViewBag.Title = "Content Index";
+    ViewData["dateNow"] = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ");
     Layout = "_Layout";
 }
 
 <h2>Content</h2>
 
-<form action="" method="post">
-    <textarea name="content" id="" cols="60" rows="20" value="{}" placeholder="{}">{}</textarea>
+<form action="/content" method="post">
+    <input type="text" name="release" value="@ViewData["dateNow"]"><br/>
+    <input name="contentType" placeholder="contentType"/><br/>
+    <textarea name="json" id="" cols="60" rows="20" value="{}" placeholder="{}">{}</textarea>
     <br>
-    
+
     <button class="btn btn-primary w-100" type="submit">Submit</button>
 </form>

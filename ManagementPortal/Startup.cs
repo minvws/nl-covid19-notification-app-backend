@@ -9,21 +9,36 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ManagementPortal;
 
 namespace ManagementPortal
 {
     public class Startup
     {
+        private readonly IConfiguration _Configuration;
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Database Scoping
+            services.AddScoped(x =>
+            {
+                var config = new StandardEfDbConfig(_Configuration, "WorkFlow");
+                var builder = new SqlServerDbContextOptionsBuilder(config);
+                var result = new WorkflowDbContext(builder.Build());
+                result.BeginTransaction();
+                return result;
+            });
+            services.AddScoped<HttpGetTEKsCommand>();
+            services.AddScoped<HttpGetWorkflowStatesCommand>();
+
             services.AddControllersWithViews();
         }
 
