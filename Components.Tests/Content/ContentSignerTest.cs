@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
         public void Build(int length)
         {
             var lf = new LoggerFactory();
-            var signer = new CmsSigner(new LocalResourceCertificateProvider(new HardCodedCertificateLocationConfig("FakeRSA.p12", "Covid19!"), lf.CreateLogger<LocalResourceCertificateProvider>())); //Not a secret.
+            var signer = new CmsSignerWithEmbeddedRootCerts(new LocalResourceCertificateProvider(new HardCodedCertificateLocationConfig("FakeRSA.p12", "Covid19!"), lf.CreateLogger<LocalResourceCertificateProvider>())); //Not a secret.
             var content = Encoding.UTF8.GetBytes(CreateString(length));
             //TODO must have an Assert.IsTrue(signature.Length == signer.LengthBytes);
         }

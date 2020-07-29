@@ -58,15 +58,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             if (configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", false))
             {
                 if (configuration.GetValue("DevelopmentFlags:Azure", false))
-                    services.AddTransient<IContentSigner>(x => new CmsSigner(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
+                    services.AddTransient<IContentSigner>(x => new CmsSignerWithEmbeddedRootCerts(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
                 else
-                    services.AddTransient<IContentSigner>(x => new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())));
+                    services.AddTransient<IContentSigner>(x => new CmsSignerWithEmbeddedRootCerts(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())));
             }
             else
             {
+                //services.AddTransient<IContentSigner>(x
+                //    => new CmsSignerWithEmbeddedRootCerts(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"),
+                //        x.GetRequiredService<ILogger<X509CertificateProvider>>())));
+
                 services.AddTransient<IContentSigner>(x
-                    => new CmsSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"),
-                        x.GetRequiredService<ILogger<X509CertificateProvider>>())));
+                    => new CmsSignerEnhanced(
+                        new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>()),
+                        new EmbeddedResourcesCertificateChainProvider(new EmbeddedResourcePathConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL:Chain")),
+                        x.GetRequiredService<IUtcDateTimeProvider>()
+                        ));
             }
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
             services.AddSingleton<IGaenContentConfig, StandardGaenContentConfig>();

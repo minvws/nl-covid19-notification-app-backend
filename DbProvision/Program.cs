@@ -79,17 +79,17 @@ namespace DbProvision
                 if (configuration.GetValue("DevelopmentFlags:Azure", false))
                 {
                     //AZURE
-                    services.AddScoped<IContentSigner>(x => new CmsSigner(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
+                    services.AddScoped<IContentSigner>(x => new CmsSignerWithEmbeddedRootCerts(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
                 }
                 else
                 {
                     //UNIT TESTS, LOCAL DEBUG
-                    services.AddScoped<IContentSigner>(x => new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())));
+                    services.AddScoped<IContentSigner>(x => new CmsSignerWithEmbeddedRootCerts(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())));
                 }
             }
             else
             {
-                services.AddScoped<IContentSigner>(x => new CmsSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>())));
+                services.AddScoped<IContentSigner>(x => new CmsSignerWithEmbeddedRootCerts(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>())));
             }
         }
     }

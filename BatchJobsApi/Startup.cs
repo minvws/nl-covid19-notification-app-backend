@@ -94,13 +94,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
                         new ExposureKeySetBuilderV1(
                             x.GetRequiredService<IExposureKeySetHeaderInfoConfig>(),
                             new EcdSaSigner(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:GA"))),
-                            new CmsSigner(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"))),
+                            new CmsSignerWithEmbeddedRootCerts(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"))),
                             x.GetRequiredService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
                             new GeneratedProtobufContentFormatter(),
                             x.GetRequiredService<ILogger<ExposureKeySetBuilderV1>>()
                         ));
 
-                    services.AddScoped<IContentSigner>(x => new CmsSigner(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"))));
+                    services.AddScoped<IContentSigner>(x => new CmsSignerWithEmbeddedRootCerts(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"))));
                 }
                 else
                 {
@@ -110,13 +110,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
                         new ExposureKeySetBuilderV1(
                             x.GetRequiredService<IExposureKeySetHeaderInfoConfig>(),
                             new EcdSaSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), "Certificates:GA"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())),
-                            new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())),
+                            new CmsSignerWithEmbeddedRootCerts(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())),
                             x.GetRequiredService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
                             new GeneratedProtobufContentFormatter(),
                             x.GetRequiredService<ILogger<ExposureKeySetBuilderV1>>()
                         ));
 
-                    services.AddScoped<IContentSigner>(x => new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())));
+                    services.AddScoped<IContentSigner>(x => new CmsSignerWithEmbeddedRootCerts(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())));
                 }
             }
             else
@@ -126,13 +126,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
                     new ExposureKeySetBuilderV1(
                         x.GetRequiredService<IExposureKeySetHeaderInfoConfig>(),
                         new EcdSaSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:GA"), x.GetRequiredService<ILogger<X509CertificateProvider>>())),
-                        new CmsSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>())),
+                        new CmsSignerWithEmbeddedRootCerts(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>())),
                         x.GetRequiredService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
                         new GeneratedProtobufContentFormatter(),
                         x.GetRequiredService<ILogger<ExposureKeySetBuilderV1>>()
                     ));
 
-                services.AddScoped<IContentSigner>(x => new CmsSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>())));
+                services.AddScoped<IContentSigner>(x => new CmsSignerWithEmbeddedRootCerts(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>())));
             }
 
             services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();

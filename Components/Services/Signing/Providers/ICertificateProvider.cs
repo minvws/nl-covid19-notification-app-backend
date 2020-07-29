@@ -10,4 +10,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
     {
         X509Certificate2 GetCertificate();
     }
+
+    public interface ICertificateChainProvider
+    {
+        X509Certificate2[] GetCertificates();
+    }
 }
