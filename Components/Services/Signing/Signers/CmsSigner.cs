@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers
@@ -63,7 +64,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             var signedCms = new SignedCms(contentInfo, true);
             var signer = new System.Security.Cryptography.Pkcs.CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, certificate);
             signedCms.Certificates.AddRange(chain);
-            signedCms.ComputeSignature(signer);
+
+            try
+            {
+                signedCms.ComputeSignature(signer);
+            }
+            catch (Exception e)
+            {
+                //NB. Cannot catch the internal exception type (cross-platform design of .NET Core)
+                if (e.GetType().Name == "WindowsCryptographicException" && e.Message == "Keyset does not exist" && !WindowsIdentityStuff.CurrentUserIsAdministrator())
+                {
+                    throw new InvalidOperationException("Failed to use certificate when current user does not have UAC elevated permissions.");
+                }
+
+                throw;
+            }
 
             return signedCms.Encode();
         }

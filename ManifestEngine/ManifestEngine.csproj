@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy $(ProjectDir)appsettings.*.json $(OutDir) /Y" />
+    <Exec Command="xcopy $(ProjectDir)appsettings*.json $(OutDir) /Y" />
   </Target>
 
   <ItemGroup>

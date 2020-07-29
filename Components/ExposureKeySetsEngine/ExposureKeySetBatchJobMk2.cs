@@ -14,6 +14,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
@@ -67,6 +68,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 throw new ObjectDisposedException(_JobName);
 
             _Logger.LogInformation($"{_JobName} started - useAllKeys:{useAllKeys}");
+
+            if (!WindowsIdentityStuff.CurrentUserIsAdministrator())
+                _Logger.LogWarning($"{_JobName} started WITHOUT elevated privileges - errors may occur when signing content.");
 
             _WorkflowDbContext.EnsureNoChangesOrTransaction();
             _PublishingDbContext.EnsureNoChangesOrTransaction();
