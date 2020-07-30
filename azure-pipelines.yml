@@ -38,7 +38,7 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Database Artifact:'
   inputs:
-    ArtifactName: 'MSS-nl-covid19-notification-app-database'
+    ArtifactName: 'Database'
 
 - task: NuGetCommand@2
   inputs:
@@ -80,5 +80,5 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
-    ArtifactName: 'drop'
+    ArtifactName: 'Backend'
     publishLocation: 'Container'
