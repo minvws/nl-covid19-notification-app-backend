@@ -178,7 +178,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 app.UseDeveloperExceptionPage();
             }
 
-            // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseSerilogRequestLogging();
 
