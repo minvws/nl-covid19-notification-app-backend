@@ -32,7 +32,7 @@ steps:
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)'
     Contents: '**\*.dacpac'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\Artifacts'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Database'
     flattenFolders: true
 
 - task: PublishBuildArtifacts@1
