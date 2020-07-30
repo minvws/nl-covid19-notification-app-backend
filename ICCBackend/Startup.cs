@@ -22,6 +22,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Register
 using NL.Rijksoverheid.ExposureNotification.IccBackend.Authorization;
 using System;
 using System.IO;
+using Microsoft.AspNetCore.HttpOverrides;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using TheIdentityHub.AspNetCore.Authentication;
@@ -45,7 +46,12 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
-
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
+            
             IIccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration, "IccPortalConfig");
             
             services.AddSingleton(iccPortalConfig);
@@ -158,7 +164,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         {
             if (app == null) throw new ArgumentNullException(nameof(app));
             if (env == null) throw new ArgumentNullException(nameof(env));
-
+            
+            app.UseForwardedHeaders();
+            
             app.UseCors(options => 
                 options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS
             
@@ -170,7 +178,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseSerilogRequestLogging();
 
