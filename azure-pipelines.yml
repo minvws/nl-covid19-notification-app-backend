@@ -31,7 +31,6 @@ steps:
   displayName: 'Publish Database Artifact:'
   inputs:
     ArtifactName: 'database'
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts\'
 
 - task: NuGetCommand@2
   inputs:
