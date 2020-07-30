@@ -27,18 +27,6 @@ steps:
     configuration: '$(BuildConfiguration)'
     maximumCpuCount: true
 
-- task: CopyFiles@2
-  displayName: 'Copy DacPac Files to: $(Build.ArtifactStagingDirectory)'
-  inputs:
-    SourceFolder: '$(Build.SourcesDirectory)'
-    Contents: '**\*.dacpac'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    flattenFolders: true
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Database Artifact:'
-  inputs:
-    ArtifactName: 'Database'
 
 - task: NuGetCommand@2
   inputs:
@@ -80,5 +68,5 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
-    ArtifactName: 'Backend'
+    ArtifactName: 'drop'
     publishLocation: 'Container'
