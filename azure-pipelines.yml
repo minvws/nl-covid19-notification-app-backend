@@ -22,6 +22,7 @@ steps:
   inputs:
     vsVersion: 16.0
     solution: '**\*.sqlproj'
+    solution: '**\*.sln'
     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactstagingdirectory)\Database" /P:PackageTempRootDir="" /p:AutoParameterizationWebConfigConnectionStrings=False'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
@@ -31,7 +32,7 @@ steps:
   displayName: 'Copy DacPac Files to: $(Build.ArtifactStagingDirectory)'
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)'
-    Contents: '**\*'
+    Contents: '**\*.dacpac'
     TargetFolder: '$(Build.ArtifactStagingDirectory)\Database'
     flattenFolders: true
 
