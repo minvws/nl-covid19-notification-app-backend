@@ -19,6 +19,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 {
@@ -102,6 +103,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
             if (!env.IsDevelopment())
                 app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
+
+            app.UseSerilogRequestLogging();
 
             app.UseRouting();
 

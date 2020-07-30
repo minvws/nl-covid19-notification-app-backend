@@ -12,9 +12,9 @@ using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
 {
@@ -32,8 +32,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
         public void ConfigureServices(IServiceCollection services)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
-
-            services.AddLogging();
 
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
 
@@ -79,6 +77,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
                 app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
             }
 
+            app.UseSerilogRequestLogging();
+            
             app.UseRouting();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

@@ -24,9 +24,9 @@ using System;
 using System.IO;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
-using NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers;
 using TheIdentityHub.AspNetCore.Authentication;
 using IJsonSerializer = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping.IJsonSerializer;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
@@ -43,7 +43,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
-            services.AddLogging();
             services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
@@ -74,17 +73,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<HttpGetLogoutCommand>();
             services.AddScoped<HttpGetUserClaimCommand>();
             services.AddScoped<HttpGetAuthorisationRedirectCommand>();
-            
-            services.AddMvc(config =>
-            {
-                config.EnableEndpointRouting = false;
-                var policy = new AuthorizationPolicyBuilder()
-                    .AddAuthenticationSchemes(TheIdentityHubDefaults.AuthenticationScheme)
-                    .RequireAuthenticatedUser()
-                    .Build();
-                config.Filters.Add(new AuthorizeFilter(policy));
-                // .RequireClaim(ClaimTypes.Role) //TODO still needed or dead line?
-            });
 
             services.AddCors();
 
@@ -183,6 +171,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             }
 
             app.UseHttpsRedirection();
+
+            app.UseSerilogRequestLogging();
 
             app.UseRouting();
 

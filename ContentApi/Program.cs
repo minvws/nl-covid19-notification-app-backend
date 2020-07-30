@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
 {
@@ -16,6 +17,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UseSerilog((context, config) => {
+                    config.ReadFrom.Configuration(context.Configuration);
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

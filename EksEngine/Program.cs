@@ -17,6 +17,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 {
@@ -38,7 +39,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
         {
             var _Configuration = configuration; //Temp hack before extension method.
 
-            services.AddLogging();
+            services.AddLogging(builder =>
+            {
+              builder.AddSerilog(logger: new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger(), dispose: true);
+            });
 
             services.AddScoped(x =>
             {

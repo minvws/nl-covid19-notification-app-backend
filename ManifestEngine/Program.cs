@@ -18,6 +18,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
 {
@@ -35,7 +36,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddLogging();
+            services.AddLogging(builder =>
+            {
+              builder.AddSerilog(logger: new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger(), dispose: true);
+            });
+            
             services.AddSingleton<IConfiguration>(configuration);
             services.AddTransient<ManifestBatchJob>();
             services.AddTransient<ManifestBuilderAndFormatter>();
