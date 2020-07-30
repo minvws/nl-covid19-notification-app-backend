@@ -27,6 +27,11 @@ steps:
     configuration: '$(BuildConfiguration)'
     maximumCpuCount: true
 
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Database Artifact:'
+  inputs:
+    ArtifactName: 'drop'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts\DacPac'
 
 - task: NuGetCommand@2
   inputs:
