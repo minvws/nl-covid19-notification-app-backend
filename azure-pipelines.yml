@@ -30,8 +30,8 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Database Artifact:'
   inputs:
-    ArtifactName: 'drop'
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts\DacPac'
+    ArtifactName: 'database'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts\'
 
 - task: NuGetCommand@2
   inputs:
