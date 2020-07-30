@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             var certList = new List<X509Certificate2>();
 
             var a = System.Reflection.Assembly.GetExecutingAssembly();
-            using var s = a.GetManifestResourceStream("NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Resources.certs.p7b");
+            using var s = a.GetManifestResourceStream("NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Resources.BdCertChain.p7b");
 
             if (s == null)
             {
