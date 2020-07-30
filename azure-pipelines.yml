@@ -31,7 +31,7 @@ steps:
   displayName: 'Copy DacPac Files to: $(Build.ArtifactStagingDirectory)'
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)'
-    Contents: '**\*.dacpac'
+    Contents: '**\*'
     TargetFolder: '$(Build.ArtifactStagingDirectory)\Database'
     flattenFolders: true
 
