@@ -18,7 +18,7 @@ steps:
 - task: NuGetToolInstaller@1
 
 - task: MSBuild@1
-  displayName: 'Build solution **\*.sln'
+  displayName: 'Build solution **\*.sqlproj'
   inputs:
     vsVersion: 16.0
     solution: '**\*.sqlproj'
@@ -27,10 +27,18 @@ steps:
     configuration: '$(BuildConfiguration)'
     maximumCpuCount: true
 
+- task: CopyFiles@2
+  displayName: 'Copy DacPac Files to: $(Build.ArtifactStagingDirectory)'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: '**\*.dacpac'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Artifacts\Database'
+    flattenFolders: true
+
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Database Artifact:'
   inputs:
-    ArtifactName: 'database'
+    ArtifactName: 'drop'
 
 - task: NuGetCommand@2
   inputs:
