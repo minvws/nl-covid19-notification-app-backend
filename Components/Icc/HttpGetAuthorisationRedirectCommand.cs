@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
             if (httpContext == null)
                 throw new ArgumentNullException(nameof(httpContext));
                     
-            _Logger.LogInformation($"Executing Auth.Redirect on Host {httpContext.Request.Host.ToString()}");
+            _Logger.LogInformation("Executing Auth.Redirect on Host {CurrentHost}", httpContext.Request.Host.ToString());
             var jwtToken = _JwtService.Generate(httpContext.User);
 
             // temporary claim payload redirect solution for demo purposes
