@@ -5,7 +5,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
@@ -41,5 +40,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
         {
             await command.Execute(HttpContext, ContentTypes.ExposureKeySet, id);
         }
+
+        [HttpGet]
+        [Route("/")]
+        public IActionResult AssemblyDump() => new DumpAssembliesToPlainText().Execute();
+
     }
 }
