@@ -27,6 +27,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using TheIdentityHub.AspNetCore.Authentication;
 using IJsonSerializer = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping.IJsonSerializer;
 using Serilog;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
@@ -41,6 +42,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            IHostingEnvironment env = serviceProvider.GetService<IHostingEnvironment>();
+            
             if (services == null) throw new ArgumentNullException(nameof(services));
 
             services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
@@ -48,7 +52,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+                options.ForwardLimit = 5;
+                options.ForwardedHostHeaderName = "X-FORWARDED-HOST";
             });
             
             IIccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration, "IccPortalConfig");
@@ -136,6 +142,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                         options.TheIdentityHubUrl = new Uri(iccPortalConfig.IdentityHubConfig.BaseUrl);
                     }
 
+                    if(!env.IsDevelopment()) options.CallbackPath = "/iccauth/signin-identityhub";
                     //TODO if the Url is not set is there any sense to setting these?
                     options.Tenant = iccPortalConfig.IdentityHubConfig.Tenant;
                     options.ClientId = iccPortalConfig.IdentityHubConfig.ClientId;

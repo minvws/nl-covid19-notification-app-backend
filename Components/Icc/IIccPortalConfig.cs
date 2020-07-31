@@ -11,7 +11,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         string FrontendBaseUrl { get; }
         string JwtSecret { get; }
         double ClaimLifetimeHours { get; }
-        
-        
+
     }
 }
