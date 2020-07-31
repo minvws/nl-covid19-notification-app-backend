@@ -28,3 +28,4 @@ REM dotnet publish ServerStandAlone\ServerStandAlone.csproj --no-self-contained 
 
 @echo on
 
+IF %ERRORLEVEL% NEQ 0 EXIT 1
