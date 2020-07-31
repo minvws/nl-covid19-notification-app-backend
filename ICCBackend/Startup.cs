@@ -39,26 +39,26 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         }
 
         private readonly IConfiguration _Configuration;
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
-            IHostingEnvironment env = serviceProvider.GetService<IHostingEnvironment>();
-            
-            if (services == null) throw new ArgumentNullException(nameof(services));
-
-            services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
-            services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
-                options.ForwardLimit = 5;
-                options.ForwardedHostHeaderName = "X-FORWARDED-HOST";
             });
-            
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            IHostingEnvironment env = serviceProvider.GetService<IHostingEnvironment>();
+
+            if (services == null) throw new ArgumentNullException(nameof(services));
+
+            services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
+            services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
+
             IIccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration, "IccPortalConfig");
-            
+
             services.AddSingleton(iccPortalConfig);
 
             // Database Scoping
@@ -93,7 +93,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 {
                     Title = "Dutch Exposure Notification ICC API (inc. dev support)",
                     Version = "v1",
-                    Description = "This specification describes the interface between the Dutch exposure notification app backend, ICC Webportal and the ICC backend service.",
+                    Description =
+                        "This specification describes the interface between the Dutch exposure notification app backend, ICC Webportal and the ICC backend service.",
                     Contact = new OpenApiContact
                     {
                         Name = "Ministerie van Volksgezondheid Welzijn en Sport backend repository", //TODO looks wrong?
@@ -103,11 +104,12 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     {
                         Name = "European Union Public License v. 1.2",
                         //TODO this should be https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
-                        Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend/blob/master/LICENSE.txt")
+                        Url = new Uri(
+                            "https://github.com/minvws/nl-covid19-notification-app-backend/blob/master/LICENSE.txt")
                     },
-
                 });
-                o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml"));
+                o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
+                    "NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml"));
                 o.AddSecurityDefinition("Icc", new OpenApiSecurityScheme
                 {
                     Description = "Icc Code Authentication",
@@ -117,7 +119,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     Scheme = "IccAuthentication"
                 });
                 o.OperationFilter<SecurityRequirementsOperationFilter>();
-
             });
 
             services.Configure<CookiePolicyOptions>(options =>
@@ -129,7 +130,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             // TODO: Make service for adding authentication + configuration model
             services
-                .AddAuthentication(auth => {
+                .AddAuthentication(auth =>
+                {
                     auth.DefaultChallengeScheme = TheIdentityHubDefaults.AuthenticationScheme;
                     auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -141,14 +143,18 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     {
                         options.TheIdentityHubUrl = new Uri(iccPortalConfig.IdentityHubConfig.BaseUrl);
                     }
+                    else
+                    {
+                        options.TheIdentityHubUrl = new Uri("https://login.ggdghor.nl/");
+                    }
 
-                    if(!env.IsDevelopment()) options.CallbackPath = "/iccauth/signin-identityhub";
-                    //TODO if the Url is not set is there any sense to setting these?
+                    if (!env.IsDevelopment()) options.CallbackPath = "/signin-theidentityhub";
+                    
                     options.Tenant = iccPortalConfig.IdentityHubConfig.Tenant;
                     options.ClientId = iccPortalConfig.IdentityHubConfig.ClientId;
                     options.ClientSecret = iccPortalConfig.IdentityHubConfig.ClientSecret;
                 });
-            
+
             services.AddMvc(config =>
             {
                 config.EnableEndpointRouting = false;
@@ -165,19 +171,37 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 .AddScheme<AuthenticationSchemeOptions, StandardJwtAuthenticationHandler>("jwt", null);
         }
 
-        
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseForwardedHeaders();
+
             if (app == null) throw new ArgumentNullException(nameof(app));
             if (env == null) throw new ArgumentNullException(nameof(env));
-            
-            app.UseForwardedHeaders();
-            
-            app.UseCors(options => 
-                options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS
-            
+
+
+            app.UseCors(options =>
+                options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS asap
+
             app.UseSwagger();
             app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", "GGD Portal Backend V1"); });
+
+
+            app.Use( (context, next) =>
+            {
+                if (context.Request.Headers.TryGetValue("X-Forwarded-Proto", out var protoHeaderValue))
+                {
+                    context.Request.Scheme = protoHeaderValue;
+                }
+                
+                if (context.Request.Headers.TryGetValue("X-FORWARDED-HOST", out var hostHeaderValue))
+                {
+                    context.Request.Host = new HostString(hostHeaderValue);
+                }
+
+                return next();
+            });
+
 
             if (env.IsDevelopment())
             {
