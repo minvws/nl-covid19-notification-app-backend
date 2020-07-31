@@ -50,6 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             {
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                options.ForwardLimit = 5;
             });
             
             IIccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration, "IccPortalConfig");
