@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.Controllers
         public async Task<IActionResult> NakeAndPaveDb([FromServices] ProvisionDatabasesCommand command)
         {
             _Logger.LogInformation("Provision Databases triggered.");
-            await command.Execute();
+            await command.Execute(new string[0]);
             return new OkResult();
         }
     }

@@ -44,7 +44,6 @@
 		<None Remove="Resources\TestRSA.p12" />
 	</ItemGroup>
 	<ItemGroup>
-		<EmbeddedResource Include="Resources\ResourceBundleDefaults.json" />
 		<EmbeddedResource Include="Resources\AppConfigDefaults.json" />
 		<EmbeddedResource Include="Resources\RiskCalcDefaults.json" />
 		<EmbeddedResource Include="Resources\BdCertChain.p7b" />

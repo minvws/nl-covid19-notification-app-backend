@@ -22,10 +22,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
             if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
 
-            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.BucketId)/*.IsUnique()*/; //TODO genteks... 
-            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.ConfirmationKey)/*.IsUnique()*/; //TODO genteks... 
-            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.LabConfirmationId)/*.IsUnique()*/; //TODO genteks... 
-            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.PollToken)/*.IsUnique()*/; //TODO genteks... 
+            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.BucketId).IsUnique();
+            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.ConfirmationKey).IsUnique();
+            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.LabConfirmationId).IsUnique();
+            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.PollToken).IsUnique();
 
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.ValidUntil);
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.AuthorisedByCaregiver);

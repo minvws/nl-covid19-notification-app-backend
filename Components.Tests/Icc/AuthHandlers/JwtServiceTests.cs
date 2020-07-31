@@ -10,36 +10,38 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.AuthHandlers
 {
-    [TestClass]
-    public class JwtServiceTests
-    {
-        private JwtService _JwtService;
-        private double claimLifetimeHours = 3;
-        private IUtcDateTimeProvider _utcDateTimeProvider;
+    //TODO finish or remove
 
-        [TestInitialize]
-        public void Initialize()
-        {
-            var lf = new TestLogger<JwtService>();
-            _utcDateTimeProvider = new StandardUtcDateTimeProvider();
-            _JwtService =
-                new JwtService(
-                    new HardCodedIccPortalConfig(null, "http://test.test", "test_secret123", claimLifetimeHours),
-                    _utcDateTimeProvider, logger: lf);
-        }
+    //[TestClass]
+    //public class JwtServiceTests
+    //{
+    //    private JwtService _JwtService;
+    //    private double claimLifetimeHours = 3;
+    //    private IUtcDateTimeProvider _utcDateTimeProvider;
+
+    //    [TestInitialize]
+    //    public void Initialize()
+    //    {
+    //        var lf = new TestLogger<JwtService>();
+    //        _utcDateTimeProvider = new StandardUtcDateTimeProvider();
+    //        _JwtService =
+    //            new JwtService(
+    //                new HardCodedIccPortalConfig(null, "http://test.test", "test_secret123", claimLifetimeHours),
+    //                _utcDateTimeProvider, logger: lf);
+    //    }
         
-        // Test Custom generate method
-        // - exp values -1 -- max. time
-        // - claims empty and filled with different types
-        // - is exp handled valid?
+    //    // Test Custom generate method
+    //    // - exp values -1 -- max. time
+    //    // - claims empty and filled with different types
+    //    // - is exp handled valid?
         
-        // Test Default Claimbased Generate method
-        // - can handle empty claims?
-        // - is exp claimlifetimehours valid?
-        // 
+    //    // Test Default Claimbased Generate method
+    //    // - can handle empty claims?
+    //    // - is exp claimlifetimehours valid?
+    //    // 
         
         
-        // TryDecode
-        // Check PollToken validation
-    }
+    //    // TryDecode
+    //    // Check PollToken validation
+    //}
 }

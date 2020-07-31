@@ -22,9 +22,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             _Provider = new WorkflowDbContext(builder.Build());
         }
 
-        public async Task Execute()
+        public async Task Execute(bool nuke)
         {
-            await _Provider.Database.EnsureDeletedAsync();
+            if (nuke) await _Provider.Database.EnsureDeletedAsync();
             await _Provider.Database.EnsureCreatedAsync();
         }
 
@@ -50,10 +50,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
                 PublishingState = PublishingState.Unpublished,
                 RollingPeriod = 1,
                 RollingStartNumber = 1,
-                KeyData = new byte[16],
                 Region = "NL"
             };
-
             r.NextBytes(key1.KeyData);
 
             var key2 = new TekEntity
@@ -62,11 +60,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
                 PublishingState = PublishingState.Unpublished,
                 RollingPeriod = 1,
                 RollingStartNumber = 1,
-                KeyData = new byte[16],
                 Region = "NL"
             };
-
-            r.NextBytes(key1.KeyData);
+            r.NextBytes(key2.KeyData);
 
             await _Provider.KeyReleaseWorkflowStates.AddAsync(wfs1);
             await _Provider.TemporaryExposureKeys.AddRangeAsync(key1, key2);

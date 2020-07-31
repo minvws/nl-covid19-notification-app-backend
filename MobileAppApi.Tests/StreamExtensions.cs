@@ -10,10 +10,10 @@ namespace MobileAppApi.Tests
     {
         public static byte[] ToArray(this Stream stream)
         {
-            if (stream is MemoryStream memStream)
-            {
-                return memStream.ToArray();
-            }
+            //if (stream is MemoryStream memStream)
+            //{
+            //    return memStream.ToArray();
+            //}
 
             using var ms = new MemoryStream();
             stream.CopyTo(ms);

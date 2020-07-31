@@ -6,6 +6,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 {
     public interface IWorkflowConfig
     {
-        //TODO
-    }
+        public int TimeToLiveMinutes { get; }
+        public int PermittedMobileDeviceClockErrorMinutes { get; }
+}
 }

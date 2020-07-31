@@ -12,19 +12,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
     [TestClass]
     public class AuthorisationArgsValidatorTests
     {
-        
-        [TestMethod]
-        public void Validate_checks_null(AuthorisationArgs args)
-        {
-            // Assemble
-            var validator = new AuthorisationArgsValidator();
+        //TODO finish this or remove.
+        //[TestMethod]
+        //public void Validate_checks_null(AuthorisationArgs args)
+        //{
+        //    // Assemble
+        //    var validator = new AuthorisationArgsValidator();
 
-            // Act
-            var result = validator.Validate(args);
+        //    // Act
+        //    var result = validator.Validate(args);
 
-            // Assert
-            Assert.IsFalse(result);
-        }
+        //    // Assert
+        //    Assert.IsFalse(result);
+        //}
 
         [DataRow("")]
         [DataRow(" ")]
