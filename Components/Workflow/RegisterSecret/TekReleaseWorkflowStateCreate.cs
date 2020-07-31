@@ -141,6 +141,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             return false;
         }
 
+        private bool CanRetry(DbUpdateException ex)
+        {
+            // TODO PROPER FIX
+            if (ex.InnerException != null)
+            {
+                if (ex.InnerException is SqlException sqlEx)
+                {
+                    return CanRetry(sqlEx);
+                }
+            }
+
+            return false;
+        }
+
 #if DEBUG
         private bool CanRetry(DbUpdateException ex)
         {
