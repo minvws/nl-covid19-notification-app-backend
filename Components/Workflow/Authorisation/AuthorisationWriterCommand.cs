@@ -48,8 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
             if (wf == null)
             {
-                var message = $"KeyReleaseWorkflowState not found - LabConfirmationId:{args.LabConfirmationId}.";
-                _Logger.LogError(message);
+                _Logger.LogError("KeyReleaseWorkflowState not found - LabConfirmationId:{LabConfirmationId}.", args.LabConfirmationId);
                 return new AuthorisationResponse {Valid = false};
             }
 
@@ -58,10 +57,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             wf.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
             wf.PollToken = _PollTokenService.GenerateToken();
 
-            _Logger.LogDebug($"Committing.");
+            _Logger.LogDebug("Committing.");
             _DbContextProvider.SaveAndCommit();
 
-            _Logger.LogInformation($"Committed - new PollToken:{wf.PollToken}.");
+            _Logger.LogInformation("Committed - new PollToken:{PollToken}.", wf.PollToken);
             return new AuthorisationResponse {Valid = true, PollToken = wf.PollToken};
         }
     }

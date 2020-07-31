@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IContentFormatter _ContentFormatter;
         private readonly IExposureKeySetHeaderInfoConfig _Config;
-        private readonly ILogger<ExposureKeySetBuilderV1> _Logger;
+        private readonly ILogger _Logger;
 
         public ExposureKeySetBuilderV1(
             IExposureKeySetHeaderInfoConfig headerInfoConfig,
@@ -70,8 +70,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             var nlSig = _NlContentSigner.GetSignature(contentBytes);
             var gaenSig = _GaenContentSigner.GetSignature(contentBytes);
 
-            _Logger.LogDebug($"GAEN Sig: {Convert.ToBase64String(gaenSig)}.");
-            _Logger.LogDebug($"NL Sig: {Convert.ToBase64String(nlSig)}.");
+            _Logger.LogDebug("GAEN Sig: {Convert.ToBase64String(GaenSig)}.", gaenSig);
+            _Logger.LogDebug("NL Sig: {Convert.ToBase64String(NlSig)}.", nlSig);
 
             var signatures = new ExposureKeySetSignaturesContentArgs
             {

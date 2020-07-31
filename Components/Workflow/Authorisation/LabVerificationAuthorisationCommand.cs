@@ -35,17 +35,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
             if (wf == null)
             {
-                var message = $"KeyReleaseWorkflowState not found - PollToken:{args.PollToken}.";
-                _Logger.LogError(message);
+                _Logger.LogError("KeyReleaseWorkflowState not found - PollToken:{PollToken}.", args.PollToken);
                 return new LabVerifyAuthorisationResponse {Error = "Workflow not found.", Valid = false};
             }
 
             var refreshedToken = _PollTokenService.GenerateToken();
             wf.PollToken = refreshedToken;
-            _Logger.LogDebug($"Committing.");
+            _Logger.LogDebug("Committing.");
             _DbContextProvider.SaveAndCommit();
 
-            _Logger.LogInformation($"Committed - new PollToken:{wf.PollToken}.");
+            _Logger.LogInformation("Committed - new PollToken:{PollToken}.", wf.PollToken);
             return new LabVerifyAuthorisationResponse
                 {PollToken = refreshedToken, Valid = wf.Teks?.Any() ?? false};
         }

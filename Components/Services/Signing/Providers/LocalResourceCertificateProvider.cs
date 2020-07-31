@@ -27,13 +27,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
             var resName = $"NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Resources.{_Config.Path}";
 
-            _Logger.LogInformation($"Opening resource: {resName}");
+            _Logger.LogInformation("Opening resource: {ResName}", resName);
 
             using var s = GetStream(a, resName);
             if (s == null)
                 throw new InvalidOperationException("Could not find resource.");
 
-            _Logger.LogInformation($"Resource found.");
+            _Logger.LogInformation("Resource found.");
             var bytes = new byte[s.Length];
             s.Read(bytes, 0, bytes.Length);
             return new X509Certificate2(bytes, _Config.Password, X509KeyStorageFlags.Exportable);

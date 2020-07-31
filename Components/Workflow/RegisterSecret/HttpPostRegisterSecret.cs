@@ -49,6 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             }
             catch (Exception ex)
             {
+                //TODO: check if you want to use Serilog's Exception logging, or just use ToString
                 _Logger.LogError(ex.ToString());
                 return new OkObjectResult(new EnrollmentResponse { Validity = -1 });
             }
