@@ -49,7 +49,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+                options.ForwardLimit = 5;
             });
             
             IIccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration, "IccPortalConfig");
