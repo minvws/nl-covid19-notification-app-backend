@@ -72,8 +72,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
             });
 
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.AddSingleton<ITransmissionRiskLevelCalculation, TransmissionRiskLevelCalculationV1>();
+
             services.AddTransient(x =>
-                new ExposureKeySetBatchJobMk2(
+                new ExposureKeySetBatchJobMk3(
                     x.GetService<IGaenContentConfig>(),
                     x.GetService<IExposureKeySetBuilder>(),
                     x.GetService<WorkflowDbContext>(),
@@ -81,7 +83,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
                     x.GetService<ContentDbContext>(),
                     x.GetService<IUtcDateTimeProvider>(),
                     x.GetService<IPublishingId>(),
-                    x.GetService<ILogger<ExposureKeySetBatchJobMk2>>()
+                    x.GetService<ILogger<ExposureKeySetBatchJobMk3>>(),
+                    x.GetService<ITransmissionRiskLevelCalculation>()
                 ));
 
             if (_Configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", false))

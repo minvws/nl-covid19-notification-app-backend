@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             => new TemporaryExposureKey
             {
                 KeyData = ByteString.CopyFrom(arg.KeyData),
-                TransmissionRiskLevel = arg.TransmissionRiskLevel, //todo: fix
+                TransmissionRiskLevel = (int)arg.TransmissionRiskLevel,
                 RollingPeriod = arg.RollingPeriod,
                 RollingStartIntervalNumber = arg.RollingStartNumber,
                 //DaysSinceOnsetOfSymptoms = 0

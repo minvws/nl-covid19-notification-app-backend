@@ -22,6 +22,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         public byte[] KeyData { get; set; }
         public int RollingStartNumber { get; set; }
         public int RollingPeriod { get; set; }
-        public int TransmissionRiskLevel { get; set; }
+        public TransmissionRiskLevel TransmissionRiskLevel { get; set; }
     }
 }

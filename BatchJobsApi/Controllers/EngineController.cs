@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.Controllers
 
         [HttpPost]
         [Route("/v1/eksengine")]
-        public async Task<IActionResult> ExposureKeySets([FromQuery] bool useAllKeys, [FromServices] ExposureKeySetBatchJobMk2 command)
+        public async Task<IActionResult> ExposureKeySets([FromQuery] bool useAllKeys, [FromServices] ExposureKeySetBatchJobMk3 command)
         {
             _Logger.LogInformation("EKS Engine triggered.");
             await command.Execute(useAllKeys);

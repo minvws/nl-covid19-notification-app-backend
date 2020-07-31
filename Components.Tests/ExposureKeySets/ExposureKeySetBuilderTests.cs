@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -68,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                         KeyData = keyBuffer,
                         RollingStartNumber = workflowKeyValidatorConfig.RollingPeriodMin + j,
                         RollingPeriod = 11,
-                        TransmissionRiskLevel = 2
+                        TransmissionRiskLevel = TransmissionRiskLevel.Medium
                     });
                 }
                 result.AddRange(keys);
