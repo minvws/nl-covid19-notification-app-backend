@@ -129,33 +129,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             }
         }
 
-        private bool CanRetry(SqlException ex)
-        {
-            if (ex.Number == 2627)
-            {
-                //TODO check actual violated index is one of the 3
-
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool CanRetry(DbUpdateException ex)
-        {
-            // TODO PROPER FIX
-            if (ex.InnerException != null)
-            {
-                if (ex.InnerException is SqlException sqlEx)
-                {
-                    return CanRetry(sqlEx);
-                }
-            }
-
-            return false;
-        }
-
-#if DEBUG
         private bool CanRetry(DbUpdateException ex)
         {
             //E.g. Microsoft.Data.SqlClient.SqlException(0x80131904):
@@ -184,6 +157,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
                       || inner.Message.Contains($"TekReleaseWorkflowState.{nameof(TekReleaseWorkflowStateEntity.BucketId)}")
                   );
         }
-#endif
-    }
+   }
 }
