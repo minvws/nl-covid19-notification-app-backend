@@ -19,7 +19,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
-using NL.Rijksoverheid.ExposureNotification.IccBackend.Authorization;
 using System;
 using System.IO;
 using Microsoft.AspNetCore.HttpOverrides;

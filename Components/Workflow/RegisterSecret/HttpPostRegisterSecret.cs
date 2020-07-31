@@ -55,16 +55,4 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             }
         }
     }
-
-    public interface ILabConfirmationIdFormatter
-    {
-        string Format(string value);
-        string Parse(string value);
-    }
-
-    public class StandardLabConfirmationIdFormatter : ILabConfirmationIdFormatter
-    {
-        public string Format(string value) => $"{value.Substring(0, 3)}-{value.Substring(3, 3)}";
-        public string Parse(string value) => value.Replace("-", string.Empty).Substring(6);
-    }
 }

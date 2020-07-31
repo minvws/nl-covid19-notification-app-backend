@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 using TekWriteArgs = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.TekWriteArgs;

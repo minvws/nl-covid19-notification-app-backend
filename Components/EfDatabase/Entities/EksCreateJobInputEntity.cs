@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.ComponentModel.DataAnnotations.Schema;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities
 {
     [Table("EksCreateJobInput")]
     public class EksCreateJobInputEntity

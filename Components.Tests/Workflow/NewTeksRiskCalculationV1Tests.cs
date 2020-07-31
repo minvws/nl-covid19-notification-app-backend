@@ -6,8 +6,9 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks.Tests
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow
 {
     [TestClass()]
     public class NewTeksRiskCalculationV1Tests

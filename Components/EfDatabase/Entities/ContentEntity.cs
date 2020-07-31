@@ -6,7 +6,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities
 {
     [Table("Content")]
     public class ContentEntity

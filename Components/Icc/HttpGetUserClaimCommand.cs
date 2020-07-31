@@ -3,7 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {

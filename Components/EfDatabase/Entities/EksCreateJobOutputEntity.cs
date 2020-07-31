@@ -4,9 +4,8 @@
 
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities
 {
     /// <summary>
     /// TODO incomplete.

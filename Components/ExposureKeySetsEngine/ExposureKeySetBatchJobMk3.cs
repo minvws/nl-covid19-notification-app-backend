@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Framework;
@@ -21,41 +22,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
 {
-    public interface ITransmissionRiskLevelCalculation
-    {
-        TransmissionRiskLevel Calculate(int tekRollingPeriodNumber, DateTime dateOfSymptomsOnset);
-    }
-
-    public enum TransmissionRiskLevel
-    {
-        None = 6,
-        Low = 1,
-        Medium = 2,
-        High = 3,
-    }
-
-    public class TransmissionRiskLevelCalculationV1 : ITransmissionRiskLevelCalculation
-    {
-        public TransmissionRiskLevel Calculate(int tekRollingPeriodNumber, DateTime dateOfSymptomsOnset)
-        {
-            if (dateOfSymptomsOnset.Date != dateOfSymptomsOnset)
-                throw new ArgumentException("Not a date.", nameof( dateOfSymptomsOnset));
-
-            var daysSinceSymptomOnset =
-                Convert.ToInt32(Math.Floor((tekRollingPeriodNumber.FromRollingPeriodStart().Date - dateOfSymptomsOnset).TotalDays));
-
-            //Keys before date of onset
-            if (daysSinceSymptomOnset <= -4) return TransmissionRiskLevel.None;
-            if (daysSinceSymptomOnset <= -3) return TransmissionRiskLevel.Low;
-            if (daysSinceSymptomOnset <= -2) return TransmissionRiskLevel.Medium;
-            if (daysSinceSymptomOnset <= 2) return TransmissionRiskLevel.High;
-            if (daysSinceSymptomOnset <= 4) return TransmissionRiskLevel.Medium;
-            if (daysSinceSymptomOnset <= 11) return TransmissionRiskLevel.Low;
-            return TransmissionRiskLevel.None;
-            //Keys after date of onset
-        }
-    }
-
     /// <summary>
     /// Add database IO to the job
     /// </summary>
