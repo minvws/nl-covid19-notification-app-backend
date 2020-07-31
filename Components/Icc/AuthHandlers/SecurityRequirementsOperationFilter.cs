@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Authorization
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
     public class SecurityRequirementsOperationFilter : IOperationFilter
     {

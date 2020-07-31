@@ -20,18 +20,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 
         public int End => RollingStartNumber + RollingPeriod;
 
-        //public bool HasOverlap(Tek? other)
-        //{
-        //    if (other == null)
-        //        return false;
-
-        //    var thisRange = new {  Lo = RollingStartNumber,       Hi = RollingStartNumber + RollingPeriod};
-        //    var otherRange = new { Lo = other.RollingStartNumber, Hi = other.RollingStartNumber + other.RollingPeriod};
-
-        //    return (thisRange.Lo <= otherRange.Lo && otherRange.Lo <= thisRange.Hi)
-        //        || (otherRange.Lo <= thisRange.Hi && thisRange.Lo <= otherRange.Hi);
-        //}
-
         public string Region { get; set; } = DefaultValues.Region;
 
         public PublishingState PublishingState { get; set; } = PublishingState.Unpublished;

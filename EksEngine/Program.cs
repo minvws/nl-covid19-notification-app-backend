@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
         private static void Start(IServiceProvider serviceProvider, string[] args)
         {
             var useAllKeys = args.Length > 0 && bool.TryParse(args[0], out var value) && value;
-            using var job = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk2>();
+            using var job = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
             job.Execute(useAllKeys).GetAwaiter().GetResult();
         }
 
@@ -72,8 +72,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.AddSingleton<ITransmissionRiskLevelCalculation, TransmissionRiskLevelCalculationV1>();
+
             services.AddScoped(x =>
-                new ExposureKeySetBatchJobMk2(
+                new ExposureKeySetBatchJobMk3(
                     x.GetRequiredService<IGaenContentConfig>(),
                     x.GetRequiredService<IExposureKeySetBuilder>(),
                     x.GetRequiredService<WorkflowDbContext>(),
@@ -81,7 +83,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                     x.GetRequiredService<ContentDbContext>(),
                     x.GetRequiredService<IUtcDateTimeProvider>(),
                     x.GetRequiredService<IPublishingId>(),
-                    x.GetRequiredService<ILogger<ExposureKeySetBatchJobMk2>>()
+                    x.GetService<ILogger<ExposureKeySetBatchJobMk3>>(),
+                    x.GetService<ITransmissionRiskLevelCalculation>()
                 ));
 
             services.AddSingleton<IGaenContentConfig, StandardGaenContentConfig>();

@@ -1,4 +1,4 @@
-namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models
 {
     public class ClaimInfo
     {

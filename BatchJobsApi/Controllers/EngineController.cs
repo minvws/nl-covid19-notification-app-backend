@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.Controllers
 {
@@ -25,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.Controllers
 
         [HttpPost]
         [Route("/v1/eksengine")]
-        public async Task<IActionResult> ExposureKeySets([FromQuery] bool useAllKeys, [FromServices] ExposureKeySetBatchJobMk2 command)
+        public async Task<IActionResult> ExposureKeySets([FromQuery] bool useAllKeys, [FromServices] ExposureKeySetBatchJobMk3 command)
         {
             _Logger.LogInformation("EKS Engine triggered.");
             await command.Execute(useAllKeys);
@@ -49,5 +50,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.Controllers
             await command.Execute(new string[0]);
             return new OkResult();
         }
+
+        [HttpGet]
+        [Route("/")]
+        public IActionResult AssemblyDump() => new DumpAssembliesToPlainText().Execute();
+
     }
+
 }

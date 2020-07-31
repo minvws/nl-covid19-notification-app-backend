@@ -56,5 +56,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
             _Logger.LogInformation("POST stopkeys triggered.");
             return await command.Execute();
         }
+
+        [HttpGet]
+        [Route("/")]
+        public IActionResult AssemblyDump() => new DumpAssembliesToPlainText().Execute();
+
     }
 }
