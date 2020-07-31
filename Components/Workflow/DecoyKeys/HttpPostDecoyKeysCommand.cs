@@ -27,13 +27,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Deco
         {
             var delayInMilliseconds = _RandomNumberGenerator.Next(_Config.MinimumDelayInMilliseconds, _Config.MaximumDelayInMilliseconds);
 
-            _Logger.LogDebug("Delaying for {delayInMilliseconds} seconds", delayInMilliseconds);
+            _Logger.LogDebug("Delaying for {DelayInMilliseconds} seconds", delayInMilliseconds);
             await Task.Delay(delayInMilliseconds);
 
             var padding = string.Empty; // TODO there's another ticket to generate the correct response padding
-            _Logger.LogDebug("Padding response is: `{padding}`", padding);
+            _Logger.LogDebug("Padding response is: `{Padding}`", padding);
 
-            _Logger.LogDebug("Delaying for {0} seconds", delayInMilliseconds);
+            _Logger.LogDebug("Delaying for {DelayInMilliseconds} seconds", delayInMilliseconds);
             return new OkObjectResult(padding);
         }
     }

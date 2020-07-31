@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
     [Authorize(AuthenticationSchemes = "jwt")]
     public class WorkflowController : Controller
     {
-        private readonly ILogger<WorkflowController> _Logger;
+        private readonly ILogger _Logger;
 
         public WorkflowController(ILogger<WorkflowController> logger)
         {

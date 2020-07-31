@@ -21,40 +21,52 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         private readonly IPublishingId _PublishingId;
         private readonly ILogger _Logger;
         private readonly IHttpResponseHeaderConfig _HttpResponseHeaderConfig;
+        private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingId publishingId, ILogger<HttpGetCdnContentCommand> logger, IHttpResponseHeaderConfig httpResponseHeaderConfig)
+        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingId publishingId, ILogger<HttpGetCdnContentCommand> logger, IHttpResponseHeaderConfig httpResponseHeaderConfig, IUtcDateTimeProvider dateTimeProvider)
         {
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _PublishingId = publishingId ?? throw new ArgumentNullException(nameof(publishingId));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _HttpResponseHeaderConfig = httpResponseHeaderConfig ?? throw new ArgumentNullException(nameof(httpResponseHeaderConfig));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
 
-        public async Task Execute(HttpContext httpContext, string id)
+        /// <summary>
+        /// Immutable content
+        /// </summary>
+        public async Task Execute(HttpContext httpContext, string type, string id)
         {
             if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
 
-            //This looked like a bug?
-            if (!httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
+            if (!ContentTypes.IsValid(type))
             {
-                _Logger.LogError($"Required request header missing - if-none-match.");
-                httpContext.Response.ContentLength = 0;
-                httpContext.Response.StatusCode = 400; //TODO!
-            }
-
-            if (!_PublishingId.Validate(id))
-            {
-                _Logger.LogError($"Invalid content id - {id}.");
+                _Logger.LogError("Invalid generic content type - {Id}.", id);
                 httpContext.Response.StatusCode = 400;
                 httpContext.Response.ContentLength = 0;
             }
 
-            var content = await _DbContext.SafeGetContent(id);
+            if (!_PublishingId.Validate(id))
+            {
+                _Logger.LogError("Invalid content id - {Id}.", id);
+                httpContext.Response.StatusCode = 400;
+                httpContext.Response.ContentLength = 0;
+            }
+
+            //This looked like a bug?
+            if (!httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
+            {
+                _Logger.LogError("Required request header missing - if-none-match.");
+                httpContext.Response.ContentLength = 0;
+                httpContext.Response.StatusCode = 400; //TODO!
+            }
+
+            var content = await _DbContext.SafeGetContent(type, id, _DateTimeProvider.Now());
             
             if (content == null)
             {
                 //TODO tell CDN to ignore hunting?
-                _Logger.LogError($"Content not found - {id}.");
+                _Logger.LogError("Content not found - {Id}.", id);
                 httpContext.Response.StatusCode = 404;
                 httpContext.Response.ContentLength = 0;
                 return;
@@ -62,7 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             if (etagValue == content.PublishingId)
             {
-                _Logger.LogWarning($"Matching etag found, responding with 304 - {id}.");
+                _Logger.LogWarning("Matching etag found, responding with 304 - {Id}.", id);
                 httpContext.Response.StatusCode = 304;
                 httpContext.Response.ContentLength = 0;
                 return;
@@ -73,71 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             //if (!signedResponse && !accepts.Contains(content.ContentTypeName))
             //{
-            //    _Logger.LogWarning($"Cannot give acceptable response, responding with 406 - {id}.");
-            //    httpContext.Response.StatusCode = 406;
-            //    httpContext.Response.ContentLength = 0;
-            //    return;
-            //}
-
-            httpContext.Response.Headers.Add("etag", content.PublishingId);
-            httpContext.Response.Headers.Add("last-modified", content.Release.ToUniversalTime().ToString("r"));
-            httpContext.Response.Headers.Add("content-type", content.ContentTypeName);
-            httpContext.Response.StatusCode = 200;
-            httpContext.Response.ContentLength = content.Content?.Length ?? throw new InvalidOperationException("SignedContent empty.");
-            await httpContext.Response.Body.WriteAsync(content.Content);
-        }
-
-        public async Task Execute(HttpContext httpContext, string genericContentName, string id)
-        {
-            if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
-
-            if (!ContentTypes.IsValid(genericContentName))
-            {
-                _Logger.LogError($"Invalid generic content type - {id}.");
-                httpContext.Response.StatusCode = 400;
-                httpContext.Response.ContentLength = 0;
-            }
-
-            if (!_PublishingId.Validate(id))
-            {
-                _Logger.LogError($"Invalid content id - {id}.");
-                httpContext.Response.StatusCode = 400;
-                httpContext.Response.ContentLength = 0;
-            }
-
-            //This looked like a bug?
-            if (!httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
-            {
-                _Logger.LogError($"Required request header missing - if-none-match.");
-                httpContext.Response.ContentLength = 0;
-                httpContext.Response.StatusCode = 400; //TODO!
-            }
-
-            var content = await _DbContext.SafeGetContent(genericContentName, id);
-            
-            if (content == null)
-            {
-                //TODO tell CDN to ignore hunting?
-                _Logger.LogError($"Content not found - {id}.");
-                httpContext.Response.StatusCode = 404;
-                httpContext.Response.ContentLength = 0;
-                return;
-            }
-
-            if (etagValue == content.PublishingId)
-            {
-                _Logger.LogWarning($"Matching etag found, responding with 304 - {id}.");
-                httpContext.Response.StatusCode = 304;
-                httpContext.Response.ContentLength = 0;
-                return;
-            }
-
-            //var accepts = httpContext.Request.Headers["accept"].ToHashSet();
-            //var signedResponse = content.SignedContentTypeName != null && accepts.Contains(content.SignedContentTypeName);
-
-            //if (!signedResponse && !accepts.Contains(content.ContentTypeName))
-            //{
-            //    _Logger.LogWarning($"Cannot give acceptable response, responding with 406 - {id}.");
+            //    _Logger.LogWarning("Cannot give acceptable response, responding with 406 - {Id}.", id);
             //    httpContext.Response.StatusCode = 406;
             //    httpContext.Response.ContentLength = 0;
             //    return;

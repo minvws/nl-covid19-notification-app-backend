@@ -19,6 +19,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
+using IWorkflowConfig = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.IWorkflowConfig;
 using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
@@ -72,11 +73,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             }
 
             services.AddScoped<HttpPostRegisterSecret, HttpPostRegisterSecret>();
-            services.AddScoped<ISecretWriter, SecretWriter>();
-            services.AddScoped<ITekWriter, TekWriter>();
-            services.AddScoped<StandardRandomNumberGenerator, StandardRandomNumberGenerator>();
-            services.AddScoped<IRandomNumberGenerator, StandardRandomNumberGenerator>();
 
+            services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
+            services.AddSingleton<IWorkflowStuff, TekReleaseWorkflowExpiryTimeProvider>();
+
+            services.AddScoped<ISecretWriter, TekReleaseWorkflowStateCreate>();
+            services.AddScoped<ITekWriter, TekWriter>();
+            services.AddScoped<IRandomNumberGenerator, StandardRandomNumberGenerator>();
+            services.AddSingleton<ILabConfirmationIdFormatter,StandardLabConfirmationIdFormatter>();
             services.AddScoped<HttpPostDecoyKeysCommand, HttpPostDecoyKeysCommand>();
             services.AddScoped<IDecoyKeysConfig, StandardDecoyKeysConfig>();
 

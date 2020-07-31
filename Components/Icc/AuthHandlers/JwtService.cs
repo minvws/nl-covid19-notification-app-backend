@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
     {
         private readonly IIccPortalConfig _IccPortalConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly ILogger<JwtService> _Logger;
+        private readonly ILogger _Logger;
 
         public JwtService(IIccPortalConfig iccPortalConfig, IUtcDateTimeProvider utcDateTimeProvider,
             ILogger<JwtService> logger)
@@ -86,19 +86,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             }
             catch (FormatException e)
             {
-                _Logger.LogWarning($"Invalid jwt token, FormatException - {token}");
+                _Logger.LogWarning("Invalid jwt token, FormatException - {Token}", token);
             }
             catch (InvalidTokenPartsException)
             {
-                _Logger.LogWarning($"Invalid jwt token, InvalidTokenPartsException - {token}");
+                _Logger.LogWarning("Invalid jwt token, InvalidTokenPartsException - {Token}", token);
             }
             catch (TokenExpiredException e)
             {
-                _Logger.LogWarning($"Invalid jwt token, TokenExpiredException - {token}");
+                _Logger.LogWarning("Invalid jwt token, TokenExpiredException - {Token}", token);
             }
             catch (SignatureVerificationException e)
             {
-                _Logger.LogWarning($"Invalid jwt token, SignatureVerificationException - {token}");
+                _Logger.LogWarning("Invalid jwt token, SignatureVerificationException - {Token}", token);
             }
 
             return false;

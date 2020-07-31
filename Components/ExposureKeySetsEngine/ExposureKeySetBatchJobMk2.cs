@@ -67,10 +67,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             if (_Disposed)
                 throw new ObjectDisposedException(_JobName);
 
-            _Logger.LogInformation($"{_JobName} started - useAllKeys:{useAllKeys}");
+            _Logger.LogInformation("{JobName} started - useAllKeys:{UseAllKeys}", _JobName, useAllKeys);
 
             if (!WindowsIdentityStuff.CurrentUserIsAdministrator())
-                _Logger.LogWarning($"{_JobName} started WITHOUT elevated privileges - errors may occur when signing content.");
+                _Logger.LogWarning("{JobName} started WITHOUT elevated privileges - errors may occur when signing content.", _JobName);
 
             _WorkflowDbContext.EnsureNoChangesOrTransaction();
             _PublishingDbContext.EnsureNoChangesOrTransaction();
@@ -80,12 +80,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             await BuildBatches();
             await CommitResults();
 
-            _Logger.LogInformation($"{_JobName} complete.");
+            _Logger.LogInformation("{JobName} complete.", _JobName);
         }
 
         private async Task BuildBatches()
         {
-            _Logger.LogDebug($"Build batches.");
+            _Logger.LogDebug("Build batches.");
 
             const int size = 100;
             var count = 0;
@@ -118,7 +118,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         private async Task Build()
         {
-            _Logger.LogDebug($"Build EKS.");
+            _Logger.LogDebug("Build EKS.");
 
             var args = _KeyBatch.ToArray();
             
@@ -140,7 +140,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         private async Task WriteOutput(EksCreateJobOutputEntity e)
         {
-            _Logger.LogInformation($"Write EKS {e.CreatingJobQualifier}.");
+            _Logger.LogInformation("Write EKS {CreatingJobQualifier}.", e.CreatingJobQualifier);
 
             await using (_PublishingDbContext.BeginTransaction())
             {
@@ -160,7 +160,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         private async Task CopyInput(bool useAllKeys = false)
         {
-            _Logger.LogDebug($"Copy input TEKs.");
+            _Logger.LogDebug("Copy input TEKs.");
 
             await using (_PublishingDbContext.BeginTransaction())
             {
@@ -192,13 +192,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         private EksCreateJobInputEntity[] GetInputBatch(int skip, int take)
         {
-            _Logger.LogDebug($"Read input batch - skip {skip}, take {take}.");
+            _Logger.LogDebug("Read input batch - skip {Skip}, take {Take}.", skip, take);
             return _PublishingDbContext.Set<EksCreateJobInputEntity>().OrderBy(x => x.KeyData).Skip(skip).Take(take).ToArray();
         }
 
         private async Task WriteUsed(EksCreateJobInputEntity[] used)
         {
-            _Logger.LogDebug($"Mark used, count {used.Length}.");
+            _Logger.LogDebug("Mark used, count {Length}.", used.Length);
 
             foreach (var i in used)
             {
@@ -213,7 +213,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         private async Task CommitResults()
         {
-            _Logger.LogInformation($"Commit results - publish EKSs.");
+            _Logger.LogInformation("Commit results - publish EKSs.");
 
             await using (_PublishingDbContext.BeginTransaction())
             {
@@ -237,7 +237,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 }
             }
 
-            _Logger.LogInformation($"Commit results - Mark TEKs as Published.");
+            _Logger.LogInformation("Commit results - Mark TEKs as Published.");
 
             await using (_PublishingDbContext.BeginTransaction()) //Read-only
             {
@@ -277,7 +277,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     _WorkflowDbContext.SaveAndCommit();
                 }
 
-                _Logger.LogInformation($"Cleanup job tables.");
+                _Logger.LogInformation("Cleanup job tables.");
                 await _PublishingDbContext.Set<EksCreateJobInputEntity>().BatchDeleteAsync();
                 await _PublishingDbContext.Set<EksCreateJobOutputEntity>().BatchDeleteAsync();
                 _PublishingDbContext.SaveAndCommit();

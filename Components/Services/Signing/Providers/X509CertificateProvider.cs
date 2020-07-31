@@ -26,18 +26,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             store.Open(OpenFlags.ReadOnly);
 
-            _Logger.LogInformation($"Finding certificate - Thumbprint:{_ThumbprintConfig.Thumbprint}, RootTrusted:{_ThumbprintConfig.RootTrusted}.");
+            _Logger.LogInformation("Finding certificate - Thumbprint:{Thumbprint}, RootTrusted:{RootTrusted}.", _ThumbprintConfig.Thumbprint, _ThumbprintConfig.RootTrusted);
 
             var result = ReadCertFromStore(store);
             if (result == null)
             {
-                _Logger.LogCritical($"Certificate not found: {_ThumbprintConfig.Thumbprint}");
+                _Logger.LogCritical("Certificate not found: {Thumbprint}", _ThumbprintConfig.Thumbprint);
                 throw new InvalidOperationException("Certificate not found.");
             }
 
             if (!result.HasPrivateKey)
             {
-                _Logger.LogCritical($"Certificate has no private key: {_ThumbprintConfig.Thumbprint}");
+                _Logger.LogCritical("Certificate has no private key: {Thumbprint}", _ThumbprintConfig.Thumbprint);
                 throw new InvalidOperationException("Private key not found.");
             }
 
@@ -54,7 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             }
             catch (Exception e)
             {
-                _Logger.LogError($"Error reading certificate store: {e}");
+                _Logger.LogError(e, "Error reading certificate store");
                 throw;
             }
         }

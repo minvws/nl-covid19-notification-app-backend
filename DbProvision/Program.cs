@@ -28,9 +28,9 @@ namespace DbProvision
             new ConsoleAppRunner().Execute(args, Configure, Start);
         }
 
-        private static void Start(IServiceProvider services, string[] _)
+        private static void Start(IServiceProvider services, string[] args)
         {
-            services.GetRequiredService<ProvisionDatabasesCommand>().Execute().GetAwaiter().GetResult();
+            services.GetRequiredService<ProvisionDatabasesCommand>().Execute(args).GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)

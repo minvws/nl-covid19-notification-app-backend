@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         private readonly ContentDbContext _DbContext;
         private readonly ILogger _Logger;
 
-        public HttpPostContentCommand(ContentValidator validator, ContentInsertDbCommand insertDbCommand, ContentDbContext dbContext, ILogger logger)
+        public HttpPostContentCommand(ContentValidator validator, ContentInsertDbCommand insertDbCommand, ContentDbContext dbContext, ILogger<HttpPostContentCommand> logger)
         {
             _Validator = validator;
             _InsertDbCommand = insertDbCommand;
@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             await _InsertDbCommand.Execute(args);
             _Logger.LogDebug("Committing.");
             _DbContext.SaveAndCommit();
-            _Logger.LogInformation($"Committed.");
+            _Logger.LogInformation("Committed.");
             return new OkResult();
         }
     }

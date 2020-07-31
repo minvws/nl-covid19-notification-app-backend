@@ -67,12 +67,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             try
             {
                 var argsJson = Encoding.UTF8.GetString(_BodyBytes);
-                _Logger.LogDebug($"Body -\n{argsJson}.");
+                _Logger.LogDebug("Body -\n{ArgsJson}.", argsJson);
                 _ArgsObject = _JsonSerializer.Deserialize<PostTeksArgs>(argsJson);
             }
             catch (Exception e)
             {
-                _Logger.LogError($"Error reading body -\n{e}");
+                //TODO: check if you want to use Serilog's Exception logging, or just use ToString
+                //i.e., _logger.LogError(e, "Error reading body");
+                _Logger.LogError("Error reading body -\n{E}", e);
                 return;
             }
 
@@ -83,7 +85,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             }
             catch (FormatException e)
             {
-                _Logger.LogError($"Error parsing BucketId -\n{e}");
+                //TODO: check if you want to use Serilog's Exception logging, or just use ToString
+                //i.e., _logger.LogError(e, "Error parsing BucketId");
+                _Logger.LogError("Error parsing BucketId -\n{E}", e);
                 return;
             }
 
@@ -101,13 +105,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             if (workflow == null)
             {
-                _Logger.LogError($"Workflow does not exist - {_ArgsObject.BucketId}.");
+                _Logger.LogError("Workflow does not exist - {BucketId}.", _ArgsObject.BucketId);
                 return;
             }
 
             if (!_SignatureValidator.Valid(signature, workflow.ConfirmationKey, _BodyBytes))
             {
-                _Logger.LogError($"Signature not valid.");
+                _Logger.LogError("Signature not valid.");
                 return;
             }
 
@@ -132,7 +136,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             if (filterResults.Items.Length != 0)
             {
-                _Logger.LogInformation($"Teks added - Count:{filterResults.Items.Length}.");
+                _Logger.LogInformation("Teks added - Count:{FilterResultsLength}.", filterResults.Items.Length);
             }
         }
     }

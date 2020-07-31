@@ -51,6 +51,7 @@ namespace MobileAppApi.Tests.Controllers
                         context.BeginTransaction();
                         return context;
                     });
+
                 });
                 builder.ConfigureAppConfiguration((ctx, config) =>
                 {

@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         public TekReleaseWorkflowStateEntity Owner { get; set; }
         
         [MinLength(32), MaxLength(32)]
-        public byte[] KeyData { get; set; }
+        public byte[] KeyData { get; set; } = new byte[32];
         public int RollingStartNumber { get; set; }
         public int RollingPeriod { get; set; }
 

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
@@ -24,20 +25,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task Execute()
+        public async Task Execute(string[] args)
         {
+            var nuke = !args.Contains("nonuke");
+
             _Logger.LogInformation("Start.");
 
             _Logger.LogInformation("Workflow...");
-            await _Workflow.Execute();
-            await _Workflow.AddExampleContent();
+            await _Workflow.Execute(nuke);
+
+            if (!args.Contains("noworkflowdata"))
+                await _Workflow.AddExampleContent();
 
             _Logger.LogInformation("Content...");
-            await _Content.Execute();
-            await _Content.AddExampleContent();
+            await _Content.Execute(nuke);
+    
+            if (!args.Contains("nocontentdata"))
+                await _Content.AddExampleContent();
 
             _Logger.LogInformation("Job...");
-            await _Job.Execute();
+            await _Job.Execute(nuke);
 
             _Logger.LogInformation("Complete.");
         }

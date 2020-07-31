@@ -29,9 +29,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             _Snapshot = _DateTimeProvider.Now();
         }
 
-        public async Task Execute()
+        public async Task Execute(bool nuke)
         {
-            await _DbContextProvider.Database.EnsureDeletedAsync();
+            if (nuke)
+                await _DbContextProvider.Database.EnsureDeletedAsync();
             await _DbContextProvider.Database.EnsureCreatedAsync();
         }
 

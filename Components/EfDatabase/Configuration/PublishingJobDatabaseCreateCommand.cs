@@ -17,9 +17,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
         }
 
-        public async Task Execute()
+        public async Task Execute(bool nuke)
         {
-            await _DbContextProvider.Database.EnsureDeletedAsync();
+            if (nuke) await _DbContextProvider.Database.EnsureDeletedAsync();
             await _DbContextProvider.Database.EnsureCreatedAsync();
         }
     }

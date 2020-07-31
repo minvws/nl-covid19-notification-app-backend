@@ -11,28 +11,37 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     public static class DbContextQueries
     {
-        public static async Task<ContentEntity?> SafeGetContent(this DbContext dbContextProvider, string id)
-        {
-            if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
-            return await dbContextProvider.Set<ContentEntity>().SingleOrDefaultAsync(x => x.PublishingId == id);
-        }
 
-        public static async Task<ContentEntity> SafeGetContent(this DbContext dbContextProvider, string type, string id)
+        /// <summary>
+        /// e.g. GET Immutable content
+        /// NB - content can be repeated with a different Publishing date.
+        /// </summary>
+        public static async Task<ContentEntity> SafeGetContent(this DbContext dbContextProvider, string type, string id, DateTime now)
         {
             if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
-            return await dbContextProvider.Set<ContentEntity>().SingleOrDefaultAsync(x => x.PublishingId == id && x.Type == type);
-        }
-
-        public static async Task<T> SafeGetLatestContent<T>(this DbContext dbContextProvider, DateTime now) where T:ContentEntity
-        {
-            if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
-            return await dbContextProvider.Set<T>()
-                .Where(x => x.Release < now)
+            return await dbContextProvider.Set<ContentEntity>()
+                .Where(x => x.PublishingId == id && x.Type == type && x.Release < now )
                 .OrderByDescending(x => x.Release)
                 .Take(1)
                 .SingleOrDefaultAsync();
         }
 
+        /// <summary>
+        /// e.g. GET Manifest
+        /// </summary>
+        public static async Task<ContentEntity> SafeGetLatestContent(this DbContext dbContextProvider, string type, DateTime now)
+        {
+            if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
+            return await dbContextProvider.Set<ContentEntity>()
+                .Where(x => x.Release < now && x.Type == type)
+                .OrderByDescending(x => x.Release)
+                .Take(1)
+                .SingleOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Build manifest - non-EKS
+        /// </summary>
         public static async Task<string> SafeGetLatestContentId(this DbContext dbContextProvider, string type, DateTime now)
         {
             if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
@@ -44,6 +53,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 .SingleOrDefaultAsync() ?? string.Empty;
         }
 
+        /// <summary>
+        /// Build manifest - EKS
+        /// </summary>
         public static async Task<string[]> SafeGetActiveContentIdList(this DbContext dbContextProvider, string type, DateTime from, DateTime to)
         {
             var result = (await dbContextProvider.Set<ContentEntity>()

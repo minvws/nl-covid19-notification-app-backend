@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
@@ -38,9 +39,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
         {
             private readonly int _Result;
             public TestRng(int result) => _Result = result;
-            public string GenerateToken(int length = 6) => "tester";
             public int Next(int min, int max) => _Result;
-            public byte[] GenerateKey(int keyLength = 32) => new byte[keyLength];
+
+            //ncrunch: no coverage start 
+            public string GenerateToken(int length = 6) => throw new NotImplementedException(); 
+            public byte[] GenerateKey(int keyLength = 32) => throw new NotImplementedException();
+            //ncrunch: no coverage end
         }
     }
 }
