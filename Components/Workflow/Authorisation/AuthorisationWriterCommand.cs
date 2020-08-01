@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         private readonly AuthorisationArgsValidator _AuthorisationArgsValidator;
 
         public AuthorisationWriterCommand(WorkflowDbContext dbContextProvider, PollTokenService pollTokenService,
-            ILogger<AuthorisationWriterCommand> logger, AuthorisationArgsValidator authorisationArgsValidator, StandardUtcDateTimeProvider standardUtcDateTimeProvider)
+            ILogger<AuthorisationWriterCommand> logger, AuthorisationArgsValidator authorisationArgsValidator, IUtcDateTimeProvider standardUtcDateTimeProvider)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _PollTokenService = pollTokenService ?? throw new ArgumentNullException(nameof(pollTokenService));
