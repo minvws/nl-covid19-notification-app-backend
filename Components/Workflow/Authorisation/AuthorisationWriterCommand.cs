@@ -24,13 +24,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         private readonly AuthorisationArgsValidator _AuthorisationArgsValidator;
 
         public AuthorisationWriterCommand(WorkflowDbContext dbContextProvider, PollTokenService pollTokenService,
-            ILogger<AuthorisationWriterCommand> logger, AuthorisationArgsValidator authorisationArgsValidator)
+            ILogger<AuthorisationWriterCommand> logger, AuthorisationArgsValidator authorisationArgsValidator, IUtcDateTimeProvider standardUtcDateTimeProvider)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _PollTokenService = pollTokenService ?? throw new ArgumentNullException(nameof(pollTokenService));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _AuthorisationArgsValidator = authorisationArgsValidator ??
                                           throw new ArgumentNullException(nameof(authorisationArgsValidator));
+            _DateTimeProvider = standardUtcDateTimeProvider;
         }
 
 
