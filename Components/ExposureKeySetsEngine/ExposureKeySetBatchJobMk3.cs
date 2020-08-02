@@ -30,11 +30,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly string _JobName;
 
         //private readonly IExposureKeySetBatchJobConfig _JobConfig;
-        private readonly IGaenContentConfig _GaenContentConfig;
+        private readonly IEksConfig _EksConfig;
 
         //private readonly IExposureKeySetWriter _Writer;
-        private readonly IExposureKeySetBuilder _SetBuilder;
+        private readonly IEksBuilder _SetBuilder;
         private readonly DateTime _Start;
+
+        private readonly IEksStuffingGenerator _EksStuffingGenerator;
 
         private int _Counter;
         private readonly List<EksCreateJobInputEntity> _Used;
@@ -44,23 +46,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly PublishingJobDbContext _PublishingDbContext;
         private readonly ContentDbContext _ContentDbContext;
 
-        private readonly IPublishingId _PublishingId;
+        private readonly IPublishingIdService _PublishingIdService;
         private readonly ILogger _Logger;
 
         private readonly ITransmissionRiskLevelCalculation _TransmissionRiskLevelCalculation;
 
-        public ExposureKeySetBatchJobMk3(IGaenContentConfig gaenContentConfig, IExposureKeySetBuilder builder, WorkflowDbContext workflowDbContext, PublishingJobDbContext publishingDbContext, ContentDbContext contentDbContext, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId, ILogger<ExposureKeySetBatchJobMk3> logger, ITransmissionRiskLevelCalculation transmissionRiskLevelCalculation)
+        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, WorkflowDbContext workflowDbContext, PublishingJobDbContext publishingDbContext, ContentDbContext contentDbContext, IUtcDateTimeProvider dateTimeProvider, IPublishingIdService publishingIdService, ILogger<ExposureKeySetBatchJobMk3> logger, ITransmissionRiskLevelCalculation transmissionRiskLevelCalculation, IEksStuffingGenerator eksStuffingGenerator)
         {
             //_JobConfig = jobConfig;
-            _GaenContentConfig = gaenContentConfig ?? throw new ArgumentNullException(nameof(gaenContentConfig));
+            _EksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
             _SetBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
             _WorkflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
             _PublishingDbContext = publishingDbContext ?? throw new ArgumentNullException(nameof(publishingDbContext));
             _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _TransmissionRiskLevelCalculation = transmissionRiskLevelCalculation ?? throw new ArgumentNullException(nameof(transmissionRiskLevelCalculation));
-            _PublishingId = publishingId;
+            _EksStuffingGenerator = eksStuffingGenerator ?? throw new ArgumentNullException(nameof(eksStuffingGenerator));
+            _PublishingIdService = publishingIdService;
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _Used = new List<EksCreateJobInputEntity>(_GaenContentConfig.ExposureKeySetCapacity); //
+            _Used = new List<EksCreateJobInputEntity>(_EksConfig.TekCountMax); //
             _Start = dateTimeProvider.Now();
             _JobName = $"ExposureKeySetsJob_{_Start:u}".Replace(" ", "_").Replace(":", "_");
         }
@@ -72,7 +75,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             _Logger.LogInformation("{JobName} started - useAllKeys:{UseAllKeys}", _JobName, useAllKeys);
 
-            if (!WindowsIdentityStuff.CurrentUserIsAdministrator())
+            if (!WindowsIdentityStuff.CurrentUserIsAdministrator()) //TODO remove warning when UAC is not in play
                 _Logger.LogWarning("{JobName} started WITHOUT elevated privileges - errors may occur when signing content.", _JobName);
 
             _WorkflowDbContext.EnsureNoChangesOrTransaction();
@@ -80,10 +83,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _ContentDbContext.EnsureNoChangesOrTransaction();
 
             await CopyInput(useAllKeys);
+            await Stuff();
             await BuildBatches();
             await CommitResults();
 
             _Logger.LogInformation("{JobName} complete.", _JobName);
+        }
+
+        private async Task Stuff()
+        {
+            var tekCount = _PublishingDbContext.Set<EksCreateJobInputEntity>().Count(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None);
+
+            if (tekCount == 0)
+                return;
+            
+            
+            var stuffingCount = tekCount < _EksConfig.TekCountMin ? _EksConfig.TekCountMin - tekCount : 0;
+            if (stuffingCount == 0)
+                return;
+
+            var stuffing = _EksStuffingGenerator.Execute(new StuffingArgs {Count = stuffingCount, JobTime = _Start});
+
+            _PublishingDbContext.BeginTransaction();
+            await _PublishingDbContext.Set<EksCreateJobInputEntity>().AddRangeAsync(stuffing);
+            _PublishingDbContext.SaveAndCommit();
         }
 
         private async Task BuildBatches()
@@ -96,7 +119,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             while (keys.Length > 0)
             {
-                if (_KeyBatch.Count + keys.Length > _GaenContentConfig.ExposureKeySetCapacity)
+                if (_KeyBatch.Count + keys.Length > _EksConfig.TekCountMax)
                     await Build();
 
                 _KeyBatch.AddRange(keys.Select(Map));
@@ -183,12 +206,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     .Select(x => new { Tek = x, DateOfSymptomsOnset = x.Owner.DateOfSymptomsOnset.Value  })
                     .Select(x => new EksCreateJobInputEntity
                     {
-                        Id = x.Tek.Id,
                         RollingPeriod = x.Tek.RollingPeriod,
                         KeyData = x.Tek.KeyData,
                         TransmissionRiskLevel = _TransmissionRiskLevelCalculation.Calculate(x.Tek.RollingStartNumber, x.DateOfSymptomsOnset),
                         RollingStartNumber = x.Tek.RollingStartNumber,
                     }).ToList();
+
+                if (read.Count == 0)
+                    return;
 
                 await using (_PublishingDbContext.BeginTransaction())
                 {
@@ -202,7 +227,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         {
             _Logger.LogDebug("Read input batch - skip {Skip}, take {Take}.", skip, take);
             return _PublishingDbContext.Set<EksCreateJobInputEntity>()
-                .Where(x => x.TransmissionRiskLevel > TransmissionRiskLevel.None)
+                .Where(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None)
                 .OrderBy(x => x.KeyData).Skip(skip).Take(take).ToArray();
         }
 
@@ -237,7 +262,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                         Type = ContentTypes.ExposureKeySet,
                         //CreatingJobName = x.CreatingJobName,
                         //CreatingJobQualifier = x.CreatingJobQualifier,
-                        PublishingId = _PublishingId.Create(x.Content)
+                        PublishingId = _PublishingIdService.Create(x.Content)
                     }).ToArray();
 
                 await using (_ContentDbContext.BeginTransaction())

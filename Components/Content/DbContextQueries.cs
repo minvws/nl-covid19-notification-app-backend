@@ -59,10 +59,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         /// </summary>
         public static async Task<string[]> SafeGetActiveContentIdList(this DbContext dbContextProvider, string type, DateTime from, DateTime to)
         {
-            var result = (await dbContextProvider.Set<ContentEntity>()
+            var result = await dbContextProvider.Set<ContentEntity>()
                 .Where(x => x.Release >= from && x.Release <= to && x.Type == type)
                 .Select(x => x.PublishingId)
-                .ToArrayAsync());
+                .ToArrayAsync();
 
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
             return result;

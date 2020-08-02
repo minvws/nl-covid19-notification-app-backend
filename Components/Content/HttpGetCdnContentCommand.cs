@@ -18,15 +18,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     public class HttpGetCdnContentCommand
     {
         private readonly ContentDbContext _DbContext;
-        private readonly IPublishingId _PublishingId;
+        private readonly IPublishingIdService _PublishingIdService;
         private readonly ILogger _Logger;
         private readonly IHttpResponseHeaderConfig _HttpResponseHeaderConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingId publishingId, ILogger<HttpGetCdnContentCommand> logger, IHttpResponseHeaderConfig httpResponseHeaderConfig, IUtcDateTimeProvider dateTimeProvider)
+        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IHttpResponseHeaderConfig httpResponseHeaderConfig, IUtcDateTimeProvider dateTimeProvider)
         {
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _PublishingId = publishingId ?? throw new ArgumentNullException(nameof(publishingId));
+            _PublishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _HttpResponseHeaderConfig = httpResponseHeaderConfig ?? throw new ArgumentNullException(nameof(httpResponseHeaderConfig));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 httpContext.Response.ContentLength = 0;
             }
 
-            if (!_PublishingId.Validate(id))
+            if (!_PublishingIdService.Validate(id))
             {
                 _Logger.LogError("Invalid content id - {Id}.", id);
                 httpContext.Response.StatusCode = 400;
@@ -61,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 httpContext.Response.StatusCode = 400; //TODO!
             }
 
-            var content = await _DbContext.SafeGetContent(type, id, _DateTimeProvider.Now());
+            var content = await _DbContext.SafeGetContent(type, id, _DateTimeProvider.Snapshot);
             
             if (content == null)
             {

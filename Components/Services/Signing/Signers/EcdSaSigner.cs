@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
     /// <summary>
     /// For GAEN EKS Signing
     /// </summary>
-    public class EcdSaSigner : IContentSigner
+    public class EcdSaSigner : IGaContentSigner
     {
         private readonly ICertificateProvider _Provider;
         private const string SignatureAlgorithmDescription = "1.2.840.10045.4.3.2";

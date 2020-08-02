@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 
         public async Task<ContentEntity> Execute()
         {
-            var now = _DateTimeProvider.Now();
+            var now = _DateTimeProvider.Snapshot;
             var e = new ContentEntity
             {
                 Created = now,

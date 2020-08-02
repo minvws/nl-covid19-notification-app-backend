@@ -9,14 +9,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Deco
 {
     public class StandardDecoyKeysConfig : AppSettingsReader, IDecoyKeysConfig
     {
-        private static readonly IDecoyKeysConfig Defaults = new DefaultDecoyKeysConfig();
+        private static readonly IDecoyKeysConfig _Defaults = new DefaultDecoyKeysConfig();
 
         public StandardDecoyKeysConfig(IConfiguration config, string? prefix = "Workflow:Decoys") : base(config, prefix)
         {
         }
 
-        public int MinimumDelayInMilliseconds => GetConfigValue(nameof(MinimumDelayInMilliseconds), Defaults.MinimumDelayInMilliseconds);
+        public int MinimumDelayInMilliseconds => GetConfigValue(nameof(MinimumDelayInMilliseconds), _Defaults.MinimumDelayInMilliseconds);
 
-        public int MaximumDelayInMilliseconds => GetConfigValue(nameof(MaximumDelayInMilliseconds), Defaults.MaximumDelayInMilliseconds);
+        public int MaximumDelayInMilliseconds => GetConfigValue(nameof(MaximumDelayInMilliseconds), _Defaults.MaximumDelayInMilliseconds);
     }
 }

@@ -2,124 +2,84 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.IO;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
-using System;
-using System.IO;
-using Microsoft.AspNetCore.HttpOverrides;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
-using TheIdentityHub.AspNetCore.Authentication;
-using IJsonSerializer = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping.IJsonSerializer;
 using Serilog;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _WebHostEnvironment = env;
         }
 
+        private readonly IWebHostEnvironment _WebHostEnvironment;
         private readonly IConfiguration _Configuration;
+        private bool _KillAuth;
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
             });
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
 
-            IHostingEnvironment env = serviceProvider.GetService<IHostingEnvironment>();
-
-            if (services == null) throw new ArgumentNullException(nameof(services));
-
-            services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
-            IIccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration, "IccPortalConfig");
+            _KillAuth = _Configuration.KillAuth();
 
-            services.AddSingleton(iccPortalConfig);
+            services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
-            // Database Scoping
-            services.AddScoped(x =>
-            {
-                var config = new StandardEfDbConfig(_Configuration, "WorkFlow");
-                var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new WorkflowDbContext(builder.Build());
-                result.BeginTransaction();
-                return result;
-            });
-
+            services.AddScoped(x => DbContextStartup.Workflow(x));
             services.AddScoped<HttpPostAuthoriseCommand>();
             services.AddScoped<HttpPostLabVerifyCommand>();
-            services.AddScoped<AuthorisationArgsValidator>();
-            services.AddScoped<LabVerifyArgsValidator>();
-            services.AddScoped<AuthorisationWriterCommand>();
-            services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddScoped<IRandomNumberGenerator, StandardRandomNumberGenerator>();
-            services.AddScoped<IJwtService, JwtService>();
-            services.AddScoped<LabVerificationAuthorisationCommand>();
-            services.AddScoped<PollTokenService>();
             services.AddScoped<HttpGetLogoutCommand>();
             services.AddScoped<HttpGetUserClaimCommand>();
             services.AddScoped<HttpGetAuthorisationRedirectCommand>();
 
+            services.AddSingleton<IIccPortalConfig, IccPortalConfig>();
+
+            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
+            services.AddTransient<AuthorisationArgsValidator>();
+            services.AddTransient<LabVerifyArgsValidator>();
+            services.AddTransient<AuthorisationWriterCommand>();
+            services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
+            services.AddTransient<IJwtService, JwtService>();
+            services.AddTransient<WriteNewPollTokenWriter>();
+            services.AddTransient<PollTokenService>();
+            services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
+
             services.AddCors();
 
-            services.AddSwaggerGen(o =>
-            {
-                o.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Dutch Exposure Notification ICC API (inc. dev support)",
-                    Version = "v1",
-                    Description =
-                        "This specification describes the interface between the Dutch exposure notification app backend, ICC Webportal and the ICC backend service.",
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Ministerie van Volksgezondheid Welzijn en Sport backend repository", //TODO looks wrong?
-                        Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend"),
-                    },
-                    License = new OpenApiLicense
-                    {
-                        Name = "European Union Public License v. 1.2",
-                        //TODO this should be https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
-                        Url = new Uri(
-                            "https://github.com/minvws/nl-covid19-notification-app-backend/blob/master/LICENSE.txt")
-                    },
-                });
-                o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
-                    "NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml"));
-                o.AddSecurityDefinition("Icc", new OpenApiSecurityScheme
-                {
-                    Description = "Icc Code Authentication",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "IccAuthentication"
-                });
-                o.OperationFilter<SecurityRequirementsOperationFilter>();
-            });
+            services.AddSwaggerGen(StartupSwagger);
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -128,7 +88,69 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            // TODO: Make service for adding authentication + configuration model
+
+            StartupIdentityHub(services);
+
+            StartupAuthenticationScheme(services.AddAuthentication(JwtAuthenticationHandler.SchemeName));
+
+        }
+
+        private void StartupSwagger(SwaggerGenOptions o)
+        {
+            o.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Dutch Exposure Notification ICC API (inc. dev support)",
+                Version = "v1",
+                Description =
+                    "This specification describes the interface between the Dutch exposure notification app backend, ICC Webportal and the ICC backend service.",
+                Contact = new OpenApiContact
+                {
+                    Name = "Ministerie van Volksgezondheid Welzijn en Sport backend repository", //TODO looks wrong?
+                    Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend"),
+                },
+                License = new OpenApiLicense
+                {
+                    Name = "European Union Public License v. 1.2",
+                    //TODO this should be https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+                    Url = new Uri(
+                        "https://github.com/minvws/nl-covid19-notification-app-backend/blob/master/LICENSE.txt")
+                },
+            });
+
+            o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
+                "NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml"));
+
+            o.OperationFilter<SecurityRequirementsOperationFilter>();
+
+            if (_KillAuth) return;
+
+            o.AddSecurityDefinition("Icc", new OpenApiSecurityScheme
+            {
+                Description = "Icc Code Authentication",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "IccAuthentication"
+            });
+        }
+
+        private void StartupAuthenticationScheme(AuthenticationBuilder authBuilder)
+        {
+            if (_KillAuth)
+            {
+                authBuilder.AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
+                return;
+            }
+
+            authBuilder.AddScheme<AuthenticationSchemeOptions, JwtAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
+        }
+
+        private void StartupIdentityHub(IServiceCollection services)
+        {
+            if (_KillAuth) return;
+
+            var iccIdentityHubConfig = new IccIdentityHubConfig(_Configuration, "IccPortalConfig:IdentityHub");
+
             services
                 .AddAuthentication(auth =>
                 {
@@ -139,20 +161,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 .AddCookie()
                 .AddTheIdentityHubAuthentication(options =>
                 {
-                    if (!string.IsNullOrWhiteSpace(iccPortalConfig.IdentityHubConfig.BaseUrl))
-                    {
-                        options.TheIdentityHubUrl = new Uri(iccPortalConfig.IdentityHubConfig.BaseUrl);
-                    }
-                    else
-                    {
-                        options.TheIdentityHubUrl = new Uri("https://login.ggdghor.nl/");
-                    }
-
-                    if (!env.IsDevelopment()) options.CallbackPath = "/signin-theidentityhub";
-                    
-                    options.Tenant = iccPortalConfig.IdentityHubConfig.Tenant;
-                    options.ClientId = iccPortalConfig.IdentityHubConfig.ClientId;
-                    options.ClientSecret = iccPortalConfig.IdentityHubConfig.ClientSecret;
+                    options.TheIdentityHubUrl = new Uri(iccIdentityHubConfig.BaseUrl);
+                    options.Tenant = iccIdentityHubConfig.Tenant;
+                    options.ClientId = iccIdentityHubConfig.ClientId;
+                    options.ClientSecret = iccIdentityHubConfig.ClientSecret;
+                    if (!_WebHostEnvironment.IsDevelopment()) options.CallbackPath = "/signin-theidentityhub";
                 });
 
             services.AddMvc(config =>
@@ -165,12 +178,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 config.Filters.Add(new AuthorizeFilter(policy));
                 // .RequireClaim(ClaimTypes.Role)
             });
-
-            services
-                .AddAuthentication("jwt")
-                .AddScheme<AuthenticationSchemeOptions, StandardJwtAuthenticationHandler>("jwt", null);
         }
-
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -214,7 +222,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             app.UseRouting();
 
-            app.UseAuthentication();
+            if (!_KillAuth)
+            {
+                app.UseAuthentication();
+            }
+
             app.UseAuthorization();
 
             app.UseCookiePolicy();

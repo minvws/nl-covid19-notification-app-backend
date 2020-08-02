@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,13 +20,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
         private class FakedNow : IUtcDateTimeProvider
         {
             private readonly DateTime _Fixed;
-
             public FakedNow(DateTime @fixed)
             {
                 _Fixed = @fixed;
             }
-
+            public DateTime Snapshot => _Fixed;
+            //ncrunch: no coverage start
             public DateTime Now() => _Fixed;
+            public DateTime TakeSnapshot() => throw new NotImplementedException();
+            //ncrunch: no coverage end
         }
 
         private List<TekReleaseWorkflowStateEntity> _Workflows;
@@ -76,7 +82,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
         Tek GenerateTek(int m, int d, int q)
         {
             var keyData = BitConverter.GetBytes(d * 100 + q);
-            var t = new DateTime(2020, m, d, 0, 0, 1).ToRollingPeriodStart();
+            var t = new DateTime(2020, m, d, 0, 0, 1).ToRollingStartNumber();
             return new Tek {RollingStartNumber = t, KeyData = keyData, RollingPeriod = 144};
         }
 
@@ -172,7 +178,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             Write(w, new Tek[0]);
 
             //Hold back todays key(s)???
-            var send = keysOnDevice.Where(x => x.End <= T.ToRollingPeriodStart()).ToArray();
+            var send = keysOnDevice.Where(x => x.End <= T.ToRollingStartNumber()).ToArray();
             var fr = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(T)).Validate(send, w);
             Assert.AreEqual(0, fr.Messages.Length);
             Assert.AreEqual(13, fr.Items.Length);

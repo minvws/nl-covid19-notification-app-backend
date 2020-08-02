@@ -59,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
                 throw new ArgumentNullException(nameof(claimsPrincipal));
 
             var builder = CreateBuilder();
-            builder.AddClaim("exp", _DateTimeProvider.Now().AddHours(_IccPortalConfig.ClaimLifetimeHours).ToUnixTime());
+            builder.AddClaim("exp", _DateTimeProvider.Snapshot.AddHours(_IccPortalConfig.ClaimLifetimeHours).ToUnixTime());
             builder.AddClaim("id", GetClaimValue(claimsPrincipal, ClaimTypes.NameIdentifier));
             builder.AddClaim("email", GetClaimValue(claimsPrincipal, ClaimTypes.Email));
             builder.AddClaim("access_token",
@@ -75,6 +75,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         public bool TryDecode(string token, out IDictionary<string, string> payload)
         {
             payload = new Dictionary<string, string>();
+
             if (string.IsNullOrWhiteSpace(token))
                 return false;
 
@@ -82,9 +83,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             {
                 payload = CreateBuilder().Decode<IDictionary<string, object>>(token)
                     .ToDictionary(x => x.Key, x => x.Value.ToString());
+
                 return true;
             }
-            catch (FormatException e)
+            catch (FormatException)
             {
                 _Logger.LogWarning("Invalid jwt token, FormatException - {Token}", token);
             }
@@ -92,14 +94,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             {
                 _Logger.LogWarning("Invalid jwt token, InvalidTokenPartsException - {Token}", token);
             }
-            catch (TokenExpiredException e)
+            catch (TokenExpiredException)
             {
                 _Logger.LogWarning("Invalid jwt token, TokenExpiredException - {Token}", token);
             }
-            catch (SignatureVerificationException e)
+            catch (SignatureVerificationException)
             {
                 _Logger.LogWarning("Invalid jwt token, SignatureVerificationException - {Token}", token);
             }
+            catch (Exception e)
+            {
+                _Logger.LogError("Invalid jwt token, Other error - Token:{Token} Exception:{e}", token, e);
+            }
+
 
             return false;
         }

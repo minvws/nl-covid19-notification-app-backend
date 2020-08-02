@@ -30,9 +30,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
         [DataTestMethod]
         public void GenerateToken(int length)
         {
-            var random = new StandardRandomNumberGenerator();
-            var result = random.GenerateToken(length);
-            Assert.IsTrue(result.Length == length);
+            var random = new LabConfirmationIdService(new StandardRandomNumberGenerator());
+            var result = random.Next();
+            Assert.IsTrue(result.Length == 6);
+
+            Assert.IsTrue(random.Validate(result).Length == 0);
+
+        }
+
+
+        [TestMethod]
+        public void GetZero()
+        {
+            var zeros = 0;
+            var ones = 0;
+            var r = new StandardRandomNumberGenerator();
+            for (var i = 0; i < 1000; i++)
+            {
+                var next = r.Next(0, 1);
+                Assert.IsTrue(next == 0 || next == 1);
+                if (next == 0) zeros++;
+                if (next == 1) ones++;
+            }
+
+            Assert.IsTrue(zeros > 0);
+            Assert.IsTrue(ones > 0);
         }
 
         [TestMethod]

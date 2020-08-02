@@ -3,12 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
-using System.Diagnostics;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.DecoyKeys
 {
@@ -27,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
 
             // Act
             timer.Start();
-            IActionResult result = command.Execute().Result;
+            var result = command.Execute().Result;
             timer.Stop();
 
             // Assert
@@ -40,10 +39,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             private readonly int _Result;
             public TestRng(int result) => _Result = result;
             public int Next(int min, int max) => _Result;
-
-            //ncrunch: no coverage start 
-            public string GenerateToken(int length = 6) => throw new NotImplementedException(); 
-            public byte[] GenerateKey(int keyLength = 32) => throw new NotImplementedException();
+            //ncrunch: no coverage start
+            public byte[] NextByteArray(int _)
+            {
+                throw new NotImplementedException();
+            }
             //ncrunch: no coverage end
         }
     }

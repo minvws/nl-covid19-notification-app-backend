@@ -6,39 +6,12 @@ using System;
 using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
-using TekWriteArgs = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.TekWriteArgs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 {
     public static class Mapper
     {
-        public static TekWriteArgs MapToWriteArgs(this PostTeksItemArgs item)
-        {
-            return new TekWriteArgs
-            {
-                KeyData = Convert.FromBase64String(item.KeyData),
-                //TODO TransmissionRiskLevel = 0,
-                RollingPeriod = item.RollingPeriod,
-                RollingStartNumber = item.RollingStartNumber,
-            };
-        }
-
-        public static TekEntity[] ToEntities(this TekWriteArgs[] items)
-        {
-            var content = items.Select(x =>
-                new TekEntity
-                {
-                    KeyData = x.KeyData,
-                    //TODO TransmissionRiskLevel = 0,
-                    RollingPeriod = x.RollingPeriod,
-                    RollingStartNumber = x.RollingStartNumber,
-                }).ToArray();
-
-            return content;
-        }
-
-        public static Tek MapToTek(this PostTeksItemArgs value)
+ public static Tek MapToTek(this PostTeksItemArgs value)
         {
             return new Tek
             {

@@ -2,27 +2,41 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System.Text.RegularExpressions;
+using System;
+using System.Collections.Generic;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
     public class AuthorisationArgsValidator
     {
-        public bool Validate(AuthorisationArgs args)
+        private readonly ILabConfirmationIdService _LabConfirmationIdService;
+        private readonly IUtcDateTimeProvider _DateTimeProvider;
+
+        public AuthorisationArgsValidator(ILabConfirmationIdService labConfirmationIdService, IUtcDateTimeProvider dateTimeProvider)
+        {
+            _LabConfirmationIdService = labConfirmationIdService ?? throw new ArgumentNullException(nameof(labConfirmationIdService));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+        }
+
+        public string[] Validate(AuthorisationArgs args)
         {
             if (args == null)
-                return false;
+                return new [] {"Args is null."};
 
-            if (string.IsNullOrWhiteSpace(args.LabConfirmationId))
-                return false;
-            if (args.LabConfirmationId.Length != 6)
-                return false;
-            if (!Regex.IsMatch(args.LabConfirmationId, "^[BCFGJLQRSTUVXYZ23456789]*$"))
-                return false;
-            
+            //Should be a date.
+            args.DateOfSymptomsOnset = args.DateOfSymptomsOnset.Date;
+
+            var errors = new List<string>();
+            errors.AddRange(_LabConfirmationIdService.Validate(args.LabConfirmationId));
+
             // TODO check SymptonsOnDate is valid date in !past!
+            // TODO setting
+            if (_DateTimeProvider.Snapshot.Date.AddDays(-30) > args.DateOfSymptomsOnset.Date || args.DateOfSymptomsOnset.Date > _DateTimeProvider.Snapshot.Date)
+                errors.Add($"Date of symptoms onset out of range - {args.DateOfSymptomsOnset}.");
 
-            return true;
+            return errors.ToArray();
         }
 
     }

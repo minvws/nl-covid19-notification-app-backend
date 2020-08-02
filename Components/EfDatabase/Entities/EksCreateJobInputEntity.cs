@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
         /// <summary>
         /// This is the id for this table - taken from the original table - NOT an identity/hilo
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
         /// <summary>

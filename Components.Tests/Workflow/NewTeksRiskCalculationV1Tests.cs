@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
     [TestClass()]
     public class NewTeksRiskCalculationV1Tests
     {
-        private readonly DateTime DateOfSystemsOnset = new DateTime(2020, 1, 10);
+        private readonly DateTime _DateOfSystemsOnset = new DateTime(2020, 1, 10);
 
 
         [DataRow(5, TransmissionRiskLevel.None)]
@@ -45,9 +45,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
         [TestMethod]
         public void RiskLevel(int day, TransmissionRiskLevel expected)
         {
-            var tek = new Tek { RollingStartNumber = new DateTime(2020, 1, day).ToRollingPeriodStart() };
-            var _Calculation = new TransmissionRiskLevelCalculationV1();
-            var result = _Calculation.Calculate(tek.RollingStartNumber, DateOfSystemsOnset);
+            var tek = new Tek { RollingStartNumber = new DateTime(2020, 1, day).ToRollingStartNumber() };
+            var calculation = new TransmissionRiskLevelCalculationV1();
+            var result = calculation.Calculate(tek.RollingStartNumber, _DateOfSystemsOnset);
             Assert.AreEqual(expected, result);
         }
     }

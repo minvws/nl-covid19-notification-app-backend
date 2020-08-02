@@ -5,6 +5,8 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
@@ -12,21 +14,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     {
         private readonly AuthorisationWriterCommand _AuthorisationWriter;
         private readonly AuthorisationArgsValidator _AuthorisationArgsValidator;
+        private readonly ILogger _Logger;
 
-        public HttpPostAuthoriseCommand(AuthorisationWriterCommand authorisationWriter,AuthorisationArgsValidator authorisationArgsValidator)
+        public HttpPostAuthoriseCommand(AuthorisationWriterCommand authorisationWriter,AuthorisationArgsValidator authorisationArgsValidator, ILogger<HttpPostAuthoriseCommand> logger)
         {
             _AuthorisationWriter = authorisationWriter ?? throw new ArgumentNullException(nameof(authorisationWriter));
             _AuthorisationArgsValidator = authorisationArgsValidator ?? throw new ArgumentNullException(nameof(authorisationArgsValidator));
+            _Logger = logger;
         }
 
         public async Task<IActionResult> Execute(AuthorisationArgs args)
         {
-            if (!_AuthorisationArgsValidator.Validate(args))
+            if(_Logger.LogValidationMessages( _AuthorisationArgsValidator.Validate(args)))
                 return new BadRequestResult();
 
-            var result = await _AuthorisationWriter.Execute(args);
+            var newPollToken = await _AuthorisationWriter.Execute(args);
 
-            return new OkObjectResult(result);
+            var response = new AuthorisationResponse
+            {
+                Valid = newPollToken != null,
+                PollToken = newPollToken
+            };
+
+            return new OkObjectResult(response);
         }
     }
 }

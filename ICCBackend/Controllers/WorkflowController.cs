@@ -2,17 +2,18 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
-using System;
-using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 {
-    [Authorize(AuthenticationSchemes = "jwt")]
+    [Authorize(AuthenticationSchemes = JwtAuthenticationHandler.SchemeName)]
     public class WorkflowController : Controller
     {
         private readonly ILogger _Logger;

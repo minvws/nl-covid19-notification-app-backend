@@ -1,3 +1,7 @@
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
 using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -13,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 
         public int RollingStartNumber { get; set; }
         //public DateTime RollingStartTime => RollingStartNumber.FromRollingPeriodStart();
-        public DateTime StartDate => RollingStartNumber.FromRollingPeriodStart().Date;
+        public DateTime StartDate => RollingStartNumber.FromRollingStartNumber().Date;
 
         //Cannot be > 144 https://developer.apple.com/documentation/exposurenotification/setting_up_an_exposure_notification_server
         public int RollingPeriod { get; set; }

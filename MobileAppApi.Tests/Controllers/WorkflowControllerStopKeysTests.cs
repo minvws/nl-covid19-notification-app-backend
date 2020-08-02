@@ -19,6 +19,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
 
 namespace MobileAppApi.Tests.Controllers
 {
+    //Tests ignored!
+    //ncrunch: no coverage start
+
     [TestClass]
     public class WorkflowControllerStopKeysTests : WebApplicationFactory<Startup>
     {

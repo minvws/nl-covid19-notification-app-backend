@@ -17,15 +17,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
     {
         private readonly ISecretWriter _Writer;
         private readonly ILogger _Logger;
-        private readonly IWorkflowStuff _WorkflowStuff;
+        private readonly IWorkflowTime _WorkflowTime;
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
         private readonly ILabConfirmationIdFormatter _LabConfirmationIdFormatter;
 
-        public HttpPostRegisterSecret(ISecretWriter writer, ILogger<HttpPostRegisterSecret> logger, IWorkflowStuff workflowStuff, IUtcDateTimeProvider utcDateTimeProvider, ILabConfirmationIdFormatter labConfirmationIdFormatter)
+        public HttpPostRegisterSecret(ISecretWriter writer, ILogger<HttpPostRegisterSecret> logger, IWorkflowTime workflowTime, IUtcDateTimeProvider utcDateTimeProvider, ILabConfirmationIdFormatter labConfirmationIdFormatter)
         {
             _Writer = writer ?? throw new ArgumentNullException(nameof(writer));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _WorkflowStuff = workflowStuff ?? throw new ArgumentNullException(nameof(workflowStuff));
+            _WorkflowTime = workflowTime ?? throw new ArgumentNullException(nameof(workflowTime));
             _UtcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
             _LabConfirmationIdFormatter = labConfirmationIdFormatter ?? throw new ArgumentNullException(nameof(labConfirmationIdFormatter));
         }
@@ -42,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
                     BucketId = Convert.ToBase64String(entity.BucketId),
                     //TODO remove formatting when spec is clarified to remove UI concern from data.
                     LabConfirmationId = _LabConfirmationIdFormatter.Format(entity.LabConfirmationId),
-                    Validity = _WorkflowStuff.TimeToLiveSeconds(_UtcDateTimeProvider.Now(), entity.ValidUntil)
+                    Validity = _WorkflowTime.TimeToLiveSeconds(_UtcDateTimeProvider.Snapshot, entity.ValidUntil)
                 };
 
                 return new OkObjectResult(result);

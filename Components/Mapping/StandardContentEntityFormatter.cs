@@ -6,7 +6,6 @@ using System;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
@@ -15,13 +14,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
     public class StandardContentEntityFormatter : IContentEntityFormatter
     {
         private readonly ZippedSignedContentFormatter _SignedFormatter;
-        private readonly IPublishingId _PublishingId;
+        private readonly IPublishingIdService _PublishingIdService;
         private readonly IJsonSerializer _JsonSerializer;
 
-        public StandardContentEntityFormatter(ZippedSignedContentFormatter signedFormatter, IPublishingId publishingId, IJsonSerializer jsonSerializer)
+        public StandardContentEntityFormatter(ZippedSignedContentFormatter signedFormatter, IPublishingIdService publishingIdService, IJsonSerializer jsonSerializer)
         {
             _SignedFormatter = signedFormatter ?? throw new ArgumentNullException(nameof(signedFormatter));
-            _PublishingId = publishingId ?? throw new ArgumentNullException(nameof(publishingId));
+            _PublishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
             _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
         }
 
@@ -32,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 
             var contentJson = _JsonSerializer.Serialize(c);
             var contentBytes = Encoding.UTF8.GetBytes(contentJson);
-            e.PublishingId = _PublishingId.Create(contentBytes);
+            e.PublishingId = _PublishingIdService.Create(contentBytes);
             e.Content = await _SignedFormatter.SignedContentPacket(contentBytes);
             e.ContentTypeName = MediaTypeNames.Application.Zip;
             return e;

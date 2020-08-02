@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
     {
         private readonly WorkflowDbContext _DbContextProvider;
 
-        public TekWriter(WorkflowDbContext dbContextProvider, ILogger<WorkflowDbContext> logger)
+        public TekWriter(WorkflowDbContext dbContextProvider)
         {
             _DbContextProvider = dbContextProvider;
         }
@@ -27,6 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 e.Owner = args.WorkflowStateEntityEntity;
 
             await _DbContextProvider.TemporaryExposureKeys.AddRangeAsync(entities);
+
         }
     }
 }

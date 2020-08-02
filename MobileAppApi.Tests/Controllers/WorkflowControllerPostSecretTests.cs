@@ -2,16 +2,13 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using System.Data.Common;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.SqlClient;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -20,7 +17,6 @@ using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
 
@@ -73,13 +69,11 @@ namespace MobileAppApi.Tests.Controllers
         {
             public int Value { get; set; }
 
-            public string GenerateToken(int length = 6) => $"{Value}00000";
+            public int Next(int min, int max) => Value;
 
-            public int Next(int min, int max) => throw new System.NotImplementedException(); //ncrunch: no coverage
-
-            public byte[] GenerateKey(int keyLength = 32)
+            public byte[] NextByteArray(int length)
             {
-                var buffer = new byte[32];
+                var buffer = new byte[length];
                 buffer[0] = (byte)Value;
                 return buffer;
             }
@@ -121,7 +115,7 @@ namespace MobileAppApi.Tests.Controllers
 
             e1.ConfirmationKey[0] = (byte) value;
             e1.BucketId[0] = (byte)value;
-            e1.LabConfirmationId = $"{value}00000";
+            e1.LabConfirmationId = $"{value}{value}{value}{value}{value}{value}";
 
             return e1;
         }

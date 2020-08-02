@@ -4,19 +4,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO.Compression;
 using System.Linq;
-using Microsoft.Azure.Amqp.Serialization;
-using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
     public class PostTeksArgsValidator : IPostTeksValidator
     {
-        private readonly IGeanTekListValidationConfig _Config;
+        private readonly ITekListValidationConfig _Config;
         private readonly ITemporaryExposureKeyValidator _TemporaryExposureKeyValidator;
 
-        public PostTeksArgsValidator(IGeanTekListValidationConfig config, ITemporaryExposureKeyValidator temporaryExposureKeyValidator)
+        public PostTeksArgsValidator(ITekListValidationConfig config, ITemporaryExposureKeyValidator temporaryExposureKeyValidator)
         {
             _Config = config ?? throw new ArgumentNullException(nameof(config));
             _TemporaryExposureKeyValidator = temporaryExposureKeyValidator ?? throw new ArgumentNullException(nameof(temporaryExposureKeyValidator));

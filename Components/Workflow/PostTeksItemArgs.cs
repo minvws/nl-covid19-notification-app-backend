@@ -6,6 +6,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 {
     public class PostTeksItemArgs
     {
+        /// <summary>
+        /// byte array encoded as base64
+        /// </summary>
         public string KeyData { get; set; }
         public int RollingStartNumber { get; set; }
         public int RollingPeriod { get; set; }

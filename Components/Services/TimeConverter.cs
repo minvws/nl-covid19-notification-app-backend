@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Net.Sockets;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {
@@ -13,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
         private static readonly DateTime _RollingPeriodEpoch = DateTime.UnixEpoch;
         private const int RollingPeriodFactor = 600; //TODO Currently 1 : ? seconds?
 
-        public static int ToRollingPeriodStart(this DateTime value)
+        public static int ToRollingStartNumber(this DateTime value)
         {
             var dif = value - _RollingPeriodEpoch;
             return Convert.ToInt32(Math.Floor(dif.TotalSeconds)) / RollingPeriodFactor;
@@ -29,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
         //    return Convert.ToInt64(Math.Floor(value.TotalSeconds)) / RollingPeriodFactor;
         //}
 
-        public static DateTime FromRollingPeriodStart(this int value)
+        public static DateTime FromRollingStartNumber(this int value)
         {
             return _RollingPeriodEpoch + TimeSpan.FromSeconds(value * RollingPeriodFactor);
         }

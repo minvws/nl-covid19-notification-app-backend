@@ -29,15 +29,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         private readonly IJsonSerializer _JsonSerializer;
         private readonly ISignatureValidator _SignatureValidator;
         private readonly ITekListWorkflowFilter _TekListWorkflowFilter;
+        private readonly IWorkflowConfig _WorkflowConfig;
 
         private PostTeksArgs _ArgsObject;
         private byte[] _BucketIdBytes;
         private byte[] _BodyBytes;
         //ILogger<HttpPostReleaseTeksCommand2> logger
 
-        public HttpPostReleaseTeksCommand2(ILogger<HttpPostReleaseTeksCommand2> logger, WorkflowDbContext dbContextProvider, IPostTeksValidator keyValidator, ITekWriter writer, IJsonSerializer jsonSerializer, ISignatureValidator signatureValidator, ITekListWorkflowFilter tekListWorkflowFilter)
+        public HttpPostReleaseTeksCommand2(ILogger<HttpPostReleaseTeksCommand2> logger, IWorkflowConfig workflowConfig, WorkflowDbContext dbContextProvider, IPostTeksValidator keyValidator, ITekWriter writer, IJsonSerializer jsonSerializer, ISignatureValidator signatureValidator, ITekListWorkflowFilter tekListWorkflowFilter)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _WorkflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _KeyValidator = keyValidator ?? throw new ArgumentNullException(nameof(keyValidator));
             _Writer = writer ?? throw new ArgumentNullException(nameof(writer));
@@ -54,11 +56,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             return new OkResult();
         }
 
-        async Task InnerExecute(byte[] signature, byte[] body)
+        private async Task InnerExecute(byte[] signature, byte[] body)
         {
             _BodyBytes = body;
 
-            if ((signature?.Length ?? 0) != 32) //TODO const
+            if ((signature?.Length ?? 0) != _WorkflowConfig.PostKeysSignatureLength) //TODO const
             {
                 _Logger.LogError("Signature is null or incorrect length.");
                 return;
@@ -78,18 +80,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 return;
             }
 
-            try
+            var base64Parser = new Base64();
+            var base64ParserResult = base64Parser.TryParseAndValidate(_ArgsObject.BucketId, _WorkflowConfig.BucketIdLength);
+            if (!base64ParserResult.Valid)
             {
-                //NB there is a Try but Span<byte> cannot be used in async functions
-                _BucketIdBytes = Convert.FromBase64String(_ArgsObject.BucketId);
-            }
-            catch (FormatException e)
-            {
-                //TODO: check if you want to use Serilog's Exception logging, or just use ToString
-                //i.e., _logger.LogError(e, "Error parsing BucketId");
-                _Logger.LogError("Error parsing BucketId -\n{E}", e);
+                _Logger.LogValidationMessages(base64ParserResult.Messages.Select(x => $"BuckedId - {x}").ToArray());
                 return;
             }
+
+            _BucketIdBytes = base64ParserResult.Item;
 
             if (_Logger.LogValidationMessages(_KeyValidator.Validate(_ArgsObject)))
                 return;
@@ -101,7 +100,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             var workflow = _DbContextProvider
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Teks)
-                .FirstOrDefault(x => x.BucketId == _BucketIdBytes);
+                .SingleOrDefault(x => x.BucketId == _BucketIdBytes);
 
             if (workflow == null)
             {
@@ -130,6 +129,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 WorkflowStateEntityEntity = workflow,
                 NewItems = filterResults.Items
             };
+
             await _Writer.Execute(writeArgs);
             _DbContextProvider.SaveAndCommit();
             _Logger.LogDebug("Committed.");

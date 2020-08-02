@@ -1,16 +1,20 @@
-﻿using System;
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Resources;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers
 {
     public class EmbeddedResourcesCertificateChainProvider : ICertificateChainProvider
     {
-        private readonly IEmbeddedResourcesPathConfig _PathProvider;
+        private readonly ICertificateLocationConfig _PathProvider;
 
-        public EmbeddedResourcesCertificateChainProvider(IEmbeddedResourcesPathConfig pathProvider)
+        public EmbeddedResourcesCertificateChainProvider(ICertificateLocationConfig pathProvider)
         {
             _PathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
         }
@@ -18,7 +22,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
         public X509Certificate2[] GetCertificates()
         {
             var certList = new List<X509Certificate2>();
-            var s = Assembly.GetExecutingAssembly().GetManifestResourceStream(_PathProvider.Path);
+
+            var s = ResourcesHook.GetManifestResourceStream(_PathProvider.Path);
 
             if (s == null)
                 throw new InvalidOperationException($"Certificate chain not found in resources - Path:{_PathProvider.Path}.");

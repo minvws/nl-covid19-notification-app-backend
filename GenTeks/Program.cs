@@ -7,14 +7,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 
 namespace GenTeks
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             new ConsoleAppRunner().Execute(args, Configure, Start);
         }
@@ -34,15 +33,8 @@ namespace GenTeks
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddScoped(x =>
-            {
-                var config = new StandardEfDbConfig(configuration, "Workflow");
-                var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new WorkflowDbContext(builder.Build());
-                return result;
-            });
+            services.AddScoped(x => DbContextStartup.Workflow(x));
             services.AddTransient<GenerateTeksCommand>();
-            services.AddSingleton<IConfiguration>(configuration);
         }
     }
 }

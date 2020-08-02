@@ -8,5 +8,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
     {
         public int TimeToLiveMinutes { get; }
         public int PermittedMobileDeviceClockErrorMinutes { get; }
-}
+        int PostKeysSignatureLength { get; }
+        int BucketIdLength { get; }
+        int ConfirmationKeyLength { get; }
+    }
 }

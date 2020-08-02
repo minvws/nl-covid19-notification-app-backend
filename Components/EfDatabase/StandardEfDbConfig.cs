@@ -19,6 +19,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
             _ConnStringName = connStringName;
         }
 
-        public string ConnectionString => _Configuration.GetConnectionString(_ConnStringName);
+        public string ConnectionString
+        {
+            get { 
+                var result = _Configuration.GetConnectionString(_ConnStringName);
+
+                if (string.IsNullOrWhiteSpace(result))
+                    throw new InvalidOperationException($"Value not found for connection string - Name:{_ConnStringName}.");
+
+                return result;
+            }
+        }
     }
 }

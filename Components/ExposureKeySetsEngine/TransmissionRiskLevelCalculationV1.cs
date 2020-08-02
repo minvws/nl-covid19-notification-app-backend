@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
@@ -11,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 throw new ArgumentException("Not a date.", nameof( dateOfSymptomsOnset));
 
             var daysSinceSymptomOnset =
-                Convert.ToInt32(Math.Floor((tekRollingPeriodNumber.FromRollingPeriodStart().Date - dateOfSymptomsOnset).TotalDays));
+                Convert.ToInt32(Math.Floor((tekRollingPeriodNumber.FromRollingStartNumber().Date - dateOfSymptomsOnset).TotalDays));
 
             //Keys before date of onset
             if (daysSinceSymptomOnset <= -4) return TransmissionRiskLevel.None;

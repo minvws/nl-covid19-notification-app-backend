@@ -5,25 +5,24 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             new ConsoleAppRunner().Execute(args, Configure, Start);
         }
@@ -37,115 +36,36 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-            var _Configuration = configuration; //Temp hack before extension method.
-
             services.AddLogging(builder =>
             {
-              builder.AddSerilog(logger: new LoggerConfiguration()
+              builder.AddSerilog(new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
-                .CreateLogger(), dispose: true);
+                .CreateLogger(), true);
             });
 
-            services.AddScoped(x =>
-            {
-                var config = new StandardEfDbConfig(configuration, "Content");
-                var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new ContentDbContext(builder.Build());
-                return result;
-            });
+            services.AddScoped(x => DbContextStartup.Workflow(x, false));
+            services.AddScoped(x => DbContextStartup.Content(x, false));
+            services.AddScoped(x => DbContextStartup.Publishing(x, false));
 
-            services.AddScoped(x =>
-            {
-                var config = new StandardEfDbConfig(configuration, "PublishingJob");
-                var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new PublishingJobDbContext(builder.Build());
-                return result;
-            });
+            services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
-            services.AddScoped(x =>
-            {
-                var config = new StandardEfDbConfig(configuration, "Workflow");
-                var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new WorkflowDbContext(builder.Build());
-                return result;
-            });
+            services.AddSingleton<ITekValidatorConfig, TekValidatorConfig>();
+            services.AddSingleton<IEksHeaderInfoConfig, EksHeaderInfoConfig>();
+            services.AddSingleton<IEksConfig, StandardEksConfig>();
 
-            services.AddSingleton<IConfiguration>(configuration);
-            services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddSingleton<ITransmissionRiskLevelCalculation, TransmissionRiskLevelCalculationV1>();
+            services.AddTransient<ITransmissionRiskLevelCalculation, TransmissionRiskLevelCalculationV1>();
+            services.AddTransient<ExposureKeySetBatchJobMk3>();
+            services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
+            services.AddTransient<IEksStuffingGenerator, EksStuffingGenerator>();
+            services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
+            services.AddTransient<EksBuilderV1>();
+            services.AddTransient<GeneratedProtobufEksContentFormatter>();
+            services.AddTransient<IEksBuilder, EksBuilderV1>();
+            services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
 
-            services.AddScoped(x =>
-                new ExposureKeySetBatchJobMk3(
-                    x.GetRequiredService<IGaenContentConfig>(),
-                    x.GetRequiredService<IExposureKeySetBuilder>(),
-                    x.GetRequiredService<WorkflowDbContext>(),
-                    x.GetRequiredService<PublishingJobDbContext>(),
-                    x.GetRequiredService<ContentDbContext>(),
-                    x.GetRequiredService<IUtcDateTimeProvider>(),
-                    x.GetRequiredService<IPublishingId>(),
-                    x.GetService<ILogger<ExposureKeySetBatchJobMk3>>(),
-                    x.GetService<ITransmissionRiskLevelCalculation>()
-                ));
+            services.NlSignerStartup(configuration.UseCertificatesFromResources());
+            services.GaSignerStartup(configuration.UseCertificatesFromResources());
 
-            services.AddSingleton<IGaenContentConfig, StandardGaenContentConfig>();
-            services.AddScoped<IExposureKeySetHeaderInfoConfig, ExposureKeySetHeaderInfoConfig>();
-            services.AddScoped<IPublishingId, StandardPublishingIdFormatter>();
-
-            if (_Configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", false))
-            {
-                if (_Configuration.GetValue("DevelopmentFlags:Azure", false))
-                {
-                    //AZURE
-                    services.AddScoped<IExposureKeySetBuilder>(x =>
-                        new ExposureKeySetBuilderV1(
-                            x.GetRequiredService<IExposureKeySetHeaderInfoConfig>(),
-                            new EcdSaSigner(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:GA"))),
-                            new CmsSignerWithEmbeddedRootCerts(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"))),
-                            x.GetRequiredService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
-                            new GeneratedProtobufContentFormatter(),
-                            x.GetRequiredService<ILogger<ExposureKeySetBuilderV1>>()
-                        ));
-
-                    services.AddScoped<IContentSigner>(x => new CmsSignerWithEmbeddedRootCerts(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"))));
-                }
-                else
-                {
-                    //UNIT TESTS, LOCAL DEBUG
-                    services.AddScoped<IExposureKeySetBuilder>(x =>
-                        new ExposureKeySetBuilderV1(
-                            x.GetRequiredService<IExposureKeySetHeaderInfoConfig>(),
-                            new EcdSaSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), "Certificates:GA"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())),
-                            new CmsSignerWithEmbeddedRootCerts(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())),
-                            x.GetRequiredService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
-                            new GeneratedProtobufContentFormatter(),
-                            x.GetRequiredService<ILogger<ExposureKeySetBuilderV1>>()
-                        ));
-
-                    services.AddScoped<IContentSigner>(x => new CmsSignerWithEmbeddedRootCerts(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(_Configuration, "Certificates:NL"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())));
-                }
-            }
-            else
-            {
-                //PROD
-                services.AddScoped<IExposureKeySetBuilder>(x =>
-                    new ExposureKeySetBuilderV1(
-                        x.GetRequiredService<IExposureKeySetHeaderInfoConfig>(),
-                        new EcdSaSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:GA"), x.GetRequiredService<ILogger<X509CertificateProvider>>())),
-                        new CmsSignerWithEmbeddedRootCerts(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>())),
-                        x.GetRequiredService<IUtcDateTimeProvider>(), //TODO pass in time thru execute
-                        new GeneratedProtobufContentFormatter(),
-                        x.GetRequiredService<ILogger<ExposureKeySetBuilderV1>>()
-                    ));
-
-                //services.AddScoped<IContentSigner>(x => new CmsSignerWithEmbeddedRootCerts(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>())));
-
-                services.AddTransient<IContentSigner>(x
-                    => new CmsSignerEnhanced(
-                        new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"), x.GetRequiredService<ILogger<X509CertificateProvider>>()),
-                        new EmbeddedResourcesCertificateChainProvider(new EmbeddedResourcePathConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL:Chain")),
-                        x.GetRequiredService<IUtcDateTimeProvider>()
-                    ));
-            }
         }
     }
 }

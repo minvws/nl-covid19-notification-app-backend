@@ -14,6 +14,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         /// </summary>
         public string BucketId { get; set; }
 
+        /// <summary>
+        /// Teks
+        /// </summary>
         public PostTeksItemArgs[] Keys { get; set; }
 
         /// <summary>

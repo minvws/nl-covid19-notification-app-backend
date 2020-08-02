@@ -14,20 +14,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
     public class ManifestBuilder
     {
         private readonly ContentDbContext _ContentDbContext;
-        private readonly IGaenContentConfig _GaenContentConfig;
+        private readonly IEksConfig _EksConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public ManifestBuilder(ContentDbContext contentDbContext, IGaenContentConfig gaenContentConfig, IUtcDateTimeProvider dateTimeProvider)
+        public ManifestBuilder(ContentDbContext contentDbContext, IEksConfig eksConfig, IUtcDateTimeProvider dateTimeProvider)
         {
             _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
-            _GaenContentConfig = gaenContentConfig ?? throw new ArgumentNullException(nameof(gaenContentConfig));
+            _EksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
 
         public async Task<ManifestContent> Execute()
         {
-            var now = _DateTimeProvider.Now();
-            var lo = now - TimeSpan.FromDays(_GaenContentConfig.ExposureKeySetLifetimeDays);
+            var now = _DateTimeProvider.Snapshot;
+            var lo = now - TimeSpan.FromDays(_EksConfig.LifetimeDays);
             return new ManifestContent
             { 
                 ExposureKeySets = await _ContentDbContext.SafeGetActiveContentIdList(ContentTypes.ExposureKeySet, lo, now),

@@ -9,5 +9,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
     public interface IUtcDateTimeProvider
     {
         DateTime Now();
+
+        DateTime TakeSnapshot();
+
+        DateTime Snapshot { get; }
     }
 }

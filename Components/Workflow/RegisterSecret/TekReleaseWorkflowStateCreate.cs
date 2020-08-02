@@ -8,11 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
@@ -25,26 +21,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
         private readonly WorkflowDbContext _DbContextProvider;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IRandomNumberGenerator _NumberGenerator;
-        private readonly IWorkflowStuff _WorkflowStuff;
+        private readonly ILabConfirmationIdService _LabConfirmationIdService;
+        private readonly IWorkflowTime _WorkflowTime;
+        private readonly IWorkflowConfig _WorkflowConfig;
         private readonly ILogger _Logger;
+
+        private const int AttemptCountMax = 5;
         private int _AttemptCount;
 
-        public TekReleaseWorkflowStateCreate(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IRandomNumberGenerator numberGenerator, IWorkflowStuff workflowStuff, ILogger<TekReleaseWorkflowStateCreate> logger)
+        public TekReleaseWorkflowStateCreate(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IRandomNumberGenerator numberGenerator, ILabConfirmationIdService labConfirmationIdService, IWorkflowTime workflowTime, IWorkflowConfig workflowConfig, ILogger<TekReleaseWorkflowStateCreate> logger)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _NumberGenerator = numberGenerator ?? throw new ArgumentNullException(nameof(numberGenerator));
-            _WorkflowStuff = workflowStuff ?? throw new ArgumentNullException(nameof(workflowStuff));
+            _LabConfirmationIdService = labConfirmationIdService ?? throw new ArgumentNullException(nameof(labConfirmationIdService));
+            _WorkflowTime = workflowTime ?? throw new ArgumentNullException(nameof(workflowTime));
+            _WorkflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<TekReleaseWorkflowStateEntity> Execute()
         {
-            var snapshot = _DateTimeProvider.Now();
             var entity = new TekReleaseWorkflowStateEntity
             {
-                Created = snapshot,
-                ValidUntil = _WorkflowStuff.Expiry(snapshot)
+                Created = _DateTimeProvider.Snapshot,
+                ValidUntil = _WorkflowTime.Expiry(_DateTimeProvider.Snapshot)
             };
             await _DbContextProvider.KeyReleaseWorkflowStates.AddAsync(entity);
 
@@ -58,8 +59,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             return entity;
         }
 
-        private const int AttemptCountMax = 5;
-
         private bool WriteAttempt(TekReleaseWorkflowStateEntity item)
         {
             if (++_AttemptCount > AttemptCountMax)
@@ -68,9 +67,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             if (_AttemptCount > 1)
                 _Logger.LogWarning($"Duplicates found while creating workflow - attempt:{_AttemptCount}");
 
-            item.LabConfirmationId = _NumberGenerator.GenerateToken();
-            item.BucketId = _NumberGenerator.GenerateKey();
-            item.ConfirmationKey = _NumberGenerator.GenerateKey();
+            item.LabConfirmationId = _LabConfirmationIdService.Next();
+            item.BucketId = _NumberGenerator.NextByteArray(_WorkflowConfig.BucketIdLength);
+            item.ConfirmationKey = _NumberGenerator.NextByteArray(_WorkflowConfig.ConfirmationKeyLength);
 
             try
             {
@@ -99,7 +98,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
 
                 return errors.Any(x =>
                     x.Number == 2601
-                    && x.Message.Contains($"TekReleaseWorkflowState")
+                    && x.Message.Contains("TekReleaseWorkflowState")
                     && (x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.LabConfirmationId))
                         || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.ConfirmationKey))
                         || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.BucketId)))
