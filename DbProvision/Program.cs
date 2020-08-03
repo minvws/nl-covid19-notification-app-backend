@@ -34,7 +34,7 @@ namespace DbProvision
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-
+            services.AddSingleton<IConfiguration>(configuration);
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddScoped(x => DbContextStartup.Workflow(x, false));
             services.AddScoped(x => DbContextStartup.Content(x, false));

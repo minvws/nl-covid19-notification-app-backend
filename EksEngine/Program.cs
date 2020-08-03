@@ -49,6 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
+            services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<ITekValidatorConfig, TekValidatorConfig>();
             services.AddSingleton<IEksHeaderInfoConfig, EksHeaderInfoConfig>();
             services.AddSingleton<IEksConfig, StandardEksConfig>();
