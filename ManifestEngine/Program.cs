@@ -44,6 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddScoped<HttpGetCdnManifestCommand>();
             services.AddScoped<HttpGetCdnContentCommand>();
 
+            services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IEksConfig, StandardEksConfig>();
 
             services.AddTransient<ManifestBatchJob>();
