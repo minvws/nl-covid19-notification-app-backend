@@ -20,8 +20,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 
         public int RollingPeriodMin => GetConfigValue("RollingPeriod:Min", _Defaults.RollingPeriodMin);
         public int RollingPeriodMax => GetConfigValue("RollingPeriod:Max", _Defaults.RollingPeriodMax);
-
         public int RollingStartNumberMin => GetConfigValue("RollingStartNumber:Min", _Defaults.RollingStartNumberMin);
+        public int PublishingDelayInMinutes => GetConfigValue("Workflow:PostKeys:TemporaryExposureKeys:PublishingDelayMinutes", _Defaults.PublishingDelayInMinutes);
+        public int AuthorisationWindowMinutes => GetConfigValue("Workflow:PostKeys:TemporaryExposureKeys:AuthorisationWindowMinutes", _Defaults.AuthorisationWindowMinutes);
         public int MaxAgeDays => GetConfigValue(nameof(MaxAgeDays), _Defaults.MaxAgeDays);
         public int KeyDataLength => GetConfigValue(nameof(KeyDataLength), _Defaults.KeyDataLength);
     }

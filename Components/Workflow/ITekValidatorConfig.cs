@@ -18,5 +18,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         /// Effectively a date -> date of go live
         /// </summary>
         int RollingStartNumberMin { get; }
+
+        int PublishingDelayInMinutes { get; }
+        int AuthorisationWindowMinutes { get; }
     }
 }

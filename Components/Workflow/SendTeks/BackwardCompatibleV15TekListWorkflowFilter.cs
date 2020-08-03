@@ -15,13 +15,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         private TekReleaseWorkflowStateEntity _Workflow;
         private bool _WorkflowHasKeyOnCreationDate;
         private List<Tek> _Valid;
-
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private int? _LastPublishedRsn;
+        private ITekValidatorConfig _Config;
 
-        public BackwardCompatibleV15TekListWorkflowFilter(IUtcDateTimeProvider dateTimeProvider)
+        public BackwardCompatibleV15TekListWorkflowFilter(IUtcDateTimeProvider dateTimeProvider, ITekValidatorConfig config)
         {
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _Config = config ?? throw new ArgumentException(nameof(config));
         }
 
         public FilterResult<Tek> Validate(Tek[] newKeys, TekReleaseWorkflowStateEntity workflow)
@@ -40,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             var messages = newKeys.SelectMany(x => ValidateSingleTek(x).Select(y => $"{y} - RSN:{x.RollingStartNumber} KeyData:{Convert.ToBase64String(x.KeyData)}")).ToArray();
 
             foreach (var i in _Valid)
-                i.PublishAfter = _DateTimeProvider.Snapshot.AddMinutes(120); //2 hours after upload; // Based on Google recommendation and checked with validation team.
+                i.PublishAfter = _DateTimeProvider.Snapshot.AddMinutes(_Config.PublishingDelayInMinutes);
 
             return new FilterResult<Tek>(_Valid.ToArray(), messages);
         }
@@ -63,7 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             {
                 // this is a ‘same day key’, generated on the day the user gets result. 
                 // it must arrive within the call window (Step 4 from proposed process)
-                if (_Workflow.AuthorisedByCaregiver != null && !(now - _Workflow.AuthorisedByCaregiver < TimeSpan.FromMinutes(120))) //TODO setting
+                if (_Workflow.AuthorisedByCaregiver != null && !(now - _Workflow.AuthorisedByCaregiver < TimeSpan.FromMinutes(_Config.AuthorisationWindowMinutes)))
                     return new[] { "Authorisation window expired" };
 
                 //Log(‘same day key accepted: before call or within call window’)
