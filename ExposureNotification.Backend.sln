@@ -55,7 +55,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Tests", "MobileAppApi.Tests\MobileAppApi.Tests.csproj", "{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbFillExampleContent", "DbFillExampleContent\DbFillExampleContent.csproj", "{DC65200F-DDCD-40FF-93E9-F12E3CE006C9}"
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForceTekAuth", "ForceTekAuth\ForceTekAuth.csproj", "{258279C2-BD6B-4445-9197-953FEE8239FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ForceTekAuth", "ForceTekAuth\ForceTekAuth.csproj", "{258279C2-BD6B-4445-9197-953FEE8239FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
