@@ -206,6 +206,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     .Select(x => new { Tek = x, DateOfSymptomsOnset = x.Owner.DateOfSymptomsOnset.Value  })
                     .Select(x => new EksCreateJobInputEntity
                     {
+                        TekId = x.Tek.Id,
                         RollingPeriod = x.Tek.RollingPeriod,
                         KeyData = x.Tek.KeyData,
                         TransmissionRiskLevel = _TransmissionRiskLevelCalculation.Calculate(x.Tek.RollingStartNumber, x.DateOfSymptomsOnset),
@@ -280,9 +281,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 {
                     var count = 0;
                     var used = _PublishingDbContext.Set<EksCreateJobInputEntity>()
-                        .Where(x => x.Used)
+                        .Where(x => x.Used && x.TekId != null)
                         .Skip(count)
-                        .Select(x => x.Id)
+                        .Select(x => x.TekId.Value)
                         .Take(100)
                         .ToArray();
 
