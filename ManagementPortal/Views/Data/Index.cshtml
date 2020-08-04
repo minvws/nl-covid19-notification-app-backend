@@ -1,5 +1,4 @@
-@using NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat
-@using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
+@using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 @model object
 
 @{
@@ -8,14 +7,14 @@
 }
 
 <h2>TEKS</h2>
-<p>Viewing all tekst currently available in the TemporaryExporeKeysTable</p>
+<p>Viewing all tekst currently available in the TekEntity Table</p>
 <table>
     <tr>
         <td>Id</td>
         <td>Owner</td>
         <td>RollingPeriod</td>
     </tr>
-    @foreach (var tek in (List<TemporaryExposureKeyEntity>) ViewData["teks"])
+    @foreach (var tek in (List<TekEntity>) ViewData["teks"])
     {
         <tr>
             <td>@tek.Id.ToString()</td>
@@ -27,18 +26,18 @@
 <br>/br>
 
 <h2>Workflows</h2>
-<p>Viewing all workflows currently available in the KeyReleaseWorkflowState Table</p>
+<p>Viewing all workflows currently available in the TekReleaseWorkflowStateEntity Table</p>
 <table>
     <tr>
         <th>Id</th>
-        <th>Authorised</th>
+        <th>AuthorisedByCaregiver</th>
         <th>BucketId</th>
     </tr>
-    @foreach (var tek in (List<KeyReleaseWorkflowState>) ViewData["wf"])
+    @foreach (var tek in (List<TekReleaseWorkflowStateEntity>) ViewData["wf"])
     {
         <tr>
             <td>@tek.Id.ToString()</td>
-            <td>@tek.Authorised.ToString()</td>
+            <td>@tek.AuthorisedByCaregiver.ToString()</td>
             <td>
                 @if (tek.BucketId != null)
                 {

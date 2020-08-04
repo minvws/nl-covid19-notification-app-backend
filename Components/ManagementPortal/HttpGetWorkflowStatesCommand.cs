@@ -5,10 +5,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ManagementPortal
 {
@@ -22,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ManagementPor
             _WorkflowDbContext = workflowDbContext;
         }
 
-        public async Task<List<KeyReleaseWorkflowState>> Execute()
+        public async Task<List<TekReleaseWorkflowStateEntity>> Execute()
         {
             // TODO: add pagination
             var wf = _WorkflowDbContext.KeyReleaseWorkflowStates.ToList();
