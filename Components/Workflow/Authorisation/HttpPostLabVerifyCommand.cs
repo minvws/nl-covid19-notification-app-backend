@@ -2,21 +2,28 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Threading.Tasks;
-using JWT.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
     public class HttpPostLabVerifyCommand
     {
-        private readonly LabVerificationAuthorisationCommand _LabVerificationAuthorisationCommand;
         private readonly LabVerifyArgsValidator _LabVerifyArgsValidator;
+        private readonly WorkflowDbContext _DbContextProvider;
+        private readonly ILogger<HttpPostLabVerifyCommand> _Logger;
+        private readonly WriteNewPollTokenWriter _Writer;
 
-        public HttpPostLabVerifyCommand(LabVerificationAuthorisationCommand labVerificationAuthorisationCommand, LabVerifyArgsValidator labVerifyArgsValidator)
+        public HttpPostLabVerifyCommand(LabVerifyArgsValidator labVerifyArgsValidator, WorkflowDbContext dbContextProvider, ILogger<HttpPostLabVerifyCommand> logger, WriteNewPollTokenWriter writer)
         {
-            _LabVerificationAuthorisationCommand = labVerificationAuthorisationCommand;
-            _LabVerifyArgsValidator = labVerifyArgsValidator;
+            _LabVerifyArgsValidator = labVerifyArgsValidator ?? throw new ArgumentNullException(nameof(labVerifyArgsValidator));
+            _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _Writer = writer ?? throw new ArgumentNullException(nameof(writer));
         }
 
         public async Task<IActionResult> Execute(LabVerifyArgs args)
@@ -24,7 +31,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             if (!_LabVerifyArgsValidator.Validate(args))
                 return new BadRequestResult();
 
-            var result = await _LabVerificationAuthorisationCommand.Execute(args);
+            var wf = await _DbContextProvider.KeyReleaseWorkflowStates
+                .Include(x => x.Teks)
+                .SingleOrDefaultAsync(x => x.PollToken == args.PollToken);
+
+            if (wf == null)
+            {
+                _Logger.LogError("KeyReleaseWorkflowState not found - PollToken:{PollToken}.", args.PollToken);
+                var error = new LabVerifyAuthorisationResponse {Error = "Workflow not found.", Valid = false};
+                return new OkObjectResult(error);
+            }
+
+            var result =  new LabVerifyAuthorisationResponse
+            {
+                PollToken = _Writer.Execute(wf),
+                Valid = wf.Teks?.Count != 0
+            };
 
             return new OkObjectResult(result);
         }

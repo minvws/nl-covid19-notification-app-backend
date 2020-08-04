@@ -6,6 +6,7 @@ using System;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
@@ -25,9 +26,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
         public void Build(int length)
         {
             var lf = new LoggerFactory();
-            var signer = new CmsSigner(new LocalResourceCertificateProvider(new HardCodedCertificateLocationConfig("FakeRSA.p12", "Covid19!"), lf.CreateLogger<LocalResourceCertificateProvider>())); //Not a secret.
+            var signer = new CmsSignerEnhanced(
+                new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), lf.CreateLogger<EmbeddedResourceCertificateProvider>()), //Not a secret.
+                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
+                new StandardUtcDateTimeProvider()
+                ); 
             var content = Encoding.UTF8.GetBytes(CreateString(length));
-            //TODO must have an Assert.IsTrue(signature.Length == signer.LengthBytes);
+
+            var sig = signer.GetSignature(content);
+
+            Assert.IsTrue((sig?.Length ?? 0) != 0);
         }
 
         internal static string CreateString(int stringLength)

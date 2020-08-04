@@ -24,15 +24,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
             public const string LabVerify = Prefix + "/labverify";
         }
 
-        public static class DevOps
-        {
-            private const string DevOpsPrefix = "/devops";
-            public const string NukeAndPave = DevOpsPrefix + "/nukeandpavedb"; 
-            public const string NukeAndPaveIcc = DevOpsPrefix + "/nukeandpavedb/icc"; 
-            public const string ExposureKeySetsCreate = DevOpsPrefix + "/exposurekeysets/runbatchjob";
-            public const string TekSetsGenerateRandom = DevOpsPrefix + "/teks/random";
-            public const string TekSetsAuthorise = DevOpsPrefix + "/teks/authorise";
-        }
 
         public const string ManifestName = "manifest";
         public const string AppConfigName = "appconfig";

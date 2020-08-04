@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30104.148
@@ -17,8 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{28BA7C9E-11A4-4EE3-8383-AB2DCC32020F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeneratedGaenFormat", "GaenFormat\GeneratedGaenFormat.csproj", "{4EE95C11-79EE-4ECB-940E-205AA3C4EAC8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi", "MobileAppApi\MobileAppApi.csproj", "{DC54D593-4B03-4879-AA7A-5294170AEB49}"
@@ -29,12 +26,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccBackend", "ICCBackend\Ic
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5CB694D0-78E1-4347-BF78-A557E0780125}"
 	ProjectSection(SolutionItems) = preProject
+		docker\docker-compose.yml = docker\docker-compose.yml
 		docker\README.md = docker\README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentApi", "ContentApi\ContentApi.csproj", "{E9B743F3-6643-4BD6-A136-2887F64A5BEB}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Environments", "Environments", "{36D1DBCA-6BB4-46DC-80DF-2C38EC9153F4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksEngine", "EksEngine\EksEngine.csproj", "{48F9CA7D-BE9A-423F-8F9C-4387271A96FD}"
 EndProject
@@ -46,7 +42,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenTeks", "GenTeks\GenTeks.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{3F8DB099-3B7E-4314-87AC-637EE6346FAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileAppApi.Tests", "MobileAppApi.Tests\MobileAppApi.Tests.csproj", "{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Tests", "MobileAppApi.Tests\MobileAppApi.Tests.csproj", "{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagementPortal", "ManagementPortal\ManagementPortal.csproj", "{404E47C8-957B-48AC-B7B4-B5A286B448BB}"
 EndProject
@@ -113,9 +109,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{D5A96A79-CFC9-46F8-9719-9840D7F717A1} = {AF7302DA-EC4A-4A77-9092-98DEAB8B4D5C}
-		{28BA7C9E-11A4-4EE3-8383-AB2DCC32020F} = {D5A96A79-CFC9-46F8-9719-9840D7F717A1}
-		{C9AA366C-852A-4D11-9842-96E9841B2291} = {36D1DBCA-6BB4-46DC-80DF-2C38EC9153F4}
+		{C9AA366C-852A-4D11-9842-96E9841B2291} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 		{30BA20ED-FB39-43FC-885A-FE7A3D6B7937} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 		{0417A9FB-86E7-4AEF-90DE-6D715BC9C7DB} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 	EndGlobalSection

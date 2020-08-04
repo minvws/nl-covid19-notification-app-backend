@@ -18,7 +18,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly ContentValidator _Validator;
         private readonly ContentInsertDbCommand _InsertDbCommand;
-        private readonly DateTime _Snapshot;
 
         public ContentDatabaseCreateCommand(ContentDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, ContentValidator validator, ContentInsertDbCommand insertDbCommand)
         {
@@ -26,12 +25,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _Validator = validator ?? throw new ArgumentNullException(nameof(validator));
             _InsertDbCommand = insertDbCommand ?? throw new ArgumentNullException(nameof(insertDbCommand));
-            _Snapshot = _DateTimeProvider.Now();
         }
 
-        public async Task Execute()
+        public async Task Execute(bool nuke)
         {
-            await _DbContextProvider.Database.EnsureDeletedAsync();
+            if (nuke)
+                await _DbContextProvider.Database.EnsureDeletedAsync();
             await _DbContextProvider.Database.EnsureCreatedAsync();
         }
 
@@ -60,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             var rcd = ReadFromResource(resource);
             var args = new ContentArgs
             {
-                Release = _Snapshot,
+                Release = _DateTimeProvider.Snapshot,
                 ContentType = type,
                 Json = rcd
             };

@@ -4,8 +4,7 @@
 
 using System;
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts
 {
@@ -21,8 +20,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
-            modelBuilder.HasDefaultSchema("dbo");
-            modelBuilder.ApplyConfiguration(new ContentEtc());
+
+            modelBuilder.Entity<ContentEntity>().HasIndex(u => u.PublishingId);
+            modelBuilder.Entity<ContentEntity>().HasIndex(u => u.Type);
+            modelBuilder.Entity<ContentEntity>().HasIndex(u => u.Release);
+            modelBuilder.Entity<ContentEntity>().HasIndex(u => u.ContentTypeName);
         }
     }
 }

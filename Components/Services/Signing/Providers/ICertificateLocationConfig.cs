@@ -4,6 +4,9 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers
 {
+    /// <summary>
+    /// Embedded resources or file system.
+    /// </summary>
     public interface ICertificateLocationConfig
     {
         public string Path { get; }

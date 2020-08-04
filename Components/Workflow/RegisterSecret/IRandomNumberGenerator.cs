@@ -6,10 +6,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
 {
     public interface IRandomNumberGenerator
     {
-        string GenerateToken(int length = 6);
-
         int Next(int min, int max);
 
-        byte[] GenerateKey(int keyLength = 32);
+        byte[] NextByteArray(int size);
     }
 }

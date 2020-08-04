@@ -4,24 +4,51 @@
 
 using System;
 using System.Linq;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 {
     public static class Mapper
     {
-        public static TemporaryExposureKeyEntity[] ToEntities(this TemporaryExposureKeyArgs[] items)
+ public static Tek MapToTek(this PostTeksItemArgs value)
         {
-            var content = items.Select(x =>
-                new TemporaryExposureKeyEntity
-                {
-                    KeyData = Convert.FromBase64String(x.KeyData),
-                    TransmissionRiskLevel = 0,
-                    RollingPeriod = x.RollingPeriod,
-                    RollingStartNumber = x.RollingStartNumber,
-                }).ToArray();
+            return new Tek
+            {
+                KeyData = Convert.FromBase64String(value.KeyData),
+                RollingPeriod = value.RollingPeriod,
+                RollingStartNumber = value.RollingStartNumber,
+            };
+        }
 
-            return content;
+        //Read
+        public static Tek? MapToTek(this TekEntity? value)
+        {
+            if (value == null)
+                return null;
+
+            return new Tek
+            {
+                KeyData = value.KeyData,
+                RollingPeriod = value.RollingPeriod,
+                RollingStartNumber = value.RollingStartNumber,
+                PublishingState = value.PublishingState,
+                PublishAfter  = value.PublishAfter,
+                Region = value.Region
+            };
+        }
+
+        public static TekEntity MapToEntity(Tek value)
+        {
+            return new TekEntity
+            {
+                KeyData = value.KeyData,
+                RollingPeriod = value.RollingPeriod,
+                RollingStartNumber = value.RollingStartNumber,
+                PublishingState = value.PublishingState,
+                PublishAfter = value.PublishAfter,
+                Region = value.Region
+            };
         }
     }
 }

@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static T EnsureNoChangesOrTransaction<T>(this T context) where T: DbContext
+        public static void EnsureNoChangesOrTransaction<T>(this T context) where T: DbContext
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
@@ -24,8 +24,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 
             if (context.Database.CurrentTransaction != null)
                 context.Database.RollbackTransaction();
-
-            return context;
         }
 
         public static IDbContextTransaction BeginTransaction(this DbContext context)

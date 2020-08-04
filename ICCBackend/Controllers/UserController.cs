@@ -5,10 +5,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 {
-    [Authorize(AuthenticationSchemes = "jwt")]
+    [Authorize(AuthenticationSchemes = JwtAuthenticationHandler.SchemeName)]
     public class UserController : Controller
     {
         [HttpGet]

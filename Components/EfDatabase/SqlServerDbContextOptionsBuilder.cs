@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 {
-    public class SqlServerDbContextOptionsBuilder : IDbContextOptionsBuilder
+    public class SqlServerDbContextOptionsBuilder 
     {
         private readonly SqlConnectionStringBuilder _ConnectionStringBuilder;
 
@@ -20,15 +20,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
             {
                     MultipleActiveResultSets = true
             };
-        }
-
-        public IDbContextOptionsBuilder AddDatabaseName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException();
-
-            _ConnectionStringBuilder.InitialCatalog = name.Trim();
-            return this;
         }
 
         public DbContextOptions Build()

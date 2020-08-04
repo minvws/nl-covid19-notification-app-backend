@@ -5,16 +5,14 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
 {
@@ -22,38 +20,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
     {
         private const string Title = "Cdn Content Provider";
 
-        public Startup(IConfiguration configuration)
+        public Startup()
         {
-            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
-
-        private readonly IConfiguration _Configuration;
 
         public void ConfigureServices(IServiceCollection services)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
-
-            services.AddLogging();
-
-            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
-
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
-            services.AddScoped(x =>
-            {
-                var config = new StandardEfDbConfig(_Configuration, "Content");
-                var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new ContentDbContext(builder.Build());
-                result.BeginTransaction();
-                return result;
-            });
-
-            services.AddTransient<IHttpResponseHeaderConfig, HttpResponseHeaderConfig>();
-            services.AddSingleton<IUtcDateTimeProvider>(new StandardUtcDateTimeProvider());
-            services.AddTransient<IPublishingId, StandardPublishingIdFormatter>();
-
+            services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.AddScoped(x => DbContextStartup.Content(x));
             services.AddScoped<HttpGetCdnManifestCommand>();
             services.AddScoped<HttpGetCdnContentCommand>();
+
+            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
+            services.AddTransient<IHttpResponseHeaderConfig, HttpResponseHeaderConfig>();
+            services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
 
             services.AddSwaggerGen(o =>
             {
@@ -70,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             });
 
 
-            if (env.IsDevelopment() || env.IsEnvironment("Test"))
+            if (env.IsDevelopment() || env.IsEnvironment("Test")) //TODO what is the env name for TEST?
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -79,6 +62,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
                 app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
             }
 
+            app.UseSerilogRequestLogging();
+            
             app.UseRouting();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

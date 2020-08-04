@@ -7,8 +7,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     public static class ContentTypes
     {
         public const string AppConfig = nameof(AppConfig);
-        public const string RiskCalculationParameters = nameof(RiskCalculationParameters); //TODO API version?
+        public const string RiskCalculationParameters = nameof(RiskCalculationParameters);
+        public const string ExposureKeySet = nameof(ExposureKeySet);
+        public const string Manifest = nameof(Manifest);
 
-        public static bool IsValid(string value) => value == AppConfig || value == RiskCalculationParameters;
+        public static bool IsValid(string value) => 
+            value == AppConfig 
+            || value == RiskCalculationParameters
+            || value == ExposureKeySet
+            || value == Manifest
+        ;
     }
 }

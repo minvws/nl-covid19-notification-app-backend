@@ -3,11 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
 {
     public interface ISecretWriter
     {
-        Task<EnrollmentResponse> Execute();
+        Task<TekReleaseWorkflowStateEntity> Execute();
     }
 }

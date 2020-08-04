@@ -16,14 +16,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs
         {
         }
 
+        //ncrunch: no coverage start 
         public bool IsEnabled(LogLevel logLevel)
         {
-            return true;
+            throw new NotImplementedException();
         }
 
         public IDisposable BeginScope<TState>(TState state)
         {
             throw new NotImplementedException();
         }
+        //ncrunch: no coverage end
     }
 }

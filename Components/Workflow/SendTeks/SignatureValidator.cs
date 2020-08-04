@@ -11,15 +11,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 {
     public class SignatureValidator : ISignatureValidator
     {
-        public bool Valid(byte[] signature, KeyReleaseWorkflowState workflow, byte[] data)
+        public bool Valid(byte[] signature, byte[] confirmationKey, byte[] data)
         {
             if (signature == null) throw new ArgumentNullException(nameof(signature));
-            if (workflow == null) throw new ArgumentNullException(nameof(workflow));
+            if (confirmationKey == null) throw new ArgumentNullException(nameof(confirmationKey));
             if (data == null) throw new ArgumentNullException(nameof(data));
 
-            using var hmac = new HMACSHA256(Convert.FromBase64String(workflow.ConfirmationKey));
+            using var hmac = new HMACSHA256(confirmationKey);
             var hash = hmac.ComputeHash(data);
-
             return hash.SequenceEqual(signature);
         }
     }

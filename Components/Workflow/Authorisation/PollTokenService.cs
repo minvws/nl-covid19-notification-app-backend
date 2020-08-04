@@ -9,6 +9,10 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
+    
+    /// <summary>
+    /// Transient
+    /// </summary>
     public class PollTokenService
     {
         private const string PayloadElement = "payload";
@@ -22,19 +26,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
 
-        public string GenerateToken()
+        public string Next()
         {
             return _JwtService.Generate(
-                _DateTimeProvider.Now().AddSeconds(30).ToUnixTime(),
+                _DateTimeProvider.Now().AddSeconds(30).ToUnixTime(), //TODO setting?
                 new Dictionary<string, object>
                 {
-                    [PayloadElement] = Guid.NewGuid().ToString() // make polltoken unique
+                    [PayloadElement] = Guid.NewGuid().ToString() // make polltoken unique //TODO use RNG here instead cos index clustering
                 });
         }
 
-        public bool Validate(string argsPollToken)
+        public bool Validate(string value)
         {
-            return _JwtService.TryDecode(argsPollToken, out _);
+            return _JwtService.TryDecode(value, out _);
         }
     }
 }

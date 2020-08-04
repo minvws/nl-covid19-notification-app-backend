@@ -5,25 +5,22 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             new ConsoleAppRunner().Execute(args, Configure, Start);
         }
@@ -35,41 +32,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddLogging();
+            services.AddLogging(builder =>
+            {
+              builder.AddSerilog(new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger(), true);
+            });
+
+            services.AddScoped(x => DbContextStartup.Content(x, false));
+            services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.AddScoped<HttpGetCdnManifestCommand>();
+            services.AddScoped<HttpGetCdnContentCommand>();
+
             services.AddSingleton<IConfiguration>(configuration);
+            services.AddSingleton<IEksConfig, StandardEksConfig>();
+
             services.AddTransient<ManifestBatchJob>();
             services.AddTransient<ManifestBuilderAndFormatter>();
             services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
             services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient<IPublishingId, StandardPublishingIdFormatter>();
-
-            services.AddTransient<HttpGetCdnManifestCommand>();
-            services.AddTransient<HttpGetCdnContentCommand>();
-
-            services.AddScoped(x =>
-            {
-                var config = new StandardEfDbConfig(configuration, "Content");
-                var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new ContentDbContext(builder.Build());
-                return result;
-            });
+            services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
             services.AddTransient<ManifestBuilder>();
-            services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            if (configuration.GetValue("DevelopmentFlags:UseCertificatesFromResources", false))
-            {
-                if (configuration.GetValue("DevelopmentFlags:Azure", false))
-                    services.AddTransient<IContentSigner>(x => new CmsSigner(new AzureResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"))));
-                else
-                    services.AddTransient<IContentSigner>(x => new CmsSigner(new LocalResourceCertificateProvider(new StandardCertificateLocationConfig(configuration, "Certificates:NL"), x.GetRequiredService<ILogger<LocalResourceCertificateProvider>>())));
-            }
-            else
-            {
-                services.AddTransient<IContentSigner>(x
-                    => new CmsSigner(new X509CertificateProvider(new CertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:NL"),
-                        x.GetRequiredService<ILogger<X509CertificateProvider>>())));
-            }
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
-            services.AddSingleton<IGaenContentConfig, StandardGaenContentConfig>();
+
+            services.NlSignerStartup(configuration.UseCertificatesFromResources());
+            services.GaSignerStartup(configuration.UseCertificatesFromResources());
+
         }
     }
 }

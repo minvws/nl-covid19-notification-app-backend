@@ -5,7 +5,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
@@ -39,7 +38,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
         [Route(EndPointNames.ContentApi.ExposureKeySet + "/{id}")]
         public async Task GetExposureKeySet(string id, [FromServices] HttpGetCdnContentCommand command)
         {
-            await command.Execute(HttpContext, id);
+            await command.Execute(HttpContext, ContentTypes.ExposureKeySet, id);
         }
+
+        [HttpGet]
+        [Route("/")]
+        public IActionResult AssemblyDump() => new DumpAssembliesToPlainText().Execute();
+
     }
 }

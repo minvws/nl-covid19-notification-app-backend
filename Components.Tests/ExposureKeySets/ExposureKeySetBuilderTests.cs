@@ -8,13 +8,13 @@ using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
-using TemporaryExposureKeyArgs = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.TemporaryExposureKeyArgs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
 {
@@ -31,11 +31,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         public void Build(int keyCount, int seed)
         {
             var lf = new LoggerFactory();
+            var dtp = new StandardUtcDateTimeProvider();
+            var builder = new EksBuilderV1(
+                new FakeEksHeaderInfoConfig(),
+                new EcdSaSigner(new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestECDSA.p12", ""), lf.CreateLogger<EmbeddedResourceCertificateProvider>())),
+                new CmsSignerEnhanced(
+                    new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), lf.CreateLogger<EmbeddedResourceCertificateProvider>()),
+                    new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")),
+                    dtp
+                    ),
+                dtp,
+                new GeneratedProtobufEksContentFormatter(),
+                lf.CreateLogger<EksBuilderV1>()
+                ); 
 
-            var builder = new ExposureKeySetBuilderV1(new FakeExposureKeySetHeaderInfoConfig(), 
-                new EcdSaSigner(new LocalResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestCert2.p12", ""), lf.CreateLogger<LocalResourceCertificateProvider>())), 
-                new CmsSigner(new LocalResourceCertificateProvider(new HardCodedCertificateLocationConfig("FakeRSA.p12", "Covid-19!"), lf.CreateLogger<LocalResourceCertificateProvider>())), 
-                new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter(), new LoggerFactory().CreateLogger<ExposureKeySetBuilderV1>());
+                //new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter(), new LoggerFactory().CreateLogger<ExposureKeySetBuilderV1>());
 
             var actual = builder.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
             Assert.IsTrue(actual.Length > 0);
@@ -50,11 +60,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         private TemporaryExposureKeyArgs[] GetRandomKeys(int workflowCount, int seed)
         {
             var random = new Random(seed);
-            var workflowKeyValidatorConfig = new DefaultGaenTekValidatorConfig();
-            var workflowValidatorConfig = new DefaultGeanTekListValidationConfig();
+            var workflowKeyValidatorConfig = new DefaultTekValidatorConfig();
+            var workflowValidatorConfig = new DefaultTekListValidationConfig();
 
             var result = new List<TemporaryExposureKeyArgs>(workflowCount * workflowValidatorConfig.TemporaryExposureKeyCountMax);
-            var keyBuffer = new byte[workflowKeyValidatorConfig.DailyKeyByteCount];
+            var keyBuffer = new byte[workflowKeyValidatorConfig.KeyDataLength];
 
             for (var i = 0; i < workflowCount; i++)
             {
@@ -68,7 +78,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                         KeyData = keyBuffer,
                         RollingStartNumber = workflowKeyValidatorConfig.RollingPeriodMin + j,
                         RollingPeriod = 11,
-                        TransmissionRiskLevel = 2
+                        TransmissionRiskLevel = TransmissionRiskLevel.Medium
                     });
                 }
                 result.AddRange(keys);

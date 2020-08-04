@@ -6,6 +6,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 {
     public interface ITemporaryExposureKeyValidator
     {
-        bool Valid(TemporaryExposureKeyArgs value);
+        string[] Valid(PostTeksItemArgs value);
     }
 }

@@ -9,12 +9,12 @@ namespace MobileAppApi.Tests
 {
     public static class HmacSigner
     {
-        public static string Sign(in string keyString, in byte[] data)
-        {
-            var key = Convert.FromBase64String(keyString);
+        //public static string Sign(in string keyString, in byte[] data)
+        //{
+        //    var key = Convert.FromBase64String(keyString);
 
-            return Sign(key, data);
-        }
+        //    return Sign(key, data);
+        //}
 
         public static string Sign(in byte[] key, in byte[] data)
         {

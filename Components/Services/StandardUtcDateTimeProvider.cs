@@ -8,6 +8,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {
     public class StandardUtcDateTimeProvider : IUtcDateTimeProvider
     {
+        public StandardUtcDateTimeProvider()
+        {
+            TakeSnapshot();
+        }
+
         public DateTime Now() => DateTime.UtcNow;
+
+        public DateTime TakeSnapshot()
+        {
+            Snapshot = Now();
+            return Snapshot;
+        }
+
+        public DateTime Snapshot { get; private set; }
     }
 }

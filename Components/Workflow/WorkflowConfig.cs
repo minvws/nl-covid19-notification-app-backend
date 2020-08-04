@@ -9,11 +9,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 {
     public class WorkflowConfig : AppSettingsReader, IWorkflowConfig
     {
-        private const int WorkflowTokenTtlDaysDefault = 14;
-
-        public WorkflowConfig(IConfiguration config, string prefix = "Workflow") : base(config, prefix)
+        public WorkflowConfig(IConfiguration config, string? prefix = null) : base(config, prefix)
         {
         }
 
+        public int TimeToLiveMinutes => GetConfigValue(nameof(TimeToLiveMinutes), 1680); //24 x 60 + 4 x 60
+        public int PermittedMobileDeviceClockErrorMinutes => GetConfigValue(nameof(PermittedMobileDeviceClockErrorMinutes), 30);
+        public int PostKeysSignatureLength => GetConfigValue(nameof(PostKeysSignatureLength), 32);
+        public int BucketIdLength => GetConfigValue(nameof(BucketIdLength), 32);
+        public int ConfirmationKeyLength => GetConfigValue(nameof(ConfirmationKeyLength), 32);
     }
 }

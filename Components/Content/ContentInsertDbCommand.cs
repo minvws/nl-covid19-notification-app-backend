@@ -7,6 +7,7 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
@@ -16,14 +17,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     {
         private readonly ContentDbContext _DbContext;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly IPublishingId _PublishingId;
+        private readonly IPublishingIdService _PublishingIdService;
         private readonly ZippedSignedContentFormatter _SignedFormatter;
 
-        public ContentInsertDbCommand(ContentDbContext dbContext, IUtcDateTimeProvider dateTimeProvider, IPublishingId publishingId, ZippedSignedContentFormatter signedFormatter)
+        public ContentInsertDbCommand(ContentDbContext dbContext, IUtcDateTimeProvider dateTimeProvider, IPublishingIdService publishingIdService, ZippedSignedContentFormatter signedFormatter)
         {
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _PublishingId = publishingId ?? throw new ArgumentNullException(nameof(publishingId));
+            _PublishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
             _SignedFormatter = signedFormatter ?? throw new ArgumentNullException(nameof(signedFormatter));
         }
 
@@ -38,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 Created= _DateTimeProvider.Now(), //TODO audit stamp
                 Release = args.Release,
                 Type = args.ContentType,
-                PublishingId = _PublishingId.Create(contentBytes),
+                PublishingId = _PublishingIdService.Create(contentBytes),
                 Content = await _SignedFormatter.SignedContentPacket(contentBytes),
                 ContentTypeName = MediaTypeNames.Application.Zip
             };

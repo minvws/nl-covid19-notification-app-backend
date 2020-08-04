@@ -2,14 +2,14 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
-using System;
-using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
 {
@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
 
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.ReleaseTeks)]
-        public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand command)
+        public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand2 command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             if (_Logger == null) throw new ArgumentNullException(nameof(_Logger));
@@ -56,5 +56,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
             _Logger.LogInformation("POST stopkeys triggered.");
             return await command.Execute();
         }
+
+        [HttpGet]
+        [Route("/")]
+        public IActionResult AssemblyDump() => new DumpAssembliesToPlainText().Execute();
+
     }
 }

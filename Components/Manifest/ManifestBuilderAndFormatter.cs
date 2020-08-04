@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
@@ -29,11 +30,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 
         public async Task<ContentEntity> Execute()
         {
-            var now = _DateTimeProvider.Now();
+            var now = _DateTimeProvider.Snapshot;
             var e = new ContentEntity
             {
                 Created = now,
                 Release = now,
+                Type = ContentTypes.Manifest
             };
             _Logger.LogDebug("Build new manifest.");
             var content = await _ManifestBuilder.Execute();

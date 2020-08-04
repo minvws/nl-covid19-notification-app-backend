@@ -10,8 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
@@ -19,6 +19,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
+using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 {
@@ -40,43 +41,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
             services.AddControllers();
 
-            services.AddScoped(x =>
-            {
-                var config = new StandardEfDbConfig(_Configuration, "WorkFlow");
-                var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new WorkflowDbContext(builder.Build());
-                result.BeginTransaction();
-                return result;
-            });
+            services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.AddScoped(x => DbContextStartup.Workflow(x));
 
-            services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddSingleton<IGeanTekListValidationConfig, StandardGeanCommonWorkflowConfig>();
-            services.AddSingleton<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
-            services.AddSingleton<ITemporaryExposureKeyValidatorConfig, TemporaryExposureKeyValidatorConfig>();
+            services.AddScoped<HttpPostReleaseTeksCommand2>();
+            services.AddScoped<HttpPostRegisterSecret>();
+            services.AddScoped<HttpPostDecoyKeysCommand>();
 
-            services.AddScoped<HttpPostReleaseTeksCommand, HttpPostReleaseTeksCommand>();
+            services.AddSingleton<ITekListValidationConfig, StandardTekListValidationConfig>();
+            services.AddSingleton<ITekValidatorConfig, TekValidatorConfig>();
+            services.AddSingleton<IDecoyKeysConfig, StandardDecoyKeysConfig>();
+            services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
 
-            services.AddScoped<IReleaseTeksValidator, ReleaseTeksValidator>();
-            services.AddScoped<ISignatureValidator, SignatureValidator>();
-
-            _SignatureValidationEnabled = _Configuration.GetValue("ValidatePostKeysSignature", true);
-            if (_SignatureValidationEnabled)
-            {
-                services.AddScoped<ISignatureValidator, SignatureValidator>();
-            }
+            if (_Configuration.ValidatePostKeysSignature())
+                services.AddTransient<ISignatureValidator, SignatureValidator>();
             else
-            {
-                services.AddScoped<ISignatureValidator, DoNotValidateSignatureValidator>();
-            }
+                services.AddTransient<ISignatureValidator, DoNotValidateSignatureValidator>();
 
-            services.AddScoped<HttpPostRegisterSecret, HttpPostRegisterSecret>();
-            services.AddScoped<ISecretWriter, SecretWriter>();
-            services.AddScoped<ITekWriter, TekWriter>();
-            services.AddScoped<RandomNumberGenerator, RandomNumberGenerator>();
-            services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
-
-            services.AddScoped<HttpPostDecoyKeysCommand, HttpPostDecoyKeysCommand>();
-            services.AddScoped<IDecoyKeysConfig, StandardDecoyKeysConfig>();
+            services.AddTransient<IWorkflowTime, TekReleaseWorkflowTime>();
+            services.AddTransient<IPostTeksValidator, PostTeksArgsValidator>();
+            services.AddTransient<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
+            services.AddTransient<ITekListWorkflowFilter, BackwardCompatibleV15TekListWorkflowFilter>();
+            services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
+            services.AddTransient<ISecretWriter, TekReleaseWorkflowStateCreate>();
+            services.AddTransient<ITekWriter, TekWriter>();
+            services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
+            services.AddTransient<ILabConfirmationIdFormatter,StandardLabConfirmationIdFormatter>();
 
             services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });
         }
@@ -101,6 +91,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
             if (!env.IsDevelopment())
                 app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
+
+            app.UseSerilogRequestLogging();
 
             app.UseRouting();
 

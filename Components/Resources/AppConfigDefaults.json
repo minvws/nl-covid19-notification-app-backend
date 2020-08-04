@@ -1,10 +1,14 @@
 ﻿{
-  "version": 1,
-  "release": "2020-06-26T06:00:00.000Z",
-  "manifestFrequency": 15,
-  "temporaryExposureKeyRetentionDays": 14,
-  "observedTemporaryExposureKeyRetentionDays": 14,
-  "decoyProbability": 1,
+  "androidMinimumVersion": 0,
   "androidMinimumKillVersion": 0,
-  "iOSMinimumKillVersion": "1.0.0"
+  "iOSMinimumVersion": "1.0.0",
+  "iOSMinimumKillVersion": "1.0.0",
+  "iOSMinimumVersionMessage": "",
+  "iOSAppStoreURL": "",
+  "manifestFrequency": 90,
+  "decoyProbability": 0.00118,
+  "requestMinimumSize": 1800,
+  "requestMaximumSize": 17000,
+  "repeatedUploadDelay": 14400,
+  "coronaMelderTestPhase": true
 }

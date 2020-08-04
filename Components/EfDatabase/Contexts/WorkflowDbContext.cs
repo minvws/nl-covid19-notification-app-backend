@@ -4,7 +4,7 @@
 
 using System;
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts
 {
@@ -15,15 +15,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         {
         }
 
-        public DbSet<KeyReleaseWorkflowState> KeyReleaseWorkflowStates { get; set; }
-        public DbSet<TemporaryExposureKeyEntity> TemporaryExposureKeys { get; set; }
+        public DbSet<TekReleaseWorkflowStateEntity> KeyReleaseWorkflowStates { get; set; }
+        public DbSet<TekEntity> TemporaryExposureKeys { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
-            modelBuilder.HasDefaultSchema("dbo");
-            modelBuilder.ApplyConfiguration(new Configuration.Workflow.KeyReleaseWorkflowStateEtc());
-            modelBuilder.ApplyConfiguration(new Configuration.Workflow.TemporaryExposureKeyEtc());
+
+            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.BucketId).IsUnique();
+            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.ConfirmationKey).IsUnique();
+            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.LabConfirmationId).IsUnique();
+            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.PollToken).IsUnique();
+
+            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.ValidUntil);
+            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.AuthorisedByCaregiver);
+
+            //TODO ensure cleanup jobs check the Published column of the Teks before deleting.
+            modelBuilder
+                .Entity<TekReleaseWorkflowStateEntity>()
+                .HasMany(x => x.Teks)
+                .WithOne(x => x.Owner)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TekEntity>().HasIndex(u => u.PublishingState);
+            modelBuilder.Entity<TekEntity>().HasIndex(u => u.PublishAfter);
+            modelBuilder.Entity<TekEntity>().HasIndex(u => u.Region);
         }
     }
 }

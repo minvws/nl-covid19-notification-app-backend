@@ -14,10 +14,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         {
         }
 
-        public string BaseUrl => GetConfigValue(nameof(BaseUrl), String.Empty);
-        public string Tenant => GetConfigValue(nameof(Tenant), String.Empty);
-        public string ClientId => GetConfigValue(nameof(ClientId), String.Empty);
-        public string ClientSecret => GetConfigValue(nameof(ClientSecret), String.Empty);
+        public string BaseUrl => GetConfigValue(nameof(BaseUrl), string.Empty);
+        public string Tenant => GetConfigValue(nameof(Tenant), string.Empty);
+        public string ClientId => GetConfigValue(nameof(ClientId), string.Empty);
+        public string ClientSecret => GetConfigValue(nameof(ClientSecret), string.Empty);
         
         
     }

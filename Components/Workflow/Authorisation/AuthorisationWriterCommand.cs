@@ -3,65 +3,56 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
     public class AuthorisationWriterCommand
     {
-        private readonly WorkflowDbContext _DbContextProvider;
-        private readonly PollTokenService _PollTokenService;
+        private readonly WorkflowDbContext _WorkflowDb;
         private readonly ILogger _Logger;
-        private readonly AuthorisationArgsValidator _AuthorisationArgsValidator;
+        private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly WriteNewPollTokenWriter _NewPollTokenWriter;
 
-        public AuthorisationWriterCommand(WorkflowDbContext dbContextProvider, PollTokenService pollTokenService,
-            ILogger<AuthorisationWriterCommand> logger, AuthorisationArgsValidator authorisationArgsValidator)
+        public AuthorisationWriterCommand(WorkflowDbContext workflowDb, ILogger<AuthorisationWriterCommand> logger, IUtcDateTimeProvider dateTimeProvider, WriteNewPollTokenWriter newPollTokenWriter)
         {
-            _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
-            _PollTokenService = pollTokenService ?? throw new ArgumentNullException(nameof(pollTokenService));
+            _WorkflowDb = workflowDb ?? throw new ArgumentNullException(nameof(workflowDb));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _AuthorisationArgsValidator = authorisationArgsValidator ??
-                                          throw new ArgumentNullException(nameof(authorisationArgsValidator));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _NewPollTokenWriter = newPollTokenWriter ?? throw new ArgumentNullException(nameof(newPollTokenWriter));
         }
 
-
-        public async Task<AuthorisationResponse> Execute(AuthorisationArgs args)
+        /// <summary>
+        /// Assume args validated
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public async Task<string?> Execute(AuthorisationArgs args)
         {
-            if (args == null) 
+            if (args == null)
                 throw new ArgumentNullException(nameof(args));
-            if (!_AuthorisationArgsValidator.Validate(args))
-                throw new ArgumentException("Not valid.", nameof(args));
 
-            var wf = await _DbContextProvider
+
+            var wf = await _WorkflowDb
                 .KeyReleaseWorkflowStates
-                .Include(x => x.Keys)
+                .Include(x => x.Teks)
                 .FirstOrDefaultAsync(x => x.LabConfirmationId == args.LabConfirmationId);
 
             if (wf == null)
             {
-                var message = $"KeyReleaseWorkflowState not found - LabConfirmationId:{args.LabConfirmationId}.";
-                _Logger.LogError(message);
-                return new AuthorisationResponse {Valid = false};
+                _Logger.LogError("KeyReleaseWorkflowState not found - LabConfirmationId:{LabConfirmationId}.", args.LabConfirmationId);
+                return null;
             }
 
-            wf.AuthorisedByCaregiver = true; //TODO but wf.LabConfirmationId = null will suffice?
-            wf.Authorised = wf.Keys?.Any() ?? false;
-
+            wf.AuthorisedByCaregiver = _DateTimeProvider.Snapshot;
+            wf.LabConfirmationId = null; //Clear from usable key range
             wf.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
-            wf.LabConfirmationId = null;
-            wf.PollToken = _PollTokenService.GenerateToken();
 
-            _Logger.LogDebug($"Committing.");
-            _DbContextProvider.SaveAndCommit();
-
-            _Logger.LogInformation($"Committed - new PollToken:{wf.PollToken}.");
-            return new AuthorisationResponse {Valid = true, PollToken = wf.PollToken};
+            return _NewPollTokenWriter.Execute(wf);
         }
     }
 }
