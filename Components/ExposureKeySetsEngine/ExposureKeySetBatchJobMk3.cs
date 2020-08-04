@@ -68,12 +68,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _JobName = $"ExposureKeySetsJob_{_Start:u}".Replace(" ", "_").Replace(":", "_");
         }
 
-        public async Task Execute(bool useAllKeys = false)
+        public async Task Execute()
         {
             if (_Disposed)
                 throw new ObjectDisposedException(_JobName);
 
-            _Logger.LogInformation("{JobName} started - useAllKeys:{UseAllKeys}", _JobName, useAllKeys);
+            _Logger.LogInformation("Started - JobName:{_JobName}", _JobName);
 
             if (!WindowsIdentityStuff.CurrentUserIsAdministrator()) //TODO remove warning when UAC is not in play
                 _Logger.LogWarning("{JobName} started WITHOUT elevated privileges - errors may occur when signing content.", _JobName);
@@ -82,7 +82,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _PublishingDbContext.EnsureNoChangesOrTransaction();
             _ContentDbContext.EnsureNoChangesOrTransaction();
 
-            await CopyInput(useAllKeys);
+            await CopyInput();
             await Stuff();
             await BuildBatches();
             await CommitResults();
@@ -184,7 +184,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             //TODO _JobDatabase?.Dispose();
         }
 
-        private async Task CopyInput(bool useAllKeys = false)
+        private async Task CopyInput()
         {
             _Logger.LogDebug("Copy input TEKs.");
 
@@ -198,7 +198,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             await using (_WorkflowDbContext.BeginTransaction())
             {
                 var read = _WorkflowDbContext.TemporaryExposureKeys
-                    .Where(x => (x.Owner.AuthorisedByCaregiver!=null || useAllKeys) 
+                    .Where(x => (x.Owner.AuthorisedByCaregiver!=null) 
                                 && x.Owner.DateOfSymptomsOnset != null
                                 && x.PublishingState == PublishingState.Unpublished 
                                 && x.PublishAfter <= _Start
