@@ -4,8 +4,17 @@ VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AF7302DA-EC4A-4A77-9092-98DEAB8B4D5C}"
 	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
 		.editorconfig = .editorconfig
+		.gitignore = .gitignore
 		appsettings.release.json = appsettings.release.json
+		azure-pipelines.yml = azure-pipelines.yml
+		build.bat = build.bat
+		copy-CIBG-configs.bat = copy-CIBG-configs.bat
+		deploy-example.bat = deploy-example.bat
+		ExposureNotification.Backend.sln.DotSettings = ExposureNotification.Backend.sln.DotSettings
+		package-CIBG.bat = package-CIBG.bat
+		package.bat = package.bat
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Components", "Components\Components.csproj", "{6142B884-72B0-4941-99BE-BBCCF0C24DA0}"
@@ -45,7 +54,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{3F8DB099
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Tests", "MobileAppApi.Tests\MobileAppApi.Tests.csproj", "{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForceTekAuth", "ForceTekAuth\ForceTekAuth.csproj", "{258279C2-BD6B-4445-9197-953FEE8239FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ForceTekAuth", "ForceTekAuth\ForceTekAuth.csproj", "{258279C2-BD6B-4445-9197-953FEE8239FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
