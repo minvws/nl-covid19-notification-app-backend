@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="..\appsettings.release.json" Link="appsettings.release.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Components\Components.csproj" />
   </ItemGroup>
 

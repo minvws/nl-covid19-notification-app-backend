@@ -37,6 +37,9 @@
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.map" />
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\LICENSE.txt" />
     </ItemGroup>
+    <ItemGroup>
+      <Content Include="..\appsettings.release.json" Link="appsettings.release.json" />
+    </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="CsvHelper" Version="15.0.5" />
