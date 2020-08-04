@@ -9,4 +9,4 @@ REM double check later
 echo f|xcopy ..\s\ManifestEngine\appsettings.release.json Artifacts\ManifestEngine\appsettings.json /Y
 
 echo f|xcopy ..\s\DbProvision\appsettings.release.json Artifacts\DbProvision\appsettings.json /Y
-echo f|xcopy ..\s\DbFillExampleContent\appsettings.release.json Artifacts\DbFillExampleContentDbFillExampleContent\appsettings.json /Y
+echo f|xcopy ..\s\DbFillExampleContent\appsettings.release.json Artifacts\DbFillExampleContent\appsettings.json /Y
