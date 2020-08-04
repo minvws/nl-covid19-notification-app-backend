@@ -9,7 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 {
     public class WorkflowConfig : AppSettingsReader, IWorkflowConfig
     {
-        public WorkflowConfig(IConfiguration config, string? prefix = null) : base(config, prefix)
+        public WorkflowConfig(IConfiguration config, string? prefix = "Workflow") : base(config, prefix)
         {
         }
 
