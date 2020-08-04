@@ -29,9 +29,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
         private static void Start(IServiceProvider serviceProvider, string[] args)
         {
-            var useAllKeys = args.Length > 0 && bool.TryParse(args[0], out var value) && value;
             using var job = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
-            job.Execute(useAllKeys).GetAwaiter().GetResult();
+            job.Execute().GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)

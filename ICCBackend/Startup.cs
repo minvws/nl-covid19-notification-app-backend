@@ -149,7 +149,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         {
             if (_KillAuth) return;
 
-            var iccIdentityHubConfig = new IccIdentityHubConfig(_Configuration, "IccPortalConfig:IdentityHub");
+            var iccIdentityHubConfig = new IccIdentityHubConfig(_Configuration);
 
             services
                 .AddAuthentication(auth =>

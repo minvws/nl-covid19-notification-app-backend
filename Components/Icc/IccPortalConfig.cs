@@ -10,12 +10,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
     public class IccPortalConfig : AppSettingsReader, IIccPortalConfig
     {
-        public IccPortalConfig(IConfiguration config, string? prefix = null) : base(config, prefix)
+        public IccPortalConfig(IConfiguration config, string? prefix = "IccPortal") : base(config, prefix)
         {
-            //IdentityHubConfig = new IccIdentityHubConfig(config, "IccPortalConfig:IdentityHub");
         }
 
-        //public IIccIdentityHubConfig IdentityHubConfig { get; }
         public string JwtSecret => GetConfigValue("Jwt:Secret", string.Empty);
         public double ClaimLifetimeHours => GetConfigValue(nameof(ClaimLifetimeHours), 3.0);
         
