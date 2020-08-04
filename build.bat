@@ -21,7 +21,9 @@ dotnet publish ManifestEngine\ManifestEngine.csproj --no-self-contained --runtim
 
 REM Publish tools
 dotnet publish DbProvision\DbProvision.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\DbProvision --version-suffix %suffix%
+dotnet publish DbFillExampleContent\DbFillExampleContent.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\DbFillExampleContent --version-suffix %suffix%
 dotnet publish GenTeks\GenTeks.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\GenTeks --version-suffix %suffix%
+dotnet publish ForceTekAuth\ForceTekAuth.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\ForceTekAuth --version-suffix %suffix%
 
 REM Publish stand-alone server
 REM dotnet publish ServerStandAlone\ServerStandAlone.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\ServerStandAlone --version-suffix %suffix%
