@@ -1,17 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ManagementPortal;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using System;
 
 namespace ManagementPortal
 {
@@ -27,6 +28,16 @@ namespace ManagementPortal
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped(x => DbContextStartup.Workflow(x, false));
+            services.AddScoped(x => DbContextStartup.Content(x, false));
+            services.AddScoped(x => DbContextStartup.Publishing(x, false));
+
+            services.AddTransient<ContentValidator>();
+            services.AddTransient<ContentInsertDbCommand>();
+
+            services.NlSignerStartup(_Configuration.UseCertificatesFromResources());
+            services.GaSignerStartup(_Configuration.UseCertificatesFromResources());
+
             // Database Scoping
             services.AddScoped(x =>
             {
@@ -36,8 +47,10 @@ namespace ManagementPortal
                 result.BeginTransaction();
                 return result;
             });
-            services.AddScoped<HttpGetTEKsCommand>();
-            services.AddScoped<HttpGetWorkflowStatesCommand>();
+
+            services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
+            services.AddTransient<ZippedSignedContentFormatter>();
 
             services.AddControllersWithViews();
         }
