@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
     public class IccIdentityHubConfig : AppSettingsReader, IIccIdentityHubConfig
     {
-        public IccIdentityHubConfig(IConfiguration config, string? prefix = null) : base(config, prefix)
+        public IccIdentityHubConfig(IConfiguration config, string? prefix = "IccPortal:IdentityHub") : base(config, prefix)
         {
         }
 

@@ -15,8 +15,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Deco
         {
         }
 
-        public int MinimumDelayInMilliseconds => GetConfigValue(nameof(MinimumDelayInMilliseconds), _Defaults.MinimumDelayInMilliseconds);
+        public int MinimumDelayInMilliseconds => GetConfigValue("DelayInMilliseconds:Min", _Defaults.MinimumDelayInMilliseconds);
 
-        public int MaximumDelayInMilliseconds => GetConfigValue(nameof(MaximumDelayInMilliseconds), _Defaults.MaximumDelayInMilliseconds);
+        public int MaximumDelayInMilliseconds => GetConfigValue("DelayInMilliseconds:Max", _Defaults.MaximumDelayInMilliseconds);
     }
 }

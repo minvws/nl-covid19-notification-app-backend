@@ -20,7 +20,4 @@
     <ProjectReference Include="..\Components\Components.csproj" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy $(ProjectDir)appsettings*.json $(OutDir) /Y" />
-  </Target>
 </Project>
