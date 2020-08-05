@@ -132,5 +132,30 @@ namespace MobileAppApi.Tests.Controllers
             Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
             Assert.IsTrue(sw.ElapsedMilliseconds > min);
         }
+
+        [DataTestMethod]
+        [DataRow(200, 300)]
+        public async Task PaddingTest(long minimumResponseSizeInBytes, long maximumResponseSizeInBytes)
+        {
+            // Arrange
+            var client = _Factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureAppConfiguration((ctx, config) =>
+                {
+                    config.AddInMemoryCollection(new Dictionary<string, string>
+                    {
+                        ["MinimumResponseSizeInBytes"] = $"{minimumResponseSizeInBytes}",
+                        ["MaximumResponseSizeInBytes"] = $"{maximumResponseSizeInBytes}"
+                    });
+                });
+            }).CreateClient();
+
+            // Act
+            var result = await client.PostAsync("v1/stopkeys", null);
+            var response = await result.Content.ReadAsByteArrayAsync();
+
+            // Assert
+            Assert.IsTrue(response.Length >= 200 && response.Length <= 300);
+        }
     }
 }

@@ -15,6 +15,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Config
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
@@ -68,6 +69,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
             services.AddTransient<ILabConfirmationIdFormatter,StandardLabConfirmationIdFormatter>();
 
+            services.AddScoped<ResponsePaddingFilter>();
+            services.AddScoped<IResponsePaddingConfig, ResponsePaddingConfig>();
+            
             services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });
         }
 
