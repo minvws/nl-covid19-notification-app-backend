@@ -24,22 +24,22 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         }
 
         [HttpPost]
-        [Route(EndPointNames.CaregiversPortalApi.LabVerify)]
-        public async Task<IActionResult> PostKeysAreUploaded([FromBody] LabVerifyArgs args, [FromServices] HttpPostLabVerifyCommand command)
-        {
-            if (command == null) throw new ArgumentNullException(nameof(command));
-
-            _Logger.LogInformation("POST labverify triggered.");
-            return await command.Execute(args);
-        }
-
-        [HttpPost]
         [Route(EndPointNames.CaregiversPortalApi.LabConfirmation)]
         public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args, [FromServices] HttpPostAuthoriseCommand command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
             _Logger.LogInformation("POST lab confirmation triggered.");
+            return await command.Execute(args);
+        }
+        
+        [HttpPost]
+        [Route(EndPointNames.CaregiversPortalApi.LabVerify)]
+        public async Task<IActionResult> PostKeysAreUploaded([FromBody] LabVerifyArgs args, [FromServices] HttpPostLabVerifyCommand command)
+        {
+            if (command == null) throw new ArgumentNullException(nameof(command));
+
+            _Logger.LogInformation("POST labverify triggered.");
             return await command.Execute(args);
         }
     }
