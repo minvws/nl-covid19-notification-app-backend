@@ -60,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
             // Nothing needs doing if we're above the minimum length
             if (resultString.Length >= _Config.MinimumLengthInBytes)
             {
-                _Logger.LogInformation("No padding needed as response length of {0} is greater than the minimum of {1}..",
+                _Logger.LogInformation("No padding needed as response length of {Length} is greater than the minimum of {MinimumLengthInBytes}..",
                     resultString.Length, _Config.MinimumLengthInBytes);
 
                 return;
