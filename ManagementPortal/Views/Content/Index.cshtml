@@ -10,7 +10,11 @@
 
 <form action="/content" method="post">
     <input type="text" name="release" value="@ViewData["dateNow"]"><br/>
-    <input name="contentType" placeholder="contentType"/><br/>
+    <select name="contentType" id="contentType">
+        <option value="AppConfig">AppConfig</option>
+        <option value="RiskCalculationParameters">RiskCalculationParameters</option>
+    </select>
+    <br/>
     <textarea name="json" id="" cols="60" rows="20" value="{}" placeholder="{}">{}</textarea>
     <br>
 
