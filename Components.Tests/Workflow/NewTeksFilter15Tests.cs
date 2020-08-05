@@ -221,15 +221,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             Write(w, fr.Items);
             Assert.AreEqual(keysOnDevice.Count-1, w.Teks.Count);
 
-
             //Sep 15 11:20 Server publishes K0902.1 through K0915.2 to the CDN.
-            //Incorrect - 2 hour waiting period
-            T = new DateTime(2020, 9, 15, 11, 20, 0);
-            Assert.AreEqual(0, Publish(T).Length);
-            //Just before publishable...
-            T = new DateTime(2020, 9, 15, 12, 59, 59);
-            Assert.AreEqual(0, Publish(T).Length);
-            //Now they publish
             T = new DateTime(2020, 9, 15, 13, 1, 0);
             Assert.AreEqual(13, Publish(T).Length);
 

@@ -1,9 +1,10 @@
-// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -73,41 +74,19 @@ namespace MobileAppApi.Tests.Controllers
             Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
         }
 
-        [Ignore("Not implemented yet")]
-        [TestMethod]
-        public async Task PaddingTest()
-        {
-            // Arrange
-            var client = _Factory.CreateClient();
-
-            // Act
-            var result = await client.PostAsync("v1/stopkeys", null);
-
-            // Assert
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-            // Values taken from https://github.com/minvws/nl-covid19-notification-app-coordination/blob/master/architecture/Traffic%20Analysis%20Mitigation%20With%20Decoys.md
-            // TODO: Should move these values to theory
-            Assert.IsTrue((result.Content.Headers.ContentLength ?? 0) >= 1800);
-            Assert.IsTrue((result.Content.Headers.ContentLength ?? 0) <= 17000);
-        }
-
+        // TODO move/refactor, this tests the delay feature not if it's enabled for an endpoint
         /// <summary>
         /// Tests whether or not the response is delayed by at least the minimum time.
         /// </summary>
-        /// <remarks>
-        /// Testing the maximum delay time is difficult as it does not include the standard processing time of the
-        /// HTTP request by Kestrel.
-        ///
-        /// TODO: Not sure what the right parameters should be here.
-        /// </remarks>
         /// <param name="min">Minimum wait time</param>
+        /// <param name="max">Maximum wait time</param>
         [DataTestMethod]
-        [DataRow(100L)]
-        [DataRow(200L)]
-        [DataRow(300L)]
-        [DataRow(50L)]
-        [DataRow(10L)]
-        public async Task DelayTest(long min)
+        [DataRow(100L, 200L)]
+        [DataRow(200L, 300L)]
+        [DataRow(300L, 400L)]
+        [DataRow(50L, 100L)]
+        [DataRow(10L, 50L)]
+        public async Task DelayTest(long min, long max)
         {
             // Arrange
             var sw = new Stopwatch();
@@ -117,8 +96,8 @@ namespace MobileAppApi.Tests.Controllers
                 {
                     config.AddInMemoryCollection(new Dictionary<string, string>
                     {
-                        ["MinimumDelayInMilliseconds"] = $"{min}",
-                        ["MaximumDelayInMilliseconds"] = $"{min + 1}",
+                        ["Workflow:Decoys:DelayInMilliseconds:Min"] = $"{min}",
+                        ["Workflow:Decoys:DelayInMilliseconds:Max"] = $"{max}"
                     });
                 });
             }).CreateClient();
@@ -131,6 +110,79 @@ namespace MobileAppApi.Tests.Controllers
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
             Assert.IsTrue(sw.ElapsedMilliseconds > min);
+        }
+        
+        // TODO: move/refactor, this tests the delay feature not if it's enabled for an endpoint
+        // TODO: implement this as a unit test on ResponsePaddingFilter
+        [DataTestMethod]
+        [DataRow(8, 16)]
+        [DataRow(32, 64)]
+        [DataRow(200, 300)]
+        public async Task PaddingTest(long min, long max)
+        {
+            // Arrange
+            var client = _Factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureAppConfiguration((ctx, config) =>
+                {
+                    config.AddInMemoryCollection(new Dictionary<string, string>
+                    {
+                        ["Workflow:ResponsePadding:ByteCount:Min"] = $"{min}",
+                        ["Workflow:ResponsePadding:ByteCount:Max"] = $"{max}",
+                        ["Workflow:Decoys:DelayInMilliseconds:Min"] = $"0",
+                        ["Workflow:Decoys:DelayInMilliseconds:Max"] = $"8"
+                    });
+                });
+            }).CreateClient();
+
+            // Act
+            var result = await client.PostAsync("v1/stopkeys", null);
+            var padding = result.Headers.GetValues("padding").SingleOrDefault();
+
+            // Assert
+            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+            Assert.IsNotNull(padding);
+            Assert.IsTrue(padding.Length >= min);
+            Assert.IsTrue(padding.Length <= max);
+        }
+
+        [TestMethod]
+        public async Task Stopkeys_has_padding()
+        {
+            // Arrange
+            var client = _Factory.CreateClient();
+
+            // Act
+            var result = await client.PostAsync("v1/stopkeys", null);
+
+            // Assert
+            Assert.IsTrue(result.Headers.Contains("padding"));
+        }
+
+        [TestMethod]
+        public async Task Register_has_padding()
+        {
+            // Arrange
+            var client = _Factory.CreateClient();
+
+            // Act
+            var result = await client.PostAsync("v1/register", null);
+
+            // Assert
+            Assert.IsTrue(result.Headers.Contains("padding"));
+        }
+
+        [TestMethod]
+        public async Task Postkeys_has_padding()
+        {
+            // Arrange
+            var client = _Factory.CreateClient();
+
+            // Act
+            var result = await client.PostAsync("v1/postkeys", null);
+
+            // Assert
+            Assert.IsTrue(result.Headers.Contains("padding"));
         }
     }
 }

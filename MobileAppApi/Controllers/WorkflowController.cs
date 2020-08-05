@@ -24,6 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        [ResponsePaddingFilterFactory]
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.ReleaseTeks)]
         public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand2 command)
@@ -35,6 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
             return await command.Execute(sig, Request);
         }
 
+        [ResponsePaddingFilterFactory]
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.Register)]
         public async Task<IActionResult> PostSecret([FromServices]HttpPostRegisterSecret command)
@@ -46,6 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
             return await command.Execute();
         }
 
+        [ResponsePaddingFilterFactory]
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.RandomNoise)]
         public async Task<IActionResult> StopKeys([FromServices] HttpPostDecoyKeysCommand command)
@@ -60,6 +63,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         [HttpGet]
         [Route("/")]
         public IActionResult AssemblyDump() => new DumpAssembliesToPlainText().Execute();
-
     }
 }

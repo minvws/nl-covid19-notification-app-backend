@@ -30,11 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Deco
             _Logger.LogDebug("Delaying for {DelayInMilliseconds} seconds", delayInMilliseconds);
             await Task.Delay(delayInMilliseconds);
 
-            var padding = string.Empty; // TODO there's another ticket to generate the correct response padding
-            _Logger.LogDebug("Padding response is: `{Padding}`", padding);
-
-            _Logger.LogDebug("Delaying for {DelayInMilliseconds} seconds", delayInMilliseconds);
-            return new OkObjectResult(padding);
+            return new OkResult();
         }
     }
 }
