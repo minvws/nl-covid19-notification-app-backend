@@ -2,9 +2,9 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 {
@@ -12,6 +12,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
     {
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
+            if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
+
             return serviceProvider.GetRequiredService<ResponsePaddingFilterAttribute>();
         }
 
