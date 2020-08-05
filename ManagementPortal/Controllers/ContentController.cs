@@ -45,12 +45,12 @@ namespace ManagementPortal.Controllers
         }
 
         [HttpPost, Route("content")]
-        public IActionResult PostContent([FromForm] ContentArgs contentArgs)
+        public async Task<IActionResult> PostContent([FromForm] ContentArgs contentArgs)
         {
             if (!_Validator.IsValid(contentArgs)) return BadRequest("Invalid Json");
 
             using var tx = _Context.Database.BeginTransaction();
-            _InsertDbCommand.Execute(contentArgs);
+            await _InsertDbCommand.Execute(contentArgs);
             _Context.SaveAndCommit();
 
             return new OkObjectResult(contentArgs);
