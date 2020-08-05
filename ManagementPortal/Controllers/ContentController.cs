@@ -8,6 +8,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ManagementPortal.Controllers
 {
