@@ -34,9 +34,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
         /// </summary>
         public ResponsePaddingFilter(IResponsePaddingConfig config, IRandomNumberGenerator rng, ILogger<ResponsePaddingFilter> logger)
         {
-            _Config = config;
-            _Rng = rng;
-            _Logger = logger;
+            _Config = config ?? throw new ArgumentNullException(nameof(_Config));
+            _Rng = rng ?? throw new ArgumentNullException(nameof(_Logger));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(_Rng));
         }
 
         /// <summary>
@@ -45,10 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
         public override void OnResultExecuting(ResultExecutingContext context)
         {
             base.OnResultExecuting(context);
-
-            if (_Config == null) throw new ArgumentNullException(nameof(_Config));
-            if (_Logger == null) throw new ArgumentNullException(nameof(_Logger));
-
+            
             string resultString = string.Empty;
 
             // Only works for object results
@@ -77,10 +74,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
         /// </summary>
         private string Padding(int contentLength)
         {
-            if (_Config == null) throw new ArgumentNullException(nameof(_Config));
-            if (_Logger == null) throw new ArgumentNullException(nameof(_Logger));
-            if (_Rng == null) throw new ArgumentNullException(nameof(_Rng));
-
             var paddingLength = _Rng.Next(_Config.MinimumLengthInBytes, _Config.MaximumLengthInBytes) - contentLength;
             _Logger.LogInformation("Length of response padding: {PaddingLength}", paddingLength);
 

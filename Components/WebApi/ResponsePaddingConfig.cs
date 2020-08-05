@@ -9,8 +9,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 {
     public class ResponsePaddingConfig : AppSettingsReader, IResponsePaddingConfig
     {
-        public ResponsePaddingConfig(IConfiguration config, string prefix = "ExposureKeySets") : base(config, prefix) { }
-        public int MinimumLengthInBytes => GetConfigValue("Workflow:ResponsePadding:ByteCount:Min", 200);
-        public int MaximumLengthInBytes => GetConfigValue("Workflow:ResponsePadding:ByteCount:Max", 300);
+        public ResponsePaddingConfig(IConfiguration config, string prefix = "Workflow:ResponsePadding") : base(config, prefix) { }
+        public int MinimumLengthInBytes => GetConfigValue("ByteCount:Min", 200);
+        public int MaximumLengthInBytes => GetConfigValue("ByteCount:Max", 300);
     }
 }
