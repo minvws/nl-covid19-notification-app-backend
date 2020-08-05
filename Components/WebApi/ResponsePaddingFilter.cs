@@ -82,10 +82,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
             if (_Rng == null) throw new ArgumentNullException(nameof(_Rng));
 
             var paddingLength = _Rng.Next(_Config.MinimumLengthInBytes, _Config.MaximumLengthInBytes) - contentLength;
-            _Logger.LogInformation("Length of response padding: {paddingLength}", paddingLength);
+            _Logger.LogInformation("Length of response padding: {PaddingLength}", paddingLength);
 
             var padding = string.Concat(Enumerable.Repeat(PaddingCharacter, paddingLength));
-            _Logger.LogDebug("Response padding: {padding}", padding);
+            _Logger.LogDebug("Response padding: {Padding}", padding);
 
             return padding;
         }
