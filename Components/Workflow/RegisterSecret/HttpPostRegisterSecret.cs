@@ -10,9 +10,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
 {
-
-
-
     public class HttpPostRegisterSecret
     {
         private readonly ISecretWriter _Writer;

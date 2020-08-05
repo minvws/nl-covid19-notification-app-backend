@@ -16,6 +16,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
+        public long? TekId { get; set; }
+
         /// <summary>
         /// Set when the exposure key set it written
         /// </summary>
