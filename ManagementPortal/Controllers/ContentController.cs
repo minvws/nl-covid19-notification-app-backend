@@ -7,6 +7,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,6 +23,11 @@ namespace ManagementPortal.Controllers
 
         public ContentController(ContentValidator validator, ContentInsertDbCommand insertDbCommand, ContentDbContext context, IUtcDateTimeProvider dateTimeProvider)
         {
+            if (validator == null) throw new ArgumentNullException(nameof(validator));
+            if (insertDbCommand == null) throw new ArgumentNullException(nameof(insertDbCommand));
+            if (context == null) throw new ArgumentNullException(nameof(context));
+            if (dateTimeProvider == null) throw new ArgumentNullException(nameof(dateTimeProvider));
+
             _Validator = validator;
             _InsertDbCommand = insertDbCommand;
             _Context = context;

@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using System;
 using System.Linq;
 
 namespace ManagementPortal
@@ -13,9 +14,11 @@ namespace ManagementPortal
     {
         private readonly WorkflowDbContext _WorkflowDbContext;
 
-        public DataController(WorkflowDbContext WorkflowDbContext)
+        public DataController(WorkflowDbContext workflowDbContext)
         {
-            _WorkflowDbContext = WorkflowDbContext;
+            if (workflowDbContext == null) throw new ArgumentNullException(nameof(workflowDbContext));
+
+            _WorkflowDbContext = workflowDbContext;
         }
 
         // GET
