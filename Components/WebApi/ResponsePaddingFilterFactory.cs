@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
     {
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
-            return serviceProvider.GetRequiredService<ResponsePaddingFilter>();
+            return serviceProvider.GetRequiredService<ResponsePaddingFilterAttribute>();
         }
 
         public bool IsReusable => true;

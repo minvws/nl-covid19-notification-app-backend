@@ -127,8 +127,8 @@ namespace MobileAppApi.Tests.Controllers
                 {
                     config.AddInMemoryCollection(new Dictionary<string, string>
                     {
-                        ["ExposureKeySets:Workflow:ResponsePadding:ByteCount:Min"] = $"{min}",
-                        ["ExposureKeySets:Workflow:ResponsePadding:ByteCount:Max"] = $"{max}",
+                        ["Workflow:ResponsePadding:ByteCount:Min"] = $"{min}",
+                        ["Workflow:ResponsePadding:ByteCount:Max"] = $"{max}",
                         ["Workflow:Decoys:DelayInMilliseconds:Min"] = $"0",
                         ["Workflow:Decoys:DelayInMilliseconds:Max"] = $"8"
                     });

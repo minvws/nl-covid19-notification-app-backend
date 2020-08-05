@@ -69,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
             services.AddTransient<ILabConfirmationIdFormatter,StandardLabConfirmationIdFormatter>();
 
-            services.AddScoped<ResponsePaddingFilter>();
+            services.AddScoped<ResponsePaddingFilterAttribute>();
             services.AddScoped<IResponsePaddingConfig, ResponsePaddingConfig>();
             
             services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });

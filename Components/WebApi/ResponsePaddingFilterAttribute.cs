@@ -8,12 +8,13 @@ using System.Linq;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 {
     /// <summary>
+    /// NOTE: DO not apply this attribute directly, apply <see cref="ResponsePaddingFilterFactoryAttribute"/>
     /// When applied to a controller or action which returns an OkObjectResult or OkResult
     /// adds a random padding to the response as a header.
     /// It's not in the list of headers in the RFC or new headers on the IANA site:
     /// https://www.iana.org/assignments/message-headers/message-headers.xhtml
     /// </summary>
-    public class ResponsePaddingFilter : ActionFilterAttribute
+    public class ResponsePaddingFilterAttribute : ActionFilterAttribute
     {
         /// <summary>
         /// Custom header without the x-prefix as per https://tools.ietf.org/html/rfc6648.
@@ -32,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
         /// <summary>
         /// Default constructor
         /// </summary>
-        public ResponsePaddingFilter(IResponsePaddingConfig config, IRandomNumberGenerator rng, ILogger<ResponsePaddingFilter> logger)
+        public ResponsePaddingFilterAttribute(IResponsePaddingConfig config, IRandomNumberGenerator rng, ILogger<ResponsePaddingFilterAttribute> logger)
         {
             _Config = config ?? throw new ArgumentNullException(nameof(_Config));
             _Rng = rng ?? throw new ArgumentNullException(nameof(_Logger));
