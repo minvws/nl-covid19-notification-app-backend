@@ -14,6 +14,7 @@ dotnet publish BatchJobsApi\BatchJobsApi.csproj --no-self-contained --runtime wi
 dotnet publish ContentApi\ContentApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\ContentApi --version-suffix %suffix%
 dotnet publish ICCBackend\ICCBackend.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\ICCBackend --version-suffix %suffix%
 dotnet publish MobileAppApi\MobileAppApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\MobileAppApi --version-suffix %suffix%
+dotnet publish ManagementPortal\ManagementPortal.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\ManagementPortal --version-suffix %suffix%
 
 REM Publish command-line
 dotnet publish EksEngine\EksEngine.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\EksEngine --version-suffix %suffix%
