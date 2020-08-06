@@ -165,7 +165,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     options.Tenant = iccIdentityHubConfig.Tenant;
                     options.ClientId = iccIdentityHubConfig.ClientId;
                     options.ClientSecret = iccIdentityHubConfig.ClientSecret;
-                    if (!_WebHostEnvironment.IsDevelopment()) options.CallbackPath = "/signin-theidentityhub";
+                    options.CallbackPath = iccIdentityHubConfig.CallbackPath;
                 });
 
             services.AddMvc(config =>
