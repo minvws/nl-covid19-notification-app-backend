@@ -5,7 +5,7 @@
   "iOSMinimumKillVersion": "1.0.0",
   "iOSMinimumVersionMessage": "",
   "iOSAppStoreURL": "",
-  "manifestFrequency": 90,
+  "manifestFrequency": 5,
   "decoyProbability": 0.00118,
   "requestMinimumSize": 1800,
   "requestMaximumSize": 17000,
