@@ -24,5 +24,8 @@ REM Database
 
 REM Zip tools
 7z a -tzip packages\Tools\CommandLine.GenTeks.zip publish\Tools\GenTeks"
+7z a -tzip packages\Tools\CommandLine.DbFillExampleContent.zip publish\Tools\DbFillExampleContent"
+7z a -tzip packages\Tools\CommandLine.GenTeks.zip publish\Tools\GenTeks"
+7z a -tzip packages\Tools\CommandLine.ForceTekAuth.zip publish\Tools\ForceTekAuth"
 
 @echo on
