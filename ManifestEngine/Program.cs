@@ -20,9 +20,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
 {
     internal class Program
     {
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
-            new ConsoleAppRunner().Execute(args, Configure, Start);
+            try
+            {
+                new ConsoleAppRunner().Execute(args, Configure, Start);
+                return 0;
+            }
+            catch(Exception)
+            {
+                return -1;
+            }
         }
 
         private static void Start(IServiceProvider services, string[] args)

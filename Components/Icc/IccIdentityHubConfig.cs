@@ -2,7 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 
@@ -18,7 +17,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         public string Tenant => GetConfigValue(nameof(Tenant), string.Empty);
         public string ClientId => GetConfigValue(nameof(ClientId), string.Empty);
         public string ClientSecret => GetConfigValue(nameof(ClientSecret), string.Empty);
-        
-        
+        public string CallbackPath => GetConfigValue(nameof(CallbackPath), string.Empty);
     }
 }

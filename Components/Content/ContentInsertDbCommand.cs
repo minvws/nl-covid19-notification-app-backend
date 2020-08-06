@@ -44,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 ContentTypeName = MediaTypeNames.Application.Zip
             };
 
-            await _DbContext.AddAsync(e);
+            await _DbContext.Content.AddAsync(e);
         }
     }
 }

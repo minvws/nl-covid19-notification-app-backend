@@ -35,14 +35,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
             _Logger.LogInformation("Workflow...");
             await _Workflow.Execute(nuke);
 
-            if (!args.Contains("noworkflowdata"))
-                await _Workflow.AddExampleContent();
-
             _Logger.LogInformation("Content...");
             await _Content.Execute(nuke);
-    
-            if (!args.Contains("nocontentdata"))
-                await _Content.AddExampleContent();
 
             _Logger.LogInformation("Job...");
             await _Job.Execute(nuke);

@@ -15,6 +15,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
@@ -30,13 +31,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         private readonly ISignatureValidator _SignatureValidator;
         private readonly ITekListWorkflowFilter _TekListWorkflowFilter;
         private readonly IWorkflowConfig _WorkflowConfig;
+        private readonly IUtcDateTimeProvider _DateTimeProvider;
 
         private PostTeksArgs _ArgsObject;
         private byte[] _BucketIdBytes;
         private byte[] _BodyBytes;
         //ILogger<HttpPostReleaseTeksCommand2> logger
 
-        public HttpPostReleaseTeksCommand2(ILogger<HttpPostReleaseTeksCommand2> logger, IWorkflowConfig workflowConfig, WorkflowDbContext dbContextProvider, IPostTeksValidator keyValidator, ITekWriter writer, IJsonSerializer jsonSerializer, ISignatureValidator signatureValidator, ITekListWorkflowFilter tekListWorkflowFilter)
+        public HttpPostReleaseTeksCommand2(ILogger<HttpPostReleaseTeksCommand2> logger, IWorkflowConfig workflowConfig, WorkflowDbContext dbContextProvider, IPostTeksValidator keyValidator, ITekWriter writer, IJsonSerializer jsonSerializer, ISignatureValidator signatureValidator, ITekListWorkflowFilter tekListWorkflowFilter, IUtcDateTimeProvider dateTimeProvider)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _WorkflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));
@@ -46,6 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
             _SignatureValidator = signatureValidator ?? throw new ArgumentNullException(nameof(signatureValidator));
             _TekListWorkflowFilter = tekListWorkflowFilter ?? throw new ArgumentNullException(nameof(tekListWorkflowFilter));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
 
         public async Task<IActionResult> Execute(byte[] signature, HttpRequest request)
@@ -94,6 +97,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 return;
 
             var teks = _ArgsObject.Keys.Select(Mapper.MapToTek).ToArray();
+
+            foreach (var i in teks)
+            {
+                i.PublishAfter = _DateTimeProvider.Snapshot;
+            }
+
             if (_Logger.LogValidationMessages(new TekListDuplicateValidator().Validate(teks)))
                 return;
 
