@@ -1,0 +1,38 @@
+@using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+@model object
+
+@{
+    ViewBag.Title = "Content List";
+    Layout = "_Layout";
+}
+
+<h2>Content (AppConfig/RiskCalcParams)</h2>
+<p>Viewing all configs currently available in the ContentEntity Table</p>
+<table border="1">
+    <tr>
+        <th width="100">Id</th>
+        <th width="100">Created</th>
+        <th width="100">Release</th>
+        <th width="100">PublishingId</th>
+        <th width="100">Content</th>
+        <th width="100">ContentTypeName</th>
+        <th width="100">Type</th>
+    </tr>
+    @foreach (var item in (List<ContentEntity>)ViewData["items"])
+    {
+        <tr>
+            <td>@item.Id.ToString()</td>
+            <td>@item.Created.ToString()</td>
+            <td>@item.Release.ToString()</td>
+            <td>@item.PublishingId.ToString()</td>
+            <td>
+                @if (@item.Content != null)
+                {
+                    @Convert.ToBase64String(@item.Content);
+                }
+            </td>
+            <td>@item.ContentTypeName.ToString()</td>
+            <td>@item.Type.ToString()</td>
+        </tr>
+    }
+</table>
