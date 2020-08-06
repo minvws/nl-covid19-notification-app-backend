@@ -24,15 +24,8 @@ namespace DbProvision
     {
         private static int Main(string[] args)
         {
-            try
-            {
-                new ConsoleAppRunner().Execute(args, Configure, Start);
-                return 0;
-            }
-            catch(Exception)
-            {
-                return -1;
-            }
+            new ConsoleAppRunner().Execute(args, Configure, Start);
+            return 0;
         }
 
         private static void Start(IServiceProvider services, string[] args)

@@ -5,6 +5,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
@@ -15,15 +16,8 @@ namespace GenTeks
     {
         public static int Main(string[] args)
         {
-            try
-            {
-                new ConsoleAppRunner().Execute(args, Configure, Start);
-                return 0;
-            }
-            catch(Exception)
-            {
-                return -1;
-            }
+            new ConsoleAppRunner().Execute(args, Configure, Start);
+            return 0;
         }
 
         private static void Start(IServiceProvider serviceProvider, string[] args)
@@ -41,6 +35,7 @@ namespace GenTeks
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
+            services.AddSingleton<IConfiguration>(configuration);
             services.AddScoped(x => DbContextStartup.Workflow(x));
             services.AddTransient<GenerateTeksCommand>();
         }
