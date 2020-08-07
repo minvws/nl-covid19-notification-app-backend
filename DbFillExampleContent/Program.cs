@@ -22,9 +22,10 @@ namespace DbFillExampleContent
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static int Main(string[] args)
         {
             new ConsoleAppRunner().Execute(args, Configure, Start);
+            return 0;
         }
 
         private static void Start(IServiceProvider services, string[] args)
