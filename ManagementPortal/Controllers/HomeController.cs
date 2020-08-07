@@ -15,6 +15,7 @@ namespace ManagementPortal.Controllers
 
         public HomeController(ILogger<HomeController> logger)
         {
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
             _logger = logger;
         }
 

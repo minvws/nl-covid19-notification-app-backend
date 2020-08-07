@@ -61,6 +61,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
         private async Task InnerExecute(byte[] signature, byte[] body)
         {
+            _Logger.LogDebug("Signature received: {Signature}", signature);
+
             _BodyBytes = body;
 
             if ((signature?.Length ?? 0) != _WorkflowConfig.PostKeysSignatureLength) //TODO const
@@ -119,7 +121,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             if (!_SignatureValidator.Valid(signature, workflow.ConfirmationKey, _BodyBytes))
             {
-                _Logger.LogError("Signature not valid.");
+                _Logger.LogError("Signature not valid: {Signature}", signature);
                 return;
             }
 
