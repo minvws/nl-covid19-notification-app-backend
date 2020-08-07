@@ -59,18 +59,19 @@ namespace ManagementPortal
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime,
             ILogger<Startup> logger)
         {
-            if (!(env.IsDevelopment() || env.IsEnvironment("Test")))
-            {
-                logger.LogCritical(
-                    $"Application environment {env.EnvironmentName} not allowed. Shutting down immediately!");
-                lifetime.StopApplication();
-            }
-            else if (env.IsDevelopment())
+            if(env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
             else
             {
+                // Application is only allowed to run in Development or Test environments.
+                if(!env.IsEnvironment("Test"))
+                {
+                    logger.LogCritical($"Application environment {env.EnvironmentName} not allowed. Shutting down immediately!");
+                    lifetime.StopApplication();
+                }
+
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
