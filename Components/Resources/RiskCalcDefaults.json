@@ -1,5 +1,5 @@
 ﻿{
-  "minimumRiskScore": 5,
+  "minimumRiskScore": 2,
   "attenuationScores": [
     0,
     1,
