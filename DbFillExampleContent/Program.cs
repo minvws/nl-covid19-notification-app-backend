@@ -15,6 +15,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 
@@ -30,7 +31,7 @@ namespace DbFillExampleContent
 
         private static void Start(IServiceProvider services, string[] args)
         {
-            services.GetRequiredService<FillDatabasesCommand>().Execute().GetAwaiter().GetResult();
+            services.GetRequiredService<FillDatabasesCommand>().Execute(args).GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
@@ -57,7 +58,13 @@ namespace DbFillExampleContent
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
             services.AddTransient<ContentValidator>();
             services.AddTransient<ContentInsertDbCommand>();
+
             services.AddTransient<ZippedSignedContentFormatter>();
+            services.AddTransient<IContentSigner, CmsSignerEnhanced>();
+
+            services.AddTransient<WriteFromFile>();
+            services.AddTransient<ContentValidator>();
+            services.AddTransient<ContentInsertDbCommand>();
 
             services.NlSignerStartup(configuration.UseCertificatesFromResources());
         }
