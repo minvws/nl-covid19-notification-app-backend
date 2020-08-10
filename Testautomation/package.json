@@ -1,0 +1,26 @@
+{
+  "name": "corona-app-backend-suite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter mochawesome"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "adm-zip": "^0.4.16",
+    "axios": "^0.19.2",
+    "chai": "^4.2.0",
+    "google-protobuf": "^4.0.0-rc.2",
+    "minimist": "^1.2.5",
+    "mocha": "^8.0.1",
+    "node-stream-zip": "^1.11.2",
+    "protobufjs": "^6.10.1",
+    "spec": "^1.0.1"
+  },
+  "devDependencies": {
+    "mochawesome": "^6.1.1"
+  }
+}
