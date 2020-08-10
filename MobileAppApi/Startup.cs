@@ -71,7 +71,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
             services.AddScoped<ResponsePaddingFilterAttribute>();
             services.AddScoped<IResponsePaddingConfig, ResponsePaddingConfig>();
-            services.AddScoped<IPaddingGenerator, FixedCharacterPaddingGenerator>();
+            services.AddScoped<IPaddingGenerator, CryptoRandomPaddingGenerator>();
             
             services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });
         }
