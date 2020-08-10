@@ -4,18 +4,20 @@
 
 using System;
 using System.Collections.Generic;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 {
     public class TemporaryExposureKeyValidator : ITemporaryExposureKeyValidator
     {
         private readonly ITekValidatorConfig _Config;
-        //private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public TemporaryExposureKeyValidator(ITekValidatorConfig config /*, IUtcDateTimeProvider dateTimeProvider*/)
+        public TemporaryExposureKeyValidator(ITekValidatorConfig config, IUtcDateTimeProvider dateTimeProvider)
         {
             _Config = config;
-            //_DateTimeProvider = dateTimeProvider;
+            _DateTimeProvider = dateTimeProvider;
         }
 
         public string[] Valid(PostTeksItemArgs value)
@@ -25,14 +27,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 
             var result = new List<string>();
 
+            var earliestAcceptedDateFromDevices = _DateTimeProvider.Snapshot.Date - TimeSpan.FromDays(_Config.MaxAgeDays);
+            var rollingStartMin = Math.Max(_Config.RollingStartNumberMin, earliestAcceptedDateFromDevices.ToRollingStartNumber());
+            var rollingStartToday = _DateTimeProvider.Snapshot.Date.ToRollingStartNumber();
 
-            if (value.RollingStartNumber < _Config.RollingStartNumberMin)
-                result.Add($"RollingStartNumber out of range - before go live - {value.RollingStartNumber}.");
+            if (!(rollingStartMin <= value.RollingStartNumber && value.RollingStartNumber <= rollingStartToday))
+                result.Add($"RollingStartNumber out of range - {value.RollingStartNumber}.");
 
-            //TODO do something with _Config.MaxAgeDays as well?
-
-
-            if (_Config.RollingPeriodMin > value.RollingPeriod || value.RollingPeriod > _Config.RollingPeriodMax)
+            if (!(_Config.RollingPeriodMin <= value.RollingPeriod && value.RollingPeriod <= _Config.RollingPeriodMax))
                 result.Add($"RollingPeriod out of range - {value.RollingPeriod}.");
 
             if (string.IsNullOrEmpty(value.KeyData))
