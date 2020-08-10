@@ -1,6 +1,6 @@
 ﻿{
   "release": "2020-07-01T11:59:34.627Z",
-  "minimumRiskScore": 8,
+  "minimumRiskScore": 2,
   "attenuationScores": [
     1,
     2,
