@@ -134,6 +134,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 return;
             }
 
+            // Convert byte[]'s to string to prevent having to write an IEqualityComparer?
+            var hasDuplicates = filterResults.Items.Select(x => Convert.ToBase64String(x.KeyData)).GroupBy(x => x).Any(x => x.Count() > 1);
+            if(hasDuplicates)
+            {
+                _Logger.LogError("Duplicate keydata found in incoming teks.");
+                return;
+            }
+
             _Logger.LogDebug("Writing.");
             var writeArgs = new TekWriteArgs
             {

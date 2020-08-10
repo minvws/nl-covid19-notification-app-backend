@@ -25,9 +25,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             var ordered = values.OrderBy(x => x.RollingStartNumber).ToArray();
 
+            // Duplicate TEK check such that a duplicate is defined as having the same values for {KD, RSN and RP}
+            // as there is a case where {RSN and RP} CAN he repeated with a different KD. 
             for (var i = 0; i < ordered.Length - 1; i++)
             {
-                if (ordered[i].SameTime(ordered[i + 1]))
+                if (ordered[i].SameTime(ordered[i + 1]) && ordered[i].KeyData.SequenceEqual(ordered[i + 1].KeyData))
                     return new[] { $"There is at least one duplicate - RollingStartNumber:{ordered[i].RollingStartNumber} RollingPeriod:{ordered[i].RollingPeriod}" };
             }
 
