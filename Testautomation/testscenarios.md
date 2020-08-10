@@ -1,0 +1,86 @@
+Scenarios
+
+Test strategy to validate the backend system multiple type of test are defined:
+A. Endpoints tests => health of all endpoints
+	- response time
+	- status
+	- keys present
+	- max-age (last modified)
+	- sig. validation
+	- number of files
+	- 
+	
+	report of all endpoint tests
+B. Scenario's => integration of all endpoints (business rules)
+	1. Happy flows
+	2. timing
+	3. sequence
+	4. Frequency
+	5. Error flows (invalid data)
+
+B1. Happy flow scenarios (all 200 OK and manifest is updated)
+	- Register > Postkeys > LabConfirm > wachten (x minutes) > Labverify > Manifest > EKS
+	- Register > LabConfirm > Postkeys > wachten (x minutes) > Labverify > Manifest > EKS
+	- STOPkey can't be found in manifest	
+
+B2. Timing scenarios (validation of the business rules round the postkeys)
+	- etag is changed => validate that new CDN data is pushed (304 vs 200 OK)
+	- Register > LabConfirm > wachten (x minutes) > Labverify > (x minutes) > Labverify => validate that polltoken is expired and new is provided
+	- Register > LabConfirm > wachten (x minutes) > Labverify > (121 minutes) Postkeys > Labverify => validate that polltoken is expired, no new token + false returned
+	- today keys processing => 1.4 / 1.5 GAEN framework
+
+B3. Sequence scenarios (validation of the business rules round the postkeys)
+	- Register > postkeys > labverify > manifest
+	- random order of the endpoints ()
+
+B4. Frequency scenarios (validation of the business rules round the postkeys)
+	- Register > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > LabConfirm > wachten (x minutes) > Labverify > Manifest > EKS
+	- Register > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Register > Postkeys > Postkeys > Postkeys > LabConfirm > wachten (x minutes) > Labverify > Manifest > EKS
+	- Register > manifest => run x times like 50-100 times
+	- 
+
+B5. Error flow scenarios (API + business rules validation, no 500 error is returned)
+	- Invalid input data (bucketID, etc)
+	- API version validation
+	- 0,1, 13, 14, 15 keys in postkey array
+	- duplicate keys in keys in postkey array
+	- already processed keys
+	- to new keys (timestamp in the future)
+	
+
+These happy flows need more workout based on business rules from https://github.com/minvws/nl-covid19-notification-app-coordination-private/blob/master/architecture/Key%20Upload%20Process.md
+
+	- GAEN 1.4
+		- collect manifest + all CDN data with etag
+		- register => validity
+		- get Bearer token ICC
+		- labconfirm => timestamp
+		- labverify => poltoken
+		- postkeys (max 13) => within 2 hours of labconfirm + keys validation
+		- labverify => true
+		- manifest updated
+		- collect new manifest => based on new etag => new key is added to the manifest
+		
+	- GEAN 1.5
+		- collect manifest + all CDN data with etag
+		- register
+		- labconfirm
+		- labverify
+		- postkeys (max 13) (UPDATE: THIS IS NOT A FIXED NUMBER ANYMORE)
+		- labverify => true
+		- manifest updated
+		- collect new manifest => based on new etag => new key is added to the manifest
+	
+	
+Discussion
+The difference between 1.4 and 1.5 GAEN framework is in the postkeys handling. Need to determine if the the user scenario's in 
+total need to be split-up in a 1.4 and 1.5 set?
+
+GAEN 1.4 / 1.5
+Up until the GAEN 1.4 version of the framework, retrieving keys from the framework was 
+'idempotent': every call on the same day would retrieve the same set of keys, and wouldn't change the underlying keys.
+	
+keyset
+	- last 13 days (UPDATE: THIS IS NOT A FIXED NUMBER ANYMORE)
+	- not send before
+	- timestamp of the past
