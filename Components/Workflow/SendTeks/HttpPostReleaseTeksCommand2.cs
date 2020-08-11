@@ -132,10 +132,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 return;
             }
 
-            var allTeks = teks.Concat(workflow.Teks.Select(Mapper.MapToTek)).ToArray();
-            if (_Logger.LogValidationMessages(new TekListDuplicateKeyDataValidator().Validate(allTeks)))
-                return;
-
             var filterResults = _TekListWorkflowFilter.Validate(teks, workflow);
             _Logger.LogValidationMessages(filterResults.Messages);
 
@@ -145,6 +141,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 return;
             }
 
+            //Run after the filter removes the existing TEKs from the args.
+            var allTeks = teks.Concat(filterResults.Items).ToArray();
+            if (_Logger.LogValidationMessages(new TekListDuplicateKeyDataValidator().Validate(allTeks)))
+                return;
 
             _Logger.LogDebug("Writing.");
             var writeArgs = new TekWriteArgs
