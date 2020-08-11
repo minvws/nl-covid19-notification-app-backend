@@ -117,9 +117,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 },
             });
 
-            o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
-                "NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml"));
-
             o.OperationFilter<SecurityRequirementsOperationFilter>();
 
             if (_KillAuth) return;
