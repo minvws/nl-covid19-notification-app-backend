@@ -18,7 +18,7 @@
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<WarningsAsErrors>CS8625</WarningsAsErrors>
-		<DocumentationFile>$(SolutionDir)\Components\NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml</DocumentationFile>
+		<DocumentationFile></DocumentationFile>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="BleCalibration\**" />
