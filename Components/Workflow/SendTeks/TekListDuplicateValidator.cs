@@ -4,7 +4,6 @@
 
 using System;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
