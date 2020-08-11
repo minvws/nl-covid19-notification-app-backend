@@ -6,7 +6,7 @@
 		<UserSecretsId>170b1f58-9095-42ca-84ab-92fb11b12b22</UserSecretsId>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <DocumentationFile>$(SolutionDir)\BatchJobsApi\NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.xml</DocumentationFile>
+	  <DocumentationFile></DocumentationFile>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <DocumentationFile>$(SolutionDir)\BatchJobsApi\NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.xml</DocumentationFile>
