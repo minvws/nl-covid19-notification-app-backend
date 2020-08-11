@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using System;
-using System.Linq;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 {
@@ -21,23 +24,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
         /// </summary>
         private const string PaddingHeader = "padding";
 
-        /// <summary>
-        /// Character used for padding, must be a 1-byte character
-        /// </summary>
-        private const string PaddingCharacter = "=";
-        
         private readonly IResponsePaddingConfig _Config;
         private readonly IRandomNumberGenerator _Rng;
         private readonly ILogger _Logger;
+        private readonly IPaddingGenerator _PaddingGenerator;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public ResponsePaddingFilterAttribute(IResponsePaddingConfig config, IRandomNumberGenerator rng, ILogger<ResponsePaddingFilterAttribute> logger)
+        public ResponsePaddingFilterAttribute(IResponsePaddingConfig config, IRandomNumberGenerator rng, ILogger<ResponsePaddingFilterAttribute> logger, IPaddingGenerator paddingGenerator)
         {
-            _Config = config ?? throw new ArgumentNullException(nameof(_Config));
-            _Rng = rng ?? throw new ArgumentNullException(nameof(_Logger));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(_Rng));
+            _Config = config ?? throw new ArgumentNullException(nameof(config));
+            _Rng = rng ?? throw new ArgumentNullException(nameof(rng));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _PaddingGenerator  = paddingGenerator  ?? throw new ArgumentNullException(nameof(paddingGenerator));
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
             string resultString = string.Empty;
 
             // Only works for object results
-            if (context.Result is ObjectResult objectResult &&  objectResult.Value is string objectResultString)
+            if (context.Result is ObjectResult objectResult && objectResult.Value is string objectResultString)
             {
                 resultString = objectResultString;
             }
@@ -63,25 +63,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 
                 return;
             }
-            
-            // Add padding here
-            context.HttpContext.Response.Headers.Add(PaddingHeader, Padding(resultString.Length));
 
-            _Logger.LogInformation("Added padding to the response.");
-        }
-
-        /// <summary>
-        /// Adds padding equal 
-        /// </summary>
-        private string Padding(int contentLength)
-        {
-            var paddingLength = _Rng.Next(_Config.MinimumLengthInBytes, _Config.MaximumLengthInBytes) - contentLength;
+            // Calculate length of padding to add
+            var paddingLength = _Rng.Next(_Config.MinimumLengthInBytes, _Config.MaximumLengthInBytes) - resultString.Length;
             _Logger.LogInformation("Length of response padding: {PaddingLength}", paddingLength);
 
-            var padding = string.Concat(Enumerable.Repeat(PaddingCharacter, paddingLength));
+            // Get the padding bytes
+            var padding = _PaddingGenerator.Generate(paddingLength);
             _Logger.LogDebug("Response padding: {Padding}", padding);
 
-            return padding;
+            // Add padding here
+            context.HttpContext.Response.Headers.Add(PaddingHeader, padding);
+
+            _Logger.LogInformation("Added padding to the response.");
         }
     }
 }
