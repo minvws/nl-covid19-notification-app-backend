@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Helpers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -35,10 +38,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
         private PostTeksArgs _ArgsObject;
         private byte[] _BucketIdBytes;
+
         private byte[] _BodyBytes;
         //ILogger<HttpPostReleaseTeksCommand2> logger
 
-        public HttpPostReleaseTeksCommand2(ILogger<HttpPostReleaseTeksCommand2> logger, IWorkflowConfig workflowConfig, WorkflowDbContext dbContextProvider, IPostTeksValidator keyValidator, ITekWriter writer, IJsonSerializer jsonSerializer, ISignatureValidator signatureValidator, ITekListWorkflowFilter tekListWorkflowFilter, IUtcDateTimeProvider dateTimeProvider)
+        public HttpPostReleaseTeksCommand2(ILogger<HttpPostReleaseTeksCommand2> logger, IWorkflowConfig workflowConfig,
+            WorkflowDbContext dbContextProvider, IPostTeksValidator keyValidator, ITekWriter writer,
+            IJsonSerializer jsonSerializer, ISignatureValidator signatureValidator,
+            ITekListWorkflowFilter tekListWorkflowFilter, IUtcDateTimeProvider dateTimeProvider)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _WorkflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));
@@ -133,6 +140,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 _Logger.LogInformation("No teks survived the workflow filter.");
                 return;
             }
+
+            //Run after the filter removes the existing TEKs from the args.
+            var allTeks = teks.Concat(filterResults.Items).ToArray();
+            if (_Logger.LogValidationMessages(new TekListDuplicateKeyDataValidator().Validate(allTeks)))
+                return;
 
             _Logger.LogDebug("Writing.");
             var writeArgs = new TekWriteArgs
