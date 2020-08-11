@@ -141,11 +141,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 return;
             }
 
-            var hasDuplicates = filterResults.Items
-                .GroupBy(x => x.KeyData, new ByteArrayEqualityComparer())
-                .Any(x => x.Count() > 1);
-            
-            if (hasDuplicates)
+            if(filterResults.Items.Select(x => x.KeyData).Count() 
+                != filterResults.Items.Select(x => x.KeyData).Distinct(new ByteArrayEqualityComparer()).Count())
             {
                 _Logger.LogError("Duplicate keydata found in incoming teks.");
                 return;
