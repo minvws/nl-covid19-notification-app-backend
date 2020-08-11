@@ -22,11 +22,8 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="BleCalibration\**" />
-		<Compile Remove="Helpers\**" />
 		<EmbeddedResource Remove="BleCalibration\**" />
-		<EmbeddedResource Remove="Helpers\**" />
 		<None Remove="BleCalibration\**" />
-		<None Remove="Helpers\**" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Remove="EfDatabase\Configuration\Workflow\KeysFirstTekReleaseWorkflow.cs" />
