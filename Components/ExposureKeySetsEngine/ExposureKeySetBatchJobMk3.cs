@@ -207,7 +207,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     .Select(x => new EksCreateJobInputEntity
                     {
                         TekId = x.Tek.Id,
-                        RollingPeriod = x.Tek.RollingPeriod,
+                        RollingPeriod = 144, //HACK! Quick fix - x.Tek.RollingPeriod,
                         KeyData = x.Tek.KeyData,
                         TransmissionRiskLevel = _TransmissionRiskLevelCalculation.Calculate(x.Tek.RollingStartNumber, x.DateOfSymptomsOnset),
                         RollingStartNumber = x.Tek.RollingStartNumber,
