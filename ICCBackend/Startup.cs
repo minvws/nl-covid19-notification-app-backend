@@ -180,11 +180,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 {
                     allowedRoleEnv.Add("Prod");
                 }
-                else if (_WebHostEnvironment.IsEnvironment("Acceptatie"))
-                {
-                    allowedRoleEnv.Add("Test");
-                }
-                else if (_WebHostEnvironment.IsEnvironment("Test") || _WebHostEnvironment.IsDevelopment())
+                else if (_WebHostEnvironment.IsEnvironment("Acceptatie") || _WebHostEnvironment.IsEnvironment("Test") || _WebHostEnvironment.IsDevelopment())
                 {
                     allowedRoleEnv.Add("Test");
                 }
