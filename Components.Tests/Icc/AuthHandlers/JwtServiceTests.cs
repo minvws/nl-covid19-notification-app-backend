@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
             _UtcDateTimeProvider = new StandardUtcDateTimeProvider();
             _JwtService =
                 new JwtService(
-                    new HardCodedIccPortalConfig(null, "http://test.test", "test_secret123", _ClaimLifetimeHours),
+                    new HardCodedIccPortalConfig(null, "http://test.test", "test_secret123", _ClaimLifetimeHours, true),
                     _UtcDateTimeProvider, lf);
         }
 
