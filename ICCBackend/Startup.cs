@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -64,6 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<HttpGetLogoutCommand>();
             services.AddScoped<HttpGetUserClaimCommand>();
             services.AddScoped<HttpGetAuthorisationRedirectCommand>();
+            services.AddScoped<HttpGetAccessDeniedCommand>();
 
             services.AddSingleton<IIccPortalConfig, IccPortalConfig>();
 
@@ -92,7 +94,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             StartupIdentityHub(services);
 
             StartupAuthenticationScheme(services.AddAuthentication(JwtAuthenticationHandler.SchemeName));
-
         }
 
         private void StartupSwagger(SwaggerGenOptions o)
@@ -135,11 +136,13 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         {
             if (_KillAuth)
             {
-                authBuilder.AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
+                authBuilder.AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>(
+                    JwtAuthenticationHandler.SchemeName, null);
                 return;
             }
 
-            authBuilder.AddScheme<AuthenticationSchemeOptions, JwtAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
+            authBuilder.AddScheme<AuthenticationSchemeOptions, JwtAuthenticationHandler>(
+                JwtAuthenticationHandler.SchemeName, null);
         }
 
         private void StartupIdentityHub(IServiceCollection services)
@@ -165,15 +168,24 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     options.CallbackPath = iccIdentityHubConfig.CallbackPath;
                 });
 
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("TelefonistRole",
+                    builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Telefonist-Test", "C19NA-Telefonist-Acc"));
+                options.AddPolicy("BeheerRole",
+                    builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Beheer-Test", "C19NA-Beheer-Acc"));
+            });
+
             services.AddMvc(config =>
             {
                 config.EnableEndpointRouting = false;
                 var policy = new AuthorizationPolicyBuilder()
                     .AddAuthenticationSchemes(TheIdentityHubDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser()
+                    .RequireClaim(ClaimTypes.Role)
                     .Build();
                 config.Filters.Add(new AuthorizeFilter(policy));
-                // .RequireClaim(ClaimTypes.Role)
             });
         }
 
@@ -186,19 +198,20 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
 
             app.UseCors(options =>
-                options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS asap
+                options.AllowAnyOrigin().AllowAnyHeader()
+                    .WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS asap
 
             app.UseSwagger();
             app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", "GGD Portal Backend V1"); });
 
 
-            app.Use( (context, next) =>
+            app.Use((context, next) =>
             {
                 if (context.Request.Headers.TryGetValue("X-Forwarded-Proto", out var protoHeaderValue))
                 {
                     context.Request.Scheme = protoHeaderValue;
                 }
-                
+
                 if (context.Request.Headers.TryGetValue("X-FORWARDED-HOST", out var hostHeaderValue))
                 {
                     context.Request.Host = new HostString(hostHeaderValue);
