@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -171,11 +174,31 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             services.AddAuthorization(options =>
             {
+                var allowedRoleEnv = new List<string>();
+
+                if (_WebHostEnvironment.IsProduction())
+                {
+                    allowedRoleEnv.Add("Prod");
+                }
+                else if (_WebHostEnvironment.IsEnvironment("Acceptatie"))
+                {
+                    allowedRoleEnv.Add("Test");
+                }
+                else if (_WebHostEnvironment.IsEnvironment("Test") || _WebHostEnvironment.IsDevelopment())
+                {
+                    allowedRoleEnv.Add("Test");
+                }
+
+                var allowedTelefonistRoleValues = allowedRoleEnv.Select(e =>
+                    (e == "Prod") ? "C19NA-Telefonist" : "C19NA-Telefonist-" + e).ToList();
+                var allowedBeheerRoleValues = allowedRoleEnv.Select(e =>
+                    (e == "Prod") ? "C19NA-Telefonist" : "C19NA-Telefonist-" + e).ToList();
+                
+                
                 options.AddPolicy("TelefonistRole",
-                    builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Beheer-Test", "C19NA-Telefonist-Test",
-                        "C19NA-Telefonist-Acc", "C19NA-Telefonist"));
+                    builder => builder.RequireClaim(ClaimTypes.Role, allowedTelefonistRoleValues));
                 options.AddPolicy("BeheerRole",
-                    builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Beheer-Test", "C19NA-Beheer-Acc"));
+                    builder => builder.RequireClaim(ClaimTypes.Role, allowedBeheerRoleValues));
             });
 
             services.AddMvc(config =>
