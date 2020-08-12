@@ -23,6 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 
         public IActionResult Execute(HttpContext httpContext)
         {
+            _Logger.LogInformation("AccessDenied for login, insufficient role");
             var redirectUrl = _Configuration.FrontendBaseUrl + "/?e=access_denied";
             return new RedirectResult(redirectUrl);
         }

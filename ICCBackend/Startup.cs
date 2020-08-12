@@ -172,7 +172,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("TelefonistRole",
-                    builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Telefonist-Test", "C19NA-Telefonist-Acc"));
+                    builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Beheer-Test", "C19NA-Telefonist-Test",
+                        "C19NA-Telefonist-Acc", "C19NA-Telefonist"));
                 options.AddPolicy("BeheerRole",
                     builder => builder.RequireClaim(ClaimTypes.Role, "C19NA-Beheer-Test", "C19NA-Beheer-Acc"));
             });
@@ -183,7 +184,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 var policy = new AuthorizationPolicyBuilder()
                     .AddAuthenticationSchemes(TheIdentityHubDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser()
-                    .RequireClaim(ClaimTypes.Role)
                     .Build();
                 config.Filters.Add(new AuthorizeFilter(policy));
             });
