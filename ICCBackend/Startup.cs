@@ -139,13 +139,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         {
             if (_KillAuth)
             {
-                authBuilder.AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>(
-                    JwtAuthenticationHandler.SchemeName, null);
+                authBuilder.AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
                 return;
             }
 
-            authBuilder.AddScheme<AuthenticationSchemeOptions, JwtAuthenticationHandler>(
-                JwtAuthenticationHandler.SchemeName, null);
+            authBuilder.AddScheme<AuthenticationSchemeOptions, JwtAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
         }
 
         private void StartupIdentityHub(IServiceCollection services)
