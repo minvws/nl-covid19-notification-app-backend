@@ -222,8 +222,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
 
             app.UseCors(options =>
-                options.AllowAnyOrigin().AllowAnyHeader()
-                    .WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS asap
+                options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS asap
 
             app.UseSwagger();
             app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", "GGD Portal Backend V1"); });
