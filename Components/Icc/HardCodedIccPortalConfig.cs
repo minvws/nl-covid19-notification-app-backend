@@ -6,17 +6,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
     public class HardCodedIccPortalConfig : IIccPortalConfig
     {
-        public HardCodedIccPortalConfig(IIccIdentityHubConfig? identityHubConfig, string frontendBaseUrl, string jwtSecret, double claimLifetimeHours)
+        public HardCodedIccPortalConfig(IIccIdentityHubConfig? identityHubConfig, string frontendBaseUrl,
+            string jwtSecret, double claimLifetimeHours)
         {
             IdentityHubConfig = identityHubConfig;
             FrontendBaseUrl = frontendBaseUrl;
             JwtSecret = jwtSecret;
             ClaimLifetimeHours = claimLifetimeHours;
+            StrictRolePolicyEnabled = false;
         }
 
         public IIccIdentityHubConfig IdentityHubConfig { get; }
         public string FrontendBaseUrl { get; }
         public string JwtSecret { get; }
         public double ClaimLifetimeHours { get; }
+        public bool StrictRolePolicyEnabled { get; }
     }
 }

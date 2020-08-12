@@ -152,6 +152,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         {
             if (_KillAuth) return;
 
+            var iccPortalConfig = new IccPortalConfig(_Configuration);
             var iccIdentityHubConfig = new IccIdentityHubConfig(_Configuration);
 
             services
@@ -174,28 +175,34 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             services.AddAuthorization(options =>
             {
-                var allowedRoleEnv = new List<string>();
-
-                if (_WebHostEnvironment.IsProduction())
+                var allowedTelefonistRoleValues = new List<string>();
+                var allowedBeheerRoleValues = new List<string>();
+                if (iccPortalConfig.StrictRolePolicyEnabled)
                 {
-                    allowedRoleEnv.Add("Prod");
-                }
-                else if (_WebHostEnvironment.IsEnvironment("Acceptatie") || _WebHostEnvironment.IsEnvironment("Test") || _WebHostEnvironment.IsDevelopment())
-                {
-                    allowedRoleEnv.Add("Test");
+                    var allowedRoleEnv = new List<string>();
+
+                    if (_WebHostEnvironment.IsProduction())
+                    {
+                        allowedRoleEnv.Add("Prod");
+                    }
+                    else if (_WebHostEnvironment.IsEnvironment("Acceptatie") ||
+                             _WebHostEnvironment.IsEnvironment("Test") || _WebHostEnvironment.IsDevelopment())
+                    {
+                        allowedRoleEnv.Add("Test");
+                    }
+
+                    allowedTelefonistRoleValues = allowedRoleEnv.Select(e =>
+                        (e == "Prod") ? "C19NA-Telefonist" : "C19NA-Telefonist-" + e).ToList();
+                    allowedBeheerRoleValues = allowedRoleEnv.Select(e =>
+                        (e == "Prod") ? "C19NA-Telefonist" : "C19NA-Telefonist-" + e).ToList();
                 }
 
-                var allowedTelefonistRoleValues = allowedRoleEnv.Select(e =>
-                    (e == "Prod") ? "C19NA-Telefonist" : "C19NA-Telefonist-" + e).ToList();
-                var allowedBeheerRoleValues = allowedRoleEnv.Select(e =>
-                    (e == "Prod") ? "C19NA-Telefonist" : "C19NA-Telefonist-" + e).ToList();
-                
-                
                 options.AddPolicy("TelefonistRole",
                     builder => builder.RequireClaim(ClaimTypes.Role, allowedTelefonistRoleValues));
                 options.AddPolicy("BeheerRole",
                     builder => builder.RequireClaim(ClaimTypes.Role, allowedBeheerRoleValues));
             });
+
 
             services.AddMvc(config =>
             {
