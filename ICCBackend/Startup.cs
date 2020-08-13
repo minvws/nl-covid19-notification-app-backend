@@ -173,8 +173,15 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             services.AddAuthorization(options =>
             {
+                
+                var TelefonistRoleProd = "C19NA-Telefonist";
+                var TelefonistRoleTest = "C19NA-Telefonist-Test";
+                var BeheerRoleProd = "C19NA-Beheer";
+                var BeheerRoleTest = "C19NA-Beheer-Test";
+
                 var allowedTelefonistRoleValues = new List<string>();
                 var allowedBeheerRoleValues = new List<string>();
+                
                 if (iccPortalConfig.StrictRolePolicyEnabled)
                 {
                     var allowedRoleEnv = new List<string>();
@@ -182,17 +189,15 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     if (_WebHostEnvironment.IsProduction())
                     {
                         allowedRoleEnv.Add("Prod");
+                        allowedBeheerRoleValues.Add(TelefonistRoleProd);
+                        allowedBeheerRoleValues.Add(BeheerRoleProd);
                     }
                     else if (_WebHostEnvironment.IsEnvironment("Acceptatie") ||
                              _WebHostEnvironment.IsEnvironment("Test") || _WebHostEnvironment.IsDevelopment())
                     {
-                        allowedRoleEnv.Add("Test");
+                        allowedTelefonistRoleValues.Add(TelefonistRoleTest);
+                        allowedBeheerRoleValues.Add(BeheerRoleTest);
                     }
-
-                    allowedTelefonistRoleValues = allowedRoleEnv.Select(e =>
-                        (e == "Prod") ? "C19NA-Telefonist" : "C19NA-Telefonist-" + e).ToList();
-                    allowedBeheerRoleValues = allowedRoleEnv.Select(e =>
-                        (e == "Prod") ? "C19NA-Beheer" : "C19NA-Beheer-" + e).ToList();
                 }
 
                 options.AddPolicy("TelefonistRole",
