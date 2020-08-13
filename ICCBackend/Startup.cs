@@ -192,7 +192,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     allowedTelefonistRoleValues = allowedRoleEnv.Select(e =>
                         (e == "Prod") ? "C19NA-Telefonist" : "C19NA-Telefonist-" + e).ToList();
                     allowedBeheerRoleValues = allowedRoleEnv.Select(e =>
-                        (e == "Prod") ? "C19NA-Telefonist" : "C19NA-Telefonist-" + e).ToList();
+                        (e == "Prod") ? "C19NA-Beheer" : "C19NA-Beheer-" + e).ToList();
                 }
 
                 options.AddPolicy("TelefonistRole",
