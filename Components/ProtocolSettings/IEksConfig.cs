@@ -23,5 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSetti
         /// Stuffing
         /// </summary>
         int TekCountMin { get; }
+
+        int PageSize { get; }
     }
 }

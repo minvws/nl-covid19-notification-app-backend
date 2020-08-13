@@ -3,7 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -64,6 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<HttpGetLogoutCommand>();
             services.AddScoped<HttpGetUserClaimCommand>();
             services.AddScoped<HttpGetAuthorisationRedirectCommand>();
+            services.AddScoped<HttpGetAccessDeniedCommand>();
 
             services.AddSingleton<IIccPortalConfig, IccPortalConfig>();
 
@@ -92,7 +97,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             StartupIdentityHub(services);
 
             StartupAuthenticationScheme(services.AddAuthentication(JwtAuthenticationHandler.SchemeName));
-
         }
 
         private void StartupSwagger(SwaggerGenOptions o)
@@ -112,13 +116,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 {
                     Name = "European Union Public License v. 1.2",
                     //TODO this should be https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
-                    Url = new Uri(
-                        "https://github.com/minvws/nl-covid19-notification-app-backend/blob/master/LICENSE.txt")
+                    Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend/blob/master/LICENSE.txt")
                 },
             });
-
-            o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
-                "NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml"));
 
             o.OperationFilter<SecurityRequirementsOperationFilter>();
 
@@ -145,9 +145,13 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             authBuilder.AddScheme<AuthenticationSchemeOptions, JwtAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
         }
 
+
+       
+
         private void StartupIdentityHub(IServiceCollection services)
         {
             if (_KillAuth) return;
+
 
             var iccIdentityHubConfig = new IccIdentityHubConfig(_Configuration);
 
@@ -168,6 +172,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     options.CallbackPath = iccIdentityHubConfig.CallbackPath;
                 });
 
+
+            PolicyAuthorizationOptions policyAuthorizationOptions = new PolicyAuthorizationOptions(_WebHostEnvironment, new IccPortalConfig(_Configuration));
+            services.AddAuthorization(options => policyAuthorizationOptions.GetOptions(options));
+
+
             services.AddMvc(config =>
             {
                 config.EnableEndpointRouting = false;
@@ -176,7 +185,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     .RequireAuthenticatedUser()
                     .Build();
                 config.Filters.Add(new AuthorizeFilter(policy));
-                // .RequireClaim(ClaimTypes.Role)
             });
         }
 
@@ -195,13 +203,13 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", "GGD Portal Backend V1"); });
 
 
-            app.Use( (context, next) =>
+            app.Use((context, next) =>
             {
                 if (context.Request.Headers.TryGetValue("X-Forwarded-Proto", out var protoHeaderValue))
                 {
                     context.Request.Scheme = protoHeaderValue;
                 }
-                
+
                 if (context.Request.Headers.TryGetValue("X-FORWARDED-HOST", out var hostHeaderValue))
                 {
                     context.Request.Host = new HostString(hostHeaderValue);

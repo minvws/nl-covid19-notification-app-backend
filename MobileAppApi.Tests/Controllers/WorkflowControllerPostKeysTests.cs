@@ -30,7 +30,8 @@ namespace MobileAppApi.Tests.Controllers
     {
         private readonly byte[] _Key = Convert.FromBase64String(@"PwMcyc8EXF//Qkye1Vl2S6oCOo9HFS7E7vw7y9GOzJk=");
         private WebApplicationFactory<Startup> _Factory;
-        private readonly byte[] _BucketId = Convert.FromBase64String(@"lRaBTBonsMaJ8PdOhVYdfmyZooCR3fpjQZgLboa4Qig=");
+        //private readonly byte[] _BucketId = Convert.FromBase64String(@"lRaBTBonsMaJ8PdOhVYdfmyZooCR3fpjQZgLboa4Qig=");
+        private readonly byte[] _BucketId = Convert.FromBase64String(@"idlVmyDGeAXTyaNN06Uejy6tLgkgWtj32sLRJm/OuP8=");
         private DbConnection _Connection;
         private WorkflowDbContext _DbContext;
 
@@ -84,8 +85,10 @@ namespace MobileAppApi.Tests.Controllers
             await _Connection.DisposeAsync();
         }
 
-        //[DataRow("Resources.payload-short.json", 1)] TODO make test use a fake datetimeprovider
-        //[DataRow("Resources.payload.json", 14)] TODO fix the keys
+
+        [DataRow("Resources.payload-bug.json", 2)]
+        //[DataRow("Resources.payload-short.json", 1)] //TODO make test use a fake datetimeprovider
+        //[DataRow("Resources.payload.json", 14)] //TODO fix the keys
         [DataTestMethod]
         public async Task PostWorkflowTest(string file, int keyCount)
         {
@@ -155,6 +158,26 @@ namespace MobileAppApi.Tests.Controllers
             var client = _Factory.CreateClient();
             await using var inputStream =
                 Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Resources.payload.json");
+            var data = inputStream.ToArray();
+            var content = new ByteArrayContent(data);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+            // Act
+            var result = await client.PostAsync($"v1/postkeys?sig={string.Empty}", content);
+
+            // Assert
+            var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.AreEqual(0, items.Count);
+        }
+
+        [TestMethod]
+        public async Task PostWorkflowTest_DuplicateKeys()
+        {
+            // Arrange
+            var client = _Factory.CreateClient();
+            await using var inputStream =
+                Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Resources.payload-duplicate-keys.json");
             var data = inputStream.ToArray();
             var content = new ByteArrayContent(data);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");

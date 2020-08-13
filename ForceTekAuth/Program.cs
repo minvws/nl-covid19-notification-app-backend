@@ -52,30 +52,16 @@ namespace ForceTekAuth
 
         public void Execute(string[] _)
         {
-            ForceWorkflowAuth();
-
             using var tx = _WorkflowDb.BeginTransaction();
 
-            Console.WriteLine($"Authorised.");
+            ForceWorkflowAuth();
+            //ForceTekAuth();
 
-            var teks = _WorkflowDb.TemporaryExposureKeys
-                .Include(x => x.Owner)
-                .Where(x => x.PublishingState == PublishingState.Unpublished && x.PublishAfter > _Dtp.Snapshot)
-                .ToList();
-
-            foreach (var i in teks)
-            {
-                i.PublishAfter = _Dtp.Snapshot;
-                _WorkflowDb.TemporaryExposureKeys.Update(i);
-            }
-            
             _WorkflowDb.SaveAndCommit();
         }
 
         private void ForceWorkflowAuth()
         {
-            using var tx = _WorkflowDb.BeginTransaction();
-
             var notAuthed = _WorkflowDb.KeyReleaseWorkflowStates
                 .Where(x => x.AuthorisedByCaregiver == null)
                 .ToList();
@@ -84,13 +70,26 @@ namespace ForceTekAuth
 
             foreach (var i in notAuthed)
             {
+                i.LabConfirmationId = null;
                 i.AuthorisedByCaregiver = _Dtp.Snapshot;
                 i.DateOfSymptomsOnset = _Dtp.Snapshot.Date.AddDays(-1);
-                i.LabConfirmationId = null;
             }
 
             _WorkflowDb.BulkUpdate(notAuthed);
-            _WorkflowDb.SaveAndCommit();
         }
+
+        //private void ForceTekAuth()
+        //{
+        //    var teks = _WorkflowDb.TemporaryExposureKeys
+        //        .Include(x => x.Owner)
+        //        .Where(x => x.PublishingState == PublishingState.Unpublished) // && x.PublishAfter > _Dtp.Snapshot
+        //        .ToList();
+
+        //    foreach (var i in teks)
+        //    {
+        //        i.PublishAfter = _Dtp.Snapshot;
+        //        _WorkflowDb.TemporaryExposureKeys.Update(i);
+        //    }
+        //}
     }
 }

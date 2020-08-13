@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Content Index";
-    ViewData["dateNow"] = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ");
+    ViewData["dateNow"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
     Layout = "_Layout";
 }
 

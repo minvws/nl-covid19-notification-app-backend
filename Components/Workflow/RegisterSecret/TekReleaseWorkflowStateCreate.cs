@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
 {
     public class TekReleaseWorkflowStateCreate : ISecretWriter
     {
-        private readonly WorkflowDbContext _DbContextProvider;
+        private readonly WorkflowDbContext _WorkflowDbContext;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IRandomNumberGenerator _NumberGenerator;
         private readonly ILabConfirmationIdService _LabConfirmationIdService;
@@ -26,12 +26,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
         private readonly IWorkflowConfig _WorkflowConfig;
         private readonly ILogger _Logger;
 
-        private const int AttemptCountMax = 5;
+        private const int AttemptCountMax = 10;
         private int _AttemptCount;
 
         public TekReleaseWorkflowStateCreate(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IRandomNumberGenerator numberGenerator, ILabConfirmationIdService labConfirmationIdService, IWorkflowTime workflowTime, IWorkflowConfig workflowConfig, ILogger<TekReleaseWorkflowStateCreate> logger)
         {
-            _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
+            _WorkflowDbContext = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _NumberGenerator = numberGenerator ?? throw new ArgumentNullException(nameof(numberGenerator));
             _LabConfirmationIdService = labConfirmationIdService ?? throw new ArgumentNullException(nameof(labConfirmationIdService));
@@ -47,14 +47,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
                 Created = _DateTimeProvider.Snapshot,
                 ValidUntil = _WorkflowTime.Expiry(_DateTimeProvider.Snapshot)
             };
-            await _DbContextProvider.KeyReleaseWorkflowStates.AddAsync(entity);
+            await _WorkflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
 
             _Logger.LogDebug("Writing.");
 
             var success = WriteAttempt(entity);
             while (!success)
+            {
+                entity = new TekReleaseWorkflowStateEntity
+                {
+                    Created = _DateTimeProvider.Snapshot,
+                    ValidUntil = _WorkflowTime.Expiry(_DateTimeProvider.Snapshot)
+                };
+                await _WorkflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
                 success = WriteAttempt(entity);
-
+            }
 
             return entity;
         }
@@ -73,12 +80,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
 
             try
             {
-                _DbContextProvider.SaveAndCommit();
+                _WorkflowDbContext.SaveAndCommit();
                 _Logger.LogDebug("Committed.");
                 return true;
             }
             catch (DbUpdateException ex)
             {
+                _WorkflowDbContext.Remove(item);
                 if (CanRetry(ex))
                     return false;
 

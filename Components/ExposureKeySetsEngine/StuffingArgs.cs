@@ -8,6 +8,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 {
     public class StuffingArgs
     {
+        /// <summary>
+        /// For random generation
+        /// </summary>
         public DateTime JobTime { get; set; }
         public int Count { get; set; }
     }

@@ -59,9 +59,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
                 throw new ArgumentNullException(nameof(claimsPrincipal));
 
             var builder = CreateBuilder();
-            builder.AddClaim("exp", _DateTimeProvider.Snapshot.AddHours(_IccPortalConfig.ClaimLifetimeHours).ToUnixTime());
+            builder.AddClaim("exp", _DateTimeProvider.Snapshot.AddHours(_IccPortalConfig.ClaimLifetimeHours).ToUnixTimeU64());
             builder.AddClaim("id", GetClaimValue(claimsPrincipal, ClaimTypes.NameIdentifier));
-            builder.AddClaim("email", GetClaimValue(claimsPrincipal, ClaimTypes.Email));
             builder.AddClaim("access_token",
                 GetClaimValue(claimsPrincipal, "http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken"));
             builder.AddClaim("name",

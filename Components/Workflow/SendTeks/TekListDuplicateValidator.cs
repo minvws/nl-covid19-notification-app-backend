@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                     return new[] { $"There is at least one duplicate - RollingStartNumber:{ordered[i].RollingStartNumber} RollingPeriod:{ordered[i].RollingPeriod}" };
             }
 
-            return new string[0];
+            return new TekListDuplicateKeyDataValidator().Validate(values);
         }
     }
 }

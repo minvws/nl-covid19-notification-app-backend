@@ -8,7 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
     {
         public int WorkflowCount { get; set; }
         public int TekCountPerWorkflow { get; set; }
-        public bool Authorised { get; set; }
-        public int Seed { get; set; }
+        //public bool Authorised { get; set; }
+        //public int Seed { get; set; }
     }
 }

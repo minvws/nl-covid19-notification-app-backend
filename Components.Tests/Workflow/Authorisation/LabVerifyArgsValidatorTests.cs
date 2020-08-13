@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             _PollTokenService =
                 new PollTokenService(
                     new JwtService(
-                        new HardCodedIccPortalConfig(null, "http://test.test", "test_secret123", ClaimLifetimeHours),
+                        new HardCodedIccPortalConfig(null, "http://test.test", "test_secret123", ClaimLifetimeHours, true),
                         _UtcDateTimeProvider, lf), _UtcDateTimeProvider);
             _Validator = new LabVerifyArgsValidator(_PollTokenService);
         }

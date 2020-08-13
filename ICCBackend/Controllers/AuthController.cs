@@ -8,7 +8,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "TelefonistRole")]
     public class AuthController : Controller
     {
         [HttpGet]

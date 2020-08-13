@@ -18,15 +18,12 @@
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<WarningsAsErrors>CS8625</WarningsAsErrors>
-		<DocumentationFile>$(SolutionDir)\Components\NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml</DocumentationFile>
+		<DocumentationFile></DocumentationFile>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="BleCalibration\**" />
-		<Compile Remove="Helpers\**" />
 		<EmbeddedResource Remove="BleCalibration\**" />
-		<EmbeddedResource Remove="Helpers\**" />
 		<None Remove="BleCalibration\**" />
-		<None Remove="Helpers\**" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Remove="EfDatabase\Configuration\Workflow\KeysFirstTekReleaseWorkflow.cs" />

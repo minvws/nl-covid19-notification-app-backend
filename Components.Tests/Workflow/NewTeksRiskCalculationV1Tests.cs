@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
         [TestMethod]
         public void RiskLevel(int day, TransmissionRiskLevel expected)
         {
-            var tek = new Tek { RollingStartNumber = new DateTime(2020, 1, day).ToRollingStartNumber() };
+            var tek = new Tek { RollingStartNumber = new DateTime(2020, 1, day, 0,0,0, DateTimeKind.Utc).ToRollingStartNumber() };
             var calculation = new TransmissionRiskLevelCalculationV1();
             var result = calculation.Calculate(tek.RollingStartNumber, _DateOfSystemsOnset);
             Assert.AreEqual(expected, result);

@@ -9,10 +9,14 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.5" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+        <PackageReference Include="Moq" Version="4.14.5" />
         <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
         <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
         <PackageReference Include="coverlet.collector" Version="1.2.0" />
         <PackageReference Include="NCrunch.Framework" Version="4.5.0" />
+        <PackageReference Include="Serilog" Version="2.9.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+        <PackageReference Include="Serilog.Sinks.Trace" Version="2.1.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -21,10 +25,15 @@
 
     <ItemGroup>
       <None Remove="payload.json" />
+      <None Remove="Resources\payload-bug.json" />
+      <None Remove="Resources\payload.json" />
+      <None Remove="Resources\payload-duplicate-keys.json" />
       <None Remove="Resources\payload-short.json" />
     </ItemGroup>
 
     <ItemGroup>
+      <EmbeddedResource Include="Resources\payload-bug.json" />
+      <EmbeddedResource Include="Resources\payload-duplicate-keys.json" />
       <EmbeddedResource Include="Resources\payload-short.json" />
       <EmbeddedResource Include="Resources\payload.json" />
     </ItemGroup>
