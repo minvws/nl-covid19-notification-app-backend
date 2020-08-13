@@ -146,11 +146,14 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             authBuilder.AddScheme<AuthenticationSchemeOptions, JwtAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
         }
 
+
+       
+
         private void StartupIdentityHub(IServiceCollection services)
         {
             if (_KillAuth) return;
 
-            var iccPortalConfig = new IccPortalConfig(_Configuration);
+
             var iccIdentityHubConfig = new IccIdentityHubConfig(_Configuration);
 
             services
@@ -171,40 +174,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 });
 
 
-            services.AddAuthorization(options =>
-            {
-                
-                var TelefonistRoleProd = "C19NA-Telefonist";
-                var TelefonistRoleTest = "C19NA-Telefonist-Test";
-                var BeheerRoleProd = "C19NA-Beheer";
-                var BeheerRoleTest = "C19NA-Beheer-Test";
-
-                var allowedTelefonistRoleValues = new List<string>();
-                var allowedBeheerRoleValues = new List<string>();
-                
-                if (iccPortalConfig.StrictRolePolicyEnabled)
-                {
-                    var allowedRoleEnv = new List<string>();
-
-                    if (_WebHostEnvironment.IsProduction())
-                    {
-                        allowedRoleEnv.Add("Prod");
-                        allowedBeheerRoleValues.Add(TelefonistRoleProd);
-                        allowedBeheerRoleValues.Add(BeheerRoleProd);
-                    }
-                    else if (_WebHostEnvironment.IsEnvironment("Acceptatie") ||
-                             _WebHostEnvironment.IsEnvironment("Test") || _WebHostEnvironment.IsDevelopment())
-                    {
-                        allowedTelefonistRoleValues.Add(TelefonistRoleTest);
-                        allowedBeheerRoleValues.Add(BeheerRoleTest);
-                    }
-                }
-
-                options.AddPolicy("TelefonistRole",
-                    builder => builder.RequireClaim(ClaimTypes.Role, allowedTelefonistRoleValues));
-                options.AddPolicy("BeheerRole",
-                    builder => builder.RequireClaim(ClaimTypes.Role, allowedBeheerRoleValues));
-            });
+            PolicyAuthorizationOptions policyAuthorizationOptions = new PolicyAuthorizationOptions(_WebHostEnvironment, new IccPortalConfig(_Configuration));
+            services.AddAuthorization(options => policyAuthorizationOptions.GetOptions(options));
 
 
             services.AddMvc(config =>
