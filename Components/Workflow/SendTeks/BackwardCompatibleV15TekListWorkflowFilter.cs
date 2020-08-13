@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         private List<Tek> _Valid;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private int? _LastPublishedRsn;
-        private ITekValidatorConfig _Config;
+        private readonly ITekValidatorConfig _Config;
 
         public BackwardCompatibleV15TekListWorkflowFilter(IUtcDateTimeProvider dateTimeProvider, ITekValidatorConfig config)
         {
@@ -63,24 +63,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 // it must arrive within the call window (Step 4 from proposed process)
                 if (_Workflow.AuthorisedByCaregiver != null && !(now - _Workflow.AuthorisedByCaregiver < TimeSpan.FromMinutes(_Config.AuthorisationWindowMinutes)))
                 {
-                    item.PublishAfter = _DateTimeProvider.Snapshot.AddMinutes(_Config.PublishingDelayInMinutes);
                     return new[] {"Authorisation window expired"};
                 }
 
-                //Log(‘same day key accepted: before call or within call window’)
+                item.PublishAfter = _DateTimeProvider.Snapshot.AddMinutes(_Config.PublishingDelayInMinutes);
                 _Valid.Add(item);
-                return new string[0];
+                return new [] { "Same day key accepted - Reason:Before call or within call window Key." }; //TODO text reason from doc seems ambiguous.
             }
 
-            if (item.StartDate == _Workflow.Created.Date)
+            // key from result day that arrives after today with extra check to ensure it’s a 1.4 device and not a tampered 1.5 device (Step 5)
+            if (item.StartDate == _Workflow.Created.Date && _WorkflowHasKeyOnCreationDate)
             {
-                // key from result day that arrives after today with extra check to ensure it’s a 1.4 device and not a tampered 1.5 device (Step 5)
-                if (_WorkflowHasKeyOnCreationDate)
-                    return new[] { "Tek for result day after midnight rejected - already a tek present for that day" };
-
-                //Log(“key for result day accepted after midnight”)
-                _Valid.Add(item);
-                return new string[0];
+                return new[] { "Tek for result day after midnight rejected - already a tek present for that day" };
             }
 
             // Key from the past accepted.

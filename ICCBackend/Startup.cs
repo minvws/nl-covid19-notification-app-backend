@@ -116,8 +116,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 {
                     Name = "European Union Public License v. 1.2",
                     //TODO this should be https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
-                    Url = new Uri(
-                        "https://github.com/minvws/nl-covid19-notification-app-backend/blob/master/LICENSE.txt")
+                    Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend/blob/master/LICENSE.txt")
                 },
             });
 

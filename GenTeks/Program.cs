@@ -3,12 +3,18 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 
 namespace GenTeks
 {
@@ -26,18 +32,30 @@ namespace GenTeks
             {
                 WorkflowCount = args.Length > 0 && int.TryParse(args[0], out var v0) ? v0 : 10,
                 TekCountPerWorkflow = args.Length > 1 && int.TryParse(args[1], out var v1) ? v1 : 14,
-                Authorised = args.Length > 2 && bool.TryParse(args[2], out var v2) ? v2 : true, //NB Resharper nag wrong
-                Seed = args.Length > 3 && int.TryParse(args[3], out var v3) ? v3 : 2345,
             };
 
-            serviceProvider.GetRequiredService<GenerateTeksCommand>().Execute(args2);
+            serviceProvider.GetRequiredService<GenerateTeksCommand>().Execute(args2).GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
+            services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.AddSingleton(x => DbContextStartup.Workflow(x, false));
+
             services.AddSingleton<IConfiguration>(configuration);
-            services.AddScoped(x => DbContextStartup.Workflow(x));
-            services.AddTransient<GenerateTeksCommand>();
+            services.AddSingleton<ILabConfirmationIdService, LabConfirmationIdService>();
+            services.AddSingleton<IRandomNumberGenerator, StandardRandomNumberGenerator>();
+            services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
+
+            services.AddTransient(x => new GenerateTeksCommand(
+                x.GetRequiredService<IRandomNumberGenerator>(),
+                x.GetRequiredService<WorkflowDbContext>(), 
+                x.GetRequiredService<TekReleaseWorkflowStateCreate>
+                ));
+
+            services.AddTransient<TekReleaseWorkflowStateCreate>();
+            
+            services.AddTransient<IWorkflowTime, TekReleaseWorkflowTime>();
         }
     }
 }

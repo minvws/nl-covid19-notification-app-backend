@@ -3,62 +3,55 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
     public class GenerateTeksCommand
     {
-        private Random _Random;
+        private readonly IRandomNumberGenerator _Rng;
+        private readonly WorkflowDbContext _WorkflowDb;
+        private readonly Func<TekReleaseWorkflowStateCreate> _RegisterWriter;
+
         private GenerateTeksCommandArgs _Args;
 
-        private readonly WorkflowDbContext _WorkflowDb;
-
-        public GenerateTeksCommand(WorkflowDbContext workflowDb)
+        public GenerateTeksCommand(IRandomNumberGenerator rng, WorkflowDbContext workflowDb, Func<TekReleaseWorkflowStateCreate> registerWriter)
         {
+            _Rng = rng ?? throw new ArgumentNullException(nameof(rng));
             _WorkflowDb = workflowDb ?? throw new ArgumentNullException(nameof(workflowDb));
+            _RegisterWriter = registerWriter ?? throw new ArgumentNullException(nameof(registerWriter));
         }
 
-        public void Execute(GenerateTeksCommandArgs args)
+        public async Task Execute(GenerateTeksCommandArgs args)
         {
             _WorkflowDb.EnsureNoChangesOrTransaction();
-            _WorkflowDb.BeginTransaction();
 
             _Args = args;
-            _Random = new Random(args.Seed);
-
-            GenWorkflows();
-            _WorkflowDb.SaveAndCommit();
-
+            await GenWorkflows();
         }
 
-        private void GenWorkflows()
+        private async Task GenWorkflows()
         {
             for (var i = 0; i < _Args.WorkflowCount; i++)
             {
-                var workflow = new TekReleaseWorkflowStateEntity
-                {
-                    LabConfirmationId = _Args.Authorised ? null : "2L2587",
-                    BucketId = new byte[32], //TODO from consts/settings
-                    ConfirmationKey = new byte[32], //TODO from consts/settings
-                    Created = DateTime.Now - TimeSpan.FromMinutes(_Random.Next(14 * 24 * 60 * 60)),
-                    AuthorisedByCaregiver = DateTime.Now
-                };
-                _Random.NextBytes(workflow.BucketId);
-                _Random.NextBytes(workflow.ConfirmationKey);
+                _WorkflowDb.BeginTransaction();
+                var workflow = await _RegisterWriter().Execute(); //Save/Commit
 
-                _WorkflowDb.Set<TekReleaseWorkflowStateEntity>().Add(workflow);
+                _WorkflowDb.BeginTransaction();
                 GenTeks(workflow);
+                _WorkflowDb.SaveAndCommit();
             }
-
         }
 
         private void GenTeks(TekReleaseWorkflowStateEntity workflow)
         {
-            var count = _Random.Next(1, _Args.TekCountPerWorkflow);
+            var count = _Rng.Next(1, _Args.TekCountPerWorkflow);
 
             for (var i = 0; i < count; i++)
             {
@@ -66,12 +59,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
                 {
                     Owner = workflow,
                     PublishingState = PublishingState.Unpublished,
-                    RollingPeriod = 1,
-                    RollingStartNumber = 1,
-                    KeyData = new byte[16],
+                    RollingStartNumber = DateTime.UtcNow.Date.ToRollingStartNumber(),
+                    RollingPeriod = _Rng.Next(1, 144),
+                    KeyData = _Rng.NextByteArray(16),
+                    PublishAfter = DateTime.UtcNow,
                     Region = "NL"
                 };
-                _Random.NextBytes(k.KeyData);
                 workflow.Teks.Add(k);
                 _WorkflowDb.Set<TekEntity>().Add(k);
             }

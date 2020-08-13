@@ -6,49 +6,36 @@ using System;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
 {
-    //TODO convert DateTimes to DateTimeOffsets?
     public static class TimeConverter
     {
-        private static readonly DateTime _RollingPeriodEpoch = DateTime.UnixEpoch;
-        private const int RollingPeriodFactor = 600; //TODO Currently 1 : ? seconds?
+        private const int RollingPeriodFactor = 600;
 
+        /// <summary>
+        /// Converts an UTC Date into the RollingStartNumber.
+        /// </summary>
         public static int ToRollingStartNumber(this DateTime value)
         {
-            var dif = value - _RollingPeriodEpoch;
-            return Convert.ToInt32(Math.Floor(dif.TotalSeconds)) / RollingPeriodFactor;
+            if (value.Kind != DateTimeKind.Utc || value.Date != value)
+                throw new ArgumentException("Not a date.");
+
+            return value.ToUnixTime() / RollingPeriodFactor;
         }
-
-        //public static long ToRollingPeriodNumber(this DateTime value)
-        //{
-        //    return Convert.ToInt64(Math.Floor((value - _RollingPeriodEpoch).TotalSeconds) / RollingPeriodFactor);
-        //}
-
-        //public static long ToRollingPeriodNumber(this TimeSpan value)
-        //{
-        //    return Convert.ToInt64(Math.Floor(value.TotalSeconds)) / RollingPeriodFactor;
-        //}
 
         public static DateTime FromRollingStartNumber(this int value)
         {
-            return _RollingPeriodEpoch + TimeSpan.FromSeconds(value * RollingPeriodFactor);
+            var epoch = (long)value * RollingPeriodFactor;
+
+            return  DateTimeOffset.FromUnixTimeSeconds(epoch).UtcDateTime;
+        }
+        
+        public static ulong ToUnixTimeU64(this DateTime value)
+        {
+            return Convert.ToUInt64(value.ToUnixTime());
         }
 
-        public static TimeSpan FromRollingPeriod(this int value)
+        private static int ToUnixTime(this DateTime value)
         {
-            return TimeSpan.FromSeconds(value * RollingPeriodFactor);
-        }
-
-        public static DateTime FromUnixTime(this long value)
-        {
-            if (value < 0)
-                throw new ArgumentException(nameof(value));
-
-            return DateTimeOffset.UnixEpoch.AddSeconds(value).DateTime;
-        }
-
-        public static ulong ToUnixTime(this DateTime value)
-        {
-            return Convert.ToUInt64(Math.Floor((value - DateTimeOffset.UnixEpoch).TotalSeconds));
+            return Convert.ToInt32(Math.Floor((value - DateTimeOffset.UnixEpoch).TotalSeconds));
         }
     }
 }

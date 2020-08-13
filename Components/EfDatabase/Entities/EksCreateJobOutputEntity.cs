@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
         /// <summary>
         /// Metadata - Job Id.
         /// </summary>
-        public string CreatingJobName { get; set; }
+        public string CreatingJobName { get; set; } = "Deprecated";
 
         /// <summary>
         /// Metadata - Job Id.

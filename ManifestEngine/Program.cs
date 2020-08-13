@@ -40,13 +40,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddLogging(builder =>
-            {
-              builder.AddSerilog(new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                .CreateLogger(), true);
-            });
-
             services.AddScoped(x => DbContextStartup.Content(x, false));
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddScoped<HttpGetCdnManifestCommand>();

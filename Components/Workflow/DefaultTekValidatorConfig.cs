@@ -11,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
     {
         public int RollingPeriodMin => 1;
         public int RollingPeriodMax => 144;
-        public int RollingStartNumberMin => new DateTime(2020, 7, 1, 0, 0, 0).ToRollingStartNumber();
+        public int RollingStartNumberMin => new DateTime(2020, 7, 1, 0, 0, 0, DateTimeKind.Utc).ToRollingStartNumber();
         public int MaxAgeDays => 14;
         public int KeyDataLength => 16;
         public int PublishingDelayInMinutes => 120; //NB changing this breaks a unit test cos tests dont read settings.

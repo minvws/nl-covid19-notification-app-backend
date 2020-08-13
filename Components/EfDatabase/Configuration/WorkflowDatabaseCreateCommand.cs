@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
                 LabConfirmationId = _LabConfirmationIdService.Next(),
                 BucketId = r2.NextByteArray(_WorkflowConfig.BucketIdLength),
                 ConfirmationKey = r2.NextByteArray(_WorkflowConfig.ConfirmationKeyLength),
-                Created = new DateTime(2020, 5, 1),
+                Created = new DateTime(2020, 5, 1,0,0,0,DateTimeKind.Utc),
             };
 
             var key1 = new TekEntity
@@ -56,7 +56,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
                 Owner = wfs1,
                 PublishingState = PublishingState.Unpublished,
                 RollingPeriod = 2,
-                RollingStartNumber = DateTime.Now.ToRollingStartNumber(),
+                RollingStartNumber = DateTime.UtcNow.Date.ToRollingStartNumber(),
                 KeyData = r2.NextByteArray(_TekValidatorConfig.KeyDataLength),
                 Region = "NL"
             };
@@ -67,7 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
                 Owner = wfs1,
                 PublishingState = PublishingState.Unpublished,
                 RollingPeriod = 144,
-                RollingStartNumber = DateTime.Now.ToRollingStartNumber(),
+                RollingStartNumber = DateTime.UtcNow.Date.ToRollingStartNumber(),
                 KeyData = r2.NextByteArray(_TekValidatorConfig.KeyDataLength),
                 Region = "NL"
             };

@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Data.Common;
 using System.Linq;
 using System.Net;
@@ -73,6 +74,12 @@ namespace MobileAppApi.Tests.Controllers
 
             public byte[] NextByteArray(int length)
             {
+                if (length <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(length));
+
+                //if (length == 0)
+                //    return new byte[0];
+
                 var buffer = new byte[length];
                 buffer[0] = (byte)Value;
                 return buffer;
@@ -93,6 +100,8 @@ namespace MobileAppApi.Tests.Controllers
         {
             // Arrange
             var client = _Factory.CreateClient();
+
+            _FakeNumbers.Value = 1;
 
             // Act
             var result = await client.PostAsync("v1/register", null);

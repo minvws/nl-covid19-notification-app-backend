@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         public string Next()
         {
             return _JwtService.Generate(
-                _DateTimeProvider.Now().AddSeconds(30).ToUnixTime(), //TODO setting?
+                _DateTimeProvider.Now().AddSeconds(30).ToUnixTimeU64(), //TODO setting?
                 new Dictionary<string, object>
                 {
                     [PayloadElement] = Guid.NewGuid().ToString() // make polltoken unique //TODO use RNG here instead cos index clustering

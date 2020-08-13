@@ -13,15 +13,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 {
     public class EksStuffingGenerator : IEksStuffingGenerator
     {
-        private readonly PublishingJobDbContext _DbContext;
         private readonly IRandomNumberGenerator _Random;
         private readonly ITekValidatorConfig _TekValidatorConfig;
         
         private StuffingArgs _Args;
 
-        public EksStuffingGenerator(PublishingJobDbContext dbContext, IRandomNumberGenerator random, ITekValidatorConfig tekValidatorConfig)
+        public EksStuffingGenerator(IRandomNumberGenerator random, ITekValidatorConfig tekValidatorConfig)
         {
-            _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _Random = random ?? throw new ArgumentNullException(nameof(random));
             _TekValidatorConfig = tekValidatorConfig ?? throw new ArgumentNullException(nameof(tekValidatorConfig));
         }
@@ -48,7 +46,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         }
         
         //Which day?
-        //TODO Align with times mobile apps generate - or is it ALWAYS a date.
         private int GetRandomRollingStartNumber()
         {
             var delta = _Random.Next(0, _TekValidatorConfig.MaxAgeDays);

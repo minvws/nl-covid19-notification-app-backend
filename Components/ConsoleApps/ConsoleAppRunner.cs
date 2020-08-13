@@ -8,13 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using Serilog;
-using Serilog.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps
 {
     public sealed class ConsoleAppRunner
     {
-        private ILogger<ConsoleAppRunner>? _Logger;
+        private ServiceProvider _ServiceProvider;
 
         public void Execute(string[] args, Action<IServiceCollection, IConfigurationRoot> configure, Action<IServiceProvider, string[]> start)
         {
@@ -22,24 +21,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps
             {
                 var configuration = ConfigurationRootBuilder.Build();
                 var serviceCollection = new ServiceCollection();
-                Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
-                serviceCollection.AddSingleton(LoggerFactory.Create(x => x.AddSerilog()));
+
+                Log.Logger = new LoggerConfiguration()
+                        .ReadFrom.Configuration(configuration)
+                        .CreateLogger();
+
+                serviceCollection.AddLogging(builder =>
+                {
+                    builder.AddSerilog();
+                });
+
+                Log.Debug("Created the logger");
+
                 configure(serviceCollection, configuration);
-                var serviceProvider = serviceCollection.BuildServiceProvider();
-                _Logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ConsoleAppRunner>();
-                AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
-                start(serviceProvider, args);
+                _ServiceProvider = serviceCollection.BuildServiceProvider();
+
+                Log.Debug("About to start the console app");
+
+                start(_ServiceProvider, args);
+            }
+            catch(Exception ex)
+            {
+                _ServiceProvider.GetRequiredService<ILogger<ConsoleAppRunner>>()
+                    .LogCritical(ex.ToString());
             }
             finally
             {
+                Log.Debug("About to close and flush the log");
                 Log.CloseAndFlush();
             }
-        }
-
-        private void OnCurrentDomainOnUnhandledException(object _, UnhandledExceptionEventArgs e)
-        {
-            _Logger.LogCritical(e.ExceptionObject.ToString());
-            Environment.Exit(-1);
         }
     }
 }

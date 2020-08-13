@@ -45,8 +45,6 @@ namespace DbProvision
             services.AddTransient<PublishingJobDatabaseCreateCommand>();
             services.AddTransient<ContentDatabaseCreateCommand>();
 
-            services.AddLogging();
-            
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
             services.AddSingleton<ITekValidatorConfig, TekValidatorConfig>();
             services.AddSingleton<IEksConfig, StandardEksConfig>();

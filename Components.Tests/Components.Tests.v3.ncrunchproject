@@ -11,6 +11,9 @@
       <FixtureTestSelector>
         <FixtureName>Components.Tests.CuckooFilters.CuckooFilterBuilderTests</FixtureName>
       </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.EksBatchJobTests</FixtureName>
+      </FixtureTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

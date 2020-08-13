@@ -142,7 +142,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             }
 
             //Run after the filter removes the existing TEKs from the args.
-            var allTeks = teks.Concat(filterResults.Items).ToArray();
+            var allTeks = workflow.Teks.Select(Mapper.MapToTek).Concat(filterResults.Items).ToArray();
             if (_Logger.LogValidationMessages(new TekListDuplicateKeyDataValidator().Validate(allTeks)))
                 return;
 

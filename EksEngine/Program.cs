@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
@@ -37,22 +38,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
         private static void Start(IServiceProvider serviceProvider, string[] args)
         {
-            using var job = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
+            var job = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
             job.Execute().GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddLogging(builder =>
-            {
-              builder.AddSerilog(new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                .CreateLogger(), true);
-            });
+            services.AddTransient(x => DbContextStartup.Workflow(x, false));
+            services.AddTransient(x => DbContextStartup.Content(x, false));
+            services.AddTransient(x => DbContextStartup.Publishing(x, false));
 
-            services.AddScoped(x => DbContextStartup.Workflow(x, false));
-            services.AddScoped(x => DbContextStartup.Content(x, false));
-            services.AddScoped(x => DbContextStartup.Publishing(x, false));
+            services.AddTransient<Func<WorkflowDbContext>>(x => x.GetService<WorkflowDbContext>);
+            services.AddTransient<Func<PublishingJobDbContext>>(x => x.GetService<PublishingJobDbContext>);
+            services.AddTransient<Func<ContentDbContext>>(x => x.GetService<ContentDbContext>);
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
@@ -70,6 +68,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<GeneratedProtobufEksContentFormatter>();
             services.AddTransient<IEksBuilder, EksBuilderV1>();
             services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
+            services.AddTransient<ISnapshotEksInput, SnapshotEksInputMk1>();
+            services.AddTransient<IMarkWorkFlowTeksAsUsed, MarkWorkFlowTeksAsUsed>();
+            services.AddTransient<EksJobContentWriter>();
 
             services.NlSignerStartup(configuration.UseCertificatesFromResources());
             services.GaSignerStartup(configuration.UseCertificatesFromResources());
