@@ -32,21 +32,20 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
         private void PolicyGenerator()
         {
-            if (_WebHostEnvironment.IsEnvironment("Productie"))
+            if (_WebHostEnvironment.IsProduction())
             {
                 _AllowedTelefonistRoleValues.Add(TelefonistRoleProd);
                 _AllowedBeheerRoleValues.Add(BeheerRoleProd);
                 return;
             }
 
-            if (_WebHostEnvironment.IsEnvironment("Acceptatie") || _WebHostEnvironment.IsEnvironment("Test") || _WebHostEnvironment.IsDevelopment())
+            if (_WebHostEnvironment.IsStaging() || _WebHostEnvironment.IsDevelopment())
             {
                 _AllowedTelefonistRoleValues.Add(TelefonistRoleTest);
                 _AllowedBeheerRoleValues.Add(BeheerRoleTest);
                 return;
             }
             throw new InvalidOperationException("Environment not recognized.");
-            
         }
 
         public void GetOptions(AuthorizationOptions options)
