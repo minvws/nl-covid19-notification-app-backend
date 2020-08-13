@@ -8,15 +8,10 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 {
-    [Authorize(Policy = "TelefonistRole")]
-    public class AuthController : Controller
+    public class AccountController : Controller
     {
-        [HttpGet]
-        public IActionResult Logout([FromServices] HttpGetLogoutCommand command)
-            => command.Execute(HttpContext);
-
-        [HttpGet]
-        public IActionResult Redirect([FromServices] HttpGetAuthorisationRedirectCommand command)
-            => command.Execute(HttpContext);
+        [AllowAnonymous, HttpGet]
+        public IActionResult AccessDenied([FromServices] HttpGetAccessDeniedCommand command) =>
+            command.Execute(HttpContext);
     }
 }

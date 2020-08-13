@@ -18,5 +18,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         public double ClaimLifetimeHours => GetConfigValue(nameof(ClaimLifetimeHours), 3.0);
         
         public string FrontendBaseUrl => GetConfigValue(nameof(FrontendBaseUrl), "TODO Sensible default!!!!");
+        public bool StrictRolePolicyEnabled => GetConfigValue(nameof(StrictRolePolicyEnabled), true);
     }
 }
