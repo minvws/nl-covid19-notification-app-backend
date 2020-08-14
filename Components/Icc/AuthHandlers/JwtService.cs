@@ -10,6 +10,7 @@ using JWT.Algorithms;
 using JWT.Builder;
 using JWT.Exceptions;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
@@ -62,9 +63,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             builder.AddClaim("exp", _DateTimeProvider.Snapshot.AddHours(_IccPortalConfig.ClaimLifetimeHours).ToUnixTimeU64());
             builder.AddClaim("id", GetClaimValue(claimsPrincipal, ClaimTypes.NameIdentifier));
             builder.AddClaim("access_token",
-                GetClaimValue(claimsPrincipal, "http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken"));
+                GetClaimValue(claimsPrincipal, TheIdentityHubClaimTypes.AccessToken));
             builder.AddClaim("name",
-                GetClaimValue(claimsPrincipal, "http://schemas.u2uconsult.com/ws/2014/04/identity/claims/displayname"));
+                GetClaimValue(claimsPrincipal, TheIdentityHubClaimTypes.DisplayName));
             return builder.Encode();
         }
 

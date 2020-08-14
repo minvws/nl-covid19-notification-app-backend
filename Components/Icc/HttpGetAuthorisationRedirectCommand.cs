@@ -3,10 +3,13 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Linq;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
@@ -27,10 +30,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         {
             if (httpContext == null)
                 throw new ArgumentNullException(nameof(httpContext));
-                    
             _Logger.LogInformation("Executing Auth.Redirect on Host {CurrentHost}", httpContext.Request.Host.ToString());
             var jwtToken = _JwtService.Generate(httpContext.User);
-
             // temporary claim payload redirect solution for demo purposes
             return new RedirectResult(_Configuration.FrontendBaseUrl + "/auth?token=" + jwtToken);
         }

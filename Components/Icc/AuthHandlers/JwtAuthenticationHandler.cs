@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
@@ -20,15 +21,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         //private const string AccessTokenElement = "access_token";
 
         private readonly IJwtService _JwtService;
+        private readonly TheIdentityHubService _TheIdentityHubService;
 
         public JwtAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory loggerFactory,
             UrlEncoder encoder,
             ISystemClock clock,
-            IJwtService jwtService) : base(options, loggerFactory, encoder, clock)
+            IJwtService jwtService, TheIdentityHubService theIdentityHubService) : base(options, loggerFactory, encoder, clock)
         {
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
+            _TheIdentityHubService = theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -52,10 +55,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
                 return AuthenticateResult.Fail("Invalid jwt token");
             }
 
-
+            if (!await _TheIdentityHubService.VerifyToken(decodedClaims["access_token"]))
+            {
+                return AuthenticateResult.Fail("Invalid jwt token"); 
+            }
+            
+            
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, decodedClaims["id"]),
+                new Claim(TheIdentityHubClaimTypes.AccessToken, decodedClaims["access_token"]),
             };
 
             var identity = new ClaimsIdentity(claims, Scheme.Name);
