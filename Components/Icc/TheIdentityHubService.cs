@@ -62,8 +62,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         public async void RevokeAccessToken(string accessToken)
         {
             if (accessToken == null) throw new ArgumentNullException(nameof(accessToken));
-            var requestUri = new Uri(_Options.TheIdentityHubUrl, "oauth2/v1/revoke");
-
+            var requestUri = new Uri(_Options.TheIdentityHubUrl, _Options.Tenant + "/oauth2/v1/revoke");
+            
             var payload = new List<KeyValuePair<string, string>>();
             payload.Add(new KeyValuePair<string, string>("client_id", _Options.ClientId));
             payload.Add(new KeyValuePair<string, string>("token", accessToken));
