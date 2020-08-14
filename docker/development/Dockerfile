@@ -2,9 +2,9 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS builder
 
 COPY . app/
 WORKDIR app/
-COPY docker/standalone/appsettings.json .
+COPY docker/development/appsettings.json .
 RUN rm Components/Framework/WindowsIdentityStuff.cs
-COPY docker/standalone/hacks/WindowsIdentityStuff.cs Components/Framework/
+COPY docker/development/hacks/WindowsIdentityStuff.cs Components/Framework/
 
 # get rid of xcopy commands in project files
 RUN find . -name \*.csproj -exec sed -i '/<Exec Command="xcopy.*>/d' {} \;
@@ -23,8 +23,8 @@ RUN dotnet publish GenTeks/GenTeks.csproj --no-self-contained  --configuration R
 RUN dotnet publish ForceTekAuth/ForceTekAuth.csproj --no-self-contained  --configuration Release -o publish/Tools/ForceTekAuth --version-suffix local
 
 RUN find ./publish -name appsettings.json -exec cp appsettings.json {} \;
-COPY docker/standalone/config/appconfig.json publish/Tools/DbFillExampleContent/
-COPY docker/standalone/config/riskparams.json publish/Tools/DbFillExampleContent/
+COPY docker/development/config/appconfig.json publish/Tools/DbFillExampleContent/
+COPY docker/development/config/riskparams.json publish/Tools/DbFillExampleContent/
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine
 WORKDIR /app

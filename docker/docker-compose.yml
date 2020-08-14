@@ -3,7 +3,7 @@ services:
   content_api:
     build:
       context: ..
-      dockerfile: docker/standalone/Dockerfile
+      dockerfile: docker/development/Dockerfile
     image: standalone:latest
     entrypoint: ['/bin/sh', '-c', 'cd ContentApi && ./NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi']
     ports:
@@ -13,7 +13,7 @@ services:
   mobile_api:
     build:
       context: ..
-      dockerfile: docker/standalone/Dockerfile
+      dockerfile: docker/development/Dockerfile
     image: standalone:latest
     entrypoint: ['/bin/sh', '-c', 'cd MobileAppApi && ./NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi']
     ports:
@@ -23,7 +23,7 @@ services:
   jobs_api:
     build:
       context: ..
-      dockerfile: docker/standalone/Dockerfile
+      dockerfile: docker/development/Dockerfile
     image: standalone:latest
     entrypoint: ['/bin/sh', '-c', 'cd BatchJobsApi && ./NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi']
     ports:
