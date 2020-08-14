@@ -27,13 +27,15 @@
       <None Remove="payload.json" />
       <None Remove="Resources\payload-bug.json" />
       <None Remove="Resources\payload.json" />
-      <None Remove="Resources\payload-duplicate-keys.json" />
+      <None Remove="Resources\payload-duplicate-keys-keydata.json" />
+      <None Remove="Resources\payload-duplicate-keys-rsnrp.json" />
       <None Remove="Resources\payload-short.json" />
     </ItemGroup>
 
     <ItemGroup>
       <EmbeddedResource Include="Resources\payload-bug.json" />
-      <EmbeddedResource Include="Resources\payload-duplicate-keys.json" />
+      <EmbeddedResource Include="Resources\payload-duplicate-keys-keydata.json" />
+      <EmbeddedResource Include="Resources\payload-duplicate-keys-rsnrp.json" />
       <EmbeddedResource Include="Resources\payload-short.json" />
       <EmbeddedResource Include="Resources\payload.json" />
     </ItemGroup>
