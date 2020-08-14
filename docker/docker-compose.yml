@@ -20,16 +20,6 @@ services:
       - '5005:5000'
     links:
       - 'db:database'
-  jobs_api:
-    build:
-      context: ..
-      dockerfile: docker/development/Dockerfile
-    image: standalone:latest
-    entrypoint: ['/bin/sh', '-c', 'cd BatchJobsApi && ./NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi']
-    ports:
-      - '5006:5000'
-    links:
-      - 'db:database'
   db:
     image: mcr.microsoft.com/mssql/server:2019-latest
     ports:

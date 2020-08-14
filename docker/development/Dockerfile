@@ -8,11 +8,8 @@ COPY docker/development/hacks/WindowsIdentityStuff.cs Components/Framework/
 
 # get rid of xcopy commands in project files
 RUN find . -name \*.csproj -exec sed -i '/<Exec Command="xcopy.*>/d' {} \;
-RUN dotnet publish BatchJobsApi/BatchJobsApi.csproj --no-self-contained --configuration Release -o publish/BatchJobsApi --version-suffix local
 RUN dotnet publish ContentApi/ContentApi.csproj --no-self-contained  --configuration Release -o publish/ContentApi --version-suffix local
-#RUN dotnet publish ICCBackend/ICCBackend.csproj --no-self-contained  --configuration Release -o publish/ICCBackend --version-suffix local
 RUN dotnet publish MobileAppApi/MobileAppApi.csproj --no-self-contained  --configuration Release -o publish/MobileAppApi --version-suffix local
-#RUN dotnet publish ManagementPortal/ManagementPortal.csproj --no-self-contained  --configuration Release -o publish/ManagementPortal --version-suffix local
 
 RUN dotnet publish EksEngine/EksEngine.csproj --no-self-contained  --configuration Release -o publish/EksEngine --version-suffix local
 RUN dotnet publish ManifestEngine/ManifestEngine.csproj --no-self-contained  --configuration Release -o publish/ManifestEngine --version-suffix local
