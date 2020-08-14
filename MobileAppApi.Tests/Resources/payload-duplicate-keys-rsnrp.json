@@ -1,0 +1,15 @@
+{
+    "keys": [
+      {
+        "keyData": "uzUzSsH4YjPOWbXunpolTA==",
+        "rollingStartNumber": 2661984,
+        "rollingPeriod": 144
+      },
+      {
+        "keyData": "SjnUktrhz5OFNw7bo7J3BQ==",
+        "rollingStartNumber": 2661984,
+        "rollingPeriod": 144
+      }
+    ],
+    "bucketId": "idlVmyDGeAXTyaNN06Uejy6tLgkgWtj32sLRJm/OuP8="
+  }
