@@ -30,14 +30,6 @@ services:
       - '5006:5000'
     links:
       - 'db:database'
-    
-    #   icc_backend:
-    # build:
-    #   context: ..
-    #   dockerfile: docker/icc_backend/Dockerfile
-    # ports:
-    #   - '5006:5000'
-    #   - '5007:5001'
   db:
     image: mcr.microsoft.com/mssql/server:2019-latest
     ports:
