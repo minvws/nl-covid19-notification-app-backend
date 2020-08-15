@@ -38,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     RollingPeriod = _TekValidatorConfig.RollingPeriodMax, //Could randomise - would need > 1 Tek for current date to look legit.
                     RollingStartNumber = GetRandomRollingStartNumber(),
                     KeyData = _Random.NextByteArray(_TekValidatorConfig.KeyDataLength),
-                    TransmissionRiskLevel = TransmissionRiskLevel.Low
+                    TransmissionRiskLevel = (TransmissionRiskLevel) (i % 3) + 1
                 };
             }
 
