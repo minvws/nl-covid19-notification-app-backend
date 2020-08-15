@@ -1,8 +1,8 @@
-# Covid19 Notification App Backend
+# COVID-19 Notification App - Backend
 
 ## Introduction
 
-This repository contains the backend code for the Proof of Concept for the Dutch exposure notification app. We provide this code in an early stage so that everyone can follow along as we develop the app, and to solicit feedback. Note that due to the early stage in which we are sharing this code, significant portions of the code might still change. We might add or remove features and code as needed, based on validation and user tests that are conducted partially in parallel to the development.
+This repository contains the backend code for the Dutch exposure notification app.
 
 * The backend is located in the repository you are currently viewing.
 * The iOS app can be found here: https://github.com/minvws/nl-covid19-notification-app-ios
