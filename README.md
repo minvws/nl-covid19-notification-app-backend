@@ -1,4 +1,4 @@
-# COVID-19 Notification - Backend
+# COVID-19 Notification App - Backend
 
 ## Introduction
 
