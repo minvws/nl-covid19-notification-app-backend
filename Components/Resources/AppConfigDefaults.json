@@ -3,7 +3,7 @@
   "iOSMinimumVersion": "1.0.0",
   "iOSMinimumVersionMessage": "",
   "iOSAppStoreURL": "https://apps.apple.com/nl/app/id1517652429",
-  "manifestFrequency": 90,
+  "manifestFrequency": 240,
   "decoyProbability": 0.00118,
   "requestMinimumSize": 1800,
   "requestMaximumSize": 17000,
