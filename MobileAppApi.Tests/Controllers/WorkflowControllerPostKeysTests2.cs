@@ -110,7 +110,7 @@ namespace MobileAppApi.Tests.Controllers
             Trace.WriteLine($"{new DateTime(2019, 12, 31)} == {new DateTime(2019, 12, 31, 0, 0, 0, DateTimeKind.Utc).ToRollingStartNumber()}");
         }
         
-        [DataRow("Resources.payload-AncientTek.json", 1, 7, 1)] //Issue 57883 - tek at 2020-1-1 is not accepted.
+        //[DataRow("Resources.payload-AncientTek.json", 1, 7, 1)] //Issue 57883 - tek at 2020-1-1 is not accepted.
         //[DataRow("Resources.payload-RandomRPs.json", 2, 8, 10)] //WHICH bug?
         //[DataRow("Resources.payload-duplicate-KeyData.json", 2, 8, 10)] //WHICH bug?
         //[DataRow("Resources.payload-bug.json", 2, 8, 10)] //WHICH bug?
@@ -132,10 +132,10 @@ namespace MobileAppApi.Tests.Controllers
 
             var tekDates = args.Keys
                 .OrderBy(x => x.RollingStartNumber)
-                .Select(x => x.RollingStartNumber.FromRollingStartNumber());
+                .Select(x => new {x, Date = x.RollingStartNumber.FromRollingStartNumber()});
 
             foreach (var i in tekDates)
-                Trace.WriteLine(i);
+                Trace.WriteLine($"RSN:{i.x.RollingStartNumber} Date:{i.Date:yyyy-MM-dd}.");
 
             var signature = HttpUtility.UrlEncode(HmacSigner.Sign(_LabConfirmationKey, data));
             var content = new ByteArrayContent(data);

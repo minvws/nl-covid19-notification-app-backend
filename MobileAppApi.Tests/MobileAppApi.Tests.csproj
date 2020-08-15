@@ -25,7 +25,12 @@
 
     <ItemGroup>
       <None Remove="payload.json" />
+      <None Remove="Resources\payload-AncientTek.json" />
       <None Remove="Resources\payload-bug.json" />
+      <None Remove="Resources\payload-duplicate-KeyData.json" />
+      <None Remove="Resources\payload-good01.json" />
+      <None Remove="Resources\payload-good14.json" />
+      <None Remove="Resources\payload-RandomRPs.json" />
       <None Remove="Resources\payload.json" />
       <None Remove="Resources\payload-duplicate-keys-keydata.json" />
       <None Remove="Resources\payload-duplicate-keys-rsnrp.json" />
@@ -33,9 +38,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <EmbeddedResource Include="Resources\payload-AncientTek.json" />
       <EmbeddedResource Include="Resources\payload-bug.json" />
+      <EmbeddedResource Include="Resources\payload-duplicate-KeyData.json" />
       <EmbeddedResource Include="Resources\payload-duplicate-keys-keydata.json" />
       <EmbeddedResource Include="Resources\payload-duplicate-keys-rsnrp.json" />
+      <EmbeddedResource Include="Resources\payload-good01.json" />
+      <EmbeddedResource Include="Resources\payload-good14.json" />
+      <EmbeddedResource Include="Resources\payload-RandomRPs.json" />
       <EmbeddedResource Include="Resources\payload-short.json" />
       <EmbeddedResource Include="Resources\payload.json" />
     </ItemGroup>
