@@ -28,10 +28,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             ILoggerFactory loggerFactory,
             UrlEncoder encoder,
             ISystemClock clock,
-            IJwtService jwtService, TheIdentityHubService theIdentityHubService) : base(options, loggerFactory, encoder, clock)
+            IJwtService jwtService,
+            TheIdentityHubService theIdentityHubService) : base(options, loggerFactory, encoder, clock)
         {
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
-            _TheIdentityHubService = theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
+            _TheIdentityHubService =
+                theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -57,10 +59,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
             if (!await _TheIdentityHubService.VerifyToken(decodedClaims["access_token"]))
             {
-                return AuthenticateResult.Fail("Invalid jwt token"); 
+                return AuthenticateResult.Fail("Invalid jwt token");
             }
-            
-            
+
+
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, decodedClaims["id"]),
