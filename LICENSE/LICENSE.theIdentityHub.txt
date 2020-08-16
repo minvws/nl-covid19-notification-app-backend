@@ -1,0 +1,5 @@
+See: https://shop.theidentityhub.com/terms-and-conditions/
+
+Note that for this integration GGD/GHOR is the actual tennant,
+owner of the account and user of the Identity SaaS service.
+
