@@ -12,7 +12,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
-using System.Text.Unicode;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -33,13 +32,13 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
 namespace MobileAppApi.Tests.Controllers
 {
     [TestClass]
-    public class WorkflowControllerPostKeysTests2 : WebApplicationFactory<Startup>
+    public class WorkflowControllerPostKeysDiagnosticTests : WebApplicationFactory<Startup>
     {
-        private readonly byte[] _LabConfirmationKey = Convert.FromBase64String(@"PwMcyc8EXF//Qkye1Vl2S6oCOo9HFS7E7vw7y9GOzJk=");
         private WebApplicationFactory<Startup> _Factory;
         private DbConnection _Connection;
         private WorkflowDbContext _DbContext;
         private FakeTimeProvider _FakeTimeProvider;
+
         private class FakeTimeProvider : IUtcDateTimeProvider
         {
             public DateTime Value { get; set; }
@@ -47,7 +46,6 @@ namespace MobileAppApi.Tests.Controllers
             public DateTime TakeSnapshot() => throw new NotImplementedException();
             public DateTime Snapshot => Value;
         }
-
 
         [TestInitialize]
         public async Task InitializeAsync()
@@ -75,6 +73,7 @@ namespace MobileAppApi.Tests.Controllers
                 {
                     config.AddInMemoryCollection(new Dictionary<string, string>
                     {
+                        ["Workflow:PostKeys:TemporaryExposureKeys:RollingStartNumber:Min"] = new DateTime(2019, 12, 31, 0, 0, 0, DateTimeKind.Utc).ToRollingStartNumber().ToString(),
                         ["Validation:TemporaryExposureKey:RollingPeriod:Min"] = "1",
                         ["Validation:TemporaryExposureKey:RollingPeriod:Max"] = "144"
                     });
@@ -91,7 +90,7 @@ namespace MobileAppApi.Tests.Controllers
                 BucketId = bucketId,
                 ValidUntil = DateTime.UtcNow.AddHours(1),
                 Created = DateTime.UtcNow,
-                ConfirmationKey = _LabConfirmationKey,
+                ConfirmationKey = new byte[32],
             });
             await _DbContext.SaveChangesAsync();
         }
@@ -104,18 +103,11 @@ namespace MobileAppApi.Tests.Controllers
             await _Connection.DisposeAsync();
         }
 
-        [TestMethod]
-        public void StartTime()
-        {
-            Trace.WriteLine($"{new DateTime(2019, 12, 31)} == {new DateTime(2019, 12, 31, 0, 0, 0, DateTimeKind.Utc).ToRollingStartNumber()}");
-        }
-        
-        //[DataRow("Resources.payload-AncientTek.json", 1, 7, 1)] //Issue 57883 - tek at 2020-1-1 is not accepted.
-        //[DataRow("Resources.payload-RandomRPs.json", 2, 8, 10)] //WHICH bug?
-        //[DataRow("Resources.payload-duplicate-KeyData.json", 2, 8, 10)] //WHICH bug?
-        //[DataRow("Resources.payload-bug.json", 2, 8, 10)] //WHICH bug?
-        [DataRow("Resources.payload-good14.json", 14, 7, 11)]
         [DataRow("Resources.payload-good01.json", 1, 7, 2)]
+        [DataRow("Resources.payload-good14.json", 14, 7, 11)]
+        [DataRow("Resources.payload-duplicate-TEKs-RSN-and-RP.json", 0, 7, 11)]
+        [DataRow("Resources.payload-duplicate-TEKs-KeyData.json", 0, 7, 11)]
+        [DataRow("Resources.payload-duplicate-TEKs-RSN.json", 13, 8, 13)]
         [DataTestMethod]
         public async Task PostWorkflowTest(string file, int keyCount, int mm, int dd)
         {
@@ -137,7 +129,7 @@ namespace MobileAppApi.Tests.Controllers
             foreach (var i in tekDates)
                 Trace.WriteLine($"RSN:{i.x.RollingStartNumber} Date:{i.Date:yyyy-MM-dd}.");
 
-            var signature = HttpUtility.UrlEncode(HmacSigner.Sign(_LabConfirmationKey, data));
+            var signature = HttpUtility.UrlEncode(HmacSigner.Sign(new byte[32], data));
             var content = new ByteArrayContent(data);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
@@ -148,69 +140,6 @@ namespace MobileAppApi.Tests.Controllers
             var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
             Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
             Assert.AreEqual(keyCount, items.Count);
-        }
-
-        [TestMethod]
-        public async Task PostWorkflowTest_InvalidSignature()
-        {
-            // Arrange
-            _FakeTimeProvider.Value = new DateTime(2020, 6, 29, 0, 0, 0, DateTimeKind.Utc);
-
-            var client = _Factory.CreateClient();
-            await using var inputStream =
-                Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Resources.payload-good14.json");
-            var data = inputStream.ToArray();
-            var signature = HttpUtility.UrlEncode(HmacSigner.Sign(new byte[] { 0 }, data));
-            var content = new ByteArrayContent(data);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-
-            // Act
-            var result = await client.PostAsync($"v1/postkeys?sig={signature}", content);
-
-            // Assert
-            var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-            Assert.AreEqual(0, items.Count);
-        }
-
-        [TestMethod]
-        public async Task PostWorkflowTest_NullSignature()
-        {
-            // Arrange
-            var client = _Factory.CreateClient();
-            await using var inputStream =
-                Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Resources.payload-good14.json");
-            var data = inputStream.ToArray();
-            var content = new ByteArrayContent(data);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-
-            // Act
-            var result = await client.PostAsync("v1/postkeys", content);
-
-            // Assert
-            var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-            Assert.AreEqual(0, items.Count);
-        }
-
-        [TestMethod]
-        public async Task PostWorkflowTest_EmptySignature()
-        {
-            // Arrange
-            var client = _Factory.CreateClient();
-            await using var inputStream =
-                Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Resources.payload-good01.json");
-            var data = inputStream.ToArray();
-            var content = new ByteArrayContent(data);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-
-            // Act
-            var result = await client.PostAsync($"v1/postkeys?sig={string.Empty}", content);
-
-            // Assert
-            var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
-            Assert.AreEqual(0, items.Count);
         }
     }
 }
