@@ -30,11 +30,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 
         public async Task<ContentEntity> Execute()
         {
-            var now = _DateTimeProvider.Snapshot;
+            var snapshot = _DateTimeProvider.Snapshot;
             var e = new ContentEntity
             {
-                Created = now,
-                Release = now,
+                Created = snapshot,
+                Release = snapshot,
                 Type = ContentTypes.Manifest
             };
             _Logger.LogDebug("Build new manifest.");

@@ -10,17 +10,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
     {
         public StandardUtcDateTimeProvider()
         {
-            TakeSnapshot();
+            Snapshot = DateTime.UtcNow;
         }
 
         public DateTime Now() => DateTime.UtcNow;
 
-        public DateTime TakeSnapshot()
-        {
-            Snapshot = Now();
-            return Snapshot;
-        }
-
+        
+        /// <summary>
+        /// Time of start of transaction scope
+        /// </summary>
         public DateTime Snapshot { get; private set; }
     }
 }

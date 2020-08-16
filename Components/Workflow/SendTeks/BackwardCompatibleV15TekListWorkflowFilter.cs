@@ -56,17 +56,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 return new[] { "Too recent" };
             }
 
-            var now = _DateTimeProvider.Snapshot;
-            if (item.StartDate == now.Date)
+            var snapshot = _DateTimeProvider.Snapshot;
+            if (item.StartDate == snapshot.Date)
             {
                 // this is a ‘same day key’, generated on the day the user gets result. 
                 // it must arrive within the call window (Step 4 from proposed process)
-                if (_Workflow.AuthorisedByCaregiver != null && !(now - _Workflow.AuthorisedByCaregiver < TimeSpan.FromMinutes(_Config.AuthorisationWindowMinutes)))
+                if (_Workflow.AuthorisedByCaregiver != null && !(snapshot - _Workflow.AuthorisedByCaregiver < TimeSpan.FromMinutes(_Config.AuthorisationWindowMinutes)))
                 {
                     return new[] {"Authorisation window expired"};
                 }
 
-                item.PublishAfter = _DateTimeProvider.Snapshot.AddMinutes(_Config.PublishingDelayInMinutes);
+                item.PublishAfter = snapshot.AddMinutes(_Config.PublishingDelayInMinutes);
                 _Valid.Add(item);
                 return new [] { "Same day key accepted - Reason:Before call or within call window Key." }; //TODO text reason from doc seems ambiguous.
             }

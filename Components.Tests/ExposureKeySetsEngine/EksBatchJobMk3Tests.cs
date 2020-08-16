@@ -292,7 +292,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                 new StandardUtcDateTimeProvider(),
                 _Lf.CreateLogger<ExposureKeySetBatchJobMk3>(),
                 new EksStuffingGenerator(new StandardRandomNumberGenerator(), new FakeTekValidatorConfig()),
-                new SnapshotEksInputMk1(_Lf.CreateLogger<SnapshotEksInputMk1>(), new TransmissionRiskLevelCalculationV1(), new StandardUtcDateTimeProvider(), _WorkflowFac(), _PublishingFac),
+                new SnapshotEksInputMk1(_Lf.CreateLogger<SnapshotEksInputMk1>(), new TransmissionRiskLevelCalculationV1(), _WorkflowFac(), _PublishingFac),
                 new MarkWorkFlowTeksAsUsed(_WorkflowFac, _FakeEksConfig, _PublishingFac, _Lf.CreateLogger<MarkWorkFlowTeksAsUsed>()),
                 new EksJobContentWriter(_ContentFac, _PublishingFac, new Sha256HexPublishingIdService(), _Lf.CreateLogger<EksJobContentWriter>())
                 );

@@ -34,8 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             //    httpContext.Response.StatusCode = 400;
             //}
 
-            var now = _DateTimeProvider.Now();
-            var e = await _ContentDb.SafeGetLatestContent(ContentTypes.Manifest, now);
+            var e = await _ContentDb.SafeGetLatestContent(ContentTypes.Manifest, _DateTimeProvider.Snapshot);
             if (e == null)
             {
                 httpContext.Response.StatusCode = 200;

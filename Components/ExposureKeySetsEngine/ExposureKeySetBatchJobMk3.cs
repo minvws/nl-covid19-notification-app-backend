@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -126,7 +127,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private int _EksCount;
 
         private bool _Fired;
-        private DateTime _StartEks;
+        private readonly Stopwatch _BuildEksStopwatch = new Stopwatch();
         private readonly Func<PublishingJobDbContext> _PublishingDbContextFac;
 
         public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, Func<PublishingJobDbContext> publishingDbContextFac, IUtcDateTimeProvider dateTimeProvider, ILogger<ExposureKeySetBatchJobMk3> logger, IEksStuffingGenerator eksStuffingGenerator, ISnapshotEksInput snapshotter, IMarkWorkFlowTeksAsUsed markWorkFlowTeksAsUsed, EksJobContentWriter contentWriter)
@@ -152,12 +153,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             _Fired = true;
 
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             _Logger.LogInformation("Started - JobName:{_JobName}", _JobName);
 
             if (!WindowsIdentityStuff.CurrentUserIsAdministrator()) //TODO remove warning when UAC is not in play
                 _Logger.LogWarning("{JobName} started WITHOUT elevated privileges - errors may occur when signing content.", _JobName);
 
-            _EksEngineResult.Started = _DateTimeProvider.Snapshot; //Not strictly true but we need the jobname for the dispose.
+            _EksEngineResult.Started = _DateTimeProvider.Snapshot; //Align with the logged job name.
 
             await ClearJobTables();
 
@@ -174,7 +178,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 await CommitResults();
             }
 
-            _EksEngineResult.TotalSeconds = (_DateTimeProvider.Now() - _EksEngineResult.Started).TotalSeconds;
+            _EksEngineResult.TotalSeconds = stopwatch.Elapsed.TotalSeconds;
             _EksEngineResult.EksInfo = _EksResults.ToArray();
 
             _Logger.LogInformation("Reconciliation - Teks in EKSs matches usable input and stuffing - Delta:{ReconcileOutputCount}", _EksEngineResult.ReconcileOutputCount);
@@ -233,10 +237,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _Logger.LogInformation("Stuffing added.");
         }
 
+
+
+
         private async Task BuildOutput()
         {
             _Logger.LogDebug("Build EKSs.");
-            _StartEks = _DateTimeProvider.Now();
+            _BuildEksStopwatch.Start();
 
             var inputIndex = 0;
             var page = GetInputPage(inputIndex, _EksConfig.PageSize);
@@ -327,10 +334,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             _EksEngineResult.OutputCount += _Output.Count;
 
-            var now = _DateTimeProvider.Now();
-            _EksResults.Add(new EksInfo { TekCount = _Output.Count, TotalSeconds = (now - _StartEks).TotalSeconds });
+            _EksResults.Add(new EksInfo { TekCount = _Output.Count, TotalSeconds = _BuildEksStopwatch.Elapsed.TotalSeconds });
             _Output.Clear();
-            _StartEks = now;
         }
 
         private EksCreateJobInputEntity[] GetInputPage(int skip, int take)
