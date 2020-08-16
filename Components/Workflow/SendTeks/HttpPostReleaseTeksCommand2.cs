@@ -15,7 +15,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Helpers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -25,8 +24,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 {
     public class HttpPostReleaseTeksCommand2
     {
-        private readonly ILogger _Logger;
-        private readonly WorkflowDbContext _DbContextProvider;
+        private readonly ILogger<HttpPostReleaseTeksCommand2> _Logger;
+        private readonly WorkflowDbContext _DbContext;
 
         private readonly IPostTeksValidator _KeyValidator;
         private readonly ITekWriter _Writer;
@@ -35,27 +34,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         private readonly ITekListWorkflowFilter _TekListWorkflowFilter;
         private readonly IWorkflowConfig _WorkflowConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly ITekValidPeriodFilter _TekApplicableWindowFilter;
 
         private PostTeksArgs _ArgsObject;
         private byte[] _BucketIdBytes;
 
         private byte[] _BodyBytes;
-        //ILogger<HttpPostReleaseTeksCommand2> logger
+
 
         public HttpPostReleaseTeksCommand2(ILogger<HttpPostReleaseTeksCommand2> logger, IWorkflowConfig workflowConfig,
             WorkflowDbContext dbContextProvider, IPostTeksValidator keyValidator, ITekWriter writer,
             IJsonSerializer jsonSerializer, ISignatureValidator signatureValidator,
-            ITekListWorkflowFilter tekListWorkflowFilter, IUtcDateTimeProvider dateTimeProvider)
+            ITekListWorkflowFilter tekListWorkflowFilter, IUtcDateTimeProvider dateTimeProvider, ITekValidPeriodFilter tekApplicableWindowFilter)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _WorkflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));
-            _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
+            _DbContext = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _KeyValidator = keyValidator ?? throw new ArgumentNullException(nameof(keyValidator));
             _Writer = writer ?? throw new ArgumentNullException(nameof(writer));
             _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
             _SignatureValidator = signatureValidator ?? throw new ArgumentNullException(nameof(signatureValidator));
             _TekListWorkflowFilter = tekListWorkflowFilter ?? throw new ArgumentNullException(nameof(tekListWorkflowFilter));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _TekApplicableWindowFilter = tekApplicableWindowFilter ?? throw new ArgumentNullException(nameof(tekApplicableWindowFilter));
         }
 
         public async Task<IActionResult> Execute(byte[] signature, HttpRequest request)
@@ -115,7 +116,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             if (_Logger.LogValidationMessages(new TekListDuplicateValidator().Validate(teks)))
                 return;
 
-            var workflow = _DbContextProvider
+            //Validation ends, filtering starts
+
+            var filterResult = _TekApplicableWindowFilter.Execute(teks);
+            teks = filterResult.Items;
+            _Logger.LogFilterMessages(filterResult.Messages);
+            _Logger.LogInformation("TEKs remaining - Count:{count}.", teks.Length);
+
+            var workflow = _DbContext
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Teks)
                 .SingleOrDefault(x => x.BucketId == _BucketIdBytes);
@@ -132,14 +140,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 return;
             }
 
-            var filterResults = _TekListWorkflowFilter.Validate(teks, workflow);
-            _Logger.LogValidationMessages(filterResults.Messages);
-
-            if (filterResults.Items.Length == 0)
-            {
-                _Logger.LogInformation("No teks survived the workflow filter.");
-                return;
-            }
+            var filterResults = _TekListWorkflowFilter.Filter(teks, workflow);
+            _Logger.LogFilterMessages(filterResults.Messages);
+            _Logger.LogInformation("TEKs remaining - Count:{count}.", teks.Length);
 
             //Run after the filter removes the existing TEKs from the args.
             var allTeks = workflow.Teks.Select(Mapper.MapToTek).Concat(filterResults.Items).ToArray();
@@ -154,7 +157,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             };
 
             await _Writer.Execute(writeArgs);
-            _DbContextProvider.SaveAndCommit();
+            _DbContext.SaveAndCommit();
             _Logger.LogDebug("Committed.");
 
             if (filterResults.Items.Length != 0)

@@ -5,7 +5,6 @@
 using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
 {
@@ -23,6 +22,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
             logger.LogError(string.Join(Environment.NewLine, messages));
 
             return true;
+        }
+
+        public static void LogFilterMessages(this ILogger logger, string[] messages)
+        {
+            if (messages?.Any(string.IsNullOrWhiteSpace) ?? true)
+                throw new ArgumentException(nameof(messages));
+
+            if (messages.Length == 0)
+                return;
+
+            logger.LogInformation(string.Join(Environment.NewLine, messages));
         }
     }
 }

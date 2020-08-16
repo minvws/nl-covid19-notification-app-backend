@@ -1,0 +1,16 @@
+{
+  "keys": [
+    {
+      "keyData": "pk6rFil8v5ABtnE62yFHtA==",
+      "rollingStartNumber": 2629728,
+      "rollingPeriod": 144
+    },
+    {
+      "keyData": "hVGzq9NZFoQyRpbbL2r04w==",
+      "rollingStartNumber": 2655936,
+      "rollingPeriod": 144
+    }
+  ],
+  "bucketId": "lRaBTBonsMaJ8PdOhVYdfmyZooCR3fpjQZgLboa4Qig=",
+  "padding": "ZGVmYXVsdA=="
+}
