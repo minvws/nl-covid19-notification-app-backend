@@ -11,8 +11,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSetti
     {
         public StandardEksConfig(IConfiguration config, string prefix = "ExposureKeySets") : base(config, prefix) { }
         public int TekCountMin => GetConfigValue("TekCount:Min", 10);
-        public int PageSize => GetConfigValue("TekCount:Min", 1000);
         public int TekCountMax => GetConfigValue("TekCount:Max", 21); //Low so the file split is tested
+        public int PageSize => GetConfigValue(nameof(PageSize), 1000);
         public int LifetimeDays => GetConfigValue("LifetimeDays", 14);
     }
 }
