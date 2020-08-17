@@ -78,7 +78,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services)
         {
-            app.UseDeveloperExceptionPage();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
             var logger = services.GetService<ILogger<Startup>>();
             if (_SignatureValidationEnabled)
