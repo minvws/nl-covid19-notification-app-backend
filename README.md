@@ -6,7 +6,7 @@ This repository contains the backend code for the Dutch exposure notification ap
 
 * The backend is located in the repository you are currently viewing.
 * The iOS app can be found here: https://github.com/minvws/nl-covid19-notification-app-ios
-* The android app can be found here: https://github.com/minvws/nl-covid19-notification-app-android
+* The Android app can be found here: https://github.com/minvws/nl-covid19-notification-app-android
 * The designs that are used as a basis to develop the apps can be found here: https://github.com/minvws/nl-covid19-notification-app-design
 * The architecture that underpins the development can be found here: https://github.com/minvws/nl-covid19-notification-app-coordination
 
