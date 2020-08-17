@@ -296,7 +296,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ServerStandAlone
             app.UseCors(builder =>
                 builder.WithOrigins("http://localhost:4200").WithHeaders("Authorization", "content-type"));
 
-            app.UseDeveloperExceptionPage();
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            
             app.UseSwagger();
             app.UseSwaggerUI(o =>
             {
