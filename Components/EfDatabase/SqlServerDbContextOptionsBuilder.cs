@@ -5,16 +5,19 @@
 using System;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 {
     public class SqlServerDbContextOptionsBuilder 
     {
+        private readonly ILoggerFactory _LoggerFactory;
         private readonly SqlConnectionStringBuilder _ConnectionStringBuilder;
 
-        public SqlServerDbContextOptionsBuilder(IEfDbConfig efDbConfig)
+        public SqlServerDbContextOptionsBuilder(IEfDbConfig efDbConfig, ILoggerFactory loggerFactory)
         {
             if (efDbConfig == null) throw new ArgumentNullException(nameof(efDbConfig));
+            _LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
 
             _ConnectionStringBuilder = new SqlConnectionStringBuilder(efDbConfig.ConnectionString) 
             {
@@ -25,6 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
         public DbContextOptions Build()
         {
             var builder = new DbContextOptionsBuilder();
+            builder.UseLoggerFactory(_LoggerFactory);
             builder.UseSqlServer(_ConnectionStringBuilder.ConnectionString);
             return builder.Options;
         }

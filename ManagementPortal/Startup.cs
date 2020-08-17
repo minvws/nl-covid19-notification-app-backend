@@ -38,16 +38,6 @@ namespace ManagementPortal
             services.NlSignerStartup(_Configuration.UseCertificatesFromResources());
             services.GaSignerStartup(_Configuration.UseCertificatesFromResources());
 
-            // Database Scoping
-            services.AddScoped(x =>
-            {
-                var config = new StandardEfDbConfig(_Configuration, "WorkFlow");
-                var builder = new SqlServerDbContextOptionsBuilder(config);
-                var result = new WorkflowDbContext(builder.Build());
-                result.BeginTransaction();
-                return result;
-            });
-
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
             services.AddTransient<ZippedSignedContentFormatter>();
