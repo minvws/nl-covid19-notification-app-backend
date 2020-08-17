@@ -42,6 +42,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
 
         public async Task<TekReleaseWorkflowStateEntity> Execute()
         {
+            //TODO may be an improvement to use different WorkflowDbContexts per attempt
+            //rather than just retry with a new entity.
             var entity = new TekReleaseWorkflowStateEntity
             {
                 Created = _DateTimeProvider.Snapshot,

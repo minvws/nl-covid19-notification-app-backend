@@ -36,7 +36,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             var e = new ContentEntity
             {
-                Created= _DateTimeProvider.Now(), //TODO audit stamp
+                //TODO audit stamp 
+                Created = _DateTimeProvider.Snapshot, 
                 Release = args.Release,
                 Type = args.ContentType,
                 PublishingId = _PublishingIdService.Create(contentBytes),

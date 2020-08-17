@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
@@ -18,16 +19,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly ILogger<SnapshotEksInputMk1> _Logger;
 
         private readonly ITransmissionRiskLevelCalculation _TransmissionRiskLevelCalculation;
-        private readonly IUtcDateTimeProvider _DateTimeProvider; //Being used as a stopwatch...
 
         private readonly WorkflowDbContext _WorkflowDbContext;
         private readonly Func<PublishingJobDbContext> _PublishingDbContextFactory;
 
-        public SnapshotEksInputMk1(ILogger<SnapshotEksInputMk1> logger, ITransmissionRiskLevelCalculation transmissionRiskLevelCalculation, IUtcDateTimeProvider dateTimeProvider, WorkflowDbContext workflowDbContext, Func<PublishingJobDbContext> publishingDbContextFactory)
+        public SnapshotEksInputMk1(ILogger<SnapshotEksInputMk1> logger, ITransmissionRiskLevelCalculation transmissionRiskLevelCalculation, WorkflowDbContext workflowDbContext, Func<PublishingJobDbContext> publishingDbContextFactory)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _TransmissionRiskLevelCalculation = transmissionRiskLevelCalculation ?? throw new ArgumentNullException(nameof(transmissionRiskLevelCalculation));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _WorkflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
             _PublishingDbContextFactory = publishingDbContextFactory ?? throw new ArgumentNullException(nameof(publishingDbContextFactory));
         }
@@ -40,7 +39,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             _SnapshotStart = snapshotStart;
 
-            var stopwatchStart = _DateTimeProvider.Now();
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
 
             const int pagesize = 10000;
             var index = 0;
@@ -59,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             var result = new SnapshotEksInputResult
             {
-                SnapshotSeconds = (_DateTimeProvider.Now() - stopwatchStart).TotalSeconds,
+                SnapshotSeconds = stopwatch.Elapsed.TotalSeconds,
                 TekInputCount = index
             };
 
