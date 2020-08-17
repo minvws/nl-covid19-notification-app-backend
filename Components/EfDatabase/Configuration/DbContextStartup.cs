@@ -5,6 +5,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration
@@ -14,23 +15,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public static WorkflowDbContext Workflow(IServiceProvider x, bool beginTrans = true)
         {
             var config = new StandardEfDbConfig(x.GetRequiredService<IConfiguration>(), DatabaseConnectionStringNames.Workflow);
-            var builder = new SqlServerDbContextOptionsBuilder(config);
+            var builder = new SqlServerDbContextOptionsBuilder(config, x.GetRequiredService<ILoggerFactory>());
             var result = new WorkflowDbContext(builder.Build());
             if (beginTrans) result.BeginTransaction();
             return result;
         }
+
         public static PublishingJobDbContext Publishing(IServiceProvider x, bool beginTrans = true)
         {
             var config = new StandardEfDbConfig(x.GetRequiredService<IConfiguration>(), DatabaseConnectionStringNames.Publishing);
-            var builder = new SqlServerDbContextOptionsBuilder(config);
+            var builder = new SqlServerDbContextOptionsBuilder(config, x.GetRequiredService<ILoggerFactory>());
             var result = new PublishingJobDbContext(builder.Build());
             if (beginTrans) result.BeginTransaction();
             return result;
         }
+
         public static ContentDbContext Content(IServiceProvider x, bool beginTrans = true)
         {
             var config = new StandardEfDbConfig(x.GetRequiredService<IConfiguration>(), DatabaseConnectionStringNames.Content);
-            var builder = new SqlServerDbContextOptionsBuilder(config);
+            var builder = new SqlServerDbContextOptionsBuilder(config, x.GetRequiredService<ILoggerFactory>());
             var result = new ContentDbContext(builder.Build());
             if (beginTrans) result.BeginTransaction();
             return result;
