@@ -25,6 +25,7 @@
 
     <ItemGroup>
       <None Remove="payload.json" />
+      <None Remove="Resources\payload-ancient-TEKs.json" />
       <None Remove="Resources\payload-duplicate-TEKs-KeyData.json" />
       <None Remove="Resources\payload-duplicate-TEKs-RSN-and-RP.json" />
       <None Remove="Resources\payload-duplicate-TEKs-RSN.json" />
@@ -34,6 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <EmbeddedResource Include="Resources\payload-ancient-TEKs.json" />
       <EmbeddedResource Include="Resources\payload-duplicate-TEKs-KeyData.json" />
       <EmbeddedResource Include="Resources\payload-duplicate-TEKs-RSN-and-RP.json" />
       <EmbeddedResource Include="Resources\payload-good01.json" />

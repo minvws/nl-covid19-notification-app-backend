@@ -7,15 +7,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
     public interface ITekValidatorConfig
     {
         /// <summary>
-        /// Align with IExposureKeySetsConfig.LifetimeDays
+        /// Cannot currently align with IExposureKeySetsConfig.LifetimeDays.
+        /// iOS sends 14 stored keys regardless of their date.
+        /// Re-instate validation (as opposed to just filtering) this setting when iOS fixes the bug.
         /// </summary>
         int MaxAgeDays { get; }
         int KeyDataLength { get; }
         int RollingPeriodMin { get; }
         int RollingPeriodMax { get; }
-        
+
         /// <summary>
-        /// Effectively a date -> date of go live
+        /// Anti-Spam = date of release of GA SDKs
+        /// See MaxAgeDays
         /// </summary>
         int RollingStartNumberMin { get; }
 

@@ -8,6 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 {
     public interface ITekListWorkflowFilter
     {
-        FilterResult<Tek> Validate(Tek[] newKeys, TekReleaseWorkflowStateEntity workflow);
+        FilterResult<Tek> Filter(Tek[] newKeys, TekReleaseWorkflowStateEntity workflow);
     }
 }

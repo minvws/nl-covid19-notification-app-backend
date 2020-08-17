@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             _Config = config ?? throw new ArgumentException(nameof(config));
         }
 
-        public FilterResult<Tek> Validate(Tek[] newKeys, TekReleaseWorkflowStateEntity workflow)
+        public FilterResult<Tek> Filter(Tek[] newKeys, TekReleaseWorkflowStateEntity workflow)
         {
             _Workflow = workflow;
             _WorkflowHasKeyOnCreationDate = _Workflow.Teks.Any(x => x.RollingStartNumber.FromRollingStartNumber().Date == _Workflow.Created.Date);
@@ -47,13 +47,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         {
             if (_LastPublishedRsn.HasValue && item.RollingStartNumber <= _LastPublishedRsn)
             {
-                return new[] { "Before last published" };
+                return new[] { "Before last published." };
             }
 
             if (item.StartDate > _Workflow.Created.Date)
             {
                 //Kill 'same day' keys
-                return new[] { "Too recent" };
+                return new[] { "Too recent." };
             }
 
             var snapshot = _DateTimeProvider.Snapshot;
@@ -63,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 // it must arrive within the call window (Step 4 from proposed process)
                 if (_Workflow.AuthorisedByCaregiver != null && !(snapshot - _Workflow.AuthorisedByCaregiver < TimeSpan.FromMinutes(_Config.AuthorisationWindowMinutes)))
                 {
-                    return new[] {"Authorisation window expired"};
+                    return new[] {"Authorisation window expired."};
                 }
 
                 item.PublishAfter = snapshot.AddMinutes(_Config.PublishingDelayInMinutes);
@@ -74,10 +74,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             // key from result day that arrives after today with extra check to ensure it’s a 1.4 device and not a tampered 1.5 device (Step 5)
             if (item.StartDate == _Workflow.Created.Date && _WorkflowHasKeyOnCreationDate)
             {
-                return new[] { "Tek for result day after midnight rejected - already a tek present for that day" };
+                return new[] { "Tek for result day after midnight rejected - already a tek present for that day." };
             }
 
-            // Key from the past accepted.
             _Valid.Add(item);
             return new string[0];
         }

@@ -27,8 +27,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 
             var result = new List<string>();
 
-            var earliestAcceptedDateFromDevices = _DateTimeProvider.Snapshot.Date - TimeSpan.FromDays(_Config.MaxAgeDays);
-            var rollingStartMin = Math.Max(_Config.RollingStartNumberMin, earliestAcceptedDateFromDevices.ToRollingStartNumber());
+            //The following check has to be removed until the iOS bug that returns TEKs regardless of age is fixed.
+            //var earliestAcceptedDateFromDevices = _DateTimeProvider.Snapshot.Date - TimeSpan.FromDays(_Config.MaxAgeDays);
+            //var rollingStartMin = Math.Max(_Config.RollingStartNumberMin, earliestAcceptedDateFromDevices.ToRollingStartNumber());
+            
+            var rollingStartMin = _Config.RollingStartNumberMin;
             var rollingStartToday = _DateTimeProvider.Snapshot.Date.ToRollingStartNumber();
 
             if (!(rollingStartMin <= value.RollingStartNumber && value.RollingStartNumber <= rollingStartToday))

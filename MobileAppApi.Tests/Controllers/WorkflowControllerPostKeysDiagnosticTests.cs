@@ -108,6 +108,7 @@ namespace MobileAppApi.Tests.Controllers
         [DataRow("Resources.payload-duplicate-TEKs-RSN-and-RP.json", 0, 7, 11)]
         [DataRow("Resources.payload-duplicate-TEKs-KeyData.json", 0, 7, 11)]
         [DataRow("Resources.payload-duplicate-TEKs-RSN.json", 13, 8, 13)]
+        [DataRow("Resources.payload-ancient-TEKs.json", 1, 7, 1)]
         [DataTestMethod]
         public async Task PostWorkflowTest(string file, int keyCount, int mm, int dd)
         {
