@@ -37,7 +37,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             var e = new ContentEntity
             {
                 //TODO audit stamp 
-                //TODO review whether we want time to be the same for all EKS here.
                 Created = _DateTimeProvider.Snapshot, 
                 Release = args.Release,
                 Type = args.ContentType,

@@ -27,10 +27,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         public async Task<ManifestContent> Execute()
         {
             var snapshot = _DateTimeProvider.Snapshot;
-            var lo = snapshot - TimeSpan.FromDays(_EksConfig.LifetimeDays);
+            var from = snapshot - TimeSpan.FromDays(_EksConfig.LifetimeDays);
             return new ManifestContent
             { 
-                ExposureKeySets = await _ContentDbContext.SafeGetActiveContentIdList(ContentTypes.ExposureKeySet, lo, snapshot),
+                ExposureKeySets = await _ContentDbContext.SafeGetActiveContentIdList(ContentTypes.ExposureKeySet, from, snapshot),
                 RiskCalculationParameters = await _ContentDbContext.SafeGetLatestContentId(ContentTypes.RiskCalculationParameters, snapshot),
                 AppConfig = await _ContentDbContext.SafeGetLatestContentId(ContentTypes.AppConfig, snapshot)
             };

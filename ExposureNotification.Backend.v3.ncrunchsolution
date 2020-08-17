@@ -9,6 +9,7 @@
       <Value>TemporaryExposureKey.cs:GaenFormat\GeneratedGaenFormat.csproj</Value>
       <Value>TemporaryExposureKeyExport.cs:GaenFormat\GeneratedGaenFormat.csproj</Value>
       <Value>TemporaryExposureKeyExportReflection.cs:GaenFormat\GeneratedGaenFormat.csproj</Value>
+      <Value>ICCBackend\IccBackend.csproj</Value>
     </MetricsExclusionList>
     <SolutionConfigured>True</SolutionConfigured>
   </Settings>
