@@ -59,11 +59,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
             return responseObject.ContainsKey("audience") && responseObject["audience"] != null;
         }
 
-        public async void RevokeAccessToken(string accessToken)
+        public async Task<bool> RevokeAccessToken(string accessToken)
         {
             if (accessToken == null) throw new ArgumentNullException(nameof(accessToken));
             var requestUri = new Uri(_Options.TheIdentityHubUrl, _Options.Tenant + "/oauth2/v1/revoke");
-            
+
             var payload = new List<KeyValuePair<string, string>>();
             payload.Add(new KeyValuePair<string, string>("client_id", _Options.ClientId));
             payload.Add(new KeyValuePair<string, string>("token", accessToken));
@@ -82,15 +82,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
                         Authorization = new AuthenticationHeaderValue("Bearer", accessToken)
                     }
                 }).ConfigureAwait(false);
-            
+
             if (response.IsSuccessStatusCode)
             {
                 _Logger.LogInformation("Access Token successfully revoked");
+                return true;
             }
-            else
-            {
-                _Logger.LogWarning("Access Token not revoked, statuscode {statuscode}", response.StatusCode.ToString());
-            }
+
+            _Logger.LogWarning("Access Token not revoked, statuscode {statuscode}", response.StatusCode.ToString());
+            return false;
         }
     }
 }

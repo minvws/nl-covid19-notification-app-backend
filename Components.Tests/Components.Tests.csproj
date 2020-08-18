@@ -34,6 +34,7 @@
     </PackageReference>
     <PackageReference Include="NCrunch.Framework" Version="4.5.0" />
     <PackageReference Include="Serilog.Sinks.Trace" Version="2.1.0" />
+    <PackageReference Include="WireMock.Net" Version="1.2.18" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assemblies\" />
