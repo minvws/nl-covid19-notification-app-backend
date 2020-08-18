@@ -6,7 +6,7 @@ This repository contains the backend code for the Dutch exposure notification ap
 
 * The backend is located in the repository you are currently viewing.
 * The iOS app can be found here: https://github.com/minvws/nl-covid19-notification-app-ios
-* The android app can be found here: https://github.com/minvws/nl-covid19-notification-app-android
+* The Android app can be found here: https://github.com/minvws/nl-covid19-notification-app-android
 * The designs that are used as a basis to develop the apps can be found here: https://github.com/minvws/nl-covid19-notification-app-design
 * The architecture that underpins the development can be found here: https://github.com/minvws/nl-covid19-notification-app-coordination
 
@@ -82,7 +82,7 @@ The ICC Portal consists of a .Net Core backend found under `ICCBackend` and an A
 
 The build and package pipeline for this project is implemented as a set of batch scripts. These scripts can be executed on a development machine without arguments or via a build server (Jenkins, Azure Devops) without the need to lock-in the build process to one specific vendor. This should also make it easier to build older versions of the server because all of the logic required to build is committed to version control.
 
-To run the scripts you must have following installed and assessible in your path:
+To run the scripts you must have following installed and accessible in your path:
 
 * 7zip
 
