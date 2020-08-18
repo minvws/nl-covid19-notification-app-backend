@@ -14,7 +14,7 @@ using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
-    public class TheIdentityHubService
+    public class TheIdentityHubService : ITheIdentityHubService
     {
         private readonly TheIdentityHubOptions _Options;
         private readonly ILogger<TheIdentityHubService> _Logger;

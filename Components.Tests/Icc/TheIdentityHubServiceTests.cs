@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
     [TestClass]
     public class TheIdentityHubServiceTests
     {
-        private TheIdentityHubService _TheIdentityHubService;
+        private ITheIdentityHubService _TheIdentityHubService;
         private IOptionsMonitor<TheIdentityHubOptions> _Options;
         private WireMockServer _Server;
         private int _TestPort = 8081;

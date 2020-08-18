@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         //private const string AccessTokenElement = "access_token";
 
         private readonly IJwtService _JwtService;
-        private readonly TheIdentityHubService _TheIdentityHubService;
+        private readonly ITheIdentityHubService _TheIdentityHubService;
 
         public JwtAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             UrlEncoder encoder,
             ISystemClock clock,
             IJwtService jwtService,
-            TheIdentityHubService theIdentityHubService) : base(options, loggerFactory, encoder, clock)
+            ITheIdentityHubService theIdentityHubService) : base(options, loggerFactory, encoder, clock)
         {
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
             _TheIdentityHubService =

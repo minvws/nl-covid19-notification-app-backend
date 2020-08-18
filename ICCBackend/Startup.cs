@@ -176,7 +176,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             PolicyAuthorizationOptions policyAuthorizationOptions = new PolicyAuthorizationOptions(_WebHostEnvironment, new IccPortalConfig(_Configuration));
             services.AddAuthorization(options => policyAuthorizationOptions.GetOptions(options));
 
-            services.AddScoped<TheIdentityHubService, TheIdentityHubService>();
+            services.AddScoped<ITheIdentityHubService, TheIdentityHubService>();
 
             services.AddMvc(config =>
             {

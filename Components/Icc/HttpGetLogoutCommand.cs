@@ -15,9 +15,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
     public class HttpGetLogoutCommand
     {
         private readonly IIccPortalConfig _Configuration;
-        private readonly TheIdentityHubService _TheIdentityHubService;
+        private readonly ITheIdentityHubService _TheIdentityHubService;
 
-        public HttpGetLogoutCommand(IIccPortalConfig configuration, TheIdentityHubService theIdentityHubService)
+        public HttpGetLogoutCommand(IIccPortalConfig configuration, ITheIdentityHubService theIdentityHubService)
         {
             _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _TheIdentityHubService = theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
