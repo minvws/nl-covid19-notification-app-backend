@@ -1,22 +1,26 @@
 version: '3'
 services:
-  standalone_server:
+  content_api:
     build:
       context: ..
-      dockerfile: docker/standalone/Dockerfile
+      dockerfile: docker/development/Dockerfile
+    image: standalone:latest
+    entrypoint: ['/bin/sh', '-c', 'cd ContentApi && ./NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi']
     ports:
       - '5004:5000'
-      - '5005:5001'
     links:
-      - 'db_standalone_server:database'
-  icc_backend:
+      - 'db:database'
+  mobile_api:
     build:
       context: ..
-      dockerfile: docker/icc_backend/Dockerfile
+      dockerfile: docker/development/Dockerfile
+    image: standalone:latest
+    entrypoint: ['/bin/sh', '-c', 'cd MobileAppApi && ./NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi']
     ports:
-      - '5006:5000'
-      - '5007:5001'
-  db_standalone_server:
+      - '5005:5000'
+    links:
+      - 'db:database'
+  db:
     image: mcr.microsoft.com/mssql/server:2019-latest
     ports:
       - "1433:1433"
