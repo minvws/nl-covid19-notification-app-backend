@@ -1,0 +1,3 @@
+NCrunch is an optional (commercial) dependency that can be used to parallelise testing.
+
+This commercial package is not required to develop, maintain or operate this software, and is therefore not part of this work.
