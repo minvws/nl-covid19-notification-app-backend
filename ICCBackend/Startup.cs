@@ -201,7 +201,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
 
             IccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration); 
-            CORSOptions corsOptions = new CORSOptions(env, iccPortalConfig);
+            CorsOptions corsOptions = new CorsOptions(iccPortalConfig);
             
             app.UseCors(corsOptions.Build);
             

@@ -10,10 +10,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Helpers;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
-    public class CORSOptions
+    public class CorsOptions : ICorsOptions
     {
         private readonly IccPortalConfig _IccPortalConfig;
 
@@ -22,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         /// </summary>
         /// <param name="environment"></param>
         /// <param name="iccPortalConfig"></param>
-        public CORSOptions(IccPortalConfig iccPortalConfig)
+        public CorsOptions(IccPortalConfig iccPortalConfig)
         {
             _IccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
         }
