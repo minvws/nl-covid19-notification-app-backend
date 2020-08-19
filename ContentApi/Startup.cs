@@ -38,25 +38,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             services.AddTransient<IHttpResponseHeaderConfig, HttpResponseHeaderConfig>();
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
 
-            services.AddSwaggerGen(o =>
-            {
-                o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" });
-            });
+            services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(o =>
-            {
-                o.SwaggerEndpoint("v1/swagger.json", Title);
-            });
-            
-            app.UseCors(options =>
-            {
-                options.WithOrigins("https://productie.coronamelder-dist.nl", "https://acceptatie.coronamelder-dist.nl", "https://test.coronamelder-dist.nl");
-                options.WithMethods("GET");
-            });
+            app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
+
+
+            var corsOptions = new CorsOptions(env);
+            app.UseCors(corsOptions.Build);
 
 
             if (env.IsDevelopment() || env.IsEnvironment("Test")) //TODO what is the env name for TEST?
@@ -69,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             }
 
             app.UseSerilogRequestLogging();
-            
+
             app.UseRouting();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

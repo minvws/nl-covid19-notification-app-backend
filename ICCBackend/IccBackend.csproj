@@ -54,7 +54,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Components.Tests\Components.Tests.csproj" />
       <ProjectReference Include="..\Components\Components.csproj" />
     </ItemGroup>
 
