@@ -3,14 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections.Generic;
-using System.Security.Policy;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Helpers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Helpers;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
