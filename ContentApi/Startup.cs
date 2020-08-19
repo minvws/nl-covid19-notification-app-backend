@@ -51,6 +51,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             {
                 o.SwaggerEndpoint("v1/swagger.json", Title);
             });
+            
+            app.UseCors(options =>
+            {
+                options.WithOrigins("https://productie.coronamelder-dist.nl", "https://acceptatie.coronamelder-dist.nl", "https://test.coronamelder-dist.nl");
+                options.WithMethods("GET");
+            });
 
 
             if (env.IsDevelopment() || env.IsEnvironment("Test")) //TODO what is the env name for TEST?
