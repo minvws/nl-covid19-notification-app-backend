@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
                 throw new ArgumentNullException(nameof(httpContext));
             _Logger.LogInformation("Executing Auth.Redirect on Host {CurrentHost}", httpContext.Request.Host.ToString());
             var jwtToken = _JwtService.Generate(httpContext.User);
-            // temporary claim payload redirect solution for demo purposes
+            
             return new RedirectResult(_Configuration.FrontendBaseUrl + "/auth?token=" + jwtToken);
         }
     }

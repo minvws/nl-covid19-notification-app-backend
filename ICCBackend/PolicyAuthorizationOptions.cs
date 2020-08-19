@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             throw new InvalidOperationException("Environment not recognized.");
         }
 
-        public void GetOptions(AuthorizationOptions options)
+        public void Build(AuthorizationOptions options)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
             
