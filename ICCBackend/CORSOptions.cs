@@ -15,7 +15,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
     public class CORSOptions
     {
-        private readonly IWebHostEnvironment _Environment;
         private readonly IccPortalConfig _IccPortalConfig;
 
         /// <summary>
@@ -23,9 +22,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         /// </summary>
         /// <param name="environment"></param>
         /// <param name="iccPortalConfig"></param>
-        public CORSOptions(IWebHostEnvironment environment, IccPortalConfig iccPortalConfig)
+        public CORSOptions(IccPortalConfig iccPortalConfig)
         {
-            _Environment = environment ?? throw new ArgumentNullException(nameof(environment));
             _IccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
         }
 
