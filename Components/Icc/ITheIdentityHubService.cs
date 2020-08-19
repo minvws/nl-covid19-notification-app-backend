@@ -8,7 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
     public interface ITheIdentityHubService
     {
-        public Task<bool> VerifyToken(string accesstoken);
-        public Task<bool> RevokeAccessToken(string accesstoken);
+        public Task<bool> VerifyToken(string accessToken);
+        public Task<bool> RevokeAccessToken(string accessToken);
     }
 }

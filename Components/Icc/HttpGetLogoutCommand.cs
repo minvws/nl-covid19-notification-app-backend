@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 
             var accessToken = httpContext.User.Claims.FirstOrDefault((c => c.Type == TheIdentityHubClaimTypes.AccessToken))?.Value;
             if (accessToken != null)
-                _TheIdentityHubService.RevokeAccessToken(accessToken);
+                await _TheIdentityHubService.RevokeAccessToken(accessToken);
 
             httpContext.Response.Cookies.Delete(".AspNetCore.Cookies");
             await httpContext.SignOutAsync();
