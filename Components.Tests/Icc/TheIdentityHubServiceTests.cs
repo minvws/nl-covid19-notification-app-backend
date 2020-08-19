@@ -32,17 +32,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
         private ITheIdentityHubService _TheIdentityHubService;
         private IOptionsMonitor<TheIdentityHubOptions> _Options;
         private WireMockServer _Server;
-        private int _TestPort = 8081;
 
         [TestInitialize]
         public void Initialize()
         {
             var logger = new TestLogger<TheIdentityHubService>();
+            _Server = WireMockServer.Start();
+            
+            if (_Server.Urls.Length < 1)
+            {
+                Assert.Fail("WireMockServer not started correctly");
+                return;
+            }
 
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddCustomOptions(TheIdentityHubDefaults.AuthenticationScheme, options =>
             {
-                options.TheIdentityHubUrl = new Uri("http://localhost:" + _TestPort);
+                options.TheIdentityHubUrl = new Uri(_Server.Urls[0]);
                 options.Tenant = "ggdghornl_test";
                 options.ClientId = "0";
                 options.ClientSecret = "supersecret";
@@ -66,8 +72,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
         public void VerifyTokenShouldReturnTrueOnValidToken()
         {
             var validToken = "valid_access_token";
-            _Server = WireMockServer.Start(_TestPort);
 
+            _Server.Reset();
             _Server.Given(
                     Request.Create()
                         .WithHeader("Authorization", "Bearer " + validToken)
@@ -81,15 +87,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                 );
 
             Assert.IsTrue(_TheIdentityHubService.VerifyToken(validToken).Result);
-            _Server.Stop();
         }
 
         [TestMethod]
         public void VerifyTokenShouldReturnFalseOnInValidToken()
         {
             var validToken = "invalid_access_token";
-            _Server = WireMockServer.Start(_TestPort);
 
+            _Server.Reset();
             _Server.Given(
                     Request.Create()
                         .WithHeader("Authorization", "Bearer " + validToken)
@@ -103,7 +108,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                 );
 
             Assert.IsFalse(_TheIdentityHubService.VerifyToken(validToken).Result);
-            _Server.Stop();
         }
 
 
@@ -111,8 +115,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
         public void VerifyAccessTokenRevocation()
         {
             var validToken = "valid_access_token";
-            _Server = WireMockServer.Start(_TestPort);
 
+            _Server.Reset();
             _Server.Given(
                     Request.Create().UsingPost()
                         .WithHeader("Authorization", "Bearer " + validToken)
@@ -125,16 +129,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                         .WithBody("{\"msg\":\"Access Token revoked\"}")
                 );
             Assert.IsTrue(_TheIdentityHubService.RevokeAccessToken(validToken).Result);
-            Console.WriteLine(_Server.LogEntries);
-            _Server.Stop();
         }
 
         [TestMethod]
         public void VerifyInvalidAccessTokenRevocation()
         {
             var invalidAccessToken = "invalid_access_token";
-            _Server = WireMockServer.Start(_TestPort);
 
+            _Server.Reset();
             _Server.Given(
                     Request.Create().UsingPost()
                         .WithHeader("Authorization", "Bearer " + invalidAccessToken)
@@ -147,8 +149,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                         .WithBody("{\"error\":\"Invalid AccessToken\"}")
                 );
             Assert.IsFalse(_TheIdentityHubService.RevokeAccessToken(invalidAccessToken).Result);
-
-            _Server.Stop();
         }
     }
 }
