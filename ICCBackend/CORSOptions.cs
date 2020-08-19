@@ -35,7 +35,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         /// <param name="options"></param>
         public void Build(CorsPolicyBuilder options)
         {
-            Console.WriteLine(JsonConvert.SerializeObject(GetOrigins()));
             options.WithOrigins(GetOrigins()).WithMethods(GetMethods()).WithHeaders(GetHeaders());
         }
 
