@@ -1,5 +1,3 @@
 This work includes software from the TheIdentityHub.AspNetCore.Authentication SDK.
 
-This package is provided through, and part of, the GGD / GHOR integration. 
-
-Contact the GGD/GHOR if you need access to this software.
+The Identity Hub SDK is licensed to GGD GHOR Nederland for use in the GGD portal.
