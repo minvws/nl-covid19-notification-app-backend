@@ -17,7 +17,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 
         public string getOrigin()
         {
-            return  _BaseUrl.Scheme + "://" + _BaseUrl.Host + ((_BaseUrl.Port != 80 && _BaseUrl.Port != 443) ? ":" + _BaseUrl.Port.ToString() : "");
+            var portAppendix = ((_BaseUrl.Port != 80 && _BaseUrl.Port != 443) ? ":" + _BaseUrl.Port : "");
+            return $"{_BaseUrl.Scheme}://{_BaseUrl.Host}{portAppendix}";
         }
     }
 }
