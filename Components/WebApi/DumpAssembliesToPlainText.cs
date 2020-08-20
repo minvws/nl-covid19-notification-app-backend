@@ -12,9 +12,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 {
     public class DumpAssembliesToPlainText
     {
-        public IActionResult Execute()
+        public IActionResult Execute(bool showIsDevelopmentBanner)
         {
             var list = new List<string>();
+            if (showIsDevelopmentBanner)
+            {
+                list.Add("** WARNING: DEVELOPMENT MODE **");
+                list.Add(Environment.NewLine);
+            }
             list.AddRange(Assembly.GetEntryAssembly().Dump());
             list.Add(Environment.NewLine);
             list.AddRange(typeof(AssemblyStuff).Assembly.Dump());
