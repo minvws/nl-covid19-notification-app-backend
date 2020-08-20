@@ -5,6 +5,7 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
@@ -19,9 +20,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
     public class Startup
     {
         private const string Title = "Cdn Content Provider";
+        private readonly IConfiguration _Configuration;
 
-        public Startup()
+        public Startup(IConfiguration configuration)
         {
+            _Configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -46,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             app.UseSwagger();
             app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
 
-            var corsOptions = new CorsOptions(env);
+            var corsOptions = new CorsOptions(env, new ContentApiConfig(_Configuration));
             app.UseCors(corsOptions.Build);
 
 

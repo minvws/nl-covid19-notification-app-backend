@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Helpers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
 {
     public class CorsOptions : ICorsOptions
     {
         private readonly IWebHostEnvironment _Environment;
+        private readonly ContentApiConfig _Config;
 
-        public CorsOptions(IWebHostEnvironment environment)
+        public CorsOptions(IWebHostEnvironment environment, ContentApiConfig config)
         {
             _Environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            _Config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public void Build(CorsPolicyBuilder options)
@@ -29,9 +32,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             // Swaggering via these urls
             if (_Environment.IsDevelopment())
             {
+                var originBuilder = new OriginBuilder(_Config.ContentApiUrl);
                 return new[]
                 {
-                    "https://localhost:5001", "http://localhost:5000", "https://test.coronamelder-dist.nl"
+                    originBuilder.getOrigin()
                 };
             }
 
