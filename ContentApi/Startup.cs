@@ -46,16 +46,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseSwagger();
-            app.UseSwaggerUI(o =>
-            {
-                o.SwaggerEndpoint("v1/swagger.json", Title);
-            });
-
-
-            if (env.IsDevelopment() || env.IsEnvironment("Test")) //TODO what is the env name for TEST?
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
             }
             else
             {
@@ -63,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             }
 
             app.UseSerilogRequestLogging();
-            
+
             app.UseRouting();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

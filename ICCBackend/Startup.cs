@@ -30,6 +30,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
     public class Startup
     {
+        private const string Title = "GGD Portal Backend V1";
+
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -91,25 +93,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
         private void StartupSwagger(SwaggerGenOptions o)
         {
-            o.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "Dutch Exposure Notification ICC API (inc. dev support)",
-                Version = "v1",
-                Description =
-                    "This specification describes the interface between the Dutch exposure notification app backend, ICC Webportal and the ICC backend service.",
-                Contact = new OpenApiContact
-                {
-                    Name = "Ministerie van Volksgezondheid Welzijn en Sport backend repository", //TODO looks wrong?
-                    Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend"),
-                },
-                License = new OpenApiLicense
-                {
-                    Name = "European Union Public License v. 1.2",
-                    //TODO this should be https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
-                    Url = new Uri(
-                        "https://github.com/minvws/nl-covid19-notification-app-backend/blob/master/LICENSE.txt")
-                },
-            });
+            o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"});
 
             o.OperationFilter<SecurityRequirementsOperationFilter>();
 
@@ -175,9 +159,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             app.UseCors(options =>
                 options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS asap
 
-            app.UseSwagger();
-            app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", "GGD Portal Backend V1"); });
-
             app.Use((context, next) =>
             {
                 if (context.Request.Headers.TryGetValue("X-Forwarded-Proto", out var protoHeaderValue))
@@ -196,6 +177,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
             }
 
             app.UseHttpsRedirection();

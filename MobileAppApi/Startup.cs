@@ -76,11 +76,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseSwagger();
-            app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
-
-            if (!env.IsDevelopment())
+            if (env.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
+            }
+            else
+            {
                 app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
+            }
 
             app.UseSerilogRequestLogging();
 
