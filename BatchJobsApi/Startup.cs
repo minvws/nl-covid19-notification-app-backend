@@ -31,12 +31,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
     {
         private const string Title = "MSS EKSEngine Api";
 
-        public Startup(IConfiguration configuration)
+        public Startup()
         {
-            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
-
-        private readonly IConfiguration _Configuration;
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -55,8 +52,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi
             services.AddScoped(x => DbContextStartup.Content(x, false));
             services.AddScoped(x => DbContextStartup.Publishing(x, false));
 
-            services.GaSignerStartup(_Configuration.UseCertificatesFromResources());
-            services.NlSignerStartup(_Configuration.UseCertificatesFromResources());
+            services.GaSignerStartup();
+            services.NlSignerStartup();
 
             services.AddSingleton<IEksHeaderInfoConfig, EksHeaderInfoConfig>();
             services.AddSingleton<IEksConfig, StandardEksConfig>();
