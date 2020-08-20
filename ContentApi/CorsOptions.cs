@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             // Swaggering via these urls
             if (_Environment.IsDevelopment())
             {
-                var originBuilder = new OriginBuilder(_Config.ContentApiUrl);
+                var originBuilder = new OriginBuilder(_Config.Url);
                 return new[]
                 {
                     originBuilder.getOrigin()
