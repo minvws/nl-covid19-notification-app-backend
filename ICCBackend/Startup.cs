@@ -90,7 +90,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
             StartupIdentityHub(services);
 
             StartupAuthenticationScheme(services.AddAuthentication(JwtAuthenticationHandler.SchemeName));
@@ -179,13 +178,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             if (app == null) throw new ArgumentNullException(nameof(app));
             if (env == null) throw new ArgumentNullException(nameof(env));
 
-
             app.UseCors(options =>
                 options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS asap
 
             app.UseSwagger();
             app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", "GGD Portal Backend V1"); });
-
 
             app.Use((context, next) =>
             {
@@ -201,7 +198,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
                 return next();
             });
-
 
             if (env.IsDevelopment())
             {
