@@ -44,7 +44,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
         private readonly IWebHostEnvironment _WebHostEnvironment;
         private readonly IConfiguration _Configuration;
-        private bool _KillAuth;
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -57,8 +56,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             });
 
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
-
-            _KillAuth = _Configuration.KillAuth();
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
@@ -123,8 +120,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             o.OperationFilter<SecurityRequirementsOperationFilter>();
 
-            if (_KillAuth) return;
-
             o.AddSecurityDefinition("Icc", new OpenApiSecurityScheme
             {
                 Description = "Icc Code Authentication",
@@ -137,23 +132,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
         private void StartupAuthenticationScheme(AuthenticationBuilder authBuilder)
         {
-            if (_KillAuth)
-            {
-                authBuilder.AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
-                return;
-            }
-
             authBuilder.AddScheme<AuthenticationSchemeOptions, JwtAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
         }
 
-
-       
-
         private void StartupIdentityHub(IServiceCollection services)
         {
-            if (_KillAuth) return;
-
-
             var iccIdentityHubConfig = new IccIdentityHubConfig(_Configuration);
 
             services
@@ -231,11 +214,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             app.UseRouting();
 
-            if (!_KillAuth)
-            {
-                app.UseAuthentication();
-            }
-
+            app.UseAuthentication();
+ 
             app.UseAuthorization();
 
             app.UseCookiePolicy();

@@ -72,8 +72,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<IMarkWorkFlowTeksAsUsed, MarkWorkFlowTeksAsUsed>();
             services.AddTransient<EksJobContentWriter>();
 
-            services.NlSignerStartup(configuration.UseCertificatesFromResources());
-            services.GaSignerStartup(configuration.UseCertificatesFromResources());
+            services.NlSignerStartup();
+            services.GaSignerStartup();
 
         }
     }

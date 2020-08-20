@@ -56,8 +56,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddTransient<ManifestBuilder>();
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
 
-            services.NlSignerStartup(configuration.UseCertificatesFromResources());
-            services.GaSignerStartup(configuration.UseCertificatesFromResources());
+            services.NlSignerStartup();
+            services.GaSignerStartup();
 
         }
     }

@@ -26,7 +26,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 {
     public class Startup
     {
-        private bool _SignatureValidationEnabled;
         private const string Title = "Mobile App API";
 
         public Startup(IConfiguration configuration)
@@ -53,12 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<ITekValidatorConfig, TekValidatorConfig>();
             services.AddSingleton<IDecoyKeysConfig, StandardDecoyKeysConfig>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
-
-            if (_Configuration.ValidatePostKeysSignature())
-                services.AddTransient<ISignatureValidator, SignatureValidator>();
-            else
-                services.AddTransient<ISignatureValidator, DoNotValidateSignatureValidator>();
-
+            services.AddTransient<ISignatureValidator, SignatureValidator>();
             services.AddTransient<IWorkflowTime, TekReleaseWorkflowTime>();
             services.AddTransient<IPostTeksValidator, PostTeksArgsValidator>();
             services.AddTransient<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
@@ -76,23 +70,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            var logger = services.GetService<ILogger<Startup>>();
-            if (_SignatureValidationEnabled)
-            {
-                logger.LogInformation("Signature validation of POST postkeys enabled : true");
-            }
-            else
-            {
-                logger.LogWarning("Signature validation of POST postkeys enabled : false");
-            }
-
 
             app.UseSwagger();
             app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
