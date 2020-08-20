@@ -25,6 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         }
 
         [ResponsePaddingFilterFactory]
+        [SuppressErrorFactory]
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.ReleaseTeks)]
         public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand2 command)
@@ -36,6 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         }
 
         [ResponsePaddingFilterFactory]
+        [SuppressErrorFactory]
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.Register)]
         public async Task<IActionResult> PostSecret([FromServices]HttpPostRegisterSecret command)
@@ -47,6 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         }
 
         [ResponsePaddingFilterFactory]
+        [SuppressErrorFactory]
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.RandomNoise)]
         public async Task<IActionResult> StopKeys([FromServices] HttpPostDecoyKeysCommand command)

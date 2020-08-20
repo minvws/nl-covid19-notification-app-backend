@@ -65,7 +65,7 @@ namespace DbFillExampleContent
             services.AddTransient<ContentValidator>();
             services.AddTransient<ContentInsertDbCommand>();
 
-            services.NlSignerStartup(configuration.UseCertificatesFromResources());
+            services.NlSignerStartup();
         }
     }
 }

@@ -2,11 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -15,12 +10,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
@@ -30,12 +23,15 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authoris
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
 using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
     public class Startup
     {
+        private const string Title = "GGD Portal Backend V1";
+
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -44,7 +40,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
         private readonly IWebHostEnvironment _WebHostEnvironment;
         private readonly IConfiguration _Configuration;
-        private bool _KillAuth;
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -57,8 +52,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             });
 
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
-
-            _KillAuth = _Configuration.KillAuth();
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
@@ -93,7 +86,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
             StartupIdentityHub(services);
 
             StartupAuthenticationScheme(services.AddAuthentication(JwtAuthenticationHandler.SchemeName));
@@ -101,29 +93,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
         private void StartupSwagger(SwaggerGenOptions o)
         {
-            o.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "Dutch Exposure Notification ICC API (inc. dev support)",
-                Version = "v1",
-                Description =
-                    "This specification describes the interface between the Dutch exposure notification app backend, ICC Webportal and the ICC backend service.",
-                Contact = new OpenApiContact
-                {
-                    Name = "Ministerie van Volksgezondheid Welzijn en Sport backend repository", //TODO looks wrong?
-                    Url = new Uri("https://github.com/minvws/nl-covid19-notification-app-backend"),
-                },
-                License = new OpenApiLicense
-                {
-                    Name = "European Union Public License v. 1.2",
-                    //TODO this should be https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
-                    Url = new Uri(
-                        "https://github.com/minvws/nl-covid19-notification-app-backend/blob/master/LICENSE.txt")
-                },
-            });
+            o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"});
 
             o.OperationFilter<SecurityRequirementsOperationFilter>();
-
-            if (_KillAuth) return;
 
             o.AddSecurityDefinition("Icc", new OpenApiSecurityScheme
             {
@@ -137,23 +109,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
         private void StartupAuthenticationScheme(AuthenticationBuilder authBuilder)
         {
-            if (_KillAuth)
-            {
-                authBuilder.AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
-                return;
-            }
-
             authBuilder.AddScheme<AuthenticationSchemeOptions, JwtAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
         }
 
-
-       
-
         private void StartupIdentityHub(IServiceCollection services)
         {
-            if (_KillAuth) return;
-
-
             var iccIdentityHubConfig = new IccIdentityHubConfig(_Configuration);
 
             services
@@ -199,15 +159,14 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             if (app == null) throw new ArgumentNullException(nameof(app));
             if (env == null) throw new ArgumentNullException(nameof(env));
 
+            app.UseCors(options =>
+                options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS asap
+
 
             IccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration); 
             CorsOptions corsOptions = new CorsOptions(iccPortalConfig);
             
             app.UseCors(corsOptions.Build);
-            
-            app.UseSwagger();
-            app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", "GGD Portal Backend V1"); });
-
 
             app.Use((context, next) =>
             {
@@ -224,10 +183,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 return next();
             });
 
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
             }
 
             app.UseHttpsRedirection();
@@ -236,11 +196,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             app.UseRouting();
 
-            if (!_KillAuth)
-            {
-                app.UseAuthentication();
-            }
-
+            app.UseAuthentication();
+ 
             app.UseAuthorization();
 
             app.UseCookiePolicy();

@@ -2,15 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -21,12 +18,12 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKey
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 using Serilog;
+using System;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 {
     public class Startup
     {
-        private bool _SignatureValidationEnabled;
         private const string Title = "Mobile App API";
 
         public Startup(IConfiguration configuration)
@@ -53,12 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<ITekValidatorConfig, TekValidatorConfig>();
             services.AddSingleton<IDecoyKeysConfig, StandardDecoyKeysConfig>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
-
-            if (_Configuration.ValidatePostKeysSignature())
-                services.AddTransient<ISignatureValidator, SignatureValidator>();
-            else
-                services.AddTransient<ISignatureValidator, DoNotValidateSignatureValidator>();
-
+            services.AddTransient<ISignatureValidator, SignatureValidator>();
             services.AddTransient<IWorkflowTime, TekReleaseWorkflowTime>();
             services.AddTransient<IPostTeksValidator, PostTeksArgsValidator>();
             services.AddTransient<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
@@ -72,33 +64,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddScoped<ResponsePaddingFilterAttribute>();
             services.AddScoped<IResponsePaddingConfig, ResponsePaddingConfig>();
             services.AddScoped<IPaddingGenerator, CryptoRandomPaddingGenerator>();
+            services.AddScoped<SuppressErrorAttribute>();
             
             services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            var logger = services.GetService<ILogger<Startup>>();
-            if (_SignatureValidationEnabled)
+            if (env.IsDevelopment())
             {
-                logger.LogInformation("Signature validation of POST postkeys enabled : true");
+                app.UseSwagger();
+                app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
             }
             else
             {
-                logger.LogWarning("Signature validation of POST postkeys enabled : false");
-            }
-
-
-            app.UseSwagger();
-            app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
-
-            if (!env.IsDevelopment())
                 app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
+            }
 
             app.UseSerilogRequestLogging();
 

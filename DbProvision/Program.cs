@@ -58,7 +58,7 @@ namespace DbProvision
             services.AddTransient<ContentInsertDbCommand>();
             services.AddTransient<ZippedSignedContentFormatter>();
 
-            services.NlSignerStartup(configuration.UseCertificatesFromResources());
+            services.NlSignerStartup();
         }
     }
 }

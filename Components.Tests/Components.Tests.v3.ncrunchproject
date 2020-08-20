@@ -14,27 +14,6 @@
       <FixtureTestSelector>
         <FixtureName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.EksBatchJobTests</FixtureName>
       </FixtureTestSelector>
-      <NamedTestSelector>
-        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.EksBatchJobMk3Tests.FireTwice</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.EksBatchJobMk3Tests.Teks1_NoRiskNotStuffed</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.EksBatchJobMk3Tests.Tek10_NotStuffed</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.EksBatchJobMk3Tests.Tek11_NotStuffed_2Eks</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.EksBatchJobMk3Tests.Tek5_NotStuffed</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.EksBatchJobMk3Tests.Teks0_NothingToSeeHereMoveAlong</TestName>
-      </NamedTestSelector>
-      <FixtureTestSelector>
-        <FixtureName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.EksBatchJobMk3Tests</FixtureName>
-      </FixtureTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>
