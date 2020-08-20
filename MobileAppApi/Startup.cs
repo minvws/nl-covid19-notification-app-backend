@@ -5,6 +5,7 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -66,6 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddScoped<ResponsePaddingFilterAttribute>();
             services.AddScoped<IResponsePaddingConfig, ResponsePaddingConfig>();
             services.AddScoped<IPaddingGenerator, CryptoRandomPaddingGenerator>();
+            services.AddScoped<SuppressErrorAttribute>();
             
             services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });
         }

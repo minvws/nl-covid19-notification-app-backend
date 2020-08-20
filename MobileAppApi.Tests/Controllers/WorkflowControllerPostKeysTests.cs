@@ -106,6 +106,27 @@ namespace MobileAppApi.Tests.Controllers
         }
 
         [TestMethod]
+        public async Task PostWorkflowTest_ScriptInjectionInSignature()
+        {
+            // Arrange
+            var client = _Factory.CreateClient();
+            await using var inputStream =
+                Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Resources.payload.json");
+            var data = inputStream.ToArray();
+            var signature = "<script>alert()</script>";
+            var content = new ByteArrayContent(data);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+            // Act
+            var result = await client.PostAsync($"v1/postkeys?sig={signature}", content);
+
+            // Assert
+            var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
+            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+            Assert.AreEqual(0, items.Count);
+        }
+
+        [TestMethod]
         public async Task PostWorkflowTest_NullSignature()
         {
             // Arrange
