@@ -18,8 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 Convert.ToInt32(Math.Floor((tekRollingPeriodNumber.FromRollingStartNumber().Date - dateOfSymptomsOnset).TotalDays));
 
             //Keys before date of onset
-            if (daysSinceSymptomOnset <= -4) return TransmissionRiskLevel.None;
-            if (daysSinceSymptomOnset <= -3) return TransmissionRiskLevel.Low;
+            if (daysSinceSymptomOnset <= -3) return TransmissionRiskLevel.None;
             if (daysSinceSymptomOnset <= -2) return TransmissionRiskLevel.Medium;
             if (daysSinceSymptomOnset <= 2) return TransmissionRiskLevel.High;
             if (daysSinceSymptomOnset <= 4) return TransmissionRiskLevel.Medium;

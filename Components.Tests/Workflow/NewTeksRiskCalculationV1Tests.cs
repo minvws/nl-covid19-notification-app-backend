@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
         [DataRow(5, TransmissionRiskLevel.None)]
         [DataRow(6, TransmissionRiskLevel.None)]
         
-        [DataRow(7, TransmissionRiskLevel.Low)]
+        [DataRow(7, TransmissionRiskLevel.None)]
 
         [DataRow(8, TransmissionRiskLevel.Medium)]
 
