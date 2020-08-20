@@ -133,8 +133,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     options.CallbackPath = iccIdentityHubConfig.CallbackPath;
                 });
 
-            PolicyAuthorizationOptions policyAuthorizationOptions = new PolicyAuthorizationOptions(_WebHostEnvironment, new IccPortalConfig(_Configuration));
-            services.AddAuthorization(options => policyAuthorizationOptions.GetOptions(options));
+
+            IccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration);
+            
+            PolicyAuthorizationOptions policyAuthorizationOptions = new PolicyAuthorizationOptions(_WebHostEnvironment, iccPortalConfig);
+            services.AddAuthorization(policyAuthorizationOptions.Build);
 
             services.AddScoped<ITheIdentityHubService, TheIdentityHubService>();
 
@@ -158,6 +161,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             app.UseCors(options =>
                 options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS asap
+
+            IccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration); 
+            CorsOptions corsOptions = new CorsOptions(iccPortalConfig);
+            
+            app.UseCors(corsOptions.Build);
 
             app.Use((context, next) =>
             {
