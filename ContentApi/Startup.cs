@@ -46,7 +46,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             app.UseSwagger();
             app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
 
-
             var corsOptions = new CorsOptions(env);
             app.UseCors(corsOptions.Build);
 

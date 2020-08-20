@@ -31,16 +31,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             {
                 return new[]
                 {
-                    "http://localhost:5001", 
-                    "https://test.coronamelder-dist.nl"
+                    "https://localhost:5001", "http://localhost:5000", "https://test.coronamelder-dist.nl"
                 };
             }
-            else if (_Environment.IsStaging())
-            {
-                return new[] {"https://acceptatie.coronamelder-dist.nl"};
-            }
 
-            return new[] {"https://productie.coronamelder-dist.nl"};
+            return new[] {""}; // Denies Swagger on acceptatie and productie 
         }
     }
 }
