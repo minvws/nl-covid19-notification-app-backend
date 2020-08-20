@@ -28,6 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
             // Assert
             var result = builder.getOrigin();
             var expected = typeof(string);
+            
             // Act
             Assert.IsInstanceOfType(result, expected);
         }
@@ -48,8 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
             // Assert
             var testUri = new Uri(testFrontendBaseUrl);
             var origin = builder.getOrigin();
-
-
+            
             var result = origin.EndsWith(testUri.Host) || origin.EndsWith(testUri.Port.ToString());
 
             // Act

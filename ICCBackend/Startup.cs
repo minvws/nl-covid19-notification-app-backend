@@ -162,7 +162,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             app.UseCors(options =>
                 options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS asap
 
-
             IccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration); 
             CorsOptions corsOptions = new CorsOptions(iccPortalConfig);
             

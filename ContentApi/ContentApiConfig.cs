@@ -14,6 +14,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
         }
 
         public string Url => GetConfigValue(nameof(Url), "https://localhost:5001");
-        
     }
 }
