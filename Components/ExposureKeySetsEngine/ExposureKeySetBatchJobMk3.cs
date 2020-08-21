@@ -158,7 +158,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             _Logger.LogInformation("Started - JobName:{_JobName}", _JobName);
 
-            if (!WindowsIdentityStuff.CurrentUserIsAdministrator()) //TODO remove warning when UAC is not in play
+            if (Environment.UserInteractive && !WindowsIdentityStuff.CurrentUserIsAdministrator())
                 _Logger.LogWarning("{JobName} started WITHOUT elevated privileges - errors may occur when signing content.", _JobName);
 
             _EksEngineResult.Started = _DateTimeProvider.Snapshot; //Align with the logged job name.
@@ -201,8 +201,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             await using var dbc = _PublishingDbContextFac();
             await using var tx = dbc.BeginTransaction();
-            await dbc.Database.ExecuteSqlRawAsync("TRUNCATE TABLE [dbo].[EksCreateJobInput]"); //TODO Name constants
-            await dbc.Database.ExecuteSqlRawAsync("TRUNCATE TABLE [dbo].[EksCreateJobOutput]"); //TODO Name constants
+            await dbc.Database.ExecuteSqlRawAsync($"TRUNCATE TABLE [dbo].[{TableNames.EksEngineInput}]");
+            await dbc.Database.ExecuteSqlRawAsync($"TRUNCATE TABLE [dbo].[{TableNames.EksEngineOutput}]");
             tx.Commit();
         }
 

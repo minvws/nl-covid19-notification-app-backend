@@ -68,7 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
                 item.PublishAfter = snapshot.AddMinutes(_Config.PublishingDelayInMinutes);
                 _Valid.Add(item);
-                return new [] { "Same day key accepted - Reason:Before call or within call window Key." }; //TODO text reason from doc seems ambiguous.
+                return new [] { "Same day key accepted - Reason:Before call or within call window Key." };
             }
 
             // key from result day that arrives after today with extra check to ensure it’s a 1.4 device and not a tampered 1.5 device (Step 5)

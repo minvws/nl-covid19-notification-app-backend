@@ -65,7 +65,7 @@ namespace MobileAppApi.Tests.Controllers
             await _Connection.OpenAsync();
             await _DbContext.Database.EnsureCreatedAsync();
             // ReSharper disable once MethodHasAsyncOverload
-            //TODO mapper...
+
             _DbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
                 BucketId = _BucketId,
@@ -162,7 +162,7 @@ namespace MobileAppApi.Tests.Controllers
 
             // Assert
             var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode); //All coerced by middleware to 200 now.
             Assert.AreEqual(0, items.Count);
         }
     }

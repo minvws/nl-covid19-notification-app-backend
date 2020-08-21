@@ -81,25 +81,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             // Assert
             Assert.IsTrue(result);
         }
-        
-        //
-        // [TestMethod]
-        // public void Validate_checks_pollToken_expires()
-        // {
-        //     // Assemble 
-        //     var token = _pollTokenService.GenerateToken();
-        //     var args = new LabVerifyArgs() {PollToken = token};
-        //
-        //     // Act
-        //     // var mock = new Mock<IDateTime>();
-        //     // mock.Setup(fake => fake.Now)
-        //     // .Returns(new DateTime(2000, 1, 1));
-        //     // TODO Add Moq?
-        //     var result = validator.Validate(args);
-        //
-        //     // Assert
-        //     Assert.IsTrue(result);
-        // }
+
+        [TestMethod]
+        public void Validate_checks_pollToken_expires()
+        {
+            // Assemble 
+            var token = _PollTokenService.Next();
+            var args = new LabVerifyArgs() { PollToken = token };
+
+            Assert.Fail("Finish this test.");
+            // Act
+            // var mock = new Mock<IDateTime>();
+            // mock.Setup(fake => fake.Now)
+            // .Returns(new DateTime(2000, 1, 1));
+            var result = _Validator.Validate(args);
+
+            // Assert
+            Assert.IsTrue(result);
+        }
 
         [TestMethod]
         public void Validate_checks_pollToken_signature()

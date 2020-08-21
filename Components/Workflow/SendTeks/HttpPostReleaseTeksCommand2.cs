@@ -73,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             _BodyBytes = body;
 
-            if ((signature?.Length ?? 0) != _WorkflowConfig.PostKeysSignatureLength) //TODO const
+            if ((signature?.Length ?? 0) != _WorkflowConfig.PostKeysSignatureLength)
             {
                 _Logger.LogError("Signature is null or incorrect length.");
                 return;
@@ -87,9 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             }
             catch (Exception e)
             {
-                //TODO: check if you want to use Serilog's Exception logging, or just use ToString
-                //i.e., _logger.LogError(e, "Error reading body");
-                _Logger.LogError("Error reading body -\n{E}", e);
+                _Logger.LogError("Error reading body -\n{E}", e.ToString());
                 return;
             }
 

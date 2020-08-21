@@ -74,7 +74,7 @@ namespace MobileAppApi.Tests.Controllers
             Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
         }
 
-        // TODO move/refactor, this tests the delay feature not if it's enabled for an endpoint
+        // Ticket raised to move/refactor, this tests the delay feature not if it's enabled for an endpoint
         /// <summary>
         /// Tests whether or not the response is delayed by at least the minimum time.
         /// </summary>
@@ -111,9 +111,9 @@ namespace MobileAppApi.Tests.Controllers
             Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
             Assert.IsTrue(sw.ElapsedMilliseconds > min);
         }
-        
-        // TODO: move/refactor, this tests the delay feature not if it's enabled for an endpoint
-        // TODO: implement this as a unit test on ResponsePaddingFilter
+
+        // Ticket raised to move/refactor, this tests the delay feature not if it's enabled for an endpoint
+        // Ticket raised to implement this as a unit test on ResponsePaddingFilter
         [DataTestMethod]
         [DataRow(8, 16)]
         [DataRow(32, 64)]

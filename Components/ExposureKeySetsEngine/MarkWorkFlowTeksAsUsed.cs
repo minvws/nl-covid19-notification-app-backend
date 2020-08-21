@@ -71,7 +71,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 .Where(x => x.TekId != null && (x.Used || x.TransmissionRiskLevel == TransmissionRiskLevel.None))
                 .OrderBy(x => x.TekId)
                 .Skip(_Index)
-                .Take(_EksConfig.PageSize) //TODO May need separate setting to tune.
+                .Take(_EksConfig.PageSize)
                 .Select(x => x.TekId.Value)
                 .ToArray();
         }

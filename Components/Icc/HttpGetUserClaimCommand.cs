@@ -13,7 +13,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
     public class HttpGetUserClaimCommand
     {
-        //TODO always 1 user? and 1 claim? Just return a json encoded string?
         public IActionResult Execute(HttpContext httpContext)
         {
             if (httpContext == null)

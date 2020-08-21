@@ -59,8 +59,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 BatchNum = 1,
                 BatchSize = 1,
                 SignatureInfos = new[] {securityInfo},
-                StartTimestamp = _DateTimeProvider.Snapshot.AddDays(-1).ToUnixTimeU64(), //TODO real values?
-                EndTimestamp = _DateTimeProvider.Snapshot.ToUnixTimeU64(), //TODO real values?
+                StartTimestamp = _DateTimeProvider.Snapshot.AddDays(-1).ToUnixTimeU64(),
+                EndTimestamp = _DateTimeProvider.Snapshot.ToUnixTimeU64(),
                 Keys = keys
             };
 

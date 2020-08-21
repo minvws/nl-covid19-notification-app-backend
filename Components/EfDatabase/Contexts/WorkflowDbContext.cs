@@ -30,7 +30,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.ValidUntil);
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.AuthorisedByCaregiver);
 
-            //TODO ensure cleanup jobs check the Published column of the Teks before deleting.
             modelBuilder
                 .Entity<TekReleaseWorkflowStateEntity>()
                 .HasMany(x => x.Teks)

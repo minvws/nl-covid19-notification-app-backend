@@ -31,8 +31,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             var errors = new List<string>();
             errors.AddRange(_LabConfirmationIdService.Validate(args.LabConfirmationId));
 
-            // TODO check SymptonsOnDate is valid date in !past!
-            // TODO setting
             if (_DateTimeProvider.Snapshot.Date.AddDays(-30) > args.DateOfSymptomsOnset.Date || args.DateOfSymptomsOnset.Date > _DateTimeProvider.Snapshot.Date)
                 errors.Add($"Date of symptoms onset out of range - {args.DateOfSymptomsOnset}.");
 

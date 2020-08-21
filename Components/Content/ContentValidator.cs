@@ -31,7 +31,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             }
             catch (JsonException ex)
             {
-                //TODO log
                 return false;
             }
         }

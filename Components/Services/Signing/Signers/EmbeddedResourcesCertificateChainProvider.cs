@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             result.Import(bytes);
             foreach (var c in result)
             {
-                if (c.IssuerName.Name != c.SubjectName.Name) //TODO understand this? //Error if cert not required?
+                if (c.IssuerName.Name != c.SubjectName.Name)
                     certList.Add(c);
             }
 

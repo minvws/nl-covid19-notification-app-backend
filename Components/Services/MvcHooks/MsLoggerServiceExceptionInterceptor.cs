@@ -23,7 +23,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcH
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            //TODO: check if you want to use Serilog's Exception logging, or just use ToString
             _Logger.LogError(context.Exception.ToString());
             context.ExceptionHandled = false;
             return Task.CompletedTask;

@@ -26,12 +26,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
     {
         private const string Title = "Mobile App API";
 
-        public Startup(IConfiguration configuration)
-        {
-            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        }
+        private readonly bool _IsDev;
 
-        private readonly IConfiguration _Configuration;
+        public Startup(IWebHostEnvironment env)
+        {
+            _IsDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
+        }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -66,25 +66,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddScoped<IPaddingGenerator, CryptoRandomPaddingGenerator>();
             services.AddScoped<SuppressErrorAttribute>();
             
-            services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });
+            if (_IsDev)
+                services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
+            if (_IsDev)
             {
                 app.UseDeveloperExceptionPage();
-            }
-
-            if (env.IsDevelopment())
-            {
                 app.UseSwagger();
                 app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
             }
-            else
-            {
-                app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
-            }
+
+            app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
 
             app.UseSerilogRequestLogging();
 

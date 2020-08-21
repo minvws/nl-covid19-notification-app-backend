@@ -7,10 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities
 {
-    /// <summary>
-    /// TODO incomplete.
-    /// </summary>
-    [Table("EksCreateJobOutput")]
+    [Table(TableNames.EksEngineOutput)]
     public class EksCreateJobOutputEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

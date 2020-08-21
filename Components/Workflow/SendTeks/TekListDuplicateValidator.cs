@@ -10,7 +10,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
     {
         /// <summary>
         /// Individual keys assumed previously valid.
-        /// TODO is previous key altered? E.g. is Period of previous key shortened?
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>

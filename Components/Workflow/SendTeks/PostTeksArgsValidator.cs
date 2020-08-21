@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             if (args == null)
                 return new[] {"Null value."};
 
-            if (_Config.TemporaryExposureKeyCountMin > args.Keys.Length || args.Keys.Length > _Config.TemporaryExposureKeyCountMax) //TODO sensible but hi anti-spam, maximum - e.g. not 14
+            if (_Config.TemporaryExposureKeyCountMin > args.Keys.Length || args.Keys.Length > _Config.TemporaryExposureKeyCountMax)
                 return new[] {$"Invalid number of keys - {args.Keys.Length}."};
 
             var keyErrors = new List<string>();

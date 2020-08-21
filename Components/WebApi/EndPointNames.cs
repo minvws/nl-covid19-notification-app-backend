@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 
         public const string ManifestName = "manifest";
         public const string AppConfigName = "appconfig";
-        public const string ExposureKeySetName = "exposurekeyset"; //TODO rollups elsewhere?
+        public const string ExposureKeySetName = "exposurekeyset";
         public const string RiskCalculationParametersName = "riskcalculationparameters";
 
         //Also used for the data api where necessary

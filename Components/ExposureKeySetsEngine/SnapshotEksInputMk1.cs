@@ -91,7 +91,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 {
                     TekId = x.Id,
                     RollingStartNumber = x.S,
-                    RollingPeriod = 144, //TODO constant cos iOS xxx requires all RP to be 144
+                    RollingPeriod = 144, //Constant cos iOS xxx requires all RP to be 144
                     KeyData = x.D,
                     TransmissionRiskLevel = _TransmissionRiskLevelCalculation.Calculate(x.S, x.DateOfSymptomsOnset),
                 }).ToList();

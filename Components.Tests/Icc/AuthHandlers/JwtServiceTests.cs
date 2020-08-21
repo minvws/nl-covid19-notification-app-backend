@@ -12,8 +12,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
 {
     //ncrunch: no coverage start 
 
-    //TODO finish or remove
-
     [TestClass]
     public class JwtServiceTests
     {
@@ -32,6 +30,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
                     _UtcDateTimeProvider, lf);
         }
 
+        [TestMethod]
+        public void NoUnitTestsYet()
+        {
+            Assert.Fail();
+        }
+        
+        
         // Test Custom generate method
         // - exp values -1 -- max. time
         // - claims empty and filled with different types

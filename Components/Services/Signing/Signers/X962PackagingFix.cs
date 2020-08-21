@@ -63,10 +63,9 @@
 // With the minimal len 70 = (2+2x(2+32)) and the worst case
 // when both integers have their top bit set; 72 bytes.
 //
-// TODO: this does not quite comply with the spec; the BER/DER rule requires
+// This does not quite comply with the spec; the BER/DER rule requires
 // encoding with the minimum number of octets (except for 0, which is encoded
 // as 0, length 1). So we should strip off any leading zero bytes. We do not.
-//
 
 using System;
 

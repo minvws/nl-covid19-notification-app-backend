@@ -7,7 +7,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities
 {
-    [Table("EksCreateJobInput")]
+    [Table(TableNames.EksEngineInput)]
     public class EksCreateJobInputEntity
     {
         /// <summary>

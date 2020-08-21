@@ -37,8 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
                 {
                     ConfirmationKey = Convert.ToBase64String(entity.ConfirmationKey),
                     BucketId = Convert.ToBase64String(entity.BucketId),
-                    //TODO remove formatting when spec is clarified to remove UI concern from data.
-                    LabConfirmationId = _LabConfirmationIdFormatter.Format(entity.LabConfirmationId),
+                    LabConfirmationId = _LabConfirmationIdFormatter.Format(entity.LabConfirmationId), //Architects choice to use UI format in response.
                     Validity = _WorkflowTime.TimeToLiveSeconds(_UtcDateTimeProvider.Snapshot, entity.ValidUntil)
                 };
 
@@ -46,7 +45,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             }
             catch (Exception ex)
             {
-                //TODO: check if you want to use Serilog's Exception logging, or just use ToString
                 _Logger.LogError(ex.ToString());
                 return new OkObjectResult(new EnrollmentResponse { Validity = -1 });
             }

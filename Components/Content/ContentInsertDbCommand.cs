@@ -36,7 +36,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             var e = new ContentEntity
             {
-                //TODO audit stamp 
                 Created = _DateTimeProvider.Snapshot, 
                 Release = args.Release,
                 Type = args.ContentType,

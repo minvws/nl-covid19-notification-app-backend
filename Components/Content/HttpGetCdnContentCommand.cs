@@ -53,19 +53,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 httpContext.Response.ContentLength = 0;
             }
 
-            //This looked like a bug?
             if (!httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
             {
                 _Logger.LogError("Required request header missing - if-none-match.");
                 httpContext.Response.ContentLength = 0;
-                httpContext.Response.StatusCode = 400; //TODO!
+                httpContext.Response.StatusCode = 400;
             }
 
             var content = await _DbContext.SafeGetContent(type, id, _DateTimeProvider.Snapshot);
             
             if (content == null)
             {
-                //TODO tell CDN to ignore hunting?
                 _Logger.LogError("Content not found - {Id}.", id);
                 httpContext.Response.StatusCode = 404;
                 httpContext.Response.ContentLength = 0;
@@ -79,17 +77,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 httpContext.Response.ContentLength = 0;
                 return;
             }
-
-            //var accepts = httpContext.Request.Headers["accept"].ToHashSet();
-            //var signedResponse = content.SignedContentTypeName != null && accepts.Contains(content.SignedContentTypeName);
-
-            //if (!signedResponse && !accepts.Contains(content.ContentTypeName))
-            //{
-            //    _Logger.LogWarning("Cannot give acceptable response, responding with 406 - {Id}.", id);
-            //    httpContext.Response.StatusCode = 406;
-            //    httpContext.Response.ContentLength = 0;
-            //    return;
-            //}
 
             httpContext.Response.Headers.Add("etag", content.PublishingId);
             httpContext.Response.Headers.Add("last-modified", content.Release.ToUniversalTime().ToString("r"));

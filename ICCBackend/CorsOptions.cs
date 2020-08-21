@@ -11,14 +11,14 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {
     public class CorsOptions : ICorsOptions
     {
-        private readonly IccPortalConfig _IccPortalConfig;
+        private readonly IIccPortalConfig _IccPortalConfig;
 
         /// <summary>
         /// Builds options for the CorsPolicyBuilder
         /// </summary>
         /// <param name="environment"></param>
         /// <param name="iccPortalConfig"></param>
-        public CorsOptions(IccPortalConfig iccPortalConfig)
+        public CorsOptions(IIccPortalConfig iccPortalConfig)
         {
             _IccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
         }

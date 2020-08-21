@@ -58,12 +58,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
 
-        /// <summary>
-        /// TODO see if we can have just one Random Tek Generator.
-        /// </summary>
-        /// <param name="workflowCount"></param>
-        /// <param name="seed"></param>
-        /// <returns></returns>
         private TemporaryExposureKeyArgs[] GetRandomKeys(int workflowCount, int seed)
         {
             var random = new Random(seed);

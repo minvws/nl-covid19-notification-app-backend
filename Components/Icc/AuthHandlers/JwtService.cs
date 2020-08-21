@@ -39,7 +39,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
         public string Generate(ulong exp, Dictionary<string, object> claims)
         {
-            //TODO nay validation on exp?
             if (claims == null) throw new ArgumentNullException(nameof(claims));
             // any further validation of claims?
 

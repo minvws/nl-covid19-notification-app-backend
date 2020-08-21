@@ -40,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             _Logger.LogDebug("Build new manifest.");
             var content = await _ManifestBuilder.Execute();
             _Logger.LogDebug("Format and sign new manifest.");
-            await _Formatter.Fill(e, content); //TODO add release date as a parameter
+            await _Formatter.Fill(e, content);
             return e;
         }
     }

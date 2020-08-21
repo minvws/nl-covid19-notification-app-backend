@@ -1,6 +1,5 @@
 # VS/CShrap/.NET Core ignores from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 # Docker ignores from https://github.com/atlassian/docker/blob/master/.gitignore
-# TODO K8S?
 
 # User-specific files
 McsTestConfigProvider.Db.DoNotCommit.cs

@@ -24,6 +24,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Register
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
@@ -32,14 +33,17 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
     {
         private const string Title = "GGD Portal Backend V1";
 
+        private readonly bool _IsDev;
+        private readonly IConfiguration _Configuration;
+        private readonly IWebHostEnvironment _WebHostEnvironment;
+
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _WebHostEnvironment = env;
+            _IsDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
         }
 
-        private readonly IWebHostEnvironment _WebHostEnvironment;
-        private readonly IConfiguration _Configuration;
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -77,7 +81,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             services.AddCors();
 
-            services.AddSwaggerGen(StartupSwagger);
+            if (_IsDev)
+                services.AddSwaggerGen(StartupSwagger);
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -134,9 +139,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 });
 
 
-            IccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration);
+            var iccPortalConfig = new IccPortalConfig(_Configuration);
             
-            PolicyAuthorizationOptions policyAuthorizationOptions = new PolicyAuthorizationOptions(_WebHostEnvironment, iccPortalConfig);
+            var policyAuthorizationOptions = new PolicyAuthorizationOptions(_WebHostEnvironment, iccPortalConfig);
             services.AddAuthorization(policyAuthorizationOptions.Build);
 
             services.AddScoped<ITheIdentityHubService, TheIdentityHubService>();
@@ -150,21 +155,26 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     .Build();
                 config.Filters.Add(new AuthorizeFilter(policy));
             });
+
+            if (_IsDev)
+                services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
+            if (_IsDev)
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
+            }
+
             app.UseForwardedHeaders();
 
             if (app == null) throw new ArgumentNullException(nameof(app));
-            if (env == null) throw new ArgumentNullException(nameof(env));
 
-            app.UseCors(options =>
-                options.AllowAnyOrigin().AllowAnyHeader().WithExposedHeaders("Content-Disposition")); // TODO: Fix CORS asap
-
-            IccPortalConfig iccPortalConfig = new IccPortalConfig(_Configuration); 
-            CorsOptions corsOptions = new CorsOptions(iccPortalConfig);
-            
+            var iccPortalConfig = new IccPortalConfig(_Configuration); 
+            var corsOptions = new CorsOptions(iccPortalConfig);
             app.UseCors(corsOptions.Build);
 
             app.Use((context, next) =>
@@ -181,13 +191,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
                 return next();
             });
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
-            }
 
             app.UseHttpsRedirection();
 

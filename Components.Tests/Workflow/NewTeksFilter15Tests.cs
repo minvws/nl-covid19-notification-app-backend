@@ -133,7 +133,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             Assert.AreEqual(17, deviceTeks.Count);
 
             //11:20 Server publishes Server publishes K0902.1 through K0915.2 to the CDN. 
-            //TODO has to be later
             //Only 14.
             Assert.AreEqual(14, Publish(new DateTime(2020, 9, 15, 13, 6, 0)).Length);
             Assert.AreEqual(14, w.Teks.Count(x => x.PublishingState == PublishingState.Published));
