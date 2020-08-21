@@ -8,43 +8,54 @@
 * run from IDE with "Run npm install" or from command-line: npm install from the apitest folder
 * install mocha via command-line: npm install -g mocha
 
-## Extra info
+## Design of the automation suite
 The API  suite is JavaScript NodeJS test suite, with the Mocha BDD test framework, Chai assertions, Axios API 
-requests and mochawesome reports. There are two main parts in the automation suite with each a separate report:
-* endpoints tests
-* scenario tests
+requests and mochawesome reports. There are two main parts in the automation suite:
+* endpoints tests (validate the health of each endpoint)
+* scenario tests (validate the combination of endpoints under different conditions)
 
-## setup the environment settings
-*
-npm install
+The test suite contains a number of principles to make maintaining and expanding easier.
+* The first principle is that we want to split test logic with its implementation. This means that we want to describe what the desired behaviour is and what it's outcome should be.
+We don't describe how it should do that. We put this logic in the behaviour objects and the controllers. 
+By doing this we lower the amount of work needed when an endpoint is changed without having to change the test itself.
+
+* The second principle is that we want to split test logic with physical data. A dataprovider is added where specific data can be retrieved and altered from. 
+The concept is that the required data and it's expected outcome is mentioned in the scenario. That should make it easy to see if the scenario should contain valid data and what type of data is required.
+Handling of the fysical data is handled in the data object itself.
+
+* The third principle is that every test should have one clear test goal. 
+So if the goal is to verify if an exposurekey is in the manifest. That is what we should assert in the it. All other tests obscure why the test was build in the first place.
 
 ## Maintaining the test suite
-* 
-All tests are in test/endpoint_tests
+The test suite can be extend by adding new test and by adding assertions to existing tests. A test consists of:
+* Describe: name and search terms of the test
+* Before: fetching all the required data from the endpoints
+* It: assertions (tests) on the response data
 
-### Add a new tests
-* 
-
-### Update a tests
-* 
+### Adding new tests
+Before a new test can be added first create a goal of the new test: what needs to be validated in the assertions.
+Based on the existing behaviors, endpoints and data providers a test scenario can be created. High over steps to add a new test:
+* Create a new branch in Git with the name of the name of the new test
+* Create a new js file in the scenario or endpoint tests folder
+* Add all the required dependencies like chai and expect
+* Fill the describe with a logical name and search term (using a # before the search term)
+* Fill the before with the intended behavior
+    * Use behaviors and controllers and save responses
+    * Chain the requests into a flow and wait for the responses
+* Create the assertions with expect from chai
 
 ## Running the test suite
-* Open terminal and navigate to root folder of repo: cd MSS-nl-covid19-notification-app-backend/Testautomation/test/endpoint_tests
+* Open terminal and navigate to root folder of repo: cd MSS-nl-covid19-notification-app-backend/Testautomation/test
 * Each collection is in a group that starts with a # sign. The groups are:
-    * [**#register**](test/endpoint_tests/app_post_register_endpoints.js) => only runs the register
-    * [**#endpoints**](test/endpoint_tests/app_post_register_endpoints.js) => only runs endpoint tests
-    * [**#scenario**](test/scenario_tests/test/) => only runs scenario's tests
-    * [**#regression**] => runs the whole API test suite
-* There are three environments, which  can be found in the [**util/env/conf**](util/env_config.js) file:
-    * Test
-    * Acceptance
-    * Production
-* You can switch between the two environments via the command line option:
-    * --environment
-* A test is executed from the command line with
-    * mocha --grep "#endpoints" --environment=TST
-    * for example: mocha app_post_postkeys_endpoints.js --enviroment=ACC --version=v1 
-* If a different version this can be added as a command line option:
-    * mocha --grep "#endpoints" --environment=TST --version=v1
-* The output is in the reports folder in CLI and HTML format. The reports are recycled and updated on each run.
-* If a test fails then analysis via report and rerun a specific test (endpoint of scenario) again
+    * endpoints => only runs endpoint tests
+    * scenario's => only runs scenario's tests
+    * regression => runs the whole API test suite
+* To run a collection the following command can be used
+    * mocha --recursive --grep '#endpoints'  --environment=TST --reporter mocha-junit-reporter --reporter-options mochaFile=./reports/junit/file.xml
+        ** recursive: fetches all test on lower directories
+        ** grep: search term in header of every test
+        ** #endpoints: search term by grep
+        ** environment: to switch between an environment like TST for test, ACC for acceptance and PROD for production
+        ** reporter: which report is created when running the test, besides junit, mochawesome (HTML/jSON) can also used
+        ** reporter-options: location where the report is saved and the name of the report
+
