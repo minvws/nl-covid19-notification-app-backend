@@ -5,7 +5,9 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
@@ -42,5 +44,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
             _Logger.LogInformation("POST labverify triggered.");
             return await command.Execute(args);
         }
+
+        [HttpGet]
+        [Route("/")]
+        public IActionResult AssemblyDump([FromServices] IWebHostEnvironment env) => new DumpAssembliesToPlainText().Execute(env.IsDevelopment());
     }
 }
