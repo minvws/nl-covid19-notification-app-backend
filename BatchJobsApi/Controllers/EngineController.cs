@@ -4,7 +4,9 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
@@ -53,7 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.Controllers
 
         [HttpGet]
         [Route("/")]
-        public IActionResult AssemblyDump() => new DumpAssembliesToPlainText().Execute();
+        public IActionResult AssemblyDump([FromServices] IWebHostEnvironment env) => new DumpAssembliesToPlainText().Execute(env.IsDevelopment());
 
     }
 
