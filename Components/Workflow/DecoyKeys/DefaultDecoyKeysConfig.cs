@@ -6,7 +6,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Deco
 {
     public class DefaultDecoyKeysConfig : IDecoyKeysConfig
     {
-        public int MinimumDelayInMilliseconds => 3000;
-        public int MaximumDelayInMilliseconds => 7000;
+        public int MinimumDelayInMilliseconds => 100;
+        public int MaximumDelayInMilliseconds => 1100;
     }
 }
