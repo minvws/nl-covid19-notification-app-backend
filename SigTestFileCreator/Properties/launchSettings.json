@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SigTestFileCreator": {
+      "commandName": "Project",
+      "commandLineArgs": "\".\\Some Testfolder\\test.txt\""
+    }
+  }
+}

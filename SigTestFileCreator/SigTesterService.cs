@@ -15,7 +15,7 @@
         private readonly IEksBuilder _SetBuilder;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly ILogger _Logger;
-        private readonly List<EksCreateJobInputEntity> _Output;
+        private readonly List<EksCreateJobInputEntity> _JobData;
         
         private string _fileInputLocation;
         private string _fileOutputLocation;
@@ -33,20 +33,32 @@
             _fileInputLocation = @"H:\test.txt";
             _fileOutputLocation = @"H:\testresult.zip";
 
-            _Output = new List<EksCreateJobInputEntity>(20); //value grabbed from a mock
+            _JobData = new List<EksCreateJobInputEntity>(20); //value grabbed from a mock
         }
 
-        public async Task Execute()
+        public async Task Execute(string[] args)
         {
             _Logger.LogDebug("Key presence Test started ({time})", _DateTimeProvider.Snapshot);
+
+            if (args.Length > 1)
+            {
+                throw new ArgumentException("The tester was started with more than one argument: ", String.Join(";",args));
+            }
+            else if (args.Length == 1)
+            {
+                string CleanedInput = args[0].Trim();
+                string FilePathWithoutExtension = CleanedInput.Substring(0, CleanedInput.LastIndexOf('.'));
+
+                _fileInputLocation = CleanedInput;
+                _fileOutputLocation = FilePathWithoutExtension + "-Signed" + ".Zip";
+            }
 
             if (Environment.UserInteractive && !WindowsIdentityStuff.CurrentUserIsAdministrator())
                 _Logger.LogError("The test was started WITHOUT elevated privileges - errors may occur when signing content.");
 
             LoadFile(_fileInputLocation);
-            AddContentsToOutput();
-            await BuildOutput();
-            ExportOutput(_fileOutputLocation);
+            var output = await BuildOutput();
+            ExportOutput(_fileOutputLocation, output);
 
             _Logger.LogDebug("Key presence test complete.\nResults can be found in: {_fileOutputLocation}", _fileOutputLocation);
         }
@@ -64,34 +76,29 @@
                 throw new IOException("Something went wrong with reading the test file: ", e);
             }
 
-            _Output.Add(new EksCreateJobInputEntity
+            _JobData.Add(new EksCreateJobInputEntity
             {
                 KeyData = contents
             });
         }
 
-        private void AddContentsToOutput()
-        {
-            //meh
-        }
-
-        private void ExportOutput(string filename)
+        private void ExportOutput(string filename, byte[] output)
         {
             try
             {
-                File.WriteAllBytes(filename, _Output.FirstOrDefault().KeyData);
+                File.WriteAllBytes(filename, output);
             }
             catch (Exception e)
             {
                 throw new IOException("Something went wrong with writing the result file: ", e);
             }
         }
-        
-        private async Task BuildOutput()
+
+        private async Task<byte[]> BuildOutput()
         {
             _Logger.LogDebug("Building resultfile.");
 
-            var args = _Output.Select(c =>
+            var args = _JobData.Select(c =>
                 new TemporaryExposureKeyArgs
                 {
                     RollingPeriod = c.RollingPeriod,
@@ -101,7 +108,7 @@
                 })
                 .ToArray();
 
-            var content = await _SetBuilder.BuildAsync(args);
+            return await _SetBuilder.BuildAsync(args);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace SigTestFileCreator
         private static void Start(IServiceProvider serviceProvider, string[] args)
         {
             var job = serviceProvider.GetRequiredService<SigTesterService>();
-            job.Execute().GetAwaiter().GetResult();
+            job.Execute(args).GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
