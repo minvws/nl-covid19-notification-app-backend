@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
             if (wf == null)
             {
-                _Logger.LogError("KeyReleaseWorkflowState not found - PollToken:{PollToken}.", args.PollToken);
+                _Logger.LogError("KeyReleaseWorkflowState not found - PollToken: {PollToken}.", args.PollToken);
                 var error = new LabVerifyAuthorisationResponse {Error = "Workflow not found.", Valid = false};
                 return new OkObjectResult(error);
             }

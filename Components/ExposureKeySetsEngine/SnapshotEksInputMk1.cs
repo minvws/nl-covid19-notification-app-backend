@@ -63,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 TekInputCount = index
             };
 
-            _Logger.LogInformation($"TEKs to publish - Count:{index}.");
+            _Logger.LogInformation("TEKs to publish - Count: {Count}.", index);
 
             return result;
         }

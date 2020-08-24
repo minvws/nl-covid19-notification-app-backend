@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             }
             catch (Exception ex)
             {
-                _Logger.LogError(ex.ToString());
+                _Logger.LogError(ex, "Failed to create an enrollment response.");
                 return new OkObjectResult(new EnrollmentResponse { Validity = -1 });
             }
         }

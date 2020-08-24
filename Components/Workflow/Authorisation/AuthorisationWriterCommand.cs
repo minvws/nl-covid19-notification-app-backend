@@ -44,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
             if (wf == null)
             {
-                _Logger.LogError("KeyReleaseWorkflowState not found - LabConfirmationId:{LabConfirmationId}.", args.LabConfirmationId);
+                _Logger.LogError("KeyReleaseWorkflowState not found - LabConfirmationId: {LabConfirmationId}.", args.LabConfirmationId);
                 return null;
             }
 

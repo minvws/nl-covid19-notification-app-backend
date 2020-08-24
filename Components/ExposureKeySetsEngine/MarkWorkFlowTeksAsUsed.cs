@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 .ToList();
 
             _Index += used.Length;
-            _Logger.LogInformation($"Marking as Published - Count:{zap.Count}, Running total:{_Index}.");
+            _Logger.LogInformation("Marking as Published - Count: {Count}, Running total: {RunningTotal}.", zap.Count, _Index);
 
             if (zap.Count == 0)
                 return;

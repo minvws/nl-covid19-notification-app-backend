@@ -50,12 +50,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 
             if (responseObject.ContainsKey("error") && responseObject["error"] != null)
             {
-                _Logger.LogWarning(requestUri + ": Failed HTTP:" + response.StatusCode + " – " +
-                                   responseString);
+                _Logger.LogWarning("{RequestUri}: Failed HTTP: {ResponseStatusCode} - {ResponseString}", requestUri, response.StatusCode, responseString);
                 return false;
             }
 
-            _Logger.LogInformation("Positive token verify result {responseString}", responseString);
+            _Logger.LogInformation("Positive token verify result {ResponseString}", responseString);
             return responseObject.ContainsKey("audience") && responseObject["audience"] != null;
         }
 
@@ -89,7 +88,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
                 return true;
             }
 
-            _Logger.LogWarning("Access Token not revoked, statuscode {statuscode}", response.StatusCode.ToString());
+            _Logger.LogWarning("Access Token not revoked, statuscode {ResponseStatusCode}", response.StatusCode.ToString());
             return false;
         }
     }
