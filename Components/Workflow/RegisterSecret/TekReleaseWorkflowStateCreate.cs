@@ -44,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
         {
             var entity = new TekReleaseWorkflowStateEntity
             {
-                Created = _DateTimeProvider.Snapshot,
+                Created = _DateTimeProvider.Snapshot.Date,
                 ValidUntil = _WorkflowTime.Expiry(_DateTimeProvider.Snapshot)
             };
             await _WorkflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
@@ -56,7 +56,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             {
                 entity = new TekReleaseWorkflowStateEntity
                 {
-                    Created = _DateTimeProvider.Snapshot,
+                    Created = _DateTimeProvider.Snapshot.Date,
                     ValidUntil = _WorkflowTime.Expiry(_DateTimeProvider.Snapshot)
                 };
                 await _WorkflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
