@@ -6,7 +6,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -94,33 +93,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             }
         }
 
+        //E.g. Microsoft.Data.SqlClient.SqlException(0x80131904):
+        //Cannot insert duplicate key row in object 'dbo.TekReleaseWorkflowState'
+        //with unique index 'IX_TekReleaseWorkflowState_BucketId'.The duplicate key value is (blah blah).
         private bool CanRetry(DbUpdateException ex)
         {
-            //E.g. Microsoft.Data.SqlClient.SqlException(0x80131904):
-            //Cannot insert duplicate key row in object 'dbo.TekReleaseWorkflowState'
-            //with unique index 'IX_TekReleaseWorkflowState_BucketId'.The duplicate key value is (blah blah).
-            if (ex.InnerException is SqlException sqlEx)
-            {
-                var errors = new SqlError[sqlEx.Errors.Count];
-                sqlEx.Errors.CopyTo(errors, 0);
+            if (!(ex.InnerException is SqlException sqlEx)) 
+                return false;
 
-                return errors.Any(x =>
-                    x.Number == 2601
-                    && x.Message.Contains("TekReleaseWorkflowState")
-                    && (x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.LabConfirmationId))
-                        || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.ConfirmationKey))
-                        || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.BucketId)))
-                );
-            }
+            var errors = new SqlError[sqlEx.Errors.Count];
+            sqlEx.Errors.CopyTo(errors, 0);
 
-            //e.g. SQLite Error 19: 'UNIQUE constraint failed: TekReleaseWorkflowState.LabConfirmationId'.
-            return ex.InnerException is SqliteException inner 
-                   && inner.SqliteErrorCode == 19
-                   && (
-                      inner.Message.Contains($"TekReleaseWorkflowState.{nameof(TekReleaseWorkflowStateEntity.LabConfirmationId)}")
-                      || inner.Message.Contains($"TekReleaseWorkflowState.{nameof(TekReleaseWorkflowStateEntity.ConfirmationKey)}")
-                      || inner.Message.Contains($"TekReleaseWorkflowState.{nameof(TekReleaseWorkflowStateEntity.BucketId)}")
-                  );
+            return errors.Any(x =>
+                x.Number == 2601
+                && x.Message.Contains("TekReleaseWorkflowState")
+                && (x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.LabConfirmationId))
+                    || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.ConfirmationKey))
+                    || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.BucketId)))
+            );
+
         }
    }
 }

@@ -27,17 +27,13 @@ namespace MobileAppApi.Tests.Controllers
     public class WorkflowControllerPostSecretTests : WebApplicationFactory<Startup>
     {
         private WebApplicationFactory<Startup> _Factory;
-        private DbConnection _Connection;
         private WorkflowDbContext _DbContext;
 
         [TestInitialize]
         public async Task InitializeAsync()
         {
-            //_Connection = new SqliteConnection("Data Source=:memory:");
-            //_DbContext = new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlite(_Connection).Options);
-
-            _Connection = new SqlConnection("Data Source=.;Database=WorkflowControllerPostSecretTests;Integrated Security=True");
-            _DbContext = new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer(_Connection).Options);
+            Func<WorkflowDbContext> dbcFac = () => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer("Data Source=.;Database=WorkflowControllerPostSecretTests;Integrated Security=True").Options);
+            _DbContext = dbcFac();
 
             _FakeNumbers = new FakeNumberGen();
 
@@ -47,9 +43,7 @@ namespace MobileAppApi.Tests.Controllers
                 {
                     services.AddScoped(sp =>
                     {
-                        var context =
-                            //new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlite(_Connection).Options);
-                            new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer(_Connection).Options);
+                        var context = dbcFac();
                         context.BeginTransaction();
                         return context;
                     });
@@ -61,7 +55,6 @@ namespace MobileAppApi.Tests.Controllers
 
             await _DbContext.Database.EnsureDeletedAsync();
             await _DbContext.Database.EnsureCreatedAsync();
-            //await _Connection.OpenAsync();
         }
 
         private FakeNumberGen _FakeNumbers;
@@ -90,8 +83,6 @@ namespace MobileAppApi.Tests.Controllers
         public async Task CleanupAsync()
         {
             await _DbContext.DisposeAsync();
-            await _Connection.CloseAsync();
-            await _Connection.DisposeAsync();
         }
 
         [TestMethod]
