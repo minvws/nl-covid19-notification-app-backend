@@ -4,9 +4,8 @@ let argv = require("minimist")(process.argv.slice(2));
 TST
 test.coronamelder-dist.nl => /v1/manifest
 test.coronamelder-api.nl => /v1/register
-test.coronamelder-portal/iccauth => /v1/labconfirm
+test.coronamelder-portal/iccauth/caregiversportal => /v1/labconfirm
 test.coronamelder-portal.nl => ICC frontend
-
  */
 
 // Set version
@@ -37,21 +36,20 @@ const endpoints = {
 
 const base_url = {
   CDN:{
-    TST: "https://coronamelder-dist.nl",
-    ACC: "https://vwspa-cdn-blob.azureedge.net/vws",
-    PROD: "",
+    TST: "https://test.coronamelder-dist.nl",
+    ACC: "https://acceptatie.coronamelder-dist.nl",
+    PROD: "https://coronamelder-dist.nl",
   },
   APP:{
     TST: "https://test.coronamelder-api.nl",
-    ACC: "https://api-ota.alleensamenmelden.nl/mss-acc",
-    PROD: "",
+    ACC: "https://acceptatie.coronamelder-api.nl",
+    PROD: "https://coronamelder-api.nl",
   },
   ICC:{
-    TST: "https://test.coronamelder-portal/iccauth",
-    ACC: "https://acc.alleensamenmelden.nl/iccapi/CaregiversPortalApi",
-    PROD: "",
+    TST: "https://test.coronamelder-portal.nl/iccauth/CaregiversPortalApi",
+    ACC: "https://acceptatie.coronamelder-portal.nl/iccauth/CaregiversPortalApi",
+    PROD: "https://coronamelder-portal.nl/iccauth/CaregiversPortalApi",
   }
-
 };
 
 const environment = {

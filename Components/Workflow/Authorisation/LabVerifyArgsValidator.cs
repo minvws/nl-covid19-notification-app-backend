@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             if (string.IsNullOrWhiteSpace(args.PollToken))
                 return false;
 
-            return _PollTokenService.Validate(args.PollToken);
+            return _PollTokenService.ValidateToken(args.PollToken);
         }
     }
 }

@@ -13,11 +13,11 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
@@ -31,14 +31,13 @@ namespace MobileAppApi.Tests.Controllers
         private readonly byte[] _Key = Convert.FromBase64String(@"PwMcyc8EXF//Qkye1Vl2S6oCOo9HFS7E7vw7y9GOzJk=");
         private WebApplicationFactory<Startup> _Factory;
         private readonly byte[] _BucketId = Convert.FromBase64String(@"idlVmyDGeAXTyaNN06Uejy6tLgkgWtj32sLRJm/OuP8=");
-        private DbConnection _Connection;
         private WorkflowDbContext _DbContext;
 
         [TestInitialize]
         public async Task InitializeAsync()
         {
-            _Connection = new SqliteConnection("Data Source=:memory:");
-            _DbContext = new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlite(_Connection).Options);
+            Func<WorkflowDbContext> dbcFac = () => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer("Data Source=.;Database=WorkflowControllerPostKeysTests2;Integrated Security=True").Options);
+            _DbContext = dbcFac();
 
             _Factory = WithWebHostBuilder(builder =>
             {
@@ -46,8 +45,7 @@ namespace MobileAppApi.Tests.Controllers
                 {
                     services.AddScoped(sp =>
                     {
-                        var context =
-                            new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlite(_Connection).Options);
+                        var context = dbcFac();
                         context.BeginTransaction();
                         return context;
                     });
@@ -62,9 +60,8 @@ namespace MobileAppApi.Tests.Controllers
                     });
                 });
             });
-            await _Connection.OpenAsync();
-            await _DbContext.Database.EnsureCreatedAsync();
-            // ReSharper disable once MethodHasAsyncOverload
+            _DbContext.Database.EnsureDeleted();
+            _DbContext.Database.EnsureCreated();
 
             _DbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
@@ -80,8 +77,6 @@ namespace MobileAppApi.Tests.Controllers
         public async Task CleanupAsync()
         {
             await _DbContext.DisposeAsync();
-            await _Connection.CloseAsync();
-            await _Connection.DisposeAsync();
         }
 
         [TestMethod]
@@ -106,6 +101,7 @@ namespace MobileAppApi.Tests.Controllers
         }
 
         [TestMethod]
+        [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
         public async Task PostWorkflowTest_ScriptInjectionInSignature()
         {
             // Arrange
@@ -127,6 +123,7 @@ namespace MobileAppApi.Tests.Controllers
         }
 
         [TestMethod]
+        [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
         public async Task PostWorkflowTest_NullSignature()
         {
             // Arrange
@@ -147,6 +144,7 @@ namespace MobileAppApi.Tests.Controllers
         }
 
         [TestMethod]
+        [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
         public async Task PostWorkflowTest_EmptySignature()
         {
             // Arrange
