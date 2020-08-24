@@ -1,31 +1,10 @@
 const fs = require("fs");
 const exec = require('child_process').exec;
+const padding = require("../test/data/scenario_data/app_register_padding_data");
 
-let testsSig = function (bucketId,padding,cid){
+let testsSig = function (payload,confirmationKey){
     return new Promise(function (resolve,reject){
 
-        // bucketId = "AxIE73ZlE60I3JbNoT0JiPO41sGMagxLvmYIpxYYulk=";
-        // padding = "Yg==";
-        // cid = "YI42ksgvRT2F0DHJhg9t1/15Vpon1L6+xqk3ww6ayvo=";
-
-        bucketId = bucketId.replace(/"/g,'');
-        bucketId = bucketId.replace(/,$/g,'');
-        cid = cid.replace(/"/g,'');
-        cid = cid.replace(/,$/g,'');
-
-        let payload = {
-            "bucketId": bucketId,
-            "keys": [
-                {
-                    "rollingStartNumber": 1234,
-                    "keyData": "EaMR2wpMuSMMw3wSy32HEQ==",
-                    "rollingPeriod": 144
-                }
-            ],
-            "padding": padding
-        };
-
-        let payloadString = JSON.stringify(payload);
         let fileName = __dirname + 'payload'
 
         const writeFilePromise = (file, data) => {
@@ -37,9 +16,9 @@ let testsSig = function (bucketId,padding,cid){
             });
         };
 
-        let keyCommand = `echo ${cid} | base64 -d | xxd -p -c 256`;
+        let keyCommand = `echo ${confirmationKey} | base64 -d | xxd -p -c 256`;
 
-        const fileCreate = writeFilePromise(fileName,payloadString);
+        const fileCreate = writeFilePromise(fileName,payload);
         const sig = fileCreate.then(inputFile => {
             execShellCommand(keyCommand).then(KEY => {
                 let sigCommand = `cat ${fileName} | openssl sha256 -mac HMAC -macopt hexkey:${KEY} -binary | base64 | sed -e 's/"//g' -e 's/+/%2B/g' -e 's/=/%3D/g' -e 's/\\//%2F/g`;
@@ -77,5 +56,3 @@ let testsSig = function (bucketId,padding,cid){
 }
 
 exports.testsSig = testsSig;
-
-
