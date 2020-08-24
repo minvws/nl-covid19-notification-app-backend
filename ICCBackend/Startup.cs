@@ -155,9 +155,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     .Build();
                 config.Filters.Add(new AuthorizeFilter(policy));
             });
-
-            if (_IsDev)
-                services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });
         }
 
         public void Configure(IApplicationBuilder app)
