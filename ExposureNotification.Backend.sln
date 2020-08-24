@@ -56,6 +56,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbFillExampleContent", "DbF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ForceTekAuth", "ForceTekAuth\ForceTekAuth.csproj", "{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SqlJobs", "SqlJobs", "{76542A1F-6EC6-4A43-B8D4-3A0891DB96F2}"
+	ProjectSection(SolutionItems) = preProject
+		RemoveWorkflowsOver3daysOld.sql = RemoveWorkflowsOver3daysOld.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,6 +128,7 @@ Global
 		{0417A9FB-86E7-4AEF-90DE-6D715BC9C7DB} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 		{DC65200F-DDCD-40FF-93E9-F12E3CE006C9} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 		{C7481CC9-76CE-4782-81EC-C30FB65ECA0E} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
+		{76542A1F-6EC6-4A43-B8D4-3A0891DB96F2} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}
