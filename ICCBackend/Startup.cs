@@ -64,6 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<HttpPostLabVerifyCommand>();
             services.AddScoped<HttpGetLogoutCommand>();
             services.AddScoped<HttpGetUserClaimCommand>();
+            services.AddScoped<HttpPostAuthorizationTokenCommand>();
             services.AddScoped<HttpGetAuthorisationRedirectCommand>();
             services.AddScoped<HttpGetAccessDeniedCommand>();
 
