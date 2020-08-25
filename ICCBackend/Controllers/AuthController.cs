@@ -34,6 +34,17 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         public IActionResult Redirect([FromServices] HttpGetAuthorisationRedirectCommand command)
             => command.Execute(HttpContext);
 
+        
+        
+        // temp cookie test
+        [Authorize(Policy = "TelefonistRole")]
+        [HttpGet]
+        public IActionResult Test()
+        {
+            return Ok();
+        }
+        
+        
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Token([FromBody] TokenAuthorisationArgs args,
