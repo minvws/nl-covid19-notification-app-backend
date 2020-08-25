@@ -20,10 +20,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             _RandomGenerator = randomGenerator ?? throw new ArgumentNullException(nameof(randomGenerator));
             _AuthCodeStorage = new ConcurrentDictionary<string, ClaimsPrincipal>();
         }
-        
+
+
         public string Generate(ClaimsPrincipal claimsPrincipal)
         {
-            var authCode = _RandomGenerator.Generate(64);
+            var authCode = _RandomGenerator.Generate(12);
             _AuthCodeStorage.AddOrUpdate(authCode, claimsPrincipal, (s, principal) => principal);
 
             return authCode;
