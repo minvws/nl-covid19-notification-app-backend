@@ -79,7 +79,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
                 app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
             }
 
-            app.UseHttpsRedirection(); //HTTPS redirection not mandatory for development purposes
+            // HttpsRedirection will be handled at the infrastructure level
+            app.UseHttpsRedirection();
 
             app.UseSerilogRequestLogging();
 
