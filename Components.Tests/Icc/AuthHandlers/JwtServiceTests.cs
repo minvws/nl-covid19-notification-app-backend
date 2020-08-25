@@ -2,25 +2,23 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
+using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.AuthHandlers
 {
     //ncrunch: no coverage start 
 
-    [TestClass]
     public class JwtServiceTests
     {
         private JwtService _JwtService;
         private double _ClaimLifetimeHours = 3;
         private IUtcDateTimeProvider _UtcDateTimeProvider;
 
-        [TestInitialize]
-        public void Initialize()
+        public JwtServiceTests()
         {
             var lf = new TestLogger<JwtService>();
             _UtcDateTimeProvider = new StandardUtcDateTimeProvider();
@@ -30,10 +28,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
                     _UtcDateTimeProvider, lf);
         }
 
-        [TestMethod]
+        [Fact]
         public void NoUnitTestsYet()
         {
-            Assert.Fail();
+            throw new System.Exception("Tests not implemented yet");
         }
         
         

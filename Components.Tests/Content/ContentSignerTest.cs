@@ -2,27 +2,26 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.Text;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
+using System;
+using System.Text;
+using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
 {
-    [TestClass]
     public class ContentSignerTest
     {
         private static readonly Random _Random = new Random();
 
-        [DataRow(500)]
-        [DataRow(1000)]
-        [DataRow(2000)]
-        [DataRow(3000)]
-        [DataRow(10000)]
-        [DataTestMethod]
+        [Theory]
+        [InlineData(500)]
+        [InlineData(1000)]
+        [InlineData(2000)]
+        [InlineData(3000)]
+        [InlineData(10000)]
         public void Build(int length)
         {
             var lf = new LoggerFactory();
@@ -35,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
 
             var sig = signer.GetSignature(content);
 
-            Assert.IsTrue((sig?.Length ?? 0) != 0);
+            Assert.True((sig?.Length ?? 0) != 0);
         }
 
         internal static string CreateString(int stringLength)

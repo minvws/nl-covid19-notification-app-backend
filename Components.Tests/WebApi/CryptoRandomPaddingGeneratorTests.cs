@@ -2,17 +2,16 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using System.Text;
+using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.WebApi
 {
-    [TestClass]
     public class CryptoRandomPaddingGeneratorTests
     {   
-        [TestMethod]
+        [Fact]
         public void Generate_returns_different_string_on_each_call()
         {
             // Assemble
@@ -25,17 +24,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.WebApi
             var resultC = gen.Generate(length);
 
             // Assert
-            Assert.AreNotEqual(resultA, resultB);
-            Assert.AreNotEqual(resultB, resultC);
-            Assert.AreNotEqual(resultA, resultC);
+            Assert.NotEqual(resultA, resultB);
+            Assert.NotEqual(resultB, resultC);
+            Assert.NotEqual(resultA, resultC);
         }
 
-        [DataTestMethod]
-        [DataRow(10)]
-        [DataRow(42)]
-        [DataRow(256)]
-        [DataRow(512)]
-        [DataRow(1337)]
+        [Theory]
+        [InlineData(10)]
+        [InlineData(42)]
+        [InlineData(256)]
+        [InlineData(512)]
+        [InlineData(1337)]
         public void Generate_returns_string_of_expected_length_in_bytes(int size)
         {
             // Assemble
@@ -46,9 +45,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.WebApi
             var resultByte = Encoding.UTF8.GetBytes(result);
 
             // Assert
-            Assert.IsFalse(string.IsNullOrWhiteSpace(result));
-            Assert.IsTrue(result.Length == size);
-            Assert.IsTrue(result.Length == resultByte.Length);
+            Assert.False(string.IsNullOrWhiteSpace(result));
+            Assert.True(result.Length == size);
+            Assert.True(result.Length == resultByte.Length);
         }
     }
 }
