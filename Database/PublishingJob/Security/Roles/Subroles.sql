@@ -1,6 +1,6 @@
 ﻿CREATE ROLE [Dbr_Service_MobileAppAPI] AUTHORIZATION [dbo];
 GO
-CREATE ROLE [Dbr_Service_IccPortal] AUTHORIZATION [dbo];
+CREATE ROLE [Dbr_Service_IccBackend] AUTHORIZATION [dbo];
 GO
 CREATE ROLE [Dbr_Service_EksEngine] AUTHORIZATION [dbo];
 GO

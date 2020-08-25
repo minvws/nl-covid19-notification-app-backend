@@ -20,8 +20,8 @@ IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'$(Domain)\$
 
 IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'$(Domain)\$(MobileAppAPI)')
 	CREATE LOGIN [$(Domain)\$(MobileAppAPI)] FROM WINDOWS;
-IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'$(Domain)\$(IccPortal)')
-	CREATE LOGIN [$(Domain)\$(IccPortal)] FROM WINDOWS;
+IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'$(Domain)\$(IccBackend)')
+	CREATE LOGIN [$(Domain)\$(IccBackend)] FROM WINDOWS;
 IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'$(Domain)\$(EksEngine)')
 	CREATE LOGIN [$(Domain)\$(EksEngine)] FROM WINDOWS;
 IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'$(Domain)\$(ManifestEngine)')
@@ -60,8 +60,8 @@ IF NOT EXISTS (SELECT name FROM [sys].[database_principals] WHERE name = N'$(Dom
 -- Subroles
 IF NOT EXISTS (SELECT name FROM [sys].[database_principals] WHERE name = N'$(Domain)\$(MobileAppAPI)')
 	CREATE USER [$(Domain)\$(MobileAppAPI)];
-IF NOT EXISTS (SELECT name FROM [sys].[database_principals] WHERE name = N'$(Domain)\$(IccPortal)')
-	CREATE USER [$(Domain)\$(IccPortal)];
+IF NOT EXISTS (SELECT name FROM [sys].[database_principals] WHERE name = N'$(Domain)\$(IccBackend)')
+	CREATE USER [$(Domain)\$(IccBackend)];
 IF NOT EXISTS (SELECT name FROM [sys].[database_principals] WHERE name = N'$(Domain)\$(EksEngine)')
 	CREATE USER [$(Domain)\$(EksEngine)];
 IF NOT EXISTS (SELECT name FROM [sys].[database_principals] WHERE name = N'$(Domain)\$(ManifestEngine)')

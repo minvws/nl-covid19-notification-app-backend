@@ -7,7 +7,7 @@ GRANT CONNECT TO [$(Domain)\$(Users)];
 
 --subroles
 GRANT CONNECT TO [$(Domain)\$(MobileAppAPI)];
-GRANT CONNECT TO [$(Domain)\$(IccPortal)];
+GRANT CONNECT TO [$(Domain)\$(IccBackend)];
 GRANT CONNECT TO [$(Domain)\$(EksEngine)];
 GRANT CONNECT TO [$(Domain)\$(ManifestEngine)];
 GRANT CONNECT TO [$(Domain)\$(ContentAPI)];
@@ -32,12 +32,12 @@ GRANT UPDATE ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_MobileAppAPI];
 
 GRANT INSERT ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_MobileAppAPI];
 
---[Dbr_Service_IccPortal]
-GRANT SELECT ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_IccPortal];
-GRANT UPDATE ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_IccPortal];
+--[Dbr_Service_IccBackend]
+GRANT SELECT ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_IccBackend];
+GRANT UPDATE ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_IccBackend];
 
-GRANT SELECT ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_IccPortal];
-GRANT UPDATE ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_IccPortal];
+GRANT SELECT ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_IccBackend];
+GRANT UPDATE ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_IccBackend];
 
 --[Dbr_Service_EksEngine] 
 GRANT SELECT ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_EksEngine];

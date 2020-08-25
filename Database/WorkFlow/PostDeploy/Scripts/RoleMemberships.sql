@@ -6,7 +6,7 @@ ALTER ROLE [Dbr_Ontwikkelaars] ADD MEMBER [$(Domain)\$(Ontwikkelaars)];
 ALTER ROLE [Dbr_Users] ADD MEMBER [$(Domain)\$(Users)];
 
 ALTER ROLE [Dbr_Service_MobileAppAPI] ADD MEMBER [$(Domain)\$(MobileAppAPI)];
-ALTER ROLE [Dbr_Service_IccPortal] ADD MEMBER [$(Domain)\$(IccPortal)];
+ALTER ROLE [Dbr_Service_IccBackend] ADD MEMBER [$(Domain)\$(IccBackend)];
 ALTER ROLE [Dbr_Service_EksEngine] ADD MEMBER [$(Domain)\$(EksEngine)];
 ALTER ROLE [Dbr_Service_ManifestEngine] ADD MEMBER [$(Domain)\$(ManifestEngine)];
 ALTER ROLE [Dbr_Service_ContentAPI] ADD MEMBER [$(Domain)\$(ContentAPI)];

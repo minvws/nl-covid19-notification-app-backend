@@ -177,7 +177,7 @@
       </DefaultValue>
       <Value>$(SqlCmdVar__16)</Value>
     </SqlCmdVariable>
-    <SqlCmdVariable Include="IccPortal">
+    <SqlCmdVariable Include="IccBackend">
       <DefaultValue>
       </DefaultValue>
       <Value>$(SqlCmdVar__9)</Value>

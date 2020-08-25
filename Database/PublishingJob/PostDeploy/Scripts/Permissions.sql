@@ -7,7 +7,7 @@ GRANT CONNECT TO [$(Domain)\$(Users)];
 
 --subroles
 GRANT CONNECT TO [$(Domain)\$(MobileAppAPI)];
-GRANT CONNECT TO [$(Domain)\$(IccPortal)];
+GRANT CONNECT TO [$(Domain)\$(IccBackend)];
 GRANT CONNECT TO [$(Domain)\$(EksEngine)];
 GRANT CONNECT TO [$(Domain)\$(ManifestEngine)];
 GRANT CONNECT TO [$(Domain)\$(ContentAPI)];
