@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
             var folder = Path.GetDirectoryName(NCrunch.Framework.NCrunchEnvironment.GetOriginalProjectPath());
             var filename = Path.Combine(folder, eks);
-            var bytes = new SigReader().Read(filename);
+            var bytes = new EksParser().ReadGaenSig(filename);
             using var output = File.Create(@"D:\sig.bin", 1024, FileOptions.None);
             output.Write(bytes);
         }
