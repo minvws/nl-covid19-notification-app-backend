@@ -46,6 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("/")]
         public IActionResult AssemblyDump([FromServices] IWebHostEnvironment env) => new DumpAssembliesToPlainText().Execute(env.IsDevelopment());
     }

@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
         private string[] GetHeaders()
         {
-            return new[] {"Authorization"};
+            return new[] {"Authorization","Content-Type"};
         }
 
         private string[] GetMethods()
