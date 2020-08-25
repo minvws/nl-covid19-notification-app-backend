@@ -24,7 +24,7 @@ GRANT UPDATE  ON SCHEMA::[dbo] TO [Dbr_Service];
 
 GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 
---specific permissions for Content here..
+--specific permissions for PublishingJob here..
 --[Dbr_Service_EksEngine]
 GRANT SELECT ON [dbo].[EksCreateJobInput] TO [Dbr_Service_EksEngine];
 GRANT INSERT ON [dbo].[EksCreateJobInput] TO [Dbr_Service_EksEngine];

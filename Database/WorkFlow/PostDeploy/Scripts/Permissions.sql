@@ -24,14 +24,13 @@ GRANT UPDATE  ON SCHEMA::[dbo] TO [Dbr_Service];
 
 GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 
---specific permissions for Content here..
+--specific permissions for WorkFlow here..
 --[Dbr_Service_MobileAppAPI]
-GRANT DELETE ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_MobileAppAPI];
 GRANT INSERT ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_MobileAppAPI];
 GRANT SELECT ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_MobileAppAPI];
 GRANT UPDATE ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_MobileAppAPI];
 
-GRANT UPDATE ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_MobileAppAPI];
+GRANT INSERT ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_MobileAppAPI];
 
 --[Dbr_Service_IccPortal]
 GRANT SELECT ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_IccPortal];
@@ -44,8 +43,8 @@ GRANT UPDATE ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_IccPortal];
 GRANT SELECT ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_EksEngine];
 GRANT UPDATE ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_EksEngine];
 
-GRANT SELECT ON [dbo].[TemporaryExposureKeys] TO Dbr_Service_EksEngine;
-GRANT UPDATE ON [dbo].[TemporaryExposureKeys] TO Dbr_Service_EksEngine;
+GRANT SELECT ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_EksEngine];
+GRANT UPDATE ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_EksEngine];
 
 --[Dbr_Service_CleanupJob] 
 GRANT SELECT ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_CleanupJob];

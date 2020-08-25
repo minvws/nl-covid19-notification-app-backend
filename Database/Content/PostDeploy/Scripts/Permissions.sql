@@ -26,7 +26,7 @@ GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 
 --specific permissions for Content here..
 --[Dbr_Service_EksEngine]
-GRANT SELECT ON [dbo].[Content] TO [Dbr_Service_EksEngine];
+GRANT INSERT ON [dbo].[Content] TO [Dbr_Service_EksEngine];
 
 --[Dbr_Service_ManifestEngine] 
 GRANT INSERT ON [dbo].[Content] TO [Dbr_Service_ManifestEngine];
@@ -43,7 +43,6 @@ GRANT DELETE ON [dbo].[Content] TO [Dbr_Service_CleanupJob];
 GRANT SELECT ON [dbo].[Content] TO [Dbr_Service_ManagementPortal];
 GRANT INSERT ON [dbo].[Content] TO [Dbr_Service_ManagementPortal];
 GRANT UPDATE ON [dbo].[Content] TO [Dbr_Service_ManagementPortal];
-
 --end 
 
 GRANT VIEW ANY COLUMN ENCRYPTION KEY DEFINITION TO PUBLIC;
