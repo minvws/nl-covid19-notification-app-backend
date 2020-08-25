@@ -69,8 +69,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
         private async Task InnerExecute(byte[] signature, byte[] body)
         {
-            _Logger.LogDebug("Signature received: {Signature}", signature);
-
             _BodyBytes = body;
 
             if ((signature?.Length ?? 0) != _WorkflowConfig.PostKeysSignatureLength)
@@ -82,12 +80,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             try
             {
                 var argsJson = Encoding.UTF8.GetString(_BodyBytes);
-                _Logger.LogDebug("Body -\n{ArgsJson}.", argsJson);
                 _ArgsObject = _JsonSerializer.Deserialize<PostTeksArgs>(argsJson);
             }
             catch (Exception e)
             {
-                _Logger.LogError("Error reading body -\n{E}", e.ToString());
+                _Logger.LogError(e, "Error reading body");
                 return;
             }
 
@@ -119,7 +116,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             var filterResult = _TekApplicableWindowFilter.Execute(teks);
             teks = filterResult.Items;
             _Logger.LogFilterMessages(filterResult.Messages);
-            _Logger.LogInformation("TEKs remaining - Count:{count}.", teks.Length);
+            _Logger.LogInformation("TEKs remaining - Count:{Count}.", teks.Length);
 
             var workflow = _DbContext
                 .KeyReleaseWorkflowStates
@@ -140,7 +137,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             var filterResults = _TekListWorkflowFilter.Filter(teks, workflow);
             _Logger.LogFilterMessages(filterResults.Messages);
-            _Logger.LogInformation("TEKs remaining - Count:{count}.", teks.Length);
+            _Logger.LogInformation("TEKs remaining - Count:{Count}.", teks.Length);
 
             //Run after the filter removes the existing TEKs from the args.
             var allTeks = workflow.Teks.Select(Mapper.MapToTek).Concat(filterResults.Items).ToArray();

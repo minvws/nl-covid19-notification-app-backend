@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             }
             catch (Exception e)
             {
-                _Logger.LogError(e.ToString());
+                _Logger.LogError(e, "Failed to get manifest resource stream");
                 throw;
             }
         }

@@ -71,7 +71,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
                 throw new InvalidOperationException("Maximum create attempts reached.");
 
             if (_AttemptCount > 1)
-                _Logger.LogWarning($"Duplicates found while creating workflow - attempt:{_AttemptCount}");
+                _Logger.LogWarning("Duplicates found while creating workflow - attempt:{AttemptCount}", _AttemptCount);
 
             item.LabConfirmationId = _LabConfirmationIdService.Next();
             item.BucketId = _NumberGenerator.NextByteArray(_WorkflowConfig.BucketIdLength);

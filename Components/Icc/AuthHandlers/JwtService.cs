@@ -87,25 +87,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             }
             catch (FormatException)
             {
-                _Logger.LogWarning("Invalid jwt token, FormatException - {Token}", token);
+                _Logger.LogWarning("Invalid jwt token, FormatException");
             }
             catch (InvalidTokenPartsException)
             {
-                _Logger.LogWarning("Invalid jwt token, InvalidTokenPartsException - {Token}", token);
+                _Logger.LogWarning("Invalid jwt token, InvalidTokenPartsException");
             }
             catch (TokenExpiredException)
             {
-                _Logger.LogWarning("Invalid jwt token, TokenExpiredException - {Token}", token);
+                _Logger.LogWarning("Invalid jwt token, TokenExpiredException");
             }
             catch (SignatureVerificationException)
             {
-                _Logger.LogWarning("Invalid jwt token, SignatureVerificationException - {Token}", token);
+                _Logger.LogWarning("Invalid jwt token, SignatureVerificationException");
             }
             catch (Exception e)
             {
-                _Logger.LogError("Invalid jwt token, Other error - Token:{Token} Exception:{e}", token, e);
+                _Logger.LogError(e, "Invalid jwt token, Other error");
             }
-
 
             return false;
         }

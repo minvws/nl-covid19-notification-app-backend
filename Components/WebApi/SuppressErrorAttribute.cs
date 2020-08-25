@@ -36,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 
             if (!statusCodeResult.StatusCode.HasValue || statusCodeResult.StatusCode.Value == 200) return;
 
-            _Logger.LogDebug("Call to {actionDescriptor} failed, overriding response code to return 200.", context.ActionDescriptor);
+            _Logger.LogDebug("Call to {ActionDescriptor} failed, overriding response code to return 200.", context.ActionDescriptor);
 
             context.Result = new OkResult();
         }
