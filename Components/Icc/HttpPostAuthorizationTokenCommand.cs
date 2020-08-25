@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,26 +17,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     {
         private readonly ILogger<HttpPostAuthorizationTokenCommand> _Logger;
         private readonly IJwtService _JwtService;
+        private readonly AuthCodeService _AuthCodeService;
 
         public HttpPostAuthorizationTokenCommand(ILogger<HttpPostAuthorizationTokenCommand> logger,
-            IJwtService jwtService)
+            IJwtService jwtService, AuthCodeService authCodeService)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
+            _AuthCodeService = authCodeService ?? throw new ArgumentNullException(nameof(authCodeService));
         }
 
         public async Task<IActionResult> Execute(HttpContext httpContext, TokenAuthorisationArgs args)
         {
-            if (args.Code == "test123")
+            if (!_AuthCodeService.TryGetClaims(args.Code, out ClaimsPrincipal claims))
             {
-                var jwtToken = _JwtService.Generate(httpContext.User);
-                return new OkObjectResult(new
-                {
-                    Token = jwtToken
-                });
+                return new UnauthorizedResult();
             }
-
-            return new UnauthorizedResult();
+            var jwtToken = _JwtService.Generate(claims);
+            return new OkObjectResult(new
+            {
+                Token = jwtToken
+            });
         }
     }
 

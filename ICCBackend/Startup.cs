@@ -24,7 +24,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Register
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
-using Microsoft.AspNetCore.Cors.Infrastructure;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
@@ -58,6 +58,11 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            
+            services.AddSingleton<IPaddingGenerator, CryptoRandomPaddingGenerator>();
+            
+            
+            services.AddSingleton<AuthCodeService>();
 
             services.AddScoped(x => DbContextStartup.Workflow(x));
             services.AddScoped<HttpPostAuthoriseCommand>();
@@ -68,6 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddScoped<HttpGetAuthorisationRedirectCommand>();
             services.AddScoped<HttpGetAccessDeniedCommand>();
 
+            
             services.AddSingleton<IIccPortalConfig, IccPortalConfig>();
 
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
