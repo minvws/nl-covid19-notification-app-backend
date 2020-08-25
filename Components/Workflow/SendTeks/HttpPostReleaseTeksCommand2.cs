@@ -157,7 +157,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             if (filterResults.Items.Length != 0)
             {
-                _Logger.LogInformation("Teks added - Count: {FilterResultsLength}.", filterResults.Items.Length);
+                _Logger.LogInformation("Teks added - Count:{FilterResultsLength}.", filterResults.Items.Length);
             }
         }
     }
