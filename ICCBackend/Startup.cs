@@ -189,6 +189,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 return next();
             });
 
+            // HttpsRedirection will be handled at the infrastructure level
             app.UseHttpsRedirection();
 
             app.UseSerilogRequestLogging();
