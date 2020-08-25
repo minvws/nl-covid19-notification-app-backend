@@ -99,7 +99,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     cdbc.SaveAndCommit();
                 }
 
-                _Logger.LogInformation("Published EKSs - Count: {Count}.", move.Length);
+                _Logger.LogInformation("Published EKSs - Count:{Count}.", move.Length);
             }
         }
     }
@@ -156,7 +156,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            _Logger.LogInformation("Started - JobName: {JobName}", _JobName);
+            _Logger.LogInformation("Started - JobName:{JobName}", _JobName);
 
             if (Environment.UserInteractive && !WindowsIdentityStuff.CurrentUserIsAdministrator())
                 _Logger.LogWarning("{JobName} started WITHOUT elevated privileges - errors may occur when signing content.", _JobName);
@@ -181,8 +181,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _EksEngineResult.TotalSeconds = stopwatch.Elapsed.TotalSeconds;
             _EksEngineResult.EksInfo = _EksResults.ToArray();
 
-            _Logger.LogInformation("Reconciliation - Teks in EKSs matches usable input and stuffing - Delta: {ReconcileOutputCount}", _EksEngineResult.ReconcileOutputCount);
-            _Logger.LogInformation("Reconciliation - Teks in EKSs matches output count - Delta: {ReconcileEksSumCount}", _EksEngineResult.ReconcileEksSumCount);
+            _Logger.LogInformation("Reconciliation - Teks in EKSs matches usable input and stuffing - Delta:{ReconcileOutputCount}", _EksEngineResult.ReconcileOutputCount);
+            _Logger.LogInformation("Reconciliation - Teks in EKSs matches output count - Delta:{ReconcileEksSumCount}", _EksEngineResult.ReconcileEksSumCount);
 
             _Logger.LogInformation("{JobName} complete.", _JobName);
 
@@ -228,7 +228,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             var stuffing = _EksStuffingGenerator.Execute(new StuffingArgs {Count = stuffingCount, JobTime = _EksEngineResult.Started});
 
-            _Logger.LogInformation("Stuffing required - Count: {Count}.", stuffing.Length);
+            _Logger.LogInformation("Stuffing required - Count:{Count}.", stuffing.Length);
 
             await using var tx = dbc.BeginTransaction();
             await dbc.EksInput.AddRangeAsync(stuffing);
@@ -247,13 +247,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             var inputIndex = 0;
             var page = GetInputPage(inputIndex, _EksConfig.PageSize);
-            _Logger.LogDebug("Read TEKs - Count: {Count}", page.Length);
+            _Logger.LogDebug("Read TEKs - Count:{Count}", page.Length);
 
             while (page.Length > 0)
             {
                 if (_Output.Count + page.Length >= _EksConfig.TekCountMax)
                 {
-                    _Logger.LogDebug("This page fills the EKS to capacity - Capacity: {Capacity}.", _EksConfig.TekCountMax);
+                    _Logger.LogDebug("This page fills the EKS to capacity - Capacity:{Capacity}.", _EksConfig.TekCountMax);
                     var remainingCapacity = _EksConfig.TekCountMax - _Output.Count;
                     AddToOutput(page.Take(remainingCapacity).ToArray()); //Fill to max
                     await WriteNewEksToOutput();
@@ -266,12 +266,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
                 inputIndex += _EksConfig.PageSize; //Move input index
                 page = GetInputPage(inputIndex, _EksConfig.PageSize); //Read next page.
-                _Logger.LogDebug("Read TEKs - Count: {Count}.", page.Length);
+                _Logger.LogDebug("Read TEKs - Count:{Count}.", page.Length);
             }
 
             if (_Output.Count > 0)
             {
-                _Logger.LogDebug("Write remaining TEKs - Count: {Count}.", _Output.Count);
+                _Logger.LogDebug("Write remaining TEKs - Count:{Count}.", _Output.Count);
                 await WriteNewEksToOutput();
             }
         }
@@ -279,7 +279,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private void AddToOutput(EksCreateJobInputEntity[] page)
         {
             _Output.AddRange(page); //Lots of memory
-            _Logger.LogDebug("Add TEKs to output - Count: {Count}, Total: {OutputCount}.", page.Length, _Output.Count);
+            _Logger.LogDebug("Add TEKs to output - Count:{Count}, Total:{OutputCount}.", page.Length, _Output.Count);
         }
 
         private static TemporaryExposureKeyArgs Map(EksCreateJobInputEntity c)
@@ -307,7 +307,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 Content = content, 
             };
 
-            _Logger.LogInformation("Write EKS - Id: {CreatingJobQualifier}.", e.CreatingJobQualifier);
+            _Logger.LogInformation("Write EKS - Id:{CreatingJobQualifier}.", e.CreatingJobQualifier);
 
             
             await using (var dbc = _PublishingDbContextFac())
@@ -347,7 +347,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 .Where(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None)
                 .OrderBy(x => x.KeyData).Skip(skip).Take(take).ToArray();
 
-            _Logger.LogDebug("Read page - Count: {Count}.", result.Length);
+            _Logger.LogDebug("Read page - Count:{Count}.", result.Length);
 
             return result;
         }
@@ -360,7 +360,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             _Logger.LogInformation("Commit results - Mark TEKs as Published.");
             var result = await _MarkWorkFlowTeksAsUsed.ExecuteAsync();
-            _Logger.LogInformation("Marked as published - Total: {TotalMarked}.", result.Marked);
+            _Logger.LogInformation("Marked as published - Total:{TotalMarked}.", result.Marked);
             
             await ClearJobTables();
         }

@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             store.Open(OpenFlags.ReadOnly);
 
-            _Logger.LogInformation("Finding certificate - Thumbprint: {Thumbprint}, RootTrusted: {RootTrusted}.", _ThumbprintConfig.Thumbprint, _ThumbprintConfig.RootTrusted);
+            _Logger.LogInformation("Finding certificate - Thumbprint:{Thumbprint}, RootTrusted:{RootTrusted}.", _ThumbprintConfig.Thumbprint, _ThumbprintConfig.RootTrusted);
 
             var result = ReadCertFromStore(store);
             if (result == null)

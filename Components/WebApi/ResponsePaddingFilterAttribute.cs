@@ -66,11 +66,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 
             // Calculate length of padding to add
             var paddingLength = _Rng.Next(_Config.MinimumLengthInBytes, _Config.MaximumLengthInBytes) - resultString.Length;
-            _Logger.LogInformation("Length of response padding: {PaddingLength}", paddingLength);
+            _Logger.LogInformation("Length of response padding:{PaddingLength}", paddingLength);
 
             // Get the padding bytes
             var padding = _PaddingGenerator.Generate(paddingLength);
-            _Logger.LogDebug("Response padding: {Padding}", padding);
+            _Logger.LogDebug("Response padding:{Padding}", padding);
 
             // Add padding here
             context.HttpContext.Response.Headers.Add(PaddingHeader, padding);

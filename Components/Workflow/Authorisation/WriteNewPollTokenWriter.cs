@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
                 throw new InvalidOperationException("Maximum attempts reached.");
 
             if (_AttemptCount > 1)
-                _Logger.LogWarning("Duplicate PollToken found - attempt: {AttemptCount}", _AttemptCount);
+                _Logger.LogWarning("Duplicate PollToken found - attempt:{AttemptCount}", _AttemptCount);
 
             wf.PollToken = _PollTokenService.Next();
 

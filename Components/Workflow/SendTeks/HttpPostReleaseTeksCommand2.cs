@@ -116,7 +116,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             var filterResult = _TekApplicableWindowFilter.Execute(teks);
             teks = filterResult.Items;
             _Logger.LogFilterMessages(filterResult.Messages);
-            _Logger.LogInformation("TEKs remaining - Count: {Count}.", teks.Length);
+            _Logger.LogInformation("TEKs remaining - Count:{Count}.", teks.Length);
 
             var workflow = _DbContext
                 .KeyReleaseWorkflowStates
@@ -137,7 +137,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             var filterResults = _TekListWorkflowFilter.Filter(teks, workflow);
             _Logger.LogFilterMessages(filterResults.Messages);
-            _Logger.LogInformation("TEKs remaining - Count: {Count}.", teks.Length);
+            _Logger.LogInformation("TEKs remaining - Count:{Count}.", teks.Length);
 
             //Run after the filter removes the existing TEKs from the args.
             var allTeks = workflow.Teks.Select(Mapper.MapToTek).Concat(filterResults.Items).ToArray();
