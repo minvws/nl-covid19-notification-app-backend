@@ -1,0 +1,8 @@
+[Setup]
+Lang=en
+Dir=C:\Program Files\Utimaco\CryptoServer
+Group=Utimaco\CryptoServer
+NoIcons=0
+SetupType=full
+Components=admintool,documentation,simulator,interfaces,interfaces\csp,interfaces\csp\srv,interfaces\pkcs11_r2,interfaces\cxi,interfaces\jce,interfaces\ekm,ppd
+Tasks=
