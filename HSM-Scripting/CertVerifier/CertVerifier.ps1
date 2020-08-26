@@ -5,13 +5,14 @@ $OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
 $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
 $testfileNameNoExt = ""
 $testfileName = ""
+$verifierLoc = ".\Verifier\SigTestFileCreator.exe"
 $RsaRootCertLoc = ""
 $EcdsaCertLoc = ""
+$EksParserLoc = ".\EksParser\EksParser.exe"
+$EksParserMagicStringFile = "1a082a5e05cd791ef7fbabdf3b653d3d9363d1dfb791d026e81db519500b090c"
 
-$verifierLoc = ".\Verifier\SigTestFileCreator.exe"
-$EksParserLoc = ".\Parser\EksParser.exe"
-$RsaRootCertThumbPrint = ""
-$EcdsaCertThumbPrint = ""
+$RsaRootCertThumbPrint = "61d9cfc82f55cfbb4fb9f67ff5f35634832c7097"
+$EcdsaCertThumbPrint = "fe3c560eeb63cb8f945e746194de4a168dba20d1"
 
 function SetErrorToStop
 {
@@ -104,43 +105,6 @@ function GenTestFile
 	New-Item -force -name ($script:testfileName) -path "." -ItemType File -Value $fileContent -ErrorAction Stop
 }
 
-function VerifyRsaCert
-{
-	if ($RsaRootCertLoc -eq "")
-	{
-		write-host "`nIt seems the RSA-certificate was not exported automatically. Mind doing that for us?"
-		write-host "We can get you to the MMC. From there, export it as a base-64 certificate."
-		write-host "The thumbprint is: $RsaRootCertThumbPrint."
-		
-		& mmc
-		Pause
-	
-		$RsaRootCertLoc = read-host "Enter the name of the exported RSA certificate with file extension"
-	}
-	
-	RunWithErrorCheck "$openSslLoc cms -verify -CAfile $RsaRootCertLoc -in $script:testfileNameNoExt\content.sig -inform DER -binary -content $script:testfileNameNoExt\export.bin"
-}
-
-function VerifyEcdsaCert
-{
-	if ($EcdsaCertLoc -eq "")
-	{
-		write-host "`nIt seems the ECDSA-certificate was not exported automatically. Mind doing that for us?"
-		write-host "We can get you to the MMC. From there, export it as a base-64 certificate."
-		write-host "The thumbprint is: $EcdsaCertThumbPrint."
-		
-		& mmc
-		Pause
-	
-		$EcdsaCertLoc = read-host "Enter the name of the exported ECDSA certificate with file extension"
-	}
-
-	#The parsers removes the protobuf headers from the sig- and bin files. 
-	RunWithErrorCheck "$EksParserLoc $testfileNameNoExt-eks.zip"
-	
-	RunWithErrorCheck "$openSslLoc dgst -sha256 -verify $EcdsaCertLoc.key -signature export.sig export.bin"
-}
-
 function ExtractCert ([String] $ThumbPrint, [String] $Store, [String] $ExportPath)
 {
 	$cert = Get-ChildItem -Path "cert:\LocalMachine\$Store\$ThumbPrint"
@@ -153,14 +117,15 @@ function ExtractCert ([String] $ThumbPrint, [String] $Store, [String] $ExportPat
 	return "$ExportPath-pem.cer"
 }
 
-function NoteConfig
+function CheckNotWin7
 {
-	write-warning "`nDid you do the following?"
-	write-warning "- Add the RSA root- and ecdsa thumbprint to this script?"
-	write-warning "- Placed the signer in `".\Signer`" and the parser in `".\Parser`"?"
-	write-warning "- Add the derived RSA and ECDSA thumbprint to the verifier config?"
-	write-warning "If not: abort this script with ctrl+c."
-	Pause
+	if([int](Get-WmiObject Win32_OperatingSystem).BuildNumber -lt 9000)
+	{
+		write-warning "`nAutomated export of certificates is not possible under Windows 7!`nThis script will not function."
+		Pause
+		
+		exit
+	}
 }
 
 #
@@ -171,7 +136,14 @@ function NoteConfig
 write-host "Certificate-Verifier"
 Pause
 
-NoteConfig
+CheckNotWin7
+
+write-warning "`nDid you do the following?`
+- Add the Rsa ROOT- and Ecdsa thumbprint to this script?`
+- Add the location of the verifier to this script?`
+- Add the Rsa (non-root)- and Ecdsa thumbprint to the verifier appsettings.json?`
+If not: abort this script with ctrl+c."
+Pause
 
 SetErrorToStop
 CheckNotIse
@@ -195,7 +167,7 @@ $EcdsaCertLoc = ExtractCert -ThumbPrint $EcdsaCertThumbPrint -Store "my" -Export
 #extract pubnlic key from ECDSA Key
 RunWithErrorCheck "$openSslLoc x509 -in $EcdsaCertLoc -inform pem -noout -pubkey -out $EcdsaCertLoc.key"
 
-write-host "`nSigning testfile with Coronamelder Backend"
+write-host "`nSigning testfile with Verifier"
 Pause
 
 RunWithErrorCheck "$verifierLoc $testfileName"
@@ -204,8 +176,13 @@ write-host "`nChecking signature of signed testfile"
 Pause
 
 Expand-Archive -Force -LiteralPath "$testfileNameNoExt-eks.zip" -DestinationPath ".\$testfileNameNoExt\" -ErrorAction Stop
-VerifyRsaCert
-VerifyEcdsaCert
+
+#rsa-check
+RunWithErrorCheck "$openSslLoc cms -verify -CAfile $RsaRootCertLoc -in $script:testfileNameNoExt\content.sig -inform DER -binary -content $script:testfileNameNoExt\export.bin"
+
+#ecdsa-check
+RunWithErrorCheck "$EksParserLoc $testfileNameNoExt-eks.zip"
+RunWithErrorCheck "$openSslLoc dgst -sha256 -verify $EcdsaCertLoc.key -signature export.sig export.bin"
 
 write-host "`nDone!"
 Pause
