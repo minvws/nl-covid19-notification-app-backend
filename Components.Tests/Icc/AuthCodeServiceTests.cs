@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
@@ -12,7 +13,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
-using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
 {
@@ -45,14 +45,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
         [TestMethod]
         public async Task ValidateIfClaimsPrincipalIsStoredAsync()
         {
-            var identity = new ClaimsIdentity(null, TheIdentityHubDefaults.AuthenticationScheme);
-            var expectedClaimsPrincipal = new ClaimsPrincipal(identity);
+            var testClaim = new Claim("testType","testValue", "string");
+            var identity = new ClaimsIdentity(new List<Claim>(){testClaim}, "test");
 
+            var expectedClaimsPrincipal = new ClaimsPrincipal(identity);
+            
             var authCode = await _AuthCodeService.GenerateAuthCodeAsync(expectedClaimsPrincipal);
 
             var outputClaims = await _AuthCodeService.GetClaimsByAuthCodeAsync(authCode);
 
-            Assert.AreEqual(expectedClaimsPrincipal, outputClaims);
+            Assert.AreEqual(testClaim.Type, outputClaims?[0].Type);
+            Assert.AreEqual(testClaim.Value, outputClaims?[0].Value);
         }
 
         [TestMethod]
