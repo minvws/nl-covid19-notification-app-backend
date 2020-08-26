@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +15,21 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
+    public class AuthClaim
+    {
+        public readonly string? Type;
+        public readonly string? Value;
+
+        public AuthClaim()
+        {
+            
+        }
+        public AuthClaim(Claim claim)
+        {
+            if (claim.Type != null) Type = claim.Type;
+            if (claim.Value != null) Value = claim.Value;
+        }
+    }
     public class AuthCodeService : IAuthCodeService
     {
         private readonly IPaddingGenerator _RandomGenerator;
@@ -31,8 +48,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         {
             if(claimsPrincipal == null) throw new ArgumentNullException(nameof(claimsPrincipal));
 
-            var authCode = _RandomGenerator.Generate(12);
-            var principalJson = JsonConvert.SerializeObject(claimsPrincipal);
+            var authCode = _RandomGenerator.Generate(12);  // TODO: Add url friendly generator
+
+            
+            List<AuthClaim> claimsObject = claimsPrincipal.Claims.Select(claim => new AuthClaim(claim)).ToList();
+            
+            var principalJson = JsonConvert.SerializeObject(claimsObject);
             var encodedClaimsPrincipal = Encoding.UTF8.GetBytes(principalJson);
 
             //TODO: add sliding expiration
@@ -41,16 +62,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             return authCode;
         }
 
-        public async Task<ClaimsPrincipal?> GetClaimsByAuthCodeAsync(string authCode)
+        public async Task<List<AuthClaim>> GetClaimsByAuthCodeAsync(string authCode)
         {
-            ClaimsPrincipal? result = null;
+            List<AuthClaim> result = null;
 
             var encodedClaimsPrincipal = await _cache.GetAsync(authCode);
 
             if(encodedClaimsPrincipal != null)
             {
                 var principalJson = Encoding.UTF8.GetString(_protector.Unprotect(encodedClaimsPrincipal));
-                result = JsonConvert.DeserializeObject<ClaimsPrincipal>(principalJson);
+                result = JsonConvert.DeserializeObject<List<AuthClaim>>(principalJson); // throws null ref.e.
+                return result;
             }
 
             return result;

@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
     public interface IJwtService
     {
         string Generate(ulong exp, Dictionary<string, object> claims);
-        string Generate(ClaimsPrincipal claimsPrincipal);
+        string Generate(List<AuthClaim> authClaim);
         
         bool TryDecode(string token, out IDictionary<string, string> payload);
     }
