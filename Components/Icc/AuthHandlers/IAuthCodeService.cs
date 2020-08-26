@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
@@ -12,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
     {
         Task<string> GenerateAuthCodeAsync(ClaimsPrincipal claimsPrincipal);
 
-        Task<List<AuthClaim>> GetClaimsByAuthCodeAsync(string authCode);
+        Task<List<AuthClaim>?> GetClaimsByAuthCodeAsync(string authCode);
 
         Task RevokeAuthCodeAsync(string authCode);
     }

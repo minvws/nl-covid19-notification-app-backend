@@ -69,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         }
 
         private string? GetClaimValue(List<AuthClaim> cp, string claimType) =>
-            cp.FirstOrDefault(c => c.Type.Equals(claimType))?.Value;
+            cp.FirstOrDefault(c => c.Type != null && c.Type.Equals(claimType))?.Value;
         
         public bool TryDecode(string token, out IDictionary<string, string> payload)
         {
