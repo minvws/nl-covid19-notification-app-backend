@@ -6,8 +6,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
@@ -24,10 +25,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
         public void Initialize()
         {
             var cryptoRandomPaddingGenerator = new CryptoRandomPaddingGenerator(new StandardRandomNumberGenerator());
-            var cache = new Mock<IDistributedCache>();
-            var protectionProvider = DataProtectionProvider.Create(nameof(AuthCodeServiceTests));
+            var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var protectionProvider = DataProtectionProvider.Create("AuthCodeServiceTests");
             
-            _AuthCodeService = new AuthCodeService(cryptoRandomPaddingGenerator, cache.Object, protectionProvider);
+            _AuthCodeService = new AuthCodeService(cryptoRandomPaddingGenerator, cache, protectionProvider);
         }
 
         [TestMethod]
