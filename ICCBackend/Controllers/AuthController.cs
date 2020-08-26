@@ -32,8 +32,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 
         [Authorize(Policy = "TelefonistRole")]
         [HttpGet]
-        public IActionResult Redirect([FromServices] HttpGetAuthorisationRedirectCommand command)
-            => command.Execute(HttpContext);
+        public Task<IActionResult> Redirect([FromServices] HttpGetAuthorisationRedirectCommand command)
+            => command.ExecuteAsync(HttpContext);
         
         
         [AllowAnonymous]

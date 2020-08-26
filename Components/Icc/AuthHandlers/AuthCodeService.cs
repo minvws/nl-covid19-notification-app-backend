@@ -3,49 +3,62 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Immutable;
 using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
     public class AuthCodeService : IAuthCodeService
     {
-        private readonly ConcurrentDictionary<string, ClaimsPrincipal> _AuthCodeStorage;
         private readonly IPaddingGenerator _RandomGenerator;
+        private readonly IDistributedCache _cache;
+        private readonly IDataProtector _protector;
 
-        public AuthCodeService(IPaddingGenerator randomGenerator)
+        public AuthCodeService(IPaddingGenerator randomGenerator, IDistributedCache cache, IDataProtectionProvider dataProtectionProvider)
         {
             _RandomGenerator = randomGenerator ?? throw new ArgumentNullException(nameof(randomGenerator));
-            _AuthCodeStorage = new ConcurrentDictionary<string, ClaimsPrincipal>();
+            _cache =  cache ?? throw new ArgumentNullException(nameof(cache));
+            _protector = dataProtectionProvider?.CreateProtector(typeof(IDistributedCache).FullName) ?? throw new ArgumentNullException(nameof(dataProtectionProvider));
         }
 
 
-        public string Generate(ClaimsPrincipal claimsPrincipal)
+        public async Task<string> GenerateAuthCodeAsync(ClaimsPrincipal claimsPrincipal)
         {
+            if(claimsPrincipal == null) throw new ArgumentNullException(nameof(claimsPrincipal));
+
             var authCode = _RandomGenerator.Generate(12);
-            _AuthCodeStorage.AddOrUpdate(authCode, claimsPrincipal, (s, principal) => principal);
+            var principalJson = JsonConvert.SerializeObject(claimsPrincipal);
+            var encodedClaimsPrincipal = Encoding.UTF8.GetBytes(principalJson);
+
+            //TODO: add sliding expiration
+            await _cache.SetAsync(authCode, _protector.Protect(encodedClaimsPrincipal));
 
             return authCode;
         }
 
-        public bool TryGetClaims(string authCode, out ClaimsPrincipal claimsPrincipal)
+        public async Task<ClaimsPrincipal?> GetClaimsByAuthCodeAsync(string authCode)
         {
-            if (!_AuthCodeStorage.TryGetValue(authCode, out claimsPrincipal))
+            ClaimsPrincipal? result = null;
+
+            var encodedClaimsPrincipal = await _cache.GetAsync(authCode);
+
+            if(encodedClaimsPrincipal != null)
             {
-                return false;
+                var principalJson = Encoding.UTF8.GetString(_protector.Unprotect(encodedClaimsPrincipal));
+                result = JsonConvert.DeserializeObject<ClaimsPrincipal>(principalJson);
             }
-            return true;
+
+            return result;
         }
 
-        public bool RevokeAuthCode(string authCode)
+        public async Task RevokeAuthCodeAsync(string authCode)
         {
-            if (!_AuthCodeStorage.TryRemove(authCode, out _))
-            {
-                return false;
-            }
-            return true;
+            await _cache.RemoveAsync(authCode);
         }
     }
 }
