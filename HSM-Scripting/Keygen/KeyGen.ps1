@@ -137,7 +137,6 @@ write-host "Keygenerator script for Utimaco HSM"
 Pause
 
 write-warning "Did you do the following?`
-- Turn the simulator on?`
 - Checked the values in the GenerateRequestInf-function?
 If not: abort this script with ctrl+c."
 Pause

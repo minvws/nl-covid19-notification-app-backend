@@ -172,17 +172,17 @@ Pause
 
 RunWithErrorCheck "$verifierLoc $testfileName"
 
-write-host "`nChecking signature of signed testfile"
+write-host "`nChecking signature of signed testfiles"
 Pause
 
 Expand-Archive -Force -LiteralPath "$testfileNameNoExt-eks.zip" -DestinationPath ".\$testfileNameNoExt\" -ErrorAction Stop
 
-#rsa-check
+write-host "`nRSA: "
 RunWithErrorCheck "$openSslLoc cms -verify -CAfile $RsaRootCertLoc -in $script:testfileNameNoExt\content.sig -inform DER -binary -content $script:testfileNameNoExt\export.bin"
 
-#ecdsa-check
+write-host "`nECDSA: "
 RunWithErrorCheck "$EksParserLoc $testfileNameNoExt-eks.zip"
 RunWithErrorCheck "$openSslLoc dgst -sha256 -verify $EcdsaCertLoc.key -signature export.sig export.bin"
 
-write-host "`nDone!"
+write-host "`nIf both checks return a succesful verification, then we're done!"
 Pause
