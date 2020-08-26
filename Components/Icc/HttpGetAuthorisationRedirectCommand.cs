@@ -14,9 +14,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
     {
         private readonly IIccPortalConfig _Configuration;
         private readonly ILogger<HttpGetAuthorisationRedirectCommand> _Logger;
-        private readonly AuthCodeService _AuthCodeService;
+        private readonly IAuthCodeService _AuthCodeService;
 
-        public HttpGetAuthorisationRedirectCommand(IIccPortalConfig configuration, ILogger<HttpGetAuthorisationRedirectCommand> logger, AuthCodeService authCodeService)
+        public HttpGetAuthorisationRedirectCommand(IIccPortalConfig configuration, ILogger<HttpGetAuthorisationRedirectCommand> logger, IAuthCodeService authCodeService)
         {
             _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
