@@ -1,12 +1,15 @@
 # NOT designed for Powershell ISE
 # Double-check you are allowed to run custom scripts.
 # see: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7
-#win10 has Powershell 5.1, which includes an unzip function.
 
 $currentDir
 $HSMsimulatorDir = "C:\Program Files\Utimaco\CryptoServer\Simulator\sim5_windows\bin"
 $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
 $cngtoolconfigloc = "C:\ProgramData\Utimaco\CNG"
+
+$HSMZipFile = "SecurityServer-V4.00.2.1-FIPS.zip"
+$HSMInstaller = "SecurityServer-V4.00.2.1-FIPS\CryptoServerSetup-4.00.2.0-FIPS.exe"
+$OpenSSlInstaller = "Win64OpenSSL_Light-1_1_1g.msi"
 
 function SetErrorToStop
 {
@@ -90,6 +93,7 @@ ExportPolicy = 0`
 KeepAlive = true`
 ConnectionTimeout = 3000`
 CommandTimeout = 60000`
+DefaultPadMechPKCS1 = true`
 Group = CNG`
 Login=Henk,1234`
 Device = 3001@127.0.0.1"
@@ -106,9 +110,15 @@ Device = 3001@127.0.0.1"
 write-host "Installscript for the Utimaco HSM simulator. The following will be installed:`
 - OpenSSL`
 - Utimaco HSM simulator`
-- Utimaco HSM management software`
-`
-It assumes JRE 8 is installed."
+- Utimaco HSM management software"
+Pause
+
+write-Warning "Did you do the following?`
+- Add the correct names of the HSM install-zipfile and -installer to the script`
+- Add the correct name of the openSSL-installer to the script`
+- Have aspnetcore and netcore 3.17 runtimes installed on this machine`
+- Run this script from a 32-bits powershell`
+If not: abort this script with ctrl+c."
 Pause
 
 SetErrorToStop
@@ -128,15 +138,15 @@ This installer is grabbed from https://slproweb.com/products/Win32OpenSSL.html`
 As listed under https://wiki.openssl.org/index.php/Binaries"
 Pause
 
-RunWithErrorCheck "msiexec /i `"$currentDir\Win64OpenSSL_Light-1_1_1g.msi`" /quiet /L* `"$currentDir\OpenSSlInstall.log`" | Out-Null"
+#RunWithErrorCheck "msiexec /i `"$currentDir\$OpenSSlInstaller`" /quiet /L* `"$currentDir\OpenSSlInstall.log`" | Out-Null"
 
 write-host "`nInstalling Utimaco software"
 Pause
 
-Expand-Archive -Force -LiteralPath "$currentDir\SecurityServerEvaluation-V4.31.1.0.zip" -DestinationPath "$currentDir\HSMInstall\"
+Expand-Archive -Force -LiteralPath "$currentDir\$HSMZipFile" -DestinationPath "$currentDir\HSMInstall\"
 
 #installparams: https://jrsoftware.org/ishelp/index.php?topic=setupcmdline
-RunWithErrorCheck "`"$currentdir\HSMInstall\CryptoServerSimSetup-4.31.1.0.exe`" /VERYSILENT /LOG=`"CryptoServerInstall.log`" /NORESTART /LOADINF=`"$currentdir\HSMInstallconfig.inf`" /SP- /SUPPRESSMSGBOXES | Out-Null"
+RunWithErrorCheck "`"$currentdir\HSMInstall\$HSMInstaller`" /VERYSILENT /LOG=`"CryptoServerInstall.log`" /NORESTART /LOADINF=`"$currentdir\HSMInstallconfig.inf`" /SP- /SUPPRESSMSGBOXES | Out-Null"
 
 write-host "`nCreating config file for CngTool"
 Pause
@@ -158,6 +168,6 @@ RunWithErrorCheck "`"$HSMAdminToolsDir\csadm`" dev=3001@127.0.0.1 logonsign=ADMI
 write-host "`nCheck if the simulator is running and access is allowed"
 Pause
 
-RunWithErrorCheck -command "`"$HSMAdminToolsDir\cngtool`" providerinfo"
+RunWithErrorCheck  "`"$HSMAdminToolsDir\cngtool`" providerinfo"
 
 Pause
