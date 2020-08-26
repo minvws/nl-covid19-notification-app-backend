@@ -2,7 +2,6 @@
 # Double-check you are allowed to run custom scripts.
 
 $cngtoolloc = "`"C:\Program Files\Utimaco\CryptoServer\Administration\cngtool.exe`""
-$cngtoolconfigloc = "C:\ProgramData\Utimaco\CNG"
 $openSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
 
 $keynameCert
@@ -14,7 +13,7 @@ $signedrequestRSAname
 $requestECDSAname
 $signedrequestECDSAname
 
-function GenerateRequestInf([string] $filename, [string] $keyname, [string] $hashAlgorithm, [string] $keyAlgorithm, [string] $keyLength, [string] $friendlyName)
+function GenerateRequestInf([string] $filename, [string] $keyname, [string] $hashAlgorithm, [string] $keyAlgorithm, [string] $keyLength, [string] $friendlyName, [bool] $AddOIDs = $true)
 {
 #'Issued To'-column is defined by $keyname
 #'Issued By'-column is defnied by $keynameCert
@@ -23,17 +22,25 @@ function GenerateRequestInf([string] $filename, [string] $keyname, [string] $has
 "[Version]`
 Signature = `$Windows Nt`$`
 [NewRequest]`
-Subject = `"C=NL,CN=$keyname`"`
+Subject = `"C=NL, ST=Zuid-Holland, L=Den Haag, O=CIBG, OU=CIBG/serialNumber=00000002006756402002, CN=signing.coronamelder-api.nl`"`
+Exportable = FALSE`
 HashAlgorithm = $hashAlgorithm`
 KeyAlgorithm = $keyAlgorithm`
 KeyLength = $keyLength`
-ProviderName = `"Utimaco CryptoServer key storage Provider`"`
-KeyUsage = 0xf0`
+KeySpec = AT_SIGNATURE`
+KeyUsage = 0xa0`
+KeyUsageProperty = 2`
 MachineKeySet = True`
-FriendlyName = $friendlyName`
-[EnhancedKeyUsageExtension]`
-OID = 1.3.6.1.5.5.7.3.1"
+RequestType = PKCS10`
+ProviderName = `"Utimaco CryptoServer key storage Provider`"`
+ProviderType = 1`
+FriendlyName = $friendlyName"
 # tabs aren't ignored...
+
+if($AddOIDs -eq $true)
+{
+	$fileContent = $fileContent + "`n[EnhancedKeyUsageExtension]`nOID = 1.3.6.1.5.5.7.3.2 ; Client Auth`nOID = 1.3.6.1.5.5.7.3.1 ; Server Auth"
+}
 	
 	New-Item -force -name ($filename + ".inf") -path "." -ItemType File -Value $fileContent -ErrorAction Stop
 }
@@ -129,6 +136,12 @@ function SetErrorToStop
 write-host "Keygenerator script for Utimaco HSM"
 Pause
 
+write-warning "Did you do the following?`
+- Turn the simulator on?`
+- Checked the values in the GenerateRequestInf-function?
+If not: abort this script with ctrl+c."
+Pause
+
 SetErrorToStop
 
 if($host.name -match "ISE")
@@ -160,9 +173,7 @@ write-host "`nGenerate requestfiles for both keys"
 Pause
 
 GenerateRequestInf -filename $requestRSAname -keyname $keynameRSA -hashAlgorithm "SHA256" -keyAlgorithm "RSA" -keyLength "2048" -friendlyName "RSATestKeyRequest"
-
-GenerateRequestInf -filename $requestECDSAname -keyname $keynameECDSA -hashAlgorithm "SHA256" -keyAlgorithm "ECDSA_P256" -keyLength "256" -friendlyName "ECDSATestKeyRequest"
-
+GenerateRequestInf -filename $requestECDSAname -keyname $keynameECDSA -hashAlgorithm "SHA256" -keyAlgorithm "ECDSA_P256" -keyLength "256" -friendlyName "ECDSATestKeyRequest" -AddOIDs $false
 
 write-host "`nSend requests to HSM to generate key"
 Pause
@@ -174,7 +185,6 @@ write-host "`nSign request files with certificate"
 Pause
 
 RunWithErrorCheck "$openSslLoc x509 -req -in $requestRSAname.csr -set_serial 1234 -CA $selfsigncertname.pem -CAkey $selfsigncertname.key -out $signedrequestRSAname.pem"
-
 RunWithErrorCheck "$openSslLoc x509 -req -in $requestECDSAname.csr -set_serial 1234 -CA $selfsigncertname.pem -CAkey $selfsigncertname.key -out $signedrequestECDSAname.pem"
 
 write-host "`nSending signed requests to HSM"
@@ -187,12 +197,11 @@ write-host "`nPost-check for key presence"
 Pause
 
 RunWithErrorCheck "$cngtoolloc listkeys"
-
 Pause
 
-if((Get-WmiObject Win32_OperatingSystem).BuildNumber -lt 9000)
+if([int](Get-WmiObject Win32_OperatingSystem).BuildNumber -lt 9000)
 {
-#Windows 7 doesn't have certlm.msc,
+	#Windows 7 doesn't have certlm.msc
 	write-host "`nWindows 7 cannot automatically open the local machine keystore`nWe'll drop you off at the mmc. :)"
 	Pause
 	
