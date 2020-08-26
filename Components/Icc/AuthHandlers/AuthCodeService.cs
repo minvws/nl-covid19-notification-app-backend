@@ -10,7 +10,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
-    public class AuthCodeService
+    public class AuthCodeService : IAuthCodeService
     {
         private readonly ConcurrentDictionary<string, ClaimsPrincipal> _AuthCodeStorage;
         private readonly IPaddingGenerator _RandomGenerator;
@@ -36,9 +36,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             {
                 return false;
             }
+            return true;
+        }
 
-            _AuthCodeStorage.TryRemove(authCode, out _);
-                
+        public bool RevokeAuthCode(string authCode)
+        {
+            if (!_AuthCodeStorage.TryRemove(authCode, out _))
+            {
+                return false;
+            }
             return true;
         }
     }

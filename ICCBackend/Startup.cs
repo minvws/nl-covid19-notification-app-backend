@@ -62,7 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddSingleton<IPaddingGenerator, CryptoRandomPaddingGenerator>();
             
             
-            services.AddSingleton<AuthCodeService>();
+            services.AddSingleton<IAuthCodeService, AuthCodeService>();
 
             services.AddScoped(x => DbContextStartup.Workflow(x));
             services.AddScoped<HttpPostAuthoriseCommand>();
