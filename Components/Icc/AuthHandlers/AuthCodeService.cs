@@ -46,9 +46,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
         public async Task<List<AuthClaim>?> GetClaimsByAuthCodeAsync(string authCode)
         {
-            if (authCode == null) throw new ArgumentNullException(nameof(authCode));
+            if (string.IsNullOrWhiteSpace(authCode)) throw new ArgumentNullException(nameof(authCode));
 
-            List<AuthClaim> result = null;
+            List<AuthClaim>? result = null;
 
             var encodedAuthClaimList = await _cache.GetAsync(authCode);
 

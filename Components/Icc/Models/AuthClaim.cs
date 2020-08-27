@@ -13,8 +13,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models
 
         public AuthClaim(string type, string value)
         {
-            Type = type ?? throw new ArgumentNullException(nameof(type));
-            Value = value ?? throw new ArgumentNullException(nameof(value));
+            Type = string.IsNullOrWhiteSpace(type) ? throw new ArgumentNullException(nameof(type)) : type;
+            Value = string.IsNullOrWhiteSpace(value) ? throw new ArgumentNullException(nameof(value)) : value;
         }
     }
 }

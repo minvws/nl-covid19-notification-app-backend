@@ -29,6 +29,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 
         public async Task<IActionResult> Execute(HttpContext httpContext, TokenAuthorisationArgs args)
         {
+            if(args == null) throw new ArgumentNullException(nameof(args));
+
             var claims = await _AuthCodeService.GetClaimsByAuthCodeAsync(args.Code);
             if(claims == null)
             {
