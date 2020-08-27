@@ -4,6 +4,9 @@
 $cngtoolloc = "`"C:\Program Files\Utimaco\CryptoServer\Administration\cngtool.exe`""
 $openSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
 
+$IsOnDevEnvironment = $True #When set to $False: skips sending, signing and accepting of the RSA request
+$CnValue = "ontw.coronamelder-api.nl" #should be [test|acceptatie|signing].coronamelder-api.nl
+
 $keynameCert
 $keynameRSA
 $keynameECDSA
@@ -12,38 +15,6 @@ $requestRSAname
 $signedrequestRSAname
 $requestECDSAname
 $signedrequestECDSAname
-
-function GenerateRequestInf([string] $filename, [string] $keyname, [string] $hashAlgorithm, [string] $keyAlgorithm, [string] $keyLength, [string] $friendlyName, [bool] $AddOIDs = $true)
-{
-#'Issued To'-column is defined by $keyname
-#'Issued By'-column is defnied by $keynameCert
-
-	$fileContent = `
-"[Version]`
-Signature = `$Windows Nt`$`
-[NewRequest]`
-Subject = `"C=NL, ST=Zuid-Holland, L=Den Haag, O=CIBG, OU=CIBG/serialNumber=00000002006756402002, CN=signing.coronamelder-api.nl`"`
-Exportable = FALSE`
-HashAlgorithm = $hashAlgorithm`
-KeyAlgorithm = $keyAlgorithm`
-KeyLength = $keyLength`
-KeySpec = AT_SIGNATURE`
-KeyUsage = 0xa0`
-KeyUsageProperty = 2`
-MachineKeySet = True`
-RequestType = PKCS10`
-ProviderName = `"Utimaco CryptoServer key storage Provider`"`
-ProviderType = 1`
-FriendlyName = $friendlyName"
-# tabs aren't ignored...
-
-if($AddOIDs -eq $true)
-{
-	$fileContent = $fileContent + "`n[EnhancedKeyUsageExtension]`nOID = 1.3.6.1.5.5.7.3.2 ; Client Auth`nOID = 1.3.6.1.5.5.7.3.1 ; Server Auth"
-}
-	
-	New-Item -force -name ($filename + ".inf") -path "." -ItemType File -Value $fileContent -ErrorAction Stop
-}
 
 function RunWithErrorCheck ([string]$command) 
 {
@@ -55,20 +26,6 @@ function RunWithErrorCheck ([string]$command)
 		Read-Host 'Press Enter to continue.'
         exit
     }
-}
-
-function SetKeyFilenames ()
-{
-	$script:keynameCert = read-host "Enter the preferred name of your keys"
-	$script:selfsigncertname = $keynameCert + "CA"
-	
-	$script:keynameRSA = $keynameCert + "RSA"
-	$script:requestRSAname = $keynameRSA + "Req"
-	$script:signedrequestRSAname = $keynameRSA + "Signed"
-	
-	$script:keynameECDSA = $keynameCert + "ECDSA"
-	$script:requestECDSAname = $keynameECDSA + "Req"
-	$script:signedrequestECDSAname = $keynameECDSA + "Signed"
 }
 
 function Pause ($Message = "Press any key to continue...`n") {
@@ -128,6 +85,68 @@ function SetErrorToStop
 	write-host "Error-behaviour is set from $ErrorAtStart to $ErrorActionPreference."
 }
 
+function CheckNotIse
+{
+	if($host.name -match "ISE")
+	{
+		write-host "`nYou are running this script in Powershell ISE. Please switch to the regular Powershell."
+		Pause
+		
+		exit
+	}
+}
+
+function GenerateRequestInf([string] $filename, [string] $hashAlgorithm, [string] $keyAlgorithm, [string] $keyLength, [string] $friendlyName, [bool] $AddOIDs = $true)
+{
+	$fileContent = `
+"[Version]`
+Signature = `$Windows Nt`$`
+[NewRequest]`
+Subject = `"C=NL, ST=Zuid-Holland, L=Den Haag, O=CIBG, OU=CIBG/serialNumber=00000002006756402002, CN=$script:CnValue`"`
+Exportable = FALSE`
+HashAlgorithm = $hashAlgorithm`
+KeyAlgorithm = $keyAlgorithm`
+KeyLength = $keyLength`
+KeySpec = AT_SIGNATURE`
+KeyUsage = 0xa0`
+KeyUsageProperty = 2`
+MachineKeySet = True`
+RequestType = PKCS10`
+ProviderName = `"Utimaco CryptoServer key storage Provider`"`
+ProviderType = 1`
+FriendlyName = $friendlyName"
+# tabs aren't ignored...
+
+if($AddOIDs -eq $true)
+{
+	$fileContent = $fileContent + "`n[EnhancedKeyUsageExtension]`nOID = 1.3.6.1.5.5.7.3.2 ; Client Auth`nOID = 1.3.6.1.5.5.7.3.1 ; Server Auth"
+}
+	
+	New-Item -force -name ($filename + ".inf") -path "." -ItemType File -Value $fileContent -ErrorAction Stop
+}
+
+function SetKeyFilenames ()
+{
+	$script:keynameCert = read-host "Enter the preferred name of the keyfiles"
+	$script:selfsigncertname = $keynameCert + "Root"
+	
+	$script:keynameRSA = $keynameCert + "RSA"
+	$script:requestRSAname = $keynameRSA + "Req"
+	$script:signedrequestRSAname = $keynameRSA + "Signed"
+	
+	$script:keynameECDSA = $keynameCert + "ECDSA"
+	$script:requestECDSAname = $keynameECDSA + "Req"
+	$script:signedrequestECDSAname = $keynameECDSA + "Signed"
+}
+
+function GenRequests
+{
+	$FriendlyName = read-host "`nPlease enter a `'Friendly name`' for the certificates.`n Make sure the name is not already in use! (look inside the machine personal keystore)"
+	
+	GenerateRequestInf -filename $requestRSAname -hashAlgorithm "SHA256" -keyAlgorithm "RSA" -keyLength "2048" -friendlyName "$FriendlyName-RSA"
+	GenerateRequestInf -filename $requestECDSAname -hashAlgorithm "SHA256" -keyAlgorithm "ECDSA_P256" -keyLength "256" -friendlyName "$FriendlyName-ECDSA" -AddOIDs $false
+
+}
 
 #
 # Start
@@ -137,19 +156,14 @@ write-host "Keygenerator script for Utimaco HSM"
 Pause
 
 write-warning "Did you do the following?`
+- Turn the simulator on?`
+- Checked the variables `$IsOnDevEnvironment and `$CnValue? 
 - Checked the values in the GenerateRequestInf-function?
 If not: abort this script with ctrl+c."
 Pause
 
 SetErrorToStop
-
-if($host.name -match "ISE")
-{
-	write-host "`nYou are running this script in Powershell ISE. Please switch to the regular Powershell."
-	Pause
-	
-	exit
-}
+CheckNotIse
 
 write-host "`nPre-check for key presence"
 Pause
@@ -161,7 +175,8 @@ Pause
 
 SetKeyFileNames
 
-RunWithErrorCheck "$openSslLoc req -new -x509 -nodes -subj /CN=$keynameCert -keyout $selfsigncertname.key -out $selfsigncertname.pem"
+$RootSubject = "/C=NL/ST=Zuid-Holland/L=Den Haag/O=CIBG/OU=CIBG/serialNumber=00000002006756402002/CN=$CnValue"
+RunWithErrorCheck "$openSslLoc req -new -x509 -nodes -subj `"$RootSubject`" -keyout $selfsigncertname.key -out $selfsigncertname.pem"
 
 write-host "`nStoring certificate in machine root store"
 Pause
@@ -171,8 +186,7 @@ RunWithErrorCheck "certutil -addstore -f `"root`" $selfsigncertname.pem"
 write-host "`nGenerate requestfiles for both keys"
 Pause
 
-GenerateRequestInf -filename $requestRSAname -keyname $keynameRSA -hashAlgorithm "SHA256" -keyAlgorithm "RSA" -keyLength "2048" -friendlyName "RSATestKeyRequest"
-GenerateRequestInf -filename $requestECDSAname -keyname $keynameECDSA -hashAlgorithm "SHA256" -keyAlgorithm "ECDSA_P256" -keyLength "256" -friendlyName "ECDSATestKeyRequest" -AddOIDs $false
+GenRequests
 
 write-host "`nSend requests to HSM to generate key"
 Pause
@@ -183,13 +197,21 @@ RunWithErrorCheck "certreq -new $requestECDSAname.inf $requestECDSAname.csr"
 write-host "`nSign request files with certificate"
 Pause
 
-RunWithErrorCheck "$openSslLoc x509 -req -in $requestRSAname.csr -set_serial 1234 -CA $selfsigncertname.pem -CAkey $selfsigncertname.key -out $signedrequestRSAname.pem"
-RunWithErrorCheck "$openSslLoc x509 -req -in $requestECDSAname.csr -set_serial 1234 -CA $selfsigncertname.pem -CAkey $selfsigncertname.key -out $signedrequestECDSAname.pem"
+#on test/accp/prod the RSA request is signed by PKIO
+if($IsOnDevEnvironment -eq $True)
+{
+	RunWithErrorCheck "$openSslLoc x509 -req -in $requestRSAname.csr -set_serial $(Get-Random) -CA $selfsigncertname.pem -CAkey $selfsigncertname.key -out $signedrequestRSAname.pem"
+}
+RunWithErrorCheck "$openSslLoc x509 -req -in $requestECDSAname.csr -set_serial $(Get-Random) -CA $selfsigncertname.pem -CAkey $selfsigncertname.key -out $signedrequestECDSAname.pem"
 
 write-host "`nSending signed requests to HSM"
 Pause
 
-RunWithErrorCheck "certreq -accept -machine $signedrequestRSAname.pem"
+#on test/accp/prod the RSA request is accepted when PKIO retuns the signed version
+if($IsOnDevEnvironment -eq $True)
+{
+	RunWithErrorCheck "certreq -accept -machine $signedrequestRSAname.pem"
+}
 RunWithErrorCheck "certreq -accept -machine $signedrequestECDSAname.pem"
 
 write-host "`nPost-check for key presence"
@@ -197,6 +219,11 @@ Pause
 
 RunWithErrorCheck "$cngtoolloc listkeys"
 Pause
+
+if($IsOnDevEnvironment -eq $False)
+{	
+	write-host "`nDone! The RSA-request file for PKIO is $requestRSAname."
+}
 
 if([int](Get-WmiObject Win32_OperatingSystem).BuildNumber -lt 9000)
 {
@@ -208,7 +235,7 @@ if([int](Get-WmiObject Win32_OperatingSystem).BuildNumber -lt 9000)
 }
 else
 {
-	write-host "`nOpening local machine store.`nCerts should be present under personal certificates and root certificates."
+	write-host "`nOpening the local machine store.`nCerts should be present under personal certificates and root certificates."
 	Pause
 	
 	RunWithErrorCheck "certlm.msc"
