@@ -27,6 +27,7 @@ GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 --specific permissions for Content here..
 --[Dbr_Service_EksEngine]
 GRANT INSERT ON [dbo].[Content] TO [Dbr_Service_EksEngine];
+GRANT SELECT ON [dbo].[Content] TO [Dbr_Service_EksEngine];
 
 --[Dbr_Service_ManifestEngine] 
 GRANT INSERT ON [dbo].[Content] TO [Dbr_Service_ManifestEngine];
