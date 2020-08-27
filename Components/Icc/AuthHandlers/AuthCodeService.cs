@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
         public async Task<List<AuthClaim>?> GetClaimsByAuthCodeAsync(string authCode)
         {
-            if (string.IsNullOrWhiteSpace(authCode)) throw new ArgumentNullException(nameof(authCode));
+            if (string.IsNullOrWhiteSpace(authCode)) throw new ArgumentException(nameof(authCode));
 
             List<AuthClaim>? result = null;
 
@@ -63,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
         public async Task RevokeAuthCodeAsync(string authCode)
         {
-            if (authCode == null) throw new ArgumentNullException(nameof(authCode));
+            if (string.IsNullOrWhiteSpace(authCode)) throw new ArgumentException(nameof(authCode));
 
             await _cache.RemoveAsync(authCode);
         }
