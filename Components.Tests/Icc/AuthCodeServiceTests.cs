@@ -5,7 +5,6 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -24,9 +23,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
         {
             var cryptoRandomPaddingGenerator = new CryptoRandomPaddingGenerator(new StandardRandomNumberGenerator());
             var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
-            var protectionProvider = DataProtectionProvider.Create("AuthCodeServiceTests");
 
-            _AuthCodeService = new AuthCodeService(cryptoRandomPaddingGenerator, cache, protectionProvider);
+            _AuthCodeService = new AuthCodeService(cryptoRandomPaddingGenerator, cache);
         }
 
         [Fact]

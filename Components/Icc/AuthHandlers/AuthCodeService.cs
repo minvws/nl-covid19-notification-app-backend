@@ -20,17 +20,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
     {
         private readonly IPaddingGenerator _RandomGenerator;
         private readonly IDistributedCache _cache;
-        private readonly IDataProtector _protector;
 
-        public AuthCodeService(IPaddingGenerator randomGenerator, IDistributedCache cache,
-            IDataProtectionProvider dataProtectionProvider)
+        public AuthCodeService(IPaddingGenerator randomGenerator, IDistributedCache cache)
         {
             _RandomGenerator = randomGenerator ?? throw new ArgumentNullException(nameof(randomGenerator));
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            _protector = dataProtectionProvider?.CreateProtector(typeof(IDistributedCache).FullName) ??
-                         throw new ArgumentNullException(nameof(dataProtectionProvider));
         }
-
 
         public async Task<string> GenerateAuthCodeAsync(ClaimsPrincipal claimsPrincipal)
         {
@@ -38,15 +33,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
             var authCode = _RandomGenerator.Generate(12); // TODO: Add url friendly generator
 
-
-            List<AuthClaim> claimsObject = claimsPrincipal.Claims
-                .Select(claim => new AuthClaim( claim.Type, claim.Value)).ToList();
+            var claimsObject = claimsPrincipal.Claims.Select(claim => new AuthClaim(claim.Type, claim.Value)).ToList();
 
             var principalJson = JsonConvert.SerializeObject(claimsObject);
             var encodedClaimsPrincipal = Encoding.UTF8.GetBytes(principalJson);
 
             //TODO: add sliding expiration
-            await _cache.SetAsync(authCode, _protector.Protect(encodedClaimsPrincipal));
+            await _cache.SetAsync(authCode, encodedClaimsPrincipal);
 
             return authCode;
         }
@@ -59,7 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
             if (encodedAuthClaimList != null)
             {
-                var claimListJson = Encoding.UTF8.GetString(_protector.Unprotect(encodedAuthClaimList));
+                var claimListJson = Encoding.UTF8.GetString(encodedAuthClaimList);
                 result = JsonConvert.DeserializeObject<List<AuthClaim>>(claimListJson);
             }
 
