@@ -46,6 +46,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 
             if (response == null) return false;
             var responseString = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                _Logger.LogWarning("{RequestUri}: Failed HTTP: {ResponseStatusCode} - {ResponseString}", requestUri, response.StatusCode, responseString);
+                return false;
+            }
+            if (String.IsNullOrEmpty(responseString))
+            {
+                _Logger.LogWarning("{RequestUri}: Failed ResponseString is empty: {ResponseStatusCode} - {ResponseString}", requestUri, response.StatusCode, responseString);
+                return false;
+            }
+            
             var responseObject = JsonSerializer.Deserialize<Dictionary<string, object>>(responseString);
 
             if (responseObject.ContainsKey("error") && responseObject["error"] != null)
