@@ -32,6 +32,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
         async Task<bool> IJwtClaimValidator.Validate(IDictionary<string, string> decodedClaims)
         {
+            // check exp max. 3 hrs
+
+            var maxExpiry = _DateTimeProvider.Snapshot.AddHours(_IccPortalConfig.ClaimLifetimeHours).ToUnixTimeU64();
+
+            if (!ulong.TryParse(decodedClaims["exp"], out ulong tokenExpiry))
+            {
+                return false;
+            }
+
+            if (tokenExpiry > maxExpiry)
+            {
+                _Logger.LogInformation("Token invalid, has longer exp. than configured {claimLifetimeHours} hrs", _IccPortalConfig.ClaimLifetimeHours.ToString());
+                return false;
+            }
+            
             return await _TheIdentityHubService.VerifyToken(decodedClaims["access_token"]);
         }
     }
