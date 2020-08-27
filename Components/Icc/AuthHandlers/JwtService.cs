@@ -53,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             return builder.Encode();
         }
 
-        public string Generate(ClaimsPrincipal claimsPrincipal)
+        public string Generate(IList<AuthClaim> claimsPrincipal)
         {
             if (claimsPrincipal == null)
                 throw new ArgumentNullException(nameof(claimsPrincipal));
@@ -68,8 +68,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             return builder.Encode();
         }
 
-        private string? GetClaimValue(ClaimsPrincipal cp, string claimType) =>
-            cp.Claims.FirstOrDefault(c => c.Type.Equals(claimType))?.Value;
+        private string? GetClaimValue(IList<AuthClaim> claimList, string claimType) =>
+            claimList.FirstOrDefault(c => c.Type != null && c.Type.Equals(claimType))?.Value;
         
         public bool TryDecode(string token, out IDictionary<string, string> payload)
         {

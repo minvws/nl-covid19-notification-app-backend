@@ -2,20 +2,19 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.Security.Claims;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
+using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
     public interface IAuthCodeService
     {
-        public string Generate(ClaimsPrincipal claimsPrincipal);
+        Task<string> GenerateAuthCodeAsync(ClaimsPrincipal claimsPrincipal);
 
-        public bool TryGetClaims(string authCode, out ClaimsPrincipal claimsPrincipal);
+        Task<List<AuthClaim>?> GetClaimsByAuthCodeAsync(string authCode);
 
-        public bool RevokeAuthCode(string authCode);
+        Task RevokeAuthCodeAsync(string authCode);
     }
 }

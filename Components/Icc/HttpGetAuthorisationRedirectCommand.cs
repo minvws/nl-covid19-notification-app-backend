@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -23,13 +24,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
             _AuthCodeService = authCodeService ?? throw new ArgumentNullException(nameof(authCodeService));
         }
 
-        public IActionResult Execute(HttpContext httpContext)
+        public async Task<IActionResult> ExecuteAsync(HttpContext httpContext)
         {
-            if (httpContext == null)
-                throw new ArgumentNullException(nameof(httpContext));
+            if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
+            
             _Logger.LogInformation("Executing Auth.Redirect on Host {CurrentHost}", httpContext.Request.Host.ToString());
 
-            var authorizationCode = _AuthCodeService.Generate(httpContext.User);
+            var authorizationCode = await _AuthCodeService.GenerateAuthCodeAsync(httpContext.User);
             
             return new RedirectResult(_Configuration.FrontendBaseUrl + "/auth/callback?code=" + authorizationCode);
         }
