@@ -177,7 +177,7 @@ Pause
 Expand-Archive -Force -LiteralPath "$testfileNameNoExt-eks.zip" -DestinationPath ".\$testfileNameNoExt\" -ErrorAction Stop
 
 write-host "`nRSA: "
-RunWithErrorCheck "$openSslLoc cms -verify -CAfile $RsaRootCertLoc -in $script:testfileNameNoExt\content.sig -inform DER -binary -content $script:testfileNameNoExt\export.bin"
+RunWithErrorCheck "$openSslLoc cms -verify -CAfile $RsaRootCertLoc -in $script:testfileNameNoExt\content.sig -inform DER -binary -content $script:testfileNameNoExt\export.bin -purpose any"
 
 write-host "`nECDSA: "
 RunWithErrorCheck "$EksParserLoc $testfileNameNoExt-eks.zip"
