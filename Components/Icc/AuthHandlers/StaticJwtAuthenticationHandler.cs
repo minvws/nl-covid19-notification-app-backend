@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
@@ -11,28 +12,40 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
-    public class JwtAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    public class StaticJwtAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         public const string SchemeName = "jwt";
 
         //private const string AccessTokenElement = "access_token";
 
         private readonly IJwtService _JwtService;
+        private readonly ITheIdentityHubService _TheIdentityHubService;
+        private readonly ILogger<StaticJwtAuthenticationHandler> _Logger;
         private readonly IJwtClaimValidator _JwtClaimValidator;
 
-        public JwtAuthenticationHandler(
+        public StaticJwtAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory loggerFactory,
+            ILogger<StaticJwtAuthenticationHandler> logger,
             UrlEncoder encoder,
             ISystemClock clock,
             IJwtService jwtService,
-            IJwtClaimValidator jwtClaimValidator) : base(options, loggerFactory, encoder, clock)
+            ITheIdentityHubService theIdentityHubService) : base(options, loggerFactory, encoder, clock)
         {
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
-            _JwtClaimValidator = jwtClaimValidator ?? throw new ArgumentNullException(nameof(jwtClaimValidator));
+            _TheIdentityHubService =
+                theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+            var testJwtData = new Dictionary<string, object> {{"access_token", "test_access_token"}, {"id", "0"}};
+
+            var expiry = new StandardUtcDateTimeProvider().Now().AddDays(14).ToUnixTimeU64();
+
+            _Logger.LogInformation(_JwtService.Generate(expiry, testJwtData));
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -56,10 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
                 return AuthenticateResult.Fail("Invalid jwt token");
             }
 
-            if (!decodedClaims.ContainsKey("access_token") || !await _JwtClaimValidator.Validate(decodedClaims))
-            {
-                return AuthenticateResult.Fail("Invalid jwt token");
-            }
+            
             
             var claims = new[]
             {
