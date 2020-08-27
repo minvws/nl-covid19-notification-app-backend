@@ -6,22 +6,33 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
     public class TestJwtClaimValidator : IJwtClaimValidator
     {
-
         private readonly ITheIdentityHubService _TheIdentityHubService;
         private readonly ILogger<TestJwtClaimValidator> _Logger;
 
         public TestJwtClaimValidator(ITheIdentityHubService theIdentityHubService,
-            ILogger<TestJwtClaimValidator> logger)
+            ILogger<TestJwtClaimValidator> logger, IJwtService? jwtService)
         {
             _TheIdentityHubService =
                 theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+            if (jwtService != null)
+            {
+                // Move to Singleton pattern
+                _Logger.LogInformation("TestJwtClaimValidator triggered, generating test accesstoken now...");
+                var testJwtData = new Dictionary<string, object> {{"access_token", "test_access_token"}, {"id", "0"}};
+
+                var expiry = new StandardUtcDateTimeProvider().Now().AddDays(14).ToUnixTimeU64();
+
+                _Logger.LogInformation(jwtService.Generate(expiry, testJwtData));
+            }
         }
 
 

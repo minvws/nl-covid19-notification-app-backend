@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
             var logger = new TestLogger<TestJwtClaimValidator>();
             _Server = WireMockServer.Start();
             _TestJwtClaimValidator =
-                new TestJwtClaimValidator(TestTheIdentityHubServiceCreator.CreateInstance(_Server), logger);
+                new TestJwtClaimValidator(TestTheIdentityHubServiceCreator.CreateInstance(_Server), logger, null!);
         }
 
         [Fact]
