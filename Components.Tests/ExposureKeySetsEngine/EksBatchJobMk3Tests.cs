@@ -16,6 +16,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Register
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using NCrunch.Framework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
@@ -66,6 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
 
         [Fact]
+        [ExclusivelyUses("db1")]
         public void FireTwice()
         {
             EksEngineResult();
@@ -103,6 +105,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses("db1")]
         public void Teks1_NoRiskNotStuffed()
         {
             //One TEK from the dawn of time.
@@ -131,6 +134,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses("db1")]
         public void Teks0_NothingToSeeHereMoveAlong()
         {
             var result = EksEngineResult();
@@ -151,6 +155,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses("db1")]
         public void Teks1_GetStuffed()
         {
             var wfs = new[]
@@ -179,6 +184,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses("db1")]
         public void Tek5_NotStuffed()
         {
 
@@ -212,6 +218,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses("db1")]
         public void Tek10_NotStuffed()
         {
             var teks = Enumerable.Range(1, 10)
@@ -243,6 +250,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses("db1")]
         public void Tek11_NotStuffed_2Eks()
         {
             var teks = Enumerable.Range(1, 11)

@@ -3,47 +3,93 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.IO.Compression;
+using System.Text;
 using System.Threading.Tasks;
+using JWT;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Framework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using IJsonSerializer = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping.IJsonSerializer;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
-    public class ManifestBatchJob
+    public class ManifestUpdateCommand
     {
-        private readonly ManifestBuilderAndFormatter _BuilderAndFormatter;
-        private readonly ContentDbContext _ContentDb;
-        private readonly ILogger _Logger;
+        private readonly ManifestBuilder _Builder;
+        private readonly Func<ContentDbContext> _ContentDbProvider;
+        private readonly ILogger<ManifestUpdateCommand> _Logger;
+        private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly IJsonSerializer _JsonSerializer;
+        private readonly IContentEntityFormatter _Formatter;
 
-        public ManifestBatchJob(ManifestBuilderAndFormatter builderAndFormatter, ContentDbContext contentDb, ILogger<ManifestBatchJob> logger)
+        private ContentDbContext _ContentDb;
+
+        public ManifestUpdateCommand(ManifestBuilder builder, Func<ContentDbContext> contentDbProvider, ILogger<ManifestUpdateCommand> logger, IUtcDateTimeProvider dateTimeProvider, IJsonSerializer jsonSerializer, IContentEntityFormatter formatter)
         {
-            _BuilderAndFormatter = builderAndFormatter ?? throw new ArgumentNullException(nameof(builderAndFormatter));
-            _ContentDb = contentDb ?? throw new ArgumentNullException(nameof(contentDb));
+            _Builder = builder ?? throw new ArgumentNullException(nameof(builder));
+            _ContentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
+            _Formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
         }
 
         public async Task Execute()
         {
-            if (!WindowsIdentityStuff.CurrentUserIsAdministrator())
-                _Logger.LogWarning("{ManifestBatchJobName} started WITHOUT elevated privileges - errors may occur when signing content.", nameof(ManifestBatchJob));
+            _ContentDb = _ContentDbProvider();
+            await using var tx = _ContentDb.BeginTransaction();
+            var candidate = await _Builder.Execute();
 
-            try
+            if (!await WriteCandidate(candidate))
             {
-                _ContentDb.BeginTransaction();
-                var e = await _BuilderAndFormatter.Execute();
-                if (e == null)
-                    return;
-
-                _ContentDb.Add(e);
-                _ContentDb.SaveAndCommit();
-            }
-            finally
-            {
-                await _ContentDb.DisposeAsync();
+                _Logger.LogInformation("Manifest does NOT require updating.");
+                return;
             }
 
+            _Logger.LogInformation("Manifest updating.");
+
+            var snapshot = _DateTimeProvider.Snapshot;
+            var e = new ContentEntity
+            {
+                Created = snapshot,
+                Release = snapshot,
+                Type = ContentTypes.Manifest
+            };
+            await _Formatter.Fill(e, candidate);
+
+            _ContentDb.Add(e);
+            _ContentDb.SaveAndCommit();
+
+            _Logger.LogInformation("Manifest updated.");
+        }
+
+        private async Task<bool> WriteCandidate(ManifestContent candidate)
+        {
+            var existingContent = await _ContentDb.SafeGetLatestContent(ContentTypes.Manifest, _DateTimeProvider.Snapshot);
+            if (existingContent == null)
+                return true;
+
+            var existingManifest = ParseContent(existingContent.Content);
+            return !candidate.Equals(existingManifest);
+        }
+
+        private ManifestContent ParseContent(byte[] formattedContent)
+        {
+            using var readStream = new MemoryStream(formattedContent);
+            using var zip = new ZipArchive(readStream);
+            var entry = zip.GetEntry(ZippedSignedContentFormatter.ContentEntryName);
+            using var entryStream = entry.Open();
+            using var resultStream = new MemoryStream();
+            entryStream.CopyTo(resultStream);
+            return _JsonSerializer.Deserialize<ManifestContent>(Encoding.UTF8.GetString(resultStream.ToArray()));
         }
     }
 }

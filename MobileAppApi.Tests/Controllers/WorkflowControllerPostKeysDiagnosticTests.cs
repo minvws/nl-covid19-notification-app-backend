@@ -25,6 +25,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using NCrunch.Framework;
 using Xunit;
 
 namespace MobileAppApi.Tests.Controllers
@@ -105,6 +106,7 @@ namespace MobileAppApi.Tests.Controllers
         [InlineData("Resources.payload-duplicate-TEKs-KeyData.json", 0, 7, 11)]
         [InlineData("Resources.payload-duplicate-TEKs-RSN.json", 13, 8, 13)]
         [InlineData("Resources.payload-ancient-TEKs.json", 1, 7, 1)]
+        [ExclusivelyUses("WorkflowControllerPostKeysTests")]
         public async Task PostWorkflowTest(string file, int keyCount, int mm, int dd)
         {
 
