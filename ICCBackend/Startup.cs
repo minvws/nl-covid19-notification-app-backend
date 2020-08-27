@@ -83,9 +83,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
             services.AddTransient<IJwtService, JwtService>();
             services.AddTransient<WriteNewPollTokenWriter>();
-            services.AddTransient<PollTokenService>();
+            services.AddTransient<IPollTokenService, PollTokenService>();
             services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
-
             services.AddCors();
 
             if (_IsDev)

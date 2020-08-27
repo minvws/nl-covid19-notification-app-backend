@@ -45,7 +45,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             var result =  new LabVerifyAuthorisationResponse
             {
                 PollToken = _Writer.Execute(wf),
-                Valid = wf.Teks?.Count != 0
+                //NB wf.Teks.Count > 0 is only needed on the day the db change is applied and can be removed after
+                Valid = wf.TeksTouched || wf.Teks.Count > 0 
             };
 
             return new OkObjectResult(result);

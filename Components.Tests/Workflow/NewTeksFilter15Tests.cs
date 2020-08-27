@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             public DateTime Snapshot => _Fixed;
             //ncrunch: no coverage start
             public DateTime Now() => _Fixed;
-            public DateTime TakeSnapshot() => throw new NotImplementedException();
+
             //ncrunch: no coverage end
         }
 
