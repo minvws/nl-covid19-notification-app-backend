@@ -5,14 +5,13 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Commands
 {
-    [TestClass]
     public class UtilityTests
     {
-        [TestMethod]
+        [Fact]
         public void KeyGenerator()
         {
             Trace.WriteLine(DateTime.UtcNow.ToString("u"));

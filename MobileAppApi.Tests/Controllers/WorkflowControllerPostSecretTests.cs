@@ -2,35 +2,30 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.Data.Common;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
+using System;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace MobileAppApi.Tests.Controllers
 {
-    [TestClass]
-    public class WorkflowControllerPostSecretTests : WebApplicationFactory<Startup>
+    public class WorkflowControllerPostSecretTests : WebApplicationFactory<Startup>, IDisposable
     {
         private WebApplicationFactory<Startup> _Factory;
         private WorkflowDbContext _DbContext;
 
-        [TestInitialize]
-        public async Task InitializeAsync()
+        public WorkflowControllerPostSecretTests()
         {
             Func<WorkflowDbContext> dbcFac = () => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer("Data Source=.;Database=WorkflowControllerPostSecretTests;Integrated Security=True").Options);
             _DbContext = dbcFac();
@@ -53,8 +48,8 @@ namespace MobileAppApi.Tests.Controllers
                 });
             });
 
-            await _DbContext.Database.EnsureDeletedAsync();
-            await _DbContext.Database.EnsureCreatedAsync();
+            _DbContext.Database.EnsureDeleted();
+            _DbContext.Database.EnsureCreated();
         }
 
         private FakeNumberGen _FakeNumbers;
@@ -79,14 +74,14 @@ namespace MobileAppApi.Tests.Controllers
             }
         }
 
-        [TestCleanup]
-        public async Task CleanupAsync()
+        void IDisposable.Dispose()
         {
-            await _DbContext.DisposeAsync();
+            base.Dispose();
+
+            _DbContext.Dispose();
         }
 
-        [TestMethod]
-        [ExclusivelyUses("DB")]
+        [Fact]
         public async Task PostSecretTest_EmptyDb()
         {
             // Arrange
@@ -99,8 +94,8 @@ namespace MobileAppApi.Tests.Controllers
 
             // Assert
             var items = await _DbContext.KeyReleaseWorkflowStates.ToListAsync();
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-            Assert.AreEqual(1, items.Count);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            Assert.Equal(1, items.Count);
         }
 
 
@@ -120,8 +115,7 @@ namespace MobileAppApi.Tests.Controllers
             return e1;
         }
 
-        [TestMethod]
-        [ExclusivelyUses("DB")]
+        [Fact]
         public async Task PostSecretTest_5RetriesAndBang()
         {
 
@@ -134,15 +128,13 @@ namespace MobileAppApi.Tests.Controllers
             // Act
             var result = await client.PostAsync("v1/register", null);
 
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-            Assert.AreEqual("{\"labConfirmationId\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}", await result.Content.ReadAsStringAsync());
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            Assert.Equal("{\"labConfirmationId\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}", await result.Content.ReadAsStringAsync());
         }
 
-        [TestMethod]
-        [ExclusivelyUses("DB")]
+        [Fact]
         public async Task PostSecret_MissThe5Existing()
         {
-
             _DbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
             _DbContext.SaveChanges();
             
@@ -155,8 +147,8 @@ namespace MobileAppApi.Tests.Controllers
 
             // Assert
             var items = await _DbContext.KeyReleaseWorkflowStates.ToListAsync();
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-            Assert.AreEqual(6, items.Count);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            Assert.Equal(6, items.Count);
         }
 
     }

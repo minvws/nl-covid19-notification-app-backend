@@ -2,24 +2,22 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NL.Rijksoverheid.ExposureNotification;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using System;
+using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
 {
-    [TestClass]
     public class OriginBuilderTests
     {
-        [DataRow("https://test.coronamelder-portal.nl//")]
-        [DataRow("https://test.coronamelder-portal.nl/")]
-        [DataRow("https://test.coronamelder-portal.nl")]
-        [DataRow("https://coronamelder-portal.nl/")]
-        [DataRow("https://coronamelder-portal.nl/testendpoint")]
-        [DataRow("https://acceptatie.coronamelder-portal.nl")]
-        [DataRow("http://localhost:4200/")]
-        [TestMethod]
+        [InlineData("https://test.coronamelder-portal.nl//")]
+        [InlineData("https://test.coronamelder-portal.nl/")]
+        [InlineData("https://test.coronamelder-portal.nl")]
+        [InlineData("https://coronamelder-portal.nl/")]
+        [InlineData("https://coronamelder-portal.nl/testendpoint")]
+        [InlineData("https://acceptatie.coronamelder-portal.nl")]
+        [InlineData("http://localhost:4200/")]
+        [Theory]
         public void CheckVariableBaseUrlSupport(string testFrontendBaseUrl)
         {
             // Assemble
@@ -27,20 +25,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
 
             // Assert
             var result = builder.getOrigin();
-            var expected = typeof(string);
             
             // Act
-            Assert.IsInstanceOfType(result, expected);
+            Assert.IsType<string>(result);
         }
 
-        [DataRow("https://test.coronamelder-portal.nl//")]
-        [DataRow("https://test.coronamelder-portal.nl/")]
-        [DataRow("https://test.coronamelder-portal.nl")]
-        [DataRow("https://coronamelder-portal.nl/")]
-        [DataRow("https://coronamelder-portal.nl/testendpoint")]
-        [DataRow("https://acceptatie.coronamelder-portal.nl")]
-        [DataRow("http://localhost:4200/")]
-        [TestMethod]
+        [InlineData("https://test.coronamelder-portal.nl//")]
+        [InlineData("https://test.coronamelder-portal.nl/")]
+        [InlineData("https://test.coronamelder-portal.nl")]
+        [InlineData("https://coronamelder-portal.nl/")]
+        [InlineData("https://coronamelder-portal.nl/testendpoint")]
+        [InlineData("https://acceptatie.coronamelder-portal.nl")]
+        [InlineData("http://localhost:4200/")]
+        [Theory]
         public void ShouldNotEndWithEndpoint(string testFrontendBaseUrl)
         {
             // Assemble
@@ -53,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
             var result = origin.EndsWith(testUri.Host) || origin.EndsWith(testUri.Port.ToString());
 
             // Act
-            Assert.IsTrue(result);
+            Assert.True(result);
         }
     }
 }

@@ -2,22 +2,21 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.Diagnostics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using System;
+using System.Diagnostics;
+using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.DecoyKeys
 {
-    [TestClass]
     public class HttpPostDecoyKeyCommandTests
     {
-        [DataRow(42)]
-        [DataRow(64)]
-        [DataRow(343)]
-        [DataTestMethod]
+        [Theory]
+        [InlineData(42)]
+        [InlineData(64)]
+        [InlineData(343)]
         public void Execute_takes_at_least_N_milliseconds(int n)
         {
             // Assemble
@@ -30,8 +29,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             timer.Stop();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsTrue(timer.ElapsedMilliseconds >= n);
+            Assert.NotNull(result);
+            Assert.True(timer.ElapsedMilliseconds >= n);
         }
 
         private class TestRng : IRandomNumberGenerator
