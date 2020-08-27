@@ -13,16 +13,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using System.Security.Claims;
+using TheIdentityHub.AspNetCore.Authentication;
+using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
 {
-    [TestClass]
     public class AuthCodeServiceTests
     {
         private IAuthCodeService _AuthCodeService;
 
-        [TestInitialize]
-        public void Initialize()
+        public AuthCodeServiceTests()
         {
             var cryptoRandomPaddingGenerator = new CryptoRandomPaddingGenerator(new StandardRandomNumberGenerator());
             var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
@@ -31,19 +32,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
             _AuthCodeService = new AuthCodeService(cryptoRandomPaddingGenerator, cache, protectionProvider);
         }
 
-        [TestMethod]
-        public async Task ValidateIfGeneratedAuthCodeIsStoredAsync()
+        [Fact]
+        public void ValidateIfGeneratedAuthCodeIsStored()
         {
             var authCode = await _AuthCodeService.GenerateAuthCodeAsync(new ClaimsPrincipal());
 
             var result = await _AuthCodeService.GetClaimsByAuthCodeAsync(authCode);
 
-            Assert.IsNotNull(result);
+            Assert.True(result);
         }
 
 
-        [TestMethod]
-        public async Task ValidateIfClaimsPrincipalIsStoredAsync()
+        [Fact]
+        public void ValidateIfClaimsPrincipalIsStored()
         {
             var testClaim = new Claim("testType","testValue", "string");
             var identity = new ClaimsIdentity(new List<Claim>(){testClaim}, "test");
@@ -54,12 +55,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
 
             var outputClaims = await _AuthCodeService.GetClaimsByAuthCodeAsync(authCode);
 
-            Assert.AreEqual(testClaim.Type, outputClaims?[0].Type);
-            Assert.AreEqual(testClaim.Value, outputClaims?[0].Value);
+            Assert.True(successful);
+            Assert.Equal(expectedClaimsPrincipal, outputClaims);
         }
 
-        [TestMethod]
-        public async Task ValidateIfAuthCodeIsRevokedCorrectlyAsync()
+        [Fact]
+        public void ValidateIfAuthCodeIsRevokedCorrectly()
         {
             var authCode = await _AuthCodeService.GenerateAuthCodeAsync(new ClaimsPrincipal());
 
@@ -67,7 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
 
             var result = await _AuthCodeService.GetClaimsByAuthCodeAsync(authCode);
 
-            Assert.IsNull(result);
+            Assert.False(result);
         }
     }
 }

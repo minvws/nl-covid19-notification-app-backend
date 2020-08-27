@@ -2,33 +2,25 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests
 {
-
-
-    [TestClass]
     public class TekValidatorTests
     {
-        [DataRow(0, 0, 0, 0, true)]
-
-        [DataRow(1, 0, 0, 0, false)]
-        [DataRow(0, 0, 1, 0, false)]
-
-        [DataRow(0, 1, 0, 1, true)]
-        [DataRow(1, 0, 1, 0, true)]
-
-        [DataRow(1000, 144, 1000, 144, true)]
-        [DataRow(1000, 144, 1000, 143, false)]
-
-        [DataTestMethod]
+        [Theory]
+        [InlineData(0, 0, 0, 0, true)]
+        [InlineData(1, 0, 0, 0, false)]
+        [InlineData(0, 0, 1, 0, false)]
+        [InlineData(0, 1, 0, 1, true)]
+        [InlineData(1, 0, 1, 0, true)]
+        [InlineData(1000, 144, 1000, 144, true)]
+        [InlineData(1000, 144, 1000, 143, false)]
         public void StartHere(int leftStart, int leftPeriod, int rightStart, int rightPeriod, bool overlaps)
         {
-            Assert.AreEqual(overlaps, new Tek { RollingStartNumber = leftStart, RollingPeriod = leftPeriod }
+            Assert.Equal(overlaps, new Tek { RollingStartNumber = leftStart, RollingPeriod = leftPeriod }
                 .SameTime(new Tek { RollingStartNumber = rightStart, RollingPeriod = rightPeriod }));
         }
     }
-
 }

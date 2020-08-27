@@ -2,47 +2,34 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
-using System.Reflection.Metadata.Ecma335;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
+using System;
+using System.Net.Http;
 using TheIdentityHub.AspNetCore.Authentication;
-using WireMock.Matchers;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
+using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
 {
-    [TestClass]
     public class TheIdentityHubServiceTests
     {
         private ITheIdentityHubService _TheIdentityHubService;
         private IOptionsMonitor<TheIdentityHubOptions> _Options;
         private WireMockServer _Server;
 
-        [TestInitialize]
-        public void Initialize()
+        public TheIdentityHubServiceTests()
         {
             var logger = new TestLogger<TheIdentityHubService>();
             _Server = WireMockServer.Start();
             
             if (_Server.Urls.Length < 1)
             {
-                Assert.Fail("WireMockServer not started correctly");
-                return;
+                throw new Exception("WireMockServer not started correctly");
             }
 
             var serviceCollection = new ServiceCollection();
@@ -61,14 +48,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
             _TheIdentityHubService = new TheIdentityHubService(_Options, logger);
         }
 
-        [TestMethod]
+        [Fact]
         public void Validate_If_Service_Is_Initialized()
         {
-            Assert.IsNotNull(_TheIdentityHubService);
+            Assert.NotNull(_TheIdentityHubService);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void VerifyTokenShouldReturnTrueOnValidToken()
         {
             var validToken = "valid_access_token";
@@ -86,10 +73,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.IsTrue(_TheIdentityHubService.VerifyToken(validToken).Result);
+            Assert.True(_TheIdentityHubService.VerifyToken(validToken).Result);
         }
 
-        [TestMethod]
+        [Fact]
         public void VerifyTokenShouldReturnFalseOnInValidToken()
         {
             var validToken = "invalid_access_token";
@@ -107,11 +94,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                         .WithBody("{\"error\":\"Invalid Access Token\"}")
                 );
 
-            Assert.IsFalse(_TheIdentityHubService.VerifyToken(validToken).Result);
+            Assert.False(_TheIdentityHubService.VerifyToken(validToken).Result);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void VerifyAccessTokenRevocation()
         {
             var validToken = "valid_access_token";
@@ -128,10 +115,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                         .WithHeader("Content-Type", "application/json")
                         .WithBody("{\"msg\":\"Access Token revoked\"}")
                 );
-            Assert.IsTrue(_TheIdentityHubService.RevokeAccessToken(validToken).Result);
+            Assert.True(_TheIdentityHubService.RevokeAccessToken(validToken).Result);
         }
 
-        [TestMethod]
+        [Fact]
         public void VerifyInvalidAccessTokenRevocation()
         {
             var invalidAccessToken = "invalid_access_token";
@@ -148,7 +135,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                         .WithHeader("Content-Type", "application/json")
                         .WithBody("{\"error\":\"Invalid AccessToken\"}")
                 );
-            Assert.IsFalse(_TheIdentityHubService.RevokeAccessToken(invalidAccessToken).Result);
+            Assert.False(_TheIdentityHubService.RevokeAccessToken(invalidAccessToken).Result);
         }
     }
 }
