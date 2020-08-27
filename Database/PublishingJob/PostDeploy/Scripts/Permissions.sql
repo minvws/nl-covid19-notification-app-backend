@@ -31,10 +31,14 @@ GRANT INSERT ON [dbo].[EksCreateJobInput] TO [Dbr_Service_EksEngine];
 GRANT UPDATE ON [dbo].[EksCreateJobInput] TO [Dbr_Service_EksEngine];
 GRANT DELETE ON [dbo].[EksCreateJobInput] TO [Dbr_Service_EksEngine];
 
+GRANT ALTER ON [dbo].[EksCreateJobInput] TO [Dbr_Service_EksEngine];
+
 GRANT SELECT ON [dbo].[EksCreateJobOutput] TO [Dbr_Service_EksEngine];
 GRANT INSERT ON [dbo].[EksCreateJobOutput] TO [Dbr_Service_EksEngine];
 GRANT UPDATE ON [dbo].[EksCreateJobOutput] TO [Dbr_Service_EksEngine];
 GRANT DELETE ON [dbo].[EksCreateJobOutput] TO [Dbr_Service_EksEngine];
+
+GRANT ALTER ON [dbo].[EksCreateJobOutput] TO [Dbr_Service_EksEngine];
 --end 
 
 GRANT VIEW ANY COLUMN ENCRYPTION KEY DEFINITION TO PUBLIC;
