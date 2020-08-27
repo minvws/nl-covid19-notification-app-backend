@@ -3,15 +3,12 @@
 
 $OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
 $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
-$testfileNameNoExt = ""
-$testfileName = ""
-$verifierLoc = ".\Verifier\SigTestFileCreator.exe"
-$RsaRootCertLoc = ""
-$EcdsaCertLoc = ""
-$EksParserLoc = ".\EksParser\EksParser.exe"
+$TestfileName = ""
+$TestfileNameNoExt = ""
+$VerifierLoc = ".\Verifier\SigTestFileCreator.exe"
+$Environment = "Ontw"
 
-$RsaRootCertThumbPrint = "61d9cfc82f55cfbb4fb9f67ff5f35634832c7097"
-$EcdsaCertThumbPrint = "fe3c560eeb63cb8f945e746194de4a168dba20d1"
+$EcdsaCertThumbPrint = "4e4ae434595bd2648c4253565360dab45de17967"
 
 function SetErrorToStop
 {
@@ -25,6 +22,17 @@ function CheckNotIse
 	if($host.name -match "ISE")
 	{
 		write-host "`nYou are running this script in Powershell ISE. Please switch to the regular Powershell."
+		Pause
+		
+		exit
+	}
+}
+
+function CheckNotWin7
+{
+	if([int](Get-WmiObject Win32_OperatingSystem).BuildNumber -lt 9000)
+	{
+		write-warning "`nAutomated export of certificates is not possible under Windows 7!`nThis script will not function."
 		Pause
 		
 		exit
@@ -96,35 +104,24 @@ function RunWithErrorCheck ([string]$command)
 
 function GenTestFile
 {
+	$contentstring = read-host "Please input a test string that will be used for signing"
 	$date = Get-Date -Format "MM_dd_yyyy_HH-mm"
-	$fileContent = "Key verification file: $date"
-	$script:testfileNameNoExt = "keytest$date"
-	$script:testfileName = ("keytest$date" + ".txt") 
+	$fileContent = "Key verification file`r`n$contentstring"
+	$script:TestfileNameNoExt = "KeyExtractionRawData"
+	$script:TestfileName = "$script:TestfileNameNoExt.txt"
 	
-	New-Item -force -name ($script:testfileName) -path "." -ItemType File -Value $fileContent -ErrorAction Stop
+	New-Item -force -name ($script:TestfileName) -path "." -ItemType File -Value $fileContent -ErrorAction Stop
+	New-Item -force -name "Result" -path "." -ItemType Directory -ErrorAction Stop
 }
 
-function ExtractCert ([String] $ThumbPrint, [String] $Store, [String] $ExportPath)
+function ExtractKey ([String] $ThumbPrint, [String] $Store, [String] $ExportPath)
 {
 	$cert = Get-ChildItem -Path "cert:\LocalMachine\$Store\$ThumbPrint"
+	#opvangbak prevents black magic from occurring.
 	$opvangbak = Export-Certificate -Cert $cert -FilePath "$ExportPath.cer" -Type CERT
 	
 	# the exported cert is in der-format and needs to be converted to pem-format to use for signature verification
-	RunWithErrorCheck "$openSslLoc x509 -in $ExportPath.cer -inform der -out $ExportPath-pem.cer -outform pem"
-	
-	#opvangbak prevents black magic from occurring.
-	return "$ExportPath-pem.cer"
-}
-
-function CheckNotWin7
-{
-	if([int](Get-WmiObject Win32_OperatingSystem).BuildNumber -lt 9000)
-	{
-		write-warning "`nAutomated export of certificates is not possible under Windows 7!`nThis script will not function."
-		Pause
-		
-		exit
-	}
+	RunWithErrorCheck "$openSslLoc x509 -in $ExportPath.cer -inform der -pubkey -noout -out .\Result\$script:Environment-Ecdsa-pubkey.key"
 }
 
 #
@@ -138,7 +135,7 @@ Pause
 CheckNotWin7
 
 write-warning "`nDid you do the following?`
-- Add the Rsa ROOT- and Ecdsa thumbprint to this script?`
+- Add the Ecdsa thumbprint to this script?`
 - Add the location of the verifier to this script?`
 - Add the Rsa (non-root)- and Ecdsa thumbprint to the verifier appsettings.json?`
 If not: abort this script with ctrl+c."
@@ -157,31 +154,17 @@ Pause
 
 gentestfile
 
-write-host "`nExtracting certificates"
+write-host "`nExtracting public key"
 Pause
 
-$RsaRootCertLoc = ExtractCert -ThumbPrint $RsaRootCertThumbPrint -Store "root" -ExportPath "RsaRootCert"
-$EcdsaCertLoc = ExtractCert -ThumbPrint $EcdsaCertThumbPrint -Store "my" -ExportPath "EcdsaCert"
-
-#extract pubnlic key from ECDSA Key
-RunWithErrorCheck "$openSslLoc x509 -in $EcdsaCertLoc -inform pem -noout -pubkey -out $EcdsaCertLoc.key"
+ExtractKey -ThumbPrint $EcdsaCertThumbPrint -Store "my" -ExportPath "EcdsaCert"
 
 write-host "`nSigning testfile with Verifier"
 Pause
 
-RunWithErrorCheck "$verifierLoc $testfileName"
+RunWithErrorCheck "$VerifierLoc $TestfileName"
 
-write-host "`nChecking signature of signed testfiles"
-Pause
+Expand-Archive -Force -LiteralPath "$testfileNameNoExt-eks.zip" -DestinationPath ".\Result\" -ErrorAction Stop
 
-Expand-Archive -Force -LiteralPath "$testfileNameNoExt-eks.zip" -DestinationPath ".\$testfileNameNoExt\" -ErrorAction Stop
-
-write-host "`nRSA: "
-RunWithErrorCheck "$openSslLoc cms -verify -CAfile $RsaRootCertLoc -in $script:testfileNameNoExt\content.sig -inform DER -binary -content $script:testfileNameNoExt\export.bin"
-
-write-host "`nECDSA: "
-RunWithErrorCheck "$EksParserLoc $testfileNameNoExt-eks.zip"
-RunWithErrorCheck "$openSslLoc dgst -sha256 -verify $EcdsaCertLoc.key -signature export.sig export.bin"
-
-write-host "`nIf both checks return a succesful verification, then we're done!"
+write-host "`nDone!`nYou can take export.bin, export.sig and the .key-file from the results folder now."
 Pause
