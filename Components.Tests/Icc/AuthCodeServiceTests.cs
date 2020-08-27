@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
 {
     public class AuthCodeServiceTests
     {
-        private AuthCodeService _AuthCodeService;
+        private IAuthCodeService _AuthCodeService;
 
         public AuthCodeServiceTests()
         {

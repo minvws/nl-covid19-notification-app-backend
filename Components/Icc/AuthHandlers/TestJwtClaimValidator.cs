@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
@@ -38,6 +37,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
         public async Task<bool> Validate(IDictionary<string, string> decodedClaims)
         {
+            if (decodedClaims == null) throw new ArgumentNullException(nameof(decodedClaims));
+
             if (decodedClaims["access_token"] == "test_access_token")
             {
                 _Logger.LogWarning("Test JWT Used for authorization!");

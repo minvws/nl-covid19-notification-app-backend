@@ -25,9 +25,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
 
         public JwtClaimValidatorTests()
         {
-            // public JwtClaimValidator(ITheIdentityHubService theIdentityHubService, ILogger<JwtClaimValidator> logger,
-            // IUtcDateTimeProvider dateTimeProvider, IIccPortalConfig iccPortalConfig)
-
             var logger = new TestLogger<JwtClaimValidator>();
             _DateTimeProvider = new StandardUtcDateTimeProvider();
             _Server = WireMockServer.Start();
