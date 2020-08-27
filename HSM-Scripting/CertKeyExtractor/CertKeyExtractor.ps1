@@ -106,7 +106,7 @@ function GenTestFile
 {
 	$contentstring = read-host "Please input a test string that will be used for signing"
 	$date = Get-Date -Format "MM_dd_yyyy_HH-mm"
-	$fileContent = "Key verification file`r`n$contentstring"
+	$fileContent = "Key verification file ($script:Environment)`r`n$contentstring"
 	$script:TestfileNameNoExt = "KeyExtractionRawData"
 	$script:TestfileName = "$script:TestfileNameNoExt.txt"
 	
