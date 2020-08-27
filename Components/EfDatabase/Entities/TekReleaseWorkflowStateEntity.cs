@@ -14,6 +14,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
+
+        /// <summary>
+        /// TODO Could be a date without time.
+        /// </summary>
         public DateTime Created { get; set; }
         public DateTime ValidUntil { get; set; }
 
@@ -45,5 +49,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
 
         public virtual ICollection<TekEntity> Teks { get; set; } = new List<TekEntity>();
 
+        public bool TeksTouched { get; set; }
     }
 }

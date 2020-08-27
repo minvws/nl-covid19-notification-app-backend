@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
     public class LabVerifyArgsValidatorTests
     {
         private LabVerifyArgsValidator _Validator;
-        private PollTokenService _PollTokenService;
+        private IPollTokenService _PollTokenService;
         private const double ClaimLifetimeHours = 3;
         private IUtcDateTimeProvider _UtcDateTimeProvider;
 

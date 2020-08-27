@@ -19,12 +19,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
     public class AuthCodeService : IAuthCodeService
     {
         private readonly IPaddingGenerator _RandomGenerator;
-        private readonly IDistributedCache _cache;
+        private readonly IDistributedCache _Cache;
 
         public AuthCodeService(IPaddingGenerator randomGenerator, IDistributedCache cache)
         {
             _RandomGenerator = randomGenerator ?? throw new ArgumentNullException(nameof(randomGenerator));
-            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            _Cache = cache ?? throw new ArgumentNullException(nameof(cache));
         }
 
         public async Task<string> GenerateAuthCodeAsync(ClaimsPrincipal claimsPrincipal)
@@ -39,18 +39,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             var encodedClaimsPrincipal = Encoding.UTF8.GetBytes(principalJson);
 
             //TODO: add sliding expiration
-            await _cache.SetAsync(authCode, encodedClaimsPrincipal);
+            await _Cache.SetAsync(authCode, encodedClaimsPrincipal);
 
             return authCode;
         }
 
         public async Task<List<AuthClaim>?> GetClaimsByAuthCodeAsync(string authCode)
         {
-            if (authCode == null) throw new ArgumentNullException(nameof(authCode));
+            if (string.IsNullOrWhiteSpace(authCode)) throw new ArgumentException(nameof(authCode));
 
-            List<AuthClaim> result = null;
+            List<AuthClaim>? result = null;
 
-            var encodedAuthClaimList = await _cache.GetAsync(authCode);
+            var encodedAuthClaimList = await _Cache.GetAsync(authCode);
 
             if (encodedAuthClaimList != null)
             {
@@ -63,9 +63,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 
         public async Task RevokeAuthCodeAsync(string authCode)
         {
-            if (authCode == null) throw new ArgumentNullException(nameof(authCode));
+            if (string.IsNullOrWhiteSpace(authCode)) throw new ArgumentException(nameof(authCode));
 
-            await _cache.RemoveAsync(authCode);
+            await _Cache.RemoveAsync(authCode);
         }
     }
 }
