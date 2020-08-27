@@ -82,8 +82,14 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddTransient<AuthorisationWriterCommand>();
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
 
-            if (!_IsDev)
+            if (_IsDev)
             {
+                // var testJwtData = new Dictionary<string, object> {{"access_token", "test_access_token"}, {"id", "0"}};
+                //
+                // var expiry = new StandardUtcDateTimeProvider().Now().AddDays(14).ToUnixTimeU64();
+                //
+                // _Logger.LogInformation(_JwtService.Generate(expiry, testJwtData));
+                
                 services.AddTransient<IJwtClaimValidator, TestJwtClaimValidator>();
             }
             else

@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         }
 
 
-        async Task<bool> IJwtClaimValidator.Validate(IDictionary<string, string> decodedClaims)
+        public async Task<bool> Validate(IDictionary<string, string> decodedClaims)
         {
             if (decodedClaims["access_token"] == "test_access_token")
             {

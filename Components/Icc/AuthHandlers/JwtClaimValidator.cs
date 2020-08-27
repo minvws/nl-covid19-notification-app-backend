@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             _IccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
         }
 
-        async Task<bool> IJwtClaimValidator.Validate(IDictionary<string, string> decodedClaims)
+        public async Task<bool> Validate(IDictionary<string, string> decodedClaims)
         {
             // check exp max. 3 hrs
 
