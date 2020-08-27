@@ -39,6 +39,20 @@ GRANT UPDATE ON [dbo].[EksCreateJobOutput] TO [Dbr_Service_EksEngine];
 GRANT DELETE ON [dbo].[EksCreateJobOutput] TO [Dbr_Service_EksEngine];
 
 GRANT ALTER ON [dbo].[EksCreateJobOutput] TO [Dbr_Service_EksEngine];
+
+--[Dbr_Service_CleanupJob] 
+GRANT INSERT ON [dbo].[EksCreateJobInput] TO [Dbr_Service_CleanupJob];
+GRANT SELECT ON [dbo].[EksCreateJobInput] TO [Dbr_Service_CleanupJob];
+GRANT UPDATE ON [dbo].[EksCreateJobInput] TO [Dbr_Service_CleanupJob];
+GRANT DELETE ON [dbo].[EksCreateJobInput] TO [Dbr_Service_CleanupJob];
+GRANT ALTER ON [dbo].[EksCreateJobInput] TO [Dbr_Service_CleanupJob];
+
+GRANT INSERT ON [dbo].[EksCreateJobOutput] TO [Dbr_Service_CleanupJob];
+GRANT SELECT ON [dbo].[EksCreateJobOutput] TO [Dbr_Service_CleanupJob];
+GRANT UPDATE ON [dbo].[EksCreateJobOutput] TO [Dbr_Service_CleanupJob];
+GRANT DELETE ON [dbo].[EksCreateJobOutput] TO [Dbr_Service_CleanupJob];
+GRANT ALTER ON [dbo].[EksCreateJobOutput] TO [Dbr_Service_CleanupJob];
+
 --end 
 
 GRANT VIEW ANY COLUMN ENCRYPTION KEY DEFINITION TO PUBLIC;

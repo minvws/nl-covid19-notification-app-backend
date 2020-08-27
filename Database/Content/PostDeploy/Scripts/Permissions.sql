@@ -39,6 +39,7 @@ GRANT SELECT ON [dbo].[Content] TO [Dbr_Service_ContentAPI];
 --[Dbr_Service_CleanupJob] 
 GRANT SELECT ON [dbo].[Content] TO [Dbr_Service_CleanupJob];
 GRANT DELETE ON [dbo].[Content] TO [Dbr_Service_CleanupJob];
+GRANT INSERT ON [dbo].[Content] TO [Dbr_Service_CleanupJob];
 
 --[Dbr_Service_ManagementPortal] 
 GRANT SELECT ON [dbo].[Content] TO [Dbr_Service_ManagementPortal];
