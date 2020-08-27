@@ -310,6 +310,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             public int TekCountMin { get; set; } = 10;
 
             public int PageSize { get; set; } = 100;
+            public bool CleanupDeletesData => throw new NotImplementedException(); //ncrunch: no coverage
         }
 
         private class FakeEksBuilder : IEksBuilder

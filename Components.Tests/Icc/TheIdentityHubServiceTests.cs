@@ -139,13 +139,3 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
         }
     }
 }
-
-public static class ServiceCollectionExtensions
-{
-    public static IServiceCollection AddCustomOptions(this IServiceCollection serviceCollection,
-        string name, Action<TheIdentityHubOptions> options)
-    {
-        serviceCollection.Configure(name, options);
-        return serviceCollection;
-    }
-}

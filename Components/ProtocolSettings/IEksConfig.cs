@@ -25,5 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSetti
         int TekCountMin { get; }
 
         int PageSize { get; }
+
+        bool CleanupDeletesData { get; }
     }
 }

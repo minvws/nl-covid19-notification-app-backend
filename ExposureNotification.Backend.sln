@@ -58,7 +58,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ForceTekAuth", "ForceTekAut
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SigTestFileCreator", "SigTestFileCreator\SigTestFileCreator.csproj", "{D3D483FA-9F25-489A-B27A-5A6F0549BE1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EksParser", "EksParser\EksParser.csproj", "{ABAF7EEC-3FF1-4900-A941-F268458DE385}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksParser", "EksParser\EksParser.csproj", "{ABAF7EEC-3FF1-4900-A941-F268458DE385}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DailyCleanup", "DailyCleanup\DailyCleanup.csproj", "{8E025BC6-8D21-40DA-8141-461F82AC6509}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -126,6 +128,10 @@ Global
 		{ABAF7EEC-3FF1-4900-A941-F268458DE385}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABAF7EEC-3FF1-4900-A941-F268458DE385}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABAF7EEC-3FF1-4900-A941-F268458DE385}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E025BC6-8D21-40DA-8141-461F82AC6509}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E025BC6-8D21-40DA-8141-461F82AC6509}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E025BC6-8D21-40DA-8141-461F82AC6509}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E025BC6-8D21-40DA-8141-461F82AC6509}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
