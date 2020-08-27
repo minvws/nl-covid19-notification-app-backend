@@ -49,9 +49,11 @@ GRANT UPDATE ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_EksEngine];
 --[Dbr_Service_CleanupJob] 
 GRANT SELECT ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_CleanupJob];
 GRANT DELETE ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_CleanupJob];
+GRANT UPDATE ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_CleanupJob];
 
 GRANT SELECT ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_CleanupJob];
 GRANT DELETE ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_CleanupJob];
+GRANT UPDATE ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_CleanupJob];
 
 --[Dbr_Service_ManagementPortal] 
 GRANT SELECT ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_ManagementPortal];
