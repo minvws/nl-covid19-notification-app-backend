@@ -20,6 +20,12 @@
       <FixtureTestSelector>
         <FixtureName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.EksBatchJobMk3Tests</FixtureName>
       </FixtureTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.Authorisation.LabVerifyArgsValidatorTests.Validate_checks_pollToken_expires</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.AuthHandlers.JwtServiceTests.NoUnitTestsYet</TestName>
+      </NamedTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>
