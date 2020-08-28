@@ -17,6 +17,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
         }
 
         [Fact]
+        public void Shiftless1()
+        {
+            var buffer = new byte[] { 1 };
+            var actual = buffer.StripLeadingZeros();
+            Assert.Equal(new byte[] { 1 }, actual);
+        }
+
+        [Fact]
+        public void Shiftless3()
+        {
+            var buffer = new byte[] { 1, 0, 0 };
+            var actual = buffer.StripLeadingZeros();
+            Assert.Equal(new byte[] { 1, 0, 0 }, actual);
+        }
+
+        [Fact]
         public void Shift1()
         {
             var buffer = new byte[] { 0, 1 };
