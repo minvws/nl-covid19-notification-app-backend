@@ -11,10 +11,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     public class RemoveExpiredEksCommandResult
     {
         public int Found { get; set; }
-        public int WalkingDead { get; set; }
-        public int Killed { get; set; }
+        public int Zombies { get; set; }
+        public int GivenMercy { get; set; }
         public int Remaining { get; set; }
 
-        public int Reconciliation => Found - Killed - Remaining;
+        public int Reconciliation => Found - GivenMercy - Remaining;
     }
 }

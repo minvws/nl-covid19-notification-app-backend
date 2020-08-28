@@ -64,8 +64,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             var result = command.Execute();
 
             Assert.Equal(0, result.Found);
-            Assert.Equal(0, result.WalkingDead);
-            Assert.Equal(0, result.Killed);
+            Assert.Equal(0, result.Zombies);
+            Assert.Equal(0, result.GivenMercy);
             Assert.Equal(0, result.Remaining);
             Assert.Equal(0, result.Reconciliation);
         }
@@ -97,8 +97,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             var result = command.Execute();
 
             Assert.Equal(1, result.Found);
-            Assert.Equal(1, result.WalkingDead);
-            Assert.Equal(0, result.Killed);
+            Assert.Equal(1, result.Zombies);
+            Assert.Equal(0, result.GivenMercy);
             Assert.Equal(1, result.Remaining);
             Assert.Equal(0, result.Reconciliation);
         }
@@ -132,8 +132,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             var result = command.Execute();
 
             Assert.Equal(1, result.Found);
-            Assert.Equal(1, result.WalkingDead);
-            Assert.Equal(1, result.Killed);
+            Assert.Equal(1, result.Zombies);
+            Assert.Equal(1, result.GivenMercy);
             Assert.Equal(0, result.Remaining);
             Assert.Equal(0, result.Reconciliation);
         }
@@ -169,8 +169,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             var result = command.Execute();
 
             Assert.Equal(20, result.Found);
-            Assert.Equal(5, result.WalkingDead);
-            Assert.Equal(5, result.Killed);
+            Assert.Equal(5, result.Zombies);
+            Assert.Equal(5, result.GivenMercy);
             Assert.Equal(15, result.Remaining);
             Assert.Equal(0, result.Reconciliation);
         }

@@ -7,7 +7,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
     public interface ITekValidPeriodFilter
     {
         /// <summary>
-        /// Assumes future TEKs already killed.
+        /// Assumes future TEKs already given mercy.
         /// Filters out ones too old that would not get into the EKS
         /// </summary>
         FilterResult<Tek> Execute(Tek[] values);
