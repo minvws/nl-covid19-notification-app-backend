@@ -62,8 +62,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SigTestFileCreator", "SigTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksParser", "EksParser\EksParser.csproj", "{ABAF7EEC-3FF1-4900-A941-F268458DE385}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EksGaenReSign", "EksGaenReSign\EksGaenReSign.csproj", "{68CFFF08-7D4B-4870-9950-C3D587ACD376}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -134,10 +132,6 @@ Global
 		{ABAF7EEC-3FF1-4900-A941-F268458DE385}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABAF7EEC-3FF1-4900-A941-F268458DE385}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABAF7EEC-3FF1-4900-A941-F268458DE385}.Release|Any CPU.Build.0 = Release|Any CPU
-		{68CFFF08-7D4B-4870-9950-C3D587ACD376}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{68CFFF08-7D4B-4870-9950-C3D587ACD376}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{68CFFF08-7D4B-4870-9950-C3D587ACD376}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{68CFFF08-7D4B-4870-9950-C3D587ACD376}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -149,7 +143,6 @@ Global
 		{C7481CC9-76CE-4782-81EC-C30FB65ECA0E} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 		{D3D483FA-9F25-489A-B27A-5A6F0549BE1C} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 		{ABAF7EEC-3FF1-4900-A941-F268458DE385} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
-		{68CFFF08-7D4B-4870-9950-C3D587ACD376} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}
