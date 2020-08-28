@@ -103,10 +103,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expi
                         return _Result;
                     }
 
-                    _Result.UnauthorisedKilled = dbc.Database.ExecuteSqlInterpolated($"WITH WalkingDead As ( SELECT Id FROM [TekReleaseWorkflowState] As [w] WHERE [ValidUntil] < {_Dtp.Snapshot} AND [AuthorisedByCaregiver] IS NULL AND [DateOfSymptomsOnset] IS NULL AND [LabConfirmationId] IS NOT NULL) DELETE WalkingDead");
-                    _Logger.LogInformation("Workflows deleted - Unauthorised:{unauthorised}", _Result.UnauthorisedKilled);
-                    _Result.AuthorisedAndFullyPublishedKilled = dbc.Database.ExecuteSqlInterpolated($"WITH WalkingDead As ( SELECT Id FROM [TekReleaseWorkflowState] As [w] WHERE [ValidUntil] < {_Dtp.Snapshot} AND [AuthorisedByCaregiver] IS NOT NULL AND [DateOfSymptomsOnset] IS NOT NULL AND [LabConfirmationId] IS NULL AND (SELECT COUNT(*) FROM [TemporaryExposureKeys] AS [t] WHERE [w].[Id] = [t].[OwnerId] AND [t].[PublishingState] = 0) = 0) DELETE WalkingDead");
-                    _Logger.LogInformation("Workflows deleted - FullyPublished:{fullyPublished}", _Result.AuthorisedAndFullyPublishedKilled);
+                    _Result.UnauthorisedGivenMercy = dbc.Database.ExecuteSqlInterpolated($"WITH Zombies As ( SELECT Id FROM [TekReleaseWorkflowState] As [w] WHERE [ValidUntil] < {_Dtp.Snapshot} AND [AuthorisedByCaregiver] IS NULL AND [DateOfSymptomsOnset] IS NULL AND [LabConfirmationId] IS NOT NULL) DELETE Zombies");
+                    _Logger.LogInformation("Workflows deleted - Unauthorised:{unauthorised}", _Result.UnauthorisedGivenMercy);
+                    _Result.AuthorisedAndFullyPublishedGivenMercy = dbc.Database.ExecuteSqlInterpolated($"WITH Zombies As ( SELECT Id FROM [TekReleaseWorkflowState] As [w] WHERE [ValidUntil] < {_Dtp.Snapshot} AND [AuthorisedByCaregiver] IS NOT NULL AND [DateOfSymptomsOnset] IS NOT NULL AND [LabConfirmationId] IS NULL AND (SELECT COUNT(*) FROM [TemporaryExposureKeys] AS [t] WHERE [w].[Id] = [t].[OwnerId] AND [t].[PublishingState] = 0) = 0) DELETE Zombies");
+                    _Logger.LogInformation("Workflows deleted - FullyPublished:{fullyPublished}", _Result.AuthorisedAndFullyPublishedGivenMercy);
                     tx.Commit();
                 }
 

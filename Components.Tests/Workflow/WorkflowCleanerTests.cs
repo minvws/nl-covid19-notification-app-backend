@@ -66,8 +66,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             Assert.Equal(0, result.Before.TekPublished);
             Assert.Equal(0, result.Before.TekUnpublished);
 
-            Assert.Equal(0, result.UnauthorisedKilled);
-            Assert.Equal(0, result.AuthorisedAndFullyPublishedKilled);
+            Assert.Equal(0, result.UnauthorisedGivenMercy);
+            Assert.Equal(0, result.AuthorisedAndFullyPublishedGivenMercy);
 
             Assert.Equal(0, result.After.Count);
             Assert.Equal(0, result.After.Expired);
@@ -98,8 +98,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             Assert.Equal(0, result.Before.TekPublished);
             Assert.Equal(0, result.Before.TekUnpublished);
 
-            Assert.Equal(0, result.UnauthorisedKilled);
-            Assert.Equal(0, result.AuthorisedAndFullyPublishedKilled);
+            Assert.Equal(0, result.UnauthorisedGivenMercy);
+            Assert.Equal(0, result.AuthorisedAndFullyPublishedGivenMercy);
 
             Assert.Equal(0, result.After.Count);
             Assert.Equal(0, result.After.Expired);
@@ -131,8 +131,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             Assert.Equal(0, result.Before.TekPublished);
             Assert.Equal(0, result.Before.TekUnpublished);
 
-            Assert.Equal(1, result.UnauthorisedKilled);
-            Assert.Equal(0, result.AuthorisedAndFullyPublishedKilled);
+            Assert.Equal(1, result.UnauthorisedGivenMercy);
+            Assert.Equal(0, result.AuthorisedAndFullyPublishedGivenMercy);
 
             Assert.Equal(0, result.After.Count);
             Assert.Equal(0, result.After.Expired);
@@ -169,8 +169,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             Assert.Equal(24, result.Before.TekPublished);
             Assert.Equal(10, result.Before.TekUnpublished);
 
-            Assert.Equal(2, result.UnauthorisedKilled);
-            Assert.Equal(1, result.AuthorisedAndFullyPublishedKilled);
+            Assert.Equal(2, result.UnauthorisedGivenMercy);
+            Assert.Equal(1, result.AuthorisedAndFullyPublishedGivenMercy);
 
             Assert.Equal(2, result.After.Count);
             Assert.Equal(1, result.After.Expired);

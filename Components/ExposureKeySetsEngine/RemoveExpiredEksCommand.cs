@@ -37,15 +37,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 result.Found = _DbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet);
                 _Logger.LogInformation("Current EKS - Count:{found}.", result.Found);
 
-                var walkingDead = _DbContext.Content
+                var zombies = _DbContext.Content
                     .Where(x => x.Type == ContentTypes.ExposureKeySet && x.Release < cutoff)
                     .Select(x => new { x.PublishingId, x.Release })
                     .ToList();
 
-                result.WalkingDead = walkingDead.Count;
+                result.Zombies = zombies.Count;
 
-                _Logger.LogInformation("Found expired EKS - Cutoff:{cutoff:yyyy-MM-dd}, Count:{count}", cutoff, result.WalkingDead);
-                foreach (var i in walkingDead)
+                _Logger.LogInformation("Found expired EKS - Cutoff:{cutoff:yyyy-MM-dd}, Count:{count}", cutoff, result.Zombies);
+                foreach (var i in zombies)
                     _Logger.LogInformation("Found expired EKS - PublishingId:{PublishingId} Release:{Release}", i.PublishingId, i.Release);
 
                 if (!_Config.CleanupDeletesData)
@@ -55,16 +55,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                     return result;
                 }
 
-                result.Killed = _DbContext.Database.ExecuteSqlInterpolated($"DELETE FROM [Content] WHERE [Type] = {ContentTypes.ExposureKeySet} AND [Release] < {cutoff}");
+                result.GivenMercy = _DbContext.Database.ExecuteSqlInterpolated($"DELETE FROM [Content] WHERE [Type] = {ContentTypes.ExposureKeySet} AND [Release] < {cutoff}");
                 tx.Commit();
                 //Implicit tx
                 result.Remaining = _DbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet);
             }
 
-            _Logger.LogInformation("Removed expired EKS - Count:{count}, Remaining:{remaining}", result.Killed, result.Remaining);
+            _Logger.LogInformation("Removed expired EKS - Count:{count}, Remaining:{remaining}", result.GivenMercy, result.Remaining);
 
             if (result.Reconciliation != 0)
-                _Logger.LogError("Reconciliation failed - Found-Killed-Remaining:{remaining}.", result.Reconciliation);
+                _Logger.LogError("Reconciliation failed - Found-GivenMercy-Remaining:{remaining}.", result.Reconciliation);
 
             _Logger.LogInformation("Finished EKS cleanup.");
             return result;
