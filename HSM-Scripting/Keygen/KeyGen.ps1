@@ -5,7 +5,8 @@ $cngtoolloc = "`"C:\Program Files\Utimaco\CryptoServer\Administration\cngtool.ex
 $openSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
 
 $IsOnDevEnvironment = $True #When set to $False: skips sending, signing and accepting of the RSA request
-$CnValue = "ontw.coronamelder-api.nl" #should be [test|acceptatie|signing].coronamelder-api.nl
+$CnValue = "ontw.coronamelder-api.nl" #should be [test.signing|acceptatie.signing|signing].coronamelder-api.nl
+$RootDays = 3650 #the dummy root is valid for 10 years.
 
 $keynameCert
 $keynameRSA
@@ -102,7 +103,7 @@ function GenerateRequestInf([string] $filename, [string] $hashAlgorithm, [string
 "[Version]`
 Signature = `$Windows Nt`$`
 [NewRequest]`
-Subject = `"C=NL, ST=Zuid-Holland, L=Den Haag, O=CIBG, OU=CIBG/serialNumber=00000002006756402002, CN=$script:CnValue`"`
+Subject = `"C=NL, ST=Zuid-Holland, L=Den Haag, O=CIBG, OU=CIBG, SerialNumber=00000002006756402002, CN=$script:CnValue`"`
 Exportable = FALSE`
 HashAlgorithm = $hashAlgorithm`
 KeyAlgorithm = $keyAlgorithm`
@@ -145,7 +146,6 @@ function GenRequests
 	
 	GenerateRequestInf -filename $requestRSAname -hashAlgorithm "SHA256" -keyAlgorithm "RSA" -keyLength "2048" -friendlyName "$FriendlyName-RSA"
 	GenerateRequestInf -filename $requestECDSAname -hashAlgorithm "SHA256" -keyAlgorithm "ECDSA_P256" -keyLength "256" -friendlyName "$FriendlyName-ECDSA" -AddOIDs $false
-
 }
 
 #
@@ -176,7 +176,7 @@ Pause
 SetKeyFileNames
 
 $RootSubject = "/C=NL/ST=Zuid-Holland/L=Den Haag/O=CIBG/OU=CIBG/serialNumber=00000002006756402002/CN=$CnValue"
-RunWithErrorCheck "$openSslLoc req -new -x509 -nodes -subj `"$RootSubject`" -keyout $selfsigncertname.key -out $selfsigncertname.pem"
+RunWithErrorCheck "$openSslLoc req -new -x509 -nodes -subj `"$RootSubject`" -days $RootDays -keyout $selfsigncertname.key -out $selfsigncertname.pem"
 
 write-host "`nStoring certificate in machine root store"
 Pause
@@ -200,9 +200,9 @@ Pause
 #on test/accp/prod the RSA request is signed by PKIO
 if($IsOnDevEnvironment -eq $True)
 {
-	RunWithErrorCheck "$openSslLoc x509 -req -in $requestRSAname.csr -set_serial $(Get-Random) -CA $selfsigncertname.pem -CAkey $selfsigncertname.key -out $signedrequestRSAname.pem"
+	RunWithErrorCheck "$openSslLoc x509 -req -in $requestRSAname.csr -set_serial $(Get-Random) -days $RootDays -CA $selfsigncertname.pem -CAkey $selfsigncertname.key -out $signedrequestRSAname.pem"
 }
-RunWithErrorCheck "$openSslLoc x509 -req -in $requestECDSAname.csr -set_serial $(Get-Random) -CA $selfsigncertname.pem -CAkey $selfsigncertname.key -out $signedrequestECDSAname.pem"
+RunWithErrorCheck "$openSslLoc x509 -req -in $requestECDSAname.csr -set_serial $(Get-Random) -days $RootDays -CA $selfsigncertname.pem -CAkey $selfsigncertname.key -out $signedrequestECDSAname.pem"
 
 write-host "`nSending signed requests to HSM"
 Pause
