@@ -70,8 +70,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
     public static class ByteArrayEx
     {
+        /// <summary>
+        /// Handles zero-length.
+        /// </summary>
         public static byte[] StripLeadingZeros(this byte[] buffer)
         {
+            if (buffer == null) throw new ArgumentException(nameof(buffer));
+
             var i = 0;
             for (; i < buffer.Length && buffer[i] == 0; i++);
 

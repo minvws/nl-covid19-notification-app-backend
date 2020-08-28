@@ -39,5 +39,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
             var actual = buffer.StripLeadingZeros();
             Assert.Equal(new byte[] { 1, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0 }, actual);
         }
+
+        [Fact]
+        public void ZeroLength()
+        {
+            var buffer = new byte[0];
+            var actual = buffer.StripLeadingZeros();
+            Assert.Equal(new byte[0], actual);
+        }
     }
 }
