@@ -2,25 +2,29 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
-using System.Threading.Tasks;
-using JWT;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Text;
+using System.Threading.Tasks;
 using IJsonSerializer = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping.IJsonSerializer;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
+    public class ManifestUpdateCommandResult
+    {
+        public bool Existing { get; set; }
+
+        public bool Updated { get; set; }
+    }
+
     public class ManifestUpdateCommand
     {
         private readonly ManifestBuilder _Builder;
@@ -30,6 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         private readonly IJsonSerializer _JsonSerializer;
         private readonly IContentEntityFormatter _Formatter;
 
+        private readonly ManifestUpdateCommandResult _Result = new ManifestUpdateCommandResult();
         private ContentDbContext _ContentDb;
 
         public ManifestUpdateCommand(ManifestBuilder builder, Func<ContentDbContext> contentDbProvider, ILogger<ManifestUpdateCommand> logger, IUtcDateTimeProvider dateTimeProvider, IJsonSerializer jsonSerializer, IContentEntityFormatter formatter)
@@ -44,6 +49,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 
         public async Task Execute()
         {
+            if (_ContentDb != null)
+                throw new InvalidOperationException("Command already used.");
+
             _ContentDb = _ContentDbProvider();
             await using var tx = _ContentDb.BeginTransaction();
             var candidate = await _Builder.Execute();
@@ -65,6 +73,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             };
             await _Formatter.Fill(e, candidate);
 
+            _Result.Updated = true;
+
             _ContentDb.Add(e);
             _ContentDb.SaveAndCommit();
 
@@ -77,6 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             if (existingContent == null)
                 return true;
 
+            _Result.Existing = true;
             var existingManifest = ParseContent(existingContent.Content);
             return !candidate.Equals(existingManifest);
         }
