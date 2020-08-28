@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
@@ -16,15 +15,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 {
     public class FillDatabasesCommand
     {
-        private readonly WorkflowDatabaseCreateCommand _Workflow;
         private readonly ContentDatabaseCreateCommand _Content;
         private readonly ILogger _Logger;
 
         private readonly WriteFromFile _WriteFromFile;
 
-        public FillDatabasesCommand(WorkflowDatabaseCreateCommand workflow, ContentDatabaseCreateCommand content, ILogger<FillDatabasesCommand> logger, WriteFromFile writeFromFile)
+        public FillDatabasesCommand(ContentDatabaseCreateCommand content, ILogger<FillDatabasesCommand> logger, WriteFromFile writeFromFile)
         {
-            _Workflow = workflow ?? throw new ArgumentNullException(nameof(workflow));
             _Content = content ?? throw new ArgumentNullException(nameof(content));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _WriteFromFile = writeFromFile;
@@ -35,9 +32,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
             if (args.Length == 0)
             {
                 _Logger.LogInformation("Start.");
-
-                _Logger.LogInformation("Workflow...");
-                await _Workflow.AddExampleContent();
 
                 _Logger.LogInformation("Content...");
                 await _Content.AddExampleContent();
