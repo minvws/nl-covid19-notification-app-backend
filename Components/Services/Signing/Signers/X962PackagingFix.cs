@@ -62,15 +62,31 @@
 //
 // With the minimal len 70 = (2+2x(2+32)) and the worst case
 // when both integers have their top bit set; 72 bytes.
-//
-// This does not quite comply with the spec; the BER/DER rule requires
-// encoding with the minimum number of octets (except for 0, which is encoded
-// as 0, length 1). So we should strip off any leading zero bytes. We do not.
 
 using System;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers
 {
+
+    public static class ByteArrayEx
+    {
+        public static byte[] StripLeadingZeros(this byte[] buffer)
+        {
+            var i = 0;
+            for (; i < buffer.Length && buffer[i] == 0; i++);
+
+            if (i == 0)
+                return buffer;
+
+            if (i == buffer.Length)
+                throw new InvalidOperationException("Array is all zeros.");
+
+            var result = new byte[buffer.Length];
+            Array.Copy(buffer, i, result, 0, buffer.Length - i);
+            return result;
+        }
+    }
+
     /// <summary>
     /// Packaging fix over MS .NET implementation
     /// Converted from C provided by DWvG.
@@ -87,6 +103,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             var s = new byte[32];
             Array.Copy(value, r, 32);
             Array.Copy(value, 32, s, 0, 32);
+
+            r = r.StripLeadingZeros();
+            s = s.StripLeadingZeros();
 
             // Start of SEQUENCE
             buffer[0] = 0x30;
