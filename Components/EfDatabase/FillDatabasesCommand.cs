@@ -33,8 +33,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
             {
                 _Logger.LogInformation("Start.");
 
-                _Logger.LogInformation("Content...");
-                await _Content.AddExampleContent();
+                _Logger.LogInformation("Adding initial content");
+                await _Content.AddInitialContent();
 
                 _Logger.LogInformation("Complete.");
 

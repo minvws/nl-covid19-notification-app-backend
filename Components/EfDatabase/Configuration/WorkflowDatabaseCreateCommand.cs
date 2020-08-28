@@ -40,45 +40,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             if (nuke) await _Provider.Database.EnsureDeletedAsync();
             await _Provider.Database.EnsureCreatedAsync();
         }
-
-        public async Task AddExampleContent()
-        {
-            var r2 = new StandardRandomNumberGenerator();
-
-            await using var tx = await _Provider.Database.BeginTransactionAsync();
-
-            var wfs1 = new TekReleaseWorkflowStateEntity
-            {
-                LabConfirmationId = _LabConfirmationIdService.Next(),
-                BucketId = r2.NextByteArray(_WorkflowConfig.BucketIdLength),
-                ConfirmationKey = r2.NextByteArray(_WorkflowConfig.ConfirmationKeyLength),
-                Created = new DateTime(2020, 5, 1,0,0,0,DateTimeKind.Utc),
-            };
-
-            var key1 = new TekEntity
-            {
-                Owner = wfs1,
-                PublishingState = PublishingState.Unpublished,
-                RollingPeriod = 2,
-                RollingStartNumber = DateTime.UtcNow.Date.ToRollingStartNumber(),
-                KeyData = r2.NextByteArray(_TekValidatorConfig.KeyDataLength),
-                Region = "NL"
-            };
-
-
-            var key2 = new TekEntity
-            {
-                Owner = wfs1,
-                PublishingState = PublishingState.Unpublished,
-                RollingPeriod = 144,
-                RollingStartNumber = DateTime.UtcNow.Date.ToRollingStartNumber(),
-                KeyData = r2.NextByteArray(_TekValidatorConfig.KeyDataLength),
-                Region = "NL"
-            };
-
-            await _Provider.KeyReleaseWorkflowStates.AddAsync(wfs1);
-            await _Provider.TemporaryExposureKeys.AddRangeAsync(key1, key2);
-            _Provider.SaveAndCommit();
-        }
     }
 }
