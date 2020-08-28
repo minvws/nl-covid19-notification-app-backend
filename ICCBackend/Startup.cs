@@ -57,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
-            services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
             services.AddSingleton<IPaddingGenerator, CryptoRandomPaddingGenerator>();
 
@@ -87,6 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             if (_IsDev)
             {
                 services.AddTransient<IJwtClaimValidator, TestJwtClaimValidator>();
+                services.AddSingleton<TestJwtGeneratorService>();
             }
             else
             {
@@ -111,6 +112,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             StartupIdentityHub(services);
 
             StartupAuthenticationScheme(services.AddAuthentication(JwtAuthenticationHandler.SchemeName));
+            
+            
+            
         }
 
         private void StartupSwagger(SwaggerGenOptions o)
@@ -156,7 +160,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     options.CallbackPath = iccIdentityHubConfig.CallbackPath;
                 });
 
-
+            
             var iccPortalConfig = new IccPortalConfig(_Configuration);
 
             var policyAuthorizationOptions = new PolicyAuthorizationOptions(_WebHostEnvironment, iccPortalConfig);
@@ -179,6 +183,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         {
             if (_IsDev)
             {
+                app.ApplicationServices.GetService<TestJwtGeneratorService>();
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });

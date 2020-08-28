@@ -21,20 +21,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             _TheIdentityHubService =
                 theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-            if (jwtService != null)
-            {
-                // Move to Singleton pattern
-                _Logger.LogInformation("TestJwtClaimValidator triggered, generating test accesstoken now...");
-                var testJwtData = new Dictionary<string, object> {{"access_token", "test_access_token"}, {"id", "0"}};
-
-                var expiry = new StandardUtcDateTimeProvider().Now().AddDays(14).ToUnixTimeU64();
-
-                _Logger.LogInformation(jwtService.Generate(expiry, testJwtData));
-            }
+           
         }
-
-
+        
         public async Task<bool> Validate(IDictionary<string, string> decodedClaims)
         {
             if (decodedClaims == null) throw new ArgumentNullException(nameof(decodedClaims));
