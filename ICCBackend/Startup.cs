@@ -113,8 +113,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             StartupAuthenticationScheme(services.AddAuthentication(JwtAuthenticationHandler.SchemeName));
             
-            
-            
         }
 
         private void StartupSwagger(SwaggerGenOptions o)

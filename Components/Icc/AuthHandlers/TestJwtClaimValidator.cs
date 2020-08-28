@@ -21,7 +21,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             _TheIdentityHubService =
                 theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-           
         }
         
         public async Task<bool> Validate(IDictionary<string, string> decodedClaims)
