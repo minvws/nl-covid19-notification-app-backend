@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
         {
             var buffer = new byte[] { 0, 1 };
             var actual = buffer.StripLeadingZeros();
-            Assert.Equal(new byte[] { 1, 0 }, actual);
+            Assert.Equal(new byte[] { 1 }, actual);
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
         {
             var buffer = new byte[] { 0, 0, 1, 0 };
             var actual = buffer.StripLeadingZeros();
-            Assert.Equal(new byte[] { 1, 0, 0, 0 }, actual);
+            Assert.Equal(new byte[] { 1, 0 }, actual);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
         {
             var buffer = new byte[] { 0, 0, 0, 0, 0, 0, 1, 0, 1, 2, 0 };
             var actual = buffer.StripLeadingZeros();
-            Assert.Equal(new byte[] { 1, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0 }, actual);
+            Assert.Equal(new byte[] {                   1, 0, 1, 2, 0 }, actual);
         }
 
         [Fact]
