@@ -2,11 +2,15 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
-using System.Security.Claims;
-using TheIdentityHub.AspNetCore.Authentication;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
@@ -18,44 +22,48 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
         public AuthCodeServiceTests()
         {
             var cryptoRandomPaddingGenerator = new CryptoRandomPaddingGenerator(new StandardRandomNumberGenerator());
-            _AuthCodeService = new AuthCodeService(cryptoRandomPaddingGenerator);
+            var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+
+            _AuthCodeService = new AuthCodeService(cryptoRandomPaddingGenerator, cache);
         }
 
         [Fact]
-        public void ValidateIfGeneratedAuthCodeIsStored()
+        public async void ValidateIfGeneratedAuthCodeIsStored()
         {
-            var authCode = _AuthCodeService.Generate(new ClaimsPrincipal());
+            var authCode = await _AuthCodeService.GenerateAuthCodeAsync(new ClaimsPrincipal());
 
-            var result = _AuthCodeService.TryGetClaims(authCode, out _);
+            var result = await _AuthCodeService.GetClaimsByAuthCodeAsync(authCode);
 
-            Assert.True(result);
+            Assert.NotNull(result);
         }
 
 
         [Fact]
-        public void ValidateIfClaimsPrincipalIsStored()
+        public async void ValidateIfClaimsPrincipalIsStored()
         {
-            var identity = new ClaimsIdentity(null, TheIdentityHubDefaults.AuthenticationScheme);
+            var testClaim = new Claim("testType", "testValue", "string");
+            var identity = new ClaimsIdentity(new List<Claim>() {testClaim}, "test");
+
             var expectedClaimsPrincipal = new ClaimsPrincipal(identity);
 
-            var authCode = _AuthCodeService.Generate(expectedClaimsPrincipal);
+            var authCode = await _AuthCodeService.GenerateAuthCodeAsync(expectedClaimsPrincipal);
 
-            var successful = _AuthCodeService.TryGetClaims(authCode, out var outputClaims);
+            var outputClaims = await _AuthCodeService.GetClaimsByAuthCodeAsync(authCode);
 
-            Assert.True(successful);
-            Assert.Equal(expectedClaimsPrincipal, outputClaims);
+            Assert.Equal(testClaim.Type, outputClaims?[0].Type);
+            Assert.Equal(testClaim.Value, outputClaims?[0].Value);
         }
 
         [Fact]
-        public void ValidateIfAuthCodeIsRevokedCorrectly()
+        public async Task ValidateIfAuthCodeIsRevokedCorrectly()
         {
-            var authCode = _AuthCodeService.Generate(new ClaimsPrincipal());
+            var authCode = await _AuthCodeService.GenerateAuthCodeAsync(new ClaimsPrincipal());
 
-            _AuthCodeService.RevokeAuthCode(authCode);
+            await _AuthCodeService.RevokeAuthCodeAsync(authCode);
 
-            var result = _AuthCodeService.TryGetClaims(authCode, out _);
+            var result = await _AuthCodeService.GetClaimsByAuthCodeAsync(authCode);
 
-            Assert.False(result);
+            Assert.Null(result);
         }
     }
 }

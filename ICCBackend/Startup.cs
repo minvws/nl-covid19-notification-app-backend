@@ -61,8 +61,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             
             services.AddSingleton<IPaddingGenerator, CryptoRandomPaddingGenerator>();
             
-            
             services.AddSingleton<IAuthCodeService, AuthCodeService>();
+            services.AddDistributedMemoryCache();
 
             services.AddScoped(x => DbContextStartup.Workflow(x));
             services.AddScoped<HttpPostAuthoriseCommand>();
@@ -83,9 +83,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
             services.AddTransient<IJwtService, JwtService>();
             services.AddTransient<WriteNewPollTokenWriter>();
-            services.AddTransient<PollTokenService>();
+            services.AddTransient<IPollTokenService, PollTokenService>();
             services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
-
             services.AddCors();
 
             if (_IsDev)

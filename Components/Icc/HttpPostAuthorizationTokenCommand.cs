@@ -29,12 +29,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 
         public async Task<IActionResult> Execute(HttpContext httpContext, TokenAuthorisationArgs args)
         {
-            if (!_AuthCodeService.TryGetClaims(args.Code, out ClaimsPrincipal claims))
+            if(args == null) throw new ArgumentNullException(nameof(args));
+
+            var claims = await _AuthCodeService.GetClaimsByAuthCodeAsync(args.Code);
+            if(claims == null)
             {
                 return new UnauthorizedResult();
             }
 
-            _AuthCodeService.RevokeAuthCode(args.Code);
+            //TODO: add sliding expiry time to distributed cache
+            await _AuthCodeService.RevokeAuthCodeAsync(args.Code);
             
             var jwtToken = _JwtService.Generate(claims);
             return new OkObjectResult(new
