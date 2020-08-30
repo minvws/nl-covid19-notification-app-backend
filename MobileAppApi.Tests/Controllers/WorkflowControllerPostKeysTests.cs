@@ -19,21 +19,24 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
+using NCrunch.Framework;
 using Xunit;
 
 namespace MobileAppApi.Tests.Controllers
 {
+    [Collection(nameof(WorkflowControllerPostKeysTests))]
+    [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
     public class WorkflowControllerPostKeysTests : WebApplicationFactory<Startup>, IDisposable
     {
         private readonly byte[] _Key = Convert.FromBase64String(@"PwMcyc8EXF//Qkye1Vl2S6oCOo9HFS7E7vw7y9GOzJk=");
-        private WebApplicationFactory<Startup> _Factory;
+        private readonly WebApplicationFactory<Startup> _Factory;
         private readonly byte[] _BucketId = Convert.FromBase64String(@"idlVmyDGeAXTyaNN06Uejy6tLgkgWtj32sLRJm/OuP8=");
-        private WorkflowDbContext _DbContext;
+        private readonly WorkflowDbContext _DbContext;
 
         public WorkflowControllerPostKeysTests()
         {
-            Func<WorkflowDbContext> dbcFac = () => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer("Data Source=.;Database=WorkflowControllerPostKeysTests2;Integrated Security=True").Options);
-            _DbContext = dbcFac();
+            WorkflowDbContext DbcFac() => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer($"Data Source=.;Database={nameof(WorkflowControllerPostKeysTests)};Integrated Security=True").Options);
+            _DbContext = DbcFac();
 
             _Factory = WithWebHostBuilder(builder =>
             {
@@ -41,7 +44,7 @@ namespace MobileAppApi.Tests.Controllers
                 {
                     services.AddScoped(sp =>
                     {
-                        var context = dbcFac();
+                        var context = DbcFac();
                         context.BeginTransaction();
                         return context;
                     });

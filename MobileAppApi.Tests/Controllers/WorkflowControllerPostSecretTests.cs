@@ -16,21 +16,26 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using NCrunch.Framework;
 using Xunit;
 
 namespace MobileAppApi.Tests.Controllers
 {
+
+    [Collection(nameof(WorkflowControllerPostSecretTests))]
+    [ExclusivelyUses(nameof(WorkflowControllerPostSecretTests))]
     public class WorkflowControllerPostSecretTests : WebApplicationFactory<Startup>, IDisposable
     {
-        private WebApplicationFactory<Startup> _Factory;
-        private WorkflowDbContext _DbContext;
+        private readonly WebApplicationFactory<Startup> _Factory;
+        private readonly WorkflowDbContext _DbContext;
+        private readonly FakeNumberGen _FakeNumbers = new FakeNumberGen();
 
         public WorkflowControllerPostSecretTests()
         {
-            Func<WorkflowDbContext> dbcFac = () => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer("Data Source=.;Database=WorkflowControllerPostSecretTests;Integrated Security=True").Options);
-            _DbContext = dbcFac();
+            WorkflowDbContext DbcFac() => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer($"Data Source=.;Database={nameof(WorkflowControllerPostSecretTests)};Integrated Security=True").Options);
+            _DbContext = DbcFac();
 
-            _FakeNumbers = new FakeNumberGen();
+            
 
             _Factory = WithWebHostBuilder(builder =>
             {
@@ -38,7 +43,7 @@ namespace MobileAppApi.Tests.Controllers
                 {
                     services.AddScoped(sp =>
                     {
-                        var context = dbcFac();
+                        var context = DbcFac();
                         context.BeginTransaction();
                         return context;
                     });
@@ -51,8 +56,6 @@ namespace MobileAppApi.Tests.Controllers
             _DbContext.Database.EnsureDeleted();
             _DbContext.Database.EnsureCreated();
         }
-
-        private FakeNumberGen _FakeNumbers;
 
         private class FakeNumberGen: IRandomNumberGenerator
         {
