@@ -7,7 +7,7 @@
     "test": "mocha --recursive --reporter mocha-junit-reporter,mochawesome",
     "reporter": "mocha-junit-reporter",
     "reporterOptions": {
-          "mochaFile": "./reports/junit/junit-corona-backend-testreport.xml"
+      "mochaFile": "./reports/junit/junit-corona-backend-testreport.xml"
     }
   },
   "keywords": [],

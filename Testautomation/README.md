@@ -52,6 +52,7 @@ Based on the existing behaviors, endpoints and data providers a test scenario ca
     * regression => runs the whole API test suite
 * To run a collection the following command can be used
     * mocha --recursive --grep '#endpoints'  --environment=TST --reporter mocha-junit-reporter --reporter-options mochaFile=./reports/junit/file.xml
+    * mocha --recursive --grep '#endpoints'  --environment=TST --reporter mochawesome --reporter-options reportDir=./reports/mochawesome,reportFilename=mochawesome
         ** recursive: fetches all test on lower directories
         ** grep: search term in header of every test
         ** #endpoints: search term by grep
