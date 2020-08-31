@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 {
-    public static class AssemblyStuff
+    public static class AssemblyExtensions
     { 
         public static T GetCustomAttribute<T>(this Assembly assembly) where T : Attribute
             => (T)assembly.GetCustomAttributes(typeof(T), false).FirstOrDefault();

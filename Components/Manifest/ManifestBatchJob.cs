@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 
         public async Task Execute()
         {
-            if (!WindowsIdentityStuff.CurrentUserIsAdministrator())
+            if (!WindowsIdentityQueries.CurrentUserIsAdministrator())
                 _Logger.LogWarning("{ManifestBatchJobName} started WITHOUT elevated privileges - errors may occur when signing content.", nameof(ManifestBatchJob));
 
             try

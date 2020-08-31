@@ -50,7 +50,7 @@
                 _eksFileOutputLocation = FilePathWithoutExtension + "-eks" + ".Zip";
             }
 
-            if (Environment.UserInteractive && !WindowsIdentityStuff.CurrentUserIsAdministrator())
+            if (Environment.UserInteractive && !WindowsIdentityQueries.CurrentUserIsAdministrator())
                 _Logger.LogError("The test was started WITHOUT elevated privileges - errors may occur when signing content.");
 
             LoadFile(_fileInputLocation);

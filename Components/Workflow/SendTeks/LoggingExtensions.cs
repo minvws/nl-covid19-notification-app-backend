@@ -7,7 +7,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
-    public static class LoggingEx
+    public static class LoggingExtensions
     {
         private const string Name = "postkeys";
 
