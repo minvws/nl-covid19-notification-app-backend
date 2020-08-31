@@ -62,77 +62,35 @@
 //
 // With the minimal len 70 = (2+2x(2+32)) and the worst case
 // when both integers have their top bit set; 72 bytes.
-//
-// This does not quite comply with the spec; the BER/DER rule requires
-// encoding with the minimum number of octets (except for 0, which is encoded
-// as 0, length 1). So we should strip off any leading zero bytes. We do not.
 
 using System;
+using System.Diagnostics;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers
 {
-    /// <summary>
-    /// Packaging fix over MS .NET implementation
-    /// Converted from C provided by DWvG.
-    /// </summary>
+
     public class X962PackagingFix
     {
         public byte[] Format(byte[] value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
 
-            var buffer = new byte[72];
-
             var r = new byte[32];
             var s = new byte[32];
             Array.Copy(value, r, 32);
             Array.Copy(value, 32, s, 0, 32);
+            r = r.ToANS1Integer();
+            s = s.ToANS1Integer();
 
             // Start of SEQUENCE
+            var buffer = new byte[r.Length + s.Length + 2];
             buffer[0] = 0x30;
-
-            // Length of sequence - including 0 prefixes when top bit of r/s are set.
-            //
-            buffer[1] = (byte)(0x44 + (r[0] >= 0x80 ? 1 : 0) + (s[0] >= 0x80 ? 1 : 0));
-
-            // Integer header for an intger without a top bit set and when set.
-            //
-            var ia = new byte[] { 0x02, 0x20 };
-            var ib = new byte[] { 0x02, 0x21, 0x0 };
-
-            var index = 2;
-            if (r[0] >= 0x80)
-            {
-                Array.Copy(ib, 0, buffer, index, ib.Length);
-                index += ib.Length;
-            }
-            else
-            {
-                Array.Copy(ia, 0, buffer, index, ia.Length);
-                index += ia.Length;
-            }
-            Array.Copy(r, 0, buffer, index, r.Length);
-            index += r.Length;
-
-            if (s[0] >= 0x80)
-            {
-                Array.Copy(ib, 0, buffer, index, ib.Length);
-                index += ib.Length;
-            }
-            else
-            {
-                Array.Copy(ia, 0, buffer, index, ia.Length);
-                index += ia.Length;
-            }
-            Array.Copy(s, 0, buffer, index, s.Length);
-            index += s.Length;
-
-            // Result length varies between 70 and 72.
-            //
-            var result = new byte[index];
-            Array.Copy(buffer, result, index);
-
-            return result;
+            buffer[1] = (byte)(r.Length + s.Length);
+            //Start at 2
+            Array.Copy(r, 0, buffer, 2, r.Length);
+            Array.Copy(s, 0, buffer, 2 + r.Length, s.Length);
+            Debug.Assert(buffer[3] <= 0x21);
+            return buffer;
         }
     }
 }
