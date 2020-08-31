@@ -2,11 +2,11 @@ const chai = require("chai");
 const expect = chai.expect;
 const app_register = require("../behaviours/app_register_behaviour");
 const lab_confirm = require("../behaviours/labconfirm_behaviour");
-const formater_labconfirm = require("../../util/format_strings").format_confirmation_Id;
+const formater_labconfirm = require("../../util/format_strings").format_lab_confirm_id;
 const dataprovider = require("../data/dataprovider");
 
 describe("Lab confirm endpoints tests #labconfirm #endpoints #regression", function () {
-  this.timeout(2000 * 60 * 30);
+  this.timeout(3000 * 60 * 30);
 
   let app_register_response, lab_confirm_response, labConfirmationId;
 
@@ -21,7 +21,7 @@ describe("Lab confirm endpoints tests #labconfirm #endpoints #regression", funct
       map.set("LABCONFIRMATIONID", formater_labconfirm(labConfirmationId));
 
       return lab_confirm(
-          dataprovider("lab_confirm_payload", "payload", "valid_dynamic", map)
+          dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic", map)
           ).then(function (confirm){
         lab_confirm_response = confirm;
         // console.log(lab_confirm_response);
@@ -64,5 +64,7 @@ describe("Lab confirm endpoints tests #labconfirm #endpoints #regression", funct
   it('Labconfirm response time is under 5 sec.', function (){
     expect(lab_confirm_response.headers['request-duration'],"response time is below 5 sec.").to.be.below(5000);
   });
+
+  dataprovider.clear_saved();
 
 });

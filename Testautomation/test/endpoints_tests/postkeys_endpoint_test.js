@@ -6,7 +6,7 @@ const testsSig = require("../../util/sig_encoding");
 const dataprovider = require("../data/dataprovider");
 const formater = require("../../util/format_strings").formater;
 
-describe("Postkyes endpoints tests #postkeys #endpoints #regression", function () {
+describe("Postkyes endpoint tests #postkeys #endpoints #regression", function () {
     this.timeout(2000 * 60 * 30);
 
     let app_register_response, postkeys_response, formated_bucket_id;
@@ -20,7 +20,7 @@ describe("Postkyes endpoints tests #postkeys #endpoints #regression", function (
             map.set("BUCKETID", formated_bucket_id);
 
             return testsSig.testsSig(
-                dataprovider("post_keys_payload", "payload", "valid_dynamic", map),
+                dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", map),
                 formater(app_register_response.data.confirmationKey)
             )
         }).then(function (sig) {
@@ -28,7 +28,7 @@ describe("Postkyes endpoints tests #postkeys #endpoints #regression", function (
             map.set("BUCKETID", formated_bucket_id);
 
             return post_keys(
-                dataprovider("post_keys_payload", "payload", "valid_dynamic", map)
+                dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", map)
                 ,sig.sig).then(function (postkeys) {
                 postkeys_response = postkeys;
             });
@@ -54,5 +54,5 @@ describe("Postkyes endpoints tests #postkeys #endpoints #regression", function (
         expect(postkeys_response.headers['request-duration'], "response time is below 5 sec.").to.be.below(5000);
     });
 
-
+    dataprovider.clear_saved();
 });

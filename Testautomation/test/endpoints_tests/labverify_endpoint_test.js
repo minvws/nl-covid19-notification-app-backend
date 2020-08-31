@@ -3,11 +3,11 @@ const expect = chai.expect;
 const app_register = require("../behaviours/app_register_behaviour");
 const lab_confirm = require("../behaviours/labconfirm_behaviour");
 const lab_verify = require("../behaviours/labverify_behaviour");
-const formater_labconfirm = require("../../util/format_strings").format_confirmation_Id;
+const formater_labconfirm = require("../../util/format_strings").format_lab_confirm_id;
 const dataprovider = require("../data/dataprovider");
 
 describe("Lab verify endpoints tests #labverify #endpoints #regression", function () {
-  this.timeout(2000 * 60 * 30);
+  this.timeout(3000 * 60 * 30);
 
   let app_register_response, lab_confirm_response, pollToken, lab_verify_response, labConfirmationId;
 
@@ -19,7 +19,7 @@ describe("Lab verify endpoints tests #labverify #endpoints #regression", functio
         let map = new Map();
         map.set("LABCONFIRMATIONID", formater_labconfirm(labConfirmationId));
 
-        return lab_confirm(dataprovider("lab_confirm_payload", "payload", "valid_dynamic", map)
+        return lab_confirm(dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic", map)
         ).then(function (confirm){
           lab_confirm_response = confirm;
           pollToken = confirm.data.pollToken;
@@ -80,5 +80,7 @@ describe("Lab verify endpoints tests #labverify #endpoints #regression", functio
   it('Labverify response time is under 5 sec.', function (){
     expect(lab_verify_response.headers['request-duration'],"response time is below 5 sec.").to.be.below(5000);
   });
+
+  dataprovider.clear_saved();
 
 });

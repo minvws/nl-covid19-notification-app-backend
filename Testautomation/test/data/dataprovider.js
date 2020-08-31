@@ -3,7 +3,7 @@ const scen = {
   lab_confirm_payload: require("./scenario_data/lab_confirm_payload")
 };
 
-const saved = new Map();
+let saved = new Map();
 
 function get_data(scenario, step, state, map_of_vars) {
   if (saved.has(scenario)) {
@@ -21,4 +21,11 @@ function get_data(scenario, step, state, map_of_vars) {
   return base;
 }
 
-module.exports = get_data;
+function clear_saved(){
+  this.saved = new Map();
+}
+
+module.exports = {
+  get_data: get_data,
+  clear_saved: clear_saved
+}

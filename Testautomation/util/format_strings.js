@@ -8,5 +8,5 @@ function lab_comfirm_id(str){
 
 module.exports = {
     formater: formater,
-    format_confirmation_Id: lab_comfirm_id
+    format_lab_confirm_id: lab_comfirm_id
 }
