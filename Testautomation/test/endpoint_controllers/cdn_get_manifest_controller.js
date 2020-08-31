@@ -22,7 +22,7 @@ async function manifest(endpoint) {
 
     // add logging on request and response
     instance.interceptors.request.use(axiosLogger.requestLogger,axiosLogger.errorLogger);
-    instance.interceptors.response.use(axiosLogger.responseLogger,axiosLogger.errorLogger);
+    // instance.interceptors.response.use(axiosLogger.errorLogger);
 
     const response = await instance({
         method: "get",
