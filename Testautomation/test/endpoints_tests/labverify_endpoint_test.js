@@ -3,7 +3,7 @@ const expect = chai.expect;
 const app_register = require("../behaviours/app_register_behaviour");
 const lab_confirm = require("../behaviours/labconfirm_behaviour");
 const lab_verify = require("../behaviours/labverify_behaviour");
-const formater_labconfirm = require("../../util/format_strings").format_lab_confirm_id;
+const formatter = require("../../util/format_strings");
 const dataprovider = require("../data/dataprovider");
 
 describe("Lab verify endpoints tests #labverify #endpoints #regression", function () {
@@ -17,7 +17,7 @@ describe("Lab verify endpoints tests #labverify #endpoints #regression", functio
         labConfirmationId = register.data.labConfirmationId;
       }).then(function (){
         let map = new Map();
-        map.set("LABCONFIRMATIONID", formater_labconfirm(labConfirmationId));
+        map.set("LABCONFIRMATIONID", formatter.format_remove_dash(labConfirmationId));
 
         return lab_confirm(dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic", map)
         ).then(function (confirm){
@@ -31,6 +31,9 @@ describe("Lab verify endpoints tests #labverify #endpoints #regression", functio
       });
     });
 
+  after(function (){
+    dataprovider.clear_saved();
+  })
 
   it("I should be registered", function () {
     expect(
@@ -80,7 +83,5 @@ describe("Lab verify endpoints tests #labverify #endpoints #regression", functio
   it('Labverify response time is under 5 sec.', function (){
     expect(lab_verify_response.headers['request-duration'],"response time is below 5 sec.").to.be.below(5000);
   });
-
-  dataprovider.clear_saved();
 
 });
