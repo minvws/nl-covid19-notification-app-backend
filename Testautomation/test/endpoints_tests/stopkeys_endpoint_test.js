@@ -22,7 +22,7 @@ describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function (
             map.set("BUCKETID", formated_bucket_id);
 
             return testsSig.testsSig(
-                dataprovider("post_keys_payload", "payload", "valid_dynamic", map),
+                dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", map),
                 formater(app_register_response.data.confirmationKey)
             )
         })
@@ -31,7 +31,7 @@ describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function (
                 map.set("BUCKETID", formated_bucket_id);
 
                 return stop_keys(
-                    dataprovider("post_keys_payload", "payload", "valid_dynamic", map), sig.sig
+                    dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", map), sig.sig
                 ).then(function (stopkeys) {
                     stopkeys_response = stopkeys;
                 });
@@ -58,5 +58,5 @@ describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function (
         expect(stopkeys_response.headers['request-duration'], "response time is below 5 sec.").to.be.below(5000);
     });
 
-
+    dataprovider.clear_saved();
 });

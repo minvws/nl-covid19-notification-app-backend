@@ -10,7 +10,7 @@ const manifest = require("../behaviours/manifest_behaviour");
 const exposure_key_set = require("../behaviours/exposure_keys_set_behaviour");
 const decode_protobuf = require("../../util/protobuff_decoding");
 const formater = require("../../util/format_strings").formater;
-const formater_labconfirm = require("../../util/format_strings").format_confirmation_Id;
+const formater_labconfirm = require("../../util/format_strings").format_lab_confirm_id;
 
 describe("Validate push of my exposure key into manifest - #expose_keys #scenario #regression", function () {
   this.timeout(2000 * 60 * 30);
