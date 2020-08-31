@@ -5,13 +5,15 @@ $OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
 $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
 $testfileNameNoExt = ""
 $testfileName = ""
-$verifierLoc = ".\Verifier\SigTestFileCreator.exe"
+$tempFolderLoc
+$verifierLoc = "C:\HSMTest\CertVerify\Verifier\SigTestFileCreator.exe"
+$EksParserLoc = "C:\HSMTest\CertVerify\EksParser\EksParser.exe"
 $RsaRootCertLoc = ""
 $EcdsaCertLoc = ""
-$EksParserLoc = ".\EksParser\EksParser.exe"
 
-$RsaRootCertThumbPrint = "61d9cfc82f55cfbb4fb9f67ff5f35634832c7097"
-$EcdsaCertThumbPrint = "fe3c560eeb63cb8f945e746194de4a168dba20d1"
+
+$RsaRootCertThumbPrint = ""
+$EcdsaCertThumbPrint = ""
 
 function SetErrorToStop
 {
@@ -96,12 +98,13 @@ function RunWithErrorCheck ([string]$command)
 
 function GenTestFile
 {
-	$date = Get-Date -Format "MM_dd_yyyy_HH-mm"
+	$date = Get-Date -Format "MM_dd_HH-mm-ss"
 	$fileContent = "Key verification file: $date"
+	$script:tempFolderLoc = "Temp-$date"
 	$script:testfileNameNoExt = "keytest$date"
 	$script:testfileName = ("keytest$date" + ".txt") 
 	
-	New-Item -force -name ($script:testfileName) -path "." -ItemType File -Value $fileContent -ErrorAction Stop
+	New-Item -force -name ($script:testfileName) -path ".\$script:tempFolderLoc\" -ItemType File -Value $fileContent -ErrorAction Stop
 }
 
 function ExtractCert ([String] $ThumbPrint, [String] $Store, [String] $ExportPath)
@@ -160,8 +163,8 @@ gentestfile
 write-host "`nExtracting certificates"
 Pause
 
-$RsaRootCertLoc = ExtractCert -ThumbPrint $RsaRootCertThumbPrint -Store "root" -ExportPath "RsaRootCert"
-$EcdsaCertLoc = ExtractCert -ThumbPrint $EcdsaCertThumbPrint -Store "my" -ExportPath "EcdsaCert"
+$RsaRootCertLoc = ExtractCert -ThumbPrint $RsaRootCertThumbPrint -Store "root" -ExportPath ".\$tempFolderLoc\RsaRootCert"
+$EcdsaCertLoc = ExtractCert -ThumbPrint $EcdsaCertThumbPrint -Store "my" -ExportPath ".\$tempFolderLoc\EcdsaCert"
 
 #extract pubnlic key from ECDSA Key
 RunWithErrorCheck "$openSslLoc x509 -in $EcdsaCertLoc -inform pem -noout -pubkey -out $EcdsaCertLoc.key"
@@ -169,19 +172,21 @@ RunWithErrorCheck "$openSslLoc x509 -in $EcdsaCertLoc -inform pem -noout -pubkey
 write-host "`nSigning testfile with Verifier"
 Pause
 
-RunWithErrorCheck "$verifierLoc $testfileName"
+RunWithErrorCheck "$verifierLoc .\$tempFolderLoc\$testfileName"
 
 write-host "`nChecking signature of signed testfiles"
 Pause
 
-Expand-Archive -Force -LiteralPath "$testfileNameNoExt-eks.zip" -DestinationPath ".\$testfileNameNoExt\" -ErrorAction Stop
+Expand-Archive -Force -LiteralPath ".\$tempFolderLoc\$testfileNameNoExt-eks.zip" -DestinationPath ".\$tempFolderLoc\$testfileNameNoExt\" -ErrorAction Stop
 
 write-host "`nRSA: "
-RunWithErrorCheck "$openSslLoc cms -verify -CAfile $RsaRootCertLoc -in $script:testfileNameNoExt\content.sig -inform DER -binary -content $script:testfileNameNoExt\export.bin -purpose any"
+RunWithErrorCheck "$openSslLoc cms -verify -CAfile $RsaRootCertLoc -in .\$tempFolderLoc\$testfileNameNoExt\content.sig -inform DER -binary -content .\$tempFolderLoc\$testfileNameNoExt\export.bin -purpose any"
 
 write-host "`nECDSA: "
+cd ".\$tempFolderLoc" # EksParser puts results in calling folder
 RunWithErrorCheck "$EksParserLoc $testfileNameNoExt-eks.zip"
-RunWithErrorCheck "$openSslLoc dgst -sha256 -verify $EcdsaCertLoc.key -signature export.sig export.bin"
+cd ..
+RunWithErrorCheck "$openSslLoc dgst -sha256 -verify $EcdsaCertLoc.key -signature .\$tempFolderLoc\export.sig .\$tempFolderLoc\export.bin"
 
 write-host "`nIf both checks return a succesful verification, then we're done!"
 Pause
