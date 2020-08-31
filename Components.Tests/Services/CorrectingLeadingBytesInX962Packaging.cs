@@ -13,7 +13,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
         [Fact]
         public void AllZeros()
         {
-            Assert.Throws<InvalidOperationException>(() => new byte[32].StripLeadingZeros());
+            var actual = new byte[32].StripLeadingZeros();
+            Assert.Equal(new byte[1], actual);
         }
 
         [Fact]
