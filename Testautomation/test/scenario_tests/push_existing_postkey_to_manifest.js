@@ -9,8 +9,7 @@ const lab_verify = require("../behaviours/labverify_behaviour");
 const manifest = require("../behaviours/manifest_behaviour");
 const exposure_key_set = require("../behaviours/exposure_keys_set_behaviour");
 const decode_protobuf = require("../../util/protobuff_decoding");
-const formater = require("../../util/format_strings").formater;
-const formater_labconfirm = require("../../util/format_strings").format_lab_confirm_id;
+const formatter = require("../../util/format_strings");
 
 describe("Validate push of my exposure key into manifest - #expose_keys #scenario #regression", function () {
   this.timeout(2000 * 60 * 30);
@@ -36,13 +35,13 @@ describe("Validate push of my exposure key into manifest - #expose_keys #scenari
         labConfirmationId = register.data.labConfirmationId;
       })
       .then(function (sig) {
-        formated_bucket_id = formater(app_register_response.data.bucketId);
+        formated_bucket_id = formatter.format_remove_characters(app_register_response.data.bucketId);
         let map = new Map();
         map.set("BUCKETID", formated_bucket_id);
 
         return testsSig.testsSig(
           dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", map),
-          formater(app_register_response.data.confirmationKey)
+          formatter.format_remove_characters(app_register_response.data.confirmationKey)
         );
       })
       .then(function (sig) {
@@ -58,7 +57,7 @@ describe("Validate push of my exposure key into manifest - #expose_keys #scenari
       })
       .then(function () {
         let map = new Map();
-        map.set("LABCONFIRMATIONID", formater_labconfirm(labConfirmationId));
+        map.set("LABCONFIRMATIONID", formatter.format_remove_dash(labConfirmationId));
 
         return lab_confirm(dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic", map)
         ).then(function (confirm) {
@@ -89,6 +88,10 @@ describe("Validate push of my exposure key into manifest - #expose_keys #scenari
       });
   });
 
+  after(function (){
+    dataprovider.clear_saved();
+  })
+
   it("The exposureKey pushed was in the manifest", function () {
     let exposure_key_send = JSON.parse(
       dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", new Map())
@@ -109,5 +112,4 @@ describe("Validate push of my exposure key into manifest - #expose_keys #scenari
     }
   });
 
-  dataprovider.clear_saved();
 });

@@ -1,12 +1,12 @@
-function formater(str) {
+function remove_characters(str) {
     return str.replace(/"/g, '').replace(/,$/g, '')
 }
 
-function lab_comfirm_id(str){
+function remove_dash_lab_comfirm_id(str){
     return str.replace(/-/g,'');
 }
 
 module.exports = {
-    formater: formater,
-    format_lab_confirm_id: lab_comfirm_id
+    format_remove_characters: remove_characters,
+    format_remove_dash: remove_dash_lab_comfirm_id
 }
