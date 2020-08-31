@@ -14,6 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
     {
         private readonly ITheIdentityHubService _TheIdentityHubService;
         private readonly ILogger<TestJwtClaimValidator> _Logger;
+        const string _TestAccessToken = "test_access_token";
 
         public TestJwtClaimValidator(ITheIdentityHubService theIdentityHubService,
             ILogger<TestJwtClaimValidator> logger, IJwtService? jwtService)
@@ -22,12 +23,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
                 theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-        
+
         public async Task<bool> Validate(IDictionary<string, string> decodedClaims)
         {
             if (decodedClaims == null) throw new ArgumentNullException(nameof(decodedClaims));
 
-            if (decodedClaims["access_token"] == "test_access_token")
+            if (!decodedClaims.ContainsKey("access_token"))
+            {
+                return false;
+            }
+
+            if (decodedClaims["access_token"] == _TestAccessToken)
             {
                 _Logger.LogWarning("Test JWT Used for authorization!");
                 return true;
