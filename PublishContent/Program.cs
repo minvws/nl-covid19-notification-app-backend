@@ -19,7 +19,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 
-namespace DbFillExampleContent
+namespace PublishContent
 {
     internal class Program
     {
@@ -31,7 +31,7 @@ namespace DbFillExampleContent
 
         private static void Start(IServiceProvider services, string[] args)
         {
-            services.GetRequiredService<FillDatabasesCommand>().Execute(args).GetAwaiter().GetResult();
+            services.GetRequiredService<PublishContentCommand>().Execute(args).GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
@@ -41,7 +41,7 @@ namespace DbFillExampleContent
 
             services.AddScoped(x => DbContextStartup.Content(x, false));
 
-            services.AddTransient<FillDatabasesCommand>();
+            services.AddTransient<PublishContentCommand>();
             services.AddTransient<ContentDatabaseCreateCommand>();
 
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
@@ -49,7 +49,6 @@ namespace DbFillExampleContent
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<IContentSigner, CmsSignerEnhanced>();
 
-            services.AddTransient<WriteFromFile>();
             services.AddTransient<ContentValidator>();
             services.AddTransient<ContentInsertDbCommand>();
 
