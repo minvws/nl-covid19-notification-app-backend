@@ -41,7 +41,7 @@ describe("Validate push of my exposure key into manifest - #expose_keys #scenari
         map.set("BUCKETID", formated_bucket_id);
 
         return testsSig.testsSig(
-          dataprovider("post_keys_payload", "payload", "valid_dynamic", map),
+          dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", map),
           formater(app_register_response.data.confirmationKey)
         );
       })
@@ -50,7 +50,7 @@ describe("Validate push of my exposure key into manifest - #expose_keys #scenari
         map.set("BUCKETID", formated_bucket_id);
 
         return post_keys(
-          dataprovider("post_keys_payload", "payload", "valid_dynamic", map),
+          dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", map),
           sig.sig
         ).then(function (postkeys) {
           postkeys_response = postkeys;
@@ -60,7 +60,7 @@ describe("Validate push of my exposure key into manifest - #expose_keys #scenari
         let map = new Map();
         map.set("LABCONFIRMATIONID", formater_labconfirm(labConfirmationId));
 
-        return lab_confirm(dataprovider("lab_confirm_payload", "payload", "valid_dynamic", map)
+        return lab_confirm(dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic", map)
         ).then(function (confirm) {
           lab_confirm_response = confirm;
           pollToken = confirm.data.pollToken;
@@ -91,7 +91,7 @@ describe("Validate push of my exposure key into manifest - #expose_keys #scenari
 
   it("The exposureKey pushed was in the manifest", function () {
     let exposure_key_send = JSON.parse(
-      dataprovider("post_keys_payload", "payload", "valid_dynamic", new Map())
+      dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", new Map())
     ).keys[0].keyData;
 
     let found = false;
@@ -108,4 +108,6 @@ describe("Validate push of my exposure key into manifest - #expose_keys #scenari
       );
     }
   });
+
+  dataprovider.clear_saved();
 });
