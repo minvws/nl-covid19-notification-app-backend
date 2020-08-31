@@ -44,15 +44,7 @@ namespace DbFillExampleContent
             services.AddTransient<FillDatabasesCommand>();
             services.AddTransient<ContentDatabaseCreateCommand>();
 
-            // services.AddSingleton<ITekValidatorConfig, TekValidatorConfig>();
-            // services.AddSingleton<IEksConfig, StandardEksConfig>();
-
-            // services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
-            // services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
-            // services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
-            // services.AddTransient<ContentValidator>();
-            // services.AddTransient<ContentInsertDbCommand>();
 
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<IContentSigner, CmsSignerEnhanced>();
