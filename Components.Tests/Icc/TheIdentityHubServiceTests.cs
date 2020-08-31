@@ -19,33 +19,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
     public class TheIdentityHubServiceTests
     {
         private ITheIdentityHubService _TheIdentityHubService;
-        private IOptionsMonitor<TheIdentityHubOptions> _Options;
+        
         private WireMockServer _Server;
 
         public TheIdentityHubServiceTests()
         {
-            var logger = new TestLogger<TheIdentityHubService>();
             _Server = WireMockServer.Start();
-            
             if (_Server.Urls.Length < 1)
             {
                 throw new Exception("WireMockServer not started correctly");
             }
-
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddCustomOptions(TheIdentityHubDefaults.AuthenticationScheme, options =>
-            {
-                options.TheIdentityHubUrl = new Uri(_Server.Urls[0]);
-                options.Tenant = "ggdghornl_test";
-                options.ClientId = "0";
-                options.ClientSecret = "supersecret";
-                options.CallbackPath = "/signin-identityhub";
-                options.Backchannel = new HttpClient();
-            });
-            var builder = serviceCollection.BuildServiceProvider();
-            _Options = builder.GetService<IOptionsMonitor<TheIdentityHubOptions>>();
-
-            _TheIdentityHubService = new TheIdentityHubService(_Options, logger);
+            
+            _TheIdentityHubService =  TestTheIdentityHubServiceCreator.CreateInstance(_Server);
         }
 
         [Fact]

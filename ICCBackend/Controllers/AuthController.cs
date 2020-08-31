@@ -24,8 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-
-        [Authorize(Policy = "TelefonistRole")]
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Logout([FromServices] HttpGetLogoutCommand command)
             => await command.Execute(HttpContext);
@@ -34,8 +33,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         [HttpGet]
         public Task<IActionResult> Redirect([FromServices] HttpGetAuthorisationRedirectCommand command)
             => command.ExecuteAsync(HttpContext);
-        
-        
+
+
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Token([FromBody] TokenAuthorisationArgs args,
