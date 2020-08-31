@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             };
             await _WorkflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
 
-            _Logger.LogDebug("Writing.");
+            _Logger.WriteWritingStart();
 
             var success = WriteAttempt(entity);
             while (!success)
@@ -68,10 +68,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
         private bool WriteAttempt(TekReleaseWorkflowStateEntity item)
         {
             if (++_AttemptCount > AttemptCountMax)
+            {
+                _Logger.WriteMaximumCreateAttemptsReached();
                 throw new InvalidOperationException("Maximum create attempts reached.");
+            }
 
             if (_AttemptCount > 1)
-                _Logger.LogWarning("Duplicates found while creating workflow - attempt:{AttemptCount}", _AttemptCount);
+                _Logger.WriteDuplicatesFound(_AttemptCount);
+
 
             item.LabConfirmationId = _LabConfirmationIdService.Next();
             item.BucketId = _NumberGenerator.NextByteArray(_WorkflowConfig.BucketIdLength);
@@ -80,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             try
             {
                 _WorkflowDbContext.SaveAndCommit();
-                _Logger.LogDebug("Committed.");
+                _Logger.WriteCommitted();
                 return true;
             }
             catch (DbUpdateException ex)

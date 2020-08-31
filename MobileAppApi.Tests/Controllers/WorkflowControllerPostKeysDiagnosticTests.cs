@@ -30,11 +30,13 @@ using Xunit;
 
 namespace MobileAppApi.Tests.Controllers
 {
+    [Collection(nameof(WorkflowControllerPostKeysDiagnosticTests))]
+    [ExclusivelyUses(nameof(WorkflowControllerPostKeysDiagnosticTests))]
     public class WorkflowControllerPostKeysDiagnosticTests : WebApplicationFactory<Startup>, IDisposable
     {
-        private WebApplicationFactory<Startup> _Factory;
-        private WorkflowDbContext _DbContext;
-        private FakeTimeProvider _FakeTimeProvider;
+        private readonly WebApplicationFactory<Startup> _Factory;
+        private readonly WorkflowDbContext _DbContext;
+        private readonly FakeTimeProvider _FakeTimeProvider;
 
         private class FakeTimeProvider : IUtcDateTimeProvider
         {
@@ -48,7 +50,7 @@ namespace MobileAppApi.Tests.Controllers
         {
             _FakeTimeProvider = new FakeTimeProvider();
 
-            Func<WorkflowDbContext> dbcFac = () => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer("Data Source=.;Database=WorkflowControllerPostKeysTests;Integrated Security=True").Options);
+            Func<WorkflowDbContext> dbcFac = () => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer($"Data Source=.;Database={nameof(WorkflowControllerPostKeysDiagnosticTests)};Integrated Security=True").Options);
             _DbContext = dbcFac();
 
             _Factory = WithWebHostBuilder(builder =>

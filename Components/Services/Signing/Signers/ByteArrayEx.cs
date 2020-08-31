@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers
 {
-    public static class ByteArrayEx
+    public static class ByteArrayExtensions
     {
         /// <summary>
         /// Handles zero-length.

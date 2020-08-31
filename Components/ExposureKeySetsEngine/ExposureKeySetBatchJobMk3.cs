@@ -75,7 +75,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             _Logger.LogInformation("Started - JobName:{JobName}", _JobName);
 
-            if (Environment.UserInteractive && !WindowsIdentityStuff.CurrentUserIsAdministrator())
+            if (Environment.UserInteractive && !WindowsIdentityQueries.CurrentUserIsAdministrator())
                 _Logger.LogWarning("{JobName} started WITHOUT elevated privileges - errors may occur when signing content.", _JobName);
 
             _EksEngineResult.Started = _DateTimeProvider.Snapshot; //Align with the logged job name.

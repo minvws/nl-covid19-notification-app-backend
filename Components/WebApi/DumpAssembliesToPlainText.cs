@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
             }
             list.AddRange(Assembly.GetEntryAssembly().Dump());
             list.Add(Environment.NewLine);
-            list.AddRange(typeof(AssemblyStuff).Assembly.Dump());
+            list.AddRange(typeof(AssemblyExtensions).Assembly.Dump());
             var plainText = string.Join(Environment.NewLine, list);
             return new ContentResult
             {
