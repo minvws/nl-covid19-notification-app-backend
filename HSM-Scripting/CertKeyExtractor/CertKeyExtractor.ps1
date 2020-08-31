@@ -6,8 +6,9 @@ $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
 $TestfileName = ""
 $TestfileNameNoExt = ""
 $VerifierLoc = ".\Verifier\SigTestFileCreator.exe"
-$Environment = "Ontw"
+$date
 
+$Environment = "Ontw"
 $EcdsaCertThumbPrint = ""
 
 function SetErrorToStop
@@ -105,24 +106,24 @@ function RunWithErrorCheck ([string]$command)
 function GenTestFile
 {
 	$contentstring = read-host "Please input a test string that will be used for signing"
-	$date = Get-Date -Format "MM_dd_yyyy_HH-mm"
+	$script:date = Get-Date -Format "MM_dd_yyyy_HH-mm"
 	$fileContent = "Key verification file ($script:Environment)`r`n$contentstring"
 	$script:TestfileNameNoExt = "KeyExtractionRawData"
 	$script:TestfileName = "$script:TestfileNameNoExt.txt"
 	
-	New-Item -force -name ($script:TestfileName) -path ".\Temp\" -ItemType File -Value $fileContent -ErrorAction Stop
-	New-Item -force -name "Result" -path "." -ItemType Directory -ErrorAction Stop
+	New-Item -force -name ($script:TestfileName) -path ".\Temp$script:date\" -ItemType File -Value $fileContent -ErrorAction Stop
+	New-Item -force -name "Result$script:date" -path "." -ItemType Directory -ErrorAction Stop
 }
 
 function ExtractKey ([String] $ThumbPrint, [String] $Store, [String] $ExportPath)
 {
 	$cert = Get-ChildItem -Path "cert:\LocalMachine\$Store\$ThumbPrint"
 	#opvangbak prevents black magic from occurring.
-	$opvangbak = Export-Certificate -Cert $cert -FilePath ".\Temp\$ExportPath.cer" -Type CERT
+	$opvangbak = Export-Certificate -Cert $cert -FilePath ".\Temp$script:date\$ExportPath.cer" -Type CERT
 	
 	# the exported cert is in der-format and needs to be converted to pem-format to use for signature verification
-	RunWithErrorCheck "$openSslLoc x509 -in .\temp\$ExportPath.cer -inform der -pubkey -noout -out .\Temp\$script:Environment-Ecdsa.pub"
-	RunWithErrorCheck "$openSslLoc ec -in .\Temp\$script:Environment-Ecdsa.pub -text -pubin -out .\Result\$script:Environment-Ecdsa.txt"
+	RunWithErrorCheck "$openSslLoc x509 -in .\temp$script:date\$ExportPath.cer -inform der -pubkey -noout -out .\Temp$script:date\$script:Environment-Ecdsa.pub"
+	RunWithErrorCheck "$openSslLoc ec -in .\Temp$script:date\$script:Environment-Ecdsa.pub -text -pubin -out .\Result$script:date\$script:Environment-Ecdsa.txt"
 }
 
 #
@@ -163,9 +164,9 @@ ExtractKey -ThumbPrint $EcdsaCertThumbPrint -Store "my" -ExportPath "EcdsaCert"
 write-host "`nSigning testfile with Verifier"
 Pause
 
-RunWithErrorCheck "$VerifierLoc .\Temp\$TestfileName"
+RunWithErrorCheck "$VerifierLoc .\Temp$script:date\$TestfileName"
 
-Expand-Archive -Force -LiteralPath ".\Temp\$testfileNameNoExt-eks.zip" -DestinationPath ".\Result\" -ErrorAction Stop
+Expand-Archive -Force -LiteralPath ".\Temp$script:date\$testfileNameNoExt-eks.zip" -DestinationPath ".\Result$script:date\" -ErrorAction Stop
 
 write-host "`nDone!`nYou can take export.bin, export.sig and the .key-file from the results folder now."
 Pause
