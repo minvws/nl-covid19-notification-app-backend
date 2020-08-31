@@ -9,6 +9,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
@@ -35,12 +36,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
 
         private static void Start(IServiceProvider services, string[] args)
         {
-            services.GetRequiredService<ManifestBatchJob>().Execute().GetAwaiter().GetResult();
+            services.GetRequiredService<ManifestUpdateCommand>().Execute().GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
             services.AddScoped(x => DbContextStartup.Content(x, false));
+            services.AddScoped<Func<ContentDbContext>>(x => x.GetRequiredService<ContentDbContext>);
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddScoped<HttpGetCdnManifestCommand>();
             services.AddScoped<HttpGetCdnContentCommand>();
@@ -48,8 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IEksConfig, StandardEksConfig>();
 
-            services.AddTransient<ManifestBatchJob>();
-            services.AddTransient<ManifestBuilderAndFormatter>();
+            services.AddTransient<ManifestUpdateCommand>();
             services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
@@ -57,8 +58,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
 
             services.NlSignerStartup();
-            services.GaSignerStartup();
-
         }
     }
 }

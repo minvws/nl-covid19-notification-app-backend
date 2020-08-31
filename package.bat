@@ -18,6 +18,7 @@ REM Zip websites
 REM Zip command-line
 7z a -tzip packages\Batch\CommandLine.EksEngine.zip publish\EksEngine"
 7z a -tzip packages\Batch\CommandLine.ManifestEngine.zip publish\ManifestEngine"
+7z a -tzip packages\Batch\CommandLine.DailyCleanup.zip publish\DailyCleanup"
 
 REM Database
 7z a -tzip packages\SQL\SQL.DbProvision.zip publish\Tools\DbProvision"

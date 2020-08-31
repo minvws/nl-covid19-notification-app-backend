@@ -5,8 +5,9 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
@@ -18,6 +19,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expiry;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using Serilog;
 
@@ -32,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                 new ConsoleAppRunner().Execute(args, Configure, Start);
                 return 0;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return -1;
             }
@@ -40,10 +42,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
         private static void Start(IServiceProvider serviceProvider, string[] args)
         {
-            var job = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
-            job.Execute().GetAwaiter().GetResult();
-            var job2 = serviceProvider.GetRequiredService<ManifestUpdateCommand>();
-            job2.Execute().GetAwaiter().GetResult();
+            var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+
+            logger.LogInformation("Daily cleanup - Starting.");
+
+            var j1 = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
+            //Remove this one when we get manifest count down to 1.
+            var j2 = serviceProvider.GetRequiredService<ManifestUpdateCommand>();
+            var j3 = serviceProvider.GetRequiredService<RemoveExpiredManifestsCommand>();
+            var j4 = serviceProvider.GetRequiredService<RemoveExpiredEksCommand>();
+            var j5 = serviceProvider.GetRequiredService<RemoveExpiredWorkflowsCommand>();
+
+            logger.LogInformation("Daily cleanup - EKS engine run starting.");
+            var r1 = j1.Execute().GetAwaiter().GetResult();
+            logger.LogInformation("Daily cleanup - Manifest engine run starting.");
+            j2.Execute().GetAwaiter().GetResult();
+            logger.LogInformation("Daily cleanup - Cleanup Manifests run starting.");
+            var r3 = j3.Execute().GetAwaiter().GetResult();
+            logger.LogInformation("Daily cleanup - Cleanup EKS run starting.");
+            var r4 = j4.Execute();
+            logger.LogInformation("Daily cleanup - Cleanup Workflows run starting.");
+            var r5 = j5.Execute();
+
+            logger.LogInformation("Daily cleanup - Finished.");
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
@@ -79,6 +100,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<ManifestUpdateCommand>();
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
 
+            services.AddTransient<ManifestBuilder>();
+            services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
+            services.AddTransient<ZippedSignedContentFormatter>();
+
+            services.AddTransient<RemoveExpiredManifestsCommand>();
+            services.AddTransient<RemoveExpiredEksCommand>();
+            services.AddTransient<RemoveExpiredWorkflowsCommand>();
+
+            services.AddSingleton<IManifestConfig, ManifestConfig>();
+            services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
+            
             services.NlSignerStartup();
             services.GaSignerStartup();
         }

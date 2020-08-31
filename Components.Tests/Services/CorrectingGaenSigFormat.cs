@@ -138,6 +138,192 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
             Assert.Equal(expectedBytes, new X962PackagingFix().Format(inputBytes));
         }
 
+
+        // Simple case - full length.
+        // P
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Q
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  68 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  32 prim: INTEGER           :1122334455667788112233445566778811223344556677881122334455667788
+        //   36:d=1  hl=2 l=  32 prim: INTEGER           :1122334455667788112233445566778811223344556677881122334455667788
+        //
+        [InlineData("ESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MEQCIBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIAiARIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==")]
+        // Lots of prefixes
+        // P
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 FF 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 FF 00 00 00 00 00 00 00 00 00
+        // Expected output:
+        //    0:d=0  hl=2 l=  25 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  10 prim: INTEGER           :FF0000000000000000
+        //   14:d=1  hl=2 l=  11 prim: INTEGER           :FF000000000000000000
+        //
+        [InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAAAAAAAAAA==", "MBkCCgD/AAAAAAAAAAACCwD/AAAAAAAAAAAA")]
+        // strip first, second normal
+        // 00 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  67 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  31 prim: INTEGER           :22334455667788112233445566778811223344556677881122334455667788
+        //   35:d=1  hl=2 l=  32 prim: INTEGER           :1122334455667788112233445566778811223344556677881122334455667788
+        //
+        [InlineData("ACIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MEMCHyIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gCIBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneI")]
+        // strip second, first normal
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 00 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  67 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  32 prim: INTEGER           :1122334455667788112233445566778811223344556677881122334455667788
+        //   36:d=1  hl=2 l=  31 prim: INTEGER           :22334455667788112233445566778811223344556677881122334455667788
+        //
+        [InlineData("ESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gAIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MEMCIBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIAh8iM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneI")]
+        // strip both
+        // 00 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 00 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  66 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  31 prim: INTEGER           :22334455667788112233445566778811223344556677881122334455667788
+        //   35:d=1  hl=2 l=  31 prim: INTEGER           :22334455667788112233445566778811223344556677881122334455667788
+        //
+        [InlineData("ACIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gAIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MEICHyIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gCHyIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4g=")]
+        // strip first to almost nothing
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  37 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=   1 prim: INTEGER           :00
+        //    5:d=1  hl=2 l=  32 prim: INTEGER           :1122334455667788112233445566778811223344556677881122334455667788
+        //
+        [InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MCUCAQACIBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneI")]
+        // strip first to just one byte
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 11
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  37 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=   1 prim: INTEGER           :11
+        //    5:d=1  hl=2 l=  32 prim: INTEGER           :1122334455667788112233445566778811223344556677881122334455667788
+        //
+        [InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABERIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MCUCARECIBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneI")]
+        // strip first to just one byte, but with top bit set.
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 F1
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  38 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=   2 prim: INTEGER           :F1
+        //    6:d=1  hl=2 l=  32 prim: INTEGER           :1122334455667788112233445566778811223344556677881122334455667788
+        //
+        [InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPERIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MCYCAgDxAiARIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==")]
+        // strip first to just one bit
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01
+        // 00 00 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  35 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=   1 prim: INTEGER           :01
+        //    5:d=1  hl=2 l=  30 prim: INTEGER           :334455667788112233445566778811223344556677881122334455667788
+        //
+        [InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAADNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MCMCAQECHjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==")]
+        // strip bot to just one bit
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01
+        // Expected output:
+        //    0:d=0  hl=2 l=   6 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=   1 prim: INTEGER           :01
+        //    5:d=1  hl=2 l=   1 prim: INTEGER           :01
+        //
+        [InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ==", "MAYCAQECAQE=")]
+        // strip both to one topbit.
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 F0
+        // Expected output:
+        //    0:d=0  hl=2 l=   8 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=   2 prim: INTEGER           :80
+        //    6:d=1  hl=2 l=   2 prim: INTEGER           :F0
+        //
+        [InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8A==", "MAgCAgCAAgIA8A==")]
+        // positive set and negative
+        // 7f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 84 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // Expected output:
+        //    0:d=0  hl=2 l=  69 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  32 prim: INTEGER           :7F00000000000000000000000000000000000000000000000000000000000000
+        //   36:d=1  hl=2 l=  33 prim: INTEGER           :8400000000000000000000000000000000000000000000000000000000000000
+        //
+        [InlineData("fwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==", "MEUCIH8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiEAhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")]
+        // ... the bits of the first octet and bit 8 of the second octet:
+        // 1. shall not all be ones and
+        // 2. shall not all be zero.
+        // FF F0 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // Expected output:
+        //    0:d=0  hl=2 l=  69 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  33 prim: INTEGER           :FFF0000000000000000000000000000000000000000000000000000000000000
+        //   37:d=1  hl=2 l=  32 prim: INTEGER           :0300000000000000000000000000000000000000000000000000000000000000
+        //
+        [InlineData("//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==", "MEUCIQD/8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIgAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")]
+        // ... the bits of the first octet and bit 8 of the second octet:
+        // 1. shall not all be ones and
+        // 2. shall not all be zero.
+        // FF F0 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF
+        // 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF
+        // Expected output:
+        //    0:d=0  hl=2 l=  69 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  33 prim: INTEGER           :FFF00000000000000000000000000000000000000000000000000000000000FF
+        //   37:d=1  hl=2 l=  32 prim: INTEGER           :03000000000000000000000000000000000000000000000000000000000000FF
+        //
+        [InlineData("//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/w==", "MEUCIQD/8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/wIgAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8=")]
+        // 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 7F 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // Expected output:
+        //    0:d=0  hl=2 l=  69 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  33 prim: INTEGER           :8000000000000000000000000000000000000000000000000000000000000000
+        //   37:d=1  hl=2 l=  32 prim: INTEGER           :7F00000000000000000000000000000000000000000000000000000000000000
+        //
+        [InlineData("gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==", "MEUCIQCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIgfwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")]
+        [Theory]
+        public void Batch3(string input, string expected)
+        {
+            var inputBytes = Convert.FromBase64String(input);
+            var expectedBytes = Convert.FromBase64String(expected);
+
+            Trace.WriteLine($"Input:          {ToHex(inputBytes)}");
+            Trace.WriteLine($"Expected: {ToHex(expectedBytes)}");
+            Trace.WriteLine($"Output:   {ToHex(new X962PackagingFix().Format(inputBytes))}");
+
+            Assert.Equal(expectedBytes, new X962PackagingFix().Format(inputBytes));
+        }
+
+
         string ToHex(byte[] id)
         {
             var result = new StringBuilder(id.Length * 2);
