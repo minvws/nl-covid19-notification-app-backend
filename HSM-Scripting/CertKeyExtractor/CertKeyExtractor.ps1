@@ -8,7 +8,7 @@ $TestfileNameNoExt = ""
 $VerifierLoc = ".\Verifier\SigTestFileCreator.exe"
 $Environment = "Ontw"
 
-$EcdsaCertThumbPrint = "4e4ae434595bd2648c4253565360dab45de17967"
+$EcdsaCertThumbPrint = ""
 
 function SetErrorToStop
 {
@@ -110,7 +110,7 @@ function GenTestFile
 	$script:TestfileNameNoExt = "KeyExtractionRawData"
 	$script:TestfileName = "$script:TestfileNameNoExt.txt"
 	
-	New-Item -force -name ($script:TestfileName) -path "." -ItemType File -Value $fileContent -ErrorAction Stop
+	New-Item -force -name ($script:TestfileName) -path ".\Temp\" -ItemType File -Value $fileContent -ErrorAction Stop
 	New-Item -force -name "Result" -path "." -ItemType Directory -ErrorAction Stop
 }
 
@@ -118,10 +118,11 @@ function ExtractKey ([String] $ThumbPrint, [String] $Store, [String] $ExportPath
 {
 	$cert = Get-ChildItem -Path "cert:\LocalMachine\$Store\$ThumbPrint"
 	#opvangbak prevents black magic from occurring.
-	$opvangbak = Export-Certificate -Cert $cert -FilePath "$ExportPath.cer" -Type CERT
+	$opvangbak = Export-Certificate -Cert $cert -FilePath ".\Temp\$ExportPath.cer" -Type CERT
 	
 	# the exported cert is in der-format and needs to be converted to pem-format to use for signature verification
-	RunWithErrorCheck "$openSslLoc x509 -in $ExportPath.cer -inform der -pubkey -noout -out .\Result\$script:Environment-Ecdsa-pubkey.key"
+	RunWithErrorCheck "$openSslLoc x509 -in .\temp\$ExportPath.cer -inform der -pubkey -noout -out .\Temp\$script:Environment-Ecdsa.pub"
+	RunWithErrorCheck "$openSslLoc ec -in .\Temp\$script:Environment-Ecdsa.pub -text -pubin -out .\Result\$script:Environment-Ecdsa.txt"
 }
 
 #
@@ -135,9 +136,9 @@ Pause
 CheckNotWin7
 
 write-warning "`nDid you do the following?`
-- Add the Ecdsa thumbprint to this script?`
+- Add the NEW Ecdsa thumbprint to this script?`
 - Add the location of the verifier to this script?`
-- Add the Rsa (non-root)- and Ecdsa thumbprint to the verifier appsettings.json?`
+- Add the Rsa (non-root)- and NEW Ecdsa thumbprint to the verifier appsettings.json?`
 If not: abort this script with ctrl+c."
 Pause
 
@@ -162,9 +163,9 @@ ExtractKey -ThumbPrint $EcdsaCertThumbPrint -Store "my" -ExportPath "EcdsaCert"
 write-host "`nSigning testfile with Verifier"
 Pause
 
-RunWithErrorCheck "$VerifierLoc $TestfileName"
+RunWithErrorCheck "$VerifierLoc .\Temp\$TestfileName"
 
-Expand-Archive -Force -LiteralPath "$testfileNameNoExt-eks.zip" -DestinationPath ".\Result\" -ErrorAction Stop
+Expand-Archive -Force -LiteralPath ".\Temp\$testfileNameNoExt-eks.zip" -DestinationPath ".\Result\" -ErrorAction Stop
 
 write-host "`nDone!`nYou can take export.bin, export.sig and the .key-file from the results folder now."
 Pause
