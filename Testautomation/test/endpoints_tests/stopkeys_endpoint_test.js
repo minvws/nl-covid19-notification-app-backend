@@ -3,7 +3,7 @@ const expect = chai.expect;
 const app_register = require("../behaviours/app_register_behaviour");
 const stop_keys = require("../behaviours/post_keys_behaviour");
 const testsSig = require("../../util/sig_encoding");
-const formater = require("../../util/format_strings");
+const formater = require("../../util/format_strings").formater;
 const dataprovider = require("../data/dataprovider");
 
 describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function () {
