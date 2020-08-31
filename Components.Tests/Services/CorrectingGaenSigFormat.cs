@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Diagnostics;
+using System.Text;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 using Xunit;
 
@@ -84,11 +86,238 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
         [InlineData("lyD3Ieh3q903Wh2CqhELTHTxn9CCsxF8nq6o1zSaLlx/xl7UTCbEuNAjdHL2Rr3iSgBs9HP/F5QXcdJeVuCf5A==", "MEUCIQCXIPch6Her3TdaHYKqEQtMdPGf0IKzEXyerqjXNJouXAIgf8Ze1EwmxLjQI3Ry9ka94koAbPRz/xeUF3HSXlbgn+Q=")]
         [InlineData("aRCJ7UAwqjR5ZZGqRCw9Rk50EG1Skp9VJ2Rb/WuroP9Qt4QCAVFH4eLMuNo0NxMH25N0Hy2pixMGAReyEYFGvg==", "MEQCIGkQie1AMKo0eWWRqkQsPUZOdBBtUpKfVSdkW/1rq6D/AiBQt4QCAVFH4eLMuNo0NxMH25N0Hy2pixMGAReyEYFGvg==")]
         [InlineData("vEyhXS3U+h44WfJHtCgFmyM+fm3sXNeB0Bwyxs7LRTkC2XYBNWp85USa4JzRzLprpekEk13Fp7ZH5DTblFXHgw==", "MEUCIQC8TKFdLdT6HjhZ8ke0KAWbIz5+bexc14HQHDLGzstFOQIgAtl2ATVqfOVEmuCc0cy6a6XpBJNdxae2R+Q025RVx4M=")]
-        public void Examples(string input, string result)
+
+
+
+        public void Batch1(string input, string expected)
         {
             var inputBytes = Convert.FromBase64String(input);
-            var resultBytes = Convert.FromBase64String(result);
-            Assert.Equal(resultBytes, new X962PackagingFix().Format(inputBytes));
+            var expectedBytes = Convert.FromBase64String(expected);
+
+            Trace.WriteLine($"Input:            {ToHex(inputBytes)}");
+            Trace.WriteLine($"Expected: {ToHex(expectedBytes)}");
+            Trace.WriteLine($"Output:   {ToHex(new X962PackagingFix().Format(inputBytes))}");
+
+            Assert.Equal(expectedBytes, new X962PackagingFix().Format(inputBytes));
+        }
+
+        [Theory]
+        [InlineData("AAwEowsFZjAOp1Mlj7vSf0QOCIJJ1+gah6dRZai8qMkYZnL6ja+9uzJjjB3V/Kypb0UtsyYkIaEvtI2l0if+yA==", "MEMCHwwEowsFZjAOp1Mlj7vSf0QOCIJJ1+gah6dRZai8qMkCIBhmcvqNr727MmOMHdX8rKlvRS2zJiQhoS+0jaXSJ/7I")]
+        [InlineData("Yxfsi5CkjIXPeocXan8nZNaqmo/QJASPsLFt0PVL2dEABvrEuj5cxjQAsMVUjqQ1wX8PvovaoGraEftdfgIsCw==", "MEMCIGMX7IuQpIyFz3qHF2p/J2TWqpqP0CQEj7CxbdD1S9nRAh8G+sS6PlzGNACwxVSOpDXBfw++i9qgatoR+11+AiwL")]
+        [InlineData("AFWnj6sgI5gSuza3H7UVXpuEAiKLZfQ7ljSr9brnqmh5OQGaBgQEAh7RjBxMJjTVhAZ1WrnaSHJjCLj8jC+4bA==", "MEMCH1Wnj6sgI5gSuza3H7UVXpuEAiKLZfQ7ljSr9brnqmgCIHk5AZoGBAQCHtGMHEwmNNWEBnVaudpIcmMIuPyML7hs")]
+        [InlineData("WWmHXVSsrtu98ghDAEFtOzH0kkbfRRRiu/Y1zLHdvpwAbO+dTPGGIQ7U3bKVuEbwyNkfwNy9m5YIXNgwKytghw==", "MEMCIFlph11UrK7bvfIIQwBBbTsx9JJG30UUYrv2Ncyx3b6cAh9s751M8YYhDtTdspW4RvDI2R/A3L2blghc2DArK2CH")]
+        [InlineData("L9cG0TzXiRlIg0JmeKxfamjfT3pqghzqAneMk2z/XqUAfQkqQ4gfUDPdh8F1PjlXs7T63MIkoaD9RUyfXrAXIw==", "MEMCIC/XBtE814kZSINCZnisX2po3096aoIc6gJ3jJNs/16lAh99CSpDiB9QM92HwXU+OVeztPrcwiShoP1FTJ9esBcj")]
+        [InlineData("f+vUPe/ySqrMBdCpQ8/E0BIR+imCxpD9hNDZVNzQ4B8AD7gkaI4r/VSBiFPXqepeHeKummubBlbr3E4jmEPOsg==", "MEMCIH/r1D3v8kqqzAXQqUPPxNASEfopgsaQ/YTQ2VTc0OAfAh8PuCRojiv9VIGIU9ep6l4d4q6aa5sGVuvcTiOYQ86y")]
+        [InlineData("JlbTfEq8q3WXvD5nCwqt35y8xZSz0wpclJOQvzb6d9AALT2RcXjwoY/YTKiwh/GzUIZxP06Tr/27v8uo4uyfOQ==", "MEMCICZW03xKvKt1l7w+ZwsKrd+cvMWUs9MKXJSTkL82+nfQAh8tPZFxePChj9hMqLCH8bNQhnE/TpOv/bu/y6ji7J85")]
+        [InlineData("x5E945VtzyJmNuWXe9QHd0bPtMmt+bgK51kzRhcswZwAABzcwzWHOEub0MY+/VzCnRuhVMuXAhrZ/p2Y7bSqEA==", "MEMCIQDHkT3jlW3PImY25Zd71Ad3Rs+0ya35uArnWTNGFyzBnAIeHNzDNYc4S5vQxj79XMKdG6FUy5cCGtn+nZjttKoQ")]
+        [InlineData("flyonJEx1hQqg3yOXVfYRYDzaN0jQtf44ZMiGu5zTm4AVhJ7xvixgtFHJNUXP8GGGQb/gWAhI+I8hLSaOAclBA==", "MEMCIH5cqJyRMdYUKoN8jl1X2EWA82jdI0LX+OGTIhruc05uAh9WEnvG+LGC0Uck1Rc/wYYZBv+BYCEj4jyEtJo4ByUE")]
+        [InlineData("AFUSAwZyDpH7s9CcoYIXXjslOGNA1vq252rhY5pt5kEQ1YKOvWL78ARbj/P7kz4YqIqL1rt3WTjhjz5stz5qTg==", "MEMCH1USAwZyDpH7s9CcoYIXXjslOGNA1vq252rhY5pt5kECIBDVgo69YvvwBFuP8/uTPhioiovWu3dZOOGPPmy3PmpO")]
+        [InlineData("CWvAVpQSINa4nxk2i2yTmTc0lzJv9GCMpPaKax9AoIIAJ2qJ8Q09XwWPZRxsIsvbFZW/Pid9wuQjfV25UvxHoQ==", "MEMCIAlrwFaUEiDWuJ8ZNotsk5k3NJcyb/RgjKT2imsfQKCCAh8naonxDT1fBY9lHGwiy9sVlb8+J33C5CN9XblS/Eeh")]
+        [InlineData("G4Qua4wLfUJ51aJYuhE4GCP1j8eH5BJAgQ0itN9+o6UARhqayODu+eDxUk1Im5HS5MczPLRxqC0+SQLhd1vaSg==", "MEMCIBuELmuMC31CedWiWLoROBgj9Y/Hh+QSQIENIrTffqOlAh9GGprI4O754PFSTUibkdLkxzM8tHGoLT5JAuF3W9pK")]
+        [InlineData("WAFIjPppk5X1KBiRDFVwPdKXm1s7naVjqw6CSTAHZLMAcFaD6lrjHG97jp7/LRIgITUwgRl4o8jD6vMeqj3DvA==", "MEMCIFgBSIz6aZOV9SgYkQxVcD3Sl5tbO52lY6sOgkkwB2SzAh9wVoPqWuMcb3uOnv8tEiAhNTCBGXijyMPq8x6qPcO8")]
+        [InlineData("bfHr+r989DkrYTgoobg+knVLhh2JzKLoxCRwPYIXNl4AOno6eNt+uXDToYKS40AqC3oaxaj9Z3b2fuDXyvREeA==", "MEMCIG3x6/q/fPQ5K2E4KKG4PpJ1S4Ydicyi6MQkcD2CFzZeAh86ejp42365cNOhgpLjQCoLehrFqP1ndvZ+4NfK9ER4")]
+        [InlineData("AHhJ705vD/jmSaIto8eNPJhc0E3gMaX0mWMDxV+gRw9x2Ctmt3AnhWIWsYIkP3WLp5WTisTghP3nRu84JeB0ZQ==", "MEMCH3hJ705vD/jmSaIto8eNPJhc0E3gMaX0mWMDxV+gRw8CIHHYK2a3cCeFYhaxgiQ/dYunlZOKxOCE/edG7zgl4HRl")]
+        [InlineData("VhkmOMVanpkt5p7SQZk91fOd+1Q6O/yj/2wKDuY9SBQAHM1WTAABBdGouN3ieRdDpOzuFW0nDujd5RKxrWR9FA==", "MEMCIFYZJjjFWp6ZLeae0kGZPdXznftUOjv8o/9sCg7mPUgUAh8czVZMAAEF0ai43eJ5F0Ok7O4VbScO6N3lErGtZH0U")]
+        [InlineData("AATM/6+08f0CR5PPNkrTmr5Vnjk6sQTm5HV5CGZB/79z/Of/24QZPkM+MzaBELoSezV3F/y7grWE3pRD50H/tA==", "MEMCHwTM/6+08f0CR5PPNkrTmr5Vnjk6sQTm5HV5CGZB/78CIHP85//bhBk+Qz4zNoEQuhJ7NXcX/LuCtYTelEPnQf+0")]
+        [InlineData("AFsMHqbdABHKVdAMh8OmZ8V5+V5RXk4ziBnJJXgIp+5WI4YtfNP3EW0jrFaIw2frGD4c4lJ+oyqbO3eo6haRoQ==", "MEMCH1sMHqbdABHKVdAMh8OmZ8V5+V5RXk4ziBnJJXgIp+4CIFYjhi180/cRbSOsVojDZ+sYPhziUn6jKps7d6jqFpGh")]
+        [InlineData("XqYOkH1vYxFqhf3r9DhNpVhpbyW8wO5E7+z+6cHuQjAAe75Per89UcThi6C8WffZujqYvdUUxEbjnYv63NZ7og==", "MEMCIF6mDpB9b2MRaoX96/Q4TaVYaW8lvMDuRO/s/unB7kIwAh97vk96vz1RxOGLoLxZ99m6Opi91RTERuOdi/rc1nui")]
+        [InlineData("cCfaiV/e27sVQyc2xOAK2/okO+oH3RKsDxh7gerxGbUAYigNKQu0QA4CPyExDTZU2BhOidXnzHbAfVgfkIN0KQ==", "MEMCIHAn2olf3tu7FUMnNsTgCtv6JDvqB90SrA8Ye4Hq8Rm1Ah9iKA0pC7RADgI/ITENNlTYGE6J1efMdsB9WB+Qg3Qp")]
+        [InlineData("CU2e5gUtS9KzfW+eJzt3AJsRAOK1Ps+DuSRVHc9E/hgAXLyPABzkuSbjIuatIuYdvJmqbPpmbuAV1ItHVLUMuw==", "MEMCIAlNnuYFLUvSs31vnic7dwCbEQDitT7Pg7kkVR3PRP4YAh9cvI8AHOS5JuMi5q0i5h28maps+mZu4BXUi0dUtQy7")]
+        [InlineData("x8NQjFdcXkjWbF9OfVD8IoerL/sJyTRBEV7MWhESaRQAADN7Dip5HF+s3yUP3lZTimrqst2ZsgJFk5wl4OpTyg==", "MEMCIQDHw1CMV1xeSNZsX059UPwih6sv+wnJNEERXsxaERJpFAIeM3sOKnkcX6zfJQ/eVlOKauqy3ZmyAkWTnCXg6lPK")]
+        [InlineData("Y48oZj/JGEpfFEX8tPUu1TtIMn5U76tbl2OX9eySrTIAeXWcjBdIdFoPQ04dTUSxzW0ivDbmmTgRWugwHDl23g==", "MEMCIGOPKGY/yRhKXxRF/LT1LtU7SDJ+VO+rW5djl/Xskq0yAh95dZyMF0h0Wg9DTh1NRLHNbSK8NuaZOBFa6DAcOXbe")]
+        [InlineData("U9OmCSIibIuTXeweS9EVVlD/TLk/mW5pioAOmX5/38oAI1jmMU/ryAQoVNa13/nCNajc/wP2lr5k1eFuzrwgQg==", "MEMCIFPTpgkiImyLk13sHkvRFVZQ/0y5P5luaYqADpl+f9/KAh8jWOYxT+vIBChU1rXf+cI1qNz/A/aWvmTV4W7OvCBC")]
+        public void Batch2(string input, string expected)
+        {
+            var inputBytes = Convert.FromBase64String(input);
+            var expectedBytes = Convert.FromBase64String(expected);
+
+            Trace.WriteLine($"Input:          {ToHex(inputBytes)}");
+            Trace.WriteLine($"Expected: {ToHex(expectedBytes)}");
+            Trace.WriteLine($"Output:   {ToHex(new X962PackagingFix().Format(inputBytes))}");
+
+            Assert.Equal(expectedBytes, new X962PackagingFix().Format(inputBytes));
+        }
+
+
+        // Simple case - full length.
+        // P
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Q
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  70 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  33 prim: INTEGER           :EC11223344556677881122334455667788112233445566778811223344556677
+        //   37:d=1  hl=2 l=  33 prim: INTEGER           :8811223344556677881122334455667788112233445566778811223344556677
+        //
+        [InlineData("7BEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4g=", "MEYCIQDsESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmdwIhAIgRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3")]
+        // Lots of prefixes
+        // P
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 FF 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 FF 00 00 00 00 00 00 00 00 00
+        // Expected output:
+        //    0:d=0  hl=2 l=  47 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  33 prim: INTEGER           :EF0000000000000000000000000000000000000000000000FF00000000000000
+        //   37:d=1  hl=2 l=  10 prim: INTEGER           :FF0000000000000000
+        //
+        [InlineData("7wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAAAAAAAAAA=", "MC8CIQDvAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAIKAP8AAAAAAAAAAA==")]
+        // strip first, second normal
+        // 00 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  67 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  31 prim: INTEGER           :22334455667788112233445566778811223344556677881122334455667788
+        //   35:d=1  hl=2 l=  32 prim: INTEGER           :1122334455667788112233445566778811223344556677881122334455667788
+        //
+        [InlineData("ACIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MEMCHyIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gCIBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneI")]
+        // strip second, first normal
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 00 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  70 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  33 prim: INTEGER           :EC11223344556677881122334455667788112233445566778811223344556677
+        //   37:d=1  hl=2 l=  33 prim: INTEGER           :8800223344556677881122334455667788112233445566778811223344556677
+        //
+        [InlineData("7BEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIACIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4g=", "MEYCIQDsESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmdwIhAIgAIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3")]
+        // strip both
+        // 00 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 00 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  66 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  31 prim: INTEGER           :22334455667788112233445566778811223344556677881122334455667788
+        //   35:d=1  hl=2 l=  31 prim: INTEGER           :22334455667788112233445566778811223344556677881122334455667788
+        //
+        [InlineData("ACIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gAIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MEICHyIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gCHyIzRFVmd4gRIjNEVWZ3iBEiM0RVZneIESIzRFVmd4g=")]
+        // strip first to almost nothing
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  37 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=   1 prim: INTEGER           :00
+        //    5:d=1  hl=2 l=  32 prim: INTEGER           :1122334455667788112233445566778811223344556677881122334455667788
+        //
+        [InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MCUCAQACIBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneI")]
+        // strip first to just one byte
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 11
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  37 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=   1 prim: INTEGER           :11
+        //    5:d=1  hl=2 l=  32 prim: INTEGER           :1122334455667788112233445566778811223344556677881122334455667788
+        //
+        [InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABERIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MCUCARECIBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneI")]
+        // strip first to just one byte
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 F1
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  38 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=   2 prim: INTEGER           :F1
+        //    6:d=1  hl=2 l=  32 prim: INTEGER           :1122334455667788112233445566778811223344556677881122334455667788
+        //
+        [InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPERIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MCYCAgDxAiARIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==")]
+        // strip first to just one bit
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01
+        // 00 00 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
+        // Expected output:
+        //    0:d=0  hl=2 l=  35 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=   1 prim: INTEGER           :01
+        //    5:d=1  hl=2 l=  30 prim: INTEGER           :334455667788112233445566778811223344556677881122334455667788
+        //
+        [InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAADNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MCMCAQECHjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==")]
+        // strip bot to just one bit
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01
+        // Expected output:
+        //    0:d=0  hl=2 l=   6 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=   1 prim: INTEGER           :01
+        //    5:d=1  hl=2 l=   1 prim: INTEGER           :01
+        //
+        [InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ==", "MAYCAQECAQE=")]
+        // strip both to one topbit.
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 F0
+        // Expected output:
+        //    0:d=0  hl=2 l=   8 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=   2 prim: INTEGER           :80
+        //    6:d=1  hl=2 l=   2 prim: INTEGER           :F0
+        //
+        [InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8A==", "MAgCAgCAAgIA8A==")]
+        // positive set and negative
+        // 7f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 84 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // Expected output:
+        //    0:d=0  hl=2 l=  69 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  32 prim: INTEGER           :7F00000000000000000000000000000000000000000000000000000000000000
+        //   36:d=1  hl=2 l=  33 prim: INTEGER           :8400000000000000000000000000000000000000000000000000000000000000
+        //
+        [InlineData("fwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==", "MEUCIH8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiEAhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")]
+        // ... the bits of the first octet and bit 8 of the second octet:
+        // 1. shall not all be ones and
+        // 2. shall not all be zero.
+        // FF F0 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80
+        // 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // Expected output:
+        //    0:d=0  hl=2 l=  70 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  33 prim: INTEGER           :EBFFF00000000000000000000000000000000000000000000000000000000000
+        //   37:d=1  hl=2 l=  33 prim: INTEGER           :8003000000000000000000000000000000000000000000000000000000000000
+        //
+        [InlineData("6//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", "MEYCIQDr//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIhAIADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")]
+        // 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 7F 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        // Expected output:
+        //    0:d=0  hl=2 l=  69 cons: SEQUENCE          
+        //    2:d=1  hl=2 l=  33 prim: INTEGER           :8000000000000000000000000000000000000000000000000000000000000000
+        //   37:d=1  hl=2 l=  32 prim: INTEGER           :7F00000000000000000000000000000000000000000000000000000000000000
+        //
+        [InlineData("gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==", "MEUCIQCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIgfwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")]
+        [Theory]
+        public void Batch3(string input, string expected)
+        {
+            var inputBytes = Convert.FromBase64String(input);
+            var expectedBytes = Convert.FromBase64String(expected);
+
+            Trace.WriteLine($"Input:          {ToHex(inputBytes)}");
+            Trace.WriteLine($"Expected: {ToHex(expectedBytes)}");
+            Trace.WriteLine($"Output:   {ToHex(new X962PackagingFix().Format(inputBytes))}");
+
+            Assert.Equal(expectedBytes, new X962PackagingFix().Format(inputBytes));
+        }
+
+
+        string ToHex(byte[] id)
+        {
+            var result = new StringBuilder(id.Length * 2);
+            foreach (var i in id)
+                result.AppendFormat("{0:x2}", i);
+
+            return result.ToString();
         }
     }
 }

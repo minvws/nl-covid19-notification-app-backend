@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         }
 
         /// <summary>
-        /// Assumes future TEKs already killed.
+        /// Assumes future TEKs already given mercy.
         /// Filters out ones too old that would not get into the EKS
         /// </summary>
         public FilterResult<Tek> Execute(Tek[] values)

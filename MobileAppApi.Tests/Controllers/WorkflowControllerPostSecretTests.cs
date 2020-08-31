@@ -85,6 +85,7 @@ namespace MobileAppApi.Tests.Controllers
         }
 
         [Fact]
+        [ExclusivelyUses("WorkflowControllerPostSecretTests")]
         public async Task PostSecretTest_EmptyDb()
         {
             // Arrange
@@ -119,6 +120,7 @@ namespace MobileAppApi.Tests.Controllers
         }
 
         [Fact]
+        [ExclusivelyUses("WorkflowControllerPostSecretTests")]
         public async Task PostSecretTest_5RetriesAndBang()
         {
 
@@ -136,6 +138,7 @@ namespace MobileAppApi.Tests.Controllers
         }
 
         [Fact]
+        [ExclusivelyUses("WorkflowControllerPostSecretTests")]
         public async Task PostSecret_MissThe5Existing()
         {
             _DbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));

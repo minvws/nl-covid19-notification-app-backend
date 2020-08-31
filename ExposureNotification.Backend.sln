@@ -56,11 +56,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbFillExampleContent", "DbF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ForceTekAuth", "ForceTekAuth\ForceTekAuth.csproj", "{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IccBackend.Tests", "IccBackend.Tests\IccBackend.Tests.csproj", "{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccBackend.Tests", "IccBackend.Tests\IccBackend.Tests.csproj", "{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SigTestFileCreator", "SigTestFileCreator\SigTestFileCreator.csproj", "{D3D483FA-9F25-489A-B27A-5A6F0549BE1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EksParser", "EksParser\EksParser.csproj", "{ABAF7EEC-3FF1-4900-A941-F268458DE385}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksParser", "EksParser\EksParser.csproj", "{ABAF7EEC-3FF1-4900-A941-F268458DE385}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DailyCleanup", "DailyCleanup\DailyCleanup.csproj", "{8E025BC6-8D21-40DA-8141-461F82AC6509}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -120,14 +122,6 @@ Global
 		{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{404E47C8-957B-48AC-B7B4-B5A286B448BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{404E47C8-957B-48AC-B7B4-B5A286B448BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{404E47C8-957B-48AC-B7B4-B5A286B448BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{404E47C8-957B-48AC-B7B4-B5A286B448BB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DEBC4131-BA77-48E9-B5C1-9748D2ACF722}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEBC4131-BA77-48E9-B5C1-9748D2ACF722}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEBC4131-BA77-48E9-B5C1-9748D2ACF722}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEBC4131-BA77-48E9-B5C1-9748D2ACF722}.Release|Any CPU.Build.0 = Release|Any CPU
 		{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -140,6 +134,10 @@ Global
 		{ABAF7EEC-3FF1-4900-A941-F268458DE385}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABAF7EEC-3FF1-4900-A941-F268458DE385}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABAF7EEC-3FF1-4900-A941-F268458DE385}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E025BC6-8D21-40DA-8141-461F82AC6509}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E025BC6-8D21-40DA-8141-461F82AC6509}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E025BC6-8D21-40DA-8141-461F82AC6509}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E025BC6-8D21-40DA-8141-461F82AC6509}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

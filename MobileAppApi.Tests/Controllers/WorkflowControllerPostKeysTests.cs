@@ -80,6 +80,7 @@ namespace MobileAppApi.Tests.Controllers
         }
 
         [Fact]
+        [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
         public async Task PostWorkflowTest_InvalidSignature()
         {
             // Arrange
@@ -101,6 +102,7 @@ namespace MobileAppApi.Tests.Controllers
         }
 
         [Fact]
+        [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
         public async Task PostWorkflowTest_ScriptInjectionInSignature()
         {
             // Arrange
@@ -122,6 +124,7 @@ namespace MobileAppApi.Tests.Controllers
         }
 
         [Fact]
+        [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
         public async Task PostWorkflowTest_NullSignature()
         {
             // Arrange
@@ -142,6 +145,7 @@ namespace MobileAppApi.Tests.Controllers
         }
 
         [Fact]
+        [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
         public async Task PostWorkflowTest_EmptySignature()
         {
             // Arrange

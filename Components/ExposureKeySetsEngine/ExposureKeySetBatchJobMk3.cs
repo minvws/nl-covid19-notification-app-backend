@@ -6,13 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.Mime;
 using System.Threading.Tasks;
-using EFCore.BulkExtensions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
@@ -24,89 +21,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
 {
-    public class SubsetBulkArgs
-    {
-        public int BatchSize { get; set; } = 10000;
-        public int TimeoutSeconds { get; set; } = 6000;
-        public string[] PropertiesToInclude { get; set; } = new string[0];
-
-        public BulkConfig ToBulkConfig()
-            => new BulkConfig
-            {
-                BatchSize = BatchSize,
-                BulkCopyTimeout = TimeoutSeconds,
-                UseTempDB = true,
-                PropertiesToInclude = PropertiesToInclude.ToList()
-            };
-    }
-
-    /// <summary>
-    /// Note the intent is to remove the use of these where possible and use raw SQL instead.
-    /// </summary>
-    public static class EfBulkExtensions
-    {
-        public static async Task BulkUpdateAsync2<T>(this DbContext db, IList<T> page, SubsetBulkArgs args) where T:class
-        {
-            await using (db.BeginTransaction())
-            {
-                await db.BulkUpdateAsync(page, args.ToBulkConfig());
-                db.SaveAndCommit();
-            }
-        }
-
-        public static async Task BulkInsertAsync2<T>(this DbContext db, IList<T> page, SubsetBulkArgs args) where T : class
-        {
-            await using (db.BeginTransaction())
-            {
-                await db.BulkInsertAsync(page, args.ToBulkConfig());
-                db.SaveAndCommit();
-            }
-        }
-    }
-
-    public class EksJobContentWriter 
-    {
-        private readonly Func<ContentDbContext> _ContentDbContext;
-        private readonly Func<PublishingJobDbContext> _PublishingDbContext;
-        private readonly IPublishingIdService _PublishingIdService;
-        private readonly ILogger<EksJobContentWriter> _Logger;
-
-        public EksJobContentWriter(Func<ContentDbContext> contentDbContext, Func<PublishingJobDbContext> publishingDbContext, IPublishingIdService publishingIdService, ILogger<EksJobContentWriter> logger)
-        {
-            _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
-            _PublishingDbContext = publishingDbContext ?? throw new ArgumentNullException(nameof(publishingDbContext));
-            _PublishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
-
-        public async Task ExecuteAsyc()
-        {
-            await using var pdbc = _PublishingDbContext();
-            await using (pdbc.BeginTransaction()) //Read consistency
-            {
-                var move = pdbc.EksOutput.Select(
-                    x => new ContentEntity
-                    {
-                        Created = x.Release,
-                        Release = x.Release,
-                        ContentTypeName = MediaTypeNames.Application.Zip,
-                        Content = x.Content,
-                        Type = ContentTypes.ExposureKeySet,
-                        PublishingId = _PublishingIdService.Create(x.Content)
-                    }).ToArray();
-
-                await using var cdbc = _ContentDbContext();
-                await using (cdbc.BeginTransaction())
-                {
-                    cdbc.Content.AddRange(move);
-                    cdbc.SaveAndCommit();
-                }
-
-                _Logger.LogInformation("Published EKSs - Count:{Count}.", move.Length);
-            }
-        }
-    }
-
     /// <summary>
     /// Add database IO to the job
     /// </summary>
