@@ -219,7 +219,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
         //    5:d=1  hl=2 l=  32 prim: INTEGER           :1122334455667788112233445566778811223344556677881122334455667788
         //
         [InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABERIjNEVWZ3iBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iA==", "MCUCARECIBEiM0RVZneIESIzRFVmd4gRIjNEVWZ3iBEiM0RVZneI")]
-        // strip first to just one byte, but with topbit set.
+        // strip first to just one byte, but with top bit set.
         // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
         // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 F1
         // 11 22 33 44 55 66 77 88 11 22 33 44 55 66 77 88
