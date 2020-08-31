@@ -33,8 +33,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         public async Task<bool> Validate(IDictionary<string, string> decodedClaims)
         {
             if (decodedClaims == null) throw new ArgumentNullException(nameof(decodedClaims));
-            // check exp max. 3 hrs
 
+            if (!decodedClaims.ContainsKey("exp") || !decodedClaims.ContainsKey("access_token"))
+            {
+                return false;
+            }
+            // check exp max. 3 hrs
+            
             var maxExpiry = _DateTimeProvider.Snapshot.AddHours(_IccPortalConfig.ClaimLifetimeHours).ToUnixTimeU64();
 
             if (!ulong.TryParse(decodedClaims["exp"], out ulong tokenExpiry))
