@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 using var result = JsonDocument.Parse(json);
                 return true;
             }
-            catch (JsonException ex)
+            catch (JsonException)
             {
                 return false;
             }
