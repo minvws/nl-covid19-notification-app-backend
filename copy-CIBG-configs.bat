@@ -6,8 +6,8 @@ echo f|xcopy ..\s\publish\ManagementPortal\appsettings.release.json Artifacts\Ma
 
 REM double check later
 echo f|xcopy ..\s\EksEngine\appsettings.release.json Artifacts\EksEngine\appsettings.json /Y
-REM double check later
 echo f|xcopy ..\s\ManifestEngine\appsettings.release.json Artifacts\ManifestEngine\appsettings.json /Y
+echo f|xcopy ..\s\DailyCleanup\appsettings.release.json Artifacts\DailyCleanup\appsettings.json /Y
 
 echo f|xcopy ..\s\DbProvision\appsettings.release.json Artifacts\DbProvision\appsettings.json /Y
 echo f|xcopy ..\s\DbFillExampleContent\appsettings.release.json Artifacts\DbFillExampleContent\appsettings.json /Y
