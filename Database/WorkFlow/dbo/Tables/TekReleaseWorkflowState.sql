@@ -8,8 +8,7 @@
     [AuthorisedByCaregiver] DATETIME2 (7)  NULL,
     [DateOfSymptomsOnset]   DATETIME2 (7)  NULL,
     [PollToken]             NVARCHAR (450) NULL,
-    [TeksTouched]           BIT            CONSTRAINT [DF_TekReleaseWorkflowState_TeksTouched] DEFAULT ((0)) NOT NULL,
-    CONSTRAINT [PK_TekReleaseWorkflowState] PRIMARY KEY CLUSTERED ([Id] ASC)
+	[TekTouched]			BIT NOT NULL,  CONSTRAINT [PK_TekReleaseWorkflowState] PRIMARY KEY CLUSTERED  ([Id] ASC)
 );
 
 
