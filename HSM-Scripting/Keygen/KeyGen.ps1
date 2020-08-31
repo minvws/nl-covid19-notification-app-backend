@@ -7,7 +7,9 @@ $openSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
 $IsOnDevEnvironment = $True #When set to $False: skips sending, signing and accepting of the RSA request
 $CnValue = "ontw.coronamelder-api.nl" #should be [test.signing|acceptatie.signing|signing].coronamelder-api.nl
 $RootDays = 3650 #the dummy root is valid for 10 years.
+$RootSubject = "/C=NL/ST=Zuid-Holland/L=Den Haag/O=CIBG/OU=CIBG/serialNumber=00000002006756402002/CN=$CnValue"
 
+$date
 $keynameCert
 $keynameRSA
 $keynameECDSA
@@ -128,16 +130,18 @@ if($AddOIDs -eq $true)
 
 function SetKeyFilenames ()
 {
+	$script:date = Get-Date -Format "MM_dd_HH-mm-ss"
+	
 	$script:keynameCert = read-host "Enter the preferred name of the keyfiles"
-	$script:selfsigncertname = $keynameCert + "Root"
+	$script:selfsigncertname = ".\Temp$script:date\$script:keynameCert-Root"
 	
-	$script:keynameRSA = $keynameCert + "RSA"
-	$script:requestRSAname = $keynameRSA + "Req"
-	$script:signedrequestRSAname = $keynameRSA + "Signed"
+	$script:keynameRSA = "$script:keynameCert-RSA"
+	$script:requestRSAname = ".\Temp$script:date\$script:keynameRSA-Req"
+	$script:signedrequestRSAname = ".\Temp$script:date\$script:keynameRSA-Signed"
 	
-	$script:keynameECDSA = $keynameCert + "ECDSA"
-	$script:requestECDSAname = $keynameECDSA + "Req"
-	$script:signedrequestECDSAname = $keynameECDSA + "Signed"
+	$script:keynameECDSA = "$script:keynameCert-ECDSA"
+	$script:requestECDSAname = ".\Temp$script:date\$script:keynameECDSA-Req"
+	$script:signedrequestECDSAname = ".\Temp$script:date\$script:keynameECDSA-Signed"
 }
 
 function GenRequests
@@ -175,8 +179,8 @@ Pause
 
 SetKeyFileNames
 
-$RootSubject = "/C=NL/ST=Zuid-Holland/L=Den Haag/O=CIBG/OU=CIBG/serialNumber=00000002006756402002/CN=$CnValue"
-RunWithErrorCheck "$openSslLoc req -new -x509 -nodes -subj `"$RootSubject`" -days $RootDays -keyout $selfsigncertname.key -out $selfsigncertname.pem"
+New-Item -force -name "Temp$date" -path "." -ItemType Directory -ErrorAction Stop
+RunWithErrorCheck "$openSslLoc req -new -x509 -nodes -days $RootDays -subj `"$RootSubject`" -keyout $selfsigncertname.key -out $selfsigncertname.pem"
 
 write-host "`nStoring certificate in machine root store"
 Pause
