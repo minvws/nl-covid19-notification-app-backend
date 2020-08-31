@@ -9,7 +9,8 @@ const lab_verify = require("../behaviours/labverify_behaviour");
 const manifest = require("../behaviours/manifest_behaviour");
 const exposure_key_set = require("../behaviours/exposure_keys_set_behaviour");
 const decode_protobuf = require("../../util/protobuff_decoding");
-const formater = require("../../util/format_strings");
+const formater = require("../../util/format_strings").formater;
+const formater_labconfirm = require("../../util/format_strings").format_confirmation_Id;
 
 describe("Validate push of my exposure key into manifest - #expose_keys #scenario #regression", function () {
   this.timeout(2000 * 60 * 30);
@@ -56,7 +57,11 @@ describe("Validate push of my exposure key into manifest - #expose_keys #scenari
         });
       })
       .then(function () {
-        return lab_confirm(labConfirmationId).then(function (confirm) {
+        let map = new Map();
+        map.set("LABCONFIRMATIONID", formater_labconfirm(labConfirmationId));
+
+        return lab_confirm(dataprovider("lab_confirm_payload", "payload", "valid_dynamic", map)
+        ).then(function (confirm) {
           lab_confirm_response = confirm;
           pollToken = confirm.data.pollToken;
         });

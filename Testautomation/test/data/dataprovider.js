@@ -1,5 +1,6 @@
 const scen = {
   post_keys_payload: require("./scenario_data/post_keys_payload"),
+  lab_confirm_payload: require("./scenario_data/lab_confirm_payload")
 };
 
 const saved = new Map();

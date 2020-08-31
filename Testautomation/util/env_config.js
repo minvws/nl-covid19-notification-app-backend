@@ -4,8 +4,10 @@ let argv = require("minimist")(process.argv.slice(2));
 TST
 test.coronamelder-dist.nl => /v1/manifest
 test.coronamelder-api.nl => /v1/register
-test.coronamelder-portal/iccauth/caregiversportal => /v1/labconfirm
+test.coronamelder-portal.nl/iccauth/caregiversportal => /v1/labconfirm
 test.coronamelder-portal.nl => ICC frontend
+
+https://test.coronamelder-portal.nl
  */
 
 // Set version
