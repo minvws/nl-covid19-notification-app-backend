@@ -6,12 +6,10 @@ const lab_verify = require("../behaviours/labverify_behaviour");
 const formater_labconfirm = require("../../util/format_strings").format_confirmation_Id;
 const dataprovider = require("../data/dataprovider");
 
-describe("Labconfirm endpoints tests #labverify #endpoints #regression", function () {
+describe("Lab verify endpoints tests #labverify #endpoints #regression", function () {
   this.timeout(2000 * 60 * 30);
 
   let app_register_response, lab_confirm_response, pollToken, lab_verify_response, labConfirmationId;
-
-  describe("I register the app and request a lab verify", function () {});
 
     before(function (){
       return app_register().then(function (register){
