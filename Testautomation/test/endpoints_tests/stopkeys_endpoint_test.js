@@ -11,9 +11,6 @@ describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function (
 
     let app_register_response, stopkeys_response;
 
-    describe("I can register and send my stopkeys", function () {
-    });
-
     before(function () {
         return app_register().then(function (register) {
             app_register_response = register;

@@ -8,8 +8,6 @@ describe("Appconfig endpoints tests #appconfig #endpoints #regression", function
 
   let manifest_response, appconfig_response, appConfigId;
 
-  describe("I get the app config form the manifest", function () {});
-
   before(function (){
     return manifest().then(function (manifest){
       manifest_response = manifest;

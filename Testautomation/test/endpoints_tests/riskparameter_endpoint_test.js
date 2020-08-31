@@ -8,8 +8,6 @@ describe("Riskparameter endpoints tests #riskparameter #endpoints #regression", 
 
   let manifest_response, riskparameter_response, riskParameterId;
 
-  describe("I get the riskparameters form the manifest", function () {});
-
   before(function (){
     return manifest().then(function (manifest){
       manifest_response = manifest;
