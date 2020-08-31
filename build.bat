@@ -26,7 +26,7 @@ dotnet publish DbProvision\DbProvision.csproj --no-self-contained --runtime win-
 dotnet publish DbFillExampleContent\DbFillExampleContent.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\DbFillExampleContent --version-suffix %suffix%
 dotnet publish GenTeks\GenTeks.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\GenTeks --version-suffix %suffix%
 dotnet publish ForceTekAuth\ForceTekAuth.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\ForceTekAuth --version-suffix %suffix%
-dotnet publish SigTestFileCreator\SigTestFileCreator.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\SigTestFileCreator --version-suffix %suffix%
+dotnet publish SigTestFileCreator\SigTestFileCreator.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\SigTestFileCreators
 
 REM Publish stand-alone server
 REM dotnet publish ServerStandAlone\ServerStandAlone.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\ServerStandAlone --version-suffix %suffix%
