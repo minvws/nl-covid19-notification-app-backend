@@ -35,7 +35,6 @@ describe("Postkyes endpoints tests #postkeys #endpoints #regression", function (
         })
     });
 
-
     it("I should be registered", function () {
         expect(
             app_register_response.status,
