@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
                 return buffer;
 
             if (i == buffer.Length)
-                throw new InvalidOperationException("Array is all zeros.");
+                return new byte[1];
 
             var result = new byte[buffer.Length - i];
             Array.Copy(buffer, i, result, 0, buffer.Length - i);
