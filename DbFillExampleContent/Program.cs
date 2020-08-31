@@ -39,24 +39,12 @@ namespace DbFillExampleContent
             services.AddSingleton<IConfiguration>(configuration);
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
-            services.AddScoped(x => DbContextStartup.Workflow(x, false));
             services.AddScoped(x => DbContextStartup.Content(x, false));
 
             services.AddTransient<FillDatabasesCommand>();
-
-            services.AddTransient<WorkflowDatabaseCreateCommand>();
             services.AddTransient<ContentDatabaseCreateCommand>();
 
-            services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
-            services.AddSingleton<ITekValidatorConfig, TekValidatorConfig>();
-            services.AddSingleton<IEksConfig, StandardEksConfig>();
-
-            services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
-            services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
-            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
-            services.AddTransient<ContentValidator>();
-            services.AddTransient<ContentInsertDbCommand>();
 
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<IContentSigner, CmsSignerEnhanced>();

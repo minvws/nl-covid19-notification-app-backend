@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             await _DbContextProvider.Database.EnsureCreatedAsync();
         }
 
-        public async Task AddExampleContent()
+        public async Task AddInitialContent()
         {
             await using var tx = await _DbContextProvider.Database.BeginTransactionAsync();
             await Write(ContentTypes.RiskCalculationParameters, "RiskCalcDefaults.json");
