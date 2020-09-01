@@ -78,6 +78,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             services.AddTransient<ManifestUpdateCommand>();
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
+            services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
+            services.AddTransient<ZippedSignedContentFormatter>();
+            services.AddTransient<ManifestBuilder>();
 
             services.NlSignerStartup();
             services.GaSignerStartup();
