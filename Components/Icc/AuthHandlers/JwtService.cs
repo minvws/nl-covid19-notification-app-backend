@@ -21,16 +21,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         private readonly IIccPortalConfig _IccPortalConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly ILogger _Logger;
-        private readonly ITheIdentityHubService _TheIdentityHubService;
 
-        public JwtService(IIccPortalConfig iccPortalConfig, IUtcDateTimeProvider dateTimeProvider, ILogger<JwtService> logger,
-            ITheIdentityHubService theIdentityHubService)
+        public JwtService(IIccPortalConfig iccPortalConfig, IUtcDateTimeProvider dateTimeProvider, ILogger<JwtService> logger)
         {
             _IccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _TheIdentityHubService =
-                theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
         }
 
         private JwtBuilder CreateBuilder()
@@ -71,17 +67,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             builder.AddClaim("name",
                 GetClaimValue(claimsPrincipal, TheIdentityHubClaimTypes.DisplayName));
             return builder.Encode();
-        }
-        public async Task<bool> ValidateClaims(IEnumerable<Claim> authClaims)
-        {
-            var claimsObject = authClaims.Select(claim => new AuthClaim(claim.Type, claim.Value)).ToList();
-            var accessToken = GetClaimValue(claimsObject, TheIdentityHubClaimTypes.AccessToken);
-            if (accessToken != null)
-            {
-                return await _TheIdentityHubService.VerifyToken(accessToken);
-            }
-
-            return false;
         }
 
         private string? GetClaimValue(IList<AuthClaim> claimList, string claimType) =>

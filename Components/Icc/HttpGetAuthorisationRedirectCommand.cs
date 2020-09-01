@@ -3,11 +3,14 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
+using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
@@ -17,35 +20,38 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         private readonly ILogger<HttpGetAuthorisationRedirectCommand> _Logger;
         private readonly IAuthCodeService _AuthCodeService;
         private readonly IJwtService _JwtService;
+        private readonly ITheIdentityHubService _TheIdentityHubService;
         private readonly HttpGetLogoutCommand _LogoutCommand;
-
 
         public HttpGetAuthorisationRedirectCommand(IIccPortalConfig configuration,
             ILogger<HttpGetAuthorisationRedirectCommand> logger, IAuthCodeService authCodeService,
-            IJwtService jwtService, HttpGetLogoutCommand logoutCommand)
+            IJwtService jwtService, ITheIdentityHubService theIdentityHubService, HttpGetLogoutCommand logoutCommand)
         {
             _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _AuthCodeService = authCodeService ?? throw new ArgumentNullException(nameof(authCodeService));
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
+            _TheIdentityHubService = theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
             _LogoutCommand = logoutCommand ?? throw new ArgumentNullException(nameof(logoutCommand));
         }
 
         public async Task<IActionResult> ExecuteAsync(HttpContext httpContext)
         {
             if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
-            
-            _Logger.LogInformation("Executing Auth.Redirect on Host {CurrentHost}", httpContext.Request.Host.ToString());
+
+            _Logger.LogInformation("Executing Auth.Redirect on Host {CurrentHost}",
+                httpContext.Request.Host.ToString());
 
             // check httpContext claims on AccessToken validity!
-            if (!await _JwtService.ValidateClaims(httpContext.User.Claims))
+            var accessToken = httpContext.User.Claims.FirstOrDefault(c => c.Type == TheIdentityHubClaimTypes.AccessToken)?.Value;
+            if (accessToken != null && !await _TheIdentityHubService.VerifyToken(accessToken))
             {
                 await _LogoutCommand.Execute(httpContext);
                 return new RedirectResult(httpContext.Request.Path); // redirect to {prefix}/Auth/Redirect to trigger login
             }
-            
+
             var authorizationCode = await _AuthCodeService.GenerateAuthCodeAsync(httpContext.User);
-            
+
             return new RedirectResult(_Configuration.FrontendBaseUrl + "/auth/callback?code=" + authorizationCode);
         }
     }

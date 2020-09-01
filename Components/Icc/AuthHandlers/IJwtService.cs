@@ -13,7 +13,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
     {
         string Generate(ulong exp, Dictionary<string, object> claims);
         string Generate(IList<AuthClaim> authClaim);
-        Task<bool> ValidateClaims(IEnumerable<Claim> authClaims);
         
         bool TryDecode(string token, out IDictionary<string, string> payload);
     }
