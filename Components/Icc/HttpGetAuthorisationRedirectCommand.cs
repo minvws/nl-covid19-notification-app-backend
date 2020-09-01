@@ -3,14 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
-using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
@@ -42,9 +39,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
             _Logger.LogInformation("Executing Auth.Redirect on Host {CurrentHost}",
                 httpContext.Request.Host.ToString());
 
-            // check httpContext claims on AccessToken validity!
-            var accessToken = httpContext.User.Claims.FirstOrDefault(c => c.Type == TheIdentityHubClaimTypes.AccessToken)?.Value;
-            if (accessToken != null && !await _TheIdentityHubService.VerifyToken(accessToken))
+            // check httpContext claims on AccessToken validity
+            if (!await _TheIdentityHubService.VerifyClaimToken(httpContext.User.Claims))
             {
                 await _LogoutCommand.Execute(httpContext);
                 return new RedirectResult(httpContext.Request.Path); // redirect to {prefix}/Auth/Redirect to trigger login
