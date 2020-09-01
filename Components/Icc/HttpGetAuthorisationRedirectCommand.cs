@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
             if (!await _JwtService.ValidateClaims(httpContext.User.Claims))
             {
                 await _LogoutCommand.Execute(httpContext);
-                return new RedirectResult("/Auth/Redirect");
+                return new RedirectResult(httpContext.Request.Path); // redirect to {prefix}/Auth/Redirect to trigger login
             }
             
             var authorizationCode = await _AuthCodeService.GenerateAuthCodeAsync(httpContext.User);
