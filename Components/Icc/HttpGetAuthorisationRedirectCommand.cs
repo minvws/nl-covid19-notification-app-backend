@@ -38,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
             _Logger.LogInformation("Executing Auth.Redirect on Host {CurrentHost}", httpContext.Request.Host.ToString());
 
             // check httpContext claims on AccessToken validity!
-            if (!await _JwtService.ValidateClaims(httpContext.User.Claims) || true)
+            if (!await _JwtService.ValidateClaims(httpContext.User.Claims))
             {
                 await _LogoutCommand.Execute(httpContext);
                 return new RedirectResult("/Auth/Redirect");

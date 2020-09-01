@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         private readonly ILogger _Logger;
         private readonly ITheIdentityHubService _TheIdentityHubService;
 
-        public JwtService(IIccPortalConfig iccPortalConfig, IUtcDateTimeProvider dateTimeProvider, ILogger logger,
+        public JwtService(IIccPortalConfig iccPortalConfig, IUtcDateTimeProvider dateTimeProvider, ILogger<JwtService> logger,
             ITheIdentityHubService theIdentityHubService)
         {
             _IccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
@@ -85,7 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         }
 
         private string? GetClaimValue(IList<AuthClaim> claimList, string claimType) =>
-            claimList.FirstOrDefault(c => c.Type != null && c.Type.Equals(claimType))?.Value;
+            claimList.FirstOrDefault(c => c.Type.Equals(claimType))?.Value;
 
 
         public bool TryDecode(string token, out IDictionary<string, string> payload)
