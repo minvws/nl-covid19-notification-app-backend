@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
