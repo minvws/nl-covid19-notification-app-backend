@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 }
 
                 _Result.GivenMercy = dbContext.Database.ExecuteSqlInterpolated(
-                    $"WITH Zombies AS (SELECT Id FROM [Content] WHERE [Type] = 'Manifest' ORDER BY [Release] DESC OFFSET {_ManifestConfig.KeepAliveCount} ROWS) DELETE Zombies");
+                    $"WITH Zombies AS (SELECT Id FROM [Content] WHERE [Type] = 'Manifest' AND [Release] < GETDATE() ORDER BY [Release] DESC OFFSET {_ManifestConfig.KeepAliveCount} ROWS) DELETE Zombies");
 
                 _Result.Remaining = dbContext.Content.Count();
 

@@ -71,11 +71,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expi
 
 
         /// <summary>
-        /// NB Do not delete workflows where the keys have not yet been published.
-        /// NB Posting more TEKs into a workflow is blocked by validation/filtering and does not rely on this deletion
-        /// 1. After 0430Z, run the EKS Engine
-        /// 2. Run this deletion
-        /// This kills the ones already published and the TEKs that will be published AFTER 0400Z.
+        /// Delete all Workflows and their associated TEKs that are over 2 days old
         /// Cascading delete kills the TEKs.
         /// </summary>
         public RemoveExpiredWorkflowsResult Execute()
@@ -103,10 +99,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expi
                         return _Result;
                     }
 
-                    _Result.UnauthorisedGivenMercy = dbc.Database.ExecuteSqlInterpolated($"WITH Zombies As ( SELECT Id FROM [TekReleaseWorkflowState] As [w] WHERE [ValidUntil] < {_Dtp.Snapshot} AND [AuthorisedByCaregiver] IS NULL AND [DateOfSymptomsOnset] IS NULL AND [LabConfirmationId] IS NOT NULL) DELETE Zombies");
-                    _Logger.LogInformation("Workflows deleted - Unauthorised:{unauthorised}", _Result.UnauthorisedGivenMercy);
-                    _Result.AuthorisedAndFullyPublishedGivenMercy = dbc.Database.ExecuteSqlInterpolated($"WITH Zombies As ( SELECT Id FROM [TekReleaseWorkflowState] As [w] WHERE [ValidUntil] < {_Dtp.Snapshot} AND [AuthorisedByCaregiver] IS NOT NULL AND [DateOfSymptomsOnset] IS NOT NULL AND [LabConfirmationId] IS NULL AND (SELECT COUNT(*) FROM [TemporaryExposureKeys] AS [t] WHERE [w].[Id] = [t].[OwnerId] AND [t].[PublishingState] = 0) = 0) DELETE Zombies");
-                    _Logger.LogInformation("Workflows deleted - FullyPublished:{fullyPublished}", _Result.AuthorisedAndFullyPublishedGivenMercy);
+                    _Result.GivenMercy = dbc.Database.ExecuteSqlInterpolated($"WITH Zombies AS (SELECT Id FROM [TekReleaseWorkflowState] WHERE [CREATED] < DATEADD(DAY, -2, GETDATE())) DELETE Zombies");
+                    _Logger.LogInformation("Workflows deleted - {GivenMercy}", _Result.GivenMercy);
                     tx.Commit();
                 }
 
