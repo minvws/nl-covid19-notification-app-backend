@@ -23,7 +23,7 @@ dotnet publish DailyCleanup\DailyCleanup.csproj --no-self-contained --runtime wi
 
 REM Publish tools
 dotnet publish DbProvision\DbProvision.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\DbProvision --version-suffix %suffix%
-dotnet publish DbFillExampleContent\DbFillExampleContent.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\DbFillExampleContent --version-suffix %suffix%
+dotnet publish PublishContent\PublishContent.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\PublishContent --version-suffix %suffix%
 dotnet publish GenTeks\GenTeks.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\GenTeks --version-suffix %suffix%
 dotnet publish ForceTekAuth\ForceTekAuth.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\ForceTekAuth --version-suffix %suffix%
 dotnet publish SigTestFileCreator\SigTestFileCreator.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\SigTestFileCreator

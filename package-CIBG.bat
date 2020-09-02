@@ -34,7 +34,7 @@ REM Database
 REM 7z a -tzip packages\SQL\SQL.DbProvision.zip publish\Tools\DbProvision"
 
 xcopy ..\s\publish\Tools\DbProvision Artifacts\DbProvision /E /I
-xcopy ..\s\publish\Tools\DbFillExampleContent Artifacts\DbFillExampleContent /E /I
+xcopy ..\s\publish\Tools\PublishContent Artifacts\PublishContent /E /I
 xcopy ..\s\publish\Tools\GenTeks Artifacts\GenTeks /E /I
 xcopy ..\s\publish\Tools\ForceTekAuth Artifacts\ForceTekAuth /E /I
 xcopy ..\s\publish\Tools\SigTestFileCreator Artifacts\SigTestFileCreator /E /I
