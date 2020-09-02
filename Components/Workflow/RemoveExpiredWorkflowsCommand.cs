@@ -84,7 +84,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expi
             _Result.DeletionsOn = _Config.CleanupDeletesData;
 
             _Logger.LogInformation("Begin Workflow cleanup.");
-            _Logger.LogInformation("Workflow cleanup complete.");
 
             using (var dbc = _DbContextProvider())
             {
@@ -99,8 +98,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expi
                         return _Result;
                     }
 
-                    _Result.GivenMercy = dbc.Database.ExecuteSqlInterpolated($"WITH Zombies AS (SELECT Id FROM [TekReleaseWorkflowState] WHERE [CREATED] < DATEADD(DAY, -2, GETDATE())) DELETE Zombies");
-                    _Logger.LogInformation("Workflows deleted - {GivenMercy}", _Result.GivenMercy);
+                    if (_Result.Before.Authorised != _Result.Before.AuthorisedAndFullyPublished)
+                    {
+                        _Logger.LogCritical("Authorised unpublished TEKs exist. Aborting workflow cleanup.");
+                        throw new InvalidOperationException("Authorised unpublished TEKs exist. Aborting workflow cleanup.");
+                    }
+
+                    _Result.GivenMercy = dbc.Database.ExecuteSqlInterpolated($"WITH Zombies As ( SELECT Id FROM [TekReleaseWorkflowState] WHERE [ValidUntil] < {_Dtp.Snapshot}) DELETE Zombies");
+                    _Logger.LogInformation("Workflows deleted - Unauthorised:{unauthorised}", _Result.GivenMercy);
                     tx.Commit();
                 }
 
@@ -108,6 +113,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expi
                     ReadStats(_Result.After, dbc);
 
                 Log(_Result.Before, "Workflow stats after cleanup:");
+                _Logger.LogInformation("Workflow cleanup complete.");
                 return _Result;
             }
         }
