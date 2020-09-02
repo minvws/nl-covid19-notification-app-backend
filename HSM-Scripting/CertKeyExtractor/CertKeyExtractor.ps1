@@ -18,8 +18,8 @@ if(-not("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSsl
 
     $OpenSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
     $HSMAdminToolsDir = "#{Deploy.HSMScripting.HSMAdminToolsDir}#"
-    $TestfileName = "#{Deploy.HSMScripting.TestfileName}#"
-    $TestfileNameNoExt = "#{Deploy.HSMScripting.TestfileNameNoExt}#"
+    $TestfileName = "#{Deploy.HSMScripting.CertKeyExtractor.TestfileName}#"
+    $TestfileNameNoExt = "#{Deploy.HSMScripting.CertKeyExtractor.TestfileNameNoExt}#"
     $VerifierLoc = "#{Deploy.HSMScripting.VerifierLoc}#"
     $date
 
