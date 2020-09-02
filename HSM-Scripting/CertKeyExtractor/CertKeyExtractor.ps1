@@ -3,9 +3,9 @@
 
 $OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
 $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
-$TestfileName = ""
-$TestfileNameNoExt = ""
-$VerifierLoc = ".\Verifier\SigTestFileCreator.exe"
+$SignerLoc = ".\Signer\SigTestFileCreator.exe"
+$TestfileName
+$TestfileNameNoExt
 $date
 
 $Environment = "Ontw"
@@ -164,7 +164,7 @@ ExtractKey -ThumbPrint $EcdsaCertThumbPrint -Store "my" -ExportPath "EcdsaCert"
 write-host "`nSigning testfile with Verifier"
 Pause
 
-RunWithErrorCheck "$VerifierLoc .\Temp$script:date\$TestfileName"
+RunWithErrorCheck "$SignerLoc .\Temp$script:date\$TestfileName"
 
 Expand-Archive -Force -LiteralPath ".\Temp$script:date\$testfileNameNoExt-eks.zip" -DestinationPath ".\Result$script:date\" -ErrorAction Stop
 

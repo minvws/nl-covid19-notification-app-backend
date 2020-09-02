@@ -3,14 +3,13 @@
 
 $OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
 $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
-$testfileNameNoExt = ""
-$testfileName = ""
-$tempFolderLoc
-$verifierLoc = "C:\HSMTest\CertVerify\Verifier\SigTestFileCreator.exe"
+$SignerLoc = "C:\HSMTest\CertVerify\Verifier\SigTestFileCreator.exe"
 $EksParserLoc = "C:\HSMTest\CertVerify\EksParser\EksParser.exe"
-$RsaRootCertLoc = ""
-$EcdsaCertLoc = ""
-
+$tempFolderLoc
+$testfileNameNoExt
+$testfileName
+$RsaRootCertLoc
+$EcdsaCertLoc
 
 $RsaRootCertThumbPrint = ""
 $EcdsaCertThumbPrint = ""
@@ -172,7 +171,7 @@ RunWithErrorCheck "$openSslLoc x509 -in $EcdsaCertLoc -inform pem -noout -pubkey
 write-host "`nSigning testfile with Verifier"
 Pause
 
-RunWithErrorCheck "$verifierLoc .\$tempFolderLoc\$testfileName"
+RunWithErrorCheck "$SignerLoc .\$tempFolderLoc\$testfileName"
 
 write-host "`nChecking signature of signed testfiles"
 Pause

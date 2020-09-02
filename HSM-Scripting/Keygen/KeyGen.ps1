@@ -3,12 +3,6 @@
 
 $cngtoolloc = "`"C:\Program Files\Utimaco\CryptoServer\Administration\cngtool.exe`""
 $openSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
-
-$IsOnDevEnvironment = $True #When set to $False: skips sending, signing and accepting of the RSA request
-$CnValue = "ontw.coronamelder-api.nl" #should be [test.signing|acceptatie.signing|signing].coronamelder-api.nl
-$RootDays = 3650 #the dummy root is valid for 10 years.
-$RootSubject = "/C=NL/ST=Zuid-Holland/L=Den Haag/O=CIBG/OU=CIBG/serialNumber=00000002006756402002/CN=$CnValue"
-
 $date
 $keynameCert
 $keynameRSA
@@ -18,6 +12,11 @@ $requestRSAname
 $signedrequestRSAname
 $requestECDSAname
 $signedrequestECDSAname
+
+$IsOnDevEnvironment = $True #When set to $False: skips sending, signing and accepting of the RSA request
+$CnValue = "ontw.coronamelder-api.nl" #should be [test.signing|acceptatie.signing|signing].coronamelder-api.nl
+$RootDays = 3650 #the dummy root is valid for 10 years.
+$RootSubject = "/C=NL/ST=Zuid-Holland/L=Den Haag/O=CIBG/OU=CIBG/serialNumber=00000002006756402002/CN=$CnValue"
 
 function RunWithErrorCheck ([string]$command) 
 {
