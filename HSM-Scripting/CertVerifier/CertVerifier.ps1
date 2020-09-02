@@ -1,7 +1,7 @@
 # NOT designed for Powershell ISE
 # Double-check you are allowed to run custom scripts.
 
-if(-not("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")) {
+if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*") {
     $OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
     $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
     $testfileNameNoExt = ""
