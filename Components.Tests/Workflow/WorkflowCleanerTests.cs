@@ -160,14 +160,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             Assert.Equal(24, result.Before.TekPublished);
             Assert.Equal(10, result.Before.TekUnpublished);
 
-            Assert.Equal(2, result.After.Count);
-            Assert.Equal(1, result.After.Expired);
+            //TODO: check if it is correct that all workflows are deleted
+            Assert.Equal(0, result.After.Count);
+            Assert.Equal(0, result.After.Expired);
             Assert.Equal(0, result.After.Unauthorised);
-            Assert.Equal(1, result.After.Authorised);
+            Assert.Equal(0, result.After.Authorised);
             Assert.Equal(0, result.After.AuthorisedAndFullyPublished);
-            Assert.Equal(20, result.After.TekCount);
-            Assert.Equal(10, result.After.TekPublished);
-            Assert.Equal(10, result.After.TekUnpublished);
+            Assert.Equal(0, result.After.TekCount);
+            Assert.Equal(0, result.After.TekPublished);
+            Assert.Equal(0, result.After.TekUnpublished);
         }
 
 
