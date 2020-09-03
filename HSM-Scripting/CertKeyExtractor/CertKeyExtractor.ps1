@@ -1,29 +1,31 @@
 # NOT designed for Powershell ISE
 # Double-check you are allowed to run custom scripts.
 
-if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*") {
-    #for DEV local! ###############################
+$TestfileName
+$TestfileNameNoExt
+$date
+
+if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
+{
+	#ontw
     $OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
     $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
-    $TestfileName = ""
-    $TestfileNameNoExt = ""
-    $VerifierLoc = ".\Verifier\SigTestFileCreator.exe"
-    $date
-
+    $SignerLoc = ".\Signer\SigTestFileCreator.exe"
     $Environment = "Ontw"
-    $EcdsaCertThumbPrint = ""
-
-} else {
-    #Tokenized, for running on test, acc and prod! ####################
-
+    
+	$EcdsaCertThumbPrint = "Not Specified"
+}
+else
+{
+	#test, accp and prod
     $OpenSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
     $HSMAdminToolsDir = "#{Deploy.HSMScripting.HSMAdminToolsDir}#"
-    $TestfileName = "#{Deploy.HSMScripting.CertKeyExtractor.TestfileName}#"
+    $SignerLoc = "#{Deploy.HSMScripting.VerifierLoc}#"
+	$TestfileName = "#{Deploy.HSMScripting.CertKeyExtractor.TestfileName}#"
     $TestfileNameNoExt = "#{Deploy.HSMScripting.CertKeyExtractor.TestfileNameNoExt}#"
-    $VerifierLoc = "#{Deploy.HSMScripting.VerifierLoc}#"
-    $date
-
-    $Environment = "#{Deploy.HSMScripting.Environment}#"
+    
+    
+	$Environment = "#{Deploy.HSMScripting.Environment}#"
     $EcdsaCertThumbPrint = "#{Deploy.HSMScripting.EcdsaCertThumbPrint}#"
 }
 
@@ -122,7 +124,7 @@ function RunWithErrorCheck ([string]$command)
 function GenTestFile
 {
 	$contentstring = read-host "Please input a test string that will be used for signing"
-	$script:date = Get-Date -Format "MM_dd_yyyy_HH-mm"
+	$script:date = Get-Date -Format "MM_dd_HH-mm-ss"
 	$fileContent = "Key verification file ($script:Environment)`r`n$contentstring"
 	$script:TestfileNameNoExt = "KeyExtractionRawData"
 	$script:TestfileName = "$script:TestfileNameNoExt.txt"
@@ -154,8 +156,8 @@ CheckNotWin7
 
 write-warning "`nDid you do the following?`
 - Add the NEW Ecdsa thumbprint to this script?`
-- Add the location of the verifier to this script?`
-- Add the Rsa (non-root)- and NEW Ecdsa thumbprint to the verifier appsettings.json?`
+- Add the location of the signer to this script?`
+- Add the Rsa (non-root)- and NEW Ecdsa thumbprint to the signer appsettings.json?`
 If not: abort this script with ctrl+c."
 Pause
 

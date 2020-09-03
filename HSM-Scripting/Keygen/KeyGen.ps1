@@ -1,25 +1,30 @@
 # NOT designed for Powershell ISE
 # Double-check you are allowed to run custom scripts.
 
-if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*") {
+$date
+$keynameCert
+$keynameRSA
+$keynameECDSA
+$selfsigncertname
+$requestRSAname
+$signedrequestRSAname
+$requestECDSAname
+$signedrequestECDSAname
+
+if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
+{
+	#ontw
     $cngtoolloc = "`"C:\Program Files\Utimaco\CryptoServer\Administration\cngtool.exe`""
     $openSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
 
     $IsOnDevEnvironment = $True #When set to $False: skips sending, signing and accepting of the RSA request
     $CnValue = "ontw.coronamelder-api.nl" #should be [test.signing|acceptatie.signing|signing].coronamelder-api.nl
     $RootDays = 3650 #the dummy root is valid for 10 years.
-    $RootSubject = "/C=NL/ST=Zuid-Holland/L=Den Haag/O=CIBG/OU=CIBG/serialNumber=00000002006756402002/CN=$CnValue"
-
-    $date
-    $keynameCert
-    $keynameRSA
-    $keynameECDSA
-    $selfsigncertname
-    $requestRSAname
-    $signedrequestRSAname
-    $requestECDSAname
-    $signedrequestECDSAname
-} else {
+    $RootSubject = "/C=NL/ST=Zuid-Holland/L=Den Haag/O=CIBG/OU=CIBG/serialNumber=00000002006756402002/CN=$CnValue"    
+}
+else
+{
+	#test, accp and prod
     $cngtoolloc = "`"#{Deploy.HSMScripting.HSMAdminToolsDir}#\cngtool.exe`""
     $openSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
 
@@ -27,22 +32,7 @@ if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*"
     $CnValue = "#{Deploy.HSMScripting.CnValue}#" #should be [test.signing|acceptatie.signing|signing].coronamelder-api.nl
     $RootDays = 3650 #the dummy root is valid for 10 years.
     $RootSubject = "/C=NL/ST=Zuid-Holland/L=Den Haag/O=CIBG/OU=CIBG/serialNumber=00000002006756402002/CN=$CnValue"
-
-    $date
-    $keynameCert
-    $keynameRSA
-    $keynameECDSA
-    $selfsigncertname
-    $requestRSAname
-    $signedrequestRSAname
-    $requestECDSAname
-    $signedrequestECDSAname
 }
-
-$IsOnDevEnvironment = $True #When set to $False: skips sending, signing and accepting of the RSA request
-$CnValue = "ontw.coronamelder-api.nl" #should be [test.signing|acceptatie.signing|signing].coronamelder-api.nl
-$RootDays = 3650 #the dummy root is valid for 10 years.
-$RootSubject = "/C=NL/ST=Zuid-Holland/L=Den Haag/O=CIBG/OU=CIBG/serialNumber=00000002006756402002/CN=$CnValue"
 
 function RunWithErrorCheck ([string]$command) 
 {

@@ -1,31 +1,35 @@
 # NOT designed for Powershell ISE
 # Double-check you are allowed to run custom scripts.
 
-if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*") {
+$testfileNameNoExt
+$testfileName
+$tempFolderLoc
+$RsaRootCertLoc
+$EcdsaCertLoc
+
+if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
+{
+	#ontw
     $OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
     $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
-    $testfileNameNoExt = ""
-    $testfileName = ""
-    $tempFolderLoc
-    $verifierLoc = "C:\HSMTest\CertVerify\Verifier\SigTestFileCreator.exe"
-    $EksParserLoc = "C:\HSMTest\CertVerify\EksParser\EksParser.exe"
-    $RsaRootCertLoc = ""
-    $EcdsaCertLoc = ""
-
-
-    $RsaRootCertThumbPrint = ""
-    $EcdsaCertThumbPrint = ""
-} else {
+    $SignerLoc = ".\Signer\SigTestFileCreator.exe"
+    $EksParserLoc = ".\EksParser\EksParser.exe"
+    
+    $RsaRootCertThumbPrint = "Not Specified"
+    $EcdsaCertThumbPrint = "Not Specified"
+}
+else
+{
+	#test, accp and prod
     $OpenSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
     $HSMAdminToolsDir = "#{Deploy.HSMScripting.HSMAdminToolsDir}#"
     $testfileNameNoExt = "#{Deploy.HSMScripting.CertVerifier.TestfileNameNoExt}#"
     $testfileName = "#{Deploy.HSMScripting.CertVerifier.TestfileName}#"
     $tempFolderLoc = "#{Deploy.HSMScripting.CertVerifier.tempFolderLoc}#"
-    $VerifierLoc = "#{Deploy.HSMScripting.VerifierLoc}#"
+    $SignerLoc = "#{Deploy.HSMScripting.VerifierLoc}#"
     $EksParserLoc = "#{Deploy.HSMScripting.EksParserLoc}#"
     $RsaRootCertLoc = "#{Deploy.HSMScripting.RsaRootCertLoc}#"
     $EcdsaCertLoc = "#{Deploy.HSMScripting.EcdsaCertLoc}#"
-
 
     $RsaRootCertThumbPrint = "#{Deploy.HSMScripting.RsaRootCertThumbPrint}#"
     $EcdsaCertThumbPrint = "#{Deploy.HSMScripting.EcdsaCertThumbPrint}#"
@@ -112,6 +116,17 @@ function RunWithErrorCheck ([string]$command)
     }
 }
 
+function CheckNotWin7
+{
+	if([int](Get-WmiObject Win32_OperatingSystem).BuildNumber -lt 9000)
+	{
+		write-warning "`nAutomated export of certificates is not possible under Windows 7!`nThis script will not function."
+		Pause
+		
+		exit
+	}
+}
+
 function GenTestFile
 {
 	$date = Get-Date -Format "MM_dd_HH-mm-ss"
@@ -135,17 +150,6 @@ function ExtractCert ([String] $ThumbPrint, [String] $Store, [String] $ExportPat
 	return "$ExportPath-pem.cer"
 }
 
-function CheckNotWin7
-{
-	if([int](Get-WmiObject Win32_OperatingSystem).BuildNumber -lt 9000)
-	{
-		write-warning "`nAutomated export of certificates is not possible under Windows 7!`nThis script will not function."
-		Pause
-		
-		exit
-	}
-}
-
 #
 # Start
 #
@@ -158,8 +162,8 @@ CheckNotWin7
 
 write-warning "`nDid you do the following?`
 - Add the Rsa ROOT- and Ecdsa thumbprint to this script?`
-- Add the location of the verifier to this script?`
-- Add the Rsa (non-root)- and Ecdsa thumbprint to the verifier appsettings.json?`
+- Add the location of the signer to this script?`
+- Add the Rsa (non-root)- and Ecdsa thumbprint to the signer appsettings.json?`
 If not: abort this script with ctrl+c."
 Pause
 
