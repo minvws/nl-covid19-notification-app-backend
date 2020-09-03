@@ -1,18 +1,35 @@
 # NOT designed for Powershell ISE
 # Double-check you are allowed to run custom scripts.
 
-$OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
-$HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
-$SignerLoc = "C:\HSMTest\CertVerify\Verifier\SigTestFileCreator.exe"
-$EksParserLoc = "C:\HSMTest\CertVerify\EksParser\EksParser.exe"
-$tempFolderLoc
-$testfileNameNoExt
-$testfileName
-$RsaRootCertLoc
-$EcdsaCertLoc
+if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*") {
+    $OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
+    $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
+    $testfileNameNoExt = ""
+    $testfileName = ""
+    $tempFolderLoc
+    $verifierLoc = "C:\HSMTest\CertVerify\Verifier\SigTestFileCreator.exe"
+    $EksParserLoc = "C:\HSMTest\CertVerify\EksParser\EksParser.exe"
+    $RsaRootCertLoc = ""
+    $EcdsaCertLoc = ""
 
-$RsaRootCertThumbPrint = ""
-$EcdsaCertThumbPrint = ""
+
+    $RsaRootCertThumbPrint = ""
+    $EcdsaCertThumbPrint = ""
+} else {
+    $OpenSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
+    $HSMAdminToolsDir = "#{Deploy.HSMScripting.HSMAdminToolsDir}#"
+    $testfileNameNoExt = "#{Deploy.HSMScripting.CertVerifier.TestfileNameNoExt}#"
+    $testfileName = "#{Deploy.HSMScripting.CertVerifier.TestfileName}#"
+    $tempFolderLoc = "#{Deploy.HSMScripting.CertVerifier.tempFolderLoc}#"
+    $VerifierLoc = "#{Deploy.HSMScripting.VerifierLoc}#"
+    $EksParserLoc = "#{Deploy.HSMScripting.EksParserLoc}#"
+    $RsaRootCertLoc = "#{Deploy.HSMScripting.RsaRootCertLoc}#"
+    $EcdsaCertLoc = "#{Deploy.HSMScripting.EcdsaCertLoc}#"
+
+
+    $RsaRootCertThumbPrint = "#{Deploy.HSMScripting.RsaRootCertThumbPrint}#"
+    $EcdsaCertThumbPrint = "#{Deploy.HSMScripting.EcdsaCertThumbPrint}#"
+}
 
 function SetErrorToStop
 {

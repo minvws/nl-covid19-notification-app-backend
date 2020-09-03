@@ -1,15 +1,31 @@
 # NOT designed for Powershell ISE
 # Double-check you are allowed to run custom scripts.
 
-$OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
-$HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
-$SignerLoc = ".\Signer\SigTestFileCreator.exe"
-$TestfileName
-$TestfileNameNoExt
-$date
+if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*") {
+    #for DEV local! ###############################
+    $OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
+    $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
+    $TestfileName = ""
+    $TestfileNameNoExt = ""
+    $VerifierLoc = ".\Verifier\SigTestFileCreator.exe"
+    $date
 
-$Environment = "Ontw"
-$EcdsaCertThumbPrint = ""
+    $Environment = "Ontw"
+    $EcdsaCertThumbPrint = ""
+
+} else {
+    #Tokenized, for running on test, acc and prod! ####################
+
+    $OpenSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
+    $HSMAdminToolsDir = "#{Deploy.HSMScripting.HSMAdminToolsDir}#"
+    $TestfileName = "#{Deploy.HSMScripting.CertKeyExtractor.TestfileName}#"
+    $TestfileNameNoExt = "#{Deploy.HSMScripting.CertKeyExtractor.TestfileNameNoExt}#"
+    $VerifierLoc = "#{Deploy.HSMScripting.VerifierLoc}#"
+    $date
+
+    $Environment = "#{Deploy.HSMScripting.Environment}#"
+    $EcdsaCertThumbPrint = "#{Deploy.HSMScripting.EcdsaCertThumbPrint}#"
+}
 
 function SetErrorToStop
 {
