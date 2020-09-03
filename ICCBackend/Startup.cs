@@ -59,8 +59,8 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
             services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-
-            services.AddSingleton<IPaddingGenerator, CryptoRandomPaddingGenerator>();
+            
+            services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
 
             services.AddSingleton<IAuthCodeService, AuthCodeService>();
             services.AddDistributedMemoryCache();
@@ -81,10 +81,10 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddTransient<AuthorisationArgsValidator>();
             services.AddTransient<LabVerifyArgsValidator>();
             services.AddTransient<AuthorisationWriterCommand>();
-            services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
+
 
             services.AddTransient<IJwtService, JwtService>();
-            
+
             if (_IsDev)
             {
                 services.AddTransient<IJwtClaimValidator, TestJwtClaimValidator>();
@@ -94,7 +94,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             {
                 services.AddTransient<IJwtClaimValidator, JwtClaimValidator>();
             }
-            
+
             services.AddTransient<WriteNewPollTokenWriter>();
             services.AddTransient<IPollTokenService, PollTokenService>();
             services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
@@ -113,7 +113,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             StartupIdentityHub(services);
 
             StartupAuthenticationScheme(services.AddAuthentication(JwtAuthenticationHandler.SchemeName));
-            
         }
 
         private void StartupSwagger(SwaggerGenOptions o)
@@ -159,7 +158,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     options.CallbackPath = iccIdentityHubConfig.CallbackPath;
                 });
 
-            
+
             var iccPortalConfig = new IccPortalConfig(_Configuration);
 
             var policyAuthorizationOptions = new PolicyAuthorizationOptions(_WebHostEnvironment, iccPortalConfig);

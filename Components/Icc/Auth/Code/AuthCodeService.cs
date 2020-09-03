@@ -19,14 +19,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
 {
     public class AuthCodeService : IAuthCodeService
     {
-        private readonly IPaddingGenerator _RandomGenerator;
         private readonly IDistributedCache _Cache;
         private readonly IAuthCodeGenerator _AuthCodeGenerator;
 
-        public AuthCodeService(IPaddingGenerator randomGenerator, IDistributedCache cache,
+        public AuthCodeService(IDistributedCache cache,
             IAuthCodeGenerator authCodeGenerator)
         {
-            _RandomGenerator = randomGenerator ?? throw new ArgumentNullException(nameof(randomGenerator));
             _Cache = cache ?? throw new ArgumentNullException(nameof(cache));
             _AuthCodeGenerator = authCodeGenerator ?? throw new ArgumentNullException(nameof(authCodeGenerator));
         }

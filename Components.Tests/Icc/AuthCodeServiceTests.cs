@@ -22,10 +22,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
 
         public AuthCodeServiceTests()
         {
-            var cryptoRandomPaddingGenerator = new CryptoRandomPaddingGenerator(new StandardRandomNumberGenerator());
+            var randomNumberGenerator = new StandardRandomNumberGenerator();
             var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
 
-            _AuthCodeService = new AuthCodeService(cryptoRandomPaddingGenerator, cache);
+            _AuthCodeService = new AuthCodeService( cache, new AuthCodeGenerator(randomNumberGenerator));
         }
 
         [Fact]

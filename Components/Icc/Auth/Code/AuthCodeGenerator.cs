@@ -2,20 +2,24 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Text;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code
 {
-    class AuthCodeGenerator : IAuthCodeGenerator
+    public class AuthCodeGenerator : IAuthCodeGenerator
     {
         private readonly IRandomNumberGenerator _Rng;
 
         private const int Length = 32;
         private const string PermittedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        
-        
+
+        public AuthCodeGenerator(IRandomNumberGenerator rng)
+        {
+            _Rng = rng ?? throw new ArgumentNullException(nameof(rng));
+        }
+
         public string Next()
         {
             var token = new StringBuilder(Length);
