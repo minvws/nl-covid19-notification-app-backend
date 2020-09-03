@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;

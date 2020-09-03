@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 

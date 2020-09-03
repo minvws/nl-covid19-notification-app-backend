@@ -7,6 +7,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
 using System;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.AuthHandlers

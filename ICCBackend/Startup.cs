@@ -24,6 +24,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Register
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
