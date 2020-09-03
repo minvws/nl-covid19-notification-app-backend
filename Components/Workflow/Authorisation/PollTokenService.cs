@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation

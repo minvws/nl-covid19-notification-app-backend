@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Validators;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Handlers
 {
     public class JwtAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
