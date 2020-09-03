@@ -6,6 +6,7 @@ $testfileName
 $tempFolderLoc
 $RsaRootCertLoc
 $EcdsaCertLoc
+$VariablesSource = "Development"
 
 if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
 {
@@ -21,6 +22,7 @@ if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*"
 else
 {
 	#test, accp and prod
+	$VariablesSource = "Deploy"
     $OpenSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
     $HSMAdminToolsDir = "#{Deploy.HSMScripting.HSMAdminToolsDir}#"
     $testfileNameNoExt = "#{Deploy.HSMScripting.CertVerifier.TestfileNameNoExt}#"
@@ -156,6 +158,7 @@ function ExtractCert ([String] $ThumbPrint, [String] $Store, [String] $ExportPat
 
 
 write-host "Certificate-Verifier"
+write-warning "`nUsing variables from $VariablesSource`n"
 Pause
 
 CheckNotWin7
@@ -186,7 +189,7 @@ Pause
 $RsaRootCertLoc = ExtractCert -ThumbPrint $RsaRootCertThumbPrint -Store "root" -ExportPath ".\$tempFolderLoc\RsaRootCert"
 $EcdsaCertLoc = ExtractCert -ThumbPrint $EcdsaCertThumbPrint -Store "my" -ExportPath ".\$tempFolderLoc\EcdsaCert"
 
-#extract pubnlic key from ECDSA Key
+#extract public key from ECDSA Key
 RunWithErrorCheck "$openSslLoc x509 -in $EcdsaCertLoc -inform pem -noout -pubkey -out $EcdsaCertLoc.key"
 
 write-host "`nSigning testfile with Verifier"

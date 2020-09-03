@@ -4,6 +4,7 @@
 $TestfileName
 $TestfileNameNoExt
 $date
+$VariablesSource = "Development"
 
 if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
 {
@@ -18,6 +19,7 @@ if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*"
 else
 {
 	#test, accp and prod
+	$VariablesSource = "Deploy"
     $OpenSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
     $HSMAdminToolsDir = "#{Deploy.HSMScripting.HSMAdminToolsDir}#"
     $SignerLoc = "#{Deploy.HSMScripting.VerifierLoc}#"
@@ -150,6 +152,7 @@ function ExtractKey ([String] $ThumbPrint, [String] $Store, [String] $ExportPath
 
 
 write-host "Certificate-Verifier"
+write-warning "`nUsing variables from $VariablesSource`n"
 Pause
 
 CheckNotWin7

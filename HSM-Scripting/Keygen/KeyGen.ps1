@@ -10,6 +10,7 @@ $requestRSAname
 $signedrequestRSAname
 $requestECDSAname
 $signedrequestECDSAname
+$VariablesSource = "Development"
 
 if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
 {
@@ -25,6 +26,7 @@ if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*"
 else
 {
 	#test, accp and prod
+	$VariablesSource = "Deploy"
     $cngtoolloc = "`"#{Deploy.HSMScripting.HSMAdminToolsDir}#\cngtool.exe`""
     $openSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
 
@@ -172,6 +174,7 @@ function GenRequests
 #
 
 write-host "Keygenerator script for Utimaco HSM"
+write-warning "`nUsing variables from $VariablesSource`n"
 Pause
 
 write-warning "Did you do the following?`
