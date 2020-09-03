@@ -16,12 +16,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
     public class WriteNewPollTokenWriter
     {
         private readonly WorkflowDbContext _WorkflowDb;
-        private readonly PollTokenService _PollTokenService;
+        private readonly IPollTokenService _PollTokenService;
         private readonly ILogger _Logger;
         private int _AttemptCount;
         private const int AttemptCountMax = 5;
 
-        public WriteNewPollTokenWriter(WorkflowDbContext workflowDb, PollTokenService pollTokenService, ILogger<WriteNewPollTokenWriter> logger)
+        public WriteNewPollTokenWriter(WorkflowDbContext workflowDb, IPollTokenService pollTokenService, ILogger<WriteNewPollTokenWriter> logger)
         {
             _WorkflowDb = workflowDb ?? throw new ArgumentNullException(nameof(workflowDb));
             _PollTokenService = pollTokenService ?? throw new ArgumentNullException(nameof(pollTokenService));

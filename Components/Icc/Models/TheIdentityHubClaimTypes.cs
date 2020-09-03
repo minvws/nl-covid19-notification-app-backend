@@ -18,7 +18,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models
         internal const string LargePicture = "http://schemas.u2uconsult.com/ws/2014/04/identity/claims/largepicture";
         internal const string MediumPicture = "http://schemas.u2uconsult.com/ws/2014/04/identity/claims/mediumpicture";
         internal const string Scope = "http://schemas.u2uconsult.com/ws/2014/03/identity/claims/scope";
-        internal const string SmallPicture = "http://schemas.u2uconsult.com/ws/2014/04/identity/claims/smallpicture";
         internal const string Surname = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname";
         internal static readonly string NameIdentifier = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
     }

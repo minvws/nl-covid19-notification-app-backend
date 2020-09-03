@@ -122,6 +122,8 @@
     <Folder Include="PostDeploy" />
     <Folder Include="Security\Roles" />
     <Folder Include="PostDeploy\Scripts" />
+    <Folder Include="dbo" />
+    <Folder Include="dbo\Tables" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Security\Roles\Dbr_Appbeheerders.sql" />
@@ -134,6 +136,8 @@
     <None Include="PostDeploy\Scripts\RoleMemberships.sql" />
     <None Include="PostDeploy\Scripts\Users.sql" />
     <PostDeploy Include="PostDeploy\PostDeploy.sql" />
+    <Build Include="dbo\Tables\EksCreateJobInput.sql" />
+    <Build Include="dbo\Tables\EksCreateJobOutput.sql" />
     <Build Include="Security\Roles\Subroles.sql" />
   </ItemGroup>
   <ItemGroup>

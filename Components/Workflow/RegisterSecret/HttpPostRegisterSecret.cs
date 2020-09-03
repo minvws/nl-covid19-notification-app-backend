@@ -29,6 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
 
         public async Task<IActionResult> Execute()
         {
+            _Logger.WriteStart();
             try
             {
                 var entity = await _Writer.Execute();
@@ -45,8 +46,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             }
             catch (Exception ex)
             {
-                _Logger.LogError(ex, "Failed to create an enrollment response.");
+                _Logger.WriteFailed(ex);
                 return new OkObjectResult(new EnrollmentResponse { Validity = -1 });
+            }
+            finally
+            {
+                _Logger.WriteFinished();
             }
         }
     }

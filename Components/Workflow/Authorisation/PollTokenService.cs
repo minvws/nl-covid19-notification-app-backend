@@ -9,11 +9,10 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
-    
     /// <summary>
     /// Transient
     /// </summary>
-    public class PollTokenService
+    public class PollTokenService : IPollTokenService
     {
         private const string PayloadElement = "payload";
 

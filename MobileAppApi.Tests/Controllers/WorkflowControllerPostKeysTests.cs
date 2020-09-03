@@ -2,42 +2,41 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NCrunch.Framework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
+using Xunit;
 
 namespace MobileAppApi.Tests.Controllers
 {
-    [TestClass]
-    public class WorkflowControllerPostKeysTests : WebApplicationFactory<Startup>
+    [Collection(nameof(WorkflowControllerPostKeysTests))]
+    [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
+    public class WorkflowControllerPostKeysTests : WebApplicationFactory<Startup>, IDisposable
     {
         private readonly byte[] _Key = Convert.FromBase64String(@"PwMcyc8EXF//Qkye1Vl2S6oCOo9HFS7E7vw7y9GOzJk=");
-        private WebApplicationFactory<Startup> _Factory;
+        private readonly WebApplicationFactory<Startup> _Factory;
         private readonly byte[] _BucketId = Convert.FromBase64String(@"idlVmyDGeAXTyaNN06Uejy6tLgkgWtj32sLRJm/OuP8=");
-        private WorkflowDbContext _DbContext;
+        private readonly WorkflowDbContext _DbContext;
 
-        [TestInitialize]
-        public async Task InitializeAsync()
+        public WorkflowControllerPostKeysTests()
         {
-            Func<WorkflowDbContext> dbcFac = () => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer("Data Source=.;Database=WorkflowControllerPostKeysTests2;Integrated Security=True").Options);
-            _DbContext = dbcFac();
+            WorkflowDbContext DbcFac() => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer($"Data Source=.;Database={nameof(WorkflowControllerPostKeysTests)};Integrated Security=True").Options);
+            _DbContext = DbcFac();
 
             _Factory = WithWebHostBuilder(builder =>
             {
@@ -45,7 +44,7 @@ namespace MobileAppApi.Tests.Controllers
                 {
                     services.AddScoped(sp =>
                     {
-                        var context = dbcFac();
+                        var context = DbcFac();
                         context.BeginTransaction();
                         return context;
                     });
@@ -70,16 +69,18 @@ namespace MobileAppApi.Tests.Controllers
                 Created = DateTime.UtcNow,
                 ConfirmationKey = _Key,
             });
-            await _DbContext.SaveChangesAsync();
+            _DbContext.SaveChanges();
         }
 
-        [TestCleanup]
-        public async Task CleanupAsync()
+        void IDisposable.Dispose()
         {
-            await _DbContext.DisposeAsync();
+            base.Dispose();
+
+             _DbContext.Dispose();
         }
 
-        [TestMethod]
+        [Fact]
+        [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
         public async Task PostWorkflowTest_InvalidSignature()
         {
             // Arrange
@@ -96,11 +97,11 @@ namespace MobileAppApi.Tests.Controllers
 
             // Assert
             var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-            Assert.AreEqual(0, items.Count);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            Assert.Empty(items);
         }
 
-        [TestMethod]
+        [Fact]
         [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
         public async Task PostWorkflowTest_ScriptInjectionInSignature()
         {
@@ -118,11 +119,11 @@ namespace MobileAppApi.Tests.Controllers
 
             // Assert
             var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-            Assert.AreEqual(0, items.Count);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            Assert.Empty(items);
         }
 
-        [TestMethod]
+        [Fact]
         [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
         public async Task PostWorkflowTest_NullSignature()
         {
@@ -139,11 +140,11 @@ namespace MobileAppApi.Tests.Controllers
 
             // Assert
             var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-            Assert.AreEqual(0, items.Count);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            Assert.Empty(items);
         }
 
-        [TestMethod]
+        [Fact]
         [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
         public async Task PostWorkflowTest_EmptySignature()
         {
@@ -160,8 +161,8 @@ namespace MobileAppApi.Tests.Controllers
 
             // Assert
             var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode); //All coerced by middleware to 200 now.
-            Assert.AreEqual(0, items.Count);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode); //All coerced by middleware to 200 now.
+            Assert.Empty(items);
         }
     }
 }

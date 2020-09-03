@@ -6,9 +6,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 {
     public class LabVerifyArgsValidator
     {
-        private readonly PollTokenService _PollTokenService;
+        private readonly IPollTokenService _PollTokenService;
 
-        public LabVerifyArgsValidator(PollTokenService pollTokenService)
+        public LabVerifyArgsValidator(IPollTokenService pollTokenService)
         {
             _PollTokenService = pollTokenService;
         }
@@ -16,9 +16,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         public bool Validate(LabVerifyArgs args)
         {
             if (args == null)
-                return false;
-
-            if (string.IsNullOrWhiteSpace(args.PollToken))
                 return false;
 
             return _PollTokenService.ValidateToken(args.PollToken);

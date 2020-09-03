@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 using TheIdentityHub.AspNetCore.Authentication;
 
@@ -23,18 +24,12 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-
-        [Authorize(Policy = "TelefonistRole")]
+        [Authorize(Policy = "TelefonistRole", AuthenticationSchemes = TheIdentityHubDefaults.AuthenticationScheme)]
         [HttpGet]
-        public async Task<IActionResult> Logout([FromServices] HttpGetLogoutCommand command)
-            => await command.Execute(HttpContext);
+        public Task<IActionResult> Redirect([FromServices] HttpGetAuthorisationRedirectCommand command) => 
+            command.ExecuteAsync(HttpContext);
 
-        [Authorize(Policy = "TelefonistRole")]
-        [HttpGet]
-        public IActionResult Redirect([FromServices] HttpGetAuthorisationRedirectCommand command)
-            => command.Execute(HttpContext);
-        
-        
+
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Token([FromBody] TokenAuthorisationArgs args,
@@ -50,5 +45,10 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         [HttpGet]
         public IActionResult User([FromServices] HttpGetUserClaimCommand command)
             => command.Execute(HttpContext);
+
+        [Authorize(AuthenticationSchemes = TheIdentityHubDefaults.AuthenticationScheme)]
+        [HttpGet]
+        public async Task<IActionResult> Logout([FromServices] HttpGetLogoutCommand command)
+            => await command.Execute(HttpContext);
     }
 }

@@ -2,25 +2,23 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
+using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.Authorisation
 {
-    [TestClass]
     public class LabVerifyArgsValidatorTests
     {
         private LabVerifyArgsValidator _Validator;
-        private PollTokenService _PollTokenService;
+        private IPollTokenService _PollTokenService;
         private const double ClaimLifetimeHours = 3;
         private IUtcDateTimeProvider _UtcDateTimeProvider;
 
-        [TestInitialize]
-        public void Initialize()
+        public LabVerifyArgsValidatorTests()
         {
             var lf = new TestLogger<JwtService>();
             _UtcDateTimeProvider = new StandardUtcDateTimeProvider();
@@ -32,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             _Validator = new LabVerifyArgsValidator(_PollTokenService);
         }
 
-        [TestMethod]
+        [Fact]
         public void Validate_checks_null()
         {
             // Assemble 
@@ -41,11 +39,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             var result = _Validator.Validate(args);
 
             // Assert
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void Validate_checks_pollToken_format_1()
         {
             // Assemble 
@@ -54,10 +52,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             var result = _Validator.Validate(args);
 
             // Assert
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Validate_checks_pollToken_format_2()
         {
             // Assemble 
@@ -66,10 +64,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             var result = _Validator.Validate(args);
 
             // Assert
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Validate_checks_pollToken_valid()
         {
             // Assemble 
@@ -79,17 +77,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             var result = _Validator.Validate(args);
 
             // Assert
-            Assert.IsTrue(result);
+            Assert.True(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Validate_checks_pollToken_expires()
         {
             // Assemble 
             var token = _PollTokenService.Next();
             var args = new LabVerifyArgs() { PollToken = token };
 
-            Assert.Fail("Finish this test.");
+            throw new System.Exception("Finish this test.");
             // Act
             // var mock = new Mock<IDateTime>();
             // mock.Setup(fake => fake.Now)
@@ -97,10 +95,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             var result = _Validator.Validate(args);
 
             // Assert
-            Assert.IsTrue(result);
+            Assert.True(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Validate_checks_pollToken_signature()
         {
             // Assemble 
@@ -114,7 +112,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             var result = _Validator.Validate(args);
 
             // Assert
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
     }
 }

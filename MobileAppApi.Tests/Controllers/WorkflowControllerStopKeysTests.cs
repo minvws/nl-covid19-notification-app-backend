@@ -2,26 +2,25 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
+using Xunit;
 
 namespace MobileAppApi.Tests.Controllers
 {
-    [TestClass]
-    public class WorkflowControllerStopKeysTests : WebApplicationFactory<Startup>
+    public class WorkflowControllerStopKeysTests : WebApplicationFactory<Startup>, IDisposable
     {
         private WebApplicationFactory<Startup> _Factory;
 
-        [TestInitialize]
-        public async Task InitializeAsync()
+        public WorkflowControllerStopKeysTests()
         {
             _Factory = WithWebHostBuilder(builder =>
             {
@@ -31,7 +30,7 @@ namespace MobileAppApi.Tests.Controllers
             });
         }
 
-        [TestMethod]
+        [Fact]
         public async Task PostStopKeysTest()
         {
             // Arrange
@@ -41,7 +40,7 @@ namespace MobileAppApi.Tests.Controllers
             var result = await client.PostAsync("v1/stopkeys", null);
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
 
         // Ticket raised to move/refactor, this tests the delay feature not if it's enabled for an endpoint
@@ -50,12 +49,12 @@ namespace MobileAppApi.Tests.Controllers
         /// </summary>
         /// <param name="min">Minimum wait time</param>
         /// <param name="max">Maximum wait time</param>
-        [DataTestMethod]
-        [DataRow(100L, 200L)]
-        [DataRow(200L, 300L)]
-        [DataRow(300L, 400L)]
-        [DataRow(50L, 100L)]
-        [DataRow(10L, 50L)]
+        [Theory]
+        [InlineData(100L, 200L)]
+        [InlineData(200L, 300L)]
+        [InlineData(300L, 400L)]
+        [InlineData(50L, 100L)]
+        [InlineData(10L, 50L)]
         public async Task DelayTest(long min, long max)
         {
             // Arrange
@@ -78,16 +77,16 @@ namespace MobileAppApi.Tests.Controllers
             sw.Stop();
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-            Assert.IsTrue(sw.ElapsedMilliseconds > min);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            Assert.True(sw.ElapsedMilliseconds > min);
         }
 
         // Ticket raised to move/refactor, this tests the delay feature not if it's enabled for an endpoint
         // Ticket raised to implement this as a unit test on ResponsePaddingFilter
-        [DataTestMethod]
-        [DataRow(8, 16)]
-        [DataRow(32, 64)]
-        [DataRow(200, 300)]
+        [Theory]
+        [InlineData(8, 16)]
+        [InlineData(32, 64)]
+        [InlineData(200, 300)]
         public async Task PaddingTest(long min, long max)
         {
             // Arrange
@@ -110,13 +109,13 @@ namespace MobileAppApi.Tests.Controllers
             var padding = result.Headers.GetValues("padding").SingleOrDefault();
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-            Assert.IsNotNull(padding);
-            Assert.IsTrue(padding.Length >= min);
-            Assert.IsTrue(padding.Length <= max);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            Assert.NotNull(padding);
+            Assert.True(padding.Length >= min);
+            Assert.True(padding.Length <= max);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Stopkeys_has_padding()
         {
             // Arrange
@@ -126,10 +125,10 @@ namespace MobileAppApi.Tests.Controllers
             var result = await client.PostAsync("v1/stopkeys", null);
 
             // Assert
-            Assert.IsTrue(result.Headers.Contains("padding"));
+            Assert.True(result.Headers.Contains("padding"));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Register_has_padding()
         {
             // Arrange
@@ -139,10 +138,10 @@ namespace MobileAppApi.Tests.Controllers
             var result = await client.PostAsync("v1/register", null);
 
             // Assert
-            Assert.IsTrue(result.Headers.Contains("padding"));
+            Assert.True(result.Headers.Contains("padding"));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Postkeys_has_padding()
         {
             // Arrange
@@ -152,7 +151,7 @@ namespace MobileAppApi.Tests.Controllers
             var result = await client.PostAsync("v1/postkeys", null);
 
             // Assert
-            Assert.IsTrue(result.Headers.Contains("padding"));
+            Assert.True(result.Headers.Contains("padding"));
         }
     }
 }

@@ -33,7 +33,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand2 command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-
             _Logger.LogInformation("POST postkeys triggered.");
             return await command.Execute(sig, Request);
         }
@@ -45,8 +44,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         public async Task<IActionResult> PostSecret([FromServices]HttpPostRegisterSecret command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-
-            _Logger.LogInformation("POST register triggered.");
             return await command.Execute();
         }
 

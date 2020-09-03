@@ -2,9 +2,20 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -14,30 +25,18 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NCrunch.Framework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
+using Xunit;
 
 namespace MobileAppApi.Tests.Controllers
 {
-    [TestClass]
-    public class WorkflowControllerPostKeysDiagnosticTests : WebApplicationFactory<Startup>
+    [Collection(nameof(WorkflowControllerPostKeysDiagnosticTests))]
+    [ExclusivelyUses(nameof(WorkflowControllerPostKeysDiagnosticTests))]
+    public class WorkflowControllerPostKeysDiagnosticTests : WebApplicationFactory<Startup>, IDisposable
     {
-        private WebApplicationFactory<Startup> _Factory;
-        private WorkflowDbContext _DbContext;
-        private FakeTimeProvider _FakeTimeProvider;
+        private readonly WebApplicationFactory<Startup> _Factory;
+        private readonly WorkflowDbContext _DbContext;
+        private readonly FakeTimeProvider _FakeTimeProvider;
 
         private class FakeTimeProvider : IUtcDateTimeProvider
         {
@@ -47,12 +46,11 @@ namespace MobileAppApi.Tests.Controllers
             public DateTime Snapshot => Value;
         }
 
-        [TestInitialize]
-        public async Task InitializeAsync()
+        public WorkflowControllerPostKeysDiagnosticTests()
         {
             _FakeTimeProvider = new FakeTimeProvider();
 
-            Func<WorkflowDbContext> dbcFac = () => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer("Data Source=.;Database=WorkflowControllerPostKeysTests;Integrated Security=True").Options);
+            Func<WorkflowDbContext> dbcFac = () => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer($"Data Source=.;Database={nameof(WorkflowControllerPostKeysDiagnosticTests)};Integrated Security=True").Options);
             _DbContext = dbcFac();
 
             _Factory = WithWebHostBuilder(builder =>
@@ -82,6 +80,14 @@ namespace MobileAppApi.Tests.Controllers
             _DbContext.Database.EnsureCreated();
         }
 
+        void IDisposable.Dispose()
+        {
+            base.Dispose();
+
+            _DbContext.Database.EnsureDeleted();
+            _DbContext.Dispose();
+        }
+
         private async Task WriteBucket(byte[] bucketId)
         {
             _DbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
@@ -94,20 +100,14 @@ namespace MobileAppApi.Tests.Controllers
             await _DbContext.SaveChangesAsync();
         }
 
-        [TestCleanup]
-        public async Task CleanupAsync()
-        {
-            _DbContext.Database.EnsureDeleted();
-            await _DbContext.DisposeAsync();
-        }
 
-        [DataRow("Resources.payload-good01.json", 1, 7, 2)]
-        [DataRow("Resources.payload-good14.json", 14, 7, 11)]
-        [DataRow("Resources.payload-duplicate-TEKs-RSN-and-RP.json", 0, 7, 11)]
-        [DataRow("Resources.payload-duplicate-TEKs-KeyData.json", 0, 7, 11)]
-        [DataRow("Resources.payload-duplicate-TEKs-RSN.json", 13, 8, 13)]
-        [DataRow("Resources.payload-ancient-TEKs.json", 1, 7, 1)]
-        [DataTestMethod]
+        [Theory]
+        [InlineData("Resources.payload-good01.json", 1, 7, 2)]
+        [InlineData("Resources.payload-good14.json", 14, 7, 11)]
+        [InlineData("Resources.payload-duplicate-TEKs-RSN-and-RP.json", 0, 7, 11)]
+        [InlineData("Resources.payload-duplicate-TEKs-KeyData.json", 0, 7, 11)]
+        [InlineData("Resources.payload-duplicate-TEKs-RSN.json", 13, 8, 13)]
+        [InlineData("Resources.payload-ancient-TEKs.json", 1, 7, 1)]
         [ExclusivelyUses("WorkflowControllerPostKeysTests")]
         public async Task PostWorkflowTest(string file, int keyCount, int mm, int dd)
         {
@@ -138,8 +138,8 @@ namespace MobileAppApi.Tests.Controllers
 
             // Assert
             var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-            Assert.AreEqual(keyCount, items.Count);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            Assert.Equal(keyCount, items.Count);
         }
     }
 }

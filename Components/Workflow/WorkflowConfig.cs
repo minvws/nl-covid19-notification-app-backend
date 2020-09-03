@@ -18,5 +18,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         public int PostKeysSignatureLength => GetConfigValue(nameof(PostKeysSignatureLength), 32);
         public int BucketIdLength => GetConfigValue(nameof(BucketIdLength), 32);
         public int ConfirmationKeyLength => GetConfigValue(nameof(ConfirmationKeyLength), 32);
+        public bool CleanupDeletesData => GetConfigValue(nameof(CleanupDeletesData), false);
     }
 }

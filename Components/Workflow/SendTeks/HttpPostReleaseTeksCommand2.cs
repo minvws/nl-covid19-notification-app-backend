@@ -73,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             if ((signature?.Length ?? 0) != _WorkflowConfig.PostKeysSignatureLength)
             {
-                _Logger.LogError("Signature is null or incorrect length.");
+                _Logger.WriteSignatureValidationFailed();
                 return;
             }
 
@@ -84,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             }
             catch (Exception e)
             {
-                _Logger.LogError(e, "Error reading body");
+                _Logger.WritePostBodyParsingFailed(e);
                 return;
             }
 
@@ -92,31 +92,38 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             var base64ParserResult = base64Parser.TryParseAndValidate(_ArgsObject.BucketId, _WorkflowConfig.BucketIdLength);
             if (!base64ParserResult.Valid)
             {
-                _Logger.LogValidationMessages(base64ParserResult.Messages.Select(x => $"BuckedId - {x}").ToArray());
+                _Logger.WriteBucketIdParsingFailed(_ArgsObject.BucketId, base64ParserResult.Messages);
                 return;
             }
 
             _BucketIdBytes = base64ParserResult.Item;
 
-            if (_Logger.LogValidationMessages(_KeyValidator.Validate(_ArgsObject)))
+            var messages = _KeyValidator.Validate(_ArgsObject);
+            if (messages.Length > 0)
+            {
+                _Logger.WriteTekValidationFailed(messages);
                 return;
+            }
 
             var teks = _ArgsObject.Keys.Select(Mapper.MapToTek).ToArray();
-
             foreach (var i in teks)
             {
                 i.PublishAfter = _DateTimeProvider.Snapshot;
             }
 
-            if (_Logger.LogValidationMessages(new TekListDuplicateValidator().Validate(teks)))
+            messages = new TekListDuplicateValidator().Validate(teks);
+            if (messages.Length > 0)
+            {
+                _Logger.WriteTekDuplicatesFound(messages);
                 return;
+            }
 
             //Validation ends, filtering starts
 
             var filterResult = _TekApplicableWindowFilter.Execute(teks);
+            _Logger.WriteApplicableWindowFilterResult(filterResult.Messages);
             teks = filterResult.Items;
-            _Logger.LogFilterMessages(filterResult.Messages);
-            _Logger.LogInformation("TEKs remaining - Count:{Count}.", teks.Length);
+            _Logger.WriteValidTekCount(teks.Length);
 
             var workflow = _DbContext
                 .KeyReleaseWorkflowStates
@@ -125,26 +132,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             if (workflow == null)
             {
-                _Logger.LogError("Workflow does not exist - {BucketId}.", _ArgsObject.BucketId);
+                _Logger.WriteBucketDoesNotExist(_ArgsObject.BucketId);
                 return;
             }
 
             if (!_SignatureValidator.Valid(signature, workflow.ConfirmationKey, _BodyBytes))
             {
-                _Logger.LogError("Signature not valid: {Signature}", signature);
+                _Logger.WriteSignatureInvalid(workflow.BucketId, signature);
                 return;
             }
 
             var filterResults = _TekListWorkflowFilter.Filter(teks, workflow);
-            _Logger.LogFilterMessages(filterResults.Messages);
-            _Logger.LogInformation("TEKs remaining - Count:{Count}.", teks.Length);
+            _Logger.WriteWorkflowFilterResults(filterResults.Messages);
+            _Logger.WriteValidTekCountSecondPass(teks.Length);
 
             //Run after the filter removes the existing TEKs from the args.
             var allTeks = workflow.Teks.Select(Mapper.MapToTek).Concat(filterResults.Items).ToArray();
-            if (_Logger.LogValidationMessages(new TekListDuplicateKeyDataValidator().Validate(allTeks)))
+            messages = new TekListDuplicateKeyDataValidator().Validate(allTeks);
+            if (messages.Length > 0)
+            {
+                _Logger.WriteTekDuplicatesFoundWholeWorkflow(messages);
                 return;
+            }
 
-            _Logger.LogDebug("Writing.");
+            _Logger.WriteDbWriteStart();
             var writeArgs = new TekWriteArgs
             {
                 WorkflowStateEntityEntity = workflow,
@@ -153,12 +164,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 
             await _Writer.Execute(writeArgs);
             _DbContext.SaveAndCommit();
-            _Logger.LogDebug("Committed.");
+            _Logger.WriteDbWriteCommitted();
 
             if (filterResults.Items.Length != 0)
-            {
-                _Logger.LogInformation("Teks added - Count:{FilterResultsLength}.", filterResults.Items.Length);
-            }
+                _Logger.WriteTekCountAdded(filterResults.Items.Length);
         }
     }
 }

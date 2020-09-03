@@ -6,7 +6,7 @@ using System.Security.Principal;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Framework
 {
-    public static class WindowsIdentityStuff
+    public static class WindowsIdentityQueries
     {
         public static bool CurrentUserIsAdministrator()
         {

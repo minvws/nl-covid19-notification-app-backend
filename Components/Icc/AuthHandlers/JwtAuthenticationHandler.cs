@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         //private const string AccessTokenElement = "access_token";
 
         private readonly IJwtService _JwtService;
-        private readonly ITheIdentityHubService _TheIdentityHubService;
+        private readonly IJwtClaimValidator _JwtClaimValidator;
 
         public JwtAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -29,11 +29,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             UrlEncoder encoder,
             ISystemClock clock,
             IJwtService jwtService,
-            ITheIdentityHubService theIdentityHubService) : base(options, loggerFactory, encoder, clock)
+            IJwtClaimValidator jwtClaimValidator) : base(options, loggerFactory, encoder, clock)
         {
             _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
-            _TheIdentityHubService =
-                theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
+            _JwtClaimValidator = jwtClaimValidator ?? throw new ArgumentNullException(nameof(jwtClaimValidator));
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -57,11 +56,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
                 return AuthenticateResult.Fail("Invalid jwt token");
             }
 
-            if (!await _TheIdentityHubService.VerifyToken(decodedClaims["access_token"]))
+            if (!decodedClaims.ContainsKey("id") || !decodedClaims.ContainsKey("access_token") || !await _JwtClaimValidator.Validate(decodedClaims))
             {
                 return AuthenticateResult.Fail("Invalid jwt token");
             }
-
 
             var claims = new[]
             {

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using JWT.Algorithms;
 using JWT.Builder;
 using JWT.Exceptions;
@@ -21,11 +22,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly ILogger _Logger;
 
-        public JwtService(IIccPortalConfig iccPortalConfig, IUtcDateTimeProvider utcDateTimeProvider,
-            ILogger<JwtService> logger)
+        public JwtService(IIccPortalConfig iccPortalConfig, IUtcDateTimeProvider dateTimeProvider, ILogger<JwtService> logger)
         {
             _IccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
-            _DateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -53,13 +53,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             return builder.Encode();
         }
 
-        public string Generate(ClaimsPrincipal claimsPrincipal)
+        public string Generate(IList<AuthClaim> claimsPrincipal)
         {
             if (claimsPrincipal == null)
                 throw new ArgumentNullException(nameof(claimsPrincipal));
 
             var builder = CreateBuilder();
-            builder.AddClaim("exp", _DateTimeProvider.Snapshot.AddHours(_IccPortalConfig.ClaimLifetimeHours).ToUnixTimeU64());
+            builder.AddClaim("exp",
+                _DateTimeProvider.Snapshot.AddHours(_IccPortalConfig.ClaimLifetimeHours).ToUnixTimeU64());
             builder.AddClaim("id", GetClaimValue(claimsPrincipal, ClaimTypes.NameIdentifier));
             builder.AddClaim("access_token",
                 GetClaimValue(claimsPrincipal, TheIdentityHubClaimTypes.AccessToken));
@@ -68,9 +69,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandl
             return builder.Encode();
         }
 
-        private string? GetClaimValue(ClaimsPrincipal cp, string claimType) =>
-            cp.Claims.FirstOrDefault(c => c.Type.Equals(claimType))?.Value;
-        
+        private string? GetClaimValue(IList<AuthClaim> claimList, string claimType) =>
+            claimList.FirstOrDefault(c => c.Type.Equals(claimType))?.Value;
+
+
         public bool TryDecode(string token, out IDictionary<string, string> payload)
         {
             payload = new Dictionary<string, string>();

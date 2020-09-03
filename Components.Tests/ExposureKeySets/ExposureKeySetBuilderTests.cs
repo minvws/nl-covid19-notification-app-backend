@@ -2,12 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
@@ -15,19 +10,23 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
 {
-    [TestClass]
     public class ExposureKeySetBuilderTests
     {
         //y = 4.3416x + 715.24
-        [DataRow(500, 123)]
-        [DataRow(1000, 123)]
-        [DataRow(2000, 123)]
-        [DataRow(3000, 123)]
-        [DataRow(10000, 123)]
-        [DataTestMethod]
+        [Theory]
+        [InlineData(500, 123)]
+        [InlineData(1000, 123)]
+        [InlineData(2000, 123)]
+        [InlineData(3000, 123)]
+        [InlineData(10000, 123)]
         public void Build(int keyCount, int seed)
         {
             var lf = new LoggerFactory();
@@ -48,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                 //new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter(), new LoggerFactory().CreateLogger<ExposureKeySetBuilderV1>());
 
             var actual = builder.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
-            Assert.IsTrue(actual.Length > 0);
+            Assert.True(actual.Length > 0);
             Trace.WriteLine($"{keyCount} keys = {actual.Length} bytes.");
 
             using (var fs = new FileStream("EKS.zip", FileMode.Create, FileAccess.Write))

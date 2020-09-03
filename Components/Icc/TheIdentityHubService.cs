@@ -4,12 +4,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
@@ -46,11 +49,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 
             if (response == null) return false;
             var responseString = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                _Logger.LogWarning("{RequestUri}: Failed HTTP: {ResponseStatusCode} - {ResponseString}", requestUri,
+                    response.StatusCode, responseString);
+                return false;
+            }
+
+            if (String.IsNullOrEmpty(responseString))
+            {
+                _Logger.LogWarning("{RequestUri}: Failed ResponseString is empty: {ResponseStatusCode} - {ResponseString}", requestUri,
+                    response.StatusCode, responseString);
+                return false;
+            }
+
             var responseObject = JsonSerializer.Deserialize<Dictionary<string, object>>(responseString);
 
             if (responseObject.ContainsKey("error") && responseObject["error"] != null)
             {
-                _Logger.LogWarning("{RequestUri}: Failed HTTP: {ResponseStatusCode} - {ResponseString}", requestUri, response.StatusCode, responseString);
+                _Logger.LogWarning("{RequestUri}: Failed HTTP: {ResponseStatusCode} - {ResponseString}", requestUri,
+                    response.StatusCode, responseString);
                 return false;
             }
 
@@ -88,7 +106,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
                 return true;
             }
 
-            _Logger.LogWarning("Access Token not revoked, statuscode {ResponseStatusCode}", response.StatusCode.ToString());
+            _Logger.LogWarning("Access Token not revoked, statuscode {ResponseStatusCode}",response.StatusCode.ToString());
+            return false;
+        }
+
+        public async Task<bool> VerifyClaimToken(IEnumerable<Claim> userClaims)
+        {
+            var accessToken = userClaims.FirstOrDefault(c => c.Type == TheIdentityHubClaimTypes.AccessToken)?.Value;
+            if (accessToken != null)
+            {
+                return await VerifyToken(accessToken);
+            }
+
             return false;
         }
     }

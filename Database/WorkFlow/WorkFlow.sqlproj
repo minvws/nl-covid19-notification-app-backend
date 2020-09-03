@@ -122,6 +122,8 @@
     <Folder Include="PostDeploy" />
     <Folder Include="Security\Roles" />
     <Folder Include="PostDeploy\Scripts" />
+    <Folder Include="dbo" />
+    <Folder Include="dbo\Tables" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Security\Roles\Dbr_Appbeheerders.sql" />
@@ -135,6 +137,8 @@
     <None Include="PostDeploy\Scripts\Users.sql" />
     <PostDeploy Include="PostDeploy\PostDeploy.sql" />
     <Build Include="Security\Roles\Subroles.sql" />
+    <Build Include="dbo\Tables\TekReleaseWorkflowState.sql" />
+    <Build Include="dbo\Tables\TemporaryExposureKeys.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="Appbeheerders">
@@ -217,5 +221,8 @@
       </DefaultValue>
       <Value>$(SqlCmdVar__7)</Value>
     </SqlCmdVariable>
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="WorkFlow.refactorlog" />
   </ItemGroup>
 </Project>

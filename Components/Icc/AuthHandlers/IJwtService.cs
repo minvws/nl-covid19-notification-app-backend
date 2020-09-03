@@ -4,13 +4,15 @@
 
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
 {
     public interface IJwtService
     {
         string Generate(ulong exp, Dictionary<string, object> claims);
-        string Generate(ClaimsPrincipal claimsPrincipal);
+        string Generate(IList<AuthClaim> authClaim);
         
         bool TryDecode(string token, out IDictionary<string, string> payload);
     }
