@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         }
 
         public string JwtSecret => GetConfigValue("Jwt:Secret", string.Empty);
-        public double ClaimLifetimeHours => GetConfigValue(nameof(ClaimLifetimeHours), 3.0);
+        public double ClaimLifetimeHours => GetConfigValue(nameof(ClaimLifetimeHours), 1.0);
         
         public string FrontendBaseUrl => GetConfigValue(nameof(FrontendBaseUrl), "Missed! Here are some nasty non-uri characters \"<>#%.");
         public bool StrictRolePolicyEnabled => GetConfigValue(nameof(StrictRolePolicyEnabled), true);
