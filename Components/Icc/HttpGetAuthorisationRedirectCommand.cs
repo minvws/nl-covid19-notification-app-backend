@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
