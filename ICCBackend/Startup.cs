@@ -65,6 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
 
+            services.AddTransient<IAuthCodeGenerator, AuthCodeGenerator>();
             services.AddSingleton<IAuthCodeService, AuthCodeService>();
             services.AddDistributedMemoryCache();
 
@@ -195,6 +196,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             if (app == null) throw new ArgumentNullException(nameof(app));
 
             var iccPortalConfig = new IccPortalConfig(_Configuration);
+
             var corsOptions = new CorsOptions(iccPortalConfig);
             app.UseCors(corsOptions.Build);
 
