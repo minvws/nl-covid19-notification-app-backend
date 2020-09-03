@@ -7,7 +7,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code
 {
     public interface IAuthCodeService
     {
