@@ -6,6 +6,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code
 {
     public interface IAuthCodeGenerator
     {
+        string Next(int length);
         string Next();
     }
 }

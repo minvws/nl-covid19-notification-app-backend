@@ -18,13 +18,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
     public class AuthCodeServiceTests
     {
         private IAuthCodeService _AuthCodeService;
+        private IAuthCodeGenerator _AuthCodeGenerator;
 
         public AuthCodeServiceTests()
         {
             var randomNumberGenerator = new StandardRandomNumberGenerator();
+            _AuthCodeGenerator = new AuthCodeGenerator(randomNumberGenerator);
             var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
 
-            _AuthCodeService = new AuthCodeService( cache, new AuthCodeGenerator(randomNumberGenerator));
+            _AuthCodeService = new AuthCodeService(cache, _AuthCodeGenerator);
+        }
+
+        [InlineData(32)]
+        [InlineData(12)]
+        [InlineData(1)]
+        [InlineData(64)]
+        [Theory]
+        public void GeneratorGeneratesXLengthString(int expectedLength)
+        {
+            var authCode = _AuthCodeGenerator.Next(expectedLength);
+
+            Assert.NotNull(authCode);
+            Assert.True(authCode.Length == expectedLength);
         }
 
         [Fact]

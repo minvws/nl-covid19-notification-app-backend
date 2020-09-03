@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code
     {
         private readonly IRandomNumberGenerator _Rng;
 
-        private const int Length = 32;
+        private const int DefaultLength = 32;
         private const string PermittedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
         public AuthCodeGenerator(IRandomNumberGenerator rng)
@@ -20,15 +20,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code
             _Rng = rng ?? throw new ArgumentNullException(nameof(rng));
         }
 
-        public string Next()
+        public string Next(int length)
         {
-            var token = new StringBuilder(Length);
-            for (var i = 0; i < Length; i++)
+            var token = new StringBuilder(length);
+            for (var i = 0; i < length; i++)
             {
                 var index = _Rng.Next(0, PermittedCharacters.Length - 1);
                 token.Append(PermittedCharacters[index]);
             }
             return token.ToString();
+        }
+        public string Next()
+        {
+            return Next(DefaultLength);
         }
     }
 }
