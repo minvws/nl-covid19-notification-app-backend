@@ -33,7 +33,7 @@ else
     $RsaRootCertLoc = "#{Deploy.HSMScripting.RsaRootCertLoc}#"
     $EcdsaCertLoc = "#{Deploy.HSMScripting.EcdsaCertLoc}#"
 
-    $RsaRootCertThumbPrint = "#{Deploy.HSMScripting.RsaRootCertThumbPrint}#"
+    $RsaRootCertThumbPrint = "#{Deploy.HSMScripting.RsaRootCertificateThumbprint}#"
     $EcdsaCertThumbPrint = "#{Deploy.HSMScripting.EcdsaCertThumbPrint}#"
 }
 
