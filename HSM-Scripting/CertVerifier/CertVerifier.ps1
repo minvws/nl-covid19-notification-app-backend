@@ -24,12 +24,12 @@ else
 	#test, accp and prod
 	$VariablesSource = "Deploy"
     $OpenSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
-    $HSMAdminToolsDir = "`"#{Deploy.HSMScripting.HSMAdminToolsDir}#"`"
+    $HSMAdminToolsDir = "`"#{Deploy.HSMScripting.HSMAdminToolsDir}#`""
     $testfileNameNoExt = "#{Deploy.HSMScripting.CertVerifier.TestfileNameNoExt}#"
     $testfileName = "#{Deploy.HSMScripting.CertVerifier.TestfileName}#"
     $tempFolderLoc = "#{Deploy.HSMScripting.CertVerifier.tempFolderLoc}#"
-    $SignerLoc = "`"#{Deploy.HSMScripting.VerifierLoc}#"`"
-    $EksParserLoc = "`"#{Deploy.HSMScripting.EksParserLoc}#"`"
+    $SignerLoc = "`"#{Deploy.HSMScripting.VerifierLoc}#`""
+    $EksParserLoc = "`"#{Deploy.HSMScripting.EksParserLoc}#`""
     $RsaRootCertLoc = "#{Deploy.HSMScripting.RsaRootCertLoc}#"
     $EcdsaCertLoc = "#{Deploy.HSMScripting.EcdsaCertLoc}#"
 
