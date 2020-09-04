@@ -24,7 +24,7 @@ else
 	#test, accp and prod
 	$VariablesSource = "Deploy"
     $OpenSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
-    $HSMAdminToolsDir = "`"#{Deploy.HSMScripting.HSMAdminToolsDir}#`""
+    $HSMAdminToolsDir = "#{Deploy.HSMScripting.HSMAdminToolsDir}#"
     $testfileNameNoExt = "#{Deploy.HSMScripting.CertVerifier.TestfileNameNoExt}#"
     $testfileName = "#{Deploy.HSMScripting.CertVerifier.TestfileName}#"
     $tempFolderLoc = "#{Deploy.HSMScripting.CertVerifier.tempFolderLoc}#"
