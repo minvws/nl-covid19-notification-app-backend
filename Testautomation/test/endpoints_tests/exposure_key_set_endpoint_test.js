@@ -57,7 +57,7 @@ describe("Manifest endpoints tests #exposurekeyset #endpoints #regression", func
         expect(exposure_keyset_decoded).to.have.nested.property("batchSize");
         expect(exposure_keyset_decoded).to.have.nested.property("signatureInfos");
         expect(exposure_keyset_decoded).to.have.nested.property("keys");
-        expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("verificationKeyVersion", "v10");
+        expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("verificationKeyVersion", "v11");
         expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("verificationKeyId", "204");
         expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("signatureAlgorithm", "1.2.840.10045.4.3.2");
         expect(exposure_keyset_decoded.keys[0]).to.have.nested.property("keyData").that.is.not.null;
