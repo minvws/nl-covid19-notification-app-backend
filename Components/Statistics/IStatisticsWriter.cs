@@ -12,8 +12,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Statistics
 
     public static class StatisticsSetup
     {
-        public static void SetupDailyStats(this IServiceCollection services)
+        public static void DailyStatsStartup(this IServiceCollection services)
         {
+            services.AddScoped<TotalWorkflowCountStatsQueryCommand>();
+            services.AddScoped<TotalWorkflowsWithTeksQueryCommand>();
+            services.AddScoped<TotalWorkflowAuthorisedCountStatsQueryCommand>();
+            services.AddScoped<PublishedTekCountStatsQueryCommand>();
+            services.AddScoped<TotalTekCountStatsQueryCommand>();
+            services.AddScoped<IStatisticsWriter, StatisticsDbWriter>();
             services.AddScoped<IStatisticsCommand>(x =>
                 new StatisticsCommand(x.GetRequiredService<IStatisticsWriter>(),
                     new IStatsQueryCommand[] {

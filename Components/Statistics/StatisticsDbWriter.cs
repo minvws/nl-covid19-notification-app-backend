@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Statistics
         {
             var entries = args.Select(Map).ToArray();
             _DbContext.StatisticsEntries.AddRange(entries);
-            _DbContext.SaveAndCommit();
+            _DbContext.SaveChanges(); //Implicit TX
         }
 
         StatisticsEntryEntity Map(StatisticArgs args)

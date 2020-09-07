@@ -18,6 +18,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Statistics;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expiry;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
@@ -52,11 +53,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var j3 = serviceProvider.GetRequiredService<RemoveExpiredManifestsCommand>();
             var j4 = serviceProvider.GetRequiredService<RemoveExpiredEksCommand>();
             var j5 = serviceProvider.GetRequiredService<RemoveExpiredWorkflowsCommand>();
+            var j6 = serviceProvider.GetRequiredService<IStatisticsCommand>();
 
             logger.LogInformation("Daily cleanup - EKS engine run starting.");
             var r1 = j1.Execute().GetAwaiter().GetResult();
             logger.LogInformation("Daily cleanup - Manifest engine run starting.");
             j2.Execute().GetAwaiter().GetResult();
+            logger.LogInformation("Daily cleanup - Calculating daily stats starting.");
+            j6.Execute();
             logger.LogInformation("Daily cleanup - Cleanup Manifests run starting.");
             var r3 = j3.Execute().GetAwaiter().GetResult();
             logger.LogInformation("Daily cleanup - Cleanup EKS run starting.");
@@ -72,6 +76,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient(x => DbContextStartup.Workflow(x, false));
             services.AddTransient(x => DbContextStartup.Content(x, false));
             services.AddTransient(x => DbContextStartup.Publishing(x, false));
+            services.AddTransient(x => DbContextStartup.Stats(x, false));
 
             services.AddTransient<Func<WorkflowDbContext>>(x => x.GetService<WorkflowDbContext>);
             services.AddTransient<Func<PublishingJobDbContext>>(x => x.GetService<PublishingJobDbContext>);
@@ -113,6 +118,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             
             services.NlSignerStartup();
             services.GaSignerStartup();
+
+            services.DailyStatsStartup();
+
         }
     }
 }
