@@ -1,6 +1,6 @@
-# NOT designed for Powershell ISE
+# Not designed for Powershell ISE
+# Not designed for powershell-azure (start-job not supported). Get Powershell 7 and use Start-ThreadJob for that.
 # Double-check you are allowed to run custom scripts.
-# see: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7
 
 $currentDir
 $HSMsimulatorDir = "C:\Program Files\Utimaco\CryptoServer\Simulator\sim5_windows\bin"
@@ -21,7 +21,7 @@ function SetErrorToStop
 function RunWithErrorCheck ([string]$command) 
 {
 	write-host $command
-	iex "& $command" #I'm not frustrated at all
+	iex "& $command"
 	    
 	if($lastexitcode -ne 0)
     {
@@ -79,7 +79,6 @@ function Pause ($Message = "Press any key to continue...`n") {
     Write-Host
 }
 # Got this from https://adamstech.wordpress.com/2011/05/12/how-to-properly-pause-a-powershell-script/
-# A soviet-style pause function...
 
 function createCngConfig
 {
@@ -156,7 +155,7 @@ createCngConfig
 write-host "`nStarting the Simulator (background job); this script will wait 10 secs"
 Pause
 
-#This doesn't work on powershell-azure. Get Powershell 7 and use Start-ThreadJob for that
+
 $simulator = start-job -filepath .\RunSimulator.ps1
 Start-Sleep -Seconds 10
 

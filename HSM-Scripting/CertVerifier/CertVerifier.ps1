@@ -1,4 +1,5 @@
-# NOT designed for Powershell ISE
+# Not designed for Powershell ISE
+# Not designed for Windows 7
 # Double-check you are allowed to run custom scripts.
 
 $testfileNameNoExt
@@ -10,7 +11,7 @@ $VariablesSource = "Development"
 
 if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
 {
-	#ontw
+	#dev
     $OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
     $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
     $SignerLoc = ".\Signer\SigTestFileCreator.exe"
@@ -104,7 +105,6 @@ function Pause ($Message = "Press any key to continue...`n")
     Write-Host
 }
 # Got this from https://adamstech.wordpress.com/2011/05/12/how-to-properly-pause-a-powershell-script/
-# A soviet-style pause function...
 
 function RunWithErrorCheck ([string]$command) 
 {
@@ -143,12 +143,12 @@ function GenTestFile
 function ExtractCert ([String] $ThumbPrint, [String] $Store, [String] $ExportPath)
 {
 	$cert = Get-ChildItem -Path "cert:\LocalMachine\$Store\$ThumbPrint"
-	$opvangbak = Export-Certificate -Cert $cert -FilePath "$ExportPath.cer" -Type CERT
+	$collector = Export-Certificate -Cert $cert -FilePath "$ExportPath.cer" -Type CERT
 	
 	# the exported cert is in der-format and needs to be converted to pem-format to use for signature verification
 	RunWithErrorCheck "$openSslLoc x509 -in $ExportPath.cer -inform der -out $ExportPath-pem.cer -outform pem"
 	
-	#opvangbak prevents black magic from occurring.
+	#collector prevents black magic from occurring.
 	return "$ExportPath-pem.cer"
 }
 

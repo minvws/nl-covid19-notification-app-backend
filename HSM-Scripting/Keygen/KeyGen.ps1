@@ -14,7 +14,7 @@ $VariablesSource = "Development"
 
 if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
 {
-	#ontw
+	#dev
     $cngtoolloc = "`"C:\Program Files\Utimaco\CryptoServer\Administration\cngtool.exe`""
     $openSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
 
@@ -38,7 +38,7 @@ else
 
 function RunWithErrorCheck ([string]$command) 
 {
-	iex "& $command" #I'm not frustrated at all
+	iex "& $command"
 
     if($lastexitcode -ne 0)
     {
@@ -96,7 +96,6 @@ function Pause ($Message = "Press any key to continue...`n") {
     Write-Host
 }
 # Got this from https://adamstech.wordpress.com/2011/05/12/how-to-properly-pause-a-powershell-script/
-# A soviet-style pause function...
 
 function SetErrorToStop
 {
