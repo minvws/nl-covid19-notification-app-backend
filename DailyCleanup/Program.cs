@@ -56,17 +56,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var j6 = serviceProvider.GetRequiredService<IStatisticsCommand>();
 
             logger.LogInformation("Daily cleanup - EKS engine run starting.");
-            var r1 = j1.Execute().GetAwaiter().GetResult();
+            j1.Execute().GetAwaiter().GetResult();
             logger.LogInformation("Daily cleanup - Manifest engine run starting.");
             j2.Execute().GetAwaiter().GetResult();
             logger.LogInformation("Daily cleanup - Calculating daily stats starting.");
             j6.Execute();
             logger.LogInformation("Daily cleanup - Cleanup Manifests run starting.");
-            var r3 = j3.Execute().GetAwaiter().GetResult();
+            j3.Execute().GetAwaiter().GetResult();
             logger.LogInformation("Daily cleanup - Cleanup EKS run starting.");
-            var r4 = j4.Execute();
+            j4.Execute();
             logger.LogInformation("Daily cleanup - Cleanup Workflows run starting.");
-            var r5 = j5.Execute();
+            j5.Execute();
 
             logger.LogInformation("Daily cleanup - Finished.");
         }
