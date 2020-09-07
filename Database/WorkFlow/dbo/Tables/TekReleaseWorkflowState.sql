@@ -8,11 +8,12 @@
     [AuthorisedByCaregiver] DATETIME2 (7)  NULL,
     [DateOfSymptomsOnset]   DATETIME2 (7)  NULL,
     [PollToken]             NVARCHAR (450) NULL,
-	[TeksTouched]			BIT NOT NULL,  CONSTRAINT [PK_TekReleaseWorkflowState] PRIMARY KEY CLUSTERED  ([Id] ASC)
+	[TeksTouched]			BIT NOT NULL,  
+    CONSTRAINT [PK_TekReleaseWorkflowState] PRIMARY KEY CLUSTERED  ([Id] ASC)
 );
+GO
 
-
-
+ALTER TABLE [dbo].[TekReleaseWorkflowState] ADD  CONSTRAINT [DF_TekReleaseWorkflowState_TeksTouched]  DEFAULT ((0)) FOR [TeksTouched]
 
 GO
 CREATE NONCLUSTERED INDEX [IX_TekReleaseWorkflowState_ValidUntil]
