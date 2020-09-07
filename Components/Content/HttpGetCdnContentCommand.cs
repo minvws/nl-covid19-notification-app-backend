@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _HttpResponseHeaderConfig = httpResponseHeaderConfig ?? throw new ArgumentNullException(nameof(httpResponseHeaderConfig));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _ContentExpiryStrategy = contentExpiryStrategy ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _ContentExpiryStrategy = contentExpiryStrategy ?? throw new ArgumentNullException(nameof(contentExpiryStrategy));
         }
 
         /// <summary>
