@@ -4,7 +4,7 @@ const manifest = require("../behaviours/manifest_behaviour");
 const exposure_key_set = require("../behaviours/exposure_keys_set_behaviour");
 const decode_protobuf = require("../../util/protobuff_decoding");
 
-describe("Manifest endpoints tests #exposurekeyset #endpoints #regression", function () {
+describe("Manifest endpoints tests #single_exposure_key #endpoints #regression", function () {
     this.timeout(2000 * 60 * 30);
 
     let manifest_response, exposureKeySetId, exposure_keyset_response, exposure_keyset_decoded;
@@ -57,7 +57,7 @@ describe("Manifest endpoints tests #exposurekeyset #endpoints #regression", func
         expect(exposure_keyset_decoded).to.have.nested.property("batchSize");
         expect(exposure_keyset_decoded).to.have.nested.property("signatureInfos");
         expect(exposure_keyset_decoded).to.have.nested.property("keys");
-        expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("verificationKeyVersion", "v11");
+        expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("verificationKeyVersion", "v13");
         expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("verificationKeyId", "204");
         expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("signatureAlgorithm", "1.2.840.10045.4.3.2");
         expect(exposure_keyset_decoded.keys[0]).to.have.nested.property("keyData").that.is.not.null;
