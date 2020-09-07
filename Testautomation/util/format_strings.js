@@ -1,9 +1,19 @@
 function remove_characters(str) {
-    return str.replace(/"/g, '').replace(/,$/g, '')
+    if(str != null){
+        return str.replace(/"/g, '').replace(/,$/g, '')
+    }else {
+        return str = '';
+    }
+
 }
 
 function remove_dash_lab_comfirm_id(str){
-    return str.replace(/-/g,'');
+    if(str != null){
+        return str.replace(/-/g,'')
+    }else {
+        return str = '';
+    }
+
 }
 
 module.exports = {

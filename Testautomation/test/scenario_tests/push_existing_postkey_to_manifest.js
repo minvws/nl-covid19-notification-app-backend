@@ -11,7 +11,7 @@ const exposure_key_set = require("../behaviours/exposure_keys_set_behaviour");
 const decode_protobuf = require("../../util/protobuff_decoding");
 const formatter = require("../../util/format_strings");
 
-describe("Validate push of my exposure key into manifest - #expose_keys #scenario #regression", function () {
+describe("Validate push of my exposure key into manifest - #post_key_to_manifest #scenario #regression", function () {
   this.timeout(2000 * 60 * 30);
 
   // console.log("Scenario: Register > Post keys > Lab Confirm > wait (x min.) > Lab verify > Manifest > EKS")
@@ -73,7 +73,9 @@ describe("Validate push of my exposure key into manifest - #expose_keys #scenari
       .then(function () {
         return manifest().then(function (manifest) {
           manifest_response = manifest;
-          exposureKeySetId = manifest.content.exposureKeySets[0];
+          // select the last key from the manifest
+          let exposureKeySets_length = manifest.content.exposureKeySets.length;
+          exposureKeySetId = manifest.content.exposureKeySets[exposureKeySets_length-1];
         });
       })
       .then(async function () {
@@ -99,6 +101,7 @@ describe("Validate push of my exposure key into manifest - #expose_keys #scenari
 
     let found = false;
     for (key of exposure_keyset_decoded.keys) {
+       // console.log(key.keyData.toString("base64"),exposure_key_send)
       if (key.keyData.toString("base64") == exposure_key_send) {
         expect(key.keyData.toString("base64")).to.be.eql(exposure_key_send);
         found = true;

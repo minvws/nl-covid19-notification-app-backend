@@ -1,6 +1,6 @@
 // Set bearer token to login to ICC portal
 
 const bearer =
-  "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1OTk0NzYyMTYsImlkIjoiNDUzNjQ0MDYyNDUyNTk4Njk4OCIsImFjY2Vzc190b2tlbiI6IjFKUTBmbjJqTnNFTTNiTXMxLUttb3ciLCJuYW1lIjoiTWFyYyB2YW4g4oCZdCBWZWVyIn0.ArwnZRrLkCXa6vxOgMz4KykqQiaBXYyr_eE0NdgB6b0";
+  "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1OTk0OTE4NjMsImlkIjoiNDUzNjQ0MDYyNDUyNTk4Njk4OCIsImFjY2Vzc190b2tlbiI6IkRaZmoySV9MMTk5MU82TjVROXVnblEiLCJuYW1lIjoiTWFyYyB2YW4g4oCZdCBWZWVyIn0.wZnu5RVj28VDEWM_5ap6Wg10Httc-cpsh04UQ1PdLwo";
 
 module.exports = bearer;
