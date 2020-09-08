@@ -9,6 +9,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     public interface IContentExpiryStrategy
     {
-        ExpiryStatus Apply(DateTime created, IHeaderDictionary headers);
+        /// <summary>
+        /// Calculate the time-to-live in seconds
+        /// </summary>
+        int Calculate(DateTime created);
     }
 }

@@ -80,27 +80,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 return;
             }
 
-            if (useDynamicMaxAge)
-            {
-                var result = _ContentExpiryStrategy.Apply(content.Created, httpContext.Response.Headers);
-                
-                // Return 404 for expired content
-                if (result == ExpiryStatus.Expired)
-                {
-                    _Logger.LogError("Content expired - {Id}.", id);
-                    httpContext.Response.StatusCode = 404;
-                    httpContext.Response.ContentLength = 0;
-                    return;
-                }
-            }
-            else
-            {
-                httpContext.Response.Headers.Add("cache-control", _HttpResponseHeaderConfig.ImmutableContentCacheControl);
-            }
-
+            var ttl = useDynamicMaxAge ? _ContentExpiryStrategy.Calculate(content.Created) : _HttpResponseHeaderConfig.EksMaxTtl;
+            
             httpContext.Response.Headers.Add("etag", content.PublishingId);
             httpContext.Response.Headers.Add("last-modified", content.Release.ToUniversalTime().ToString("r"));
             httpContext.Response.Headers.Add("content-type", content.ContentTypeName);
+            httpContext.Response.Headers.Add("cache-control", $"public, immutable, max-age={ ttl }, s-maxage={ ttl }");
             httpContext.Response.StatusCode = 200;
             httpContext.Response.ContentLength = content.Content?.Length ?? throw new InvalidOperationException("SignedContent empty.");
 

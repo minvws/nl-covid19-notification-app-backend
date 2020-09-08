@@ -7,6 +7,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     public interface IHttpResponseHeaderConfig
     {
         string ManifestCacheControl { get; }
-        string ImmutableContentCacheControl { get; }
+        int EksMaxTtl { get; }
     }
 }

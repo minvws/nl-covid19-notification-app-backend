@@ -14,6 +14,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         }
 
         public string ManifestCacheControl => GetConfigValue(nameof(ManifestCacheControl), "s-maxage=30");
-        public string ImmutableContentCacheControl => GetConfigValue(nameof(ImmutableContentCacheControl), "immutable");
+        public int EksMaxTtl => GetConfigValue(nameof(EksMaxTtl), 1209600);
     }
 }
