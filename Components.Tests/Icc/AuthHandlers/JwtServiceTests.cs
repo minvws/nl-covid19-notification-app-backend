@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
     public class JwtServiceTests
     {
         private JwtService _JwtService;
-        private double _ClaimLifetimeHours = 3;
+        private double _ClaimLifetimeHours = 1.0;
         private IUtcDateTimeProvider _UtcDateTimeProvider;
 
         public JwtServiceTests()
