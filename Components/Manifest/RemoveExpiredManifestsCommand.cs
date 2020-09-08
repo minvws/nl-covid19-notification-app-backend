@@ -5,21 +5,26 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
+    
+    [Obsolete("Remove this class as soon as the Manifest Engine Mk2 is in place.")]
     public class RemoveExpiredManifestsCommand
     {
+        private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly Func<ContentDbContext> _DbContextProvider;
         private readonly ILogger<RemoveExpiredManifestsCommand> _Logger;
         private readonly IManifestConfig _ManifestConfig;
         private RemoveExpiredManifestsCommandResult _Result;
 
-        public RemoveExpiredManifestsCommand(Func<ContentDbContext> dbContextProvider, ILogger<RemoveExpiredManifestsCommand> logger, IManifestConfig manifestConfig)
+        public RemoveExpiredManifestsCommand(Func<ContentDbContext> dbContextProvider, ILogger<RemoveExpiredManifestsCommand> logger, IManifestConfig manifestConfig, IUtcDateTimeProvider dateTimeProvider)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _ManifestConfig = manifestConfig ?? throw new ArgumentNullException(nameof(manifestConfig));
+            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(manifestConfig));
         }
 
         /// <summary>
@@ -58,7 +63,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 }
 
                 _Result.GivenMercy = dbContext.Database.ExecuteSqlInterpolated(
-                    $"WITH Zombies AS (SELECT Id FROM [Content] WHERE [Type] = 'Manifest' ORDER BY [Release] DESC OFFSET {_ManifestConfig.KeepAliveCount} ROWS) DELETE Zombies");
+                    $"WITH Zombies AS (SELECT Id FROM [Content] WHERE [Type] = 'Manifest' AND [Release] < {_DateTimeProvider.Snapshot} ORDER BY [Release] DESC OFFSET {_ManifestConfig.KeepAliveCount} ROWS) DELETE Zombies");
+
+                _Result.GivenMercy += dbContext.Database.ExecuteSqlInterpolated(
+                    $"WITH Zombies AS (SELECT Id FROM [Content] WHERE [Type] = 'Manifest' AND [Release] > {_DateTimeProvider.Snapshot}) DELETE Zombies");
 
                 _Result.Remaining = dbContext.Content.Count();
 

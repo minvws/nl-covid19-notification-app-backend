@@ -9,6 +9,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         {
         }
 
-        public int KeepAliveCount => GetConfigValue(nameof(KeepAliveCount), 5);
+        public int KeepAliveCount => GetConfigValue(nameof(KeepAliveCount), 1);
     }
 }

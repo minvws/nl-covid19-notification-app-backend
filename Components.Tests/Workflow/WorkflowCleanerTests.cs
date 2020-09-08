@@ -66,8 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             Assert.Equal(0, result.Before.TekPublished);
             Assert.Equal(0, result.Before.TekUnpublished);
 
-            Assert.Equal(0, result.UnauthorisedGivenMercy);
-            Assert.Equal(0, result.AuthorisedAndFullyPublishedGivenMercy);
+            Assert.Equal(0, result.GivenMercy);
 
             Assert.Equal(0, result.After.Count);
             Assert.Equal(0, result.After.Expired);
@@ -98,8 +97,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             Assert.Equal(0, result.Before.TekPublished);
             Assert.Equal(0, result.Before.TekUnpublished);
 
-            Assert.Equal(0, result.UnauthorisedGivenMercy);
-            Assert.Equal(0, result.AuthorisedAndFullyPublishedGivenMercy);
+            Assert.Equal(0, result.GivenMercy);
 
             Assert.Equal(0, result.After.Count);
             Assert.Equal(0, result.After.Expired);
@@ -131,8 +129,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             Assert.Equal(0, result.Before.TekPublished);
             Assert.Equal(0, result.Before.TekUnpublished);
 
-            Assert.Equal(1, result.UnauthorisedGivenMercy);
-            Assert.Equal(0, result.AuthorisedAndFullyPublishedGivenMercy);
+            Assert.Equal(1, result.GivenMercy);
 
             Assert.Equal(0, result.After.Count);
             Assert.Equal(0, result.After.Expired);
@@ -144,10 +141,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             Assert.Equal(0, result.After.TekUnpublished);
         }
 
-
         [Fact]
         [ExclusivelyUses("WorkflowCleanerTests")]
-        public void MoreRealistic()
+        public void Abort()
         {
             _Dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
             _FakeConfig.CleanupDeletesData = true;
@@ -158,30 +154,44 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             Add(-10, 10, 5);
             _DbContext.SaveChanges();
 
+            Assert.Throws<InvalidOperationException>(()=>_Command.Execute());
+        }
+
+        [Fact]
+        [ExclusivelyUses("WorkflowCleanerTests")]
+        public void MoreRealistic()
+        {
+            _Dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
+            _FakeConfig.CleanupDeletesData = true;
+            Add(1, 0, null);
+            Add(1, 0, null);
+            Add(1, 14, 14);
+            Add(1, 10, 10);
+            Add(-10, 10, 0);
+            _DbContext.SaveChanges();
+
             var result = _Command.Execute();
 
             Assert.Equal(_WorkflowCount, result.Before.Count);
             Assert.Equal(4, result.Before.Expired);
             Assert.Equal(2, result.Before.Unauthorised);
             Assert.Equal(2, result.Before.Authorised);
-            Assert.Equal(1, result.Before.AuthorisedAndFullyPublished);
+            Assert.Equal(2, result.Before.AuthorisedAndFullyPublished);
             Assert.Equal(34, result.Before.TekCount);
             Assert.Equal(24, result.Before.TekPublished);
             Assert.Equal(10, result.Before.TekUnpublished);
+            
+            Assert.Equal(4, result.GivenMercy);
 
-            Assert.Equal(2, result.UnauthorisedGivenMercy);
-            Assert.Equal(1, result.AuthorisedAndFullyPublishedGivenMercy);
-
-            Assert.Equal(2, result.After.Count);
-            Assert.Equal(1, result.After.Expired);
+            Assert.Equal(1, result.After.Count);
+            Assert.Equal(0, result.After.Expired);
             Assert.Equal(0, result.After.Unauthorised);
-            Assert.Equal(1, result.After.Authorised);
+            Assert.Equal(0, result.After.Authorised);
             Assert.Equal(0, result.After.AuthorisedAndFullyPublished);
-            Assert.Equal(20, result.After.TekCount);
-            Assert.Equal(10, result.After.TekPublished);
+            Assert.Equal(10, result.After.TekCount);
+            Assert.Equal(0, result.After.TekPublished);
             Assert.Equal(10, result.After.TekUnpublished);
         }
-
 
         private void Add(int offsetHours, int tekCount, int? publishedCount)
         {
