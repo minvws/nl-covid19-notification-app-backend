@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
     {
         private readonly JwtClaimValidator _JwtClaimValidator;
         private readonly WireMockServer _Server;
-        private readonly double _ClaimLifetimeHours = 3;
+        private readonly double _ClaimLifetimeHours = 1.0;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
         public JwtClaimValidatorTests()
