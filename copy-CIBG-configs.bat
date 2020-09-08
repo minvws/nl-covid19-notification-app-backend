@@ -14,4 +14,3 @@ echo f|xcopy ..\s\PublishContent\appsettings.release.json Artifacts\PublishConte
 echo f|xcopy ..\s\GenTeks\appsettings.release.json Artifacts\GenTeks\appsettings.json /Y
 echo f|xcopy ..\s\ForceTekAuth\appsettings.release.json Artifacts\ForceTekAuth\appsettings.json /Y
 echo f|xcopy ..\s\SigTestFileCreator\appsettings.release.json Artifacts\SigTestFileCreator\appsettings.json /Y
-echo f|xcopy ..\s\EksEngine\appsettings.release.json Artifacts\EksParser\appsettings.json /Y
