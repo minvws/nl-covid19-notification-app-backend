@@ -15,7 +15,7 @@ if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*"
     $OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
     $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
     $SignerLoc = "..\..\SigTestFileCreator\SigTestFileCreator.exe"
-    $EksParserLoc = "..\..\EksParser\EksParser.exe"
+    $EksParserLoc = "..\..\..\EksParser\EksParser.exe"
     
     $RsaRootCertThumbPrint = "2cb199296503438e7d87f71a7453d7dd24021696"
     $EcdsaCertThumbPrint = "a9102034f7056621155c608925b7c4eae7b241b1"
@@ -223,7 +223,7 @@ RunWithErrorCheck "$openSslLoc cms -verify -CAfile $RsaRootCertLoc -in .\$tempFo
 
 write-host "`nECDSA: "
 cd ".\$tempFolderLoc" # EksParser puts results in calling folder
-RunWithErrorCheck "..\$EksParserLoc $testfileNameNoExt-eks.zip"
+RunWithErrorCheck "$EksParserLoc $testfileNameNoExt-eks.zip"
 cd ..
 RunWithErrorCheck "$openSslLoc dgst -sha256 -verify $EcdsaCertLoc.key -signature .\$tempFolderLoc\export.sig .\$tempFolderLoc\export.bin"
 
