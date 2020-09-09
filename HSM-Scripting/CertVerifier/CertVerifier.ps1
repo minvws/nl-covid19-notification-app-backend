@@ -14,11 +14,13 @@ if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*"
 	#dev
     $OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
     $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
-    $SignerLoc = ".\Signer\SigTestFileCreator.exe"
-    $EksParserLoc = ".\EksParser\EksParser.exe"
+    $SignerLoc = "..\..\SigTestFileCreator\SigTestFileCreator.exe"
+    $EksParserLoc = "..\..\..\EksParser\EksParser.exe"
     
-    $RsaRootCertThumbPrint = "Not Specified"
-    $EcdsaCertThumbPrint = "Not Specified"
+    $RsaRootCertThumbPrint = "2cb199296503438e7d87f71a7453d7dd24021696"
+    $EcdsaCertThumbPrint = "a9102034f7056621155c608925b7c4eae7b241b1"
+	$Hsm1Address = "3001@127.0.0.1"
+	$Hsm2Address = ""
 }
 else
 {
@@ -36,6 +38,8 @@ else
 
     $RsaRootCertThumbPrint = "#{Deploy.HSMScripting.RsaRootCertificateThumbprint}#"
     $EcdsaCertThumbPrint = "#{Deploy.HSMScripting.EcdsaCertThumbPrint}#"
+	$Hsm1Address = "#{Deploy.HSMScripting.HSM1Address}#"
+	$Hsm2Address = "#{Deploy.HSMScripting.HSM2Address}#"
 }
 
 function SetErrorToStop
@@ -152,31 +156,43 @@ function ExtractCert ([String] $ThumbPrint, [String] $Store, [String] $ExportPat
 	return "$ExportPath-pem.cer"
 }
 
+function TestHsmConnection
+{
+	RunWithErrorCheck "`"$HSMAdminToolsDir\csadm`" Dev=$Hsm1Address GetState" 
+	
+	if($Hsm2Address -ne "")
+	{
+		RunWithErrorCheck "`"$HSMAdminToolsDir\csadm`" Dev=$Hsm2Address GetState" 
+	}
+}
+
+
 #
 # Start
 #
 
 
 write-host "Certificate-Verifier"
-write-warning "`nUsing variables from $VariablesSource`n"
-Pause
-
 CheckNotWin7
+CheckNotIse
 
-write-warning "`nDid you do the following?`
-- Add the Rsa ROOT- and Ecdsa thumbprint to this script?`
-- Add the location of the signer to this script?`
-- Add the Rsa (non-root)- and Ecdsa thumbprint to the signer appsettings.json?`
-If not: abort this script with ctrl+c."
+write-warning "`nPlease check the following:`
+- Using variables from $VariablesSource. Correct?`
+- Rsa ROOT thumbprint is $RsaRootCertThumbPrint. Correct?`
+- Ecdsa thumbprint is $EcdsaCertThumbPrint. Correct?`
+- Signer is located at $SignerLoc. Correct?`
+- Parser is located at $EksParserLoc. Correct?`
+- HSM-addresses are $Hsm1Address and $Hsm2Address. Correct?`
+- Did you add the Rsa (non-root)- and Ecdsa thumbprint to the signer appsettings.json?`
+If not: abort this script with Ctrl+C."
 Pause
 
 SetErrorToStop
-CheckNotIse
 
 write-host "`nCheck if HSM is accessible"
 Pause
 
-RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool`" providerinfo"
+TestHsmConnection
 
 write-host "`nGenerating testfile"
 Pause
@@ -192,7 +208,7 @@ $EcdsaCertLoc = ExtractCert -ThumbPrint $EcdsaCertThumbPrint -Store "my" -Export
 #extract public key from ECDSA Key
 RunWithErrorCheck "$openSslLoc x509 -in $EcdsaCertLoc -inform pem -noout -pubkey -out $EcdsaCertLoc.key"
 
-write-host "`nSigning testfile with Verifier"
+write-host "`nSigning testfile with SigTestFileCreator"
 Pause
 
 RunWithErrorCheck "$SignerLoc .\$tempFolderLoc\$testfileName"

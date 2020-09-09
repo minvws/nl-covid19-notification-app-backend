@@ -1,4 +1,4 @@
-# NOT designed for Powershell ISE
+# Not designed for Powershell ISE
 # Double-check you are allowed to run custom scripts.
 
 $date
@@ -15,7 +15,7 @@ $VariablesSource = "Development"
 if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
 {
 	#dev
-    $cngtoolloc = "`"C:\Program Files\Utimaco\CryptoServer\Administration\cngtool.exe`""
+    $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
     $openSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
 
     $IsOnDevEnvironment = $True #When set to $False: skips sending, signing and accepting of the RSA request
@@ -27,7 +27,7 @@ else
 {
 	#test, accp and prod
 	$VariablesSource = "Deploy"
-    $cngtoolloc = "`"#{Deploy.HSMScripting.HSMAdminToolsDir}#\cngtool.exe`""
+    $HSMAdminToolsDir = "`"#{Deploy.HSMScripting.HSMAdminToolsDir}#`""
     $openSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
 
     $IsOnDevEnvironment = $False #When set to $False: skips sending, signing and accepting of the RSA request
@@ -166,6 +166,11 @@ function GenRequests
 	
 	GenerateRequestInf -filename $requestRSAname -hashAlgorithm "SHA256" -keyAlgorithm "RSA" -keyLength "2048" -friendlyName "$FriendlyName-RSA"
 	GenerateRequestInf -filename $requestECDSAname -hashAlgorithm "SHA256" -keyAlgorithm "ECDSA_P256" -keyLength "256" -friendlyName "$FriendlyName-ECDSA" -AddOIDs $false
+	
+	if($IsOnDevEnvironment -eq $False) #generate extra RSA-cert for EV-root on test/accp/prod
+	{
+		GenerateRequestInf -filename $requestRSAname-V2 -hashAlgorithm "SHA256" -keyAlgorithm "RSA" -keyLength "2048" -friendlyName "$FriendlyName-V2-RSA"
+	}
 }
 
 #
@@ -173,23 +178,23 @@ function GenRequests
 #
 
 write-host "Keygenerator script for Utimaco HSM"
-write-warning "`nUsing variables from $VariablesSource`n"
-Pause
+CheckNotIse
 
-write-warning "Did you do the following?`
-- Turn the simulator on?`
-- Checked the variables `$IsOnDevEnvironment and `$CnValue? 
+write-warning "`nPlease check the following:`
+- Using variables from $VariablesSource. Correct?`
 - Checked the values in the GenerateRequestInf-function?
-If not: abort this script with ctrl+c."
+- `$IsOnDevEnvironment is $IsOnDevEnvironment. Correct?`
+- `$CnValue is $CnValue. Correct?`
+- (Is the simulator on?)`
+If not: abort this script with Ctrl+C."
 Pause
 
 SetErrorToStop
-CheckNotIse
 
 write-host "`nPre-check for key presence"
 Pause
 
-RunWithErrorCheck "$cngtoolloc listkeys"
+RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool`" listkeys"
 
 write-host "`nGenerate self-signed certificate"
 Pause
@@ -215,6 +220,11 @@ Pause
 RunWithErrorCheck "certreq -new $requestRSAname.inf $requestRSAname.csr"
 RunWithErrorCheck "certreq -new $requestECDSAname.inf $requestECDSAname.csr"
 
+if($IsOnDevEnvironment -eq $False) #extra RSA-cert on test/accp/prod
+{
+	RunWithErrorCheck "certreq -new $requestRSAname-V2.inf $requestRSAname-V2.csr"
+}
+
 write-host "`nSign request files with certificate"
 Pause
 
@@ -238,12 +248,12 @@ RunWithErrorCheck "certreq -accept -machine $signedrequestECDSAname.pem"
 write-host "`nPost-check for key presence"
 Pause
 
-RunWithErrorCheck "$cngtoolloc listkeys"
+RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool`" listkeys"
 Pause
 
 if($IsOnDevEnvironment -eq $False)
 {	
-	write-host "`nDone! The RSA-request file for PKIO is $requestRSAname."
+	write-host "`nDone! The RSA request-files for PKIO are $requestRSAname and $requestRSAname-V2."
 }
 
 if([int](Get-WmiObject Win32_OperatingSystem).BuildNumber -lt 9000)
