@@ -41,7 +41,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             services.AddScoped(x => DbContextStartup.Content(x));
             services.AddScoped<HttpGetCdnManifestCommand>();
             services.AddScoped<HttpGetCdnContentCommand>();
-            services.AddScoped<IContentExpiryStrategy, DynamicContentExpiryStrategy>();
+            services.AddScoped<DynamicContentExpiryStrategy>();
+            services.AddScoped<ImmutableContentExpiryStrategy>();
+            services.AddScoped<HttpGetCdnEksContentCommand>();
+            services.AddScoped<HttpGetCdnStaticContentCommand>();
 
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
             services.AddTransient<IHttpResponseHeaderConfig, HttpResponseHeaderConfig>();

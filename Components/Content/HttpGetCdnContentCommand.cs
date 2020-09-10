@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     /// Includes mitigations for CDN cache miss/stale item edge cases.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class HttpGetCdnContentCommand
+    public abstract class HttpGetCdnContentCommand
     {
         private readonly ContentDbContext _DbContext;
         private readonly IPublishingIdService _PublishingIdService;
@@ -23,8 +23,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         private readonly IHttpResponseHeaderConfig _HttpResponseHeaderConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IContentExpiryStrategy _ContentExpiryStrategy;
-
-        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IHttpResponseHeaderConfig httpResponseHeaderConfig, IUtcDateTimeProvider dateTimeProvider, IContentExpiryStrategy contentExpiryStrategy)
+        
+        protected HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IHttpResponseHeaderConfig httpResponseHeaderConfig, IUtcDateTimeProvider dateTimeProvider, IContentExpiryStrategy contentExpiryStrategy)
         {
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _PublishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         /// <summary>
         /// Immutable content
         /// </summary>
-        public async Task Execute(HttpContext httpContext, string type, string id, bool useDynamicMaxAge = false)
+        public async Task Execute(HttpContext httpContext, string type, string id)
         {
             if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
 
@@ -80,7 +80,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 return;
             }
 
-            var ttl = useDynamicMaxAge ? _ContentExpiryStrategy.Calculate(content.Created) : _HttpResponseHeaderConfig.EksMaxTtl;
+            var ttl = _ContentExpiryStrategy.Calculate(content.Created);
             
             httpContext.Response.Headers.Add("etag", content.PublishingId);
             httpContext.Response.Headers.Add("last-modified", content.Release.ToUniversalTime().ToString("r"));
@@ -90,6 +90,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             httpContext.Response.ContentLength = content.Content?.Length ?? throw new InvalidOperationException("SignedContent empty.");
 
             await httpContext.Response.Body.WriteAsync(content.Content);
+        }
+    }
+
+    public class HttpGetCdnEksContentCommand : HttpGetCdnContentCommand
+    {
+        public HttpGetCdnEksContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IHttpResponseHeaderConfig httpResponseHeaderConfig, IUtcDateTimeProvider dateTimeProvider, DynamicContentExpiryStrategy contentExpiryStrategy) : 
+            base(dbContext, publishingIdService, logger, httpResponseHeaderConfig, dateTimeProvider, contentExpiryStrategy)
+        {
+        }
+    }
+
+    public class HttpGetCdnStaticContentCommand : HttpGetCdnContentCommand
+    {
+        public HttpGetCdnStaticContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IHttpResponseHeaderConfig httpResponseHeaderConfig, IUtcDateTimeProvider dateTimeProvider, ImmutableContentExpiryStrategy contentExpiryStrategy) : 
+            base(dbContext, publishingIdService, logger, httpResponseHeaderConfig, dateTimeProvider, contentExpiryStrategy)
+        {
         }
     }
 }

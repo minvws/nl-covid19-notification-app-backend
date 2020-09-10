@@ -24,23 +24,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
 
         [HttpGet]
         [Route(EndPointNames.ContentApi.AppConfig + "/{id}")]
-        public async Task GetAppConfig(string id, [FromServices] HttpGetCdnContentCommand command)
+        public async Task GetAppConfig(string id, [FromServices] HttpGetCdnStaticContentCommand command)
         {
             await command.Execute(HttpContext, ContentTypes.AppConfig, id);
         }
 
         [HttpGet]
         [Route(EndPointNames.ContentApi.RiskCalculationParameters + "/{id}")]
-        public async Task GetRiskCalculationParameters(string id, [FromServices] HttpGetCdnContentCommand command)
+        public async Task GetRiskCalculationParameters(string id, [FromServices] HttpGetCdnStaticContentCommand command)
         {
             await command.Execute(HttpContext, ContentTypes.RiskCalculationParameters, id);
         }
 
         [HttpGet]
         [Route(EndPointNames.ContentApi.ExposureKeySet + "/{id}")]
-        public async Task GetExposureKeySet(string id, [FromServices] HttpGetCdnContentCommand command)
+        public async Task GetExposureKeySet(string id, [FromServices] HttpGetCdnEksContentCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.ExposureKeySet, id, useDynamicMaxAge: true);
+            await command.Execute(HttpContext, ContentTypes.ExposureKeySet, id);
         }
 
         [HttpGet]
