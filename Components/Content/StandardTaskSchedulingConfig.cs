@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.Globalization;
+using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
@@ -9,6 +11,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         {
         }
 
-        public double DailyCleanupHoursAfterMidnight => GetConfigValue(nameof(DailyCleanupHoursAfterMidnight), 5.0);
+        public double DailyCleanupHoursAfterMidnight
+        {
+            get
+            {
+                var raw = GetConfigValue("DailyCleanupStartTime", "05:00:00");
+                var result = DateTime.ParseExact(raw, "hh:mm:ss", CultureInfo.InvariantCulture);
+                return result.TimeOfDay.TotalHours;
+            }
+        }
     }
 }
