@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         private readonly ILogger _Logger;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        protected HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IUtcDateTimeProvider dateTimeProvider, ImmutableNonExpiringContentCacheControlHeaderProcessor cacheControlHeaderProcessor)
+        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IUtcDateTimeProvider dateTimeProvider)
         {
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _PublishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
@@ -81,7 +81,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             httpContext.Response.Headers.Add("content-type", content.ContentTypeName);
             httpContext.Response.StatusCode = 200;
             httpContext.Response.ContentLength = content.Content?.Length ?? throw new InvalidOperationException("SignedContent empty.");
-            await httpContext.Response.Body.WriteAsync(content.Content);
             return content;
         }
     }

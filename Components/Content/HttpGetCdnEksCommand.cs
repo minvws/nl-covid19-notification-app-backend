@@ -18,7 +18,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         public async Task Execute(HttpContext httpContext, string id)
         {
             var e = await _GetCommand.Execute(httpContext, ContentTypes.ExposureKeySet, id);
+            if (e == null) return;
             _CacheControlHeaderProcessor.Execute(httpContext, e);
+            await httpContext.Response.Body.WriteAsync(e.Content);
         }
     }
 }

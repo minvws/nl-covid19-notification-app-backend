@@ -39,15 +39,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddScoped(x => DbContextStartup.Content(x));
-            services.AddScoped<HttpGetCdnManifestCommand>();
-            services.AddScoped<HttpGetCdnContentCommand>();
 
-            services.AddSingleton<ManifestCacheControlHeaderProcessor>();
-            services.AddSingleton<EksCacheControlHeaderProcessor>();
-            services.AddSingleton<ImmutableNonExpiringContentCacheControlHeaderProcessor>();
-            services.AddSingleton<EksMaxageCalculator>();
-            services.AddSingleton<ManifestMaxAgeCalculator>();
+            services.AddScoped(x => DbContextStartup.Content(x));
+
+            services.AddScoped<HttpGetCdnManifestCommand>();
+            services.AddScoped<HttpGetCdnEksCommand>();
+            services.AddScoped<HttpGetCdnImmutableNonExpiringContentCommand>();
+
+            services.AddScoped<HttpGetCdnContentCommand>();
+            services.AddTransient<ManifestCacheControlHeaderProcessor>();
+            services.AddTransient<EksCacheControlHeaderProcessor>();
+            services.AddTransient<ImmutableNonExpiringContentCacheControlHeaderProcessor>();
+
+            services.AddTransient<EksMaxageCalculator>();
+            services.AddTransient<ManifestMaxAgeCalculator>();
+
             services.AddSingleton<ITaskSchedulingConfig, StandardTaskSchedulingConfig>();
             services.AddSingleton<IEksConfig, StandardEksConfig>();
 
