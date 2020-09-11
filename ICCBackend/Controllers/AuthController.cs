@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         public IActionResult User([FromServices] HttpGetUserClaimCommand command)
             => command.Execute(HttpContext);
 
-        [Authorize(AuthenticationSchemes = TheIdentityHubDefaults.AuthenticationScheme)]
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Logout([FromServices] HttpGetLogoutCommand command)
             => await command.Execute(HttpContext);
