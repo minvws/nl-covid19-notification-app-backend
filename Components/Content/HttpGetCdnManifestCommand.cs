@@ -16,28 +16,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     public class HttpGetCdnManifestCommand
     {
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly IHttpResponseHeaderConfig _HttpResponseHeaderConfig;
         private readonly ContentDbContext _ContentDb;
+        private readonly ManifestCacheControlHeaderProcessor _CacheControlHeaderProcessor;
 
-        public HttpGetCdnManifestCommand(IUtcDateTimeProvider dateTimeProvider, IHttpResponseHeaderConfig httpResponseHeaderConfig, ContentDbContext contentDb)
+        public HttpGetCdnManifestCommand(IUtcDateTimeProvider dateTimeProvider, ContentDbContext contentDb, ManifestCacheControlHeaderProcessor cacheControlHeaderProcessor)
         {
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _HttpResponseHeaderConfig = httpResponseHeaderConfig ?? throw new ArgumentNullException(nameof(httpResponseHeaderConfig));
             _ContentDb = contentDb ?? throw new ArgumentNullException(nameof(contentDb));
+            _CacheControlHeaderProcessor = cacheControlHeaderProcessor ?? throw new ArgumentNullException(nameof(cacheControlHeaderProcessor));
         }
 
         public async Task Execute(HttpContext httpContext)
         {
-            //if (httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
-            //{
-            //    httpContext.Response.ContentLength = 0;
-            //    httpContext.Response.StatusCode = 400;
-            //}
-
             var e = await _ContentDb.SafeGetLatestContent(ContentTypes.Manifest, _DateTimeProvider.Snapshot);
             if (e == null)
             {
-                httpContext.Response.StatusCode = 200;
+                httpContext.Response.StatusCode = 404;
                 httpContext.Response.ContentLength = 0;
                 return;
             }
@@ -52,8 +46,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             httpContext.Response.Headers.Add("etag", e.PublishingId);
             httpContext.Response.Headers.Add("last-modified", e.Release.ToUniversalTime().ToString("r"));
             httpContext.Response.Headers.Add("content-type", e.ContentTypeName);
-            httpContext.Response.Headers.Add("cache-control", _HttpResponseHeaderConfig.ManifestCacheControl);
             httpContext.Response.Headers.Add("x-vws-signed", true.ToString());
+
+            _CacheControlHeaderProcessor.Execute(httpContext, e);
+
             httpContext.Response.StatusCode = 200;
             httpContext.Response.ContentLength = e.Content?.Length ?? throw new InvalidOperationException("SignedContent empty.");
             await httpContext.Response.Body.WriteAsync(e.Content);

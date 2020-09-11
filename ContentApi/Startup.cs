@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using Serilog;
 
@@ -41,13 +42,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             services.AddScoped(x => DbContextStartup.Content(x));
             services.AddScoped<HttpGetCdnManifestCommand>();
             services.AddScoped<HttpGetCdnContentCommand>();
-            services.AddScoped<DynamicContentExpiryStrategy>();
-            services.AddScoped<ImmutableContentExpiryStrategy>();
-            services.AddScoped<HttpGetCdnEksContentCommand>();
-            services.AddScoped<HttpGetCdnStaticContentCommand>();
+
+            services.AddSingleton<ManifestCacheControlHeaderProcessor>();
+            services.AddSingleton<EksCacheControlHeaderProcessor>();
+            services.AddSingleton<ImmutableNonExpiringContentCacheControlHeaderProcessor>();
+            services.AddSingleton<EksMaxageCalculator>();
+            services.AddSingleton<ManifestMaxAgeCalculator>();
+            services.AddSingleton<ITaskSchedulingConfig, StandardTaskSchedulingConfig>();
+            services.AddSingleton<IEksConfig, StandardEksConfig>();
 
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
-            services.AddTransient<IHttpResponseHeaderConfig, HttpResponseHeaderConfig>();
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
 
             if (_IsDev)

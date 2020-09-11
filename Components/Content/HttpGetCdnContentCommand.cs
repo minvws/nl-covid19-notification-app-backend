@@ -8,36 +8,32 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using System;
 using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     /// <summary>
     /// Includes mitigations for CDN cache miss/stale item edge cases.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public abstract class HttpGetCdnContentCommand
+    public class HttpGetCdnContentCommand
     {
         private readonly ContentDbContext _DbContext;
         private readonly IPublishingIdService _PublishingIdService;
         private readonly ILogger _Logger;
-        private readonly IHttpResponseHeaderConfig _HttpResponseHeaderConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly IContentExpiryStrategy _ContentExpiryStrategy;
-        
-        protected HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IHttpResponseHeaderConfig httpResponseHeaderConfig, IUtcDateTimeProvider dateTimeProvider, IContentExpiryStrategy contentExpiryStrategy)
+
+        protected HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IUtcDateTimeProvider dateTimeProvider, ImmutableNonExpiringContentCacheControlHeaderProcessor cacheControlHeaderProcessor)
         {
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _PublishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _HttpResponseHeaderConfig = httpResponseHeaderConfig ?? throw new ArgumentNullException(nameof(httpResponseHeaderConfig));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _ContentExpiryStrategy = contentExpiryStrategy ?? throw new ArgumentNullException(nameof(contentExpiryStrategy));
         }
 
         /// <summary>
         /// Immutable content
         /// </summary>
-        public async Task Execute(HttpContext httpContext, string type, string id)
+        public async Task<ContentEntity?> Execute(HttpContext httpContext, string type, string id)
         {
             if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
 
@@ -69,7 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 _Logger.LogError("Content not found - {Id}.", id);
                 httpContext.Response.StatusCode = 404;
                 httpContext.Response.ContentLength = 0;
-                return;
+                return null;
             }
 
             if (etagValue == content.PublishingId)
@@ -77,35 +73,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 _Logger.LogWarning("Matching etag found, responding with 304 - {Id}.", id);
                 httpContext.Response.StatusCode = 304;
                 httpContext.Response.ContentLength = 0;
-                return;
+                return null;
             }
 
-            var ttl = _ContentExpiryStrategy.Calculate(content.Created);
-            
             httpContext.Response.Headers.Add("etag", content.PublishingId);
             httpContext.Response.Headers.Add("last-modified", content.Release.ToUniversalTime().ToString("r"));
             httpContext.Response.Headers.Add("content-type", content.ContentTypeName);
-            httpContext.Response.Headers.Add("cache-control", $"public, immutable, max-age={ ttl }, s-maxage={ ttl }");
             httpContext.Response.StatusCode = 200;
             httpContext.Response.ContentLength = content.Content?.Length ?? throw new InvalidOperationException("SignedContent empty.");
-
             await httpContext.Response.Body.WriteAsync(content.Content);
-        }
-    }
-
-    public class HttpGetCdnEksContentCommand : HttpGetCdnContentCommand
-    {
-        public HttpGetCdnEksContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IHttpResponseHeaderConfig httpResponseHeaderConfig, IUtcDateTimeProvider dateTimeProvider, DynamicContentExpiryStrategy contentExpiryStrategy) : 
-            base(dbContext, publishingIdService, logger, httpResponseHeaderConfig, dateTimeProvider, contentExpiryStrategy)
-        {
-        }
-    }
-
-    public class HttpGetCdnStaticContentCommand : HttpGetCdnContentCommand
-    {
-        public HttpGetCdnStaticContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IHttpResponseHeaderConfig httpResponseHeaderConfig, IUtcDateTimeProvider dateTimeProvider, ImmutableContentExpiryStrategy contentExpiryStrategy) : 
-            base(dbContext, publishingIdService, logger, httpResponseHeaderConfig, dateTimeProvider, contentExpiryStrategy)
-        {
+            return content;
         }
     }
 }
