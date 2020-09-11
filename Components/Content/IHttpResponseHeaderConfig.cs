@@ -4,8 +4,9 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
-    public interface ITaskSchedulingConfig
+    public interface IHttpResponseHeaderConfig
     {
-        public double DailyCleanupHoursAfterMidnight { get; }
+        string ManifestCacheControl { get; }
+        string ImmutableContentCacheControl { get; }
     }
 }

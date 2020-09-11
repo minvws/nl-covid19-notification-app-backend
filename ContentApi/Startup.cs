@@ -47,13 +47,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
             services.AddScoped<HttpGetCdnImmutableNonExpiringContentCommand>();
 
             services.AddScoped<HttpGetCdnContentCommand>();
-            services.AddTransient<ManifestCacheControlHeaderProcessor>();
             services.AddTransient<EksCacheControlHeaderProcessor>();
-            services.AddTransient<ImmutableNonExpiringContentCacheControlHeaderProcessor>();
 
             services.AddTransient<EksMaxageCalculator>();
-            services.AddTransient<ManifestMaxAgeCalculator>();
 
+            services.AddSingleton<IHttpResponseHeaderConfig, HttpResponseHeaderConfig>();
             services.AddSingleton<ITaskSchedulingConfig, StandardTaskSchedulingConfig>();
             services.AddSingleton<IEksConfig, StandardEksConfig>();
 

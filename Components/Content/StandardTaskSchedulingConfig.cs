@@ -10,6 +10,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         }
 
         public double DailyCleanupHoursAfterMidnight => GetConfigValue(nameof(DailyCleanupHoursAfterMidnight), 5.0);
-        public double ManifestPeriodMinutes => GetConfigValue(nameof(ManifestPeriodMinutes), 60);
     }
 }
