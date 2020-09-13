@@ -11,34 +11,34 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ContentController : ControllerBase
+    public class ContentControllerV2 : ControllerBase
     {
         [HttpGet]
         [Route(EndPointNames.ContentApi.Manifest)]
         public async Task GetManifest([FromServices] HttpGetCdnManifestCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.Manifest);
+            await command.Execute(HttpContext, ContentTypes.ManifestV2);
         }
 
         [HttpGet]
-        [Route(EndPointNames.ContentApi.AppConfig + "/{id}")]
+        [Route(EndPointNames.ContentApi.AppConfig + "/v2/{id}")]
         public async Task GetAppConfig(string id, [FromServices] HttpGetCdnContentCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.AppConfig, id);
+            await command.Execute(HttpContext, ContentTypes.AppConfigV2, id);
         }
 
         [HttpGet]
-        [Route(EndPointNames.ContentApi.RiskCalculationParameters + "/{id}")]
+        [Route(EndPointNames.ContentApi.RiskCalculationParameters + "/v2/{id}")]
         public async Task GetRiskCalculationParameters(string id, [FromServices] HttpGetCdnContentCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.RiskCalculationParameters, id);
+            await command.Execute(HttpContext, ContentTypes.RiskCalculationParametersV2, id);
         }
 
         [HttpGet]
-        [Route(EndPointNames.ContentApi.ExposureKeySet + "/{id}")]
+        [Route(EndPointNames.ContentApi.ExposureKeySet + "/v2/{id}")]
         public async Task GetExposureKeySet(string id, [FromServices] HttpGetCdnContentCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.ExposureKeySet, id);
+            await command.Execute(HttpContext, ContentTypes.ExposureKeySetV2, id);
         }
     }
 }

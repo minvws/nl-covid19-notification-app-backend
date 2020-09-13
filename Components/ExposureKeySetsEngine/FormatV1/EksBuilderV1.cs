@@ -8,7 +8,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
@@ -17,9 +17,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
     public class EksBuilderV1 : IEksBuilder
     {
         private const string Header = "EK Export v1    ";
-        private const string ContentEntryName = "export.bin"; //Fixed
-        private const string GaenSignaturesEntryName = "export.sig"; //Fixed
-        private const string NlSignatureEntryName = ZippedSignedContentFormatter.SignaturesEntryName;
 
         private readonly IGaContentSigner _GaenContentSigner;
         private readonly IContentSigner _NlContentSigner;
@@ -86,7 +83,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             };
 
             var gaenSigFile = _EksContentFormatter.GetBytes(signatures);
-            return await CreateZipArchive(contentBytes, gaenSigFile, nlSig);
+            return await new ZippedContentBuilder().BuildEks(contentBytes, gaenSigFile, nlSig);
         }
 
         private SignatureInfoArgs GetGaenSignatureInfo()
@@ -97,27 +94,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 VerificationKeyVersion = _Config.VerificationKeyVersion,
                 AppBundleId = _Config.AppBundleId
             };
-
-        private static async Task<byte[]> CreateZipArchive(byte[] content, byte[] gaenSig, byte[] nlSig)
-        {
-            await using var result = new MemoryStream();
-            using (var archive = new ZipArchive(result, ZipArchiveMode.Create, true))
-            {
-                await WriteEntry(archive, ContentEntryName, content);
-                await WriteEntry(archive, GaenSignaturesEntryName, gaenSig);
-                await WriteEntry(archive, NlSignatureEntryName, nlSig);
-            }
-
-            return result.ToArray();
-        }
-
-        private static async Task WriteEntry(ZipArchive archive, string entryName, byte[] content)
-        {
-            await using var entryStream = archive.CreateEntry(entryName).Open();
-            await using var contentStream = new MemoryStream(content);
-            await contentStream.CopyToAsync(entryStream);
-        }
-
     }
-
 }
