@@ -36,7 +36,6 @@ describe("Manifest endpoints tests #multiple_exposure_keys #scenario #regression
                 let result = await getExposureKeySet(exposureKeySet[i])
                 exposure_keyset_decoded_set.push(result);
             }
-
         })
     });
 
@@ -48,11 +47,9 @@ describe("Manifest endpoints tests #multiple_exposure_keys #scenario #regression
             TemporaryExposureKey.forEach(key => {
                 key.keyData = key.keyData.toString("base64");
             })
-            // console.log(exposure_keyset_decoded.keys);
 
             // start timestamp is not older then 14 days run from yesterday
             let max_days_old = moment().add(-15,'days').unix();
-            let yesterday = moment().add(-1,'days').unix()
 
             console.log('end date key: ' + moment.unix(exposure_keyset_decoded.endTimestamp.low).format('dddd, MMMM Do, YYYY h:mm:ss A'));
             expect(exposure_keyset_decoded.endTimestamp.low - max_days_old,"key not older then 14 days").to.be.least(0);

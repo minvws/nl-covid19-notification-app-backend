@@ -38,15 +38,14 @@ describe("Appconfig endpoints tests #appconfig #endpoints #regression", function
     expect(parseInt(total),'Response size below 20KB').to.be.below(20);
   });
 
-  // validate lastmodified is not
-  it("Max-Age of exposureKey data validated", function (){
-    let lastModified = Date.parse(appconfig_response.response.headers["last-modified"]);
-    let now = Date.now();
-    let maxAge = appconfig_response.response.headers["cache-control"].split("=");
-    expect(
-        (now - lastModified) / 1000,
-        `Response last-modified (${appconfig_response.response.headers["last-modified"]} is not older then ${maxAge[1]/3600} hours ago`
-    ).to.be.below(parseInt(maxAge[1]));
+  // validate max-age is not older then 1.209.600 sec (14 days)
+  it("Max-Age of app config data validated, not older then 1209600 sec. (14 days)", function () {
+    let maxAge = appconfig_response.response.headers["cache-control"].split("="); // max age is number of sec.
+    maxAge = parseInt(maxAge[1]);
+
+    expect(maxAge - 1209600,
+        `Response max-age (${appconfig_response.response.headers["cache-control"]} is not older then ${parseInt(maxAge)/3600/24} days ago`
+    ).to.be.least(0);
   });
 
   it('Appconfig has all needed property keys', function () {
