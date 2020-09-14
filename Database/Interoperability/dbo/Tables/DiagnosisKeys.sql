@@ -1,4 +1,4 @@
-CREATE TABLE [dbo].[DailyKeys] (
+CREATE TABLE [dbo].[DiagnosisKeys] (
 	[Id] [bigint] IDENTITY(1,1) NOT NULL,
 	[KeyData] [varbinary](32) NOT NULL,
 	[RollingStartNumber] [int] NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE [dbo].[DailyKeys] (
 	[PublishedToEksOn] [datetime] NULL,
 	[PublishedToInteropOn] [datetime] NULL,
 	[IsStuffing] [bit] NOT NULL,
-	CONSTRAINT [PK_DailyKeys] PRIMARY KEY CLUSTERED 
+	CONSTRAINT [PK_DiagnosisKeys] PRIMARY KEY CLUSTERED 
 	(
 		[Id] ASC
 	)

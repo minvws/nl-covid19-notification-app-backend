@@ -6,8 +6,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities
 {
-    [Table(TableNames.DailyKey)]
-    public class DailyKey
+    [Table(TableNames.DiagnosisKeys)]
+    public class DiagnosisKeys
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
