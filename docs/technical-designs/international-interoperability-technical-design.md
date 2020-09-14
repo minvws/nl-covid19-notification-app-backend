@@ -227,27 +227,91 @@ Conceptually it is the mirror of the EksEngine.
 
 This component is responsible for uploading published TEKs - both real and stuffing - to the *EU Federation Gateway*. The tool takes the unpublished IKS from ContentDb and uploads them one-by-one and only once to the EU Federation server.
 
+The upload accepts a protocol-buffer format keyset: https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/src/main/proto/Efgs.proto.
+
+The file is then uploaded to: [TODO].
+
 Conceptually it is the mirror of the ContentApi.
 
-### Interop Downloader (TODO: finish)
+### Interop Downloader
 
 This component is responsible for downloading the keys from the interop server and putting them in the table `ExternalTemporaryExposureKeys`. It supports the batching logic of the EU Federation gateway.
 
-It applies the same validation rules as postkeys (via re-use), dropping any keys which we do not consider valid. 
+It applies the same validation rules as postkeys (via re-use), dropping any keys which we do not consider valid.
 
-Conceptually it is the same as /postkeys from the Mobile API
+#### Register callback (RegisterInteropCallbackCommand)
 
-### InteropProcessor (TODO: finish)
+The EU federation gateway implements a callback functionality to notify the backend that there are new keysets available. The interop downloader will initally register our callback url with the federation gateway.
+
+TODO: this would be ideal functionality for an Administration Portal?
+
+The gateway implements a CRUD interface over callbacks, which can be found here: https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/src/main/java/eu/interop/federationgateway/controller/CallbackAdminController.java
+
+The command will first check to see if our callback is registered by calling `getCallbackSubscriptions`. If this does not return our callback then 
+
+The callback will be configurable, with the following options:
+
+- `federationGatewayBaseUrl`
+  * the base url for EU Federation gateway.
+  * e.g. : `https://someurl/something`
+- `callbackId`
+  * our free-text identifier for our callback.
+  * e.g. `2020-09-05_Prod`
+- `callbackUrl`
+  *  our callback url, a full URL.
+  * e.g. `https:/coronamelder-api.nl/v1/efg-callback`
+- DB settings
+
+More details on callbacks can be found here: https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/docs/implementation_details/callback.md
+
+#### Callback handler (HandleInteropCallbackCommand)
+
+The handler will be called once per batch job published by the EU federation gateway. The gateway will retry the callback until we return a success.
+
+We must process every batch which is published to interop.
+
+This command will accept the callback, write it to the database table `IncomingBatchJobs` and then return an OK once the transaction has committed.
+
+#### Batch downloader (InteropBatchDownloaderCommand)
+
+This command will download the batches found in the table `IncomingBatchJobs` one for one. It will download the data, deserialize it and then put the content into the table `ExternalTemporaryExposureKeys`.
+
+The keys will be validated using a subset of our validation rules:
+- <TODO details>
+
+Each batch will be processes once and once only. To ensure that this happens an exclusive row-level lock will be held on each batch as it is being processed. This can be implemented by selecting the ID of the single batch ID under the `serializable` transaction isolation level. That can be achieved via the hint `HOLDLOCK` or by setting the isolation level correctly on the context.
+
+Once a batch has been processed the status will be changed to `BatchStatus.Downloaded`.
+
+Conceptually it is the same as /postkeys from the Mobile API.
+
+#### Process batches (InteropBatchProcesserCommand)
 
 This component is responsible for taking raw keys from the table `ExternalTemporaryExposureKeys`, implementing the `Ingress Filter` and then copying the keys which pass the filter to the table `DailyKeys`. Once the keys are copied they will be removed from `ExternalTemporaryExposureKeys` (as part of the same transaction).
 
 Conceptually this is the same as the first part of the existing EksEngine.
 
+This command will iterate through all of the downloaded batched of status `Downloaded`.
+
+First the keys for the batch will be loaded from `ExternalTemporaryExposureKeys` and we will apply our *ingress filter* them. The filter consists of the following checks:
+- TODO
+- TODO
+
+Keys which pass the filter will be inserted into the table `DailyKeys` and marked as processed. Those that failed will be marked as processed and the details logged.
+
+Once the batch is complete the batch status will be uploaded to `BatchStatus.Processed` and all of the processed keys from that batch will be deleted from the table `ExternalTemporaryExposureKeys`. The numbers being logged.
+
+Once all of the batches have been processed then they will be removed from the table `IncomingBatchJobs`. The numbers and details logged.
+
+The following settings will be added:
+- TODO
+- TODO
+
 ## Existing Components
 
 One of the main design goals for phase one is to minimize the changes to existing components whilst minimizing the impact on our support of the interop standard.
 
-Short summary of changes (TODO: add detailed changed in a section):
+Short summary of changes:
 - EKS engine command will be split to allow reuse. Code changes are minimal.
 - EKS engine will be modified to use the new tables. Code changess are minimal as schema changes are also minimal.
 - EKS engine command will gain an origin-filter
