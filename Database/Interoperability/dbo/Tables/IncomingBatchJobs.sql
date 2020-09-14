@@ -7,7 +7,6 @@ CREATE TABLE [dbo].[IncomingBatchJobs] (
 	[CompletedAt] [datetime] NULL,
 	[Status] [int] NOT NULL DEFAULT(0),
 	[RetryCount] [int] NOT NULL DEFAULT(0),
-	[CompletionToken] [nvarchar](max) NULL,
 	[TotalKeys] [int] NULL,
 	[TotalCountries] [int] NULL,
 )
