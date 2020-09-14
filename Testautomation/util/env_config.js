@@ -40,7 +40,7 @@ const base_url = {
   CDN:{
     TST: "https://test.coronamelder-dist.nl",
     ACC: "https://acceptatie.coronamelder-dist.nl",
-    PROD: "https://coronamelder-dist.nl",
+    PROD: "https://productie.coronamelder-dist.nl",
   },
   APP:{
     TST: "https://test.coronamelder-api.nl",
