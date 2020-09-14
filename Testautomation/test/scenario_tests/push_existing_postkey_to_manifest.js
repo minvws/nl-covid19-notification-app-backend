@@ -26,7 +26,9 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
     exposureKeySetId,
     exposure_keyset_response,
     exposure_keyset_decoded,
-    formated_bucket_id;
+    formated_bucket_id,
+    exposureKeySet,
+    exposure_keyset_decoded_set = [];
 
   before(function () {
     return app_register()
@@ -73,9 +75,7 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
       .then(function () {
         return manifest().then(function (manifest) {
           manifest_response = manifest;
-          // select the last key from the manifest
-          let exposureKeySets_length = manifest.content.exposureKeySets.length;
-          exposureKeySetId = manifest.content.exposureKeySets[exposureKeySets_length-1];
+          exposureKeySet = manifest.content.exposureKeySets;
         });
       })
       .then(async function () {
