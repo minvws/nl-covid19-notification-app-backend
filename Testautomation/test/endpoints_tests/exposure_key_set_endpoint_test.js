@@ -58,6 +58,7 @@ describe("Manifest endpoints tests #single_exposure_key #endpoints #regression",
         // console.log(exposure_keyset_decoded.keys);
 
         expect(exposure_keyset_decoded).to.have.nested.property("startTimestamp");
+        expect(exposure_keyset_decoded).to.have.nested.property("startTimestamp");
         expect(exposure_keyset_decoded).to.have.nested.property("endTimestamp");
         expect(exposure_keyset_decoded).to.have.nested.property("region");
         expect(exposure_keyset_decoded).to.have.nested.property("batchNum");
@@ -65,7 +66,7 @@ describe("Manifest endpoints tests #single_exposure_key #endpoints #regression",
         expect(exposure_keyset_decoded).to.have.nested.property("signatureInfos");
         expect(exposure_keyset_decoded).to.have.nested.property("keys");
         expect(exposure_keyset_decoded).to.have.nested.property("revisedKeys");
-        expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("verificationKeyVersion", "v13");
+        expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("verificationKeyVersion");
         expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("verificationKeyId", "204");
         expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("signatureAlgorithm", "1.2.840.10045.4.3.2");
 
