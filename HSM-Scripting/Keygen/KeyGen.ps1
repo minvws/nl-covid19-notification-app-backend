@@ -27,7 +27,7 @@ else
 {
 	#test, accp and prod
 	$VariablesSource = "Deploy"
-    $HSMAdminToolsDir = "`"#{Deploy.HSMScripting.HSMAdminToolsDir}#`""
+    $HSMAdminToolsDir = "#{Deploy.HSMScripting.HSMAdminToolsDir}#"
     $openSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
 
     $IsOnDevEnvironment = $False #When set to $False: skips sending, signing and accepting of the RSA request
