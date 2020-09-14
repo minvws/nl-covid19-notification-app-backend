@@ -79,14 +79,31 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
         });
       })
       .then(async function () {
-        return exposure_key_set(exposureKeySetId).then(function (
-          exposure_keyset
-        ) {
-          exposure_keyset_response = exposure_keyset;
-          return decode_protobuf(exposure_keyset_response).then(function (EKS) {
-            exposure_keyset_decoded = EKS;
+
+        function getExposureKeySet(exposureKeySetId){
+          return new Promise(function(resolve){
+            exposure_key_set(exposureKeySetId).then(function (exposure_keyset) {
+              exposure_keyset_response = exposure_keyset;
+              return decode_protobuf(exposure_keyset_response)
+                  .then(function (EKS) {
+                    return resolve(exposure_keyset_decoded = EKS)
+                  });
+            })
           });
-        });
+        }
+
+        for(i = 0; i< exposureKeySet.length; i++){
+          let eks = await getExposureKeySet(exposureKeySet[i])
+          let TemporaryExposureKey = eks.keys
+          // decode keydata into readable text
+          TemporaryExposureKey.forEach(key => {
+            key.keyData = key.keyData.toString("base64");
+          })
+          let obj = {"exposureKeySet" : exposureKeySet[i],
+            "eks":eks
+          }
+          exposure_keyset_decoded_set.push(obj);
+        }
       });
   });
 
@@ -99,20 +116,30 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
       dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", new Map())
     ).keys[0].keyData;
 
+    console.log('Number of exposure_keyset_decoded_set: ' + exposure_keyset_decoded_set.length);
+
     let found = false;
-    for (key of exposure_keyset_decoded.keys) {
-       // console.log(key.keyData.toString("base64"),exposure_key_send)
-      if (key.keyData.toString("base64") == exposure_key_send) {
-        expect(key.keyData.toString("base64")).to.be.eql(exposure_key_send);
-        found = true;
-        break;
+    exposure_keyset_decoded_set.forEach(exposure_keyset_decoded => {
+      console.log(exposure_keyset_decoded.exposureKeySet);
+
+      for(key of exposure_keyset_decoded.eks.keys){
+          console.log(`Validating key ${key.keyData} is eql to ${exposure_key_send}`);
+          if (key.keyData == exposure_key_send){
+            found = true;
+          }
       }
+    })
+
+    if(found){
+      expect(true, `Expected EKS ${exposure_key_send} is found in the manifest`).to.be.eql(true);
     }
+
     if (!found) {
-      expect(true, "Expected EKS in manifest keys but not found").to.be.eql(
-        false
+      expect(true, `Expected EKS ${exposure_key_send} in manifest but not found`).to.be.eql(
+          false
       );
     }
+
   });
 
 });
