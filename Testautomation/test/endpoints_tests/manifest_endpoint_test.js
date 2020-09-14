@@ -32,20 +32,14 @@ describe("Manifest endpoints tests #manifest #endpoints #regression", function (
         expect(parseInt(total), "Response size below 20KB").to.be.below(20);
     })
 
-    // validate lastmodified is not
-    it("Max-Age of exposureKey data validated", function () {
-        let lastModified = Date.parse(manifest_response.response.headers["last-modified"]);
-        let now = Date.now();
+    // validate max-age is not older then 300 sec (5 min.)
+    it("Max-Age of manifest data validated, not older then 300 sec.", function () {
         let maxAge = manifest_response.response.headers["cache-control"].split("="); // max age is number of sec.
+        maxAge = parseInt(maxAge[1]);
 
-        let difference = (parseInt(now) - parseInt(lastModified)) / 1000
-        // console.log('difference in sec: ' + difference.toFixed(2));
-        // console.log('maxAge: ' + maxAge[1]);
-
-        expect(
-            (now - lastModified) / 1000,
-            `Response last-modified (${manifest_response.response.headers["last-modified"]} is not older then ${parseInt(maxAge[1])} sec. ago`
-        ).to.be.below(parseInt(maxAge[1]));
+        expect(maxAge - 300,
+            `Response max-age (${manifest_response.response.headers["cache-control"]} is not older then ${parseInt(maxAge)} sec. ago`
+        ).to.be.least(0);
     });
 
     it("Manifest has all needed property keys", function () {

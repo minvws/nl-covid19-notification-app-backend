@@ -36,14 +36,14 @@ describe("Manifest endpoints tests #single_exposure_key #endpoints #regression",
         );
     })
 
-    it("Max-Age of exposureKey data validated", function () {
-        let lastModified = Date.parse(exposure_keyset_response.headers["last-modified"]);
-        let now = Date.now();
-        let maxAge = exposure_keyset_response.headers["cache-control"].split("=");
-        expect(
-            (now - lastModified) / 1000,
-            `Response last-modified (${exposure_keyset_response.headers["last-modified"]} is not older then ${maxAge[1] / 3600} hours ago`
-        ).to.be.below(parseInt(maxAge[1]));
+    // validate max-age is not older then 1.209.600 sec (14 days)
+    it("Max-Age of exposureKey data validated, not older then 1209600 sec. (14 days)", function () {
+        let maxAge = exposure_keyset_response.headers["cache-control"].split("="); // max age is number of sec.
+        maxAge = parseInt(maxAge[1]);
+
+        expect(maxAge - 1209600,
+            `Response max-age (${exposure_keyset_response.headers["cache-control"]} is not older then ${parseInt(maxAge)/3600/24} days ago`
+        ).to.be.least(0);
     });
 
     it("Exposure Key sets response time is under 5 sec.", function () {
