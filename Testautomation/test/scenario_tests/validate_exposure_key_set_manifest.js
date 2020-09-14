@@ -50,14 +50,13 @@ describe("Manifest endpoints tests #multiple_exposure_keys #scenario #regression
             })
             // console.log(exposure_keyset_decoded.keys);
 
-            expect(exposure_keyset_decoded).to.have.nested.property("startTimestamp");
-
-            // start timestamp is not older then 14 days
-            let max_days_old = moment().add(-14,'days').unix();
+            // start timestamp is not older then 14 days run from yesterday
+            let max_days_old = moment().add(-15,'days').unix();
             let yesterday = moment().add(-1,'days').unix()
 
-            console.log(moment(exposure_keyset_decoded.endTimestamp));
-
+            console.log('end date key: ' + moment.unix(exposure_keyset_decoded.endTimestamp.low).format('dddd, MMMM Do, YYYY h:mm:ss A'));
+            expect(exposure_keyset_decoded.endTimestamp.low - max_days_old,"key not older then 14 days").to.be.least(0);
+            expect(exposure_keyset_decoded).to.have.nested.property("startTimestamp");
             expect(exposure_keyset_decoded).to.have.nested.property("endTimestamp");
             expect(exposure_keyset_decoded).to.have.nested.property("region");
             expect(exposure_keyset_decoded).to.have.nested.property("batchNum");
@@ -65,7 +64,7 @@ describe("Manifest endpoints tests #multiple_exposure_keys #scenario #regression
             expect(exposure_keyset_decoded).to.have.nested.property("signatureInfos");
             expect(exposure_keyset_decoded).to.have.nested.property("keys");
             expect(exposure_keyset_decoded).to.have.nested.property("revisedKeys");
-            expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("verificationKeyVersion", "v13");
+            expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("verificationKeyVersion");
             expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("verificationKeyId", "204");
             expect(exposure_keyset_decoded.signatureInfos[0]).to.have.nested.property("signatureAlgorithm", "1.2.840.10045.4.3.2");
 
