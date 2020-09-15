@@ -2,7 +2,6 @@
 # Double-check you are allowed to run custom scripts.
 
 $VariablesSource = "Development"
-$Location
 
 if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
 {
