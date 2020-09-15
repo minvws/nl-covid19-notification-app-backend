@@ -144,7 +144,7 @@ CREATE TABLE [dbo].[IncomingBatchJobs] (
 
 ### Interop: OutgoingBatchJobs (new)
 
-This is the worklow table for incoming batches.
+This is the worklow table for outgoing batches.
 
 ```
 CREATE TABLE [dbo].[OutgoingBatchJobs] (
@@ -158,9 +158,9 @@ CREATE TABLE [dbo].[OutgoingBatchJobs] (
 )
 ```
 
-### Interop: InteropKetSets (new)
+### Interop: InteropKeySets (new)
 
-This is the worklow table for incoming batches.
+This is the worklow table for the InteropKeySets.
 
 ```
 CREATE TABLE [dbo].[InteropKeySet] (
