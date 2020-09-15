@@ -12,55 +12,41 @@
 
 # Introduction
 
-TODO blurb
+This document contains the Software Architecture and Design for the Corona Melder backend support of the European Federated Gateway Server (EFGS) which implements the EU Interoperability.
+
+Please see the solution architecture document for a detailed description of Interoperability, the business requirements and a high level overview of the System Architecture.
 
 # Contents
 
-- Status
 - Phase One
   * Overview
-    - Publishing flow
+  * Operations
   * Database
-    - ExternalTemporaryExposureKeys
-    - DailyKeys
-    - IncomingBatchJobs
-    - OutgoingBatchJobs
+    - Interop.TemporaryExposureKeys
+    - Interop.DiagnosisKeys
+    - Interop.IncomingBatchJobs
+    - Interop.OutgoingBatchJobs
+	- Workflow: TemporaryExposureKeys
+    - Workflow: TekReleaseWorkflowState
+    - Workflow: vwTemporaryExposureKeys
+    - Workflow: vwTekReleaseWorkflowState
   * New Components
+	- Entities
     - InteropKeySetEngine (IksEngine)
-    - Interop Uploader
     - Interop Downloader
+    - Interop Uploader [TODO]
   * Existing Components
     - EKS Stuffing Generator
     - GGD Portal Backend
     - GGD Portal Frontend
-    - Data model [TODO, OLD!]
     - EKS Engine [TODO]
-    - Cleanup tools which are in development [TODO]
   * Appendix
     - ISO Codes
     - Additions for Functional Requirements
 
-# Status
-
-This document is current in draft form. Any section marked as [TODO] should be completely ignored. Other sections contain TODOs to mark work which still has to occur.
-
-In general, the following is also required before this document can be considered complete:
-- Reconsilation on the yet-to-be-published software architecture document for the EU federation gateway.
-- In lieu of the above, reconsiliation vs the current published source code.
-- Reconsiliation against our solution architecture document to ensure that the concepts are aligned over all three documents (with the EU Federation Gateway leading)
-
-And then
-- Peer review!
-
 # Phase One
 
-TODO BLURB
-
-Some of the changes required for interop will have a big impact on our current implementation. Those are:
-
-- TemporaryExposureKeys can no longer be deleted by the clean-up tasks after they have been published.
-- Stuffing keys must be persisted in our database.
-- ..
+In the first phase of interop our aim is to share out keys with EFGS and download keys from other countries from EFGS and integrate them into our keysets. This first phase will involve only changes to the backend, with no changes required in the apps.
 
 ## Overview
 
@@ -72,7 +58,7 @@ The design is based on standard Software Engineering practises. This leads the d
 
 ![Overview](images/Overview.png "Overview of the system")
 
-The take-away from this diagram is that with some minor changes to the server we can treat Interop as a mirrored, or special case of our normal flow.
+The take-away from this diagram is that with some minor changes to the server we can treat Interop as a logical mirror of our normal flow.
 
 ### Publishing flow
 
@@ -80,18 +66,20 @@ This diagram shows how the publishing components are to be executed. The take-aw
 
 ![Flow](images/Flow.png "Overview of the publishing flow")
 
+## Operations
+
+The interoperability components will run on a dedicated server (`-interop`) and will store data in a dedicated database.
+
 ## Database
 
-TODO
-- Interop tables into their own schema?
-- Jobs tables into the jobs db?
+For interop we will have a new database, called `Interop`.
 
-### Workflow: ExternalTemporaryExposureKeys (new)
+### Interop: TemporaryExposureKeys (new)
 
-This is a staging table, it holds the incoming TEKs from the Federation Gateway. It mirrors the table `TemporaryExposureKeys` from the NL server.
+This is a staging table, it holds the incoming TEKs from the EFGS. It mirrors the table `Workflow.TemporaryExposureKeys` from the NL server.
 
 ```
-CREATE TABLE [dbo].[ExternalTemporaryExposureKeys] (
+CREATE TABLE [dbo].[TemporaryExposureKeys] (
 	[Id] [bigint] IDENTITY(1,1) NOT NULL,
 	[IncomingBatchJobId] [bigint] NOT NULL,
 	[KeyData] [varbinary](32) NOT NULL,
@@ -102,23 +90,23 @@ CREATE TABLE [dbo].[ExternalTemporaryExposureKeys] (
 	[OriginTransmissionRiskLevel] [int] NOT NULL,
 	[TransmissionRiskLevel] [int] NOT NULL,
 	[ProcessingState] [int] NOT NULL,
-	CONSTRAINT [PK_ExternalTemporaryExposureKeys] PRIMARY KEY CLUSTERED 
+	CONSTRAINT [PK_TemporaryExposureKeys] PRIMARY KEY CLUSTERED 
 	(
 		[Id] ASC
 	)
 )
 ```
 
-### Workflow: DailyKeys (new)
+### Interop: DiagnosisKeys (new)
 
-This table holds fully normalized, validated, stuffed and valid keys from all sources (NL & EU Federation Gateway). This table is the source of truth for the *EksEngine* and *InteropPubishingEngine*.
+This table holds fully cleaned, validated, stuffed and valid keys from all sources (NL & EU Federation Gateway). This table is the source of truth for the *EksEngine* and *InteropPubishingEngine*.
 
-Keys stored in this table will always be published to an EKS (Exposure Key Sets) AND to IKS (Interop Key Sets). Keys which are not to be distributed are published to the ϵ sets.
+Keys stored in this table will always be published to an EKS (Exposure Key Sets) AND to IKS (Interop Key Sets). Keys which are not to be distributed are published to the ϵ sets. Note: keys with TRL of none will never be added to the DiagnosisKeys table.
 
 Once published to both destinations keys are deleted from this table.
 
 ```
-CREATE TABLE [dbo].[DailyKeys] (
+CREATE TABLE [dbo].[DiagnosisKeys] (
 	[Id] [bigint] IDENTITY(1,1) NOT NULL,
 	[KeyData] [varbinary](32) NOT NULL,
 	[RollingStartNumber] [int] NOT NULL,
@@ -128,22 +116,17 @@ CREATE TABLE [dbo].[DailyKeys] (
 	[TransmissionRiskLevel] [int] NOT NULL,
 	[PublishedToEksOn] [datetime] NULL,
 	[PublishedToInteropOn] [datetime] NULL,
-  [IsStuffing] [bit] NOT NULL
-	CONSTRAINT [PK_DailyKeys] PRIMARY KEY CLUSTERED 
+    [IsStuffing] [bit] NOT NULL
+	CONSTRAINT [PK_DiagnosisKeys] PRIMARY KEY CLUSTERED 
 	(
 		[Id] ASC
 	)
 )
 ```
 
-TODO: 
-- IsStuffing, is this needed?
-- Dates so that EOL can be ensured. 
-- Ryan, better describe the epsilon sets, it's stolen from automata theory and not everyone will know that.
+### Interop: IncomingBatchJobs (new)
 
-### Workflow: IncomingBatchJobs (new)
-
-This table contains information on interop incoming batches. It has a FK to ExternalTemporaryExposureKeys so batches are linked.
+This is the worklow table for incoming batches. It has a FK to `Interop.TemporaryExposureKeys` so batches are linked.
 
 ```
 CREATE TABLE [dbo].[IncomingBatchJobs] (
@@ -159,14 +142,11 @@ CREATE TABLE [dbo].[IncomingBatchJobs] (
 )
 ```
 
-TODO
-- Review structure when the InteropDownloadEngine is designed
-- Cross-reference with the latest Federation Gateway design when it's published.
+### Interop: OutgoingBatchJobs (new)
 
-### Workflow: OutgoingBatchJobs (new)
+This is the worklow table for incoming batches.
 
-This table contains information on interop outgoing batches.
-
+```
 CREATE TABLE [dbo].[OutgoingBatchJobs] (
 	[Id] [bigint] IDENTITY(1,1) NOT NULL,
 	[CreatedOn] [datetime] NOT NULL DEFAULT(GETDATE()),
@@ -176,74 +156,64 @@ CREATE TABLE [dbo].[OutgoingBatchJobs] (
 	[RetryCount] [int] NOT NULL DEFAULT(0),
 	[TotalKeys] [int] NULL
 )
+```
 
-TODO
-- Review structure when the InteropUploadEngine is designed
-- Cross-reference with the latest Federation Gateway design when it's published.
+### Interop: InteropKetSets (new)
 
-### OLD
+This is the worklow table for incoming batches.
 
-Review against the new simplified design, most can probably go.
+```
+CREATE TABLE [dbo].[InteropKeySet] (
+    [Id] INT IDENTITY (1, 1) NOT NULL,
+    [Created] DATETIME2 (7) NOT NULL,
+    [Content] VARBINARY (MAX) NOT NULL
+    CONSTRAINT [PK_InteropKeySet] PRIMARY KEY CLUSTERED ([Id] ASC)
+)
+```
 
-#### Workflow: TemporaryExposureKeys
+### Workflow: TemporaryExposureKeys
 
-- Add the field `Origin` as a `char(2) NOT NULL` and `DEFAULT ('NL')`.
-- Add the field `IsStuffing` as a `bit NOT NULL`.
 - Remove the field 'Region'.
 
-#### Workflow: TekReleaseWorkflowState
+### Workflow: TekReleaseWorkflowState
 
 - Add the field `CountriesOfInterest` as a `varchar(255) NOT NULL` and `DEFAULT ('NL')`.
 
-#### PublishingJob: EksCreateJobInput
+### Workflow: vwTemporaryExposureKeys
 
-- Add the field `CountriesOfInterest` as a `varchar(255) NOT NULL`.
-- Add the field `Origin` as a `char(2) NOT NULL` and `DEFAULT ('NL')`.
-
-#### Workflow: vwTemporaryExposureKeys
-
-- Add the fields `CountriesOfInterest`, `Origin` and `IsStuffing`.
 - Remove the field `Region`.
 
-#### Workflow: vwTekReleaseWorkflowState.sql**
+### Workflow: vwTekReleaseWorkflowState
 
 - Add the field `CountriesOfInterest`.
 
 ## New Components
 
-TODO rewrite blurb
+The interop server functionality will be implemented as a number of extra commands and components within the existing server.
 
 ### InteropKeySetEngine (IksEngine)
 
-This component generates EKS from keys in the table `DailyKeys` which have the `Origin` of `NL`, where `PublishedToEksOn` is not null and `PublishedToInteropOn` is null. The keysets are then stored in the ContentDb with the tag `IKS`.
+This component generates EKS from keys in the table `Interop.DiagnosisKeys` which have the `Origin` of `NL`, where `PublishedToEksOn` is not null and `PublishedToInteropOn` is null. The keysets are then stored in the table `Interop.InteropKeySets`.
 
-Almost all of the logic in this tool is re-used from the `EksEngine`.
+Almost all of the patterns in this tool are re-used from the `EksEngine`.
 
 The `egress filter` is implemented in this component.
 
 Conceptually it is the mirror of the EksEngine.
 
-### Interop Uploader (TODO: finish)
-
-This component is responsible for uploading published TEKs - both real and stuffing - to the *EU Federation Gateway*. The tool takes the unpublished IKS from ContentDb and uploads them one-by-one and only once to the EU Federation server.
-
-The upload accepts a protocol-buffer format keyset: https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/src/main/proto/Efgs.proto.
-
-The file is then uploaded to: [TODO].
-
-Conceptually it is the mirror of the ContentApi.
-
 ### Interop Downloader
 
-This component is responsible for downloading the keys from the interop server and putting them in the table `ExternalTemporaryExposureKeys`. It supports the batching logic of the EU Federation gateway.
+This component is responsible for downloading the keys from the interop server and putting them in the table `Interop.TemporaryExposureKeys`. It supports the batching logic of the EU Federation gateway.
 
 It applies the same validation rules as postkeys (via re-use), dropping any keys which we do not consider valid.
 
+#### Interop Web Api
+
+This web api is a website which hosts the web services we need to expose to support the EFGS.
+
 #### Register callback (RegisterInteropCallbackCommand)
 
-The EU federation gateway implements a callback functionality to notify the backend that there are new keysets available. The interop downloader will initally register our callback url with the federation gateway.
-
-TODO: this would be ideal functionality for an Administration Portal?
+The EU federation gateway implements a callback functionality to notify the backend that there are new keysets available. The interop downloader will initally register our callback url with the EFGS.
 
 The gateway implements a CRUD interface over callbacks, which can be found here: https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/src/main/java/eu/interop/federationgateway/controller/CallbackAdminController.java
 
@@ -252,7 +222,7 @@ The command will first check to see if our callback is registered by calling `ge
 The callback will be configurable, with the following options:
 
 - `federationGatewayBaseUrl`
-  * the base url for EU Federation gateway.
+  * the base url for EFGS.
   * e.g. : `https://someurl/something`
 - `callbackId`
   * our free-text identifier for our callback.
@@ -266,15 +236,19 @@ More details on callbacks can be found here: https://github.com/eu-federation-ga
 
 #### Callback handler (HandleInteropCallbackCommand)
 
-The handler will be called once per batch job published by the EU federation gateway. The gateway will retry the callback until we return a success.
+The handler will be called once per batch job published by the EFGS. The gateway will retry the callback until we return a success.
 
 We must process every batch which is published to interop.
 
-This command will accept the callback, write it to the database table `IncomingBatchJobs` and then return an OK once the transaction has committed.
+This command will accept the callback, write it to the database table `Interop.IncomingBatchJobs` and then return an OK once the transaction has committed.
+
+The callback is an empty `GET` to our callback url, with the query parameters `batchTag`and `date`. These will be stored in `Interop.IncomingBatchJobs` in the fields `BatchTag` and `BatchDate` respectively.
+
+The handler implementation can be found here: `https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/src/main/java/eu/interop/federationgateway/service/CallbackTaskExecutorService.java`
 
 #### Batch downloader (InteropBatchDownloaderCommand)
 
-This command will download the batches found in the table `IncomingBatchJobs` one for one. It will download the data, deserialize it and then put the content into the table `ExternalTemporaryExposureKeys`.
+This command will download the batches found in the table `Interop.IncomingBatchJobs` one for one. It will download the data, deserialize it and then put the content into the table `Interop.TemporaryExposureKeys`.
 
 The keys will be validated using a subset of our validation rules:
 - <TODO details>
@@ -287,25 +261,35 @@ Conceptually it is the same as /postkeys from the Mobile API.
 
 #### Process batches (InteropBatchProcesserCommand)
 
-This component is responsible for taking raw keys from the table `ExternalTemporaryExposureKeys`, implementing the `Ingress Filter` and then copying the keys which pass the filter to the table `DailyKeys`. Once the keys are copied they will be removed from `ExternalTemporaryExposureKeys` (as part of the same transaction).
+This component is responsible for taking raw keys from the table `Interop.TemporaryExposureKeys`, implementing the `Ingress Filter` and then copying the keys which pass the filter to the table `Interop.DiagnosisKeys`. Once the keys are copied they will be removed from `Interop.TemporaryExposureKeys` (as part of the same transaction).
 
 Conceptually this is the same as the first part of the existing EksEngine.
 
 This command will iterate through all of the downloaded batched of status `Downloaded`.
 
-First the keys for the batch will be loaded from `ExternalTemporaryExposureKeys` and we will apply our *ingress filter* them. The filter consists of the following checks:
+First the keys for the batch will be loaded from `Interop.TemporaryExposureKeys` and we will apply our *ingress filter* them. The filter consists of the following checks:
 - TODO
 - TODO
 
-Keys which pass the filter will be inserted into the table `DailyKeys` and marked as processed. Those that failed will be marked as processed and the details logged.
+Keys which pass the filter will be inserted into the table `Interop.DiagosisKeys` and marked as processed. Those that failed will be marked as processed and the details logged.
 
-Once the batch is complete the batch status will be uploaded to `BatchStatus.Processed` and all of the processed keys from that batch will be deleted from the table `ExternalTemporaryExposureKeys`. The numbers being logged.
+Once the batch is complete the batch status will be uploaded to `BatchStatus.Processed` and all of the processed keys from that batch will be deleted from the table `Interop.TemporaryExposureKeys`. The numbers being logged.
 
 Once all of the batches have been processed then they will be removed from the table `IncomingBatchJobs`. The numbers and details logged.
 
 The following settings will be added:
 - TODO
 - TODO
+
+### Interop Uploader (TODO: finish)
+
+			This component is responsible for uploading published TEKs - both real and stuffing - to the EFGS. The tool takes the unpublished IKS from ContentDb and uploads them one-by-one and only once to the EU Federation server.
+
+			The upload accepts a protocol-buffer format keyset: https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/src/main/proto/Efgs.proto.
+
+			The file is then uploaded to: [TODO].
+
+			Conceptually it is the mirror of the ContentApi.
 
 ## Existing Components
 
@@ -324,6 +308,8 @@ Short summary of changes:
 * Add a function `GenerateCountriesOfInterest()` which will randomly choose one or more of the ISO country codes from the list and return that together with our own land code (`NL`).  The list will be weighted such that both the number and chosen countries are similar to actual data.
 * Set `EksCreateJobInputEntity.Origin` to `NL`.
 * Set `EksCreateJobInputEntity.CountriesOfInterest` to the results of `GenerateCountriesOfInterest()`.
+
+We will always have to stuff to the level of 150 keys with the origin of `NL`. These exact stuffed keys will included in both `EKS` and `IKS`.
 
 ### GGD Portal Frontend
 
@@ -358,52 +344,18 @@ Add the selected countries to `this.data.CountriesOfInterest` in `confirmLabId`.
 Only delete published TEKs after 14 days.
 Update stats so that they take int account the `IsStuffing` flag.
 
-### Data model [TODO, OLD!]
-
-The fields Origin and Countries Of Interest must be added to the database and our data models. Both of these fields contain a two-letter ISO-3166-2 country code listed in the [appendix](#Appendix). The default value for both fields is `NL`.
-
-**Components\EfDatabase\Entities\TekEntity.cs**
-
-- Remove the property `Region`.
-- Add `Origin` as a string property of length two matching this regex `^[A-Za-z]{2}$`.
-
-**Components\EfDatabase\Entities\TekReleaseWorkflowStateEntity.cs**
-
-- Add `CountriesOfInterest` as a string property matching this regex `^([A-Z]{2},?)+$`.
-
-**Components\EfDatabase\Entities\EksCreateJobInputEntity.cs**
-
-- Add `CountriesOfInterest` as a string property.
-- Add `Origin` as a string property.
-
-**Dacpac: table TemporaryExposureKeys in Workflow**
-
-- Add the field `Origin` as a `char(2) NOT NULL` and `DEFAULT ('NL')`.
-- Add the field `IsStuffing` as a `bit NOT NULL`.
-- Remove the field 'Region'.
-
-**Dacpac: table TekReleaseWorkflowState in Workflow**
-
-- Add the field `CountriesOfInterest` as a `varchar(255) NOT NULL` and `DEFAULT ('NL')`.
-
-**Dacpac: table EksCreateJobInput in PublishingJob**
-
-- Add the field `CountriesOfInterest` as a `varchar(255) NOT NULL`.
-- Add the field `Origin` as a `char(2) NOT NULL` and `DEFAULT ('NL')`.
-
-**Devops\Database\vwTemporaryExposureKeys.sql**
-
-- Add the fields `CountriesOfInterest`, `Origin` and `IsStuffing`.
-- Remove the field `Region`.
-
-**Devops\Database\vwTekReleaseWorkflowState.sql**
-
-- Add the field `CountriesOfInterest`.
-
 ### EksEngine [TODO]
 
 * Insertion of keys from origins other than NL into our Exposure Key Sets.
 * We need to add all keys at this point: we shouldn't actually need to change anything in the EKS engine to get that. Only we do have to implement new stuffing requirements, as well as inserting the stuffing into the database AND making sure that nothing is deleded.
+
+**Components\EfDatabase\Entities\TekEntity.cs**
+
+- Remove the property `Region`.
+
+**Components\EfDatabase\Entities\TekReleaseWorkflowStateEntity.cs**
+
+- Add `CountriesOfInterest` as a string property matching this regex `^([A-Z]{2},?)+$`.
 
 # Phase Two
 
