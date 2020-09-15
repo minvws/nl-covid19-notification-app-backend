@@ -35,7 +35,7 @@
 		<None Remove="DevOps\RiskCalcDefaults.json" />
 		<None Remove="Resources\BdCertChain.p7b" />
 		<None Remove="Resources\NlCertChain.p7b" />
-		<None Remove="Resources\StaatDerNLChain-EV-Expires-2022-12-08.p7b" />
+		<None Remove="Resources\StaatDerNLChain-EV-Expires-2022-12-05.p7b" />
 		<None Remove="Resources\StaatDerNLChain-Expires2020-08-28.p7b" />
 		<None Remove="Resources\TestCert.p12" />
 		<None Remove="Resources\TestECDSA.p12" />
@@ -45,7 +45,7 @@
 		<EmbeddedResource Include="Resources\AppConfigDefaults.json" />
 		<EmbeddedResource Include="Resources\RiskCalcDefaults.json" />
 		<EmbeddedResource Include="Resources\BdCertChain.p7b" />
-		<EmbeddedResource Include="Resources\StaatDerNLChain-EV-Expires-2022-12-08.p7b" />
+		<EmbeddedResource Include="Resources\StaatDerNLChain-EV-Expires-2022-12-05.p7b" />
 		<EmbeddedResource Include="Resources\StaatDerNLChain-Expires2020-08-28.p7b" />
 		<EmbeddedResource Include="Resources\TestRSA.p12" />
 		<EmbeddedResource Include="Resources\TestECDSA.p12" />
