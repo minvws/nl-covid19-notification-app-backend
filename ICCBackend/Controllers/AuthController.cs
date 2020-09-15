@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Handlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 using TheIdentityHub.AspNetCore.Authentication;
@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         public IActionResult User([FromServices] HttpGetUserClaimCommand command)
             => command.Execute(HttpContext);
 
-        [Authorize(AuthenticationSchemes = TheIdentityHubDefaults.AuthenticationScheme)]
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Logout([FromServices] HttpGetLogoutCommand command)
             => await command.Execute(HttpContext);

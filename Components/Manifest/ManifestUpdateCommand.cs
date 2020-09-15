@@ -96,11 +96,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         {
             using var readStream = new MemoryStream(formattedContent);
             using var zip = new ZipArchive(readStream);
-            var entry = zip.GetEntry(ZippedSignedContentFormatter.ContentEntryName);
-            using var entryStream = entry.Open();
-            using var resultStream = new MemoryStream();
-            entryStream.CopyTo(resultStream);
-            return _JsonSerializer.Deserialize<ManifestContent>(Encoding.UTF8.GetString(resultStream.ToArray()));
+            var content = zip.ReadEntry(ZippedContentEntryNames.Content);
+            return _JsonSerializer.Deserialize<ManifestContent>(Encoding.UTF8.GetString(content));
         }
     }
 }

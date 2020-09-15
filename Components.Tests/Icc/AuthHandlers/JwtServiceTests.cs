@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
 using System;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.AuthHandlers
@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
     public class JwtServiceTests
     {
         private JwtService _JwtService;
-        private double _ClaimLifetimeHours = 3;
+        private double _ClaimLifetimeHours = 1.0;
         private IUtcDateTimeProvider _UtcDateTimeProvider;
 
         public JwtServiceTests()

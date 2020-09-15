@@ -8,31 +8,30 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code
 {
     public class AuthCodeService : IAuthCodeService
     {
-        private readonly IPaddingGenerator _RandomGenerator;
         private readonly IDistributedCache _Cache;
+        private readonly IAuthCodeGenerator _AuthCodeGenerator;
 
-        public AuthCodeService(IPaddingGenerator randomGenerator, IDistributedCache cache)
+        public AuthCodeService(IDistributedCache cache,
+            IAuthCodeGenerator authCodeGenerator)
         {
-            _RandomGenerator = randomGenerator ?? throw new ArgumentNullException(nameof(randomGenerator));
             _Cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            _AuthCodeGenerator = authCodeGenerator ?? throw new ArgumentNullException(nameof(authCodeGenerator));
         }
 
         public async Task<string> GenerateAuthCodeAsync(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null) throw new ArgumentNullException(nameof(claimsPrincipal));
 
-            var authCode = _RandomGenerator.Generate(12); // TODO: Add url friendly generator
-
+            var authCode = _AuthCodeGenerator.Next();
+            
             var claimsObject = claimsPrincipal.Claims.Select(claim => new AuthClaim(claim.Type, claim.Value)).ToList();
 
             var principalJson = JsonConvert.SerializeObject(claimsObject);

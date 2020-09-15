@@ -22,7 +22,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Statistics;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expiry;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
-using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 {
@@ -54,6 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var j4 = serviceProvider.GetRequiredService<RemoveExpiredEksCommand>();
             var j5 = serviceProvider.GetRequiredService<RemoveExpiredWorkflowsCommand>();
             var j6 = serviceProvider.GetRequiredService<IStatisticsCommand>();
+            var j7 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
 
             logger.LogInformation("Daily cleanup - EKS engine run starting.");
             j1.Execute().GetAwaiter().GetResult();
@@ -67,6 +67,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             j4.Execute();
             logger.LogInformation("Daily cleanup - Cleanup Workflows run starting.");
             j5.Execute();
+            logger.LogInformation("Daily cleanup - Resigning existing v1 content.");
+            j6.Execute().GetAwaiter().GetResult();
+            //TOO Remove when we have 1 cert chain.
+            logger.LogInformation("Daily cleanup - Resigning existing v1 content.");
+            j7.Execute().GetAwaiter().GetResult();
 
             logger.LogInformation("Daily cleanup - Finished.");
         }
@@ -115,7 +120,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             services.AddSingleton<IManifestConfig, ManifestConfig>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
-            
+
+            services.NlResignerStartup();
+
             services.NlSignerStartup();
             services.GaSignerStartup();
 

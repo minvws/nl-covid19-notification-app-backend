@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Validators;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
 using WireMock.RequestBuilders;
@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
     {
         private readonly JwtClaimValidator _JwtClaimValidator;
         private readonly WireMockServer _Server;
-        private readonly double _ClaimLifetimeHours = 3;
+        private readonly double _ClaimLifetimeHours = 1.0;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
         public JwtClaimValidatorTests()

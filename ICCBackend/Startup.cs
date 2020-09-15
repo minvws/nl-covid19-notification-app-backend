@@ -16,7 +16,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
@@ -24,6 +23,11 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Register
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Handlers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Validators;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using TheIdentityHub.AspNetCore.Authentication;
 
@@ -58,9 +62,10 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
             services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            
+            services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
 
-            services.AddSingleton<IPaddingGenerator, CryptoRandomPaddingGenerator>();
-
+            services.AddTransient<IAuthCodeGenerator, AuthCodeGenerator>();
             services.AddSingleton<IAuthCodeService, AuthCodeService>();
             services.AddDistributedMemoryCache();
 
@@ -80,10 +85,10 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             services.AddTransient<AuthorisationArgsValidator>();
             services.AddTransient<LabVerifyArgsValidator>();
             services.AddTransient<AuthorisationWriterCommand>();
-            services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
+
 
             services.AddTransient<IJwtService, JwtService>();
-            
+
             if (_IsDev)
             {
                 services.AddTransient<IJwtClaimValidator, TestJwtClaimValidator>();
@@ -93,7 +98,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             {
                 services.AddTransient<IJwtClaimValidator, JwtClaimValidator>();
             }
-            
+
             services.AddTransient<WriteNewPollTokenWriter>();
             services.AddTransient<IPollTokenService, PollTokenService>();
             services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
@@ -112,7 +117,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             StartupIdentityHub(services);
 
             StartupAuthenticationScheme(services.AddAuthentication(JwtAuthenticationHandler.SchemeName));
-            
         }
 
         private void StartupSwagger(SwaggerGenOptions o)
@@ -158,7 +162,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                     options.CallbackPath = iccIdentityHubConfig.CallbackPath;
                 });
 
-            
+
             var iccPortalConfig = new IccPortalConfig(_Configuration);
 
             var policyAuthorizationOptions = new PolicyAuthorizationOptions(_WebHostEnvironment, iccPortalConfig);
@@ -192,6 +196,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             if (app == null) throw new ArgumentNullException(nameof(app));
 
             var iccPortalConfig = new IccPortalConfig(_Configuration);
+
             var corsOptions = new CorsOptions(iccPortalConfig);
             app.UseCors(corsOptions.Build);
 

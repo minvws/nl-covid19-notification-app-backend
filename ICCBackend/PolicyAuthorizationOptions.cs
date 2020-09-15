@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {

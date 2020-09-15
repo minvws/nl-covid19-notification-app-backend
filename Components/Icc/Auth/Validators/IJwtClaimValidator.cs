@@ -4,10 +4,8 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Validators
 {
     public interface IJwtClaimValidator
     {

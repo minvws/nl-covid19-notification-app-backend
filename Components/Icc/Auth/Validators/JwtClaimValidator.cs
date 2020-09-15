@@ -4,14 +4,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading.Tasks;
-using JWT;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using Serilog;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Validators
 {
     public class JwtClaimValidator : IJwtClaimValidator
     {

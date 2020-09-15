@@ -11,11 +11,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         public const string ExposureKeySet = nameof(ExposureKeySet);
         public const string Manifest = nameof(Manifest);
 
-        public static bool IsValid(string value) => 
-            value == AppConfig 
+        public const string AppConfigV2 = nameof(AppConfigV2);
+        public const string RiskCalculationParametersV2 = nameof(RiskCalculationParametersV2);
+        public const string ExposureKeySetV2 = nameof(ExposureKeySetV2);
+        public const string ManifestV2 = nameof(ManifestV2);
+
+        public static bool IsValid(string value) =>
+            value == AppConfig
             || value == RiskCalculationParameters
             || value == ExposureKeySet
             || value == Manifest
+            || value == AppConfigV2
+            || value == RiskCalculationParametersV2
+            || value == ExposureKeySetV2
+            || value == ManifestV2
         ;
     }
 }

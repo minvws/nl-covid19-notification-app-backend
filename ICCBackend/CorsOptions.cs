@@ -6,6 +6,7 @@ using System;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Helpers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {

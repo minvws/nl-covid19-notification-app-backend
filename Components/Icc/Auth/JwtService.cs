@@ -6,15 +6,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using JWT.Algorithms;
 using JWT.Builder;
 using JWT.Exceptions;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth
 {
     public class JwtService : IJwtService
     {
