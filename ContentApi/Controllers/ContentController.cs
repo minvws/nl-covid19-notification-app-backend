@@ -3,9 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
@@ -19,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
         [Route(EndPointNames.ContentApi.Manifest)]
         public async Task GetManifest([FromServices] HttpGetCdnManifestCommand command)
         {
-            await command.Execute(HttpContext);
+            await command.Execute(HttpContext, ContentTypes.Manifest);
         }
 
         [HttpGet]
@@ -42,9 +40,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
         {
             await command.Execute(HttpContext, id);
         }
-
-        [HttpGet]
-        [Route("/")]
-        public IActionResult AssemblyDump([FromServices] IWebHostEnvironment env) => new DumpAssembliesToPlainText().Execute(env.IsDevelopment());
     }
 }
