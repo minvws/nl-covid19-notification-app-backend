@@ -22,7 +22,7 @@ describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function (
             map.set("BUCKETID", formated_bucket_id);
 
             return testsSig.testsSig(
-                dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", map),
+                dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map),
                 formatter.format_remove_characters(app_register_response.data.confirmationKey)
             )
         })
@@ -31,7 +31,7 @@ describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function (
                 map.set("BUCKETID", formated_bucket_id);
 
                 return stop_keys(
-                    dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", map), sig.sig
+                    dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map), sig.sig
                 ).then(function (stopkeys) {
                     stopkeys_response = stopkeys;
                 });

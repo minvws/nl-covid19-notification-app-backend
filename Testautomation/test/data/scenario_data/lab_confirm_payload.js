@@ -6,25 +6,24 @@ const data = {
             "labConfirmationId": "LABCONFIRMATIONID",
             "dateOfSymptomsOnset": "2020-07-23T16:11:19.487Z"
     }`,
-        valid_dynamic: `{
+       valid_dynamic_yesterday: `{
             "labConfirmationId": "LABCONFIRMATIONID",
-            "dateOfSymptomsOnset": "${generate_date(true,-14)}"
+            "dateOfSymptomsOnset": "${generate_date(true,-1)}"
+    }`,valid_dynamic_tomorrow: `{
+            "labConfirmationId": "LABCONFIRMATIONID",
+            "dateOfSymptomsOnset": "${generate_date(true,+1)}"
     }`,
-        invalid_date: `{
+       invalid_date: `{
             "labConfirmationId": "LABCONFIRMATIONID",
             "dateOfSymptomsOnset": "${generate_date(false)}"
-    }`,future_date: `{
-            "labConfirmationId": "LABCONFIRMATIONID",
-            "dateOfSymptomsOnset": "${generate_date(true,+7)}"
-    }`
-        ,
+    }`,
         insufficient: "insufficient data for this scenario",
     },
 };
 
 function generate_date(valid,days) {
 
-    days = days || '0';
+    days = days || 0;
     var date = moment()
         .add(days, 'days')
         .format('YYYY-MM-DDTHH:mm:ss.SSS')
