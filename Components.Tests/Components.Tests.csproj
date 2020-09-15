@@ -23,6 +23,12 @@
     <EmbeddedResource Remove="Assemblies\**" />
     <None Remove="Assemblies\**" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\ResignTestManifest.zip" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ResignTestManifest.zip" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Components\Components.csproj" />
