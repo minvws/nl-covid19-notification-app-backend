@@ -61,6 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             j2.Execute().GetAwaiter().GetResult();
             logger.LogInformation("Daily cleanup - Calculating daily stats starting.");
             j6.Execute();
+            //TODO Remove when manifest updating is live.
             logger.LogInformation("Daily cleanup - Cleanup Manifests run starting.");
             j3.Execute().GetAwaiter().GetResult();
             logger.LogInformation("Daily cleanup - Cleanup EKS run starting.");
@@ -68,8 +69,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             logger.LogInformation("Daily cleanup - Cleanup Workflows run starting.");
             j5.Execute();
             logger.LogInformation("Daily cleanup - Resigning existing v1 content.");
-            j6.Execute().GetAwaiter().GetResult();
-            //TOO Remove when we have 1 cert chain.
+            j6.Execute();
+            //TODO Remove when we have 1 cert chain.
             logger.LogInformation("Daily cleanup - Resigning existing v1 content.");
             j7.Execute().GetAwaiter().GetResult();
 
