@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1169
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Content", "Content\Content.sqlproj", "{DCE516D6-26DD-4DAA-9AF9-09936F91279D}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "PublishingJob", "PublishingJob\PublishingJob.sqlproj", "{8CBD7876-8033-4AD4-AE50-8C121DC3E31E}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "WorkFlow", "WorkFlow\WorkFlow.sqlproj", "{76669C6F-7687-4C3D-90DD-0206385D36ED}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Statistics", "Statistics\Statistics.sqlproj", "{1B43A591-F224-4A8B-B50E-53BAF0710B08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,12 @@ Global
 		{76669C6F-7687-4C3D-90DD-0206385D36ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76669C6F-7687-4C3D-90DD-0206385D36ED}.Release|Any CPU.Build.0 = Release|Any CPU
 		{76669C6F-7687-4C3D-90DD-0206385D36ED}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{1B43A591-F224-4A8B-B50E-53BAF0710B08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B43A591-F224-4A8B-B50E-53BAF0710B08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B43A591-F224-4A8B-B50E-53BAF0710B08}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{1B43A591-F224-4A8B-B50E-53BAF0710B08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B43A591-F224-4A8B-B50E-53BAF0710B08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B43A591-F224-4A8B-B50E-53BAF0710B08}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
