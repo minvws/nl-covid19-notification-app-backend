@@ -21,7 +21,7 @@ describe("Lab confirm endpoints tests #labconfirm #endpoints #regression", funct
       map.set("LABCONFIRMATIONID", formatter.format_remove_dash(labConfirmationId));
 
       return lab_confirm(
-          dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic", map)
+          dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
           ).then(function (confirm){
         lab_confirm_response = confirm;
         // console.log(lab_confirm_response);

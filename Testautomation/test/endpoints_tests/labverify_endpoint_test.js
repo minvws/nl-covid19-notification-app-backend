@@ -19,7 +19,7 @@ describe("Lab verify endpoints tests #labverify #endpoints #regression", functio
         let map = new Map();
         map.set("LABCONFIRMATIONID", formatter.format_remove_dash(labConfirmationId));
 
-        return lab_confirm(dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic", map)
+        return lab_confirm(dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
         ).then(function (confirm){
           lab_confirm_response = confirm;
           pollToken = confirm.data.pollToken;

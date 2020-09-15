@@ -23,7 +23,6 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
     pollToken,
     lab_verify_response,
     manifest_response,
-    exposureKeySetId,
     exposure_keyset_response,
     exposure_keyset_decoded,
     formated_bucket_id,
@@ -36,13 +35,23 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
         app_register_response = register;
         labConfirmationId = register.data.labConfirmationId;
       })
+      .then(function () {
+        let map = new Map();
+        map.set("LABCONFIRMATIONID", formatter.format_remove_dash(labConfirmationId));
+
+        return lab_confirm(dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
+        ).then(function (confirm) {
+          lab_confirm_response = confirm;
+          pollToken = confirm.data.pollToken;
+        });
+      })
       .then(function (sig) {
         formated_bucket_id = formatter.format_remove_characters(app_register_response.data.bucketId);
         let map = new Map();
         map.set("BUCKETID", formated_bucket_id);
 
         return testsSig.testsSig(
-          dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", map),
+          dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map),
           formatter.format_remove_characters(app_register_response.data.confirmationKey)
         );
       })
@@ -51,20 +60,10 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
         map.set("BUCKETID", formated_bucket_id);
 
         return post_keys(
-          dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", map),
+          dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map),
           sig.sig
         ).then(function (postkeys) {
           postkeys_response = postkeys;
-        });
-      })
-      .then(function () {
-        let map = new Map();
-        map.set("LABCONFIRMATIONID", formatter.format_remove_dash(labConfirmationId));
-
-        return lab_confirm(dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic", map)
-        ).then(function (confirm) {
-          lab_confirm_response = confirm;
-          pollToken = confirm.data.pollToken;
         });
       })
       .then(function () {
@@ -123,7 +122,7 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
       console.log(exposure_keyset_decoded.exposureKeySet);
 
       for(key of exposure_keyset_decoded.eks.keys){
-          console.log(`Validating key ${key.keyData} is eql to ${exposure_key_send}`);
+          // console.log(`Validating key ${key.keyData} is eql to ${exposure_key_send}`);
           if (key.keyData == exposure_key_send){
             found = true;
           }

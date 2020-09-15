@@ -20,7 +20,7 @@ describe("Postkyes endpoint tests #postkeys #endpoints #regression", function ()
             map.set("BUCKETID", formated_bucket_id);
 
             return testsSig.testsSig(
-                dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", map),
+                dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map),
                 formatter.format_remove_characters(app_register_response.data.confirmationKey)
             )
         }).then(function (sig) {
@@ -28,7 +28,7 @@ describe("Postkyes endpoint tests #postkeys #endpoints #regression", function ()
             map.set("BUCKETID", formated_bucket_id);
 
             return post_keys(
-                dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", map)
+                dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map)
                 ,sig.sig).then(function (postkeys) {
                 postkeys_response = postkeys;
             });
