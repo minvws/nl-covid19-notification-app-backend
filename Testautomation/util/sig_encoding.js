@@ -24,7 +24,7 @@ let testsSig = function (payload,confirmationKey){
                 let sigCommand = `cat ${fileName} | openssl sha256 -mac HMAC -macopt hexkey:${KEY} -binary | base64 | sed -e 's/"//g' -e 's/+/%2B/g' -e 's/=/%3D/g' -e 's/\\//%2F/g`;
                 execShellCommand(sigCommand).then(sig => {
                     // this function has access to variables inputFile, Key and sig
-                    console.log(sigCommand);
+                    // console.log(sigCommand);
                     // console.log('inputFile: ' + inputFile);
                     // console.log('Key: ' + KEY);
                     // console.log('sig: ' + sig);
