@@ -14,28 +14,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
     public class ContentController : ControllerBase
     {
         [HttpGet]
-        [Route(EndPointNames.ContentApi.Manifest)]
+        [Route("/v1/manifest")]
         public async Task GetManifest([FromServices] HttpGetCdnManifestCommand command)
         {
             await command.Execute(HttpContext, ContentTypes.Manifest);
         }
 
         [HttpGet]
-        [Route(EndPointNames.ContentApi.AppConfig + "/{id}")]
+        [Route("/v1/appconfig/{id}")]
         public async Task GetAppConfig(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
         {
             await command.Execute(HttpContext, ContentTypes.AppConfig, id);
         }
 
         [HttpGet]
-        [Route(EndPointNames.ContentApi.RiskCalculationParameters + "/{id}")]
+        [Route("/v1/riskcalculationparameters/{id}")]
         public async Task GetRiskCalculationParameters(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
         {
             await command.Execute(HttpContext, ContentTypes.RiskCalculationParameters, id);
         }
 
         [HttpGet]
-        [Route(EndPointNames.ContentApi.ExposureKeySet + "/{id}")]
+        [Route("/v1/exposurekeyset/{id}")]
         public async Task GetExposureKeySet(string id, [FromServices] HttpGetCdnEksCommand command)
         {
             await command.Execute(HttpContext, id);
