@@ -68,7 +68,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
         private async Task<byte[]> ReplaceSig(byte[] archiveBytes)
         {
-            await using var m = new MemoryStream(archiveBytes);
+            await using var m = new MemoryStream();
+            m.Write(archiveBytes, 0, archiveBytes.Length);
             using (var archive = new ZipArchive(m, ZipArchiveMode.Update, true))
             {
                 var content = archive.ReadEntry(_ContentEntryName);
