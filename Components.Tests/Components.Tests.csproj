@@ -24,9 +24,11 @@
     <None Remove="Assemblies\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Resources\ResignAppConfig.zip" />
     <None Remove="Resources\ResignTestManifest.zip" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\ResignAppConfig.zip" />
     <EmbeddedResource Include="Resources\ResignTestManifest.zip" />
   </ItemGroup>
 

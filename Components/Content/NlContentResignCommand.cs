@@ -51,7 +51,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         {
             await using var db = _ContentDbContext();
             await using var tx = db.BeginTransaction();
-            var item = db.Content.Single(x => x.Type == _FromType && x.PublishingId == publishingId);
+
+            var item = db.Content
+                .Where(x => x.Type == _FromType && x.PublishingId == publishingId)
+                .OrderByDescending(x => x.Release)
+                .First();
+
             var content = await ReplaceSig(item.Content);
             var e = new ContentEntity
             {
