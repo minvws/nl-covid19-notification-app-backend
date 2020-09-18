@@ -45,8 +45,8 @@ describe("Manifest endpoints tests #single_exposure_key #endpoints #regression",
         let maxAge = exposure_keyset_response.headers["cache-control"].split("="); // max age is number of sec.
         maxAge = parseInt(maxAge[1]);
 
-        expect(maxAge - 1209600,
-            `Response max-age (${exposure_keyset_response.headers["cache-control"]} is not older then ${parseInt(maxAge)/3600/24} days ago`
+        expect(1209600 - maxAge,
+            `Response max-age ${Math.floor(maxAge/3600/24)} is not older then 1209600 sec. (14 days) ago`
         ).to.be.least(0);
     });
 

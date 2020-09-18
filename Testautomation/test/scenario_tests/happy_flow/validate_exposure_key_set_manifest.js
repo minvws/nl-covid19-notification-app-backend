@@ -12,17 +12,18 @@ describe("Manifest endpoints tests #multiple_exposure_keys #scenario #regression
         exposureKeySet,
         exposure_keyset_response,
         exposure_keyset_decoded,
+        version = "v1",
         exposure_keyset_decoded_set = [];
 
     before(function () {
-        return manifest().then(function (manifest) {
+        return manifest(version).then(function (manifest) {
             manifest_response = manifest;
             exposureKeySet = manifest.content.exposureKeySets;
         }).then(async function () {
 
             function getExposureKeySet(exposureKeySetId){
                 return new Promise(function(resolve){
-                    exposure_key_set(exposureKeySetId).then(function (exposure_keyset) {
+                    exposure_key_set(exposureKeySetId, version).then(function (exposure_keyset) {
                         exposure_keyset_response = exposure_keyset;
                         return decode_protobuf(exposure_keyset_response)
                             .then(function (EKS) {

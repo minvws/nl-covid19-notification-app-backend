@@ -28,12 +28,13 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
     formated_bucket_id,
     exposureKeySet,
     exposure_keyset_decoded_set = [],
-    delayInMilliseconds = 30000; // delay should be minimal 6 min.
+    version = "v1",
+    delayInMilliseconds = 1000; // delay should be minimal 6 min.
 
   beforeEach(done => setTimeout(done, 2000));
 
   before(function () {
-    return app_register()
+    return app_register(version)
       .then(function (register) {
         app_register_response = register;
         labConfirmationId = register.data.labConfirmationId;
@@ -42,7 +43,10 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
         let map = new Map();
         map.set("LABCONFIRMATIONID", formatter.format_remove_dash(labConfirmationId));
 
-        return lab_confirm(dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
+        return lab_confirm(
+            dataprovider.get_data(
+                "lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
+            , version
         ).then(function (confirm) {
           lab_confirm_response = confirm;
           pollToken = confirm.data.pollToken;
@@ -63,8 +67,10 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
         map.set("BUCKETID", formated_bucket_id);
 
         return post_keys(
-          dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map),
-          sig.sig
+          dataprovider.get_data(
+              "post_keys_payload", "payload", "valid_dynamic_yesterday", map)
+            , sig.sig
+            , version
         ).then(function (postkeys) {
           postkeys_response = postkeys;
         });
@@ -77,12 +83,12 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
           })
         })
       .then(function (){
-          return lab_verify(pollToken).then(function (response) {
+          return lab_verify(pollToken, version).then(function (response) {
             lab_verify_response = response;
           });
         })
       .then(function () {
-        return manifest().then(function (manifest) {
+        return manifest(version).then(function (manifest) {
           manifest_response = manifest;
           exposureKeySet = manifest.content.exposureKeySets;
         });
@@ -91,7 +97,7 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
 
         function getExposureKeySet(exposureKeySetId){
           return new Promise(function(resolve){
-            exposure_key_set(exposureKeySetId).then(function (exposure_keyset) {
+            exposure_key_set(exposureKeySetId, version).then(function (exposure_keyset) {
               exposure_keyset_response = exposure_keyset;
               return decode_protobuf(exposure_keyset_response)
                   .then(function (EKS) {
