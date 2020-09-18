@@ -12,7 +12,7 @@ const decode_protobuf = require("../../../util/protobuff_decoding");
 const formatter = require("../../../util/format_strings");
 
 describe("Validate push of my exposure key into manifest - #post_key_to_manifest #scenario #regression", function () {
-  this.timeout(600000);
+  this.timeout(3000 * 60 * 30);
 
   // console.log("Scenario: Register > Post keys > Lab Confirm > wait (x min.) > Lab verify > Manifest > EKS")
 
@@ -29,6 +29,8 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
     exposureKeySet,
     exposure_keyset_decoded_set = [],
     delayInMilliseconds = 30000; // delay should be minimal 6 min.
+
+  beforeEach(done => setTimeout(done, 2000));
 
   before(function () {
     return app_register()

@@ -34,6 +34,7 @@ describe("Lab verify endpoints tests #labverify #endpoints #regression", functio
       }).then(function (){
         return lab_verify(pollToken,version).then(function (response){
           lab_verify_response = response;
+          // console.log(lab_verify_response.data)
         });
       });
     });

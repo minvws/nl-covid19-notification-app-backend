@@ -14,7 +14,6 @@ describe("Manifest endpoints tests #endpoints #regression", function () {
         })
     });
 
-
     it("I have received the Manifest", function () {
         expect(manifest_response.response.status, "response status code").to.be.eql(200);
     });

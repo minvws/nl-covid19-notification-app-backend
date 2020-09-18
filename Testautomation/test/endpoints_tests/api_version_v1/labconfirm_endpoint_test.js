@@ -28,7 +28,6 @@ describe("Lab confirm endpoints tests #labconfirm #endpoints #regression", funct
           ,version
           ).then(function (confirm){
         lab_confirm_response = confirm;
-        // console.log(lab_confirm_response);
       });
     });
   });
