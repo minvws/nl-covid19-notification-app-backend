@@ -59,6 +59,12 @@ You need the following commmands available in your path:
 - `base64`
 - `sed`
 
+You also need a bearer token for the GGD Portal. You must pass this as a CLI parameter to mocha. The token looks like this:
+
+`Bearer fgGgrdsd573fghk643`
+
+You need to replace `[bearer-token]` with the `fgGgrdsd573fghk643` part of the token.
+
 ### Run the tests
 
 * Open terminal, navigate to root folder of repo then go to the folder: `Testautomation`
@@ -67,8 +73,9 @@ You need the following commmands available in your path:
     * scenario's => only runs scenario's tests
     * regression => runs the whole API test suite
 * To run a collection the following command can be used
-    * `mocha --recursive --grep '#endpoints' --environment=TST --reporter mocha-junit-reporter --reporter-options mochaFile=./reports/junit/file.xml`
-    * `mocha --recursive --grep '#endpoints' --environment=TST --reporter mochawesome --reporter-options reportDir=./reports/mochawesome,reportFilename=mochawesome`
+    * `mocha --recursive --grep '#endpoints' --environment=TST --reporter mocha-junit-reporter --reporter-options mochaFile=./reports/junit/file.xml --token=[bearer-token]`
+    * `mocha --recursive --grep '#endpoints' --environment=TST --reporter mochawesome --reporter-options reportDir=./reports/mochawesome,reportFilename=mochawesome --token=[bearer-token]`
+        ** `[bearer-token]`: this is the token sans the prefix `Bearer `, as described above.
         ** `recursive`: fetches all test on lower directories
         ** `grep`: search term in header of every test
         ** `#endpoints`: search term by grep

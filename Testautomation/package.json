@@ -16,16 +16,16 @@
   "dependencies": {
     "adm-zip": "^0.4.16",
     "axios": "^0.19.2",
+    "axios-logger": "^2.4.0",
     "chai": "^4.2.0",
     "google-protobuf": "3.13.0",
     "minimist": "^1.2.5",
     "mocha": "^8.0.1",
     "mocha-junit-reporter": "^2.0.0",
     "mochawesome": "^6.1.1",
+    "moment": "^2.27.0",
     "node-stream-zip": "^1.11.2",
     "protobufjs": "^6.10.1",
-    "spec": "^1.0.1",
-    "moment": "^2.27.0",
-    "axios-logger": "^2.4.0"
+    "spec": "^1.0.1"
   }
 }

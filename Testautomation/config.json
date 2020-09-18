@@ -1,7 +1,0 @@
-{
-	"portal": {
-		"auth": {
-			"token" : "#{Deploy.Testautomation.BearerToken}#" 
-		}
-	}
-}

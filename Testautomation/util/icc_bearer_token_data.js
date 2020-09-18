@@ -1,7 +1,7 @@
 // Set bearer token to login to ICC portal
 
-require('../config.json')
+var args = require('minimist')(process.argv.slice(2));
 
-const bearer = portal.auth.token;
+const bearer = "Bearer " + args.token;
 
-module.exports = bearer;
+module.exports = args.token;
