@@ -2,15 +2,14 @@ Scenarios
 
 Test strategy to validate the backend system multiple type of test are defined:
 A. Endpoints tests => health of all endpoints
-	- response time
-	- status
-	- keys present
-	- max-age (last modified)
-	- sig. validation
-	- number of keys
-	- certificate
+	- response time (done)
+	- status (done)
+	- keys present (done)
+	- max-age (done)
+	- sig. validation (done)
+	- number of keys (done)
+	- certificate => uit welk endpoints?
 
-	report of all endpoint tests
 B. Scenario's => integration of all endpoints (business rules)
 	1. Happy flows
 	2. timing
@@ -18,21 +17,27 @@ B. Scenario's => integration of all endpoints (business rules)
 	4. Frequency
 	5. Error flows (invalid data)
 
+B. Scenario's workout
+
 B1. Happy flow scenarios (all 200 OK and manifest is updated)
-	- Register > Postkeys > LabConfirm > wachten (x minutes) > Labverify > Manifest > EKS
-	- Register > LabConfirm > Postkeys > wachten (x minutes) > Labverify > Manifest > EKS
+	- Register > LabConfirm > Postkeys > wachten (x minutes) > Labverify > Manifest > EKS (done)
+	    - determine transmissionRiskLevel (TRL) 1/2/3 based on de RollingStartNumber (RSN) + DateOfSymptomsOnset (aantal dagen tussen)
+	    - validate new key is in manifest
+	    - Etag is changed with new manifest (304 vs. 200)
 	- STOPkey can't be found in manifest
+	- validate all exposure keys in manifest (done)
 	- API versioning
 
-
 B2. Timing scenarios (validation of the business rules round the postkeys)
-	- etag is changed => validate that new CDN data is pushed (304 vs 200 OK)
+    - Postkey of 3 weeks is to old => not added to manifest
+    - Postkey is to new => not added to manifest
 	- Register > LabConfirm > wachten (x minutes) > Labverify > (x minutes) > Labverify => validate that polltoken is expired and new is provided
 	- Register > LabConfirm > wachten (x minutes) > Labverify > (121 minutes) Postkeys > Labverify => validate that polltoken is expired, no new token + false returned
 	- today keys processing => 1.4 / 1.5 GAEN framework
 
 B3. Sequence scenarios (validation of the business rules round the postkeys)
 	- Register > postkeys > labverify > manifest
+	- Register > Postkeys > LabConfirm > wachten (x minutes) > Labverify > Manifest > EKS (done)
 	- random order of the endpoints ()
 
 B4. Frequency scenarios (validation of the business rules round the postkeys)
