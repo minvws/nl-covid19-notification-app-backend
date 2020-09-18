@@ -1,18 +1,21 @@
 const chai = require("chai");
 const expect = chai.expect;
-const app_register = require("../behaviours/app_register_behaviour");
-const post_keys = require("../behaviours/post_keys_behaviour");
-const testsSig = require("../../util/sig_encoding");
-const dataprovider = require("../data/dataprovider");
-const formatter = require("../../util/format_strings");
+const app_register = require("../../behaviours/app_register_behaviour");
+const post_keys = require("../../behaviours/post_keys_behaviour");
+const testsSig = require("../../../util/sig_encoding");
+const dataprovider = require("../../data/dataprovider");
+const formatter = require("../../../util/format_strings");
 
 describe("Postkyes endpoint tests #postkeys #endpoints #regression", function () {
     this.timeout(2000 * 60 * 30);
 
-    let app_register_response, postkeys_response, formated_bucket_id;
+    let app_register_response,
+        postkeys_response,
+        formated_bucket_id,
+        version = "v1";
 
     before(function () {
-        return app_register().then(function (register) {
+        return app_register(version).then(function (register) {
             app_register_response = register;
         }).then(function (sig) {
             formated_bucket_id = formatter.format_remove_characters(app_register_response.data.bucketId)
@@ -29,7 +32,8 @@ describe("Postkyes endpoint tests #postkeys #endpoints #regression", function ()
 
             return post_keys(
                 dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map)
-                ,sig.sig).then(function (postkeys) {
+                ,sig.sig
+                ,version).then(function (postkeys) {
                 postkeys_response = postkeys;
             });
         })

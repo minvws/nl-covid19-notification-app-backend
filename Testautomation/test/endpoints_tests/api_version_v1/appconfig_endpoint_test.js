@@ -1,20 +1,23 @@
 const chai = require("chai");
 const expect = chai.expect;
-const app_config = require("../behaviours/appconfig_behaviour");
-const manifest = require("../behaviours/manifest_behaviour");
+const app_config = require("../../behaviours/appconfig_behaviour");
+const manifest = require("../../behaviours/manifest_behaviour");
 
 describe("Appconfig endpoints tests #appconfig #endpoints #regression", function () {
   this.timeout(2000 * 60 * 30);
 
-  let manifest_response, appconfig_response, appConfigId;
+  let manifest_response,
+      appconfig_response,
+      appConfigId,
+      version = "v1";
 
   before(function (){
-    return manifest().then(function (manifest){
+    return manifest(version).then(function (manifest){
       manifest_response = manifest;
       appConfigId = manifest.content.appConfig;
 
     }).then(function (){
-      return app_config(appConfigId).then(function (config){
+      return app_config(appConfigId,version).then(function (config){
         appconfig_response = config;
       })
     });

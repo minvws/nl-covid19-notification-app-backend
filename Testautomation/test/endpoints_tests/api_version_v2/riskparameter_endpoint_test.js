@@ -1,20 +1,23 @@
 const chai = require("chai");
 const expect = chai.expect;
-const riskparameter = require("../behaviours/riskparameter_behaviour");
-const manifest = require("../behaviours/manifest_behaviour");
+const riskparameter = require("../../behaviours/riskparameter_behaviour");
+const manifest = require("../../behaviours/manifest_behaviour");
 
-describe("Riskparameter endpoints tests #riskparameter #endpoints #regression", function () {
+describe("Riskparameter endpoints tests #endpoints #regression", function () {
   this.timeout(2000 * 60 * 30);
 
-  let manifest_response, riskparameter_response, riskParameterId;
+  let manifest_response,
+      riskparameter_response,
+      riskParameterId,
+      version = "v2";
 
   before(function (){
-    return manifest().then(function (manifest){
+    return manifest(version).then(function (manifest){
       manifest_response = manifest;
       riskParameterId = manifest.content.riskCalculationParameters;
 
     }).then(function (){
-      return riskparameter(riskParameterId).then(function (risks){
+      return riskparameter(riskParameterId, version).then(function (risks){
         riskparameter_response = risks;
       })
     });

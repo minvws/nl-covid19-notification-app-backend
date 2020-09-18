@@ -1,20 +1,24 @@
 const chai = require("chai");
 const expect = chai.expect;
-const manifest = require("../behaviours/manifest_behaviour");
-const exposure_key_set = require("../behaviours/exposure_keys_set_behaviour");
-const decode_protobuf = require("../../util/protobuff_decoding");
+const manifest = require("../../behaviours/manifest_behaviour");
+const exposure_key_set = require("../../behaviours/exposure_keys_set_behaviour");
+const decode_protobuf = require("../../../util/protobuff_decoding");
 
 describe("Manifest endpoints tests #single_exposure_key #endpoints #regression", function () {
     this.timeout(2000 * 60 * 30);
 
-    let manifest_response, exposureKeySetId, exposure_keyset_response, exposure_keyset_decoded;
+    let manifest_response,
+        exposureKeySetId,
+        exposure_keyset_response,
+        exposure_keyset_decoded,
+        version = "v1";
 
     before(function () {
-        return manifest().then(function (manifest) {
+        return manifest(version).then(function (manifest) {
             manifest_response = manifest;
             exposureKeySetId = manifest.content.exposureKeySets[0];
         }).then(async function () {
-            return exposure_key_set(exposureKeySetId).then(function (exposure_keyset) {
+            return exposure_key_set(exposureKeySetId,version).then(function (exposure_keyset) {
                 exposure_keyset_response = exposure_keyset;
                 return decode_protobuf(exposure_keyset_response)
                     .then(function (EKS) {

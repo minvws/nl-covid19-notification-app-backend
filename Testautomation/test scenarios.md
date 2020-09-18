@@ -9,7 +9,8 @@ To validate if the endpoints are up-and-running the following validations are pe
 - [x] max-age
 - [ ] sig. validation
 - [x] number of keys
-- [ ] certificate => unclear which endpoints to validate
+- [ ] certificate => unclear which endpoints to validate => key file?
+- [x] versioning (v1 and v2)
 
 ## B. Scenario's => integration of all endpoints (business rules)
 	1. Happy flows
@@ -17,6 +18,7 @@ To validate if the endpoints are up-and-running the following validations are pe
 	3. sequence
 	4. Frequency
 	5. Error flows (invalid data)
+	6. Versioning (different certificate validation)
 
 ### B. Scenario's workout
 
@@ -25,10 +27,10 @@ To validate if the endpoints are up-and-running the following validations are pe
       * determine transmissionRiskLevel (TRL) 1/2/3 based on de RollingStartNumber (RSN) + DateOfSymptomsOnset (aantal dagen tussen)
 	  * validate new key is in manifest
 	  * Etag is changed with new manifest (304 vs. 200)  
-    - [ ] STOPkey can't be found in manifest
-    - [x] validate all exposure keys in manifest
-    - [ ] API versioning
-    - [ ] 1, 13 and 14 keys in postkey array
+    - [x] validate all exposure keys in manifest 
+    - [ ] API versioning => v1 validatie / v2 validatie => different certificate
+    - [ ] 1 and 13 keys in postkey array
+    - [ ] update appconfig if etag is changed in manifest
 
 2. Timing scenarios (validation of the business rules round the postkeys)
     - [ ] Postkey of 3 weeks is to old => not added to manifest
@@ -40,7 +42,6 @@ To validate if the endpoints are up-and-running the following validations are pe
 	    - [ ] 1.5 GAEN framework (key today + key yesterday): yesterday is processed & today is delayed in backend
 
 3. Sequence scenarios (validation of the business rules round the postkeys)
-	- [ ] Register > postkeys > labverify > manifest
 	- [x] Register > Postkeys > LabConfirm > wachten (6 minutes) > Labverify > Manifest > EKS
 
 4. Frequency scenarios (validation of the business rules round the postkeys)
@@ -52,8 +53,7 @@ To validate if the endpoints are up-and-running the following validations are pe
 	- [ ] Invalid input data (bucketID, etc)
 	- [ ] duplicate keys in keys in postkey array
 	- [ ] already processed keys
-	- [ ] update appconfig if etag is changed in manifest
-	- [ ] 0, 15, 30 keys in postkey array
+	- [ ] 0, 14, 30 keys in postkey array
 
 These happy flows need more workout based on business rules from https://github.com/minvws/nl-covid19-notification-app-coordination-private/blob/master/architecture/Key%20Upload%20Process.md
 

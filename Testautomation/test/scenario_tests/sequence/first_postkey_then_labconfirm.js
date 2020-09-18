@@ -1,17 +1,17 @@
 const chai = require("chai");
 const expect = chai.expect;
-const dataprovider = require("../data/dataprovider");
-const app_register = require("../behaviours/app_register_behaviour");
-const post_keys = require("../behaviours/post_keys_behaviour");
-const testsSig = require("../../util/sig_encoding");
-const lab_confirm = require("../behaviours/labconfirm_behaviour");
-const lab_verify = require("../behaviours/labverify_behaviour");
-const manifest = require("../behaviours/manifest_behaviour");
-const exposure_key_set = require("../behaviours/exposure_keys_set_behaviour");
-const decode_protobuf = require("../../util/protobuff_decoding");
-const formatter = require("../../util/format_strings");
+const dataprovider = require("../../data/dataprovider");
+const app_register = require("../../behaviours/app_register_behaviour");
+const post_keys = require("../../behaviours/post_keys_behaviour");
+const testsSig = require("../../../util/sig_encoding");
+const lab_confirm = require("../../behaviours/labconfirm_behaviour");
+const lab_verify = require("../../behaviours/labverify_behaviour");
+const manifest = require("../../behaviours/manifest_behaviour");
+const exposure_key_set = require("../../behaviours/exposure_keys_set_behaviour");
+const decode_protobuf = require("../../../util/protobuff_decoding");
+const formatter = require("../../../util/format_strings");
 
-describe("Validate push of my exposure key into manifest - #post_key_to_manifest #scenario #regression", function () {
+describe("Validate push of my exposure key into manifest - #first_postkey_then_labconfirm #scenario #regression", function () {
   this.timeout(2000 * 60 * 30);
 
   // console.log("Scenario: Register > Post keys > Lab Confirm > wait (x min.) > Lab verify > Manifest > EKS")
@@ -27,23 +27,14 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
     exposure_keyset_decoded,
     formated_bucket_id,
     exposureKeySet,
-    exposure_keyset_decoded_set = [];
+    exposure_keyset_decoded_set = [],
+    delayInMilliseconds = 360000; // delay should be minimal 6 min.
 
   before(function () {
     return app_register()
       .then(function (register) {
         app_register_response = register;
         labConfirmationId = register.data.labConfirmationId;
-      })
-      .then(function () {
-        let map = new Map();
-        map.set("LABCONFIRMATIONID", formatter.format_remove_dash(labConfirmationId));
-
-        return lab_confirm(dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
-        ).then(function (confirm) {
-          lab_confirm_response = confirm;
-          pollToken = confirm.data.pollToken;
-        });
       })
       .then(function (sig) {
         formated_bucket_id = formatter.format_remove_characters(app_register_response.data.bucketId);
@@ -65,6 +56,24 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
         ).then(function (postkeys) {
           postkeys_response = postkeys;
         });
+      })
+      .then(function () {
+        let map = new Map();
+        map.set("LABCONFIRMATIONID", formatter.format_remove_dash(labConfirmationId));
+
+        return lab_confirm(dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
+        ).then(function (confirm) {
+          lab_confirm_response = confirm;
+          pollToken = confirm.data.pollToken;
+        });
+      })
+      .then(function (){
+        console.log(`Start delay for ${delayInMilliseconds/1000} sec.`)
+        return new Promise(function (resolve){
+          setTimeout(function() {
+            resolve();
+          }, delayInMilliseconds);
+        })
       })
       .then(function () {
         return lab_verify(pollToken).then(function (response) {
