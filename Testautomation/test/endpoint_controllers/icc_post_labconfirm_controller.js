@@ -1,15 +1,7 @@
 const axios = require("axios");
+const axiosLogger = require("axios-logger");
 
-async function labconfirm(endpoint, labConfirmationId, bearer) {
-  //remove dash from register labcomfirmId
-  let labConfirmUpdate = labConfirmationId.replace(/-/g,'');
-
-  let payload = {
-    "labConfirmationId": labConfirmUpdate,
-    "dateOfSymptomsOnset": "2020-07-23T16:11:19.487Z"
-  };
-
-  let data = JSON.stringify(payload);
+async function labconfirm(endpoint, payload, bearer) {
 
   const instance = axios.create();
   // add start time header in request
@@ -27,6 +19,10 @@ async function labconfirm(endpoint, labConfirmationId, bearer) {
     return response;
   });
 
+  // add logging on request and response
+  instance.interceptors.request.use(axiosLogger.requestLogger,axiosLogger.errorLogger);
+  instance.interceptors.response.use(axiosLogger.responseLogger, axiosLogger.errorLogger);
+
   const response = await instance({
     method: "post",
     url: endpoint,
@@ -34,7 +30,7 @@ async function labconfirm(endpoint, labConfirmationId, bearer) {
       "Content-Type": "application/json",
       Authorization: bearer,
     },
-    data: data,
+    data: JSON.parse(payload),
   });
 
   return response;

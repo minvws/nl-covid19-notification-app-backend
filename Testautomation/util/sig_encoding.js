@@ -5,7 +5,7 @@ const padding = require("../test/data/scenario_data/app_register_padding_data");
 let testsSig = function (payload,confirmationKey){
     return new Promise(function (resolve,reject){
 
-        let fileName = __dirname + 'payload'
+        let fileName = __dirname + '/temp/payload'
 
         const writeFilePromise = (file, data) => {
             return new Promise((resolve, reject) => {
@@ -24,9 +24,10 @@ let testsSig = function (payload,confirmationKey){
                 let sigCommand = `cat ${fileName} | openssl sha256 -mac HMAC -macopt hexkey:${KEY} -binary | base64 | sed -e 's/"//g' -e 's/+/%2B/g' -e 's/=/%3D/g' -e 's/\\//%2F/g`;
                 execShellCommand(sigCommand).then(sig => {
                     // this function has access to variables inputFile, Key and sig
-                    // console.log(inputFile);
-                    // console.log(KEY);
-                    // console.log(sig);
+                    // console.log(sigCommand);
+                    // console.log('inputFile: ' + inputFile);
+                    // console.log('Key: ' + KEY);
+                    // console.log('sig: ' + sig);
 
                     resolve({sig:sig});
                 });

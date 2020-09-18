@@ -1,4 +1,5 @@
 const axios = require("axios");
+const axiosLogger = require("axios-logger");
 
 async function postkeys(endpoint, payload, sig) {
 
@@ -17,6 +18,10 @@ async function postkeys(endpoint, payload, sig) {
     response.headers["request-duration"] = milliseconds;
     return response;
   });
+
+  // add logging on request and response
+  instance.interceptors.request.use(axiosLogger.requestLogger,axiosLogger.errorLogger);
+  instance.interceptors.response.use(axiosLogger.responseLogger,axiosLogger.errorLogger);
 
   const response = await instance({
     method: "post",

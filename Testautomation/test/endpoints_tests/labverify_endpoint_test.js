@@ -3,20 +3,24 @@ const expect = chai.expect;
 const app_register = require("../behaviours/app_register_behaviour");
 const lab_confirm = require("../behaviours/labconfirm_behaviour");
 const lab_verify = require("../behaviours/labverify_behaviour");
+const formatter = require("../../util/format_strings");
+const dataprovider = require("../data/dataprovider");
 
-describe("Labconfirm endpoints tests #labverify #endpoints #regression", function () {
-  this.timeout(2000 * 60 * 30);
+describe("Lab verify endpoints tests #labverify #endpoints #regression", function () {
+  this.timeout(3000 * 60 * 30);
 
   let app_register_response, lab_confirm_response, pollToken, lab_verify_response, labConfirmationId;
-
-  describe("I register the app and request a lab verify", function () {});
 
     before(function (){
       return app_register().then(function (register){
         app_register_response = register;
         labConfirmationId = register.data.labConfirmationId;
       }).then(function (){
-        return lab_confirm(labConfirmationId).then(function (confirm){
+        let map = new Map();
+        map.set("LABCONFIRMATIONID", formatter.format_remove_dash(labConfirmationId));
+
+        return lab_confirm(dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
+        ).then(function (confirm){
           lab_confirm_response = confirm;
           pollToken = confirm.data.pollToken;
         });
@@ -27,6 +31,9 @@ describe("Labconfirm endpoints tests #labverify #endpoints #regression", functio
       });
     });
 
+  after(function (){
+    dataprovider.clear_saved();
+  })
 
   it("I should be registered", function () {
     expect(

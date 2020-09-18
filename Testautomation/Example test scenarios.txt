@@ -7,7 +7,8 @@ A. Endpoints tests => health of all endpoints
 	- keys present
 	- max-age (last modified)
 	- sig. validation
-	- number of files
+	- number of keys
+	- certificate
 
 	report of all endpoint tests
 B. Scenario's => integration of all endpoints (business rules)
@@ -21,6 +22,8 @@ B1. Happy flow scenarios (all 200 OK and manifest is updated)
 	- Register > Postkeys > LabConfirm > wachten (x minutes) > Labverify > Manifest > EKS
 	- Register > LabConfirm > Postkeys > wachten (x minutes) > Labverify > Manifest > EKS
 	- STOPkey can't be found in manifest
+	- API versioning
+
 
 B2. Timing scenarios (validation of the business rules round the postkeys)
 	- etag is changed => validate that new CDN data is pushed (304 vs 200 OK)
@@ -36,7 +39,6 @@ B4. Frequency scenarios (validation of the business rules round the postkeys)
 	- Register > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > LabConfirm > wachten (x minutes) > Labverify > Manifest > EKS
 	- Register > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Register > Postkeys > Postkeys > Postkeys > LabConfirm > wachten (x minutes) > Labverify > Manifest > EKS
 	- Register > manifest => run x times like 50-100 times
-	-
 
 B5. Error flow scenarios (API + business rules validation, no 500 error is returned)
 	- Invalid input data (bucketID, etc)
