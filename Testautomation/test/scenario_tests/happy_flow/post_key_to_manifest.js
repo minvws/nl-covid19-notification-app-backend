@@ -1,15 +1,15 @@
 const chai = require("chai");
 const expect = chai.expect;
-const dataprovider = require("../data/dataprovider");
-const app_register = require("../behaviours/app_register_behaviour");
-const post_keys = require("../behaviours/post_keys_behaviour");
-const testsSig = require("../../util/sig_encoding");
-const lab_confirm = require("../behaviours/labconfirm_behaviour");
-const lab_verify = require("../behaviours/labverify_behaviour");
-const manifest = require("../behaviours/manifest_behaviour");
-const exposure_key_set = require("../behaviours/exposure_keys_set_behaviour");
-const decode_protobuf = require("../../util/protobuff_decoding");
-const formatter = require("../../util/format_strings");
+const dataprovider = require("../../data/dataprovider");
+const app_register = require("../../behaviours/app_register_behaviour");
+const post_keys = require("../../behaviours/post_keys_behaviour");
+const testsSig = require("../../../util/sig_encoding");
+const lab_confirm = require("../../behaviours/labconfirm_behaviour");
+const lab_verify = require("../../behaviours/labverify_behaviour");
+const manifest = require("../../behaviours/manifest_behaviour");
+const exposure_key_set = require("../../behaviours/exposure_keys_set_behaviour");
+const decode_protobuf = require("../../../util/protobuff_decoding");
+const formatter = require("../../../util/format_strings");
 
 describe("Validate push of my exposure key into manifest - #post_key_to_manifest #scenario #regression", function () {
   this.timeout(2000 * 60 * 30);
@@ -27,7 +27,8 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
     exposure_keyset_decoded,
     formated_bucket_id,
     exposureKeySet,
-    exposure_keyset_decoded_set = [];
+    exposure_keyset_decoded_set = [],
+    delayInMilliseconds = 1000;
 
   before(function () {
     return app_register()
@@ -65,12 +66,19 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
         ).then(function (postkeys) {
           postkeys_response = postkeys;
         });
-      })
-      .then(function () {
-        return lab_verify(pollToken).then(function (response) {
-          lab_verify_response = response;
-        });
-      })
+      }).then(function (){
+          console.log(`Start delay for ${delayInMilliseconds/1000} sec.`)
+          return new Promise(function (resolve){
+            setTimeout(function() {
+              resolve();
+            }, delayInMilliseconds);
+          })
+        })
+      .then(function (){
+          return lab_verify(pollToken).then(function (response) {
+            lab_verify_response = response;
+          });
+        })
       .then(function () {
         return manifest().then(function (manifest) {
           manifest_response = manifest;
@@ -125,6 +133,36 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
           // console.log(`Validating key ${key.keyData} is eql to ${exposure_key_send}`);
           if (key.keyData == exposure_key_send){
             found = true;
+            // validate transmissionRiskLevel number based on the rollingStartIntervalNumber
+            let rollingStartIntervalNumber = key.rollingStartIntervalNumber * 600;
+            let DSSO = moment().add(-1, 'days').unix(); // yesterday
+            let RSN = moment(rollingStartIntervalNumber);
+            let dif = Math.floor((DSSO+RSN) / 86400);
+            let expectedRiskLevel;
+            // console.log('yesterday:' + moment.unix(x).format('dddd, MMMM Do, YYYY h:mm:ss A'));
+            // console.log('rollingStartIntervalNumber: ' + moment.unix(rollingStartIntervalNumber).format('dddd, MMMM Do, YYYY h:mm:ss A'));
+            // console.log('dif in days: ' + dif);
+            // console.log(key.transmissionRiskLevel);
+            switch (parseInt(dif)){
+              case -2: case 3: case 4:
+                // console.log('case -2, 3, 4')
+                expectedRiskLevel = 2;
+                break
+              case -1: case 0: case 1: case 2:
+                // console.log('case -1, 0, 1, 2')
+                expectedRiskLevel = 3;
+                break;
+              case 5: case 6: case 7: case 8: case 9: case 10: case 11:
+                // console.log('case 5, 6, 7, 8. 9, 10, 11')
+                expectedRiskLevel = 1
+                break;
+              default:
+                // console.log('default case')
+                expectedRiskLevel = 6
+                break;
+            }
+            expect(key.transmissionRiskLevel,`key: ${key.keyData}`).to.be.eql(expectedRiskLevel)
+
           }
       }
     })

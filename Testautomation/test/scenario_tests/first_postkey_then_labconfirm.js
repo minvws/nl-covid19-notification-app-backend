@@ -23,12 +23,12 @@ describe("Validate push of my exposure key into manifest - #first_postkey_then_l
     pollToken,
     lab_verify_response,
     manifest_response,
-    exposureKeySetId,
     exposure_keyset_response,
     exposure_keyset_decoded,
     formated_bucket_id,
     exposureKeySet,
-    exposure_keyset_decoded_set = [];
+    exposure_keyset_decoded_set = [],
+    delayInMilliseconds = 1000;
 
   before(function () {
     return app_register()
@@ -66,6 +66,14 @@ describe("Validate push of my exposure key into manifest - #first_postkey_then_l
           lab_confirm_response = confirm;
           pollToken = confirm.data.pollToken;
         });
+      })
+      .then(function (){
+        console.log(`Start delay for ${delayInMilliseconds/1000} sec.`)
+        return new Promise(function (resolve){
+          setTimeout(function() {
+            resolve();
+          }, delayInMilliseconds);
+        })
       })
       .then(function () {
         return lab_verify(pollToken).then(function (response) {
