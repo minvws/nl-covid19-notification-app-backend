@@ -1,58 +1,59 @@
-Scenarios
+#Test scenarios
 
 Test strategy to validate the backend system multiple type of test are defined:
-A. Endpoints tests => health of all endpoints
-	- response time (done)
-	- status (done)
-	- keys present (done)
-	- max-age (done)
-	- sig. validation (done)
-	- number of keys (done)
-	- certificate => uit welk endpoints?
+## A. Endpoints tests => health of all endpoints
+To validate if the endpoints are up-and-running the following validations are performed per endpoint:
+- [x] response time
+- [x] status
+- [x] keys present
+- [x] max-age
+- [ ] sig. validation
+- [x] number of keys
+- [ ] certificate => unclear which endpoints to validate
 
-B. Scenario's => integration of all endpoints (business rules)
+## B. Scenario's => integration of all endpoints (business rules)
 	1. Happy flows
 	2. timing
 	3. sequence
 	4. Frequency
 	5. Error flows (invalid data)
 
-B. Scenario's workout
+### B. Scenario's workout
 
-B1. Happy flow scenarios (all 200 OK and manifest is updated)
-	- Register > LabConfirm > Postkeys > wachten (6 minutes) > Labverify > Manifest > EKS (done)
-	    - determine transmissionRiskLevel (TRL) 1/2/3 based on de RollingStartNumber (RSN) + DateOfSymptomsOnset (aantal dagen tussen)
-	    - validate new key is in manifest
-	    - Etag is changed with new manifest (304 vs. 200)
-	- STOPkey can't be found in manifest
-	- validate all exposure keys in manifest (done)
-	- API versioning
+1. Happy flow scenarios (all 200 OK and manifest is updated)
+    - [ ] Register > LabConfirm > Postkeys > wachten (6 minutes) > Labverify > Manifest > EKS
+      * determine transmissionRiskLevel (TRL) 1/2/3 based on de RollingStartNumber (RSN) + DateOfSymptomsOnset (aantal dagen tussen)
+	  * validate new key is in manifest
+	  * Etag is changed with new manifest (304 vs. 200)  
+    - [ ] STOPkey can't be found in manifest
+    - [x] validate all exposure keys in manifest
+    - [ ] API versioning
+    - [ ] 1, 13 and 14 keys in postkey array
 
-B2. Timing scenarios (validation of the business rules round the postkeys)
-    - Postkey of 3 weeks is to old => not added to manifest
-    - Postkey is to new => not added to manifest
-	- Register > LabConfirm > wachten (x minutes) > Labverify > (x minutes) > Labverify => validate that polltoken is expired and new is provided
-	- Register > LabConfirm > wachten (x minutes) > Labverify > (121 minutes) Postkeys > Labverify => validate that polltoken is expired, no new token + false returned
-	- today keys processing => 1.4 / 1.5 GAEN framework
+2. Timing scenarios (validation of the business rules round the postkeys)
+    - [ ] Postkey of 3 weeks is to old => not added to manifest
+    - [ ] Postkey is to new (tomorrow) => not added to manifest
+	- [ ] Register > LabConfirm > wachten > Labverify > (x minutes) > Labverify => validate that polltoken is expired and new is provided
+	- [ ] Register > LabConfirm > wachten (x minutes) > Labverify > (121 minutes) Postkeys > Labverify => validate that polltoken is expired, no new token + false returned
+	GAEN framework 1.4 versus 1.5
+	    - [ ] 1.4 GAEN framework (key today + key yesterday): yesterday keys are processed & today not
+	    - [ ] 1.5 GAEN framework (key today + key yesterday): yesterday is processed & today is delayed in backend
 
-B3. Sequence scenarios (validation of the business rules round the postkeys)
-	- Register > postkeys > labverify > manifest
-	- Register > Postkeys > LabConfirm > wachten (6 minutes) > Labverify > Manifest > EKS (done)
+3. Sequence scenarios (validation of the business rules round the postkeys)
+	- [ ] Register > postkeys > labverify > manifest
+	- [x] Register > Postkeys > LabConfirm > wachten (6 minutes) > Labverify > Manifest > EKS
 
-B4. Frequency scenarios (validation of the business rules round the postkeys)
-	- Register > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > LabConfirm > wachten (x minutes) > Labverify > Manifest > EKS
-	- Register > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Register > Postkeys > Postkeys > Postkeys > LabConfirm > wachten (x minutes) > Labverify > Manifest > EKS
-	- Register > manifest => run x times like 50-100 times
+4. Frequency scenarios (validation of the business rules round the postkeys)
+	- [ ] Register > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > LabConfirm > wachten (6 minutes) > Labverify > Manifest > EKS
+	- [ ] Register > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Register > Postkeys > Postkeys > Postkeys > LabConfirm > wachten (6 minutes) > Labverify > Manifest > EKS
+	- [ ] Register > manifest => run x times like 50-100 times
 
-B5. Error flow scenarios (API + business rules validation, no 500 error is returned)
-	- Invalid input data (bucketID, etc)
-	- API version validation
-	- 0,1, 13, 14, 15 keys in postkey array
-	- duplicate keys in keys in postkey array
-	- already processed keys
-	- to new keys (timestamp in the future)
-	- update appconfig if etag is changed in manifest
-
+5. Error flow scenarios (API + business rules validation, no 500 error is returned)
+	- [ ] Invalid input data (bucketID, etc)
+	- [ ] duplicate keys in keys in postkey array
+	- [ ] already processed keys
+	- [ ] update appconfig if etag is changed in manifest
+	- [ ] 0, 15, 30 keys in postkey array
 
 These happy flows need more workout based on business rules from https://github.com/minvws/nl-covid19-notification-app-coordination-private/blob/master/architecture/Key%20Upload%20Process.md
 
