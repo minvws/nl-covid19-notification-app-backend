@@ -19,6 +19,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
         [MaxLength(64)]
         public string PublishingId { get; set; }
         public byte[] Content { get; set; }
+        
+        [Obsolete("Always zips.")]
         public string ContentTypeName { get; set; }
         public string Type { get; set; }
     }

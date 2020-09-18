@@ -2,13 +2,10 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
 using System;
-using System.Net.Http;
-using TheIdentityHub.AspNetCore.Authentication;
+using System.Collections.Generic;
+using System.Security.Claims;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
@@ -19,33 +16,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
     public class TheIdentityHubServiceTests
     {
         private ITheIdentityHubService _TheIdentityHubService;
-        private IOptionsMonitor<TheIdentityHubOptions> _Options;
+        
         private WireMockServer _Server;
 
         public TheIdentityHubServiceTests()
         {
-            var logger = new TestLogger<TheIdentityHubService>();
             _Server = WireMockServer.Start();
-            
             if (_Server.Urls.Length < 1)
             {
                 throw new Exception("WireMockServer not started correctly");
             }
-
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddCustomOptions(TheIdentityHubDefaults.AuthenticationScheme, options =>
-            {
-                options.TheIdentityHubUrl = new Uri(_Server.Urls[0]);
-                options.Tenant = "ggdghornl_test";
-                options.ClientId = "0";
-                options.ClientSecret = "supersecret";
-                options.CallbackPath = "/signin-identityhub";
-                options.Backchannel = new HttpClient();
-            });
-            var builder = serviceCollection.BuildServiceProvider();
-            _Options = builder.GetService<IOptionsMonitor<TheIdentityHubOptions>>();
-
-            _TheIdentityHubService = new TheIdentityHubService(_Options, logger);
+            
+            _TheIdentityHubService =  TestTheIdentityHubServiceCreator.CreateInstance(_Server);
         }
 
         [Fact]
@@ -137,15 +119,53 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                 );
             Assert.False(_TheIdentityHubService.RevokeAccessToken(invalidAccessToken).Result);
         }
-    }
-}
 
-public static class ServiceCollectionExtensions
-{
-    public static IServiceCollection AddCustomOptions(this IServiceCollection serviceCollection,
-        string name, Action<TheIdentityHubOptions> options)
-    {
-        serviceCollection.Configure(name, options);
-        return serviceCollection;
+
+        [Fact]
+        public void ValidateValidAccessTokenWithUserClaims()
+        {
+            var validToken = "valid_access_token";
+            var testClaim = new Claim("http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken", validToken, "string");
+            var identity = new ClaimsIdentity(new List<Claim>() {testClaim}, "test");
+
+            _Server.Reset();
+            _Server.Given(
+                    Request.Create()
+                        .WithHeader("Authorization", "Bearer " + validToken)
+                        .WithPath("/ggdghornl_test/oauth2/v1/verify").UsingGet()
+                )
+                .RespondWith(
+                    Response.Create()
+                        .WithStatusCode(200)
+                        .WithHeader("Content-Type", "application/json")
+                        .WithBody("{\"audience\":1234}")
+                );
+
+            Assert.True(_TheIdentityHubService.VerifyClaimToken(identity.Claims).Result);
+        }        
+        
+        [Fact]
+        public void ValidateInValidAccessTokenWithUserClaims()
+        {
+            var validToken = "valid_access_token";
+            var testClaim = new Claim("http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken", validToken, "string");
+            var identity = new ClaimsIdentity(new List<Claim>() {testClaim}, "test");
+
+            _Server.Reset();
+            _Server.Given(
+                    Request.Create()
+                        .WithHeader("Authorization", "Bearer " + "invalid_" + validToken)
+                        .WithPath("/ggdghornl_test/oauth2/v1/verify").UsingGet()
+                )
+                .RespondWith(
+                    Response.Create()
+                        .WithStatusCode(200)
+                        .WithHeader("Content-Type", "application/json")
+                        .WithBody("{\"audience\":1234}")
+                );
+
+            Assert.False(_TheIdentityHubService.VerifyClaimToken(identity.Claims).Result);
+        }
+        
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.AuthHandlers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using Xunit;
@@ -18,13 +18,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
     public class AuthCodeServiceTests
     {
         private IAuthCodeService _AuthCodeService;
+        private IAuthCodeGenerator _AuthCodeGenerator;
 
         public AuthCodeServiceTests()
         {
-            var cryptoRandomPaddingGenerator = new CryptoRandomPaddingGenerator(new StandardRandomNumberGenerator());
+            var randomNumberGenerator = new StandardRandomNumberGenerator();
+            _AuthCodeGenerator = new AuthCodeGenerator(randomNumberGenerator);
             var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
 
-            _AuthCodeService = new AuthCodeService(cryptoRandomPaddingGenerator, cache);
+            _AuthCodeService = new AuthCodeService(cache, _AuthCodeGenerator);
+        }
+
+        [InlineData(32)]
+        [InlineData(12)]
+        [InlineData(1)]
+        [InlineData(64)]
+        [Theory]
+        public void GeneratorGeneratesXLengthString(int expectedLength)
+        {
+            var authCode = _AuthCodeGenerator.Next(expectedLength);
+
+            Assert.NotNull(authCode);
+            Assert.True(authCode.Length == expectedLength);
         }
 
         [Fact]

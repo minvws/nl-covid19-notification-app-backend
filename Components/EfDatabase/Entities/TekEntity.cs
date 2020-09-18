@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
         public int RollingPeriod { get; set; }
 
         [MinLength(2), MaxLength(2)]
-        public string Region { get; set; }
+        public string Region { get; set; } = "NL";
 
         public PublishingState PublishingState { get; set; }
        

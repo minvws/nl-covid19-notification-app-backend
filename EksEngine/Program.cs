@@ -7,11 +7,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
@@ -40,6 +43,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
         {
             var job = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
             job.Execute().GetAwaiter().GetResult();
+            var job2 = serviceProvider.GetRequiredService<ManifestUpdateCommand>();
+            job2.Execute().GetAwaiter().GetResult();
+            var job3 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
+            job3.Execute().GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
@@ -72,9 +79,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<IMarkWorkFlowTeksAsUsed, MarkWorkFlowTeksAsUsed>();
             services.AddTransient<EksJobContentWriter>();
 
+            services.AddTransient<ManifestUpdateCommand>();
+            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
+            services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
+            services.AddTransient<ZippedSignedContentFormatter>();
+            services.AddTransient<ManifestBuilder>();
+
+            services.NlResignerStartup();
+
             services.NlSignerStartup();
             services.GaSignerStartup();
-
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
@@ -20,7 +21,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         public HttpGetLogoutCommand(IIccPortalConfig configuration, ITheIdentityHubService theIdentityHubService)
         {
             _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _TheIdentityHubService = theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
+            _TheIdentityHubService =
+                theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
         }
 
         public async Task<IActionResult> Execute(HttpContext httpContext)
@@ -28,14 +30,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
             if (httpContext == null)
                 throw new ArgumentNullException(nameof(httpContext));
 
-
-            var accessToken = httpContext.User.Claims.FirstOrDefault((c => c.Type == TheIdentityHubClaimTypes.AccessToken))?.Value;
+            var accessToken = httpContext.User?.Claims
+                .FirstOrDefault((c => c.Type == TheIdentityHubClaimTypes.AccessToken))
+                ?.Value;
             if (accessToken != null)
                 await _TheIdentityHubService.RevokeAccessToken(accessToken);
 
             httpContext.Response.Cookies.Delete(".AspNetCore.Cookies");
             await httpContext.SignOutAsync();
-            
+
             return new RedirectResult(_Configuration.FrontendBaseUrl);
         }
     }

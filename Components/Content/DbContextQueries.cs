@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         /// <summary>
         /// e.g. GET Manifest
         /// </summary>
-        public static async Task<ContentEntity> SafeGetLatestContent(this DbContext dbContextProvider, string type, DateTime now)
+        public static async Task<ContentEntity?> SafeGetLatestContent(this DbContext dbContextProvider, string type, DateTime now)
         {
             if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
             return await dbContextProvider.Set<ContentEntity>()

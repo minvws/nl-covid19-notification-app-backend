@@ -222,4 +222,7 @@
       <Value>$(SqlCmdVar__7)</Value>
     </SqlCmdVariable>
   </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="WorkFlow.refactorlog" />
+  </ItemGroup>
 </Project>

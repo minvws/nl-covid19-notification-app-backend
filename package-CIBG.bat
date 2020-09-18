@@ -28,14 +28,19 @@ REM 7z a -tzip packages\Batch\CommandLine.ManifestEngine.zip publish\Batch.Manif
 
 xcopy ..\s\publish\EksEngine Artifacts\EksEngine /E /I
 xcopy ..\s\publish\ManifestEngine Artifacts\ManifestEngine /E /I
+xcopy ..\s\publish\DailyCleanup Artifacts\DailyCleanup /E /I
 
 REM Database
 REM 7z a -tzip packages\SQL\SQL.DbProvision.zip publish\Tools\DbProvision"
 
 xcopy ..\s\publish\Tools\DbProvision Artifacts\DbProvision /E /I
-xcopy ..\s\publish\Tools\DbFillExampleContent Artifacts\DbFillExampleContent /E /I
+xcopy ..\s\publish\Tools\PublishContent Artifacts\PublishContent /E /I
 xcopy ..\s\publish\Tools\GenTeks Artifacts\GenTeks /E /I
 xcopy ..\s\publish\Tools\ForceTekAuth Artifacts\ForceTekAuth /E /I
+xcopy ..\s\publish\Tools\SigTestFileCreator Artifacts\SigTestFileCreator /E /I
+xcopy ..\s\publish\Tools\EksParser Artifacts\EksParser /E /I
+
+xcopy ..\s\HSM-Scripting Artifacts\HSM-Scripting /E /I
 
 REM Zip tools
 REM 7z a -tzip packages\Tools\CommandLine.GenTeks.zip publish\Tools\GenTeks"

@@ -18,13 +18,14 @@ REM Zip websites
 REM Zip command-line
 7z a -tzip packages\Batch\CommandLine.EksEngine.zip publish\EksEngine"
 7z a -tzip packages\Batch\CommandLine.ManifestEngine.zip publish\ManifestEngine"
+7z a -tzip packages\Batch\CommandLine.DailyCleanup.zip publish\DailyCleanup"
 
 REM Database
 7z a -tzip packages\SQL\SQL.DbProvision.zip publish\Tools\DbProvision"
 
 REM Zip tools
 7z a -tzip packages\Tools\CommandLine.GenTeks.zip publish\Tools\GenTeks"
-7z a -tzip packages\Tools\CommandLine.DbFillExampleContent.zip publish\Tools\DbFillExampleContent"
+7z a -tzip packages\Tools\CommandLine.PublishContent.zip publish\Tools\PublishContent"
 7z a -tzip packages\Tools\CommandLine.ForceTekAuth.zip publish\Tools\ForceTekAuth"
 
 @echo on

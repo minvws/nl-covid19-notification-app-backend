@@ -3,9 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
@@ -16,35 +14,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
     public class ContentController : ControllerBase
     {
         [HttpGet]
-        [Route(EndPointNames.ContentApi.Manifest)]
+        [Route("/v1/manifest")]
         public async Task GetManifest([FromServices] HttpGetCdnManifestCommand command)
         {
-            await command.Execute(HttpContext);
+            await command.Execute(HttpContext, ContentTypes.Manifest);
         }
 
         [HttpGet]
-        [Route(EndPointNames.ContentApi.AppConfig + "/{id}")]
-        public async Task GetAppConfig(string id, [FromServices] HttpGetCdnContentCommand command)
+        [Route("/v1/appconfig/{id}")]
+        public async Task GetAppConfig(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
         {
             await command.Execute(HttpContext, ContentTypes.AppConfig, id);
         }
 
         [HttpGet]
-        [Route(EndPointNames.ContentApi.RiskCalculationParameters + "/{id}")]
-        public async Task GetRiskCalculationParameters(string id, [FromServices] HttpGetCdnContentCommand command)
+        [Route("/v1/riskcalculationparameters/{id}")]
+        public async Task GetRiskCalculationParameters(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
         {
             await command.Execute(HttpContext, ContentTypes.RiskCalculationParameters, id);
         }
 
         [HttpGet]
-        [Route(EndPointNames.ContentApi.ExposureKeySet + "/{id}")]
-        public async Task GetExposureKeySet(string id, [FromServices] HttpGetCdnContentCommand command)
+        [Route("/v1/exposurekeyset/{id}")]
+        public async Task GetExposureKeySet(string id, [FromServices] HttpGetCdnEksCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.ExposureKeySet, id);
+            await command.Execute(HttpContext, id);
         }
-
-        [HttpGet]
-        [Route("/")]
-        public IActionResult AssemblyDump([FromServices] IWebHostEnvironment env) => new DumpAssembliesToPlainText().Execute(env.IsDevelopment());
     }
 }

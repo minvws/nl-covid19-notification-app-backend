@@ -9,5 +9,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public const string Workflow = "Workflow";
         public const string Publishing = "PublishingJob";
         public const string Content = "Content";
+        public const string Stats = "Stats";
     }
 }

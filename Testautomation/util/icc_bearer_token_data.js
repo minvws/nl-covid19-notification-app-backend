@@ -1,6 +1,7 @@
 // Set bearer token to login to ICC portal
 
-const bearer =
-  "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDA0MTg3NjUsImlkIjoiNDUzNjQ0MDYyNDUyNTk4Njk4OCIsImFjY2Vzc190b2tlbiI6InFoYjQyWTZNMHZzLTA0Z0pCOVVCZHciLCJuYW1lIjoiTWFyYyB2YW4g4oCZdCBWZWVyIn0.tvikeuoTqLYl7YL1_6ETb8_yMXxK2hZKJbNuvXaLDug";
+var args = require('minimist')(process.argv.slice(2));
+
+const bearer = "Bearer " + args.token;
 
 module.exports = bearer;
