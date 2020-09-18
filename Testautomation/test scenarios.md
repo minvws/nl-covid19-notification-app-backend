@@ -20,7 +20,7 @@ B. Scenario's => integration of all endpoints (business rules)
 B. Scenario's workout
 
 B1. Happy flow scenarios (all 200 OK and manifest is updated)
-	- Register > LabConfirm > Postkeys > wachten (x minutes) > Labverify > Manifest > EKS (done)
+	- Register > LabConfirm > Postkeys > wachten (6 minutes) > Labverify > Manifest > EKS (done)
 	    - determine transmissionRiskLevel (TRL) 1/2/3 based on de RollingStartNumber (RSN) + DateOfSymptomsOnset (aantal dagen tussen)
 	    - validate new key is in manifest
 	    - Etag is changed with new manifest (304 vs. 200)
@@ -37,8 +37,7 @@ B2. Timing scenarios (validation of the business rules round the postkeys)
 
 B3. Sequence scenarios (validation of the business rules round the postkeys)
 	- Register > postkeys > labverify > manifest
-	- Register > Postkeys > LabConfirm > wachten (x minutes) > Labverify > Manifest > EKS (done)
-	- random order of the endpoints ()
+	- Register > Postkeys > LabConfirm > wachten (6 minutes) > Labverify > Manifest > EKS (done)
 
 B4. Frequency scenarios (validation of the business rules round the postkeys)
 	- Register > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > LabConfirm > wachten (x minutes) > Labverify > Manifest > EKS
