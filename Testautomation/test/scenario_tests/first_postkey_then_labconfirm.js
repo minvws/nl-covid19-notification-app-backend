@@ -28,7 +28,7 @@ describe("Validate push of my exposure key into manifest - #first_postkey_then_l
     formated_bucket_id,
     exposureKeySet,
     exposure_keyset_decoded_set = [],
-    delayInMilliseconds = 1000;
+    delayInMilliseconds = 360000; // delay should be minimal 6 min.
 
   before(function () {
     return app_register()
