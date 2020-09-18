@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         /// <summary>
         /// Comparer ensures content is equivalent so that items are not re-signed more than once
         /// </summary>
-        private class Comparer : IEqualityComparer<ContentEntity>
+        private class ContentEntityComparer : IEqualityComparer<ContentEntity>
         {
             public bool Equals(ContentEntity left, ContentEntity right)
              => left.Created == right.Created
@@ -60,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             var fromItems = db.Content.Where(x => x.Type == fromType).ToArray();
             var toItems = db.Content.Where(x => x.Type == toType).ToArray();
-            var todo = fromItems.Except(toItems,  new Comparer()).ToArray();
+            var todo = fromItems.Except(toItems,  new ContentEntityComparer()).ToArray();
 
             var sb = new StringBuilder();
             sb.AppendLine($"Re-signing {todo.Length} items:");
