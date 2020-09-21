@@ -1,28 +1,20 @@
 const fs = require("fs");
 const exec = require('child_process').exec;
-const padding = require("../test/data/scenario_data/app_register_padding_data");
+const tmp = require('tmp');
 const extraConsoleLogging = false; // switch to true to log debug stuff
 
 let testsSig = function (payload,confirmationKey){
-    return new Promise(function (resolve,reject){
+    return new Promise(function (resolve){
 
-        let fileName = __dirname + '/temp/payload'
-
-        const writeFilePromise = (file, data) => {
-            return new Promise((resolve, reject) => {
-                fs.writeFile(file, data, error => {
-                    if (error) reject(error);
-                    resolve("done");
-                });
-            });
-        };
+        let tmpObj = tmp.fileSync({ mode: 0644, prefix: 'tempfile', postfix: '.txt' });
+        let path = tmpObj.name.substring(0, tmpObj.name.lastIndexOf('/'));
+        let fileName = tmpObj.name.substring(tmpObj.name.lastIndexOf('/') + 1);
 
         let keyCommand = `echo ${confirmationKey} | base64 -d | xxd -p -c 256`;
+        fs.writeFileSync(tmpObj.name,payload)
+        const sig = execShellCommand(keyCommand).then(KEY => {
 
-        const fileCreate = writeFilePromise(fileName,payload);
-        const sig = fileCreate.then(inputFile => {
-            execShellCommand(keyCommand).then(KEY => {
-                let sigCommand = `cat ${fileName} | openssl sha256 -mac HMAC -macopt hexkey:${KEY} -binary`;
+                let sigCommand = `cat ${tmpObj.name} | openssl sha256 -mac HMAC -macopt hexkey:${KEY} -binary`;
                 execShellCommand(sigCommand).then(result => {
                     // remove prefix fromm the result
                     var resultHex = result.replace("(stdin)= ", "");
@@ -35,19 +27,10 @@ let testsSig = function (payload,confirmationKey){
                         console.log('resultBase64: ' + resultBase64);
                         console.log('resultBase64UrlEncode: ' + resultBase64UrlEncode);
                     }
+                    tmpObj.removeCallback(); // remove temp file
                     resolve({sig:resultBase64UrlEncode});
                 });
             });
-        })
-        const fileRemove = sig.then(file => {
-            fs.unlink(fileName, (err) => {
-                if (err) {
-                    console.error(err)
-                    return
-                }
-            });
-        })
-
 
         function execShellCommand(cmd) {
             return new Promise((resolve, reject) => {
@@ -62,5 +45,4 @@ let testsSig = function (payload,confirmationKey){
         };
     });
 }
-
-exports.testsSig = testsSig;
+module.exports = testsSig;

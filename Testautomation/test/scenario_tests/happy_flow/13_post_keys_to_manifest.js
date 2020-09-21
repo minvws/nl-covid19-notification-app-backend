@@ -57,7 +57,7 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
         let map = new Map();
         map.set("BUCKETID", formated_bucket_id);
 
-        return testsSig.testsSig(
+        return testsSig(
           dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_13_keys", map),
           formatter.format_remove_characters(app_register_response.data.confirmationKey)
         );
@@ -75,7 +75,8 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
           postkeys_response = postkeys;
         });
       }).then(function (){
-          console.log(`Start delay for ${delayInMilliseconds/1000} sec.`)
+          console.log(`Start delay for ${delayInMilliseconds/1000/60} min.`)
+          console.log('started delay at: ' + new Date(Date.now()).toLocaleString());
           return new Promise(function (resolve){
             setTimeout(function() {
               resolve();
