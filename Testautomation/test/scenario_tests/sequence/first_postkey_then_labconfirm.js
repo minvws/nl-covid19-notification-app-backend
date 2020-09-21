@@ -42,7 +42,7 @@ describe("Validate push of my exposure key into manifest - #first_postkey_then_l
         let map = new Map();
         map.set("BUCKETID", formated_bucket_id);
 
-        return testsSig.testsSig(
+        return testsSig(
           dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map),
           formatter.format_remove_characters(app_register_response.data.confirmationKey)
         );

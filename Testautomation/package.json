@@ -27,7 +27,6 @@
     "node-stream-zip": "^1.11.2",
     "protobufjs": "^6.10.1",
     "spec": "^1.0.1",
-    "moment": "^2.27.0",
-    "axios-logger": "^2.4.0"
+    "tmp": "^0.2.1"
   }
 }

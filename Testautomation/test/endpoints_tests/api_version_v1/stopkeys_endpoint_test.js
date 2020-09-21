@@ -17,13 +17,13 @@ describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function (
         return app_register(version).then(function (register) {
             app_register_response = register;
         }).then(function (sig) {
-            return testsSig.testsSig(app_register_response.data.bucketId, app_register_response.data.confirmationKey)
+            return testsSig(app_register_response.data.bucketId, app_register_response.data.confirmationKey)
         }).then(function (sig) {
             formated_bucket_id = formatter.format_remove_characters(app_register_response.data.bucketId)
             let map = new Map();
             map.set("BUCKETID", formated_bucket_id);
 
-            return testsSig.testsSig(
+            return testsSig(
                 dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map),
                 formatter.format_remove_characters(app_register_response.data.confirmationKey)
             )
