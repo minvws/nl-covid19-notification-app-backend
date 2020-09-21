@@ -1,6 +1,7 @@
 const fs = require("fs");
 const exec = require('child_process').exec;
 const padding = require("../test/data/scenario_data/app_register_padding_data");
+const extraConsoleLogging = false; // switch to true to log debug stuff
 
 let testsSig = function (payload,confirmationKey){
     return new Promise(function (resolve,reject){
@@ -21,15 +22,20 @@ let testsSig = function (payload,confirmationKey){
         const fileCreate = writeFilePromise(fileName,payload);
         const sig = fileCreate.then(inputFile => {
             execShellCommand(keyCommand).then(KEY => {
-                let sigCommand = `cat ${fileName} | openssl sha256 -mac HMAC -macopt hexkey:${KEY} -binary | base64 | sed -e 's/"//g' -e 's/+/%2B/g' -e 's/=/%3D/g' -e 's/\\//%2F/g`;
-                execShellCommand(sigCommand).then(sig => {
-                    // this function has access to variables inputFile, Key and sig
-                    // console.log(sigCommand);
-                    // console.log('inputFile: ' + inputFile);
-                    // console.log('Key: ' + KEY);
-                    // console.log('sig: ' + sig);
+                let sigCommand = `cat ${fileName} | openssl sha256 -mac HMAC -macopt hexkey:${KEY} -binary`;
+                execShellCommand(sigCommand).then(result => {
+                    // remove prefix fromm the result
+                    var resultHex = result.replace("(stdin)= ", "");
+                    var resultBase64 = Buffer.from(resultHex, 'hex').toString('base64');
+                    var resultBase64UrlEncode = encodeURIComponent(resultBase64);
 
-                    resolve({sig:sig});
+                    if(extraConsoleLogging) {
+                        console.log('result: ' + result);
+                        console.log('resultHex: ' + resultHex);
+                        console.log('resultBase64: ' + resultBase64);
+                        console.log('resultBase64UrlEncode: ' + resultBase64UrlEncode);
+                    }
+                    resolve({sig:resultBase64UrlEncode});
                 });
             });
         })
@@ -47,7 +53,8 @@ let testsSig = function (payload,confirmationKey){
             return new Promise((resolve, reject) => {
                 exec(cmd, (error, stdout, stderr) => {
                     if (error) {
-                        // console.warn(error);
+                        console.warn("!!! ERROR !!!");
+                        console.warn(error);
                     }
                     resolve(stdout? stdout : stderr);
                 })
