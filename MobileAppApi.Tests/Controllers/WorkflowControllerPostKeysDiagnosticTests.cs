@@ -37,12 +37,12 @@ namespace MobileAppApi.Tests.Controllers
         private readonly WebApplicationFactory<Startup> _Factory;
         private readonly WorkflowDbContext _DbContext;
         private readonly FakeTimeProvider _FakeTimeProvider;
+        private Func<WorkflowDbContext> _DbcFac;
 
         private class FakeTimeProvider : IUtcDateTimeProvider
         {
             public DateTime Value { get; set; }
             public DateTime Now() => Value;
-            public DateTime TakeSnapshot() => throw new NotImplementedException();
             public DateTime Snapshot => Value;
         }
 
@@ -50,8 +50,8 @@ namespace MobileAppApi.Tests.Controllers
         {
             _FakeTimeProvider = new FakeTimeProvider();
 
-            Func<WorkflowDbContext> dbcFac = () => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer($"Data Source=.;Database={nameof(WorkflowControllerPostKeysDiagnosticTests)};Integrated Security=True").Options);
-            _DbContext = dbcFac();
+            _DbcFac = () => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer($"Data Source=.;Database={nameof(WorkflowControllerPostKeysDiagnosticTests)};Integrated Security=True").Options);
+            _DbContext = _DbcFac();
 
             _Factory = WithWebHostBuilder(builder =>
             {
@@ -59,7 +59,7 @@ namespace MobileAppApi.Tests.Controllers
                 {
                     services.AddScoped(sp =>
                     {
-                        var context = dbcFac();
+                        var context = _DbcFac();
                         context.BeginTransaction();
                         return context;
                     });
@@ -71,6 +71,7 @@ namespace MobileAppApi.Tests.Controllers
                     config.AddInMemoryCollection(new Dictionary<string, string>
                     {
                         ["Workflow:PostKeys:TemporaryExposureKeys:RollingStartNumber:Min"] = new DateTime(2019, 12, 31, 0, 0, 0, DateTimeKind.Utc).ToRollingStartNumber().ToString(),
+                        ["Workflow:PostKeys:TemporaryExposureKeys:Count:Min"] = "0",
                         ["Validation:TemporaryExposureKey:RollingPeriod:Min"] = "1",
                         ["Validation:TemporaryExposureKey:RollingPeriod:Max"] = "144"
                     });
@@ -83,8 +84,6 @@ namespace MobileAppApi.Tests.Controllers
         void IDisposable.Dispose()
         {
             base.Dispose();
-
-            _DbContext.Database.EnsureDeleted();
             _DbContext.Dispose();
         }
 
@@ -102,14 +101,15 @@ namespace MobileAppApi.Tests.Controllers
 
 
         [Theory]
-        [InlineData("Resources.payload-good01.json", 1, 7, 2)]
-        [InlineData("Resources.payload-good14.json", 14, 7, 11)]
-        [InlineData("Resources.payload-duplicate-TEKs-RSN-and-RP.json", 0, 7, 11)]
-        [InlineData("Resources.payload-duplicate-TEKs-KeyData.json", 0, 7, 11)]
-        [InlineData("Resources.payload-duplicate-TEKs-RSN.json", 13, 8, 13)]
-        [InlineData("Resources.payload-ancient-TEKs.json", 1, 7, 1)]
+        [InlineData("Resources.payload-good00.json", 0, 7, 2, true)]
+        [InlineData("Resources.payload-good01.json", 1, 7, 2, true)]
+        [InlineData("Resources.payload-good14.json", 14, 7, 11, true)]
+        [InlineData("Resources.payload-duplicate-TEKs-RSN-and-RP.json", 0, 7, 11, false)]
+        [InlineData("Resources.payload-duplicate-TEKs-KeyData.json", 0, 7, 11, false)]
+        [InlineData("Resources.payload-duplicate-TEKs-RSN.json", 13, 8, 13, true )]
+        [InlineData("Resources.payload-ancient-TEKs.json", 1, 7, 1, true)]
         [ExclusivelyUses("WorkflowControllerPostKeysTests")]
-        public async Task PostWorkflowTest(string file, int keyCount, int mm, int dd)
+        public async Task PostWorkflowTest(string file, int keyCount, int mm, int dd, bool teksTouched)
         {
 
             _FakeTimeProvider.Value = new DateTime(2020, mm, dd, 0, 0, 0, DateTimeKind.Utc);
@@ -140,6 +140,9 @@ namespace MobileAppApi.Tests.Controllers
             var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Equal(keyCount, items.Count);
+
+            var wf = await _DbcFac().KeyReleaseWorkflowStates.SingleAsync();
+            Assert.Equal(teksTouched, wf.TeksTouched);
         }
     }
 }
