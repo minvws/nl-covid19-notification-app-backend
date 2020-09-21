@@ -8,8 +8,6 @@ describe("Riskparameter endpoints tests #riskparameter #endpoints #regression", 
 
   let manifest_response, riskparameter_response, riskParameterId;
 
-  describe("I get the riskparameters form the manifest", function () {});
-
   before(function (){
     return manifest().then(function (manifest){
       manifest_response = manifest;
@@ -36,12 +34,18 @@ describe("Riskparameter endpoints tests #riskparameter #endpoints #regression", 
 
     let total = (parseFloat(riskparameter_response.response.headers["content-length"])/1000).toFixed(3);
     expect(parseInt(total),'Response size below 20KB').to.be.below(20);
-
-    let lastModified = (Date.parse(riskparameter_response.response.headers["last-modified"]));
-    let now = Date.now();
-    let maxAge = riskparameter_response.response.headers["cache-control"].split("=");
-    expect((now-lastModified)/1000,'Response last-modified smaller then max-age').to.be.below(parseInt(maxAge[1]));
   });
+
+  // validate max-age is not older then 1.209.600 sec (14 days)
+  it("Max-Age of riskparameters data validated, not older then 1209600 sec. (14 days)", function () {
+    let maxAge = riskparameter_response.response.headers["cache-control"].split("="); // max age is number of sec.
+    maxAge = parseInt(maxAge[1]);
+
+    expect(maxAge - 1209600,
+        `Response max-age (${riskparameter_response.response.headers["cache-control"]} is not older then ${parseInt(maxAge)/3600/24} days ago`
+    ).to.be.least(0);
+  });
+
 
   it('Risk calculation parameter has all needed property keys', function () {
     expect(riskparameter_response.content).to.have.nested.property("minimumRiskScore");

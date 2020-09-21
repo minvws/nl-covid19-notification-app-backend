@@ -1,5 +1,6 @@
 const axios = require("axios");
 const AdmZip = require("adm-zip");
+const axiosLogger = require("axios-logger");
 
 async function manifest(endpoint) {
 
@@ -18,6 +19,14 @@ async function manifest(endpoint) {
         response.headers["request-duration"] = milliseconds;
         return response;
     });
+
+    // add logging on request and response
+    instance.interceptors.request.use(axiosLogger.requestLogger,axiosLogger.errorLogger);
+    instance.interceptors.response.use(
+        res => {
+            console.log('[Axios][Response] ' + res.config.method, res.config.url,res.status);
+            return res;
+        },  axiosLogger.errorLogger);
 
     const response = await instance({
         method: "get",

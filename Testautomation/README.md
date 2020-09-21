@@ -4,11 +4,12 @@
 
 * IDE like IntelliJ: 
 * Install node.js (including npm package manager)
-* Validate that node and npm are configured correctly: https://coolestguidesontheplanet.com/installing-node-js-on-macos/
-* run from IDE with "Run npm install" or from command-line: npm install from the apitest folder
+* Validate that node and npm are configured [correctly](https://coolestguidesontheplanet.com/installing-node-js-on-macos).
+* run from IDE with `run npm install` or from command-line: `npm install` from the `Testautomation` folder
 * install mocha via command-line: npm install -g mocha
 
 ## Design of the automation suite
+
 The API  suite is JavaScript NodeJS test suite, with the Mocha BDD test framework, Chai assertions, Axios API 
 requests and mochawesome reports. There are two main parts in the automation suite:
 * endpoints tests (validate the health of each endpoint)
@@ -21,41 +22,64 @@ By doing this we lower the amount of work needed when an endpoint is changed wit
 
 * The second principle is that we want to split test logic with physical data. A dataprovider is added where specific data can be retrieved and altered from. 
 The concept is that the required data and it's expected outcome is mentioned in the scenario. That should make it easy to see if the scenario should contain valid data and what type of data is required.
-Handling of the fysical data is handled in the data object itself.
+Handling of the physical data is handled in the data object itself.
 
 * The third principle is that every test should have one clear test goal. 
 So if the goal is to verify if an exposurekey is in the manifest. That is what we should assert in the it. All other tests obscure why the test was build in the first place.
 
 ## Maintaining the test suite
-The test suite can be extend by adding new test and by adding assertions to existing tests. A test consists of:
+
+The test suite can be extended by adding new test and by adding assertions to existing tests. A test consists of:
 * Describe: name and search terms of the test
 * Before: fetching all the required data from the endpoints
 * It: assertions (tests) on the response data
 
 ### Adding new tests
+
 Before a new test can be added first create a goal of the new test: what needs to be validated in the assertions.
 Based on the existing behaviors, endpoints and data providers a test scenario can be created. High over steps to add a new test:
 * Create a new branch in Git with the name of the name of the new test
 * Create a new js file in the scenario or endpoint tests folder
 * Add all the required dependencies like chai and expect
-* Fill the describe with a logical name and search term (using a # before the search term)
+* Fill the description with a logical name and search term (using a # before the search term)
 * Fill the before with the intended behavior
     * Use behaviors and controllers and save responses
     * Chain the requests into a flow and wait for the responses
 * Create the assertions with expect from chai
 
 ## Running the test suite
-* Open terminal and navigate to root folder of repo: cd MSS-nl-covid19-notification-app-backend/Testautomation/test
+
+### Pre-reqs
+
+In order to run the test suite, you need to be running a linux-compatible terminal. On Windows this can be achieved by installing WSL (https://docs.microsoft.com/en-us/windows/wsl/install-win10) or by using a terminal such as CMDER (https://cmder.net).
+
+You need the following commmands available in your path:
+- `cat`
+- `openssl`
+- `base64`
+- `sed`
+
+You also need a bearer token for the GGD Portal. You must pass this as a CLI parameter to mocha. The token looks like this:
+
+`Bearer fgGgrdsd573fghk643`
+
+You need to replace `[bearer-token]` with the `fgGgrdsd573fghk643` part of the token.
+
+### Run the tests
+
+* Open terminal, navigate to root folder of repo then go to the folder: `Testautomation`
 * Each collection is in a group that starts with a # sign. The groups are:
     * endpoints => only runs endpoint tests
     * scenario's => only runs scenario's tests
     * regression => runs the whole API test suite
 * To run a collection the following command can be used
-    * mocha --recursive --grep '#endpoints'  --environment=TST --reporter mocha-junit-reporter --reporter-options mochaFile=./reports/junit/file.xml
-        ** recursive: fetches all test on lower directories
-        ** grep: search term in header of every test
-        ** #endpoints: search term by grep
-        ** environment: to switch between an environment like TST for test, ACC for acceptance and PROD for production
-        ** reporter: which report is created when running the test, besides junit, mochawesome (HTML/jSON) can also used
-        ** reporter-options: location where the report is saved and the name of the report
+    * `mocha --recursive --grep '#endpoints' --environment=TST --reporter mocha-junit-reporter --reporter-options mochaFile=./reports/junit/file.xml --token=[bearer-token]`
+    * `mocha --recursive --grep '#endpoints' --environment=TST --reporter mochawesome --reporter-options reportDir=./reports/mochawesome,reportFilename=mochawesome --token=[bearer-token]`
+        ** `[bearer-token]`: this is the token sans the prefix `Bearer `, as described above.
+        ** `recursive`: fetches all test on lower directories
+        ** `grep`: search term in header of every test
+        ** `#endpoints`: search term by grep
+        ** `environment`: to switch between an environment like TST for test, ACC for acceptance and PROD for production
+        ** `reporter`: which report is created when running the test, besides junit, mochawesome (HTML/jSON) can also used
+        ** `reporter-options`: location where the report is saved and the name of the report
 

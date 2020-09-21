@@ -3,7 +3,7 @@ const expect = chai.expect;
 const app_register = require("../behaviours/app_register_behaviour");
 const stop_keys = require("../behaviours/post_keys_behaviour");
 const testsSig = require("../../util/sig_encoding");
-const formater = require("../../util/format_strings");
+const formatter = require("../../util/format_strings");
 const dataprovider = require("../data/dataprovider");
 
 describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function () {
@@ -11,22 +11,19 @@ describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function (
 
     let app_register_response, stopkeys_response;
 
-    describe("I can register and send my stopkeys", function () {
-    });
-
     before(function () {
         return app_register().then(function (register) {
             app_register_response = register;
         }).then(function (sig) {
             return testsSig.testsSig(app_register_response.data.bucketId, app_register_response.data.confirmationKey)
         }).then(function (sig) {
-            formated_bucket_id = formater(app_register_response.data.bucketId)
+            formated_bucket_id = formatter.format_remove_characters(app_register_response.data.bucketId)
             let map = new Map();
             map.set("BUCKETID", formated_bucket_id);
 
             return testsSig.testsSig(
-                dataprovider("post_keys_payload", "payload", "valid_dynamic", map),
-                formater(app_register_response.data.confirmationKey)
+                dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map),
+                formatter.format_remove_characters(app_register_response.data.confirmationKey)
             )
         })
             .then(function (sig) {
@@ -34,13 +31,16 @@ describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function (
                 map.set("BUCKETID", formated_bucket_id);
 
                 return stop_keys(
-                    dataprovider("post_keys_payload", "payload", "valid_dynamic", map), sig.sig
+                    dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map), sig.sig
                 ).then(function (stopkeys) {
                     stopkeys_response = stopkeys;
                 });
             })
     });
 
+    after(function (){
+        dataprovider.clear_saved();
+    })
 
     it("I should be registered", function () {
         expect(
@@ -60,6 +60,5 @@ describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function (
     it('Postkeys response time is under 5 sec.', function () {
         expect(stopkeys_response.headers['request-duration'], "response time is below 5 sec.").to.be.below(5000);
     });
-
 
 });
