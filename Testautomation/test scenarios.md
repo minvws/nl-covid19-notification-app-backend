@@ -29,7 +29,7 @@ To validate if the endpoints are up-and-running the following validations are pe
 	  * Etag is changed with new manifest (304 vs. 200)  
     - [x] validate all exposure keys in manifest 
     - [ ] API versioning => v1 validatie / v2 validatie => different certificate
-    - [ ] 1 and 13 keys in postkey array
+    - [ ] 13 keys in postkey array
     - [ ] update appconfig if etag is changed in manifest
 
 2. Timing scenarios (validation of the business rules round the postkeys)

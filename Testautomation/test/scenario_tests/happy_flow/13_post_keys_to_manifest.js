@@ -11,7 +11,7 @@ const exposure_key_set = require("../../behaviours/exposure_keys_set_behaviour")
 const decode_protobuf = require("../../../util/protobuff_decoding");
 const formatter = require("../../../util/format_strings");
 
-describe("Validate push of my exposure key into manifest - #post_key_to_manifest #scenario #regression", function () {
+describe("Validate push of my exposure key into manifest - #13_post_keys_to_manifest #scenario #regression", function () {
   this.timeout(3000 * 60 * 30);
 
   // console.log("Scenario: Register > Post keys > Lab Confirm > wait (x min.) > Lab verify > Manifest > EKS")
@@ -45,7 +45,7 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
 
         return lab_confirm(
             dataprovider.get_data(
-                "lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
+                "lab_confirm_payload", "payload", "valid_dynamic_13_keys", map)
             , version
         ).then(function (confirm) {
           lab_confirm_response = confirm;
@@ -58,7 +58,7 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
         map.set("BUCKETID", formated_bucket_id);
 
         return testsSig.testsSig(
-          dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map),
+          dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_13_keys", map),
           formatter.format_remove_characters(app_register_response.data.confirmationKey)
         );
       })
@@ -68,7 +68,7 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
 
         return post_keys(
           dataprovider.get_data(
-              "post_keys_payload", "payload", "valid_dynamic_yesterday", map)
+              "post_keys_payload", "payload", "valid_dynamic_13_keys", map)
             , sig.sig
             , version
         ).then(function (postkeys) {
@@ -128,7 +128,7 @@ describe("Validate push of my exposure key into manifest - #post_key_to_manifest
 
   it("The exposureKey pushed was in the manifest", function () {
     let exposure_key_send = JSON.parse(
-      dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", new Map())
+      dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_13_keys", new Map())
     ).keys[0].keyData;
 
     console.log('Number of exposure_keyset_decoded_set: ' + exposure_keyset_decoded_set.length);

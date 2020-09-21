@@ -24,7 +24,78 @@ const data = {
       ],
       "padding": "Yg=="
     }`,
-    valid_dynamic_tomorrow: `{
+    valid_dynamic_13_keys: `{
+      "bucketId": "BUCKETID",
+      "keys": [
+        {
+          "rollingStartNumber": ${generate_date_rsn(true,-13)},
+          "keyData": "${generate_key(true)}",
+          "rollingPeriod": 144
+        },
+        {
+          "rollingStartNumber": ${generate_date_rsn(true,-12)},
+          "keyData": "${generate_key(true)}",
+          "rollingPeriod": 144
+        },
+        {
+          "rollingStartNumber": ${generate_date_rsn(true,-11)},
+          "keyData": "${generate_key(true)}",
+          "rollingPeriod": 144
+        },
+        {
+          "rollingStartNumber": ${generate_date_rsn(true,-10)},
+          "keyData": "${generate_key(true)}",
+          "rollingPeriod": 144
+        },
+        {
+          "rollingStartNumber": ${generate_date_rsn(true,-9)},
+          "keyData": "${generate_key(true)}",
+          "rollingPeriod": 144
+        },
+        {
+          "rollingStartNumber": ${generate_date_rsn(true,-8)},
+          "keyData": "${generate_key(true)}",
+          "rollingPeriod": 144
+        },
+        {
+          "rollingStartNumber": ${generate_date_rsn(true,-7)},
+          "keyData": "${generate_key(true)}",
+          "rollingPeriod": 144
+        },
+        {
+          "rollingStartNumber": ${generate_date_rsn(true,-6)},
+          "keyData": "${generate_key(true)}",
+          "rollingPeriod": 144
+        },
+        {
+          "rollingStartNumber": ${generate_date_rsn(true,-5)},
+          "keyData": "${generate_key(true)}",
+          "rollingPeriod": 144
+        },
+        {
+          "rollingStartNumber": ${generate_date_rsn(true,-4)},
+          "keyData": "${generate_key(true)}",
+          "rollingPeriod": 144
+        },
+        {
+          "rollingStartNumber": ${generate_date_rsn(true,-3)},
+          "keyData": "${generate_key(true)}",
+          "rollingPeriod": 144
+        },
+        {
+          "rollingStartNumber": ${generate_date_rsn(true,-2)},
+          "keyData": "${generate_key(true)}",
+          "rollingPeriod": 144
+        },
+        {
+          "rollingStartNumber": ${generate_date_rsn(true,-1)},
+          "keyData": "${generate_key(true)}",
+          "rollingPeriod": 144
+        }
+      ],
+      "padding": "Yg=="
+    }`,
+    invalid_dynamic_tomorrow: `{
       "bucketId": "BUCKETID",
       "keys": [
         {
