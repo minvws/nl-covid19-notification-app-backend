@@ -74,6 +74,11 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
         ).then(function (postkeys) {
           postkeys_response = postkeys;
         });
+      })
+      .then(function (){
+          return lab_verify(pollToken, version).then(function (response) {
+            lab_verify_response = response;
+          });
       }).then(function (){
           console.log(`Start delay for ${delayInMilliseconds/1000/60} min.`)
           console.log('started delay at: ' + new Date(Date.now()).toLocaleString());
@@ -82,12 +87,7 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
               resolve();
             }, delayInMilliseconds);
           })
-        })
-      .then(function (){
-          return lab_verify(pollToken, version).then(function (response) {
-            lab_verify_response = response;
-          });
-        })
+      })
       .then(function () {
         return manifest(version).then(function (manifest) {
           manifest_response = manifest;
@@ -179,10 +179,14 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
           }
         })
       })
+
     })
 
-
-
+    if(!found){
+      let keyArray = []
+      exposure_key_send.forEach(keys => keyArray.push(keys.keyData))
+      expect(true, `Expected send keys ${keyArray} are found in the manifest`).to.be.eql(false);
+    }
   });
 
 });
