@@ -15,9 +15,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             _CacheControlHeaderProcessor = cacheControlHeaderProcessor ?? throw new ArgumentNullException(nameof(cacheControlHeaderProcessor));
         }
 
-        public async Task Execute(HttpContext httpContext, string id)
+        public async Task Execute(HttpContext httpContext, string type, string id)
         {
-            var e = await _GetCommand.Execute(httpContext, ContentTypes.ExposureKeySet, id);
+            var e = await _GetCommand.Execute(httpContext, type, id);
             if (e == null) return;
             _CacheControlHeaderProcessor.Execute(httpContext, e);
             await httpContext.Response.Body.WriteAsync(e.Content);

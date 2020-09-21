@@ -38,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
         [Route("/v1/exposurekeyset/{id}")]
         public async Task GetExposureKeySet(string id, [FromServices] HttpGetCdnEksCommand command)
         {
-            await command.Execute(HttpContext, id);
+            await command.Execute(HttpContext, ContentTypes.ExposureKeySet, id);
         }
     }
 }
