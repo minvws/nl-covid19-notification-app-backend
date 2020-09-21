@@ -123,10 +123,12 @@ const data = {
 
 function generate_date_rsn(valid,days){
   days = days || 0;
-  var unix_sec = moment().add(days, 'days').unix()
+  let unix_sec = moment().add(days, 'days').unix();
+  let rsn = Math.floor(unix_sec / 600);
 
   if (valid) {
-    return unix_sec;
+    // console.log("RSN: " + rsn)
+    return rsn;
   } else {
     return 0;
   }
