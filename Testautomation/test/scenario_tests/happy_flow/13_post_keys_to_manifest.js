@@ -45,7 +45,7 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
 
         return lab_confirm(
             dataprovider.get_data(
-                "lab_confirm_payload", "payload", "valid_dynamic_13_keys", map)
+                "lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
             , version
         ).then(function (confirm) {
           lab_confirm_response = confirm;
@@ -130,17 +130,18 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
   it("The exposureKey pushed was in the manifest", function () {
     let exposure_key_send = JSON.parse(
       dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_13_keys", new Map())
-    ).keys[0].keyData;
+    ).keys;
 
     console.log('Number of exposure_keyset_decoded_set: ' + exposure_keyset_decoded_set.length);
 
-    let found = false;
     exposure_keyset_decoded_set.forEach(exposure_keyset_decoded => {
-      console.log(exposure_keyset_decoded.exposureKeySet);
+      console.log('Received key set: ' + exposure_keyset_decoded.exposureKeySet);
 
-      for(key of exposure_keyset_decoded.eks.keys){
-          // console.log(`Validating key ${key.keyData} is eql to ${exposure_key_send}`);
-          if (key.keyData == exposure_key_send){
+      exposure_keyset_decoded.eks.keys.forEach(received_keys => {
+        exposure_key_send.forEach(send_keys => {
+          console.log('Send key:' + send_keys.keyData + ' = ' + received_keys.keyData + '?')
+          found = false;
+          if (received_keys.keyData == send_keys.keyData){
             found = true;
             // validate transmissionRiskLevel number based on the rollingStartIntervalNumber
             let rollingStartIntervalNumber = key.rollingStartIntervalNumber * 600;
@@ -170,21 +171,17 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
                 expectedRiskLevel = 6
                 break;
             }
-            expect(key.transmissionRiskLevel,`key: ${key.keyData}`).to.be.eql(expectedRiskLevel)
+            expect(received_keys.transmissionRiskLevel,`key: ${received_keys.keyData}`).to.be.eql(expectedRiskLevel)
 
+            if(found){
+              expect(true, `Expected EKS ${send_keys.keyData} is found in the manifest`).to.be.eql(true);
+            }
           }
-      }
+        })
+      })
     })
 
-    if(found){
-      expect(true, `Expected EKS ${exposure_key_send} is found in the manifest`).to.be.eql(true);
-    }
 
-    if (!found) {
-      expect(true, `Expected EKS ${exposure_key_send} in manifest but not found`).to.be.eql(
-          false
-      );
-    }
 
   });
 

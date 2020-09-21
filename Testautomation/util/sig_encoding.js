@@ -27,7 +27,7 @@ let testsSig = function (payload,confirmationKey){
                         console.log('resultBase64: ' + resultBase64);
                         console.log('resultBase64UrlEncode: ' + resultBase64UrlEncode);
                     }
-                    tmpObj.removeCallback(); // remove temp file
+                    // tmpObj.removeCallback(); // remove temp file
                     resolve({sig:resultBase64UrlEncode});
                 });
             });

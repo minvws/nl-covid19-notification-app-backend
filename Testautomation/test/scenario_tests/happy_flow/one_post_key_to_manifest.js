@@ -29,7 +29,7 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
     exposureKeySet,
     exposure_keyset_decoded_set = [],
     version = "v1",
-    delayInMilliseconds = 1000; // delay should be minimal 6 min.
+    delayInMilliseconds = 360000; // delay should be minimal 6 min.
 
   beforeEach(done => setTimeout(done, 2000));
 
@@ -74,6 +74,11 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
         ).then(function (postkeys) {
           postkeys_response = postkeys;
         });
+      })
+      .then(function (){
+          return lab_verify(pollToken, version).then(function (response) {
+            lab_verify_response = response;
+          });
       }).then(function (){
           console.log(`Start delay for ${delayInMilliseconds/1000/60} min.`)
           console.log('started delay at: ' + new Date(Date.now()).toLocaleString());
@@ -82,12 +87,7 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
               resolve();
             }, delayInMilliseconds);
           })
-        })
-      .then(function (){
-          return lab_verify(pollToken, version).then(function (response) {
-            lab_verify_response = response;
-          });
-        })
+      })
       .then(function () {
         return manifest(version).then(function (manifest) {
           manifest_response = manifest;
