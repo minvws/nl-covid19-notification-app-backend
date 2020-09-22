@@ -34,12 +34,14 @@
       <None Remove="Resources\payload-duplicate-TEKs-KeyData.json" />
       <None Remove="Resources\payload-duplicate-TEKs-RSN-and-RP.json" />
       <None Remove="Resources\payload-duplicate-TEKs-RSN.json" />
+      <None Remove="Resources\payload-good00.json" />
       <None Remove="Resources\payload-good01.json" />
       <None Remove="Resources\payload-good14.json" />
       <None Remove="Resources\payload.json" />
     </ItemGroup>
 
     <ItemGroup>
+      <EmbeddedResource Include="Resources\payload-good00.json" />
       <EmbeddedResource Include="Resources\payload-ancient-TEKs.json" />
       <EmbeddedResource Include="Resources\payload-duplicate-TEKs-KeyData.json" />
       <EmbeddedResource Include="Resources\payload-duplicate-TEKs-RSN-and-RP.json" />
