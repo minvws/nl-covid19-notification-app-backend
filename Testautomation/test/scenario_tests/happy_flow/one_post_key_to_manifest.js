@@ -59,7 +59,9 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
         map.set("BUCKETID", formated_bucket_id);
 
         payload = dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map)
+        payload = JSON.parse(payload);
         payload = JSON.stringify(payload);
+        console.log('payload scenario: ' + payload)
 
         return testsSig(
           payload,
