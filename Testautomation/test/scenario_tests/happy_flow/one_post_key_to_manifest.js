@@ -1,5 +1,6 @@
 const chai = require("chai");
 const expect = chai.expect;
+const moment = require("moment");
 const dataprovider = require("../../data/dataprovider");
 const app_register = require("../../behaviours/app_register_behaviour");
 const post_keys = require("../../behaviours/post_keys_behaviour");
@@ -129,34 +130,37 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
   })
 
   it("Labverify should be true, so postkey is uploaded to bucket", function (){
-    expect(lab_verify_response.data.valid,"postkey is in bucket").to.be.equal("true")
+    expect(lab_verify_response.data.valid,"postkey is in bucket").to.be.equal(true)
   })
 
-  it("The exposureKey pushed was in the manifest", function () {
+  it("The exposureKey pushed was in the manifest and has the correct risklevel", function () {
     let exposure_key_send = JSON.parse(
       dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", new Map())
     ).keys[0].keyData;
 
-    console.log('Number of exposure_keyset_decoded_set: ' + exposure_keyset_decoded_set.length);
-
     let found = false;
-    exposure_keyset_decoded_set.forEach(exposure_keyset_decoded => {
-      console.log(exposure_keyset_decoded.exposureKeySet);
 
+    exposure_keyset_decoded_set.forEach(exposure_keyset_decoded => {
       for(key of exposure_keyset_decoded.eks.keys){
           // console.log(`Validating key ${key.keyData} is eql to ${exposure_key_send}`);
           if (key.keyData == exposure_key_send){
+            console.log('Key found in EKS: ' + exposure_keyset_decoded.exposureKeySet);
             found = true;
+
+            // validate key is found in manifest
+            expect(key.keyData, `Expected EKS ${exposure_key_send} is found in the manifest`).to.be.eql(exposure_key_send);
+
             // validate transmissionRiskLevel number based on the rollingStartIntervalNumber
             let rollingStartIntervalNumber = key.rollingStartIntervalNumber * 600;
             let DSSO = moment().add(-1, 'days').unix(); // yesterday
             let RSN = moment(rollingStartIntervalNumber);
             let dif = Math.floor((DSSO+RSN) / 86400);
             let expectedRiskLevel;
-            // console.log('yesterday:' + moment.unix(x).format('dddd, MMMM Do, YYYY h:mm:ss A'));
-            // console.log('rollingStartIntervalNumber: ' + moment.unix(rollingStartIntervalNumber).format('dddd, MMMM Do, YYYY h:mm:ss A'));
-            // console.log('dif in days: ' + dif);
-            // console.log(key.transmissionRiskLevel);
+
+            console.log('yesterday:' + moment.unix(x).format('dddd, MMMM Do, YYYY h:mm:ss A'));
+            console.log('rollingStartIntervalNumber: ' + moment.unix(rollingStartIntervalNumber).format('dddd, MMMM Do, YYYY h:mm:ss A'));
+            console.log('dif in days: ' + dif);
+            console.log(key.transmissionRiskLevel);
             switch (parseInt(dif)){
               case -2: case 3: case 4:
                 // console.log('case -2, 3, 4')
@@ -175,15 +179,14 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
                 expectedRiskLevel = 6
                 break;
             }
-            expect(key.transmissionRiskLevel,`key: ${key.keyData}`).to.be.eql(expectedRiskLevel)
+
+            expect(key.transmissionRiskLevel,`Risk level ${key.transmissionRiskLevel} key: ${key.keyData}`).to.be.eql(expectedRiskLevel)
 
           }
       }
     })
 
-    if(found){
-      expect(true, `Expected EKS ${exposure_key_send} is found in the manifest`).to.be.eql(true);
-    }
+
 
     if (!found) {
       expect(true, `Expected EKS ${exposure_key_send} in manifest but not found`).to.be.eql(
@@ -192,5 +195,6 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
     }
 
   });
+
 
 });
