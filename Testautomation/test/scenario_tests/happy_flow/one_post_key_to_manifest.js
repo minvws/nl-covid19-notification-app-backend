@@ -29,6 +29,7 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
     exposureKeySet,
     exposure_keyset_decoded_set = [],
     version = "v1",
+    payload,
     delayInMilliseconds = 360000; // delay should be minimal 6 min.
 
   beforeEach(done => setTimeout(done, 2000));
@@ -57,18 +58,19 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
         let map = new Map();
         map.set("BUCKETID", formated_bucket_id);
 
+        let payload = dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map)
+        payload = payload.toString();
+        console.log('payload: ' + payload)
+        console.log(typeof payload)
         return testsSig(
-          dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map),
+          payload,
           formatter.format_remove_characters(app_register_response.data.confirmationKey)
         );
       })
       .then(function (sig) {
-        let map = new Map();
-        map.set("BUCKETID", formated_bucket_id);
 
         return post_keys(
-          dataprovider.get_data(
-              "post_keys_payload", "payload", "valid_dynamic_yesterday", map)
+            payload
             , sig.sig
             , version
         ).then(function (postkeys) {

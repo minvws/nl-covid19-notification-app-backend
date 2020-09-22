@@ -27,7 +27,7 @@ async function postkeys(endpoint, payload, sig) {
     method: "post",
     url: endpoint + "?sig=" + sig,
     headers: { Accept: "application/json" },
-    data: JSON.parse(payload),
+    data: payload,
   });
 
   return response;
