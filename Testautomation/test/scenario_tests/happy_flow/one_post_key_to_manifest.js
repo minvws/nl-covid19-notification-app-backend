@@ -154,14 +154,14 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
             let rollingStartIntervalNumber = key.rollingStartIntervalNumber * 600;
             let DSSO = moment().add(-1, 'days').unix(); // yesterday
             let RSN = moment(rollingStartIntervalNumber);
-            let dif = Math.floor((DSSO+RSN) / 86400);
+            let numberOfDays = Math.floor((DSSO+RSN) / 86400); // 24 hours in sec.
             let expectedRiskLevel;
 
-            console.log('yesterday:' + moment.unix(x).format('dddd, MMMM Do, YYYY h:mm:ss A'));
+            console.log('yesterday:' + moment.unix(DSSO).format('dddd, MMMM Do, YYYY h:mm:ss A'));
             console.log('rollingStartIntervalNumber: ' + moment.unix(rollingStartIntervalNumber).format('dddd, MMMM Do, YYYY h:mm:ss A'));
-            console.log('dif in days: ' + dif);
+            console.log('Number of days: ' + numberOfDays);
             console.log(key.transmissionRiskLevel);
-            switch (parseInt(dif)){
+            switch (parseInt(numberOfDays)){
               case -2: case 3: case 4:
                 // console.log('case -2, 3, 4')
                 expectedRiskLevel = 2;
