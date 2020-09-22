@@ -121,7 +121,11 @@ describe("Validate push of my exposure key into manifest - #first_postkey_then_l
 
   after(function (){
     dataprovider.clear_saved();
-  })
+  });
+
+  if("Labverify should be true, so postkey is uploaded to bucket", function (){
+    expect(lab_verify_response.data.valid,"postkey is in bucket").to.be.equal("true")
+  });
 
   it("The exposureKey pushed was in the manifest", function () {
     let exposure_key_send = JSON.parse(

@@ -44,10 +44,7 @@ describe("Postkyes endpoint tests #postkeys #endpoints #regression", function ()
     })
 
     it("I should be registered", function () {
-        expect(
-            app_register_response.status,
-            "response status code"
-        ).to.be.eql(200);
+        expect(app_register_response.status,"response status code").to.be.eql(200);
     });
 
     it('I should have send the exposurekeys succesfully', function () {

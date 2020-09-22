@@ -127,6 +127,10 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
     dataprovider.clear_saved();
   })
 
+  it("Labverify should be true, so postkey is uploaded to bucket", function (){
+    expect(lab_verify_response.data.valid,"postkey is in bucket").to.be.equal("true")
+  })
+
   it("The exposureKey pushed was in the manifest", function () {
     let exposure_key_send = JSON.parse(
       dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", new Map())

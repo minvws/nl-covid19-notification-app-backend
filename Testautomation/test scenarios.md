@@ -23,13 +23,13 @@ To validate if the endpoints are up-and-running the following validations are pe
 ### B. Scenario's workout
 
 1. Happy flow scenarios (all 200 OK and manifest is updated)
-    - [ ] Register > LabConfirm > Postkeys > wachten (6 minutes) > Labverify > Manifest > EKS
+    - [ ] Register > LabConfirm > Postkeys > Labverify > wachten (6 minutes) > Manifest > EKS
       * determine transmissionRiskLevel (TRL) 1/2/3 based on de RollingStartNumber (RSN) + DateOfSymptomsOnset (aantal dagen tussen)
 	  * validate new key is in manifest
 	  * Etag is changed with new manifest (304 vs. 200)  
     - [x] validate all exposure keys in manifest 
     - [ ] API versioning => v1 validatie / v2 validatie => different certificate
-    - [ ] 13 keys in postkey array
+    - [x] 13 keys in postkey array
     - [ ] update appconfig if etag is changed in manifest
 
 2. Timing scenarios (validation of the business rules round the postkeys)
@@ -42,7 +42,7 @@ To validate if the endpoints are up-and-running the following validations are pe
 	    - [ ] 1.5 GAEN framework (key today + key yesterday): yesterday is processed & today is delayed in backend
 
 3. Sequence scenarios (validation of the business rules round the postkeys)
-	- [x] Register > Postkeys > LabConfirm > wachten (6 minutes) > Labverify > Manifest > EKS
+	- [x] Register > Postkeys > LabConfirm > Labverify > wachten (6 minutes) > Manifest > EKS
 
 4. Frequency scenarios (validation of the business rules round the postkeys)
 	- [ ] Register > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > Postkeys > LabConfirm > wachten (6 minutes) > Labverify > Manifest > EKS
