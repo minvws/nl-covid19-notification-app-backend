@@ -23,6 +23,7 @@ async function postkeys(endpoint, payload, sig) {
   instance.interceptors.request.use(axiosLogger.requestLogger,axiosLogger.errorLogger);
   instance.interceptors.response.use(axiosLogger.responseLogger,axiosLogger.errorLogger);
 
+  console.log('payload: ' + payload)
   const response = await instance({
     method: "post",
     url: endpoint + "?sig=" + sig,

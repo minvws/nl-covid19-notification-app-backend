@@ -58,17 +58,15 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
         let map = new Map();
         map.set("BUCKETID", formated_bucket_id);
 
-        let payload = dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map)
-        payload = payload.toString();
-        console.log('payload: ' + payload)
-        console.log(typeof payload)
+        payload = dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map)
+        payload = JSON.stringify(payload);
+
         return testsSig(
           payload,
           formatter.format_remove_characters(app_register_response.data.confirmationKey)
         );
       })
       .then(function (sig) {
-
         return post_keys(
             payload
             , sig.sig
