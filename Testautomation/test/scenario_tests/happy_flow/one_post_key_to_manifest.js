@@ -1,6 +1,5 @@
 const chai = require("chai");
 const expect = chai.expect;
-const moment = require("moment");
 const dataprovider = require("../../data/dataprovider");
 const app_register = require("../../behaviours/app_register_behaviour");
 const post_keys = require("../../behaviours/post_keys_behaviour");
@@ -11,6 +10,7 @@ const manifest = require("../../behaviours/manifest_behaviour");
 const exposure_key_set = require("../../behaviours/exposure_keys_set_behaviour");
 const decode_protobuf = require("../../../util/protobuff_decoding");
 const formatter = require("../../../util/format_strings");
+const calcRSN = require("../../../util/calcRSN");
 
 describe("Validate push of my exposure key into manifest - #one_post_key_to_manifest #scenario #regression", function () {
   this.timeout(3000 * 60 * 30);
@@ -29,14 +29,16 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
     formated_bucket_id,
     exposureKeySet,
     exposure_keyset_decoded_set = [],
-    version = "v1",
+    currentVersion = "v1",
+    nextVersion = "v2",
     payload,
+    expectedTRL,
     delayInMilliseconds = 360000; // delay should be minimal 6 min.
 
   beforeEach(done => setTimeout(done, 2000));
 
   before(function () {
-    return app_register(version)
+    return app_register(currentVersion)
       .then(function (register) {
         app_register_response = register;
         labConfirmationId = register.data.labConfirmationId;
@@ -48,7 +50,7 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
         return lab_confirm(
             dataprovider.get_data(
                 "lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
-            , version
+            , currentVersion
         ).then(function (confirm) {
           lab_confirm_response = confirm;
           pollToken = confirm.data.pollToken;
@@ -72,13 +74,13 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
         return post_keys(
             payload
             , sig.sig
-            , version
+            , currentVersion
         ).then(function (postkeys) {
           postkeys_response = postkeys;
         });
       })
       .then(function (){
-          return lab_verify(pollToken, version).then(function (response) {
+          return lab_verify(pollToken, currentVersion).then(function (response) {
             lab_verify_response = response;
           });
       }).then(function (){
@@ -91,7 +93,7 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
           })
       })
       .then(function () {
-        return manifest(version).then(function (manifest) {
+        return manifest(nextVersion).then(function (manifest) {
           manifest_response = manifest;
           exposureKeySet = manifest.content.exposureKeySets;
         });
@@ -100,7 +102,7 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
 
         function getExposureKeySet(exposureKeySetId){
           return new Promise(function(resolve){
-            exposure_key_set(exposureKeySetId, version).then(function (exposure_keyset) {
+            exposure_key_set(exposureKeySetId, nextVersion).then(function (exposure_keyset) {
               exposure_keyset_response = exposure_keyset;
               return decode_protobuf(exposure_keyset_response)
                   .then(function (EKS) {
@@ -138,11 +140,16 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
       dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", new Map())
     ).keys[0].keyData;
 
+    let dateOfSymptomsOnset = JSON.parse(dataprovider.get_data(
+        "lab_confirm_payload", "payload", "valid_dynamic_yesterday", new Map())
+    ).dateOfSymptomsOnset;
+    dateOfSymptomsOnset = new Date(dateOfSymptomsOnset)
+
     let found = false;
 
     exposure_keyset_decoded_set.forEach(exposure_keyset_decoded => {
       for(key of exposure_keyset_decoded.eks.keys){
-          // console.log(`Validating key ${key.keyData} is eql to ${exposure_key_send}`);
+
           if (key.keyData == exposure_key_send){
             console.log('Key found in EKS: ' + exposure_keyset_decoded.exposureKeySet);
             found = true;
@@ -151,36 +158,8 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
             expect(key.keyData, `Expected EKS ${exposure_key_send} is found in the manifest`).to.be.eql(exposure_key_send);
 
             // validate transmissionRiskLevel number based on the rollingStartIntervalNumber
-            let rollingStartIntervalNumber = key.rollingStartIntervalNumber * 600;
-            let DSSO = moment().add(-1, 'days').unix(); // yesterday
-            let RSN = moment(rollingStartIntervalNumber);
-            let numberOfDays = Math.floor((DSSO+RSN) / 86400); // 24 hours in sec.
-            let expectedRiskLevel;
-
-            console.log('yesterday:' + moment.unix(DSSO).format('dddd, MMMM Do, YYYY h:mm:ss A'));
-            console.log('rollingStartIntervalNumber: ' + moment.unix(rollingStartIntervalNumber).format('dddd, MMMM Do, YYYY h:mm:ss A'));
-            console.log('Number of days: ' + numberOfDays);
-            console.log(key.transmissionRiskLevel);
-            switch (parseInt(numberOfDays)){
-              case -2: case 3: case 4:
-                // console.log('case -2, 3, 4')
-                expectedRiskLevel = 2;
-                break
-              case -1: case 0: case 1: case 2:
-                // console.log('case -1, 0, 1, 2')
-                expectedRiskLevel = 3;
-                break;
-              case 5: case 6: case 7: case 8: case 9: case 10: case 11:
-                // console.log('case 5, 6, 7, 8. 9, 10, 11')
-                expectedRiskLevel = 1
-                break;
-              default:
-                // console.log('default case')
-                expectedRiskLevel = 6
-                break;
-            }
-
-            expect(key.transmissionRiskLevel,`Risk level ${key.transmissionRiskLevel} key: ${key.keyData}`).to.be.eql(expectedRiskLevel)
+            expectedTRL = calcRSN(key.rollingStartIntervalNumber,dateOfSymptomsOnset)
+            expect(key.transmissionRiskLevel,`Risk level ${key.transmissionRiskLevel} key: ${key.keyData}`).to.be.eql(expectedTRL)
 
           }
       }

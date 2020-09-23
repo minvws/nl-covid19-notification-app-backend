@@ -28,13 +28,14 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
     formated_bucket_id,
     exposureKeySet,
     exposure_keyset_decoded_set = [],
-    version = "v1",
+    currentVersion = "v1",
+    nextVersion = "v2",
     delayInMilliseconds = 1000; // delay should be minimal 6 min.
 
   beforeEach(done => setTimeout(done, 2000));
 
   before(function () {
-    return app_register(version)
+    return app_register(currentVersion)
       .then(function (register) {
         app_register_response = register;
         labConfirmationId = register.data.labConfirmationId;
@@ -46,7 +47,7 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
         return lab_confirm(
             dataprovider.get_data(
                 "lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
-            , version
+            , currentVersion
         ).then(function (confirm) {
           lab_confirm_response = confirm;
           pollToken = confirm.data.pollToken;
@@ -70,13 +71,13 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
           dataprovider.get_data(
               "post_keys_payload", "payload", "valid_dynamic_13_keys", map)
             , sig.sig
-            , version
+            , currentVersion
         ).then(function (postkeys) {
           postkeys_response = postkeys;
         });
       })
       .then(function (){
-          return lab_verify(pollToken, version).then(function (response) {
+          return lab_verify(pollToken, currentVersion).then(function (response) {
             lab_verify_response = response;
           });
       }).then(function (){
@@ -89,7 +90,7 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
           })
       })
       .then(function () {
-        return manifest(version).then(function (manifest) {
+        return manifest(nextVersion).then(function (manifest) {
           manifest_response = manifest;
           exposureKeySet = manifest.content.exposureKeySets;
         });
@@ -98,7 +99,7 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
 
         function getExposureKeySet(exposureKeySetId){
           return new Promise(function(resolve){
-            exposure_key_set(exposureKeySetId, version).then(function (exposure_keyset) {
+            exposure_key_set(exposureKeySetId, nextVersion).then(function (exposure_keyset) {
               exposure_keyset_response = exposure_keyset;
               return decode_protobuf(exposure_keyset_response)
                   .then(function (EKS) {

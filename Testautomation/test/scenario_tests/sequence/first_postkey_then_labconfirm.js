@@ -10,6 +10,7 @@ const manifest = require("../../behaviours/manifest_behaviour");
 const exposure_key_set = require("../../behaviours/exposure_keys_set_behaviour");
 const decode_protobuf = require("../../../util/protobuff_decoding");
 const formatter = require("../../../util/format_strings");
+const calcRSN = require("../../../util/calcRSN");
 
 describe("Validate push of my exposure key into manifest - #first_postkey_then_labconfirm #scenario #regression", function () {
   this.timeout(2000 * 60 * 30);
@@ -28,11 +29,14 @@ describe("Validate push of my exposure key into manifest - #first_postkey_then_l
     formated_bucket_id,
     exposureKeySet,
     exposure_keyset_decoded_set = [],
-    version = "v1",
-    delayInMilliseconds = 1000; // delay should be minimal 6 min.
+    currentVersion = "v1",
+    nextVersion = "v2",
+    payload,
+    expectedTRL,
+    delayInMilliseconds = 360000; // delay should be minimal 6 min.
 
   before(function () {
-    return app_register(version)
+    return app_register(currentVersion)
       .then(function (register) {
         app_register_response = register;
         labConfirmationId = register.data.labConfirmationId;
@@ -42,8 +46,12 @@ describe("Validate push of my exposure key into manifest - #first_postkey_then_l
         let map = new Map();
         map.set("BUCKETID", formated_bucket_id);
 
+        payload = dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map)
+        payload = JSON.parse(payload);
+        payload = JSON.stringify(payload);
+
         return testsSig(
-          dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map),
+          payload,
           formatter.format_remove_characters(app_register_response.data.confirmationKey)
         );
       })
@@ -52,9 +60,9 @@ describe("Validate push of my exposure key into manifest - #first_postkey_then_l
         map.set("BUCKETID", formated_bucket_id);
 
         return post_keys(
-          dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map)
+          payload
             , sig.sig
-            , version
+            , currentVersion
         ).then(function (postkeys) {
           postkeys_response = postkeys;
         });
@@ -65,10 +73,15 @@ describe("Validate push of my exposure key into manifest - #first_postkey_then_l
 
         return lab_confirm(
             dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
-            , version
+            , currentVersion
         ).then(function (confirm) {
           lab_confirm_response = confirm;
           pollToken = confirm.data.pollToken;
+        });
+      })
+      .then(function () {
+        return lab_verify(pollToken, currentVersion).then(function (response) {
+          lab_verify_response = response;
         });
       })
       .then(function (){
@@ -80,12 +93,7 @@ describe("Validate push of my exposure key into manifest - #first_postkey_then_l
         })
       })
       .then(function () {
-        return lab_verify(pollToken, version).then(function (response) {
-          lab_verify_response = response;
-        });
-      })
-      .then(function () {
-        return manifest(version).then(function (manifest) {
+        return manifest(nextVersion).then(function (manifest) {
           manifest_response = manifest;
           exposureKeySet = manifest.content.exposureKeySets;
         });
@@ -94,7 +102,7 @@ describe("Validate push of my exposure key into manifest - #first_postkey_then_l
 
         function getExposureKeySet(exposureKeySetId){
           return new Promise(function(resolve){
-            exposure_key_set(exposureKeySetId, version).then(function (exposure_keyset) {
+            exposure_key_set(exposureKeySetId, nextVersion).then(function (exposure_keyset) {
               exposure_keyset_response = exposure_keyset;
               return decode_protobuf(exposure_keyset_response)
                   .then(function (EKS) {
@@ -123,32 +131,41 @@ describe("Validate push of my exposure key into manifest - #first_postkey_then_l
     dataprovider.clear_saved();
   });
 
-  if("Labverify should be true, so postkey is uploaded to bucket", function (){
-    expect(lab_verify_response.data.valid,"postkey is in bucket").to.be.equal("true")
-  });
+  it("Labverify should be true, so postkey is uploaded to bucket", function (){
+    expect(lab_verify_response.data.valid,"postkey is in bucket").to.be.equal(true)
+  })
 
-  it("The exposureKey pushed was in the manifest", function () {
+  it("The exposureKey pushed was in the manifest and has the correct risklevel", function () {
     let exposure_key_send = JSON.parse(
-      dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", new Map())
+        dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic", new Map())
     ).keys[0].keyData;
 
-    console.log('Number of exposure_keyset_decoded_set: ' + exposure_keyset_decoded_set.length);
+    let dateOfSymptomsOnset = JSON.parse(dataprovider.get_data(
+        "lab_confirm_payload", "payload", "valid_dynamic_yesterday", new Map())
+    ).dateOfSymptomsOnset;
+    dateOfSymptomsOnset = new Date(dateOfSymptomsOnset)
 
     let found = false;
-    exposure_keyset_decoded_set.forEach(exposure_keyset_decoded => {
-      console.log(exposure_keyset_decoded.exposureKeySet);
 
+    exposure_keyset_decoded_set.forEach(exposure_keyset_decoded => {
       for(key of exposure_keyset_decoded.eks.keys){
-          // console.log(`Validating key ${key.keyData} is eql to ${exposure_key_send}`);
-          if (key.keyData == exposure_key_send){
-            found = true;
-          }
+
+        if (key.keyData == exposure_key_send){
+          console.log('Key found in EKS: ' + exposure_keyset_decoded.exposureKeySet);
+          found = true;
+
+          // validate key is found in manifest
+          expect(key.keyData, `Expected EKS ${exposure_key_send} is found in the manifest`).to.be.eql(exposure_key_send);
+
+          // validate transmissionRiskLevel number based on the rollingStartIntervalNumber
+          expectedTRL = calcRSN(key.rollingStartIntervalNumber,dateOfSymptomsOnset)
+          expect(key.transmissionRiskLevel,`Risk level ${key.transmissionRiskLevel} key: ${key.keyData}`).to.be.eql(expectedTRL)
+
+        }
       }
     })
 
-    if(found){
-      expect(true, `Expected EKS ${exposure_key_send} is found in the manifest`).to.be.eql(true);
-    }
+
 
     if (!found) {
       expect(true, `Expected EKS ${exposure_key_send} in manifest but not found`).to.be.eql(
