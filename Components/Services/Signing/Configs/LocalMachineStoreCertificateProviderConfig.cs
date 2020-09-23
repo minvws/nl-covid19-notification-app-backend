@@ -10,7 +10,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
     public class LocalMachineStoreCertificateProviderConfig : AppSettingsReader, IThumbprintConfig
     {
         public LocalMachineStoreCertificateProviderConfig(IConfiguration config, string? prefix = null) : base(config, prefix) { }
-        public string Thumbprint => GetConfigValue("Thumbprint", "Unspecified default!");
+
+        public string Thumbprint => GetConfigValue("Thumbprint", string.Empty);
         public bool RootTrusted => GetConfigValue(nameof(RootTrusted), true);
+        public bool Valid => !string.IsNullOrWhiteSpace(Thumbprint);
     }
 }

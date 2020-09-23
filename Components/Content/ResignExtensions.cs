@@ -21,17 +21,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
         public static void NlResignerStartup(this IServiceCollection services)
         {
-            services.AddTransient<NlContentResignExistingV1ContentCommand>();
+            services.AddTransient(
+                x => new NlContentResignExistingV1ContentCommand(x.GetRequiredService<NlContentResignCommand>(), 
+                    new LocalMachineStoreCertificateProviderConfig(x.GetRequiredService<IConfiguration>(), NlSettingPrefix), 
+                    x.GetRequiredService<ILogger<NlContentResignExistingV1ContentCommand>>()));
 
             services.AddTransient(
                 x => new NlContentResignCommand(
-                    x.GetRequiredService<Func<ContentDbContext>>(),
-                    new CmsSignerEnhanced(
-                        new LocalMachineStoreCertificateProvider(new LocalMachineStoreCertificateProviderConfig(x.GetRequiredService<IConfiguration>(), NlSettingPrefix), x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>()),
-                        new EmbeddedResourcesCertificateChainProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), ChainPrefix)),
-                        x.GetRequiredService<IUtcDateTimeProvider>()),
+                        x.GetRequiredService<Func<ContentDbContext>>(),
+                        new CmsSignerEnhanced(
+                            new LocalMachineStoreCertificateProvider(new LocalMachineStoreCertificateProviderConfig(x.GetRequiredService<IConfiguration>(), NlSettingPrefix), x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>()),
+                            new EmbeddedResourcesCertificateChainProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), ChainPrefix)),
+                            x.GetRequiredService<IUtcDateTimeProvider>()),
                         x.GetRequiredService<ILogger<NlContentResignCommand>>()));
-                
+
         }
     }
 }
