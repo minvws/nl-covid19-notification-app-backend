@@ -8,5 +8,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
     {
         public const string EksEngineInput = "EksCreateJobInput";
         public const string EksEngineOutput = "EksCreateJobOutput";
+        public const string DiagnosisKeys = "DiagnosisKeys";
+        public const string ExternalTemporaryExposureKeys = "ExternalTemporaryExposureKeys";
+        public const string IncomingBatchJobs = "IncomingBatchJobs";
+        public const string OutgoingBatchJobs = "OutgoingBatchJobs";
+        public const string InteropKeySet = "InteropKeySet";
     }
 }

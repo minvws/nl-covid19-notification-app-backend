@@ -1,6 +1,6 @@
 ﻿{
-  "androidMinimumVersion": 0,
-  "iOSMinimumVersion": "1.0.0",
+  "androidMinimumVersion": 71407,
+  "iOSMinimumVersion": "1.0.7",
   "iOSMinimumVersionMessage": "",
   "iOSAppStoreURL": "https://apps.apple.com/nl/app/id1517652429",
   "manifestFrequency": 240,

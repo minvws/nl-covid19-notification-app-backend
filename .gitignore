@@ -152,9 +152,12 @@ coverage*[.json, .xml, .info]
 *.coveragexml
 
 # NCrunch
+globalconfig.crunch.v3.xml
 _NCrunch_*
-.*crunch*.local.xml
+_NCrunch_\**
+SOLUTION.v3.ncrunchsolution.user
 nCrunchTemp_*
+
 
 # MightyMoose
 *.mm.*
