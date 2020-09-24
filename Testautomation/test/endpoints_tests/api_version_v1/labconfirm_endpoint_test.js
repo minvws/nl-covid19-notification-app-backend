@@ -1,18 +1,21 @@
 const chai = require("chai");
 const expect = chai.expect;
-const app_register = require("../behaviours/app_register_behaviour");
-const lab_confirm = require("../behaviours/labconfirm_behaviour");
-const formatter = require("../../util/format_strings");
-const dataprovider = require("../data/dataprovider");
+const app_register = require("../../behaviours/app_register_behaviour");
+const lab_confirm = require("../../behaviours/labconfirm_behaviour");
+const formatter = require("../../../util/format_strings");
+const dataprovider = require("../../data/dataprovider");
 
 describe("Lab confirm endpoints tests #labconfirm #endpoints #regression", function () {
   this.timeout(3000 * 60 * 30);
 
-  let app_register_response, lab_confirm_response, labConfirmationId;
+  let app_register_response,
+      lab_confirm_response,
+      labConfirmationId,
+      version = "v1";
 
   before(function (){
     // Do an API request
-    return app_register().then(function (register){
+    return app_register(version).then(function (register){
       app_register_response = register;
       labConfirmationId = register.data.labConfirmationId;
 
@@ -22,9 +25,9 @@ describe("Lab confirm endpoints tests #labconfirm #endpoints #regression", funct
 
       return lab_confirm(
           dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
+          ,version
           ).then(function (confirm){
         lab_confirm_response = confirm;
-        // console.log(lab_confirm_response);
       });
     });
   });

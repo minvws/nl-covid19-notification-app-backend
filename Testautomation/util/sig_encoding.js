@@ -1,66 +1,41 @@
 const fs = require("fs");
 const exec = require('child_process').exec;
-const padding = require("../test/data/scenario_data/app_register_padding_data");
+const execSync = require('child_process').execSync;
+const tmp = require('tmp');
 const extraConsoleLogging = false; // switch to true to log debug stuff
 
-let testsSig = function (payload,confirmationKey){
-    return new Promise(function (resolve,reject){
+let testsSig = function (payload, confirmationKey) {
+    return new Promise(function (resolve) {
 
-        let fileName = __dirname + '/temp/payload'
+        let tmpObj = tmp.fileSync({mode: 0644, prefix: 'tempfile', postfix: '.txt'});
+        // let path = tmpObj.name.substring(0, tmpObj.name.lastIndexOf('/'));
+        // let file = tmpObj.name.substring(tmpObj.name.lastIndexOf('/') + 1);
 
-        const writeFilePromise = (file, data) => {
-            return new Promise((resolve, reject) => {
-                fs.writeFile(file, data, error => {
-                    if (error) reject(error);
-                    resolve("done");
-                });
-            });
+        let optionsA = {
+            encoding: 'utf8'
         };
+        let optionsB = {
+            encoding: 'binary'
+        };
+        fs.writeFileSync(tmpObj.name, payload)
 
         let keyCommand = `echo ${confirmationKey} | base64 -d | xxd -p -c 256`;
+        let KEY = execSync(keyCommand,optionsA)
+        let sigCommand = `cat ${tmpObj.name} | openssl sha256 -mac HMAC -macopt hexkey:${KEY}`
+        const sig = execSync(sigCommand, optionsB);
+        let resultHex = sig.replace("(stdin)= ", "");
+        let resultBase64 = Buffer.from(resultHex, 'hex').toString('base64');
+        let resultBase64UrlEncode = encodeURIComponent(resultBase64);
 
-        const fileCreate = writeFilePromise(fileName,payload);
-        const sig = fileCreate.then(inputFile => {
-            execShellCommand(keyCommand).then(KEY => {
-                let sigCommand = `cat ${fileName} | openssl sha256 -mac HMAC -macopt hexkey:${KEY} -binary`;
-                execShellCommand(sigCommand).then(result => {
-                    // remove prefix fromm the result
-                    var resultHex = result.replace("(stdin)= ", "");
-                    var resultBase64 = Buffer.from(resultHex, 'hex').toString('base64');
-                    var resultBase64UrlEncode = encodeURIComponent(resultBase64);
+        if (extraConsoleLogging) {
+            console.log('result: ' + sig);
+            console.log('resultHex: ' + resultHex);
+            console.log('resultBase64: ' + resultBase64);
+            console.log('resultBase64UrlEncode: ' + resultBase64UrlEncode);
+        }
+        tmpObj.removeCallback();
+        resolve({sig: resultBase64UrlEncode});
 
-                    if(extraConsoleLogging) {
-                        console.log('result: ' + result);
-                        console.log('resultHex: ' + resultHex);
-                        console.log('resultBase64: ' + resultBase64);
-                        console.log('resultBase64UrlEncode: ' + resultBase64UrlEncode);
-                    }
-                    resolve({sig:resultBase64UrlEncode});
-                });
-            });
-        })
-        const fileRemove = sig.then(file => {
-            fs.unlink(fileName, (err) => {
-                if (err) {
-                    console.error(err)
-                    return
-                }
-            });
-        })
-
-
-        function execShellCommand(cmd) {
-            return new Promise((resolve, reject) => {
-                exec(cmd, (error, stdout, stderr) => {
-                    if (error) {
-                        console.warn("!!! ERROR !!!");
-                        console.warn(error);
-                    }
-                    resolve(stdout? stdout : stderr);
-                })
-            })
-        };
     });
 }
-
-exports.testsSig = testsSig;
+module.exports = testsSig;

@@ -1,20 +1,23 @@
 const chai = require("chai");
 const expect = chai.expect;
-const app_config = require("../behaviours/appconfig_behaviour");
-const manifest = require("../behaviours/manifest_behaviour");
+const app_config = require("../../behaviours/appconfig_behaviour");
+const manifest = require("../../behaviours/manifest_behaviour");
 
 describe("Appconfig endpoints tests #appconfig #endpoints #regression", function () {
   this.timeout(2000 * 60 * 30);
 
-  let manifest_response, appconfig_response, appConfigId;
+  let manifest_response,
+      appconfig_response,
+      appConfigId,
+      version = "v1";
 
   before(function (){
-    return manifest().then(function (manifest){
+    return manifest(version).then(function (manifest){
       manifest_response = manifest;
       appConfigId = manifest.content.appConfig;
 
     }).then(function (){
-      return app_config(appConfigId).then(function (config){
+      return app_config(appConfigId,version).then(function (config){
         appconfig_response = config;
       })
     });
@@ -43,10 +46,11 @@ describe("Appconfig endpoints tests #appconfig #endpoints #regression", function
     let maxAge = appconfig_response.response.headers["cache-control"].split("="); // max age is number of sec.
     maxAge = parseInt(maxAge[1]);
 
-    expect(maxAge - 1209600,
-        `Response max-age (${appconfig_response.response.headers["cache-control"]} is not older then ${parseInt(maxAge)/3600/24} days ago`
+    expect(1209600 - maxAge,
+        `Response max-age ${Math.floor(maxAge/3600/24)} is not older then 1209600 sec. (14 days) ago`
     ).to.be.least(0);
   });
+
 
   it('Appconfig has all needed property keys', function () {
     expect(appconfig_response.content).to.have.nested.property("androidMinimumVersion");

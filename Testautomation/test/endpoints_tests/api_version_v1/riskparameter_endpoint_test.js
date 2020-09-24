@@ -1,20 +1,23 @@
 const chai = require("chai");
 const expect = chai.expect;
-const riskparameter = require("../behaviours/riskparameter_behaviour");
-const manifest = require("../behaviours/manifest_behaviour");
+const riskparameter = require("../../behaviours/riskparameter_behaviour");
+const manifest = require("../../behaviours/manifest_behaviour");
 
 describe("Riskparameter endpoints tests #riskparameter #endpoints #regression", function () {
   this.timeout(2000 * 60 * 30);
 
-  let manifest_response, riskparameter_response, riskParameterId;
+  let manifest_response,
+      riskparameter_response,
+      riskParameterId,
+      version = "v1";
 
   before(function (){
-    return manifest().then(function (manifest){
+    return manifest(version).then(function (manifest){
       manifest_response = manifest;
       riskParameterId = manifest.content.riskCalculationParameters;
 
     }).then(function (){
-      return riskparameter(riskParameterId).then(function (risks){
+      return riskparameter(riskParameterId, version).then(function (risks){
         riskparameter_response = risks;
       })
     });
@@ -41,11 +44,10 @@ describe("Riskparameter endpoints tests #riskparameter #endpoints #regression", 
     let maxAge = riskparameter_response.response.headers["cache-control"].split("="); // max age is number of sec.
     maxAge = parseInt(maxAge[1]);
 
-    expect(maxAge - 1209600,
-        `Response max-age (${riskparameter_response.response.headers["cache-control"]} is not older then ${parseInt(maxAge)/3600/24} days ago`
+    expect(1209600 - maxAge,
+        `Response max-age ${Math.floor(maxAge/3600/24)} is not older then 1209600 sec. (14 days) ago`
     ).to.be.least(0);
   });
-
 
   it('Risk calculation parameter has all needed property keys', function () {
     expect(riskparameter_response.content).to.have.nested.property("minimumRiskScore");
