@@ -1,14 +1,16 @@
 const chai = require("chai");
 const expect = chai.expect;
-const app_register = require("../behaviours/app_register_behaviour");
+const app_register = require("../../behaviours/app_register_behaviour");
 
 let app_register_response;
 
 describe("Register endpoint test #register #endpoints #scenario #regression", function () {
     this.timeout(2000 * 60 * 30);
 
+    version = "v1";
+
     before(function () {
-        return app_register().then(function (register) {
+        return app_register(version).then(function (register) {
             app_register_response = register;
         })
     });

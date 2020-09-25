@@ -22,7 +22,7 @@ function get_data(scenario, step, state, map_of_vars) {
 }
 
 function clear_saved(){
-  this.saved = new Map();
+  saved.clear();
 }
 
 module.exports = {

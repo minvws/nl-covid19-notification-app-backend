@@ -1,14 +1,15 @@
 const chai = require("chai");
 const expect = chai.expect;
-const manifest = require("../behaviours/manifest_behaviour");
+const manifest = require("../../behaviours/manifest_behaviour");
 
 describe("Manifest endpoints tests #manifest #endpoints #regression", function () {
     this.timeout(2000 * 60 * 30);
 
-    let manifest_response;
+    let manifest_response,
+        version = "v1";
 
     before(function () {
-        return manifest().then(function (manifest) {
+        return manifest(version).then(function (manifest) {
             manifest_response = manifest;
         })
     });
