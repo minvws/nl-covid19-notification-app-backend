@@ -156,7 +156,6 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
         ).keys;
 
         console.log('Number of exposure_keyset_decoded_set: ' + exposure_keyset_decoded_set.length);
-        let found = false;
 
         exposure_keyset_decoded_set.forEach(exposure_keyset_decoded => {
             console.log('Received key set: ' + exposure_keyset_decoded.exposureKeySet);
@@ -166,21 +165,26 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
 
                     if (received_keys.keyData == send_keys.keyData) {
                         console.log('Key found in EKS: ' + exposure_keyset_decoded.exposureKeySet);
-                        found = true;
-
-                        // validate key is found in manifest
-                        expect(received_keys.keyData, `Expected EKS ${send_keys.keyData} is found in the manifest`).to.be.eql(send_keys.keyData);
+                        console.log('send_keys.keyData: ' + send_keys.keyData);
+                        for (var i = 0; i < exposure_key_send.length; i++) {
+                            if (exposure_key_send[i].keyData === send_keys.keyData) {
+                                exposure_key_send.splice(i, 1);
+                            }
+                        }
                     }
                 })
             })
         })
 
-        if (!found) {
-            expect(true, `Expected EKS keys in manifest but not found`).to.be.eql(
-                false
-            );
+        // validate keys are found in manifest
+        if (exposure_key_send.length === 0) {
+            expect(exposure_key_send.length, `Expected EKS are found in the manifest`).to.be.equal(0);
+        } else {
+            let result = "";
+            exposure_key_send.forEach(item => result += ` "` + item.keyData.toString() + `" `)
+            console.log('payload: ' + JSON.parse(payload))
+            expect(exposure_key_send.length, `Expected EKS keys ${result} are NOT found in the manifest`).to.be.equal(0);
         }
-
     });
 
 });
