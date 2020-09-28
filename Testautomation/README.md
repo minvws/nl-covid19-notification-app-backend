@@ -73,13 +73,16 @@ You need to replace `[bearer-token]` with the `fgGgrdsd573fghk643` part of the t
     * scenario's => only runs scenario's tests
     * regression => runs the whole API test suite
 * To run a collection the following command can be used
-    * `mocha --recursive --grep '#endpoints' --environment=TST --reporter mocha-junit-reporter --reporter-options mochaFile=./reports/junit/file.xml --token=[bearer-token]`
-    * `mocha --recursive --grep '#endpoints' --environment=TST --reporter mochawesome --reporter-options reportDir=./reports/mochawesome,reportFilename=mochawesome --token=[bearer-token]`
-        ** `[bearer-token]`: this is the token sans the prefix `Bearer `, as described above.
-        ** `recursive`: fetches all test on lower directories
-        ** `grep`: search term in header of every test
-        ** `#endpoints`: search term by grep
-        ** `environment`: to switch between an environment like TST for test, ACC for acceptance and PROD for production
-        ** `reporter`: which report is created when running the test, besides junit, mochawesome (HTML/jSON) can also used
-        ** `reporter-options`: location where the report is saved and the name of the report
+    * `mocha --recursive --grep '#endpoints' --environment=TST --version=v1 --reporter mocha-junit-reporter --reporter-options mochaFile=./reports/junit/file.xml --token=[bearer-token]`
+    * `mocha --recursive --grep '#endpoints' --environment=TST --version=v1 --reporter mochawesome --reporter-options reportDir=./reports/mochawesome,reportFilename=mochawesome --token=[bearer-token]`
+        * `[bearer-token]`: this is the token sans the prefix `Bearer `, as described above.
+        * `recursive`: fetches all test on lower directories
+        * `grep`: search term in header of every test
+        * `#endpoints`: search term by grep
+        
+    * Optional parameters:
+        * `environment`: to switch between an environment like TST for test, ACC for acceptance and PROD for production
+        * `version`: to switch between a version of the api
+        * `reporter`: which report is created when running the test, besides junit, mochawesome (HTML/jSON) can also used
+        * `reporter-options`: location where the report is saved and the name of the report
 

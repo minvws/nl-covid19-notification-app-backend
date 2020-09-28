@@ -1,32 +1,40 @@
 const chai = require("chai");
 const expect = chai.expect;
-const app_register = require("../behaviours/app_register_behaviour");
-const lab_confirm = require("../behaviours/labconfirm_behaviour");
-const lab_verify = require("../behaviours/labverify_behaviour");
-const formatter = require("../../util/format_strings");
-const dataprovider = require("../data/dataprovider");
+const app_register = require("../../behaviours/app_register_behaviour");
+const lab_confirm = require("../../behaviours/labconfirm_behaviour");
+const lab_verify = require("../../behaviours/labverify_behaviour");
+const formatter = require("../../../util/format_strings");
+const dataprovider = require("../../data/dataprovider");
 
 describe("Lab verify endpoints tests #labverify #endpoints #regression", function () {
   this.timeout(3000 * 60 * 30);
 
-  let app_register_response, lab_confirm_response, pollToken, lab_verify_response, labConfirmationId;
+  let app_register_response,
+      lab_confirm_response,
+      pollToken,
+      lab_verify_response,
+      labConfirmationId,
+      version = "v1";
 
     before(function (){
-      return app_register().then(function (register){
+      return app_register(version).then(function (register){
         app_register_response = register;
         labConfirmationId = register.data.labConfirmationId;
       }).then(function (){
         let map = new Map();
         map.set("LABCONFIRMATIONID", formatter.format_remove_dash(labConfirmationId));
 
-        return lab_confirm(dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
+        return lab_confirm(
+            dataprovider.get_data("lab_confirm_payload", "payload", "valid_dynamic_yesterday", map)
+            ,version
         ).then(function (confirm){
           lab_confirm_response = confirm;
           pollToken = confirm.data.pollToken;
         });
       }).then(function (){
-        return lab_verify(pollToken).then(function (response){
+        return lab_verify(pollToken,version).then(function (response){
           lab_verify_response = response;
+          // console.log(lab_verify_response.data)
         });
       });
     });

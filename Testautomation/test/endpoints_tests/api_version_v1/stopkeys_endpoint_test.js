@@ -1,27 +1,29 @@
 const chai = require("chai");
 const expect = chai.expect;
-const app_register = require("../behaviours/app_register_behaviour");
-const stop_keys = require("../behaviours/post_keys_behaviour");
-const testsSig = require("../../util/sig_encoding");
-const formatter = require("../../util/format_strings");
-const dataprovider = require("../data/dataprovider");
+const app_register = require("../../behaviours/app_register_behaviour");
+const stop_keys = require("../../behaviours/post_keys_behaviour");
+const testsSig = require("../../../util/sig_encoding");
+const formatter = require("../../../util/format_strings");
+const dataprovider = require("../../data/dataprovider");
 
 describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function () {
     this.timeout(2000 * 60 * 30);
 
-    let app_register_response, stopkeys_response;
+    let app_register_response,
+        stopkeys_response,
+        version = "v1";
 
     before(function () {
-        return app_register().then(function (register) {
+        return app_register(version).then(function (register) {
             app_register_response = register;
         }).then(function (sig) {
-            return testsSig.testsSig(app_register_response.data.bucketId, app_register_response.data.confirmationKey)
+            return testsSig(app_register_response.data.bucketId, app_register_response.data.confirmationKey)
         }).then(function (sig) {
             formated_bucket_id = formatter.format_remove_characters(app_register_response.data.bucketId)
             let map = new Map();
             map.set("BUCKETID", formated_bucket_id);
 
-            return testsSig.testsSig(
+            return testsSig(
                 dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map),
                 formatter.format_remove_characters(app_register_response.data.confirmationKey)
             )
@@ -31,7 +33,9 @@ describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function (
                 map.set("BUCKETID", formated_bucket_id);
 
                 return stop_keys(
-                    dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map), sig.sig
+                    dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map)
+                    , sig.sig
+                    , version
                 ).then(function (stopkeys) {
                     stopkeys_response = stopkeys;
                 });

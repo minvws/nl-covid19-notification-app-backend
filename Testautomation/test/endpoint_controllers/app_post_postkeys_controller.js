@@ -26,8 +26,10 @@ async function postkeys(endpoint, payload, sig) {
   const response = await instance({
     method: "post",
     url: endpoint + "?sig=" + sig,
-    headers: { Accept: "application/json" },
-    data: JSON.parse(payload),
+    headers: { "Accept": "application/json",
+      "Content-Type":"application/json"
+    },
+    data: payload,
   });
 
   return response;

@@ -1,20 +1,24 @@
 const chai = require("chai");
 const expect = chai.expect;
-const manifest = require("../behaviours/manifest_behaviour");
-const exposure_key_set = require("../behaviours/exposure_keys_set_behaviour");
-const decode_protobuf = require("../../util/protobuff_decoding");
+const manifest = require("../../behaviours/manifest_behaviour");
+const exposure_key_set = require("../../behaviours/exposure_keys_set_behaviour");
+const decode_protobuf = require("../../../util/protobuff_decoding");
 
 describe("Manifest endpoints tests #single_exposure_key #endpoints #regression", function () {
     this.timeout(2000 * 60 * 30);
 
-    let manifest_response, exposureKeySetId, exposure_keyset_response, exposure_keyset_decoded;
+    let manifest_response,
+        exposureKeySetId,
+        exposure_keyset_response,
+        exposure_keyset_decoded,
+        version = "v1";
 
     before(function () {
-        return manifest().then(function (manifest) {
+        return manifest(version).then(function (manifest) {
             manifest_response = manifest;
             exposureKeySetId = manifest.content.exposureKeySets[0];
         }).then(async function () {
-            return exposure_key_set(exposureKeySetId).then(function (exposure_keyset) {
+            return exposure_key_set(exposureKeySetId,version).then(function (exposure_keyset) {
                 exposure_keyset_response = exposure_keyset;
                 return decode_protobuf(exposure_keyset_response)
                     .then(function (EKS) {
@@ -41,8 +45,8 @@ describe("Manifest endpoints tests #single_exposure_key #endpoints #regression",
         let maxAge = exposure_keyset_response.headers["cache-control"].split("="); // max age is number of sec.
         maxAge = parseInt(maxAge[1]);
 
-        expect(maxAge - 1209600,
-            `Response max-age (${exposure_keyset_response.headers["cache-control"]} is not older then ${parseInt(maxAge)/3600/24} days ago`
+        expect(1209600 - maxAge,
+            `Response max-age ${Math.floor(maxAge/3600/24)} is not older then 1209600 sec. (14 days) ago`
         ).to.be.least(0);
     });
 

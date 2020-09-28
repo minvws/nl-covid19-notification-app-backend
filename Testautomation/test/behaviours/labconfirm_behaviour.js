@@ -3,8 +3,10 @@ const labconfirm_controller = require("../endpoint_controllers/icc_post_labconfi
 const bearer = require("../../util/icc_bearer_token_data");
 const env = require("../../util/env_config");
 
-async function labconfirm(payload) {
-  return await labconfirm_controller(env.LABCONFIRM,payload, bearer);
+async function labconfirm(payload, version) {
+  let str = env.LABCONFIRM
+  let endpoint = str.replace("v1",version);
+  return await labconfirm_controller(endpoint,payload, bearer);
 }
 
 module.exports = labconfirm;
