@@ -71,7 +71,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             services.AddScoped(x => DbContextStartup.Workflow(x));
             services.AddScoped<HttpPostAuthoriseCommand>();
-            services.AddScoped<HttpPostLabVerifyCommand>();
             services.AddScoped<HttpGetLogoutCommand>();
             services.AddScoped<HttpGetUserClaimCommand>();
             services.AddScoped<HttpPostAuthorizationTokenCommand>();
@@ -83,7 +82,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
             services.AddTransient<AuthorisationArgsValidator>();
-            services.AddTransient<LabVerifyArgsValidator>();
             services.AddTransient<AuthorisationWriterCommand>();
 
 

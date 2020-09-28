@@ -48,7 +48,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
         public string? PollToken { get; set; }
 
         public virtual ICollection<TekEntity> Teks { get; set; } = new List<TekEntity>();
-
-        public bool TeksTouched { get; set; }
     }
 }
