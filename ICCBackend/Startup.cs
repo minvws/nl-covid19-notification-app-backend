@@ -89,7 +89,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             services.AddTransient<IJwtService, JwtService>();
 
-            if (_IsDev)
+            if (_WebHostEnvironment.IsStaging() || _WebHostEnvironment.IsDevelopment())
             {
                 services.AddTransient<IJwtClaimValidator, TestJwtClaimValidator>();
                 services.AddSingleton<TestJwtGeneratorService>();
