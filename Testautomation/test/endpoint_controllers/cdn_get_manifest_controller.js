@@ -1,6 +1,7 @@
 const axios = require("axios");
 const AdmZip = require("adm-zip");
 const axiosLogger = require("axios-logger");
+const fs = require('fs');
 
 async function manifest(endpoint) {
 
@@ -38,6 +39,8 @@ async function manifest(endpoint) {
     })
 
     let zip = new AdmZip(response.data);
+    fs.writeFileSync( `util/temp/manifest_response.zip`, zip);
+
     let zipEntries = zip.getEntries();
     content = JSON.parse(zip.readAsText(zipEntries[0]).toString('utf8'));
 

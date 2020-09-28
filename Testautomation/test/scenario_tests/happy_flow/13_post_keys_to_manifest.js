@@ -155,6 +155,12 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
             dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_13_keys", new Map())
         ).keys;
 
+        let dateOfSymptomsOnset = JSON.parse(
+            dataprovider.get_data(
+                "lab_confirm_payload", "payload", "valid_dynamic_yesterday", new Map())
+        ).dateOfSymptomsOnset;
+        dateOfSymptomsOnset = new Date(dateOfSymptomsOnset)
+
         console.log('Number of exposure_keyset_decoded_set: ' + exposure_keyset_decoded_set.length);
 
         exposure_keyset_decoded_set.forEach(exposure_keyset_decoded => {
@@ -181,8 +187,8 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
             expect(exposure_key_send.length, `Expected EKS are found in the manifest`).to.be.equal(0);
         } else {
             let result = "";
-            exposure_key_send.forEach(item => result += ` "RSN: ` + item.rollingStartNumber + " keydata: " + item.keyData + `" `)
-            expect(exposure_key_send.length, `Expected EKS keys ${result} are NOT found in the manifest`).to.be.equal(0);
+            exposure_key_send.forEach(item => result += ` "RSN: ${item.rollingStartNumber}, keydata: ${item.keyData}" `)
+            expect(exposure_key_send.length, `Expected EKS keys ${result} are NOT found in the manifest when DSSO is ${dateOfSymptomsOnset}`).to.be.equal(0);
         }
     });
 

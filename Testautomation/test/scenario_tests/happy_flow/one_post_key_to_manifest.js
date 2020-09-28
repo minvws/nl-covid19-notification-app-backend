@@ -169,7 +169,7 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
                     found = true;
 
                     // validate key is found in manifest
-                    expect(key.keyData, `Expected EKS ${exposure_key_send} is found in the manifest`).to.be.eql(exposure_key_send);
+                    expect(key.keyData, `Expected EKS ${exposure_key_send} is found in the manifest, when DSSO is ${dateOfSymptomsOnset}`).to.be.eql(exposure_key_send);
 
                     // validate transmissionRiskLevel number based on the rollingStartIntervalNumber
                     expectedTRL = calcTRL(key.rollingStartIntervalNumber, dateOfSymptomsOnset)
