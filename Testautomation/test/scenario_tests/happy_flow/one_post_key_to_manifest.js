@@ -34,7 +34,7 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
         nextVersion = "v2",
         payload,
         expectedTRL,
-        delayInMilliseconds = 360000; // delay should be minimal 6 min.
+        delayInMilliseconds = 10 * 60 * 1000 // delay should be minimal 10 min.
 
     beforeEach(done => setTimeout(done, 2000));
 
