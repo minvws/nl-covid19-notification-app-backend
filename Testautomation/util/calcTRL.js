@@ -10,9 +10,6 @@ function calcTRL(rollingStartNumber, dateOfSymptomsOnset) {
     let rsnJsEpoch = rsnUnixEpoch * 1000;
     let rsnDate = new Date(rsnJsEpoch);
     let daysSinceSymptomOnset = Math.floor((rsnDate - dateOfSymptomsOnset) / MillisecondsInDay)
-    console.log('rsnDate: ' + rsnDate)
-    console.log('dateOfSymptomsOnset: ' + dateOfSymptomsOnset)
-    console.log('daysSinceSymptomOnset: ' + daysSinceSymptomOnset)
     if (daysSinceSymptomOnset <= -3) return TransmissionRiskLevel.None;
     if (daysSinceSymptomOnset <= -2) return TransmissionRiskLevel.Medium;
     if (daysSinceSymptomOnset <= 2) return TransmissionRiskLevel.High;

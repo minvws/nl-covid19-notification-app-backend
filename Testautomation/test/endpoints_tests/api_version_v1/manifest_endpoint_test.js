@@ -1,11 +1,13 @@
 const chai = require("chai");
 const expect = chai.expect;
 const manifest = require("../../behaviours/manifest_behaviour");
+const certificate_validation = require("../../../util/certificate_validation");
 
 describe("Manifest endpoints tests #manifest #endpoints #regression", function () {
     this.timeout(2000 * 60 * 30);
 
     let manifest_response,
+        content,
         version = "v1";
 
     before(function () {
@@ -42,6 +44,13 @@ describe("Manifest endpoints tests #manifest #endpoints #regression", function (
             `Response max-age (${manifest_response.response.headers["cache-control"]} is not older then ${parseInt(maxAge)} sec. ago`
         ).to.be.least(0);
     });
+
+    // validate certificate validation
+    it.skip("manifest certificate is validate", function (){
+        let result = certificate_validation(manifest_response);
+        console.log(result);
+        expect(result).to.contain("test");
+    })
 
     it("Manifest has all needed property keys", function () {
         expect(manifest_response.content).to.have.nested.property("exposureKeySets");
