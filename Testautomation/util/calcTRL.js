@@ -9,7 +9,7 @@ function calcTRL(rollingStartNumber, dateOfSymptomsOnset) {
     let rsnUnixEpoch = rollingStartNumber * 600;
     let rsnJsEpoch = rsnUnixEpoch * 1000;
     let rsnDate = new Date(rsnJsEpoch);
-    let daysSinceSymptomOnset = Math.ceil(Math.abs(rsnDate - dateOfSymptomsOnset) / MillisecondsInDay)
+    let daysSinceSymptomOnset = Math.floor((rsnDate - dateOfSymptomsOnset) / MillisecondsInDay)
     console.log('rsnDate: ' + rsnDate)
     console.log('dateOfSymptomsOnset: ' + dateOfSymptomsOnset)
     console.log('daysSinceSymptomOnset: ' + daysSinceSymptomOnset)
