@@ -181,8 +181,7 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
             expect(exposure_key_send.length, `Expected EKS are found in the manifest`).to.be.equal(0);
         } else {
             let result = "";
-            exposure_key_send.forEach(item => result += ` "` + item.keyData.toString() + `" `)
-            console.log('payload: ' + JSON.parse(payload))
+            exposure_key_send.forEach(item => result += ` "RSN: ` + item.rollingStartNumber + " keydata: " + item.keyData + `" `)
             expect(exposure_key_send.length, `Expected EKS keys ${result} are NOT found in the manifest`).to.be.equal(0);
         }
     });

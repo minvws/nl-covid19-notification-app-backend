@@ -10,7 +10,7 @@ const manifest = require("../../behaviours/manifest_behaviour");
 const exposure_key_set = require("../../behaviours/exposure_keys_set_behaviour");
 const decode_protobuf = require("../../../util/protobuff_decoding");
 const formatter = require("../../../util/format_strings");
-const calcRSN = require("../../../util/calcRSN");
+const calcRSN = require("../../../util/calcTRL");
 
 describe("Validate push of my exposure key into manifest - #first_postkey_then_labconfirm #scenario #regression", function () {
   this.timeout(2000 * 60 * 30);
