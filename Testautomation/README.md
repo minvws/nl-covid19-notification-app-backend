@@ -1,4 +1,6 @@
 # Corona backend API suite
+Marc van 't Veer & Michiel Keij
+Polteq.com
 
 ## Instructions for setup API CI set
 
