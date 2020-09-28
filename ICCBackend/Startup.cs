@@ -38,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
         private const string Title = "GGD Portal Backend V1";
 
         private readonly bool _IsDev;
-        private readonly bool _IsStaging;
+        private readonly bool _UseTestJwtClaims;
         private readonly IConfiguration _Configuration;
         private readonly IWebHostEnvironment _WebHostEnvironment;
 
@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
             _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _WebHostEnvironment = env;
             _IsDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
-            _IsStaging = env?.IsStaging() ?? throw new ArgumentException(nameof(env));
+            _UseTestJwtClaims = !env.IsProduction();
         }
 
 
@@ -91,7 +91,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             services.AddTransient<IJwtService, JwtService>();
 
-            if (_IsDev || _IsStaging)
+            if (_UseTestJwtClaims)
             {
                 services.AddTransient<IJwtClaimValidator, TestJwtClaimValidator>();
                 services.AddSingleton<TestJwtGeneratorService>();
