@@ -46,7 +46,8 @@ describe("Manifest endpoints tests #manifest #endpoints #regression", function (
     });
 
     // validate certificate validation
-    it.skip("manifest certificate is validate", function (){
+    it.skip
+    ("manifest certificate is validate", function (){
         let result = certificate_validation(manifest_response);
         console.log(result);
         expect(result).to.contain("test");
