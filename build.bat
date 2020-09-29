@@ -12,7 +12,7 @@ FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-parse --short HEAD`) DO (
 REM Publish websites
 dotnet publish BatchJobsApi\BatchJobsApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\BatchJobsApi --version-suffix %suffix%
 dotnet publish ContentApi\ContentApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\ContentApi --version-suffix %suffix%
-dotnet publish ICCBackend\ICCBackend.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\ICCBackend --version-suffix %suffix%
+dotnet publish IccBackend\IccBackend.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\IccBackend --version-suffix %suffix%
 dotnet publish MobileAppApi\MobileAppApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\MobileAppApi --version-suffix %suffix%
 dotnet publish ManagementPortal\ManagementPortal.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\ManagementPortal --version-suffix %suffix%
 

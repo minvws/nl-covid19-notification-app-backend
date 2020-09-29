@@ -12,7 +12,7 @@ cd ..
 REM Zip websites
 7z a -tzip packages\Batch\Website.BatchJobsApi.zip publish\BatchJobsApi"
 7z a -tzip packages\App\Website.ContentApi.zip publish\ContentApi"
-7z a -tzip packages\App\Website.ICCBackend.zip publish\ICCBackend"
+7z a -tzip packages\App\Website.IccBackend.zip publish\IccBackend"
 7z a -tzip packages\App\Website.MobileAppApi.zip publish\MobileAppApi"
 
 REM Zip command-line

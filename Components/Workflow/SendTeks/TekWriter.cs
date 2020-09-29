@@ -24,7 +24,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         {
             if (args == null) throw new ArgumentNullException(nameof(args));
 
-            args.WorkflowStateEntityEntity.TeksTouched = true;
             var entities = args.NewItems.Select(Mapper.MapToEntity).ToArray();
             
             foreach (var e in entities)

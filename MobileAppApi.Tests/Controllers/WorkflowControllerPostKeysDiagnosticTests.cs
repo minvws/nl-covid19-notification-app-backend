@@ -101,15 +101,15 @@ namespace MobileAppApi.Tests.Controllers
 
 
         [Theory]
-        [InlineData("Resources.payload-good00.json", 0, 7, 2, true)]
-        [InlineData("Resources.payload-good01.json", 1, 7, 2, true)]
-        [InlineData("Resources.payload-good14.json", 14, 7, 11, true)]
-        [InlineData("Resources.payload-duplicate-TEKs-RSN-and-RP.json", 0, 7, 11, false)]
-        [InlineData("Resources.payload-duplicate-TEKs-KeyData.json", 0, 7, 11, false)]
-        [InlineData("Resources.payload-duplicate-TEKs-RSN.json", 13, 8, 13, true )]
-        [InlineData("Resources.payload-ancient-TEKs.json", 1, 7, 1, true)]
+        [InlineData("Resources.payload-good00.json", 0, 7, 2)]
+        [InlineData("Resources.payload-good01.json", 1, 7, 2)]
+        [InlineData("Resources.payload-good14.json", 14, 7, 11)]
+        [InlineData("Resources.payload-duplicate-TEKs-RSN-and-RP.json", 0, 7, 11)]
+        [InlineData("Resources.payload-duplicate-TEKs-KeyData.json", 0, 7, 11)]
+        [InlineData("Resources.payload-duplicate-TEKs-RSN.json", 13, 8, 13)]
+        [InlineData("Resources.payload-ancient-TEKs.json", 1, 7, 1)]
         [ExclusivelyUses("WorkflowControllerPostKeysTests")]
-        public async Task PostWorkflowTest(string file, int keyCount, int mm, int dd, bool teksTouched)
+        public async Task PostWorkflowTest(string file, int keyCount, int mm, int dd)
         {
 
             _FakeTimeProvider.Value = new DateTime(2020, mm, dd, 0, 0, 0, DateTimeKind.Utc);
@@ -140,9 +140,6 @@ namespace MobileAppApi.Tests.Controllers
             var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Equal(keyCount, items.Count);
-
-            var wf = await _DbcFac().KeyReleaseWorkflowStates.SingleAsync();
-            Assert.Equal(teksTouched, wf.TeksTouched);
         }
     }
 }
