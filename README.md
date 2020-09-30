@@ -58,13 +58,13 @@ Then clone this repo.
 
 ### ICC Portal
 
-The ICC Portal consists of a .Net Core backend found under `ICCBackend` and an Angular / ASP.Net MVC Core frontend found under `ICCPortal`
+The ICC Portal consists of a .Net Core backend found under `IccBackend` and an Angular / ASP.Net MVC Core frontend found under `ICCPortal`
 
 #### ICC Portal backend
 
 1. Setup a database instance. Windows users can use a local SQL Server.
-1. Add an `appsettings.Development.json` file to the folder `ICCBackend`. This overrides the settings in appsettings.json. And add a value for the MSS connection string.
-1. Go to the `\ICCBackend` folder and run it with `dotnet run`, this will start the backend in Kestrel.
+1. Add an `appsettings.Development.json` file to the folder `IccBackend`. This overrides the settings in appsettings.json. And add a value for the MSS connection string.
+1. Go to the `\IccBackend` folder and run it with `dotnet run`, this will start the backend in Kestrel.
 1. Access the APIs here: `http://localhost:5000/swagger/index.html`.
 1. To provision the database you must execute `​/devops​/nukeandpavedb` in Swagger.
 1. Done :)

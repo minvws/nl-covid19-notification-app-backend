@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-      <DocumentationFile>$(SolutionDir)\ICCBackend\NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccBackend.xml</DocumentationFile>
+      <DocumentationFile>$(SolutionDir)\IccBackend\NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccBackend.xml</DocumentationFile>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

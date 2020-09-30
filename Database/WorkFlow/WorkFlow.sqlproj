@@ -124,6 +124,8 @@
     <Folder Include="PostDeploy\Scripts" />
     <Folder Include="dbo" />
     <Folder Include="dbo\Tables" />
+    <Folder Include="PreDeploy" />
+    <Folder Include="PreDeploy\Scripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Security\Roles\Dbr_Appbeheerders.sql" />
@@ -223,6 +225,9 @@
     </SqlCmdVariable>
   </ItemGroup>
   <ItemGroup>
-    <RefactorLog Include="WorkFlow.refactorlog" />
+    <PreDeploy Include="PreDeploy\PreDeploy.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PreDeploy\Scripts\DropColumns.sql" />
   </ItemGroup>
 </Project>

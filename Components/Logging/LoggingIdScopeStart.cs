@@ -10,6 +10,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int PostTeks = 200;
         public const int Decoy = 300;
         public const int LabAuthorise = 400;
-        public const int LabVerify = 500;
     }
 }

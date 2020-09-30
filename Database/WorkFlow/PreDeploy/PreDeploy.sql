@@ -1,0 +1,5 @@
+﻿PRINT 'START PRE-DEPLOYMENT'
+
+:r .\Scripts\DropColumns.sql
+
+PRINT 'FINISHED PRE-DEPLOYMENT'

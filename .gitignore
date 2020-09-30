@@ -382,5 +382,5 @@ MigrationBackup/
 publish_Logger.txt
 /BatchJobsApi/NL.Rijksoverheid.ExposureNotification.BackEnd.BatchJobsApi.xml
 /ContentApi/NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.xml
-/ICCBackend/NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccBackend.xml
+/IccBackend/NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccBackend.xml
 /MobileAppApi/NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.xml

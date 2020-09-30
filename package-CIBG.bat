@@ -13,12 +13,12 @@ REM --notice: at CIBG we don't use ZIP files for artifacts
 REM Zip websites
 REM 7z a -tzip packages\Batch\Website.BatchJobsApi.zip publish\BatchJobsApi"
 REM 7z a -tzip packages\App\Website.ContentApi.zip publish\ContentApi"
-REM 7z a -tzip packages\App\Website.ICCBackend.zip publish\ICCBackend"
+REM 7z a -tzip packages\App\Website.IccBackend.zip publish\IccBackend"
 REM 7z a -tzip packages\App\Website.MobileAppApi.zip publish\MobileAppApi"
 
 xcopy ..\s\publish\BatchJobsApi Artifacts\BatchJobsApi /E /I
 xcopy ..\s\publish\ContentApi Artifacts\ContentApi /E /I
-xcopy ..\s\publish\ICCBackend Artifacts\ICCBackend /E /I
+xcopy ..\s\publish\IccBackend Artifacts\IccBackend /E /I
 xcopy ..\s\publish\MobileAppApi Artifacts\MobileAppApi /E /I
 xcopy ..\s\publish\ManagementPortal Artifacts\ManagementPortal /E /I
 
