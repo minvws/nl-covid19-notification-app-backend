@@ -30,7 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeneratedGaenFormat", "Gaen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi", "MobileAppApi\MobileAppApi.csproj", "{DC54D593-4B03-4879-AA7A-5294170AEB49}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccBackend", "ICCBackend\IccBackend.csproj", "{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccBackend", "IccBackend\IccBackend.csproj", "{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5CB694D0-78E1-4347-BF78-A557E0780125}"
 	ProjectSection(SolutionItems) = preProject
