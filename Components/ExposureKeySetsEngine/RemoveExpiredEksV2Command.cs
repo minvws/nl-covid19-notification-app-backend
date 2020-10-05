@@ -14,9 +14,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         private readonly ContentDbContext _DbContext;
         private readonly IEksConfig _Config;
         private readonly IUtcDateTimeProvider _Dtp;
-        private readonly ILogger<RemoveExpiredEksCommand> _Logger;
+        private readonly ILogger<RemoveExpiredEksV2Command> _Logger;
 
-        public RemoveExpiredEksV2Command(ContentDbContext dbContext, IEksConfig config, IUtcDateTimeProvider dtp, ILogger<RemoveExpiredEksCommand> logger)
+        public RemoveExpiredEksV2Command(ContentDbContext dbContext, IEksConfig config, IUtcDateTimeProvider dtp, ILogger<RemoveExpiredEksV2Command> logger)
         {
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _Config = config ?? throw new ArgumentNullException(nameof(config));
