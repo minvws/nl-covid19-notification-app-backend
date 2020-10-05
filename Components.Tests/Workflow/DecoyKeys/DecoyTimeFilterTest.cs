@@ -14,6 +14,7 @@
     using Microsoft.AspNetCore.Routing;
     using Microsoft.AspNetCore.Mvc.Abstractions;
     using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using Moq;
 
     public class DecoyTimeFilterTest
     {
@@ -25,10 +26,16 @@
         public async void DecoyTimeAttribute_ExecutionTakesAtleastNMilliseconds(int delayMs)
         {
             //Arrange
+            var mockRNG = new Mock<IRandomNumberGenerator>();
+            mockRNG.Setup(x =>
+                        x.Next(It.IsAny<int>(), It.IsAny<int>())
+                    ).Returns(delayMs);
+
             var sut = new DecoyTimeGeneratorAttribute(
-                new TestLogger<DecoyTimeGeneratorAttribute>(), 
-                new TestRng(delayMs), 
+                new TestLogger<DecoyTimeGeneratorAttribute>(),
+                mockRNG.Object,
                 new DefaultDecoyKeysConfig());
+
             
             var actionContext = new ActionContext(
                     new DefaultHttpContext(),
@@ -53,28 +60,6 @@
             
             //Assert
             Assert.True(timer.ElapsedMilliseconds >= delayMs, $"Recorded time: {timer.ElapsedMilliseconds}ms.");
-        }
-
-        private class TestRng : IRandomNumberGenerator
-        {
-            private readonly int _Result;
-            
-            public TestRng(int result) => _Result = result;
-            
-            public int Next(int min, int max) => _Result;
-            
-            //ncrunch: no coverage start
-            public byte[] NextByteArray(int _)
-            {
-                throw new NotImplementedException();
-            }
-            //ncrunch: no coverage end
-        }
-
-        private class TestDecoyKeysConfig
-        {
-            public int MinimumDelayInMilliseconds => 0;
-            public int MaximumDelayInMilliseconds => 10000;
         }
     }
 }

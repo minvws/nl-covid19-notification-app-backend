@@ -11,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
     using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
     using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
 
-    // NOTE: DO not apply this attribute directly, apply DecoyTimeGeneratorAttributeFactory
+    // NOTE: do not apply this attribute directly, apply DecoyTimeGeneratorAttributeFactory
     public class DecoyTimeGeneratorAttribute : ActionFilterAttribute
     {
         private readonly ILogger _Logger;
