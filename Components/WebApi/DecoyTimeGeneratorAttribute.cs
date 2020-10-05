@@ -5,7 +5,6 @@
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 {
     using System;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Filters;
     using Microsoft.Extensions.Logging;
     using System.Threading.Tasks;
@@ -29,16 +28,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
             _Config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
-        //Todo: check whether to execute before result is given.
-        public override Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             base.OnActionExecuting(context);
-            var result = next();
 
             var delayInMilliseconds = _RandomNumberGenerator.Next(_Config.MinimumDelayInMilliseconds, _Config.MaximumDelayInMilliseconds);
             _Logger.LogDebug("Delaying for {DelayInMilliseconds} seconds", delayInMilliseconds);
 
-            return new Task(() => Task.Delay(delayInMilliseconds));
+            await Task.Delay(delayInMilliseconds);
+            await next();
         }
     }
 }
