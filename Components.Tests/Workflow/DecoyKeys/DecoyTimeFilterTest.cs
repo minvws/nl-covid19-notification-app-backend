@@ -1,6 +1,5 @@
 ﻿namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.DecoyKeys
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using Xunit;
