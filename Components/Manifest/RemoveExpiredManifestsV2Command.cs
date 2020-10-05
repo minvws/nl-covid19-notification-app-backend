@@ -11,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     
     [Obsolete("Remove this class as soon as the Manifest Engine Mk2 is in place.")]
-    public class RemoveExpiredManifestsCommand
+    public class RemoveExpiredManifestsV2Command
     {
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly Func<ContentDbContext> _DbContextProvider;
@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         private readonly IManifestConfig _ManifestConfig;
         private RemoveExpiredManifestsCommandResult? _Result;
 
-        public RemoveExpiredManifestsCommand(Func<ContentDbContext> dbContextProvider, ILogger<RemoveExpiredManifestsCommand> logger, IManifestConfig manifestConfig, IUtcDateTimeProvider dateTimeProvider)
+        public RemoveExpiredManifestsV2Command(Func<ContentDbContext> dbContextProvider, ILogger<RemoveExpiredManifestsCommand> logger, IManifestConfig manifestConfig, IUtcDateTimeProvider dateTimeProvider)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             _Result = new RemoveExpiredManifestsCommandResult();
 
-            _Logger.LogInformation("Begin removing expired Manifests - Keep Alive Count:{count}", _ManifestConfig.KeepAliveCount);
+            _Logger.LogInformation("Begin removing expired ManifestV2s - Keep Alive Count:{count}", _ManifestConfig.KeepAliveCount);
 
             await using (var dbContext = _DbContextProvider())
             await using (var tx = dbContext.BeginTransaction())
@@ -45,41 +45,41 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 _Result.Found = dbContext.Content.Count();
 
                 var zombies = dbContext.Content
-                    .Where(x => x.Type == ContentTypes.Manifest)
+                    .Where(x => x.Type == ContentTypes.ManifestV2)
                     .OrderByDescending(x => x.Release)
                     .Skip(_ManifestConfig.KeepAliveCount)
                     .Select(x => new { x.PublishingId, x.Release })
                     .ToList();
 
                 _Result.Zombies = zombies.Count;
-                _Logger.LogInformation("Removing expired Manifests - Count:{count}", zombies.Count);
+                _Logger.LogInformation("Removing expired ManifestV2s - Count:{count}", zombies.Count);
                 foreach (var i in zombies)
-                    _Logger.LogInformation("Removing expired Manifest - PublishingId:{PublishingId} Release:{Release}", i.PublishingId, i.Release);
+                    _Logger.LogInformation("Removing expired ManifestV2 - PublishingId:{PublishingId} Release:{Release}", i.PublishingId, i.Release);
 
                 if (zombies.Count == 0)
                 {
-                    _Logger.LogInformation("Finished removing expired Manifests - Nothing to remove.");
+                    _Logger.LogInformation("Finished removing expired ManifestV2s - Nothing to remove.");
                     return _Result;
                 }
 
                 _Result.GivenMercy = dbContext.Database.ExecuteSqlInterpolated(
-                    $"WITH Zombies AS (SELECT Id FROM [Content] WHERE [Type] = 'Manifest' AND [Release] < {_DateTimeProvider.Snapshot} ORDER BY [Release] DESC OFFSET {_ManifestConfig.KeepAliveCount} ROWS) DELETE Zombies");
+                    $"WITH Zombies AS (SELECT Id FROM [Content] WHERE [Type] = {ContentTypes.ManifestV2} AND [Release] < {_DateTimeProvider.Snapshot} ORDER BY [Release] DESC OFFSET {_ManifestConfig.KeepAliveCount} ROWS) DELETE Zombies");
 
                 _Result.GivenMercy += dbContext.Database.ExecuteSqlInterpolated(
-                    $"WITH Zombies AS (SELECT Id FROM [Content] WHERE [Type] = 'Manifest' AND [Release] > {_DateTimeProvider.Snapshot}) DELETE Zombies");
+                    $"WITH Zombies AS (SELECT Id FROM [Content] WHERE [Type] = {ContentTypes.ManifestV2} AND [Release] > {_DateTimeProvider.Snapshot}) DELETE Zombies");
 
                 _Result.Remaining = dbContext.Content.Count();
 
                 tx.Commit();
             }
 
-            _Logger.LogInformation("Finished removing expired Manifests - ExpectedCount:{count} ActualCount:{givenMercy}", _Result.Zombies, _Result.GivenMercy);
+            _Logger.LogInformation("Finished removing expired ManifestV2s - ExpectedCount:{count} ActualCount:{givenMercy}", _Result.Zombies, _Result.GivenMercy);
 
             if (_Result.Reconciliation != 0)
-                _Logger.LogError("Reconciliation failed removing expired Manifests - Found-GivenMercy-Remaining={reconciliation}.", _Result.Reconciliation);
+                _Logger.LogError("Reconciliation failed removing expired ManifestV2s - Found-GivenMercy-Remaining={reconciliation}.", _Result.Reconciliation);
 
             if (_Result.DeletionReconciliation != 0)
-                _Logger.LogError("Reconciliation failed removing expired Manifests - Zombies-GivenMercy={deadReconciliation}.", _Result.DeletionReconciliation);
+                _Logger.LogError("Reconciliation failed removing expired ManifestV2s - Zombies-GivenMercy={deadReconciliation}.", _Result.DeletionReconciliation);
 
             return _Result;
         }

@@ -55,6 +55,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var j6 = serviceProvider.GetRequiredService<IStatisticsCommand>();
             //Remove this one when we have 1 cert chain.
             var j7 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
+            //Clean these two up once the V1 endpoint is deprecated
+            var j8 = serviceProvider.GetRequiredService<RemoveExpiredEksV2Command>();
+            var j9 = serviceProvider.GetRequiredService<RemoveExpiredManifestsV2Command>();
 
             logger.LogInformation("Daily cleanup - EKS engine run starting.");
             j1.Execute().GetAwaiter().GetResult();
@@ -70,6 +73,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             j5.Execute();
             logger.LogInformation("Daily cleanup - Resigning existing v1 content.");
             j7.Execute().GetAwaiter().GetResult();
+            logger.LogInformation("Daily cleanup - Cleanup EKSv2 run starting.");
+            j8.Execute();
+            logger.LogInformation("Daily cleanup - Cleanup ManifestV2 run starting.");
+            j9.Execute();
 
             logger.LogInformation("Daily cleanup - Finished.");
         }
@@ -113,7 +120,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<ZippedSignedContentFormatter>();
 
             services.AddTransient<RemoveExpiredManifestsCommand>();
+            services.AddTransient<RemoveExpiredManifestsV2Command>();
             services.AddTransient<RemoveExpiredEksCommand>();
+            services.AddTransient<RemoveExpiredEksV2Command>();
             services.AddTransient<RemoveExpiredWorkflowsCommand>();
 
             services.AddSingleton<IManifestConfig, ManifestConfig>();
