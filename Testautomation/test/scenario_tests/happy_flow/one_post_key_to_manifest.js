@@ -10,7 +10,7 @@ const manifest = require("../../behaviours/manifest_behaviour");
 const exposure_key_set = require("../../behaviours/exposure_keys_set_behaviour");
 const decode_protobuf = require("../../../util/protobuff_decoding");
 const formatter = require("../../../util/format_strings");
-const calcRSN = require("../../../util/calcRSN");
+const calcTRL = require("../../../util/calcTRL");
 
 describe("Validate push of my exposure key into manifest - #one_post_key_to_manifest #scenario #regression", function () {
     this.timeout(3000 * 60 * 30);
@@ -34,7 +34,7 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
         nextVersion = "v2",
         payload,
         expectedTRL,
-        delayInMilliseconds = 360000; // delay should be minimal 6 min.
+        delayInMilliseconds = 10 * 60 * 1000 // delay should be minimal 10 min.
 
     beforeEach(done => setTimeout(done, 2000));
 
@@ -169,10 +169,10 @@ describe("Validate push of my exposure key into manifest - #one_post_key_to_mani
                     found = true;
 
                     // validate key is found in manifest
-                    expect(key.keyData, `Expected EKS ${exposure_key_send} is found in the manifest`).to.be.eql(exposure_key_send);
+                    expect(key.keyData, `Expected EKS ${exposure_key_send} is found in the manifest, when DSSO is ${dateOfSymptomsOnset}`).to.be.eql(exposure_key_send);
 
                     // validate transmissionRiskLevel number based on the rollingStartIntervalNumber
-                    expectedTRL = calcRSN(key.rollingStartIntervalNumber, dateOfSymptomsOnset)
+                    expectedTRL = calcTRL(key.rollingStartIntervalNumber, dateOfSymptomsOnset)
                     expect(key.transmissionRiskLevel, `Risk level ${key.transmissionRiskLevel} key: ${key.keyData}`).to.be.eql(expectedTRL)
 
                 }

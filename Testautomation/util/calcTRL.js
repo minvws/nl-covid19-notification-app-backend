@@ -5,11 +5,11 @@ const TransmissionRiskLevel = {
     Medium: 2,
     High: 3
 }
-function calcRSN(rollingStartNumber, dateOfSymptomsOnset) {
+function calcTRL(rollingStartNumber, dateOfSymptomsOnset) {
     let rsnUnixEpoch = rollingStartNumber * 600;
     let rsnJsEpoch = rsnUnixEpoch * 1000;
     let rsnDate = new Date(rsnJsEpoch);
-    let daysSinceSymptomOnset = Math.ceil(Math.abs(rsnDate - dateOfSymptomsOnset) / MillisecondsInDay)
+    let daysSinceSymptomOnset = Math.floor((rsnDate - dateOfSymptomsOnset) / MillisecondsInDay)
     if (daysSinceSymptomOnset <= -3) return TransmissionRiskLevel.None;
     if (daysSinceSymptomOnset <= -2) return TransmissionRiskLevel.Medium;
     if (daysSinceSymptomOnset <= 2) return TransmissionRiskLevel.High;
@@ -18,4 +18,4 @@ function calcRSN(rollingStartNumber, dateOfSymptomsOnset) {
     return TransmissionRiskLevel.None;
 }
 
-module.exports = calcRSN;
+module.exports = calcTRL;

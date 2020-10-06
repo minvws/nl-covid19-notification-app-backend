@@ -7,7 +7,7 @@ To validate if the endpoints are up-and-running the following validations are pe
 - [x] status
 - [x] keys present
 - [x] max-age
-- [ ] sig. validation
+- [x] sig. validation
 - [x] number of keys
 - [ ] certificate => unclear which endpoints to validate => key file?
 - [x] versioning (v1 and v2)
