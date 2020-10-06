@@ -2,15 +2,15 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 {
-    using System;
-    using Microsoft.AspNetCore.Mvc.Filters;
-    using Microsoft.Extensions.Logging;
-    using System.Threading.Tasks;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
-
     // NOTE: do not apply this attribute directly, apply DecoyTimeGeneratorAttributeFactory
     public class DecoyTimeGeneratorAttribute : ActionFilterAttribute
     {
@@ -30,8 +30,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            base.OnActionExecuting(context);
-
             var delayInMilliseconds = _RandomNumberGenerator.Next(_Config.MinimumDelayInMilliseconds, _Config.MaximumDelayInMilliseconds);
             _Logger.LogDebug("Delaying for {DelayInMilliseconds} seconds", delayInMilliseconds);
 

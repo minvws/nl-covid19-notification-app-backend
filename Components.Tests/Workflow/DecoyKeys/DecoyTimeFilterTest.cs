@@ -1,20 +1,24 @@
-﻿namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.DecoyKeys
-{
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using Xunit;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
-    using Microsoft.AspNetCore.Mvc.Filters;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Routing;
-    using Microsoft.AspNetCore.Mvc.Abstractions;
-    using Microsoft.AspNetCore.Mvc.ModelBinding;
-    using Moq;
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
 
+using System.Collections.Generic;
+using System.Diagnostics;
+using Xunit;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Moq;
+
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.DecoyKeys
+{
     public class DecoyTimeFilterTest
     {
         [Theory]

@@ -2,12 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 {
-    using System;
-    using Microsoft.AspNetCore.Mvc.Filters;
-    using Microsoft.Extensions.DependencyInjection;
-
     public class DecoyTimeGeneratorAttributeFactory : Attribute, IFilterFactory
     {
         public bool IsReusable => true;
