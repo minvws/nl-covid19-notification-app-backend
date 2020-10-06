@@ -4,7 +4,7 @@ const AdmZip = require("adm-zip");
 
 function decode_proto_buf(response){
   return new Promise(function (resolve,reject){
-    const input_file_path = __dirname + "/temp/eks.zip";
+    const input_file_path = __dirname + "/temp/local_eks.zip";
     response.data.pipe(fs.createWriteStream(input_file_path)).on("close", async function (){
       const zip = new AdmZip(input_file_path);
       let zipEntries = zip.getEntries();

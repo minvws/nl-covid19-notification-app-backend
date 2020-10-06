@@ -11,6 +11,7 @@ describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function (
 
     let app_register_response,
         stopkeys_response,
+        payload,
         version = "v1";
 
     before(function () {
@@ -23,8 +24,12 @@ describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function (
             let map = new Map();
             map.set("BUCKETID", formated_bucket_id);
 
+            payload = dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map)
+            payload = JSON.parse(payload);
+            payload = JSON.stringify(payload);
+
             return testsSig(
-                dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map),
+                payload,
                 formatter.format_remove_characters(app_register_response.data.confirmationKey)
             )
         })
@@ -33,7 +38,7 @@ describe("Stopkyes endpoints tests #stopkeys #endpoints #regression", function (
                 map.set("BUCKETID", formated_bucket_id);
 
                 return stop_keys(
-                    dataprovider.get_data("post_keys_payload", "payload", "valid_dynamic_yesterday", map)
+                    payload
                     , sig.sig
                     , version
                 ).then(function (stopkeys) {

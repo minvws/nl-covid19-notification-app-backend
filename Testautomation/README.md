@@ -1,4 +1,6 @@
 # Corona backend API suite
+Marc van 't Veer & Michiel Keij
+Polteq.com
 
 ## Instructions for setup API CI set
 
@@ -46,6 +48,17 @@ Based on the existing behaviors, endpoints and data providers a test scenario ca
     * Use behaviors and controllers and save responses
     * Chain the requests into a flow and wait for the responses
 * Create the assertions with expect from chai
+
+### Test data
+Test data can be added to the following [folder](Testautomation/test/data). With the dataprovider function this can be used
+in a test. Test data can be of different type, like postkeys or register padding, and of variants of the same type, like postkey
+of yesterday of two weeks ago. Within the different types to create dynamic testdata, like timestamps.
+
+### API versions
+There are multiple API versions, at the moment of writing v1 and v2. This version can be set at different points. The lowest point
+is at runtime, with --version=v1 option on the command-line. At a higher leverl the version can be set within a tests as an variable.
+Then this test will be run for this version. The last option to use version is in scenario's where multiple endpoints with different version
+can be used with the variable currentVersion (v1) and nextVersion (v2).
 
 ## Running the test suite
 
