@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
@@ -14,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
@@ -56,6 +58,40 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             }
         }
 
+        [Fact]
+        public void EksBuilderV1WithDummy_NLSigHasDummyText()
+		{
+            //Arrange
+            int KeyCount = 500;
+            var lf = new LoggerFactory();
+            var dtp = new StandardUtcDateTimeProvider();
+            var dummySigner = new DummyCmsSigner();
+
+            var sut = new EksBuilderV1(
+                new FakeEksHeaderInfoConfig(),
+                new EcdSaSigner(
+                    new EmbeddedResourceCertificateProvider(
+                        new HardCodedCertificateLocationConfig("TestECDSA.p12", ""),
+                        lf.CreateLogger<EmbeddedResourceCertificateProvider>())
+                    ),
+                dummySigner,
+                dtp,
+                new GeneratedProtobufEksContentFormatter(),
+                lf.CreateLogger<EksBuilderV1>());
+
+            //Act
+            var result = sut.BuildAsync(GetRandomKeys(KeyCount, 123)).GetAwaiter().GetResult();
+
+            //Assert
+            using var zipFileInMemory = new MemoryStream();
+            zipFileInMemory.Write(result, 0, result.Length);
+            using (var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false))
+            {
+                var NlSignature = zipFileContent.ReadEntry(ZippedContentEntryNames.NLSignature);
+                Assert.NotNull(NlSignature);
+                Assert.Equal(NlSignature, dummySigner.DummyContent);
+            }
+        }
 
         private TemporaryExposureKeyArgs[] GetRandomKeys(int workflowCount, int seed)
         {
