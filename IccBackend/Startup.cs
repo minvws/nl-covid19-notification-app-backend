@@ -16,6 +16,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Handlers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Validators;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
@@ -23,12 +28,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Register
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Handlers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Validators;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
@@ -69,7 +68,13 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 
             services.AddTransient<IAuthCodeGenerator, AuthCodeGenerator>();
             services.AddSingleton<IAuthCodeService, AuthCodeService>();
-            services.AddDistributedMemoryCache();
+
+            services.AddDistributedSqlServerCache(options =>
+            {
+                options.ConnectionString = _Configuration.GetConnectionString(DatabaseConnectionStringNames.IccDistMemCache);
+                options.SchemaName = "dbo";
+                options.TableName = "Cache";
+            });
 
             services.AddScoped(x => DbContextStartup.Workflow(x));
             services.AddScoped<HttpPostAuthoriseCommand>();
