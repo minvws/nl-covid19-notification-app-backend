@@ -22,7 +22,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 {
     public class ExposureKeySetBuilderTests
     {
-        //y = 4.3416x + 715.24
         [Theory]
         [InlineData(500, 123)]
         [InlineData(1000, 123)]
@@ -31,30 +30,38 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         [InlineData(10000, 123)]
         public void Build(int keyCount, int seed)
         {
+            //Arrange
             var lf = new LoggerFactory();
             var dtp = new StandardUtcDateTimeProvider();
-            var builder = new EksBuilderV1(
+            
+            var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
-                new EcdSaSigner(new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestECDSA.p12", ""), lf.CreateLogger<EmbeddedResourceCertificateProvider>())),
+                new EcdSaSigner(
+                    new EmbeddedResourceCertificateProvider(
+                        new HardCodedCertificateLocationConfig("TestECDSA.p12", ""),
+                        lf.CreateLogger<EmbeddedResourceCertificateProvider>())),
                 new CmsSignerEnhanced(
-                    new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), lf.CreateLogger<EmbeddedResourceCertificateProvider>()),
-                    new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")),
+                    new EmbeddedResourceCertificateProvider(
+                        new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), 
+                        lf.CreateLogger<EmbeddedResourceCertificateProvider>()),
+                    new EmbeddedResourcesCertificateChainProvider(
+                        new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")),
                     dtp
                     ),
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
-                lf.CreateLogger<EksBuilderV1>()
-                ); 
+                lf.CreateLogger<EksBuilderV1>());
 
-                //new StandardUtcDateTimeProvider(), new GeneratedProtobufContentFormatter(), new LoggerFactory().CreateLogger<ExposureKeySetBuilderV1>());
-
-            var actual = builder.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
-            Assert.True(actual.Length > 0);
-            Trace.WriteLine($"{keyCount} keys = {actual.Length} bytes.");
+            //Act
+            var result = sut.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
+            Trace.WriteLine($"{keyCount} keys = {result.Length} bytes.");
+            
+            //Assert
+            Assert.True(result.Length > 0);
 
             using (var fs = new FileStream("EKS.zip", FileMode.Create, FileAccess.Write))
             {
-                fs.Write(actual, 0, actual.Length);
+                fs.Write(result, 0, result.Length);
             }
         }
 
@@ -106,6 +113,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             {
                 var keyCount = 1 + random.Next(workflowValidatorConfig.TemporaryExposureKeyCountMax - 1);
                 var keys = new List<TemporaryExposureKeyArgs>(keyCount);
+
                 for (var j = 0; j < keyCount; j++)
                 {
                     random.NextBytes(keyBuffer);
@@ -118,7 +126,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                     });
                 }
                 result.AddRange(keys);
+
             }
+
             return result.ToArray();
         }
     }
