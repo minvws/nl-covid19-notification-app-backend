@@ -11,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 	/// </summary>
 	public class DummyCmsSigner : IContentSigner
 	{
-		public string SignatureOid => "2.16.840.1.101.3.4.2.1";
+		public string SignatureOid => "OID for Dummy signer";
 
 		public byte[] DummyContent => Encoding.ASCII.GetBytes("Signature intentionally left empty");
 
