@@ -47,13 +47,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             return result;
         }
 
-        public static IdentityHubKeysDbContext IdentityHubKeys(IServiceProvider x, bool beginTrans = true)
+        public static IdentityHubKeysDbContext IdentityHubKeys(IServiceProvider x)
         {
             var config = new StandardEfDbConfig(x.GetRequiredService<IConfiguration>(), DatabaseConnectionStringNames.IdentityHubKeys);
             var builder = new SqlServerDbContextOptionsBuilder(config, x.GetRequiredService<ILoggerFactory>());
-            var result = new IdentityHubKeysDbContext(builder.Build());
-            if (beginTrans) result.BeginTransaction();
-            return result;
+            return new IdentityHubKeysDbContext(builder.Build());
         }
     }
 }
