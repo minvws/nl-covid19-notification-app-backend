@@ -24,5 +24,14 @@ GRANT UPDATE  ON SCHEMA::[dbo] TO [Dbr_Service];
 
 GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 
+--specific permissions for DataProtectionKeys
+
+GRANT SELECT ON [dbo].[DataProtectionKeys] TO [Dbr_Service];
+GRANT INSERT ON [dbo].[DataProtectionKeys] TO [Dbr_Service];
+GRANT UPDATE ON [dbo].[DataProtectionKeys] TO [Dbr_Service];
+GRANT DELETE ON [dbo].[DataProtectionKeys] TO [Dbr_Service];
+
+--end
+
 GRANT VIEW ANY COLUMN ENCRYPTION KEY DEFINITION TO PUBLIC;
 GRANT VIEW ANY COLUMN MASTER KEY DEFINITION TO PUBLIC;
