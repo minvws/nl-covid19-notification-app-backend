@@ -26,10 +26,10 @@ GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 
 --specific permissions for DataProtectionKeys
 
-GRANT SELECT ON [dbo].[DataProtectionKeys] TO [Dbr_Service];
-GRANT INSERT ON [dbo].[DataProtectionKeys] TO [Dbr_Service];
-GRANT UPDATE ON [dbo].[DataProtectionKeys] TO [Dbr_Service];
-GRANT DELETE ON [dbo].[DataProtectionKeys] TO [Dbr_Service];
+GRANT SELECT ON [dbo].[DataProtectionKeys] TO [Dbr_Service_IccBackend];
+GRANT INSERT ON [dbo].[DataProtectionKeys] TO [Dbr_Service_IccBackend];
+GRANT UPDATE ON [dbo].[DataProtectionKeys] TO [Dbr_Service_IccBackend];
+GRANT DELETE ON [dbo].[DataProtectionKeys] TO [Dbr_Service_IccBackend];
 
 --end
 
