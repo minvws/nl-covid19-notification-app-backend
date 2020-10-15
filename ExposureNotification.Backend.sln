@@ -74,7 +74,7 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Statistics", "Database\Stat
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "WorkFlow", "Database\WorkFlow\WorkFlow.sqlproj", "{76669C6F-7687-4C3D-90DD-0206385D36ED}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DataProtectionKeys", "Database\IdentityHubKeys\DataProtectionKeys.sqlproj", "{CF8CB421-3554-4647-A9F0-55DBB8390BDE}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DataProtectionKeys", "Database\DataProtectionKeys\DataProtectionKeys.sqlproj", "{CF8CB421-3554-4647-A9F0-55DBB8390BDE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
