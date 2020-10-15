@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts
 {
-    public class IdentityHubKeysDbContext : DbContext, IDataProtectionKeyContext
+    public class DataProtectionKeysDbContext : DbContext, IDataProtectionKeyContext
     {
-        public IdentityHubKeysDbContext(DbContextOptions options) 
+        public DataProtectionKeysDbContext(DbContextOptions options) 
             : base(options)
         {
 

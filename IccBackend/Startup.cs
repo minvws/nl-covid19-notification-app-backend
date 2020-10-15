@@ -78,9 +78,9 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend
                 options.TableName = "Cache";
             });
 
-            services.AddScoped(x => DbContextStartup.IdentityHubKeys(x));
+            services.AddScoped(x => DbContextStartup.DataProtectionKeys(x));
             services.AddDataProtection()
-                .PersistKeysToDbContext<IdentityHubKeysDbContext>();
+                .PersistKeysToDbContext<DataProtectionKeysDbContext>();
 
             services.AddScoped(x => DbContextStartup.Workflow(x));
             services.AddScoped<HttpPostAuthoriseCommand>();
