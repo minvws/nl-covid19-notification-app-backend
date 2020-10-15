@@ -120,11 +120,26 @@
     <Folder Include="Properties" />
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
+    <Folder Include="Security" />
+    <Folder Include="Security\Roles" />
+    <Folder Include="PostDeploy" />
+    <Folder Include="PostDeploy\Scripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\DataProtectionKeys.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="Security\Roles\Dbr_Appbeheerders.sql" />
+    <Build Include="Security\Roles\Dbr_Funcbeheerders.sql" />
+    <Build Include="Security\Roles\Dbr_Ontwikkelaars.sql" />
+    <Build Include="Security\Roles\Dbr_Report.sql" />
+    <Build Include="Security\Roles\Dbr_Service.sql" />
+    <Build Include="Security\Roles\Dbr_Users.sql" />
+    <Build Include="Security\Roles\Subroles.sql" />
+    <PostDeploy Include="PostDeploy\PostDeploy.sql" />
+    <None Include="PostDeploy\Scripts\Permissions.sql" />
+    <None Include="PostDeploy\Scripts\RoleMemberships.sql" />
+    <None Include="PostDeploy\Scripts\Users.sql" />
   </ItemGroup>
 </Project>
