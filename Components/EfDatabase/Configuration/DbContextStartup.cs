@@ -46,5 +46,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             if (beginTrans) result.BeginTransaction();
             return result;
         }
+
+        public static DataProtectionKeysDbContext DataProtectionKeys(IServiceProvider x)
+        {
+            var config = new StandardEfDbConfig(x.GetRequiredService<IConfiguration>(), DatabaseConnectionStringNames.DataProtectionKeys);
+            var builder = new SqlServerDbContextOptionsBuilder(config, x.GetRequiredService<ILoggerFactory>());
+            return new DataProtectionKeysDbContext(builder.Build());
+        }
     }
 }
