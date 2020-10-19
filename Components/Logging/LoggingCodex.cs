@@ -11,6 +11,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int Register = 100;
         public const int PostTeks = 200;
         public const int Decoy = 300;
+        public const int ResponsePaddding = 400;
+        public const int ExceptionInterceptor = 500;
+        public const int SuppressError = 600;
     }
 
     public static class LoggingDataRegisterSecret
@@ -55,6 +58,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int Start = LoggingCodex.Decoy;
     }
 
+    public static class LoggingDataResponsePadding
+	{
+        public const string Name = "PostDecoyPadding";
 
+        public const int NoPaddingNeeded = LoggingCodex.ResponsePaddding + 1;
+        public const int ResponsePaddingLength = LoggingCodex.ResponsePaddding + 2;
+        public const int ResponsePaddingContent = LoggingCodex.ResponsePaddding + 3;
+        public const int PaddingAdded = LoggingCodex.ResponsePaddding + 4;
+    }
 
+    public static class LoggingDataExceptioninterceptor
+	{
+        public const string Name = "MsLoggerServiceExceptionInterceptor";
+
+        public const int ExceptionFound = LoggingCodex.ExceptionInterceptor;
+    }
+
+    public static class LoggingDataSuppressError
+	{
+        public const string Name = "SuppressError";
+
+        public const int CallFailed = LoggingCodex.SuppressError;
+    }
 }
