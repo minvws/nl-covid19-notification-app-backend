@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.GetCd
 
 			logger.LogError("[{name}/{id}] Invalid content id - {Id}.",
 				LoggingDataGetCdnContent.Name, LoggingDataGetCdnContent.InvalidId,
-				cndId);
+				cdnId);
 		}
 
 		public static void WriteHeaderMissing(this ILogger logger)
