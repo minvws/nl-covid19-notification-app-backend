@@ -17,6 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int GetCdnContent = 700;
         // 800 is for IccBackend; to be implemented later
         public const int DbProvision = 900;
+        public const int PublishContent = 1000;
     }
 
     public static class LoggingDataRegisterSecret
@@ -107,5 +108,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int ContentDb = LoggingCodex.DbProvision + 2;
         public const int JobDb = LoggingCodex.DbProvision + 3;
     }
+
+    public static class LoggingExtensionsPublishContent
+	{
+        public const string Name = "PublishContent";
+
+        public const int StartWriting = LoggingCodex.PublishContent;
+        public const int FinishedWriting = LoggingCodex.PublishContent + 1;
+	}
 
 }
