@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.SuppressError;
 using System;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
@@ -36,8 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 
             if (!statusCodeResult.StatusCode.HasValue || statusCodeResult.StatusCode.Value == 200) return;
 
-            _Logger.LogDebug("Call to {ActionDescriptor} failed, overriding response code to return 200.", context.ActionDescriptor);
-
+            _Logger.WriteCallFailed(context.ActionDescriptor);
             context.Result = new OkResult();
         }
     }
