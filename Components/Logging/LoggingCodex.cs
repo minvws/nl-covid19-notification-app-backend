@@ -15,6 +15,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int ExceptionInterceptor = 500;
         public const int SuppressError = 600;
         public const int GetCdnContent = 700;
+        // 800 is for IccBackend; to be implemented later
+        public const int DbProvision = 900;
     }
 
     public static class LoggingDataRegisterSecret
@@ -93,4 +95,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int NotFound = LoggingCodex.GetCdnContent + 3;
         public const int EtagFound = LoggingCodex.GetCdnContent + 4;
     }
+
+    public static class LoggingDataDbProvision
+	{
+        public const string Name = "DbProvision";
+
+        public const int Start = LoggingCodex.DbProvision;
+        public const int Finished = LoggingCodex.DbProvision + 99;
+
+        public const int WorkflowDb = LoggingCodex.DbProvision + 1;
+        public const int ContentDb = LoggingCodex.DbProvision + 2;
+        public const int JobDb = LoggingCodex.DbProvision + 3;
+    }
+
 }
