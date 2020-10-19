@@ -13,6 +13,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DailyCleanup;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
@@ -44,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
         {
             var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
 
-            logger.LogInformation("Daily cleanup - Starting.");
+            logger.WriteStart();
 
             var j1 = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
             //Remove this one when we get manifest count down to 1.
@@ -59,26 +60,34 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var j8 = serviceProvider.GetRequiredService<RemoveExpiredEksV2Command>();
             var j9 = serviceProvider.GetRequiredService<RemoveExpiredManifestsV2Command>();
 
-            logger.LogInformation("Daily cleanup - EKS engine run starting.");
+            logger.WriteEksEngineStarting();
             j1.Execute().GetAwaiter().GetResult();
-            logger.LogInformation("Daily cleanup - Manifest engine run starting.");
+            
+            logger.WriteManifestEngineStarting();
             j2.Execute().GetAwaiter().GetResult();
-            logger.LogInformation("Daily cleanup - Calculating daily stats starting.");
+            
+            logger.WriteDailyStatsCalcStarting();
             j6.Execute();
-            logger.LogInformation("Daily cleanup - Cleanup Manifests run starting.");
+            
+            logger.WriteManiFestCleanupStarting();
             j3.Execute().GetAwaiter().GetResult();
-            logger.LogInformation("Daily cleanup - Cleanup EKS run starting.");
+            
+            logger.WriteEksCleanupStarting();
             j4.Execute();
-            logger.LogInformation("Daily cleanup - Cleanup Workflows run starting.");
+            
+            logger.WriteWorkflowCleanupStarting();
             j5.Execute();
-            logger.LogInformation("Daily cleanup - Resigning existing v1 content.");
+            
+            logger.WriteResignerStarting();
             j7.Execute().GetAwaiter().GetResult();
-            logger.LogInformation("Daily cleanup - Cleanup EKSv2 run starting.");
+            
+            logger.WriteEksV2CleanupStarting();
             j8.Execute();
-            logger.LogInformation("Daily cleanup - Cleanup ManifestV2 run starting.");
+            
+            logger.WriteManifestV2CleanupStarting();
             j9.Execute();
 
-            logger.LogInformation("Daily cleanup - Finished.");
+            logger.WriteFinished();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
