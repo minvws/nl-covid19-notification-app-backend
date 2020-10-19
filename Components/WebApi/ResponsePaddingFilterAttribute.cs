@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ResponsePadding;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using System;
 
@@ -58,24 +59,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
             // Nothing needs doing if we're above the minimum length
             if (resultString.Length >= _Config.MinimumLengthInBytes)
             {
-                _Logger.LogInformation("No padding needed as response length of {Length} is greater than the minimum of {MinimumLengthInBytes}..",
-                    resultString.Length, _Config.MinimumLengthInBytes);
-
+                _Logger.WriteNoPaddingNeeded(resultString.Length, _Config.MinimumLengthInBytes);
                 return;
             }
 
             // Calculate length of padding to add
             var paddingLength = _Rng.Next(_Config.MinimumLengthInBytes, _Config.MaximumLengthInBytes) - resultString.Length;
-            _Logger.LogInformation("Length of response padding:{PaddingLength}", paddingLength);
-
+            _Logger.WriteLengthOfResponsePadding(paddingLength);
+            
             // Get the padding bytes
             var padding = _PaddingGenerator.Generate(paddingLength);
-            _Logger.LogDebug("Response padding:{Padding}", padding);
+            _Logger.WritePaddingContent(padding);
 
             // Add padding here
             context.HttpContext.Response.Headers.Add(PaddingHeader, padding);
-
-            _Logger.LogInformation("Added padding to the response.");
+            _Logger.WritePaddingAdded();
         }
     }
 }
