@@ -109,7 +109,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int JobDb = LoggingCodex.DbProvision + 3;
     }
 
-    public static class LoggingExtensionsPublishContent
+    public static class LoggingDataPublishContent
 	{
         public const string Name = "PublishContent";
 
