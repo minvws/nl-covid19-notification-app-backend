@@ -18,6 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         // 800 is for IccBackend; to be implemented later
         public const int DbProvision = 900;
         public const int PublishContent = 1000;
+        public const int SigtestFileCreator = 1100;
     }
 
     public static class LoggingDataRegisterSecret
@@ -117,4 +118,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int FinishedWriting = LoggingCodex.PublishContent + 1;
 	}
 
+    public static class LoggingDataSigTestFileCreator
+	{
+        public const string Name = "SigTestFileCreator";
+
+        public const int Start = LoggingCodex.SigtestFileCreator;
+        public const int Finished = LoggingCodex.SigtestFileCreator + 99;
+
+        public const int NoElevatedPrivs = LoggingCodex.SigtestFileCreator + 1;
+        public const int BuildingResultFile = LoggingCodex.SigtestFileCreator + 2;
+        public const int SavingResultFile = LoggingCodex.SigtestFileCreator + 3;
+	}
 }
