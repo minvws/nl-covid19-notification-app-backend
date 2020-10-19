@@ -14,6 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int ResponsePaddding = 400;
         public const int ExceptionInterceptor = 500;
         public const int SuppressError = 600;
+        public const int GetCdnContent = 700;
     }
 
     public static class LoggingDataRegisterSecret
@@ -80,5 +81,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const string Name = "SuppressError";
 
         public const int CallFailed = LoggingCodex.SuppressError;
+    }
+
+    public static class LoggingDataGetCdnContent
+	{
+        public const string Name = "HttpGetCdnContent";
+
+        public const int InvalidType = LoggingCodex.GetCdnContent;
+        public const int InvalidContent = LoggingCodex.GetCdnContent + 1;
+        public const int HeaderMissing = LoggingCodex.GetCdnContent + 2;
+        public const int NotFound = LoggingCodex.GetCdnContent + 3;
+        public const int EtagFound = LoggingCodex.GetCdnContent + 4;
     }
 }
