@@ -20,6 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int PublishContent = 1000;
         public const int SigtestFileCreator = 1100;
         public const int DailyCleanup = 1200;
+        public const int RemoveExpiredManifest = 1300;
     }
 
     public static class LoggingDataRegisterSecret
@@ -146,7 +147,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int WorkflowCleanupStarting = LoggingCodex.DailyCleanup + 6;
         public const int ResignerStarting = LoggingCodex.DailyCleanup + 7;
         public const int EksV2CleanupStarting = LoggingCodex.DailyCleanup + 8;
-        public const int ManifestV2CleanupStarting = LoggingCodex.DailyCleanup + 9;
-        
+        public const int ManifestV2CleanupStarting = LoggingCodex.DailyCleanup + 9;       
     }
+
+    public static class LoggingDataRemoveExpiredManifest
+	{
+        public const string Name = "RemoveExpiredManifest";
+
+        public const int Start = LoggingCodex.RemoveExpiredManifest;
+        public const int Finished = LoggingCodex.RemoveExpiredManifest + 99;
+
+        public const int RemovingManifests = LoggingCodex.RemoveExpiredManifest + 1;
+        public const int RemovingEntry = LoggingCodex.RemoveExpiredManifest + 2;
+        public const int ReconciliationFailed = LoggingCodex.RemoveExpiredManifest + 3;
+        public const int DeletionReconciliationFailed = LoggingCodex.RemoveExpiredManifest + 4;
+        public const int FinishedNothingRemoved = LoggingCodex.RemoveExpiredManifest + 98;
+	}
 }
