@@ -88,7 +88,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const string Name = "HttpGetCdnContent";
 
         public const int InvalidType = LoggingCodex.GetCdnContent;
-        public const int InvalidContent = LoggingCodex.GetCdnContent + 1;
+        public const int InvalidId = LoggingCodex.GetCdnContent + 1;
         public const int HeaderMissing = LoggingCodex.GetCdnContent + 2;
         public const int NotFound = LoggingCodex.GetCdnContent + 3;
         public const int EtagFound = LoggingCodex.GetCdnContent + 4;
