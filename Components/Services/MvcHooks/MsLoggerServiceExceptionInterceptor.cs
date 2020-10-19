@@ -4,12 +4,12 @@
 
 using System;
 using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExceptionInterceptor;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcHooks
 {
-
     public class MsLoggerServiceExceptionInterceptor : IAsyncExceptionFilter
     {
         private readonly ILogger _Logger;
@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.MvcH
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            _Logger.LogError(context.Exception.ToString());
+            _Logger.WriteExceptionFound(context.Exception.ToString());
             context.ExceptionHandled = false;
             return Task.CompletedTask;
         }
