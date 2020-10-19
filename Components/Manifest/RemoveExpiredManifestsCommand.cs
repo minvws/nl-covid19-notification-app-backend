@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredManifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
@@ -37,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             _Result = new RemoveExpiredManifestsCommandResult();
 
-            _Logger.LogInformation("Begin removing expired Manifests - Keep Alive Count:{count}", _ManifestConfig.KeepAliveCount);
+            _Logger.WriteStart(_ManifestConfig.KeepAliveCount);
 
             await using (var dbContext = _DbContextProvider())
             await using (var tx = dbContext.BeginTransaction())
@@ -52,13 +53,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                     .ToList();
 
                 _Result.Zombies = zombies.Count;
-                _Logger.LogInformation("Removing expired Manifests - Count:{count}", zombies.Count);
+                _Logger.WriteRemovingManifests(zombies.Count);
                 foreach (var i in zombies)
-                    _Logger.LogInformation("Removing expired Manifest - PublishingId:{PublishingId} Release:{Release}", i.PublishingId, i.Release);
+                    _Logger.WriteRemovingEntry(i.PublishingId, i.Release);
 
                 if (zombies.Count == 0)
                 {
-                    _Logger.LogInformation("Finished removing expired Manifests - Nothing to remove.");
+                    _Logger.WriteFinishedNothingRemoved();
                     return _Result;
                 }
 
@@ -73,13 +74,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 tx.Commit();
             }
 
-            _Logger.LogInformation("Finished removing expired Manifests - ExpectedCount:{count} ActualCount:{givenMercy}", _Result.Zombies, _Result.GivenMercy);
+            _Logger.WriteFinished(_Result.Zombies, _Result.GivenMercy);
 
             if (_Result.Reconciliation != 0)
-                _Logger.LogError("Reconciliation failed removing expired Manifests - Found-GivenMercy-Remaining={reconciliation}.", _Result.Reconciliation);
+                _Logger.WriteReconcilliationFailed(_Result.Reconciliation);
 
             if (_Result.DeletionReconciliation != 0)
-                _Logger.LogError("Reconciliation failed removing expired Manifests - Zombies-GivenMercy={deadReconciliation}.", _Result.DeletionReconciliation);
+                _Logger.WriteDeletionReconciliationFailed(_Result.DeletionReconciliation);
 
             return _Result;
         }
