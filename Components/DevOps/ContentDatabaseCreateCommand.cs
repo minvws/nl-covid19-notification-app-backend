@@ -39,6 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             await using var tx = await _DbContextProvider.Database.BeginTransactionAsync();
             await Write(ContentTypes.RiskCalculationParameters, "RiskCalcDefaults.json");
             await Write(ContentTypes.AppConfig, "AppConfigDefaults.json");
+            await Write(ContentTypes.ResourceBundle, "ResourceBundleDefaults.json");
             _DbContextProvider.SaveAndCommit();
         }
 
