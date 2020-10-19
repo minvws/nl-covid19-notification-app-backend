@@ -19,6 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int DbProvision = 900;
         public const int PublishContent = 1000;
         public const int SigtestFileCreator = 1100;
+        public const int DailyCleanup = 1200;
     }
 
     public static class LoggingDataRegisterSecret
@@ -129,4 +130,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int BuildingResultFile = LoggingCodex.SigtestFileCreator + 2;
         public const int SavingResultFile = LoggingCodex.SigtestFileCreator + 3;
 	}
+
+    public static class LoggingDataDailyCleanup
+	{
+        public const string Name = "DailyCleanup";
+
+        public const int Start = LoggingCodex.DailyCleanup;
+        public const int Finished = LoggingCodex.DailyCleanup + 99;
+
+        public const int EksEngineStarting = LoggingCodex.DailyCleanup + 1;
+        public const int ManifestEngineStarting = LoggingCodex.DailyCleanup + 2;
+        public const int DailyStatsCalcStarting = LoggingCodex.DailyCleanup + 3;
+        public const int ManiFestCleanupStarting = LoggingCodex.DailyCleanup + 4;
+        public const int EksCleanupStarting = LoggingCodex.DailyCleanup + 5;
+        public const int WorkflowCleanupStarting = LoggingCodex.DailyCleanup + 6;
+        public const int ResignerStarting = LoggingCodex.DailyCleanup + 7;
+        public const int EksV2CleanupStarting = LoggingCodex.DailyCleanup + 8;
+        public const int ManifestV2CleanupStarting = LoggingCodex.DailyCleanup + 9;
+        
+    }
 }
