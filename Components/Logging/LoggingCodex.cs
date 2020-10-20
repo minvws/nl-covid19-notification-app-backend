@@ -167,7 +167,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
 
     public static class LoggingDataRemoveExpiredEks
 	{
-        const string Name = "RemoveExpiredEks";
+        public const string Name = "RemoveExpiredEks";
 
         public const int Start = LoggingCodex.RemoveExpiredEks;
         public const int Finished = LoggingCodex.RemoveExpiredEks + 99;
