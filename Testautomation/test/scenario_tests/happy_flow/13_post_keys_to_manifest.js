@@ -5,7 +5,6 @@ const app_register = require("../../behaviours/app_register_behaviour");
 const post_keys = require("../../behaviours/post_keys_behaviour");
 const testsSig = require("../../../util/sig_encoding");
 const lab_confirm = require("../../behaviours/labconfirm_behaviour");
-const lab_verify = require("../../behaviours/labverify_behaviour");
 const manifest = require("../../behaviours/manifest_behaviour");
 const exposure_key_set = require("../../behaviours/exposure_keys_set_behaviour");
 const decode_protobuf = require("../../../util/protobuff_decoding");
@@ -14,14 +13,13 @@ const formatter = require("../../../util/format_strings");
 describe("Validate push of my exposure key into manifest - #13_post_keys_to_manifest #scenario #regression", function () {
     this.timeout(3000 * 60 * 30);
 
-    // console.log("Scenario: Register > Post keys > Lab Confirm > wait (x min.) > Lab verify > Manifest > EKS")
+    // console.log("Scenario: Register > Post keys > Lab Confirm > wait (x min.) > Manifest > EKS")
 
     let app_register_response,
         postkeys_response,
         lab_confirm_response,
         labConfirmationId,
         pollToken,
-        lab_verify_response,
         manifest_response,
         manifest_response_updated,
         exposure_keyset_response,
@@ -85,10 +83,6 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
                     });
                 })
                 .then(function () {
-                    return lab_verify(pollToken, currentVersion).then(function (response) {
-                        lab_verify_response = response;
-                    });
-                }).then(function () {
                     console.log(`Start delay for ${delayInMilliseconds / 1000 / 60} min.`)
                     console.log('started delay at: ' + new Date(Date.now()).toLocaleString());
                     return new Promise(function (resolve) {
@@ -144,10 +138,6 @@ describe("Validate push of my exposure key into manifest - #13_post_keys_to_mani
 
         expect(manifest_response.response.headers["etag"], "New etag is found in manfifest header").to.not.equal(manifest_response_updated.response.headers["etag"])
         expect(manifest_response.response.headers["last-modified"], "New etag is found in manfifest header").to.not.equal(manifest_response_updated.response.headers["last-modified"])
-    })
-
-    it("Labverify should be true, so postkey is uploaded to bucket", function () {
-        expect(lab_verify_response.data.valid, "postkey is in bucket").to.be.equal(true)
     })
 
     it("The exposureKey pushed was in the manifest", function () {

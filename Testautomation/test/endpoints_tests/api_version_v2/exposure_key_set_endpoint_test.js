@@ -46,7 +46,7 @@ describe("Exposure key set endpoints tests #endpoints #regression", function () 
         maxAge = parseInt(maxAge[1]);
 
         expect(1209600 - maxAge,
-            `Response max-age ${Math.floor(maxAge/3600/24)} is not older then 1209600 sec. (14 days) ago`
+            `Response max-age ${Math.floor(maxAge)} is not older then 1209600 sec. (14 days) ago`
         ).to.be.least(0);
     });
 
