@@ -49,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Expir
 				publishingId, releaseDate);
 		}
 
-		public static void WriteReconcilliationFailed(this ILogger logger, int reconciliationCount)
+		public static void WriteReconciliationFailed(this ILogger logger, int reconciliationCount)
 		{
 			if (logger == null) throw new ArgumentNullException(nameof(logger));
 

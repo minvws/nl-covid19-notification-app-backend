@@ -77,7 +77,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             _Logger.WriteFinished(_Result.Zombies, _Result.GivenMercy);
 
             if (_Result.Reconciliation != 0)
-                _Logger.WriteReconcilliationFailed(_Result.Reconciliation);
+                _Logger.WriteReconciliationFailed(_Result.Reconciliation);
 
             if (_Result.DeletionReconciliation != 0)
                 _Logger.WriteDeletionReconciliationFailed(_Result.DeletionReconciliation);
