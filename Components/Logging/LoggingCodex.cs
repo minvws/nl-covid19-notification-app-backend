@@ -23,6 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int RemoveExpiredManifest = 1300;
         public const int RemoveExpiredEks = 1400;
         public const int RemoveExpiredWorkflow = 1500;
+        public const int Resigner = 1600;
     }
 
     public static class LoggingDataRegisterSecret
@@ -193,4 +194,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int UnpublishedTekFound = LoggingCodex.RemoveExpiredWorkflow + 97;
         public const int FinishedNothingRemoved = LoggingCodex.RemoveExpiredWorkflow + 98;
     }
+
+    public static class LoggingDataResigner
+	{
+        public const string Name = "Resigner";
+
+        public const int Finished = LoggingCodex.Resigner + 99;
+
+        public const int CertNotSpecified = LoggingCodex.Resigner + 1;
+        public const int Report = LoggingCodex.Resigner + 2;
+	}
 }
