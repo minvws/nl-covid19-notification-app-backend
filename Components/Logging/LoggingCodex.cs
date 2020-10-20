@@ -25,6 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int RemoveExpiredWorkflow = 1500;
         public const int Resigner = 1600;
         public const int RemoveExpiredEksV2 = 1700;
+        public const int RemoveExpiredManifestV2 = 1800;
     }
 
     public static class LoggingDataRegisterSecret
@@ -220,5 +221,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int ReconciliationFailed = LoggingCodex.RemoveExpiredEksV2 + 5;
         public const int FinishedNothingRemoved = LoggingCodex.RemoveExpiredEksV2 + 98;
 
+    }
+
+    public static class LoggingDataRemoveExpiredManifestV2
+	{
+        public const string Name = "RemoveExpiredManifestV2";
+
+        public const int Start = LoggingCodex.RemoveExpiredManifestV2;
+        public const int Finished = LoggingCodex.RemoveExpiredManifestV2 + 99;
+
+        public const int RemovingManifests = LoggingCodex.RemoveExpiredManifestV2 + 1;
+        public const int RemovingEntry = LoggingCodex.RemoveExpiredManifestV2 + 2;
+        public const int ReconciliationFailed = LoggingCodex.RemoveExpiredManifestV2 + 3;
+        public const int DeletionReconciliationFailed = LoggingCodex.RemoveExpiredManifestV2 + 4;
+        public const int FinishedNothingRemoved = LoggingCodex.RemoveExpiredManifestV2 + 98;
     }
 }
