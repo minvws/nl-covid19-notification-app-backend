@@ -5,8 +5,8 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
-using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         {
             if (!_V2ThumbprintConfig.Valid)
             {
-                _Logger.LogWarning("Certificate for re-signing not specified in settings. Re-signing will not run.");
+                _Logger.WriteCertNotSpecified();
                 return;
             }
 
