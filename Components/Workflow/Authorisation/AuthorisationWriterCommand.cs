@@ -36,7 +36,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             if (args == null)
                 throw new ArgumentNullException(nameof(args));
 
-
             var wf = await _WorkflowDb
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Teks)
@@ -47,6 +46,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
                 _Logger.LogError("KeyReleaseWorkflowState not found - LabConfirmationId:{LabConfirmationId}.", args.LabConfirmationId);
                 return null;
             }
+
+            _Logger.LogInformation("LabConfirmationId {LabConfirmationId} authorized.", wf.LabConfirmationId);
 
             wf.AuthorisedByCaregiver = _DateTimeProvider.Snapshot;
             wf.LabConfirmationId = null; //Clear from usable key range
