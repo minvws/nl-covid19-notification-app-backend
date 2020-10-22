@@ -22,6 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 {
     public class ExposureKeySetBuilderTests
     {
+        //y = 4.3416x + 715.24
         [Theory]
         [InlineData(500, 123)]
         [InlineData(1000, 123)]
