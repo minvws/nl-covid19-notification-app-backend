@@ -5,7 +5,6 @@ const app_register = require("../../behaviours/app_register_behaviour");
 const post_keys = require("../../behaviours/post_keys_behaviour");
 const testsSig = require("../../../util/sig_encoding");
 const lab_confirm = require("../../behaviours/labconfirm_behaviour");
-const lab_verify = require("../../behaviours/labverify_behaviour");
 const manifest = require("../../behaviours/manifest_behaviour");
 const exposure_key_set = require("../../behaviours/exposure_keys_set_behaviour");
 const decode_protobuf = require("../../../util/protobuff_decoding");
@@ -15,14 +14,13 @@ const calcRSN = require("../../../util/calcTRL");
 describe("Validate push of my exposure key into manifest - #first_postkey_then_labconfirm #scenario #regression", function () {
   this.timeout(2000 * 60 * 30);
 
-  // console.log("Scenario: Register > Post keys > Lab Confirm > wait (x min.) > Lab verify > Manifest > EKS")
+  // console.log("Scenario: Register > Post keys > Lab Confirm > wait (x min.) > Manifest > EKS")
 
   let app_register_response,
     postkeys_response,
     lab_confirm_response,
     labConfirmationId,
     pollToken,
-    lab_verify_response,
     manifest_response,
     exposure_keyset_response,
     exposure_keyset_decoded,
@@ -79,11 +77,6 @@ describe("Validate push of my exposure key into manifest - #first_postkey_then_l
           pollToken = confirm.data.pollToken;
         });
       })
-      .then(function () {
-        return lab_verify(pollToken, currentVersion).then(function (response) {
-          lab_verify_response = response;
-        });
-      })
       .then(function (){
         console.log(`Start delay for ${delayInMilliseconds/1000} sec.`)
         return new Promise(function (resolve){
@@ -130,10 +123,6 @@ describe("Validate push of my exposure key into manifest - #first_postkey_then_l
   after(function (){
     dataprovider.clear_saved();
   });
-
-  it("Labverify should be true, so postkey is uploaded to bucket", function (){
-    expect(lab_verify_response.data.valid,"postkey is in bucket").to.be.equal(true)
-  })
 
   it("The exposureKey pushed was in the manifest and has the correct risklevel", function () {
     let exposure_key_send = JSON.parse(

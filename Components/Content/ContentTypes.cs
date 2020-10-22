@@ -16,6 +16,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         public const string ExposureKeySetV2 = nameof(ExposureKeySetV2);
         public const string ManifestV2 = nameof(ManifestV2);
 
+        public const string ResourceBundle = nameof(ResourceBundle);
+
         public static bool IsValid(string value) =>
             value == AppConfig
             || value == RiskCalculationParameters
@@ -25,6 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             || value == RiskCalculationParametersV2
             || value == ExposureKeySetV2
             || value == ManifestV2
+            || value == ResourceBundle
         ;
     }
 }

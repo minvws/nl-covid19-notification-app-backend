@@ -15,11 +15,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         public string RiskCalculationParameters { get; set; }
 
         public string AppConfig { get; set; }
+        public string ResourceBundle { get; set; }
 
 
         protected bool Equals(ManifestContent other)
         {
-            return ExposureKeySets.SequenceEqual(other.ExposureKeySets) && RiskCalculationParameters == other.RiskCalculationParameters && AppConfig == other.AppConfig;
+            return ExposureKeySets.SequenceEqual(other.ExposureKeySets) 
+                && RiskCalculationParameters == other.RiskCalculationParameters 
+                && AppConfig == other.AppConfig
+                && ResourceBundle == other.ResourceBundle;
         }
 
         public override bool Equals(object? obj)
@@ -37,6 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
                 var hashCode = ExposureKeySets.GetHashCode();
                 hashCode = (hashCode * 397) ^ RiskCalculationParameters.GetHashCode();
                 hashCode = (hashCode * 397) ^ AppConfig.GetHashCode();
+                hashCode = (hashCode * 397) ^ ResourceBundle.GetHashCode();
                 return hashCode;
             }
         }
