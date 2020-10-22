@@ -61,6 +61,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
             if (arg.Equals("-r", StringComparison.InvariantCultureIgnoreCase))
                 return ContentTypes.RiskCalculationParameters;
 
+            if (arg.Equals("-b", StringComparison.InvariantCultureIgnoreCase))
+                return ContentTypes.ResourceBundle;
+
             throw new InvalidOperationException("Cannot parse Content Type.");
         }
     }
