@@ -49,14 +49,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
 
         [ResponsePaddingFilterFactory]
         [SuppressErrorFactory]
+        [DecoyTimeGeneratorAttributeFactory]
         [HttpPost]
         [Route(EndPointNames.MobileAppApi.RandomNoise)]
-        public async Task<IActionResult> StopKeys([FromServices] HttpPostDecoyKeysCommand command)
+        public async Task<IActionResult> StopKeys()
         {
-            if (command == null) throw new ArgumentNullException(nameof(command));
-
             _Logger.LogInformation("POST stopkeys triggered.");
-            return await command.Execute();
+            return new OkResult();
         }
 
         [HttpGet]

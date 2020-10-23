@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         private readonly Func<ContentDbContext> _DbContextProvider;
         private readonly ILogger<RemoveExpiredManifestsCommand> _Logger;
         private readonly IManifestConfig _ManifestConfig;
-        private RemoveExpiredManifestsCommandResult _Result;
+        private RemoveExpiredManifestsCommandResult? _Result;
 
         public RemoveExpiredManifestsCommand(Func<ContentDbContext> dbContextProvider, ILogger<RemoveExpiredManifestsCommand> logger, IManifestConfig manifestConfig, IUtcDateTimeProvider dateTimeProvider)
         {

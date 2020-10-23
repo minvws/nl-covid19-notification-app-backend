@@ -40,5 +40,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
         {
             await command.Execute(HttpContext, ContentTypes.ExposureKeySetV2, id);
         }
+
+        [HttpGet]
+        [Route("/v2/resourcebundle/{id}")]
+        public async Task GetResourceBundleAsync(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
+        {
+            await command.Execute(HttpContext, ContentTypes.ResourceBundle, id);
+        }
     }
 }

@@ -1,6 +1,6 @@
 echo f|xcopy ..\s\publish\BatchJobsApi\appsettings.release.json Artifacts\BatchJobsApi\appsettings.json /Y
 echo f|xcopy ..\s\publish\ContentApi\appsettings.release.json Artifacts\ContentApi\appsettings.json /Y
-echo f|xcopy ..\s\publish\ICCBackend\appsettings.release.json Artifacts\ICCBackend\appsettings.json /Y
+echo f|xcopy ..\s\publish\IccBackend\appsettings.release.json Artifacts\IccBackend\appsettings.json /Y
 echo f|xcopy ..\s\publish\MobileAppApi\appsettings.release.json Artifacts\MobileAppApi\appsettings.json /Y
 echo f|xcopy ..\s\publish\ManagementPortal\appsettings.release.json Artifacts\ManagementPortal\appsettings.json /Y
 

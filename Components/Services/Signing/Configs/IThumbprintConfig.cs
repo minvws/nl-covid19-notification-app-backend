@@ -6,6 +6,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 {
     public interface IThumbprintConfig
     {
+        bool Valid { get; }
         string Thumbprint { get; }
         bool RootTrusted { get; }
     }

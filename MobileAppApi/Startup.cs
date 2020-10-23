@@ -44,7 +44,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
             services.AddScoped<HttpPostReleaseTeksCommand2>();
             services.AddScoped<HttpPostRegisterSecret>();
-            services.AddScoped<HttpPostDecoyKeysCommand>();
 
             services.AddSingleton<ITekListValidationConfig, StandardTekListValidationConfig>();
             services.AddSingleton<ITekValidatorConfig, TekValidatorConfig>();
@@ -65,7 +64,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddScoped<IResponsePaddingConfig, ResponsePaddingConfig>();
             services.AddScoped<IPaddingGenerator, CryptoRandomPaddingGenerator>();
             services.AddScoped<SuppressErrorAttribute>();
-            
+            services.AddScoped<DecoyTimeGeneratorAttribute>();
+
             if (_IsDev)
                 services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });
         }
