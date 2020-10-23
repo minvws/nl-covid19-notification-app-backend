@@ -2,32 +2,30 @@
 # Not designed for Windows 7
 # Double-check you are allowed to run custom scripts.
 
-$date
 $VariablesSource = "Development"
-$Environment = "#{Deploy.HSMScripting.Environment}#"
-$FriendlyName-Client
-$FriendlyName-Signing
 $TempPassword = "temppassword" #To get around the annoying p12-encryption in certutil -importpfx
 
 if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
 {
 	#dev
+	$IsOnDevEnvironment = $true #When set to false: don't sign certificate requests
     $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
     $openSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
-    $CnValue = "ontw.interop-signing.coronamelder-api.nl" #([ontw|test|acceptatie|productie].interop-signing.coronamelder-api.nl)
-    $CertDays = 3650 #cert lifetime of 10 years.
-    $SelfSignSubject = "/C=NL/ST=Zuid-Holland/L=Den Haag/O=TestOrganisation/OU=TestOrganisation/CN=$CnValue"
+    $CnValueClient = "ontw.interop-client.coronamelder-api.nl"
+	$CnValueSigner = "ontw.interop-signing.coronamelder-api.nl"
+    $SelfSignSubject = "/C=NL/ST=Zuid-Holland/L=Den Haag/O=TestOrganisation/OU=TestOrganisation/CN="
+	$CertDays = 3650 #cert lifetime of 10 years.
 }
 else
 {
 	#test, accp, prod
+	$IsOnDevEnvironment = $false
 	$VariablesSource = "Deploy"
     $HSMAdminToolsDir = "#{Deploy.HSMScripting.HSMAdminToolsDir}#"
     $openSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
-    $CnValue = "#{Deploy.HSMScripting.InteropCnValue}#" #should be [test.signing|acceptatie.signing|signing].coronamelder-api.nl
+    $CnValueClient = "#{Deploy.HSMScripting.InteropCnValueClient}#" #([test|acceptatie|productie].interop-client.coronamelder-api.nl)
+    $CnValueSigner = "#{Deploy.HSMScripting.InteropCnValueSigner}#" #([test|acceptatie|productie].interop-signing.coronamelder-api.nl)
 }
-
-
 
 function RunWithErrorCheck ([string]$command) 
 {
@@ -119,13 +117,13 @@ function CheckNotWin7
 	}
 }
 
-function GenerateRequestInf([string] $filename, [string] $KeyUsage, [string] $friendlyName, [bool] $AddOIDs = $true)
+function GenerateRequestInf([string] $filename, [string] $CnValue, [string] $KeyUsage, [string] $friendlyName, [bool] $AddOIDs = $true)
 {
 	$fileContent = `
 "[Version]`
 Signature = `$Windows Nt`$`
 [NewRequest]`
-Subject = `"C=NL, ST=Zuid-Holland, L=Den Haag, O=CIBG, OU=CIBG, CN=$script:CnValue`"`
+Subject = `"C=NL, ST=Zuid-Holland, L=Den Haag, O=CIBG, OU=CIBG, CN=$CnValue`"`
 Exportable = FALSE`
 HashAlgorithm = SHA256`
 KeyAlgorithm = RSA`
@@ -157,7 +155,7 @@ function SetCertFileNames ()
 	
 	$script:clientName = "$script:baseName-Client"
 	$script:clientSigned = "$script:clientName-signed"
-	$script:signerName = "$script:baseName-Signer"
+	$script:signerName = "$script:baseName-Signing"
 	$script:signerSigned = "$script:signerName-signed"
 }
 
@@ -169,13 +167,14 @@ function SetCertFileNames ()
 
 write-host "Certificate creation-script for interop certificates with Utimaco HSM"
 CheckNotIse
-#CheckNotWin7
+CheckNotWin7
 
 write-warning "`nPlease check the following:`
 - Using variables from $VariablesSource. Correct?`
 - Checked the values in the GenerateRequestInf-function?
-- `$Environment is $Environment. Correct?`
-- `$CnValue is $CnValue. Correct?`
+- `$IsOnDevEnvironment is $IsOnDevEnvironment. Correct?`
+- `$CnValueClient is $CnValueClient. Correct?`
+- `$CnValueSigner is $CnValueSigner. Correct?`
 - (Is the simulator on?)`
 If not: abort this script with Ctrl+C."
 Pause
@@ -190,23 +189,22 @@ RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool`" listkeys"
 write-host "`nGenerate requestfiles for both certificates"
 Pause
 
+SetCertFileNames
+
 New-Item -force -name $folderName -path "." -ItemType Directory -ErrorAction Stop
 
 $FriendlyName = read-host "`nPlease enter a `'Friendly name`' for the certificates.`n Make sure the name is not already in use! (look inside the machine personal keystore)"
 
-$FriendlyName-Client = "$FriendlyName-Client"
-$FriendlyName-Signing = "$FriendlyName-Signing"
-
-
-SetCertFileNames
+$FriendlyNameClient = "$FriendlyName-Client"
+$FriendlyNameSigning = "$FriendlyName-Signing"
 
 #Generate Client cert
-if($Environment -eq "ontw")
+if($IsOnDevEnvironment -eq $true)
 {
 	write-host "`nGenerate self-signed Client certificate. HSM not involved"
 	Pause
 	
-	RunWithErrorCheck "$openSslLoc req -new -x509 -nodes -days $CertDays -subj `"$SelfSignSubject`" -keyout $clientName.key -out $clientname.pem"
+	RunWithErrorCheck "$openSslLoc req -new -x509 -nodes -days $CertDays -subj `"$SelfSignSubject$CnValueClient`" -keyout $clientName.key -out $clientname.pem"
 	RunWithErrorCheck "$openSslLoc pkcs12 -export -in $clientName.pem -inkey $clientName.key -nodes -passout pass:$TempPassword -out $clientName.p12"
 	
 	write-host "`nAdding Client certificate to local machine store"
@@ -217,7 +215,7 @@ else
 	write-host "`nGenerate Client certificate-request"
 	Pause
 	
-	GenerateRequestInf -filename $clientName -KeyUsage "0xA0" -friendlyName "$FriendlyName-Client"
+	GenerateRequestInf -filename $clientName -CnValue $CnValueClient -KeyUsage "0xA0" -friendlyName "$FriendlyNameClient"
 	
 	write-host "`nSend request to HSM to generate private key"
 	Pause
@@ -226,23 +224,23 @@ else
 }
 
 #Generate Signing cert
-if($Enviromnent -eq "ontw")
+if($IsOnDevEnvironment -eq $true)
 {
 	write-host "`nGenerate self-signed Signing certificate. HSM not involved"
 	Pause
 	
-	RunWithErrorCheck "$openSslLoc req -new -x509 -nodes -days $CertDays -subj `"$SelfSignSubject`" -keyout $signerName.key -out $signerName.pem"
+	RunWithErrorCheck "$openSslLoc req -new -x509 -nodes -days $CertDays -subj `"$SelfSignSubject$CnValueSigner`" -keyout $signerName.key -out $signerName.pem"
 	RunWithErrorCheck "$openSslLoc pkcs12 -export -in $signerName.pem -inkey $signerName.key -nodes -passout pass:$TempPassword -out $signerName.p12"
 	
 	write-host "`nAdding Client certificate to local machine store"
 	RunWithErrorCheck "certutil -importpfx -p $TempPassword -f $signerName.p12"
 }
-else
+else #Test could work with a self-signed signing cert, but doing that with the HSM is hard
 {
 	write-host "`nGenerate Signing certificate-request."
 	Pause
 	
-	GenerateRequestInf -filename $signerName -KeyUsage "0x80" -friendlyName "$FriendlyName-Signing" -AddOIDs $False
+	GenerateRequestInf -filename $signerName -CnValue $CnValueSigner -KeyUsage "0x80" -friendlyName "$FriendlyNameSigning" -AddOIDs $False
 	
 	write-host "`nSend request to HSM to generate private key"
 	Pause
@@ -256,11 +254,11 @@ Pause
 RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool`" listkeys"
 Pause
 
-if($Environment -eq "ontw")
+if($IsOnDevEnvironment -eq $true)
 {	
-	write-host "`nDone! The self-signed certificates can be found in the local machine personal store"
+	write-host "`nDone! The self-signed certificates can be found in the local machine personal store.`nThe password for the certificates is $TempPassword."
 }
 else
 {
-	write-host "`nDone! The Client certificate request is $clientName.csr.`nThe Signing certificate request is $SigningName.csr."
+	write-host "`nDone! The Client certificate request is $clientName.csr.`nThe Signing certificate request is $signerName.csr."
 }
