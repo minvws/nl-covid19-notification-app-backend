@@ -248,17 +248,18 @@ else #Test could work with a self-signed signing cert, but doing that with the H
 	RunWithErrorCheck "certreq -new $signerName.inf $signerName.csr"
 }
 
-write-host "`nPost-check for key presence"
-Pause
-
-RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool`" listkeys"
-Pause
-
 if($IsOnDevEnvironment -eq $true)
 {	
-	write-host "`nDone! The self-signed certificates can be found in the local machine personal store.`nThe password for the certificates is $TempPassword."
+	write-host "`nDone! The self-signed certificates can be found in the local machine personal store.`nThe password for the certificates is `'$TempPassword`'."
 }
 else
 {
-	write-host "`nDone! The Client certificate request is $clientName.csr.`nThe Signing certificate request is $signerName.csr."
+	write-host "`nPost-check for key presence"
+	Pause
+
+	RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool`" listkeys"
+	Pause
+
+	write-host "`nDone! The Client certificate request is $clientName.csr.`nThe Signing certificate request is $signerName.csr.`n"
+	write-warning "Make sure to add the following when submitting the requests:`nClient: SubjectAltName`nSigning: 2-year validity period."
 }
