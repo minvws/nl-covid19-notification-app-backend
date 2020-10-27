@@ -32,6 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int EksJobContentWriter = 2200;
         public const int MarkWorkflowTeksAsUsed = 2300;
         public const int ManifestUpdate = 2400;
+        public const int EmbeddedCertProvider = 2500;
     }
 
     public static class LoggingDataRegisterSecret
@@ -327,4 +328,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
 
         public static int UpdateNotRequired = LoggingCodex.ManifestUpdate + 1;
 	}
+
+    public static class LoggingDataEmbeddedResourceCertificateProvider
+	{
+        public static string Name = "EmbeddedResourceCertificateProvider";
+
+        public static int Opening = LoggingCodex.EmbeddedCertProvider + 1;
+        public static int ResourceFound = LoggingCodex.EmbeddedCertProvider + 2;
+        public static int ResourceFail = LoggingCodex.EmbeddedCertProvider + 3;
+    }
 }
