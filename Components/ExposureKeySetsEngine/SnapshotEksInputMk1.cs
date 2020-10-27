@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using EFCore.BulkExtensions;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Snapshot;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
@@ -35,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         public async Task<SnapshotEksInputResult> Execute(DateTime snapshotStart)
         {
-            _Logger.LogDebug("Snapshot publishable TEKs.");
+            _Logger.WriteStart();
 
             _SnapshotStart = snapshotStart;
 
@@ -63,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 TekInputCount = index
             };
 
-            _Logger.LogInformation("TEKs to publish - Count:{Count}.", index);
+            _Logger.WriteTeksToPublish(index);
 
             return result;
         }
