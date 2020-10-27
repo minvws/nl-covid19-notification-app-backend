@@ -7,15 +7,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Framework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
@@ -73,10 +72,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            _Logger.LogInformation("Started - JobName:{JobName}", _JobName);
+            _Logger.WriteStart(_JobName);
 
             if (Environment.UserInteractive && !WindowsIdentityQueries.CurrentUserIsAdministrator())
-                _Logger.LogWarning("{JobName} started WITHOUT elevated privileges - errors may occur when signing content.", _JobName);
+                _Logger.WriteNoElevatedPrivs(_JobName);
 
             _EksEngineResult.Started = _DateTimeProvider.Snapshot; //Align with the logged job name.
 
@@ -98,10 +97,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _EksEngineResult.TotalSeconds = stopwatch.Elapsed.TotalSeconds;
             _EksEngineResult.EksInfo = _EksResults.ToArray();
 
-            _Logger.LogInformation("Reconciliation - Teks in EKSs matches usable input and stuffing - Delta:{ReconcileOutputCount}", _EksEngineResult.ReconcileOutputCount);
-            _Logger.LogInformation("Reconciliation - Teks in EKSs matches output count - Delta:{ReconcileEksSumCount}", _EksEngineResult.ReconcileEksSumCount);
+            _Logger.WriteReconciliationMatchUsable(_EksEngineResult.ReconcileOutputCount);
+            _Logger.WriteReconciliationMatchCount(_EksEngineResult.ReconcileEksSumCount);
 
-            _Logger.LogInformation("{JobName} complete.", _JobName);
+            _Logger.WriteFinished(_JobName);
 
             return _EksEngineResult;
         }
@@ -114,7 +113,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         private async Task ClearJobTables()
         {
-            _Logger.LogDebug("Clear job tables.");
+            _Logger.WriteCleartables();
 
             await using var dbc = _PublishingDbContextFac();
             await using var tx = dbc.BeginTransaction();
@@ -130,14 +129,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             if (tekCount == 0)
             {
-                _Logger.LogInformation("No stuffing required - No publishable TEKs.");
+                _Logger.WriteNoStuffingNoTeks();
                 return;
             }
 
             var stuffingCount = tekCount < _EksConfig.TekCountMin ? _EksConfig.TekCountMin - tekCount : 0;
             if (stuffingCount == 0)
             {
-                _Logger.LogInformation("No stuffing required - Minimum TEK count OK.");
+                _Logger.WriteNoStuffingMinimumOk();
                 return;
             }
 
@@ -145,13 +144,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             var stuffing = _EksStuffingGenerator.Execute(new StuffingArgs {Count = stuffingCount, JobTime = _EksEngineResult.Started});
 
-            _Logger.LogInformation("Stuffing required - Count:{Count}.", stuffing.Length);
+            _Logger.WriteStuffingRequired(stuffing.Length);
 
             await using var tx = dbc.BeginTransaction();
             await dbc.EksInput.AddRangeAsync(stuffing);
             dbc.SaveAndCommit();
 
-            _Logger.LogInformation("Stuffing added.");
+            _Logger.WriteStuffingAdded();
         }
 
 
@@ -159,18 +158,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         private async Task BuildOutput()
         {
-            _Logger.LogDebug("Build EKSs.");
+            _Logger.WriteBuildEkses();
             _BuildEksStopwatch.Start();
 
             var inputIndex = 0;
             var page = GetInputPage(inputIndex, _EksConfig.PageSize);
-            _Logger.LogDebug("Read TEKs - Count:{Count}", page.Length);
+            _Logger.WriteReadTeks(page.Length);
 
             while (page.Length > 0)
             {
                 if (_Output.Count + page.Length >= _EksConfig.TekCountMax)
                 {
-                    _Logger.LogDebug("This page fills the EKS to capacity - Capacity:{Capacity}.", _EksConfig.TekCountMax);
+                    _Logger.WritePageFillsToCapacity(_EksConfig.TekCountMax);
                     var remainingCapacity = _EksConfig.TekCountMax - _Output.Count;
                     AddToOutput(page.Take(remainingCapacity).ToArray()); //Fill to max
                     await WriteNewEksToOutput();
@@ -183,12 +182,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
                 inputIndex += _EksConfig.PageSize; //Move input index
                 page = GetInputPage(inputIndex, _EksConfig.PageSize); //Read next page.
-                _Logger.LogDebug("Read TEKs - Count:{Count}.", page.Length);
+                _Logger.WriteReadTeks(page.Length);
             }
 
             if (_Output.Count > 0)
             {
-                _Logger.LogDebug("Write remaining TEKs - Count:{Count}.", _Output.Count);
+                _Logger.WriteRemainingTeks(_Output.Count);
                 await WriteNewEksToOutput();
             }
         }
@@ -196,7 +195,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private void AddToOutput(EksCreateJobInputEntity[] page)
         {
             _Output.AddRange(page); //Lots of memory
-            _Logger.LogDebug("Add TEKs to output - Count:{Count}, Total:{OutputCount}.", page.Length, _Output.Count);
+            _Logger.WriteAddTeksToOutput(page.Length, _Output.Count);
         }
 
         private static TemporaryExposureKeyArgs Map(EksCreateJobInputEntity c)
@@ -210,7 +209,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         private async Task WriteNewEksToOutput()
         {
-            _Logger.LogDebug("Build EKS.");
+            _Logger.WriteBuildEntry();
 
             var args = _Output.Select(Map).ToArray();
 
@@ -224,7 +223,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 Content = content, 
             };
 
-            _Logger.LogInformation("Write EKS - Id:{CreatingJobQualifier}.", e.CreatingJobQualifier);
+            _Logger.WriteWritingCurrentEks(e.CreatingJobQualifier);
 
             
             await using (var dbc = _PublishingDbContextFac())
@@ -234,7 +233,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 dbc.SaveAndCommit();
             }
 
-            _Logger.LogInformation("Mark TEKs as used.");
+            _Logger.WriteMarkTekAsUsed();
 
             foreach (var i in _Output)
                 i.Used = true;
@@ -257,27 +256,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         private EksCreateJobInputEntity[] GetInputPage(int skip, int take)
         {
-            _Logger.LogDebug("Read page - Skip {Skip}, Take {Take}.", skip, take);
+            _Logger.WriteStartReadPage(skip, take);
 
             using var dbc = _PublishingDbContextFac();
             var result = dbc.Set<EksCreateJobInputEntity>()
                 .Where(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None)
                 .OrderBy(x => x.KeyData).Skip(skip).Take(take).ToArray();
 
-            _Logger.LogDebug("Read page - Count:{Count}.", result.Length);
+            _Logger.WriteFinishedReadPage(result.Length);
 
             return result;
         }
 
         private async Task CommitResults()
         {
-            _Logger.LogInformation("Commit results - publish EKSs.");
+            _Logger.WriteCommitPublish();
 
             await _ContentWriter.ExecuteAsyc();
 
-            _Logger.LogInformation("Commit results - Mark TEKs as Published.");
+            _Logger.WriteCommitMarkTeks();
             var result = await _MarkWorkFlowTeksAsUsed.ExecuteAsync();
-            _Logger.LogInformation("Marked as published - Total:{TotalMarked}.", result.Marked);
+            _Logger.WriteTotalMarked(result.Marked);
             
             await ClearJobTables();
         }
