@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PublishContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using System;
 using System.IO;
@@ -44,13 +45,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
             if (!_Validator.IsValid(contentArgs))
                 throw new InvalidOperationException("Content not valid.");
 
-            _Logger.LogDebug("Writing {ContentType} to database.", contentArgs.ContentType);
+            _Logger.WriteStartWriting(contentArgs.ContentType);
 
             _ContentDbContext.BeginTransaction();
             await _InsertDbCommand.Execute(contentArgs);
             _ContentDbContext.SaveAndCommit();
 
-            _Logger.LogDebug("Done writing {ContentType} to database.", contentArgs.ContentType);
+            _Logger.WriteFinishedWriting(contentArgs.ContentType);
         }
 
         private string ParseContentType(string arg)
