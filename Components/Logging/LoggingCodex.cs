@@ -31,6 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int EksBuilderV1 = 2100;
         public const int EksJobContentWriter = 2200;
         public const int MarkWorkflowTeksAsUsed = 2300;
+        public const int ManifestUpdate = 2400;
     }
 
     public static class LoggingDataRegisterSecret
@@ -315,5 +316,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const string Name = "EksJobContentWriter";
 
         public const int Published = LoggingCodex.EksJobContentWriter + 1;
+	}
+
+    public static class LoggingDataManifestUpdateCommand
+	{
+        public static string Name = "ManifestUpdateCommand";
+
+        public static int Start = LoggingCodex.ManifestUpdate;
+        public static int Finished = LoggingCodex.ManifestUpdate + 99;
+
+        public static int UpdateNotRequired = LoggingCodex.ManifestUpdate + 1;
 	}
 }
