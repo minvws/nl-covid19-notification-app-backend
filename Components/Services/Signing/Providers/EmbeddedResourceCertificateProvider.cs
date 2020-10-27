@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EmbeddedCertProvider;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers
 {
@@ -27,13 +28,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
             var resName = $"NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Resources.{_Config.Path}";
 
-            _Logger.LogInformation("Opening resource: {ResName}", resName);
+            _Logger.WriteOpening(resName);
 
             using var s = GetStream(a, resName);
             if (s == null)
                 throw new InvalidOperationException("Could not find resource.");
 
-            _Logger.LogInformation("Resource found.");
+            _Logger.WriteResourceFound();
             var bytes = new byte[s.Length];
             s.Read(bytes, 0, bytes.Length);
             return new X509Certificate2(bytes, _Config.Password, X509KeyStorageFlags.Exportable);
@@ -47,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             }
             catch (Exception e)
             {
-                _Logger.LogError(e, "Failed to get manifest resource stream");
+                _Logger.WriteResourceFail(e);
                 throw;
             }
         }
