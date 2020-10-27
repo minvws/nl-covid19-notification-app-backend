@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DbProvision;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 {
@@ -30,18 +31,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
         {
             var nuke = !args.Contains("nonuke");
 
-            _Logger.LogInformation("Start.");
+            _Logger.WriteStart();
 
-            _Logger.LogInformation("Workflow...");
+            _Logger.WriteWorkFlowDb();
             await _Workflow.Execute(nuke);
 
-            _Logger.LogInformation("Content...");
+            _Logger.WriteContentDb();
             await _Content.Execute(nuke);
 
-            _Logger.LogInformation("Job...");
+            _Logger.WriteJobDb();
             await _Job.Execute(nuke);
 
-            _Logger.LogInformation("Complete.");
+            _Logger.WriteFinished();
         }
     }
 }
