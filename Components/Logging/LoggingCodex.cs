@@ -312,7 +312,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
 
     public static class LoggingDataEksJobContentWriter
 	{
-        public const string Name = "EksJobCobntentWriter";
+        public const string Name = "EksJobContentWriter";
 
         public const int Published = LoggingCodex.EksJobContentWriter + 1;
 	}
