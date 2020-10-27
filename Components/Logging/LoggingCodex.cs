@@ -27,6 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int RemoveExpiredEksV2 = 1700;
         public const int RemoveExpiredManifestV2 = 1800;
         public const int EksEngine = 1900;
+        public const int Snapshot = 2000;
     }
 
     public static class LoggingDataRegisterSecret
@@ -280,5 +281,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int CommitPublish = LoggingCodex.EksEngine + 19;
         public const int CommitMarkTeks = LoggingCodex.EksEngine + 20;
         public const int TotalMarked = LoggingCodex.EksEngine + 21;   
+	}
+
+    public static class LoggingDataSnapshot
+	{
+        public const string Name = "Snapshot";
+
+        public const int Start = LoggingCodex.Snapshot;
+
+        public const int TeksToPublish = LoggingCodex.Snapshot + 1;
 	}
 }
