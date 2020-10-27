@@ -7,6 +7,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ManifestUpdateCommand;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using System;
@@ -58,11 +59,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 
             if (!await WriteCandidate(candidate))
             {
-                _Logger.LogInformation("Manifest does NOT require updating.");
+                _Logger.WriteUpdateNotRequired();
                 return;
             }
 
-            _Logger.LogInformation("Manifest updating.");
+            _Logger.WriteStart();
 
             var snapshot = _DateTimeProvider.Snapshot;
             var e = new ContentEntity
@@ -78,7 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             _ContentDb.Add(e);
             _ContentDb.SaveAndCommit();
 
-            _Logger.LogInformation("Manifest updated.");
+            _Logger.WriteFinished();
         }
 
         private async Task<bool> WriteCandidate(ManifestContent candidate)
