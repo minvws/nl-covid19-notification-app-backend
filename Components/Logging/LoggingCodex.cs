@@ -29,6 +29,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int EksEngine = 1900;
         public const int Snapshot = 2000;
         public const int EksBuilderV1 = 2100;
+        public const int EksJobContentWriter = 2200;
+        public const int MarkWorkflowTeksAsUsed = 2300;
     }
 
     public static class LoggingDataRegisterSecret
@@ -299,5 +301,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
 
         public const int NlSig = LoggingCodex.EksBuilderV1 + 1;
         public const int GaenSig = LoggingCodex.EksBuilderV1 + 2;
+	}
+
+    public static class LoggingDataMarkWorkFlowTeksAsUsed
+	{
+        public const string Name = "MarkWorkFlowTeksAsUsed";
+
+        public const int MarkAsPublished = LoggingCodex.MarkWorkflowTeksAsUsed + 1;
+	}
+
+    public static class LoggingDataEksJobContentWriter
+	{
+        public const string Name = "EksJobCobntentWriter";
+
+        public const int Published = LoggingCodex.EksJobContentWriter + 1;
 	}
 }
