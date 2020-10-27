@@ -26,12 +26,9 @@ else
     $OpenSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
     $HSMAdminToolsDir = "#{Deploy.HSMScripting.HSMAdminToolsDir}#"
     $SignerLoc = "`"#{Deploy.HSMScripting.VerifierLoc}#`""
-	$TestfileName = "#{Deploy.HSMScripting.CertKeyExtractor.TestfileName}#"
-    $TestfileNameNoExt = "#{Deploy.HSMScripting.CertKeyExtractor.TestfileNameNoExt}#"
-    
-    
 	$Environment = "#{Deploy.HSMScripting.Environment}#"
-    $EcdsaCertThumbPrint = "#{Deploy.HSMScripting.EcdsaCertThumbPrint}#"
+    
+	$EcdsaCertThumbPrint = "#{Deploy.HSMScripting.EcdsaCertThumbPrint}#"
 	$Hsm1Address = "#{Deploy.HSMScripting.HSM1Address}#"
 	$Hsm2Address = "#{Deploy.HSMScripting.HSM2Address}#"
 }

@@ -43,12 +43,12 @@ namespace PublishContent
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
 
             services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient<IContentSigner, CmsSignerEnhanced>();
+            services.AddTransient<IContentSigner, DummyCmsSigner>();
 
             services.AddTransient<ContentValidator>();
             services.AddTransient<ContentInsertDbCommand>();
 
-            services.NlSignerStartup();
+            services.DummySignerStartup();
         }
     }
 }

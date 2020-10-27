@@ -119,7 +119,7 @@ Pause
 write-host "`nCheck if HSM is accessible"
 Pause
 
-RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool.exe`" providerinfo" 
+RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool`" providerinfo" 
 
 write-host "`nImporting certificate"
 Pause

@@ -139,7 +139,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             services.NlResignerStartup();
 
-            services.NlSignerStartup();
+            services.DummySignerStartup();
             services.GaSignerStartup();
 
             services.DailyStatsStartup();

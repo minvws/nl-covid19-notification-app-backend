@@ -19,18 +19,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 
         public static void NlSignerStartup(this IServiceCollection services)
         {
-            services.AddTransient<IContentSigner>(
-                x => new CmsSignerEnhanced(
-                    new LocalMachineStoreCertificateProvider(new LocalMachineStoreCertificateProviderConfig(x.GetRequiredService<IConfiguration>(), NlSettingPrefix), x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>()),
-                    new EmbeddedResourcesCertificateChainProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), ChainPrefix)),
-                    x.GetRequiredService<IUtcDateTimeProvider>()));
+            services.AddTransient<IContentSigner>(x =>
+                new CmsSignerEnhanced(
+                    new LocalMachineStoreCertificateProvider(
+                        new LocalMachineStoreCertificateProviderConfig(
+                            x.GetRequiredService<IConfiguration>(), NlSettingPrefix),
+                            x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>()),
+                        new EmbeddedResourcesCertificateChainProvider(
+                            new StandardCertificateLocationConfig(
+                                x.GetRequiredService<IConfiguration>(),
+                                ChainPrefix)),
+                        x.GetRequiredService<IUtcDateTimeProvider>()
+                    ));
         }
 
         public static void GaSignerStartup(this IServiceCollection services)
         {
-            services.AddTransient<IGaContentSigner>(
-                x => new EcdSaSigner(
-                    new LocalMachineStoreCertificateProvider(new LocalMachineStoreCertificateProviderConfig(x.GetRequiredService<IConfiguration>(), GaSettingPrefix), x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>())));
+            services.AddTransient<IGaContentSigner>(x =>
+                new EcdSaSigner(
+                    new LocalMachineStoreCertificateProvider(
+                        new LocalMachineStoreCertificateProviderConfig(
+                            x.GetRequiredService<IConfiguration>(),
+                            GaSettingPrefix),
+                        x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>()
+                    )));
         }
+
+        public static void DummySignerStartup(this IServiceCollection services)
+		{
+            services.AddTransient<IContentSigner>(x => new DummyCmsSigner());
+		}
     }
 }

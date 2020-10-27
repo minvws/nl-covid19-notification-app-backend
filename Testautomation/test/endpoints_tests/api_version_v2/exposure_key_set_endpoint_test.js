@@ -40,13 +40,13 @@ describe("Exposure key set endpoints tests #endpoints #regression", function () 
         );
     })
 
-    // validate max-age is not older then 1.209.600 sec (14 days)
-    it("Max-Age of exposureKey data validated, not older then 1209600 sec. (14 days)", function () {
+    // validate max-age is not older then 1227600 sec (14 days + 5hrs)
+    it("Max-Age of exposureKey data validated, not older then 1227600 sec. (14 days + 5 hrs)", function () {
         let maxAge = exposure_keyset_response.headers["cache-control"].split("="); // max age is number of sec.
         maxAge = parseInt(maxAge[1]);
-
-        expect(1209600 - maxAge,
-            `Response max-age ${Math.floor(maxAge/3600/24)} is not older then 1209600 sec. (14 days) ago`
+        let maxPossibleAge = (3600*24*14) + (3600*5);
+        expect(maxPossibleAge - maxAge,
+            `Response max-age ${Math.floor(maxAge)} is not older then ${maxPossibleAge} sec. (14 days + 5hrs) ago`
         ).to.be.least(0);
     });
 
