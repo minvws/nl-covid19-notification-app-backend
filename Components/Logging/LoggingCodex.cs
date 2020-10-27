@@ -26,6 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int Resigner = 1600;
         public const int RemoveExpiredEksV2 = 1700;
         public const int RemoveExpiredManifestV2 = 1800;
+        public const int EksEngine = 1900;
     }
 
     public static class LoggingDataRegisterSecret
@@ -236,4 +237,48 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int DeletionReconciliationFailed = LoggingCodex.RemoveExpiredManifestV2 + 4;
         public const int FinishedNothingRemoved = LoggingCodex.RemoveExpiredManifestV2 + 98;
     }
+
+    public static class LoggingDataEksEngine
+	{
+        public const string Name = "EksEngine";
+
+        public const int Start = LoggingCodex.EksEngine;
+        public const int Finished = LoggingCodex.EksEngine + 99;
+
+        public const int NoElevatedPrivs = LoggingCodex.EksEngine + 1;
+        public const int ReconciliationTeksMatchInputAndStuffing = LoggingCodex.EksEngine + 2;
+        public const int ReconcilliationTeksMatchOutputCount = LoggingCodex.EksEngine + 3;
+        
+        //ClearJobTables()
+        public const int ClearJobTables = LoggingCodex.EksEngine + 4;
+        
+        //Stuff()
+        public const int NoStuffingNoTeks = LoggingCodex.EksEngine + 5;
+        public const int NoStuffingMinimumOk = LoggingCodex.EksEngine + 6;
+        public const int StuffingRequired = LoggingCodex.EksEngine + 7;
+        public const int StuffingAdded = LoggingCodex.EksEngine + 8;
+        
+        //BuildOutput()
+        public const int BuildEkses = LoggingCodex.EksEngine + 9;
+        public const int ReadTeks = LoggingCodex.EksEngine + 10;
+        public const int PageFillsToCapacity = LoggingCodex.EksEngine + 11;
+        public const int WriteRemainingTeks = LoggingCodex.EksEngine + 12;
+        
+        //AddToOutput()
+        public const int AddTeksToOutput = LoggingCodex.EksEngine + 13;
+
+        //WriteNewEksToOutput()
+        public const int BuildEntry = LoggingCodex.EksEngine + 14;
+        public const int WritingCurrentEks = LoggingCodex.EksEngine + 15;
+        public const int MarkTekAsUsed = LoggingCodex.EksEngine + 16;
+        
+        //GetInputPage()
+        public const int StartReadPage = LoggingCodex.EksEngine + 17;
+        public const int FinishReadPage = LoggingCodex.EksEngine + 18;
+        
+        //CommitResults()
+        public const int CommitPublish = LoggingCodex.EksEngine + 19;
+        public const int CommitMarkTeks = LoggingCodex.EksEngine + 20;
+        public const int TotalMarked = LoggingCodex.EksEngine + 21;   
+	}
 }
