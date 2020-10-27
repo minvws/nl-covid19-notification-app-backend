@@ -33,6 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int MarkWorkflowTeksAsUsed = 2300;
         public const int ManifestUpdate = 2400;
         public const int EmbeddedCertProvider = 2500;
+        public const int CertLmProvider = 2600;
     }
 
     public static class LoggingDataRegisterSecret
@@ -336,5 +337,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public static int Opening = LoggingCodex.EmbeddedCertProvider + 1;
         public static int ResourceFound = LoggingCodex.EmbeddedCertProvider + 2;
         public static int ResourceFail = LoggingCodex.EmbeddedCertProvider + 3;
+    }
+
+    public static class LoggingDataCertLmProvider
+	{
+        public static string Name = "LocalMachineStoreCertificateProvider";
+
+        public static int Finding = LoggingCodex.CertLmProvider + 1;
+        public static int CertNotFound = LoggingCodex.CertLmProvider + 2;
+        public static int NoPrivateKey = LoggingCodex.CertLmProvider + 3;
+        public static int CertReadError = LoggingCodex.CertLmProvider + 4;
+
     }
 }
