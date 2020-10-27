@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredWorkflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expiry
@@ -49,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expi
             stats.TekUnpublished = dbc.TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Unpublished);
         }
 
-        private void Log(WorkflowStats stats, string message)
+        private void LogReport(WorkflowStats stats, string message)
         {
             var sb = new StringBuilder(message);
             sb.AppendLine();
@@ -66,7 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expi
             sb.AppendLine($"   Published:{stats.TekPublished}");
             sb.AppendLine($"   Unpublished:{stats.TekUnpublished}");
 
-            _Logger.LogInformation(sb.ToString());
+            _Logger.WriteReport(sb.ToString());
         }
 
 
@@ -83,37 +84,37 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expi
             _Result = new RemoveExpiredWorkflowsResult();
             _Result.DeletionsOn = _Config.CleanupDeletesData;
 
-            _Logger.LogInformation("Begin Workflow cleanup.");
+            _Logger.WriteStart();
 
             using (var dbc = _DbContextProvider())
             {
                 using (var tx = dbc.BeginTransaction())
                 {
                     ReadStats(_Result.Before, dbc);
-                    Log(_Result.Before, "Workflow stats before cleanup:");
+                    LogReport(_Result.Before, "Workflow stats before cleanup:");
 
                     if (!_Result.DeletionsOn)
                     {
-                        _Logger.LogInformation("No Workflows deleted - Deletions switched off");
+                        _Logger.WriteFinishedNothingRemoved();
                         return _Result;
                     }
 
                     if (_Result.Before.Authorised != _Result.Before.AuthorisedAndFullyPublished)
                     {
-                        _Logger.LogCritical("Authorised unpublished TEKs exist. Aborting workflow cleanup.");
+                        _Logger.WriteUnpublishedTekFound();
                         throw new InvalidOperationException("Authorised unpublished TEKs exist. Aborting workflow cleanup.");
                     }
 
                     _Result.GivenMercy = dbc.Database.ExecuteSqlInterpolated($"WITH Zombies As ( SELECT Id FROM [TekReleaseWorkflowState] WHERE [ValidUntil] < {_Dtp.Snapshot}) DELETE Zombies");
-                    _Logger.LogInformation("Workflows deleted - Unauthorised:{unauthorised}", _Result.GivenMercy);
+                    _Logger.WriteRemovedAmount(_Result.GivenMercy);
                     tx.Commit();
                 }
 
                 using (dbc.BeginTransaction())
                     ReadStats(_Result.After, dbc);
 
-                Log(_Result.Before, "Workflow stats after cleanup:");
-                _Logger.LogInformation("Workflow cleanup complete.");
+                LogReport(_Result.Before, "Workflow stats after cleanup:");
+                _Logger.WriteFinished();
                 return _Result;
             }
         }
