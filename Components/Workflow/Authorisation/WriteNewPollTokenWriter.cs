@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
 {
@@ -30,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
         public string Execute(TekReleaseWorkflowStateEntity wf)
         {
-            _Logger.LogDebug("Writing.");
+            _Logger.WriteWritingNewPollToken();
 
             var success = WriteAttempt(wf);
             while (!success)
@@ -45,14 +46,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
                 throw new InvalidOperationException("Maximum attempts reached.");
 
             if (_AttemptCount > 1)
-                _Logger.LogWarning("Duplicate PollToken found - attempt:{AttemptCount}", _AttemptCount);
+                _Logger.WriteDuplicatePollTokenFound(_AttemptCount);
 
             wf.PollToken = _PollTokenService.Next();
 
             try
             {
                 _WorkflowDb.SaveAndCommit();
-                _Logger.LogDebug("Committed.");
+                _Logger.WritePollTokenCommit();
                 return true;
             }
             catch (DbUpdateException ex)

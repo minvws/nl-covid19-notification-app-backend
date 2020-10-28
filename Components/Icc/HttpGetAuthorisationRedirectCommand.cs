@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Code;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
@@ -38,8 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
         {
             if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
 
-            _Logger.LogInformation("Executing Auth.Redirect on Host {CurrentHost}",
-                httpContext.Request.Host.ToString());
+            _Logger.WriteRedirecting(httpContext.Request.Host.ToString());
 
             // check httpContext claims on AccessToken validity
             if (!await _TheIdentityHubService.VerifyClaimToken(httpContext.User.Claims))

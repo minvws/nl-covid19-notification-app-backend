@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
@@ -24,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 
         public IActionResult Execute(HttpContext httpContext)
         {
-            _Logger.LogInformation("AccessDenied for login, insufficient role");
+            _Logger.WriteInsufficientRole();
             var redirectUrl = _Configuration.FrontendBaseUrl + "/?e=access_denied";
             return new RedirectResult(redirectUrl);
         }

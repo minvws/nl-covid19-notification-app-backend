@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
@@ -44,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
 
             if (wf == null)
             {
-                _Logger.LogError("KeyReleaseWorkflowState not found - LabConfirmationId:{LabConfirmationId}.", args.LabConfirmationId);
+                _Logger.WriteKeyReleaseWorkflowStateNotFound(args.LabConfirmationId);
                 return null;
             }
 

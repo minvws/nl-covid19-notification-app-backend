@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Validators
 {
@@ -34,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Vali
 
             if (decodedClaims["access_token"] == _TestAccessToken)
             {
-                _Logger.LogWarning("Test JWT Used for authorization!");
+                _Logger.WriteTestJwtUsed();
                 return true;
             }
 

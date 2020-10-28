@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
@@ -24,12 +25,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         
         
-            _Logger.LogInformation("TestJwtGeneratorService Singleton constructed, generating test JWT now...");
+            _Logger.WriteTestJwtConstructed();
             var testJwtData = new Dictionary<string, object> {{"access_token", "test_access_token"}, {"id", "0"}};
         
             var expiry = new StandardUtcDateTimeProvider().Now().AddDays(7).ToUnixTimeU64();
         
-            _Logger.LogInformation(jwtService.Generate(expiry, testJwtData));
+            _Logger.WriteGeneratedToken(jwtService.Generate(expiry, testJwtData));
         }
     }
 }
