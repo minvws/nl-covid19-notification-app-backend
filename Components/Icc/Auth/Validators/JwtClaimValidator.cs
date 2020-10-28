@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Validators
@@ -47,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Vali
 
             if (tokenExpiry > maxExpiry)
             {
-                _Logger.LogInformation("Token invalid, has longer exp. than configured {claimLifetimeHours} hrs", _IccPortalConfig.ClaimLifetimeHours.ToString());
+                _Logger.WriteTokenExpTooLong(_IccPortalConfig.ClaimLifetimeHours.ToString());
                 return false;
             }
             

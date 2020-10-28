@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
 {
@@ -19,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
             if (messages.Length == 0)
                 return false;
 
-            logger.LogError(string.Join(Environment.NewLine, messages));
+            logger.WriteLogValidationError(string.Join(Environment.NewLine, messages));
 
             return true;
         }
@@ -32,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
             if (messages.Length == 0)
                 return;
 
-            logger.LogInformation(string.Join(Environment.NewLine, messages));
+            logger.WriteLogValidationInfo(string.Join(Environment.NewLine, messages));
         }
     }
 }
