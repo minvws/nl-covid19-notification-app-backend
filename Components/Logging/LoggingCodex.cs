@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int ExceptionInterceptor = 500;
         public const int SuppressError = 600;
         public const int GetCdnContent = 700;
-        // 800 is for IccBackend; to be implemented later
+        public const int IccBackend = 800;
         public const int DbProvision = 900;
         public const int PublishContent = 1000;
         public const int SigtestFileCreator = 1100;
@@ -112,6 +112,38 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
         public const int NotFound = LoggingCodex.GetCdnContent + 3;
         public const int EtagFound = LoggingCodex.GetCdnContent + 4;
     }
+
+    public static class LoggingDataIccBackend //Split up for workflowcontroller and authcontroller
+	{
+        public const string Name = "IccBackend";
+
+        public const int HttpFail = LoggingCodex.IccBackend + 1;
+        public const int EmptyResponseString = LoggingCodex.IccBackend + 2;
+        public const int TokenVerifyResult = LoggingCodex.IccBackend + 3;
+        public const int TokenRevokeSuccess = LoggingCodex.IccBackend + 4;
+        public const int TokenNotRevoked = LoggingCodex.IccBackend + 5;
+        public const int InsufficientRole = LoggingCodex.IccBackend + 6;
+        public const int TestJwtConstructed = LoggingCodex.IccBackend + 7;
+        public const int GeneratedToken = LoggingCodex.IccBackend + 8;
+        public const int MissingAuthHeader = LoggingCodex.IccBackend + 9;
+        public const int InvalidAuthHeader = LoggingCodex.IccBackend + 10;
+        public const int TokenExpTooLong = LoggingCodex.IccBackend + 11;
+        public const int TestJwtUsed = LoggingCodex.IccBackend + 12;
+        public const int InvalidTokenFormat = LoggingCodex.IccBackend + 13;
+        public const int InvalidTokenParts = LoggingCodex.IccBackend + 14;
+        public const int TokenExpired = LoggingCodex.IccBackend + 15;
+        public const int TokenSigInvalid = LoggingCodex.IccBackend + 16;
+        public const int TokenOtherError = LoggingCodex.IccBackend + 17;
+        public const int Redirecting = LoggingCodex.IccBackend + 18;
+        public const int AuthStart = LoggingCodex.IccBackend + 19;
+        public const int LabStart = LoggingCodex.IccBackend + 20;
+        public const int LogValidationError = LoggingCodex.IccBackend + 21;
+        public const int LogValidationInfo = LoggingCodex.IccBackend + 22;
+        public const int KeyReleaseWorkflowStateNotFound = LoggingCodex.IccBackend + 23;
+        public const int WritingNewPollToken = LoggingCodex.IccBackend + 24;
+        public const int DuplicatePollTokenFound = LoggingCodex.IccBackend + 25;
+        public const int PollTokenCommit = LoggingCodex.IccBackend + 26;
+	}
 
     public static class LoggingDataDbProvision
 	{
