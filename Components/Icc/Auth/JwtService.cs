@@ -88,25 +88,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth
 
                 return true;
             }
-            catch (FormatException)
+            catch (FormatException exception)
             {
-                _Logger.WriteInvalidTokenFormat();
+                _Logger.WriteInvalidTokenFormat(exception);
             }
-            catch (InvalidTokenPartsException)
+            catch (InvalidTokenPartsException exception)
             {
-                _Logger.WriteInvalidTokenParts();
+                _Logger.WriteInvalidTokenParts(exception);
             }
-            catch (TokenExpiredException)
+            catch (TokenExpiredException exception)
             {
-                _Logger.WriteTokenExpired();
+                _Logger.WriteTokenExpired(exception);
             }
-            catch (SignatureVerificationException)
+            catch (SignatureVerificationException exception)
             {
-                _Logger.WriteTokenSigInvalid();
+                _Logger.WriteTokenSigInvalid(exception);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                _Logger.WriteTokenOtherError(e);
+                _Logger.WriteTokenOtherError(exception);
             }
 
             return false;

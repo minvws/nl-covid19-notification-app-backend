@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using JWT.Exceptions;
 using System;
 using System.Net;
 using Microsoft.Extensions.Logging;
@@ -112,35 +113,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBa
 				LoggingDataIccBackend.Name, LoggingDataIccBackend.TestJwtUsed);
 		}
 
-		public static void WriteInvalidTokenFormat(this ILogger logger)
+		public static void WriteInvalidTokenFormat(this ILogger logger, FormatException exception)
 		{
 			if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-			logger.LogWarning("[{name}/{id}] Invalid jwt token, FormatException.",
+			logger.LogWarning(exception, "[{name}/{id}] Invalid jwt token, FormatException.",
 				LoggingDataIccBackend.Name, LoggingDataIccBackend.InvalidTokenFormat);
 		}
 
-		public static void WriteInvalidTokenParts(this ILogger logger)
+		public static void WriteInvalidTokenParts(this ILogger logger, InvalidTokenPartsException exception)
 		{
 			if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-			logger.LogWarning("[{name}/{id}] Invalid jwt token, InvalidTokenPartsException.",
+			logger.LogWarning(exception, "[{name}/{id}] Invalid jwt token, InvalidTokenPartsException.",
 				LoggingDataIccBackend.Name, LoggingDataIccBackend.InvalidTokenParts);
 		}
 
-		public static void WriteTokenExpired(this ILogger logger)
+		public static void WriteTokenExpired(this ILogger logger, TokenExpiredException exception)
 		{
 			if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-			logger.LogWarning("[{name}/{id}] Invalid jwt token, TokenExpiredException",
+			logger.LogWarning(exception, "[{name}/{id}] Invalid jwt token, TokenExpiredException",
 				LoggingDataIccBackend.Name, LoggingDataIccBackend.TokenExpired);
 		}
 
-		public static void WriteTokenSigInvalid(this ILogger logger)
+		public static void WriteTokenSigInvalid(this ILogger logger, SignatureVerificationException exception)
 		{
 			if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-			logger.LogWarning("[{name}/{id}] Invalid jwt token, SignatureVerificationException.",
+			logger.LogWarning(exception, "[{name}/{id}] Invalid jwt token, SignatureVerificationException.",
 				LoggingDataIccBackend.Name, LoggingDataIccBackend.TokenSigInvalid);
 		}
 
