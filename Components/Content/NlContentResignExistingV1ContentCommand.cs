@@ -35,6 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             await _Resigner.Execute(ContentTypes.ExposureKeySet, ContentTypes.ExposureKeySetV2, ZippedContentEntryNames.EksContent);
             await _Resigner.Execute(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content);
             await _Resigner.Execute(ContentTypes.RiskCalculationParameters, ContentTypes.RiskCalculationParametersV2, ZippedContentEntryNames.Content);
+            await _Resigner.Execute(ContentTypes.ResourceBundle, ContentTypes.ResourceBundleV2, ZippedContentEntryNames.Content);
         }
     }
 }

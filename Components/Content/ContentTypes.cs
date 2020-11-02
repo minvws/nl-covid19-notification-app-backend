@@ -6,6 +6,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     public static class ContentTypes
     {
+        public const string ResourceBundle = nameof(ResourceBundle);
+
         public const string AppConfig = nameof(AppConfig);
         public const string RiskCalculationParameters = nameof(RiskCalculationParameters);
         public const string ExposureKeySet = nameof(ExposureKeySet);
@@ -15,8 +17,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         public const string RiskCalculationParametersV2 = nameof(RiskCalculationParametersV2);
         public const string ExposureKeySetV2 = nameof(ExposureKeySetV2);
         public const string ManifestV2 = nameof(ManifestV2);
+        public const string ResourceBundleV2 = nameof(ResourceBundleV2);
 
-        public const string ResourceBundle = nameof(ResourceBundle);
 
         public static bool IsValid(string value) =>
             value == AppConfig
@@ -28,6 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             || value == ExposureKeySetV2
             || value == ManifestV2
             || value == ResourceBundle
+            || value == ResourceBundleV2
         ;
     }
 }
