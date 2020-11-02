@@ -12,11 +12,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resig
     public static class LoggingExtensionsResigner
     {
         private const string Name = "Resigner";
-        private const int First = LoggingCodex.Resigner;
+        private const int Base = LoggingCodex.Resigner;
 
-        private const int CertNotSpecified = First;
-        private const int Report = First + 1;
-        private const int Finished = First + 99;
+        private const int CertNotSpecified = Base;
+        private const int Report = Base + 1;
+        private const int Finished = Base + 99;
 
         public static void WriteFinished(this ILogger logger)
         {

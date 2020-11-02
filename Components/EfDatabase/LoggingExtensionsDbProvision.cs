@@ -10,12 +10,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DbPro
     public static class LoggingExtensionsDbProvision
     {
         private const string Name = "DbProvision";
-        private const int First = LoggingCodex.DbProvision;
-        private const int Start = First;
-        private const int Finished = First + 99;
-        private const int WorkflowDb = First + 1;
-        private const int ContentDb = First + 2;
-        private const int JobDb = First + 3;
+        private const int Base = LoggingCodex.DbProvision;
+        private const int Start = Base;
+        private const int Finished = Base + 99;
+        private const int WorkflowDb = Base + 1;
+        private const int ContentDb = Base + 2;
+        private const int JobDb = Base + 3;
 
         public static void WriteStart(this ILogger logger)
         {

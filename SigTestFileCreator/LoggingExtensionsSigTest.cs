@@ -10,14 +10,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.SigTe
     public static class LoggingExtensionsSigTestFileCreator
     {
         private const string Name = "SigTestFileCreator";
-        private const int First = LoggingCodex.SigtestFileCreator;
+        private const int Base = LoggingCodex.SigtestFileCreator;
 
-        private const int Start = First;
-        private const int Finished = First + 99;
+        private const int Start = Base;
+        private const int Finished = Base + 99;
 
-        private const int NoElevatedPrivs = First + 1;
-        private const int BuildingResultFile = First + 2;
-        private const int SavingResultFile = First + 3;
+        private const int NoElevatedPrivs = Base + 1;
+        private const int BuildingResultFile = Base + 2;
+        private const int SavingResultFile = Base + 3;
 
 
         public static void WriteStart(this ILogger logger, DateTime time)

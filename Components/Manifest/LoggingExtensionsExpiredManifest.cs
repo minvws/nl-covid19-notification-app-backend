@@ -6,16 +6,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Expir
     public static class LoggingExtensionsExpiredManifest
     {
         private const string Name = "RemoveExpiredManifest";
-        private const int First = LoggingCodex.RemoveExpiredManifest;
+        private const int Base = LoggingCodex.RemoveExpiredManifest;
 
-        private const int Start = First;
-        private const int Finished = First + 99;
+        private const int Start = Base;
+        private const int Finished = Base + 99;
 
-        private const int RemovingManifests = First + 1;
-        private const int RemovingEntry = First + 2;
-        private const int ReconciliationFailed = First + 3;
-        private const int DeletionReconciliationFailed = First + 4;
-        private const int FinishedNothingRemoved = First + 98;
+        private const int RemovingManifests = Base + 1;
+        private const int RemovingEntry = Base + 2;
+        private const int ReconciliationFailed = Base + 3;
+        private const int DeletionReconciliationFailed = Base + 4;
+        private const int FinishedNothingRemoved = Base + 98;
 
         public static void WriteStart(this ILogger logger, int keepAliveCount)
         {

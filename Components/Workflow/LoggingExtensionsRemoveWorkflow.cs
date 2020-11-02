@@ -10,15 +10,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Expir
     public static class LoggingExtensionsExpiredWorkflow
     {
         private const string Name = "RemoveExpiredWorkflow";
-        private const int First = LoggingCodex.RemoveExpiredWorkflow;
+        private const int Base = LoggingCodex.RemoveExpiredWorkflow;
 
-        private const int Start = First;
-        private const int Finished = First + 99;
+        private const int Start = Base;
+        private const int Finished = Base + 99;
 
-        private const int Report = First + 1;
-        private const int RemovedAmount = First + 2;
-        private const int UnpublishedTekFound = First + 97;
-        private const int FinishedNothingRemoved = First + 98;
+        private const int Report = Base + 1;
+        private const int RemovedAmount = Base + 2;
+        private const int UnpublishedTekFound = Base + 97;
+        private const int FinishedNothingRemoved = Base + 98;
 
         public static void WriteStart(this ILogger logger)
         {

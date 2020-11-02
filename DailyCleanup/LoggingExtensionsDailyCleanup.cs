@@ -10,20 +10,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Daily
     public static class LoggingExtensionsDailyCleanup
     {
         private const string Name = "DailyCleanup";
-        private const int First = LoggingCodex.DailyCleanup;
+        private const int Base = LoggingCodex.DailyCleanup;
 
-        private const int Start = First;
-        private const int Finished = First + 99;
+        private const int Start = Base;
+        private const int Finished = Base + 99;
 
-        private const int EksEngineStarting = First + 1;
-        private const int ManifestEngineStarting = First + 2;
-        private const int DailyStatsCalcStarting = First + 3;
-        private const int ManiFestCleanupStarting = First + 4;
-        private const int EksCleanupStarting = First + 5;
-        private const int WorkflowCleanupStarting = First + 6;
-        private const int ResignerStarting = First + 7;
-        private const int EksV2CleanupStarting = First + 8;
-        private const int ManifestV2CleanupStarting = First + 9;
+        private const int EksEngineStarting = Base + 1;
+        private const int ManifestEngineStarting = Base + 2;
+        private const int DailyStatsCalcStarting = Base + 3;
+        private const int ManiFestCleanupStarting = Base + 4;
+        private const int EksCleanupStarting = Base + 5;
+        private const int WorkflowCleanupStarting = Base + 6;
+        private const int ResignerStarting = Base + 7;
+        private const int EksV2CleanupStarting = Base + 8;
+        private const int ManifestV2CleanupStarting = Base + 9;
 
         public static void WriteStart(this ILogger logger)
         {

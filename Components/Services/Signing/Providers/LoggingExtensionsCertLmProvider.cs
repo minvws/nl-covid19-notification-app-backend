@@ -11,12 +11,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Local
     {
 
         private static string Name = "LocalMachineStoreCertificateProvider";
-        private const int First = LoggingCodex.CertLmProvider;
+        private const int Base = LoggingCodex.CertLmProvider;
 
-        private const int Finding = First;
-        private const int CertNotFound = First + 1;
-        private const int NoPrivateKey = First + 2;
-        private const int CertReadError = First + 3;
+        private const int Finding = Base;
+        private const int CertNotFound = Base + 1;
+        private const int NoPrivateKey = Base + 2;
+        private const int CertReadError = Base + 3;
 
         public static void WriteFindingCert(this ILogger logger, string thumbprint, bool rootTrusted)
         {

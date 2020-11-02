@@ -11,17 +11,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Expir
     {
 
         private const string Name = "RemoveExpiredEks";
-        private const int First = LoggingCodex.RemoveExpiredEks;
+        private const int Base = LoggingCodex.RemoveExpiredEks;
 
-        private const int Start = First;
-        private const int Finished = First + 99;
+        private const int Start = Base;
+        private const int Finished = Base + 99;
 
-        private const int CurrentEksFound = First + 1;
-        private const int FoundTotal = First + 2;
-        private const int FoundEntry = First + 3;
-        private const int RemovedAmount = First + 4;
-        private const int ReconciliationFailed = First + 5;
-        private const int FinishedNothingRemoved = First + 98;
+        private const int CurrentEksFound = Base + 1;
+        private const int FoundTotal = Base + 2;
+        private const int FoundEntry = Base + 3;
+        private const int RemovedAmount = Base + 4;
+        private const int ReconciliationFailed = Base + 5;
+        private const int FinishedNothingRemoved = Base + 98;
 
         public static void WriteStart(this ILogger logger)
         {

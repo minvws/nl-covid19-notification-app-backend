@@ -11,8 +11,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBu
     {
         private const string Name = "EksBuilderV1";
         private const int Base = LoggingCodex.EksBuilderV1;
-        private const int NlSig = Base + 1;
-        private const int GaenSig = Base + 2;
+        private const int NlSig = Base;
+        private const int GaenSig = Base + 1;
 
         public static void WriteNlSig(this ILogger logger, byte[]? sig)
         {

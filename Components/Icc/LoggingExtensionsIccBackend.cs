@@ -13,6 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBa
     {
         private const string Name = "IccBackend";
         private const int Base = LoggingCodex.IccBackend;
+
         private const int HttpFail = Base + 1;
         private const int EmptyResponseString = Base + 2;
         private const int TokenVerifyResult = Base + 3;

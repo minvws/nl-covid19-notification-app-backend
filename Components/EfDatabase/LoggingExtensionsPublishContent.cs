@@ -10,10 +10,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Publi
     public static class LoggingExtensionsPublishContent
     {
         private const string Name = "PublishContent";
-        private const int First = LoggingCodex.PublishContent;
+        private const int Base = LoggingCodex.PublishContent;
 
-        private const int StartWriting = First;
-        private const int FinishedWriting = First + 1;
+        private const int StartWriting = Base;
+        private const int FinishedWriting = Base + 1;
 
         public static void WriteStartWriting(this ILogger logger, string contentType)
         {
