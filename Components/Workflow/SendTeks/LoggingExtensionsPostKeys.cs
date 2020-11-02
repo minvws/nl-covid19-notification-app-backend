@@ -5,22 +5,40 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PostK
 {
     public static class LoggingExtensionsPostKeys
     {
+        private const string Name = "Postkeys";
+        private const int Base = LoggingCodex.PostTeks;
+
+        private const int Start = Base;
+        private const int Finished = Base + 99;
+        private const int SignatureValidationFailed = Base + 1;
+        private const int BucketIdParsingFailed = Base + 2;
+        private const int TekValidationFailed = Base + 3;
+        private const int ValidTekCount = Base + 4;
+        private const int BucketDoesNotExist = Base + 5;
+        private const int SignatureInvalid = Base + 6;
+        private const int WorkflowFilterResults = Base + 7;
+        private const int ValidTekCountSecondPass = Base + 8;
+        private const int TekDuplicatesFoundWholeWorkflow = Base + 9;
+        private const int DbWriteStart = Base + 10;
+        private const int DbWriteCommitted = Base + 11;
+        private const int TekCountAdded = Base + 12;
+
         public static void WriteStartPostKeys(this ILogger logger)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogInformation("[{name}/{id}] POST triggered.", LoggingDataPostKeys.Name, LoggingDataPostKeys.Start);
+            logger.LogInformation("[{name}/{id}] POST triggered.", Name, Start);
         }
 
         public static void WriteFinished(this ILogger logger)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogDebug("[{name}/{id}] Finished.", LoggingDataPostKeys.Name, LoggingDataPostKeys.Finished);
+            logger.LogDebug("[{name}/{id}] Finished.", Name, Finished);
         }
 
         public static void WriteSignatureValidationFailed(this ILogger logger)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogInformation("[{name}/{id}] Signature is null or incorrect length.", LoggingDataPostKeys.Name, LoggingDataPostKeys.SignatureValidationFailed);
+            logger.LogInformation("[{name}/{id}] Signature is null or incorrect length.", Name, SignatureValidationFailed);
         }
 
         public static void WritePostBodyParsingFailed(this ILogger logger, Exception e)
@@ -32,39 +50,39 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PostK
         public static void WriteBucketIdParsingFailed(this ILogger logger, string input, string[] messages)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogInformation("[{name}/{id}] BucketId failed validation - BucketId:{input} Messages:{messages}", LoggingDataPostKeys.Name, LoggingDataPostKeys.BucketIdParsingFailed, input, string.Join(",", messages));
+            logger.LogInformation("[{name}/{id}] BucketId failed validation - BucketId:{input} Messages:{messages}", Name, BucketIdParsingFailed, input, string.Join(",", messages));
         }
 
         public static void WriteTekValidationFailed(this ILogger logger, string[] messages)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
             if (messages.Length == 0) return;
-            logger.LogInformation("[{name}/{id}] Tek failed validation - Messages:{messages}", LoggingDataPostKeys.Name, LoggingDataPostKeys.TekValidationFailed, string.Join(",", messages));
+            logger.LogInformation("[{name}/{id}] Tek failed validation - Messages:{messages}", Name, TekValidationFailed, string.Join(",", messages));
         }
 
         public static void WriteTekDuplicatesFound(this ILogger logger, string[] messages)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogInformation("[{name}/{id}] Tek duplicates found - Messages:{messages}", LoggingDataPostKeys.Name, LoggingDataPostKeys.TekValidationFailed, string.Join(",", messages));
+            logger.LogInformation("[{name}/{id}] Tek duplicates found - Messages:{messages}", Name, TekValidationFailed, string.Join(",", messages));
         }
 
         public static void WriteApplicableWindowFilterResult(this ILogger logger, string[] messages)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
             if (messages.Length == 0) return;
-            logger.LogInformation("[{name}/{id}] Tek failed validation - Messages:{messages}", LoggingDataPostKeys.Name, LoggingDataPostKeys.TekValidationFailed, string.Join(",", messages));
+            logger.LogInformation("[{name}/{id}] Tek failed validation - Messages:{messages}", Name, TekValidationFailed, string.Join(",", messages));
         }
 
         public static void WriteValidTekCount(this ILogger logger, int count)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogInformation("[{name}/{id}] TEKs remaining - Count:{Count}.", LoggingDataPostKeys.Name, LoggingDataPostKeys.ValidTekCount, count);
+            logger.LogInformation("[{name}/{id}] TEKs remaining - Count:{Count}.", Name, ValidTekCount, count);
         }
 
         public static void WriteBucketDoesNotExist(this ILogger logger, string bucketId)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogError("[{name}/{id}] Bucket does not exist - Id:{BucketId}.", LoggingDataPostKeys.Name, LoggingDataPostKeys.BucketDoesNotExist, bucketId); //_ArgsObject.BucketId
+            logger.LogError("[{name}/{id}] Bucket does not exist - Id:{BucketId}.", Name, BucketDoesNotExist, bucketId); //_ArgsObject.BucketId
         }
 
         /// <summary>
@@ -76,42 +94,42 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PostK
         public static void WriteSignatureInvalid(this ILogger logger, byte[] bucketId, byte[] signature)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogError("[{name}/{id}] Signature not valid - Signature:{Signature} Bucket:{}", LoggingDataPostKeys.Name, LoggingDataPostKeys.SignatureInvalid, Convert.ToBase64String(signature), Convert.ToBase64String(bucketId));
+            logger.LogError("[{name}/{id}] Signature not valid - Signature:{Signature} Bucket:{}", Name, SignatureInvalid, Convert.ToBase64String(signature), Convert.ToBase64String(bucketId));
         }
 
         public static void WriteWorkflowFilterResults(this ILogger logger, string[] messages)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
             if (messages.Length == 0) return;
-            logger.LogInformation("[{name}/{id}] WriteWorkflowFilterResults - Count:{Count}.", LoggingDataPostKeys.Name, LoggingDataPostKeys.WorkflowFilterResults, string.Join(",", messages));
+            logger.LogInformation("[{name}/{id}] WriteWorkflowFilterResults - Count:{Count}.", Name, WorkflowFilterResults, string.Join(",", messages));
         }
 
         public static void WriteValidTekCountSecondPass(this ILogger logger, int count)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogInformation("[{name}/{id}] TEKs remaining 2 - Count:{Count}.", LoggingDataPostKeys.Name, LoggingDataPostKeys.ValidTekCountSecondPass, count);
+            logger.LogInformation("[{name}/{id}] TEKs remaining 2 - Count:{Count}.", Name, ValidTekCountSecondPass, count);
         }
 
         public static void WriteTekDuplicatesFoundWholeWorkflow(this ILogger logger, string[] messages)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogInformation("[{name}/{id}] Tek duplicates found - Whole Workflow - Messages:{messages}", LoggingDataPostKeys.Name, LoggingDataPostKeys.TekDuplicatesFoundWholeWorkflow, string.Join(",", messages));
+            logger.LogInformation("[{name}/{id}] Tek duplicates found - Whole Workflow - Messages:{messages}", Name, TekDuplicatesFoundWholeWorkflow, string.Join(",", messages));
         }
         public static void WriteDbWriteStart(this ILogger logger)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogInformation("[{name}/{id}] Teks added - Writing db.", LoggingDataPostKeys.Name, LoggingDataPostKeys.DbWriteStart);
+            logger.LogInformation("[{name}/{id}] Teks added - Writing db.", Name, DbWriteStart);
         }
 
         public static void WriteDbWriteCommitted(this ILogger logger)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogInformation("[{name}/{id}] Teks added - Committed.", LoggingDataPostKeys.Name, LoggingDataPostKeys.DbWriteCommitted);
+            logger.LogInformation("[{name}/{id}] Teks added - Committed.", Name, DbWriteCommitted);
         }
         public static void WriteTekCountAdded(this ILogger logger, int count)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogInformation("[{name}/{id}] Teks added - Count:{count}.", LoggingDataPostKeys.Name, LoggingDataPostKeys.TekCountAdded, count);
+            logger.LogInformation("[{name}/{id}] Teks added - Count:{count}.", Name, TekCountAdded, count);
         }
     }
 }
