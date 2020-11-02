@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -61,13 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             var toItems = db.Content.Where(x => x.Type == toType).ToArray();
             var todo = fromItems.Except(toItems,  new ContentEntityComparer()).ToArray();
 
-            var sb = new StringBuilder();
-            sb.AppendLine($"Re-signing {todo.Length} items:");
-            foreach (var i in todo)
-                sb.AppendLine($"PK:{i.Id} PublishingId:{i.PublishingId} Created:{i.Created:O} Release:{i.Release:O}");
-
-            var m = sb.ToString();
-            _Logger.WriteReport(m);
+            _Logger.WriteReport(todo);
 
             foreach (var i in todo)
                 await Resign(i);

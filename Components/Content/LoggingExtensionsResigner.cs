@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Text;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner
 {
@@ -31,14 +33,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resig
             logger.LogWarning("[{name}/{id}] Certificate for re-signing not specified in settings. Re-signing will not run.",
                 Name, CertNotSpecified);
         }
-
-        public static void WriteReport(this ILogger logger, string? report)
+        
+        public static void WriteReport(this ILogger logger, ContentEntity[]? reportcontent)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
+            var report = new StringBuilder();
+            report.AppendLine($"Re-signing {reportcontent.Length} items:");
+
+            foreach (var entry in reportcontent)
+            {
+                report.AppendLine($"PK:{entry.Id} PublishingId:{entry.PublishingId} Created:{entry.Created:O} Release:{entry.Release:O}");
+            }
+
             logger.LogInformation("[{name}/{id}] {report}.",
                 Name, Report,
-                report);
+                report.ToString());
         }
+
+        //public static void WriteReport(this ILogger logger, string? report)
+        //{
+        //    if (logger == null) throw new ArgumentNullException(nameof(logger));
+
+        //    logger.LogInformation("[{name}/{id}] {report}.",
+        //        Name, Report,
+        //        report);
+        //}
     }
 }
