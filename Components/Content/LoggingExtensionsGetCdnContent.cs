@@ -8,11 +8,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.GetCd
         private const string Name = "HttpGetCdnContent";
         private const int Base = LoggingCodex.GetCdnContent;
 
-        private const int InvalidType = Base;
-        private const int InvalidId = Base + 1;
-        private const int HeaderMissing = Base + 2;
-        private const int NotFound = Base + 3;
-        private const int EtagFound = Base + 4;
+        private const int InvalidType = Base + 1;
+        private const int InvalidId = Base + 2;
+        private const int HeaderMissing = Base + 3;
+        private const int NotFound = Base + 4;
+        private const int EtagFound = Base + 5;
 
 		public static void WriteInvalidType(this ILogger logger, string cdnId)
 		{

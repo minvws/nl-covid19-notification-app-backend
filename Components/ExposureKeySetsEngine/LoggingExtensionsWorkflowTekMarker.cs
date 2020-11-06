@@ -11,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.MarkW
     {
         private const string Name = "MarkWorkFlowTeksAsUsed";
         private const int Base = LoggingCodex.MarkWorkflowTeksAsUsed;
-        private const int MarkAsPublished = Base;
+        private const int MarkAsPublished = Base + 1;
 
         public static void WriteMarkingAsPublished(this ILogger logger, int zapcount, int total)
         {

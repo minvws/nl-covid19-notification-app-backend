@@ -11,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksJo
     {
         private const string Name = "EksJobContentWriter";
         private const int Base = LoggingCodex.EksJobContentWriter;
-        private const int Published = Base;
+        private const int Published = Base + 1;
 
         public static void WritePublished(this ILogger logger, int count)
         {

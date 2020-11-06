@@ -14,8 +14,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resig
         private const string Name = "Resigner";
         private const int Base = LoggingCodex.Resigner;
 
-        private const int CertNotSpecified = Base;
-        private const int Report = Base + 1;
+        private const int CertNotSpecified = Base + 1;
+        private const int Report = Base + 2;
         private const int Finished = Base + 99;
 
         public static void WriteFinished(this ILogger logger)
@@ -50,14 +50,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resig
                 Name, Report,
                 report.ToString());
         }
-
-        //public static void WriteReport(this ILogger logger, string? report)
-        //{
-        //    if (logger == null) throw new ArgumentNullException(nameof(logger));
-
-        //    logger.LogInformation("[{name}/{id}] {report}.",
-        //        Name, Report,
-        //        report);
-        //}
     }
 }

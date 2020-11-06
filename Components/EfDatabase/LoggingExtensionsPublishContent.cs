@@ -12,8 +12,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Publi
         private const string Name = "PublishContent";
         private const int Base = LoggingCodex.PublishContent;
 
-        private const int StartWriting = Base;
-        private const int FinishedWriting = Base + 1;
+        private const int StartWriting = Base + 1;
+        private const int FinishedWriting = Base + 2;
 
         public static void WriteStartWriting(this ILogger logger, string contentType)
         {

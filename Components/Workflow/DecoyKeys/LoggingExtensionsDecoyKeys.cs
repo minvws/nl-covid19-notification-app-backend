@@ -8,7 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Decoy
         private const string Name = "Decoykeys(PostSecret)";
 		private const int Base = LoggingCodex.Decoy;
 
-		private const int Start = Base; //Just the one then.
+		private const int Start = Base;
 
 		public static void WriteStartDecoy(this ILogger logger)
 		{

@@ -12,9 +12,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Embed
         private static string Name = "EmbeddedResourceCertificateProvider";
         private const int Base = LoggingCodex.EmbeddedCertProvider;
 
-        private const int Opening = Base;
-        private const int ResourceFound = Base + 1;
-        private const int ResourceFail = Base + 2;
+        private const int Opening = Base + 1;
+        private const int ResourceFound = Base + 2;
+        private const int ResourceFail = Base + 3;
 
         public static void WriteOpening(this ILogger logger, string? name)
         {
