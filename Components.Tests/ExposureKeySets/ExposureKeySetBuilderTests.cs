@@ -7,6 +7,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
@@ -51,7 +52,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                     ),
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
-                lf.CreateLogger<EksBuilderV1>());
+                new LoggingExtensionsEksBuilderV1(lf.CreateLogger<LoggingExtensionsEksBuilderV1>())
+                );
 
             //Act
             var result = sut.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
@@ -85,7 +87,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                 dummySigner,
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
-                lf.CreateLogger<EksBuilderV1>());
+                new LoggingExtensionsEksBuilderV1(lf.CreateLogger<LoggingExtensionsEksBuilderV1>())
+                );
 
             //Act
             var result = sut.BuildAsync(GetRandomKeys(KeyCount, 123)).GetAwaiter().GetResult();

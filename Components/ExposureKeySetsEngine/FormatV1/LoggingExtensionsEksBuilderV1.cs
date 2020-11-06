@@ -7,28 +7,35 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1
 {
-    public static class LoggingExtensionsEksBuilderV1
+    public class LoggingExtensionsEksBuilderV1
     {
         private const string Name = "EksBuilderV1";
         private const int Base = LoggingCodex.EksBuilderV1;
-        
+
         private const int NlSig = Base + 1;
         private const int GaenSig = Base + 2;
 
-        public static void WriteNlSig(this ILogger logger, byte[]? sig)
-        {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+        private readonly ILogger _Logger;
 
-            logger.LogDebug("[{name}/{id}] NL Sig: {NlSig}.",
+        public LoggingExtensionsEksBuilderV1(ILogger<LoggingExtensionsEksBuilderV1> logger)
+		{
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+        
+        public void WriteNlSig(byte[]? sig)
+        {
+            if (sig == null) throw new ArgumentNullException(nameof(sig));
+            
+            _Logger.LogDebug("[{name}/{id}] NL Sig: {NlSig}.",
                 Name, NlSig,
                 Convert.ToBase64String(sig));
         }
 
-        public static void WriteGaenSig(this ILogger logger, byte[]? sig)
+        public void WriteGaenSig(byte[]? sig)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (sig == null) throw new ArgumentNullException(nameof(sig));
 
-            logger.LogDebug("[{name}/{id}] GAEN Sig: {GaenSig}.",
+            _Logger.LogDebug("[{name}/{id}] GAEN Sig: {GaenSig}.",
                 Name, GaenSig,
                 Convert.ToBase64String(sig));
         }

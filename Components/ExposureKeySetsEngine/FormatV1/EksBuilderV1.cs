@@ -5,7 +5,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -22,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IEksContentFormatter _EksContentFormatter;
         private readonly IEksHeaderInfoConfig _Config;
-        private readonly ILogger _Logger;
+        private readonly LoggingExtensionsEksBuilderV1 _Logger;
 
         public EksBuilderV1(
             IEksHeaderInfoConfig headerInfoConfig,
@@ -30,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             IContentSigner nlContentSigner,
             IUtcDateTimeProvider dateTimeProvider,
             IEksContentFormatter eksContentFormatter,
-            ILogger<EksBuilderV1> logger
+            LoggingExtensionsEksBuilderV1 logger
             )
         {
             _GaenContentSigner = gaenContentSigner ?? throw new ArgumentNullException(nameof(gaenContentSigner));
