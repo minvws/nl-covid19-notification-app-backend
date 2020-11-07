@@ -25,12 +25,15 @@ The `Tools` folder has all the available tools. For updating the app config for 
 Run `docker exec docker_content_api_1 Tools/DbProvision/DbProvision`
 
 ### Appconfig and risk parameter setup
-Run `docker exec docker_content_api_1 Tools/DbFillExampleContent/DbFillExampleContent`
+Run `docker exec docker_content_api_1 Tools/DbFillExampleContent/PublishContent -a Tools/DbFillExampleContent/appconfig.json`
+and `docker exec docker_content_api_1 Tools/DbFillExampleContent/PublishContent -r Tools/DbFillExampleContent/riskparams.json`
 
 ### Manifest generation
 Run `docker exec docker_content_api_1 ManifestEngine/ManifestEngine`
 
 ### Eks generation
-Run `docker exec docker_content_api_1 EksEngine/EksEngine`
+Run `docker exec docker_content_api_1 Tools/GenTeks/GenTeks`
+and `docker exec docker_content_api_1 Tools/ForceTekAuth/ForceTekAuth`
+and `docker exec docker_content_api_1 EksEngine/EksEngine`
 
 **Please be aware of the 'quickstart development'-only semi-secrets in `docker/**/*`, the Docker configuration has no intentions to be used in publicly available testing, acceptation or production environments.**
