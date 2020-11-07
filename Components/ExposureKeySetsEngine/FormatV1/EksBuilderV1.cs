@@ -62,8 +62,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             };
 
             var contentBytes = _EksContentFormatter.GetBytes(content);
-            var nlSig = _NlContentSigner.GetSignature(contentBytes);
-            var gaenSig = _GaenContentSigner.GetSignature(contentBytes);
+
+            byte[] nlSig;
+            try
+            {
+              nlSig = _NlContentSigner.GetSignature(contentBytes);
+            }
+            catch
+            {
+              nlSig = new byte[] { 0x4e, 0x6f, 0x53, 0x69, 0x67 };
+              _Logger.LogWarning("NL Siganture could not be generated, using dummy value");
+            }
+
+            byte[] gaenSig;
+            try
+            {
+              gaenSig = _GaenContentSigner.GetSignature(contentBytes);
+            }
+            catch
+            {
+              gaenSig = new byte[] { 0x4e, 0x6f, 0x53, 0x69, 0x67 };
+              _Logger.LogWarning("GAEN Siganture could not be generated, using dummy value");
+            }
 
             _Logger.LogDebug("GAEN Sig: {Convert.ToBase64String(GaenSig)}.", gaenSig);
             _Logger.LogDebug("NL Sig: {Convert.ToBase64String(NlSig)}.", nlSig);
