@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PostKeys
 {
-    public class LoggingExtensionsPostKeys
+    public class PostKeysLoggingExtensions
     {
         private const string Name = "Postkeys";
         private const int Base = LoggingCodex.PostTeks;
@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PostK
 
         private readonly ILogger _Logger;
 
-        public LoggingExtensionsPostKeys(ILogger<LoggingExtensionsPostKeys> logger)
+        public PostKeysLoggingExtensions(ILogger<PostKeysLoggingExtensions> logger)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }

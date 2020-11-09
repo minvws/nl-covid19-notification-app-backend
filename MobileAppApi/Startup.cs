@@ -69,9 +69,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddScoped<SuppressErrorAttribute>();
             services.AddScoped<DecoyTimeGeneratorAttribute>();
 
-            services.AddSingleton<LoggingExtensionsRegisterSecret>();
-            services.AddSingleton<LoggingExtensionsPostKeys>();
-            services.AddSingleton<LoggingExtensionsDecoyKeys>();
+            services.AddSingleton<RegisterSecretLoggingExtensions>();
+            services.AddSingleton<PostKeysLoggingExtensions>();
+            services.AddSingleton<DecoyKeysLoggingExtensions>();
 
 
             if (_IsDev)

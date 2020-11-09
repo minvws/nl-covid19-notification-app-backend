@@ -23,12 +23,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
         private readonly ILabConfirmationIdService _LabConfirmationIdService;
         private readonly IWorkflowTime _WorkflowTime;
         private readonly IWorkflowConfig _WorkflowConfig;
-        private readonly LoggingExtensionsRegisterSecret _Logger;
+        private readonly RegisterSecretLoggingExtensions _Logger;
 
         private const int AttemptCountMax = 10;
         private int _AttemptCount;
 
-        public TekReleaseWorkflowStateCreate(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IRandomNumberGenerator numberGenerator, ILabConfirmationIdService labConfirmationIdService, IWorkflowTime workflowTime, IWorkflowConfig workflowConfig, LoggingExtensionsRegisterSecret logger)
+        public TekReleaseWorkflowStateCreate(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IRandomNumberGenerator numberGenerator, ILabConfirmationIdService labConfirmationIdService, IWorkflowTime workflowTime, IWorkflowConfig workflowConfig, RegisterSecretLoggingExtensions logger)
         {
             _WorkflowDbContext = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));

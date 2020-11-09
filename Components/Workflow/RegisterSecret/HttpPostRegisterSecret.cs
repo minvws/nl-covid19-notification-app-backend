@@ -13,12 +13,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
     public class HttpPostRegisterSecret
     {
         private readonly ISecretWriter _Writer;
-        private readonly LoggingExtensionsRegisterSecret _Logger;
+        private readonly RegisterSecretLoggingExtensions _Logger;
         private readonly IWorkflowTime _WorkflowTime;
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
         private readonly ILabConfirmationIdFormatter _LabConfirmationIdFormatter;
 
-        public HttpPostRegisterSecret(ISecretWriter writer, LoggingExtensionsRegisterSecret logger, IWorkflowTime workflowTime, IUtcDateTimeProvider utcDateTimeProvider, ILabConfirmationIdFormatter labConfirmationIdFormatter)
+        public HttpPostRegisterSecret(ISecretWriter writer, RegisterSecretLoggingExtensions logger, IWorkflowTime workflowTime, IUtcDateTimeProvider utcDateTimeProvider, ILabConfirmationIdFormatter labConfirmationIdFormatter)
         {
             _Writer = writer ?? throw new ArgumentNullException(nameof(writer));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));

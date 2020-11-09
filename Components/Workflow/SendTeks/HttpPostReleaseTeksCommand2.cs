@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 {
     public class HttpPostReleaseTeksCommand2
     {
-        private readonly LoggingExtensionsPostKeys _Logger;
+        private readonly PostKeysLoggingExtensions _Logger;
         private readonly WorkflowDbContext _DbContext;
 
         private readonly IPostTeksValidator _KeyValidator;
@@ -39,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         private byte[] _BodyBytes;
 
 
-        public HttpPostReleaseTeksCommand2(LoggingExtensionsPostKeys logger, IWorkflowConfig workflowConfig,
+        public HttpPostReleaseTeksCommand2(PostKeysLoggingExtensions logger, IWorkflowConfig workflowConfig,
             WorkflowDbContext dbContextProvider, IPostTeksValidator keyValidator, ITekWriter writer,
             IJsonSerializer jsonSerializer, ISignatureValidator signatureValidator,
             ITekListWorkflowFilter tekListWorkflowFilter, IUtcDateTimeProvider dateTimeProvider, ITekValidPeriodFilter tekApplicableWindowFilter)

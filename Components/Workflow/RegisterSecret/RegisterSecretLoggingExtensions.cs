@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.RegisterSecret
 {
-    public class LoggingExtensionsRegisterSecret
+    public class RegisterSecretLoggingExtensions
     {
         private const string Name = "Register";
         private const int Base = LoggingCodex.Register;
@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Regis
 
         private readonly ILogger _Logger;
 
-        public LoggingExtensionsRegisterSecret(ILogger<LoggingExtensionsRegisterSecret> logger)
+        public RegisterSecretLoggingExtensions(ILogger<RegisterSecretLoggingExtensions> logger)
 		{
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }

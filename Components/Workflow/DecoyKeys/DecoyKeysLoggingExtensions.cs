@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DecoyKeys
 {
-	public class LoggingExtensionsDecoyKeys
+	public class DecoyKeysLoggingExtensions
 	{
         private const string Name = "Decoykeys(PostSecret)";
 		private const int Base = LoggingCodex.Decoy;
@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Decoy
 
 		private readonly ILogger _Logger;
 
-		public LoggingExtensionsDecoyKeys(ILogger<LoggingExtensionsDecoyKeys> logger)
+		public DecoyKeysLoggingExtensions(ILogger<DecoyKeysLoggingExtensions> logger)
 		{
 			_Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
