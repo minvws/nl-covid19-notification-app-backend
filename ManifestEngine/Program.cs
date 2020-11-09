@@ -9,6 +9,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.GetCdnContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
@@ -59,8 +60,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddTransient<ManifestBuilder>();
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
 
-            services.NlResignerStartup();
+            services.AddSingleton<GetCdnContentLoggingExtensions>();
 
+            services.NlResignerStartup();
             services.DummySignerStartup();
         }
     }

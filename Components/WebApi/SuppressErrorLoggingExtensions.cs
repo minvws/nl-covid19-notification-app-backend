@@ -21,7 +21,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Suppr
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-
         public void WriteCallFailed(ActionDescriptor actionDescriptor)
         {
             if (actionDescriptor == null) throw new ArgumentNullException(nameof(actionDescriptor));

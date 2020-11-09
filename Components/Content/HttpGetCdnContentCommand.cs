@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.GetCdnContent;
@@ -20,10 +19,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     {
         private readonly ContentDbContext _DbContext;
         private readonly IPublishingIdService _PublishingIdService;
-        private readonly ILogger _Logger;
+        private readonly GetCdnContentLoggingExtensions _Logger;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IUtcDateTimeProvider dateTimeProvider)
+        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, GetCdnContentLoggingExtensions logger, IUtcDateTimeProvider dateTimeProvider)
         {
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _PublishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
