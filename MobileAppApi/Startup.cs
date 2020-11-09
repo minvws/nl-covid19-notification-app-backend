@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PostKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
@@ -70,6 +71,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
             services.AddSingleton<LoggingExtensionsRegisterSecret>();
             services.AddSingleton<LoggingExtensionsPostKeys>();
+            services.AddSingleton<LoggingExtensionsDecoyKeys>();
 
 
             if (_IsDev)

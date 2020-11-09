@@ -3,17 +3,24 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DecoyKeys
 {
-	public static class LoggingExtensionsDecoyKeys
+	public class LoggingExtensionsDecoyKeys
 	{
         private const string Name = "Decoykeys(PostSecret)";
 		private const int Base = LoggingCodex.Decoy;
 
 		private const int Start = Base;
 
-		public static void WriteStartDecoy(this ILogger logger)
+		private readonly ILogger _Logger;
+
+		public LoggingExtensionsDecoyKeys(ILogger<LoggingExtensionsDecoyKeys> logger)
 		{
-			if (logger == null) throw new ArgumentNullException(nameof(logger));
-			logger.LogInformation("[{name}/{id}] POST triggered.", Name, Start);
+			_Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+		}
+
+		public void WriteStartDecoy()
+		{
+			_Logger.LogInformation("[{name}/{id}] POST triggered.",
+				Name, Start);
 		}
 	}
 }

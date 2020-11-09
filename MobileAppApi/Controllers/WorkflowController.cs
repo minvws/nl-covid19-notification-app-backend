@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PostKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DecoyKeys;
@@ -21,15 +20,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
     [Route("[controller]")]
     public class WorkflowController : ControllerBase
     {
-        private readonly ILogger _Logger;
         private readonly LoggingExtensionsRegisterSecret _LoggerRegisterSecret;
         private readonly LoggingExtensionsPostKeys _LoggerPostKeys;
+        private readonly LoggingExtensionsDecoyKeys _LoggerDecoyKeys;
 
-        public WorkflowController(ILogger<WorkflowController> logger, LoggingExtensionsRegisterSecret loggerRegisterSecret, LoggingExtensionsPostKeys loggerPostKeys)
+        public WorkflowController(LoggingExtensionsRegisterSecret loggerRegisterSecret, LoggingExtensionsPostKeys loggerPostKeys, LoggingExtensionsDecoyKeys LoggerDecoyKeys)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _LoggerRegisterSecret = loggerRegisterSecret ?? throw new ArgumentNullException(nameof(loggerRegisterSecret));
             _LoggerPostKeys = loggerPostKeys ?? throw new ArgumentNullException(nameof(loggerPostKeys));
+            _LoggerDecoyKeys = LoggerDecoyKeys ?? throw new ArgumentNullException(nameof(LoggerDecoyKeys));
         }
 
         [ResponsePaddingFilterFactory]
@@ -61,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         [Route(EndPointNames.MobileAppApi.RandomNoise)]
         public async Task<IActionResult> StopKeys()
         {
-            _Logger.WriteStartDecoy();
+            _LoggerDecoyKeys.WriteStartDecoy();
             return new OkResult();
         }
 
