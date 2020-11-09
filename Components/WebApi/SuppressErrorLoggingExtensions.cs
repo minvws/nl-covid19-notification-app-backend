@@ -8,17 +8,25 @@ using System;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.SuppressError
 {
-    public static class LoggingExtensionSuppressError
+    public class SuppressErrorLoggingExtensions
     {
         private const string Name = "SuppressError";
 
         private const int CallFailed = LoggingCodex.SuppressError;
 
-        public static void WriteCallFailed(this ILogger logger, ActionDescriptor actionDescriptor)
-        {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+        private readonly ILogger _Logger;
 
-            logger.LogDebug("[{name}/{id}] Call to {ActionDescriptor} failed, overriding response code to return 200.",
+        public SuppressErrorLoggingExtensions(ILogger<SuppressErrorLoggingExtensions> logger)
+        {
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
+
+        public void WriteCallFailed(ActionDescriptor actionDescriptor)
+        {
+            if (actionDescriptor == null) throw new ArgumentNullException(nameof(actionDescriptor));
+
+            _Logger.LogDebug("[{name}/{id}] Call to {ActionDescriptor} failed, overriding response code to return 200.",
                 Name, CallFailed,
                 actionDescriptor);
         }
