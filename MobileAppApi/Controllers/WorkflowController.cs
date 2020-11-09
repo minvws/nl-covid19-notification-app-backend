@@ -23,11 +23,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
     {
         private readonly ILogger _Logger;
         private readonly LoggingExtensionsRegisterSecret _LoggerRegisterSecret;
+        private readonly LoggingExtensionsPostKeys _LoggerPostKeys;
 
-        public WorkflowController(ILogger<WorkflowController> logger, LoggingExtensionsRegisterSecret loggerRegisterSecret)
+        public WorkflowController(ILogger<WorkflowController> logger, LoggingExtensionsRegisterSecret loggerRegisterSecret, LoggingExtensionsPostKeys loggerPostKeys)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _LoggerRegisterSecret = loggerRegisterSecret ?? throw new ArgumentNullException(nameof(loggerRegisterSecret));
+            _LoggerPostKeys = loggerPostKeys ?? throw new ArgumentNullException(nameof(loggerPostKeys));
         }
 
         [ResponsePaddingFilterFactory]
@@ -37,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand2 command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-            _Logger.WriteStartPostKeys();
+            _LoggerPostKeys.WriteStartPostKeys();
             return await command.Execute(sig, Request);
         }
 
