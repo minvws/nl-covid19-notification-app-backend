@@ -22,10 +22,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
     public class WorkflowController : ControllerBase
     {
         private readonly ILogger _Logger;
+        private readonly LoggingExtensionsRegisterSecret _LoggerRegisterSecret;
 
-        public WorkflowController(ILogger<WorkflowController> logger)
+        public WorkflowController(ILogger<WorkflowController> logger, LoggingExtensionsRegisterSecret loggerRegisterSecret)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _LoggerRegisterSecret = loggerRegisterSecret ?? throw new ArgumentNullException(nameof(loggerRegisterSecret));
         }
 
         [ResponsePaddingFilterFactory]
@@ -46,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         public async Task<IActionResult> PostSecret([FromServices]HttpPostRegisterSecret command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-            _Logger.WriteStartSecret();
+            _LoggerRegisterSecret.WriteStartSecret();
             return await command.Execute();
         }
 

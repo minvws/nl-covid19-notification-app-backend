@@ -3,10 +3,9 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.RegisterSecret
 {
-    public static class LoggingExtensionsRegisterSecret
+    public class LoggingExtensionsRegisterSecret
     {
         private const string Name = "Register";
-
         private const int Base = LoggingCodex.Register;
 
         private const int Start = Base;
@@ -19,47 +18,56 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Regis
         private const int MaximumCreateAttemptsReached = Base + 4;
         private const int Failed = Base + 5;
 
-        public static void WriteStartSecret(this ILogger logger)
-        {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogInformation("[{name}/{id}] POST register triggered.", Name, Start);
+        private readonly ILogger _Logger;
+
+        public LoggingExtensionsRegisterSecret(ILogger<LoggingExtensionsRegisterSecret> logger)
+		{
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public static void WriteFailed(this ILogger logger, Exception ex)
+        public void WriteStartSecret()
+        {   
+            _Logger.LogInformation("[{name}/{id}] POST register triggered.",
+                Name, Start);
+        }
+
+        public void WriteFailed(Exception ex)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
             if (ex == null) throw new ArgumentNullException(nameof(ex));
-            logger.LogCritical(ex, "[{name}/{id}] Failed to create an enrollment response.", Name, Failed);
+
+            _Logger.LogCritical(ex, "[{name}/{id}] Failed to create an enrollment response.",
+                Name, Failed);
         }
         
-        public static void WriteWritingStart(this ILogger logger)
+        public void WriteWritingStart()
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogDebug("[{name}/{id}] Writing.", Name, Writing);
+            _Logger.LogDebug("[{name}/{id}] Writing.",
+                Name, Writing);
         }
         
-        public static void WriteDuplicatesFound(this ILogger logger, int attemptCount)
+        public void WriteDuplicatesFound(int attemptCount)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogWarning("[{name}/{id}] Duplicates found while creating workflow - Attempt:{AttemptCount}", Name, attemptCount, DuplicatesFound);
+            _Logger.LogWarning("[{name}/{id}] Duplicates found while creating workflow - Attempt:{AttemptCount}",
+                Name, DuplicatesFound,
+                attemptCount);
         }
         
-        public static void WriteMaximumCreateAttemptsReached(this ILogger logger)
+        public void WriteMaximumCreateAttemptsReached()
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogCritical("[{name}/{id}] Maximum attempts made at creating workflow.", Name, MaximumCreateAttemptsReached);
+            _Logger.LogCritical("[{name}/{id}] Maximum attempts made at creating workflow.",
+                Name, MaximumCreateAttemptsReached);
         }
 
-        public static void WriteCommitted(this ILogger logger)
+        public void WriteCommitted()
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogDebug("[{name}/{id}] Committed.", Name, Committed);
+            _Logger.LogDebug("[{name}/{id}] Committed.",
+                Name, Committed);
         }
 
-        public static void WriteFinished(this ILogger logger)
+        public void WriteFinished()
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
-            logger.LogDebug("[{name}/{id}] Finished.", Name, Finished);
+            _Logger.LogDebug("[{name}/{id}] Finished.",
+                Name, Finished);
         }
     }
 }
