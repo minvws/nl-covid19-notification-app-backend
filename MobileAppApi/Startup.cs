@@ -12,6 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Config
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PostKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.RegisterSecret;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ResponsePadding;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
@@ -72,6 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<RegisterSecretLoggingExtensions>();
             services.AddSingleton<PostKeysLoggingExtensions>();
             services.AddSingleton<DecoyKeysLoggingExtensions>();
+            services.AddSingleton<ResponsePaddingLoggingExtensions>();
 
 
             if (_IsDev)

@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ResponsePadding;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using System;
@@ -27,13 +26,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 
         private readonly IResponsePaddingConfig _Config;
         private readonly IRandomNumberGenerator _Rng;
-        private readonly ILogger _Logger;
+        private readonly ResponsePaddingLoggingExtensions _Logger;
         private readonly IPaddingGenerator _PaddingGenerator;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public ResponsePaddingFilterAttribute(IResponsePaddingConfig config, IRandomNumberGenerator rng, ILogger<ResponsePaddingFilterAttribute> logger, IPaddingGenerator paddingGenerator)
+        public ResponsePaddingFilterAttribute(IResponsePaddingConfig config, IRandomNumberGenerator rng, ResponsePaddingLoggingExtensions logger, IPaddingGenerator paddingGenerator)
         {
             _Config = config ?? throw new ArgumentNullException(nameof(config));
             _Rng = rng ?? throw new ArgumentNullException(nameof(rng));
