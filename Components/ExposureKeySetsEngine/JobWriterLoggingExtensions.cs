@@ -7,17 +7,22 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksJobContentWriter
 {
-    public static class LoggingExtensionsEksJobContentWriter
+    public class EksJobContentWriterLoggingExtensions
     {
         private const string Name = "EksJobContentWriter";
         private const int Base = LoggingCodex.EksJobContentWriter;
         private const int Published = Base + 1;
 
-        public static void WritePublished(this ILogger logger, int count)
-        {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+        private readonly ILogger _Logger;
 
-            logger.LogInformation("[{name}/{id}] Published EKSs - Count:{Count}.",
+        public EksJobContentWriterLoggingExtensions(ILogger<EksJobContentWriterLoggingExtensions> logger)
+        {
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
+        public void WritePublished(int count)
+        {
+            _Logger.LogInformation("[{name}/{id}] Published EKSs - Count:{Count}.",
                 Name, Published,
                 count);
         }

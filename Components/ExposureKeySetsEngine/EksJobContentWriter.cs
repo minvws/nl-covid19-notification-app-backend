@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -17,9 +16,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly Func<ContentDbContext> _ContentDbContext;
         private readonly Func<PublishingJobDbContext> _PublishingDbContext;
         private readonly IPublishingIdService _PublishingIdService;
-        private readonly ILogger<EksJobContentWriter> _Logger;
+        private readonly EksJobContentWriterLoggingExtensions _Logger;
 
-        public EksJobContentWriter(Func<ContentDbContext> contentDbContext, Func<PublishingJobDbContext> publishingDbContext, IPublishingIdService publishingIdService, ILogger<EksJobContentWriter> logger)
+        public EksJobContentWriter(Func<ContentDbContext> contentDbContext, Func<PublishingJobDbContext> publishingDbContext, IPublishingIdService publishingIdService, EksJobContentWriterLoggingExtensions logger)
         {
             _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _PublishingDbContext = publishingDbContext ?? throw new ArgumentNullException(nameof(publishingDbContext));
