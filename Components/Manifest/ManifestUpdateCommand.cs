@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
     {
         private readonly ManifestBuilder _Builder;
         private readonly Func<ContentDbContext> _ContentDbProvider;
-        private readonly ILogger<ManifestUpdateCommand> _Logger;
+        private readonly ManifestUpdateCommandLoggingExtensions _Logger;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IJsonSerializer _JsonSerializer;
         private readonly IContentEntityFormatter _Formatter;
@@ -38,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         private readonly ManifestUpdateCommandResult _Result = new ManifestUpdateCommandResult();
         private ContentDbContext _ContentDb;
 
-        public ManifestUpdateCommand(ManifestBuilder builder, Func<ContentDbContext> contentDbProvider, ILogger<ManifestUpdateCommand> logger, IUtcDateTimeProvider dateTimeProvider, IJsonSerializer jsonSerializer, IContentEntityFormatter formatter)
+        public ManifestUpdateCommand(ManifestBuilder builder, Func<ContentDbContext> contentDbProvider, ManifestUpdateCommandLoggingExtensions logger, IUtcDateTimeProvider dateTimeProvider, IJsonSerializer jsonSerializer, IContentEntityFormatter formatter)
         {
             _Builder = builder ?? throw new ArgumentNullException(nameof(builder));
             _ContentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
