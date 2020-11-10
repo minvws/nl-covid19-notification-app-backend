@@ -5,7 +5,6 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
@@ -44,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
         private static void Start(IServiceProvider serviceProvider, string[] args)
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+            var logger = serviceProvider.GetRequiredService<DailyCleanupLoggingExtensions>();
 
             logger.WriteStart();
 
@@ -138,6 +137,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
 
             services.AddSingleton<LoggingExtensionsEksBuilderV1>();
+            services.AddSingleton<DailyCleanupLoggingExtensions>();
             
             services.NlResignerStartup();
 
