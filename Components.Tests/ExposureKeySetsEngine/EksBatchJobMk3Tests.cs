@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using NCrunch.Framework;
 using Xunit;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksEngine;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Snapshot;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
 {
@@ -31,6 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
         private LoggerFactory _Lf;
         private Mock<EksEngineLoggingExtensions> _EksLogMock;
+        private Mock<SnapshotLoggingExtensions> _SnapshotLogMock;
         private FakeEksConfig _FakeEksConfig;
         private ExposureKeySetBatchJobMk3 _Engine;
         private DateTime _Now;
@@ -67,6 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
             _Lf = new LoggerFactory();
             _EksLogMock = new Mock<EksEngineLoggingExtensions>();
+            _SnapshotLogMock = new Mock<SnapshotLoggingExtensions>();
         }
 
 
@@ -296,7 +299,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                 new StandardUtcDateTimeProvider(),
                 _EksLogMock.Object,
                 new EksStuffingGenerator(new StandardRandomNumberGenerator(), new FakeTekValidatorConfig()),
-                new SnapshotEksInputMk1(_Lf.CreateLogger<SnapshotEksInputMk1>(), new TransmissionRiskLevelCalculationV1(), _WorkflowFac(), _PublishingFac),
+                new SnapshotEksInputMk1(_SnapshotLogMock.Object, new TransmissionRiskLevelCalculationV1(), _WorkflowFac(), _PublishingFac),
                 new MarkWorkFlowTeksAsUsed(_WorkflowFac, _FakeEksConfig, _PublishingFac, _Lf.CreateLogger<MarkWorkFlowTeksAsUsed>()),
                 new EksJobContentWriter(_ContentFac, _PublishingFac, new Sha256HexPublishingIdService(), _Lf.CreateLogger<EksJobContentWriter>())
                 );

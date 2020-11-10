@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
@@ -14,14 +13,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 {
     public class SnapshotEksInputMk1 : ISnapshotEksInput
     {
-        private readonly ILogger<SnapshotEksInputMk1> _Logger;
+        private readonly SnapshotLoggingExtensions _Logger;
 
         private readonly ITransmissionRiskLevelCalculation _TransmissionRiskLevelCalculation;
 
         private readonly WorkflowDbContext _WorkflowDbContext;
         private readonly Func<PublishingJobDbContext> _PublishingDbContextFactory;
 
-        public SnapshotEksInputMk1(ILogger<SnapshotEksInputMk1> logger, ITransmissionRiskLevelCalculation transmissionRiskLevelCalculation, WorkflowDbContext workflowDbContext, Func<PublishingJobDbContext> publishingDbContextFactory)
+        public SnapshotEksInputMk1(SnapshotLoggingExtensions logger, ITransmissionRiskLevelCalculation transmissionRiskLevelCalculation, WorkflowDbContext workflowDbContext, Func<PublishingJobDbContext> publishingDbContextFactory)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _TransmissionRiskLevelCalculation = transmissionRiskLevelCalculation ?? throw new ArgumentNullException(nameof(transmissionRiskLevelCalculation));

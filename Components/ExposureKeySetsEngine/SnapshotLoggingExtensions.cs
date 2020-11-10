@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Snapshot
 {
-    public static class LoggingExtensionsSnapshot
+    public class SnapshotLoggingExtensions
     {
         private const string Name = "Snapshot";
 
@@ -15,19 +15,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Snaps
         private const int Start = Base;
         private const int TeksToPublish = Base + 1;
 
-        public static void WriteStart(this ILogger logger)
-        {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+        private readonly ILogger _Logger;
 
-            logger.LogDebug("[{name}/{id}] Snapshot publishable TEKs..",
+        public SnapshotLoggingExtensions(ILogger<SnapshotLoggingExtensions> logger)
+        {
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
+        public void WriteStart()
+        {
+            _Logger.LogDebug("[{name}/{id}] Snapshot publishable TEKs..",
                 Name, Start);
         }
 
-        public static void WriteTeksToPublish(this ILogger logger, int tekCount)
+        public void WriteTeksToPublish(int tekCount)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
-
-            logger.LogInformation("[{name}/{id}] TEKs to publish - Count:{Count}.",
+            _Logger.LogInformation("[{name}/{id}] TEKs to publish - Count:{Count}.",
                 Name, TeksToPublish,
                 tekCount);
         }
