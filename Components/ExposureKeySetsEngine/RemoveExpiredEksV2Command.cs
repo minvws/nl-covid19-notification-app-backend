@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredEksV2;
@@ -15,9 +14,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         private readonly ContentDbContext _DbContext;
         private readonly IEksConfig _Config;
         private readonly IUtcDateTimeProvider _Dtp;
-        private readonly ILogger<RemoveExpiredEksV2Command> _Logger;
+        private readonly ExpiredEksV2LoggingExtensions _Logger;
 
-        public RemoveExpiredEksV2Command(ContentDbContext dbContext, IEksConfig config, IUtcDateTimeProvider dtp, ILogger<RemoveExpiredEksV2Command> logger)
+        public RemoveExpiredEksV2Command(ContentDbContext dbContext, IEksConfig config, IUtcDateTimeProvider dtp, ExpiredEksV2LoggingExtensions logger)
         {
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _Config = config ?? throw new ArgumentNullException(nameof(config));

@@ -15,6 +15,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DailyCleanup;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredEks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredEksV2;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredManifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredWorkflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner;
@@ -146,6 +147,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddSingleton<ExpiredEksLoggingExtensions>();
             services.AddSingleton<LoggingExtensionsExpiredWorkflow>();
             services.AddSingleton<ResignerLoggingExtensions>();
+            services.AddSingleton<ExpiredEksV2LoggingExtensions>();
             
             services.NlResignerStartup();
 
