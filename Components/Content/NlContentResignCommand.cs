@@ -8,7 +8,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
@@ -21,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     {
         private readonly Func<ContentDbContext> _ContentDbContext;
         private readonly IContentSigner _ContentSigner;
-        private readonly ILogger<NlContentResignCommand> _Logger;
+        private readonly ResignerLoggingExtensions _Logger;
 
         private string _ContentEntryName;
         private string _ToType;
@@ -39,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             public int GetHashCode(ContentEntity obj) => HashCode.Combine(obj.Created, obj.Release, obj.PublishingId);
         }
 
-        public NlContentResignCommand(Func<ContentDbContext> contentDbContext, IContentSigner contentSigner, ILogger<NlContentResignCommand> logger)
+        public NlContentResignCommand(Func<ContentDbContext> contentDbContext, IContentSigner contentSigner, ResignerLoggingExtensions logger)
         {
             _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _ContentSigner = contentSigner ?? throw new ArgumentNullException(nameof(contentSigner));

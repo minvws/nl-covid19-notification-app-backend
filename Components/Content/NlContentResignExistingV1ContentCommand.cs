@@ -4,7 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 
@@ -14,9 +13,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     {
         private readonly NlContentResignCommand _Resigner;
         private readonly IThumbprintConfig _V2ThumbprintConfig;
-        private readonly ILogger<NlContentResignExistingV1ContentCommand> _Logger;
+        private readonly ResignerLoggingExtensions _Logger;
 
-        public NlContentResignExistingV1ContentCommand(NlContentResignCommand resigner, IThumbprintConfig v2ThumbprintConfig, ILogger<NlContentResignExistingV1ContentCommand> logger)
+        public NlContentResignExistingV1ContentCommand(NlContentResignCommand resigner, IThumbprintConfig v2ThumbprintConfig, ResignerLoggingExtensions logger)
         {
             _Resigner = resigner ?? throw new ArgumentNullException(nameof(resigner));
             _V2ThumbprintConfig = v2ThumbprintConfig ?? throw new ArgumentNullException(nameof(v2ThumbprintConfig));

@@ -17,6 +17,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilde
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredEks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredManifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredWorkflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
@@ -144,6 +145,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddSingleton<ExpiredManifestLoggingExtensions>();
             services.AddSingleton<ExpiredEksLoggingExtensions>();
             services.AddSingleton<LoggingExtensionsExpiredWorkflow>();
+            services.AddSingleton<ResignerLoggingExtensions>();
             
             services.NlResignerStartup();
 

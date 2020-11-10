@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
@@ -24,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             services.AddTransient(
                 x => new NlContentResignExistingV1ContentCommand(x.GetRequiredService<NlContentResignCommand>(), 
                     new LocalMachineStoreCertificateProviderConfig(x.GetRequiredService<IConfiguration>(), NlSettingPrefix), 
-                    x.GetRequiredService<ILogger<NlContentResignExistingV1ContentCommand>>()));
+                    x.GetRequiredService<ResignerLoggingExtensions>()));
 
             services.AddTransient(
                 x => new NlContentResignCommand(
@@ -33,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                             new LocalMachineStoreCertificateProvider(new LocalMachineStoreCertificateProviderConfig(x.GetRequiredService<IConfiguration>(), NlSettingPrefix), x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>()),
                             new EmbeddedResourcesCertificateChainProvider(new StandardCertificateLocationConfig(x.GetRequiredService<IConfiguration>(), ChainPrefix)),
                             x.GetRequiredService<IUtcDateTimeProvider>()),
-                        x.GetRequiredService<ILogger<NlContentResignCommand>>()));
+                        x.GetRequiredService<ResignerLoggingExtensions>()));
 
         }
     }

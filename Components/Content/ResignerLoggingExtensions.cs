@@ -9,7 +9,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entiti
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner
 {
-    public static class LoggingExtensionsResigner
+    public class ResignerLoggingExtensions
     {
         private const string Name = "Resigner";
         private const int Base = LoggingCodex.Resigner;
@@ -18,35 +18,41 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resig
         private const int Report = Base + 2;
         private const int Finished = Base + 99;
 
-        public static void WriteFinished(this ILogger logger)
-        {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+        private readonly ILogger _Logger;
 
-            logger.LogInformation("[{name}/{id}] Re-signing complete.",
+        public ResignerLoggingExtensions(ILogger<ResignerLoggingExtensions> logger)
+        {
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
+        public void WriteFinished()
+        {
+            _Logger.LogInformation("[{name}/{id}] Re-signing complete.",
                 Name, Finished);
         }
 
-        public static void WriteCertNotSpecified(this ILogger logger)
+        public void WriteCertNotSpecified()
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
-
-            logger.LogWarning("[{name}/{id}] Certificate for re-signing not specified in settings. Re-signing will not run.",
+            _Logger.LogWarning("[{name}/{id}] Certificate for re-signing not specified in settings. Re-signing will not run.",
                 Name, CertNotSpecified);
         }
         
-        public static void WriteReport(this ILogger logger, ContentEntity[]? reportcontent)
+        public void WriteReport(ContentEntity[]? reportContent)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+			if (reportContent == null)
+			{
+                throw new ArgumentNullException(nameof(reportContent));
+            }
 
             var report = new StringBuilder();
-            report.AppendLine($"Re-signing {reportcontent.Length} items:");
+            report.AppendLine($"Re-signing {reportContent.Length} items:");
 
-            foreach (var entry in reportcontent)
+            foreach (var entry in reportContent)
             {
                 report.AppendLine($"PK:{entry.Id} PublishingId:{entry.PublishingId} Created:{entry.Created:O} Release:{entry.Release:O}");
             }
 
-            logger.LogInformation("[{name}/{id}] {report}.",
+            _Logger.LogInformation("[{name}/{id}] {report}.",
                 Name, Report,
                 report.ToString());
         }
