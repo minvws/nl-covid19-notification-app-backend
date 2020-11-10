@@ -5,7 +5,6 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.LocalMachineStoreCertificateProvider;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 
@@ -14,9 +13,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
     public class LocalMachineStoreCertificateProvider : ICertificateProvider
     {
         private readonly IThumbprintConfig _ThumbprintConfig;
-        private readonly ILogger _Logger;
+        private readonly LocalMachineStoreCertificateProviderLoggingExtensions _Logger;
 
-        public LocalMachineStoreCertificateProvider(IThumbprintConfig thumbprintConfig, ILogger<LocalMachineStoreCertificateProvider> logger)
+        public LocalMachineStoreCertificateProvider(IThumbprintConfig thumbprintConfig, LocalMachineStoreCertificateProviderLoggingExtensions logger)
         {
             _ThumbprintConfig = thumbprintConfig ?? throw new ArgumentNullException(nameof(thumbprintConfig));
             _Logger = logger;

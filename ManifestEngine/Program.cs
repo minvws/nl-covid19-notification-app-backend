@@ -10,6 +10,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.GetCdnContent;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.LocalMachineStoreCertificateProvider;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ManifestUpdateCommand;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
@@ -65,6 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddSingleton<GetCdnContentLoggingExtensions>();
             services.AddSingleton<ResignerLoggingExtensions>();
             services.AddSingleton<ManifestUpdateCommandLoggingExtensions>();
+            services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
 
             services.NlResignerStartup();
             services.DummySignerStartup();
