@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Moq;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
@@ -49,8 +48,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
 
             _FakeConfig = new FakeConfig();
             _Dtp = new FakeDtp();
-            var lf = new Mock<LoggingExtensionsExpiredWorkflow>();
-            _Command = new RemoveExpiredWorkflowsCommand(Func, lf.Object, _Dtp, _FakeConfig);
+
+            var lf = new LoggerFactory();
+            var expWorkflowLogger = new LoggingExtensionsExpiredWorkflow(lf.CreateLogger<LoggingExtensionsExpiredWorkflow>());
+            _Command = new RemoveExpiredWorkflowsCommand(Func, expWorkflowLogger, _Dtp, _FakeConfig);
         }
 
         [Fact]
