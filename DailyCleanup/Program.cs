@@ -148,11 +148,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddSingleton<IManifestConfig, ManifestConfig>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
 
-            services.AddSingleton<LoggingExtensionsEksBuilderV1>();
+            services.AddSingleton<EksBuilderV1LoggingExtensions>();
             services.AddSingleton<DailyCleanupLoggingExtensions>();
             services.AddSingleton<ExpiredManifestLoggingExtensions>();
             services.AddSingleton<ExpiredEksLoggingExtensions>();
-            services.AddSingleton<LoggingExtensionsExpiredWorkflow>();
+            services.AddSingleton<ExpiredWorkflowLoggingExtensions>();
             services.AddSingleton<ResignerLoggingExtensions>();
             services.AddSingleton<ExpiredEksV2LoggingExtensions>();
             services.AddSingleton<ExpiredManifestV2LoggingExtensions>();

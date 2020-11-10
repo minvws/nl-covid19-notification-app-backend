@@ -39,7 +39,7 @@ namespace SigTestFileCreator
             services.AddSingleton<IEksHeaderInfoConfig, EksHeaderInfoConfig>();
             services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
             services.AddTransient<IEksBuilder, EksBuilderV1>();
-            services.AddSingleton<LoggingExtensionsEksBuilderV1>();
+            services.AddSingleton<EksBuilderV1LoggingExtensions>();
             services.AddSingleton<SigTestFileCreatorLoggingExtensions>();
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
 

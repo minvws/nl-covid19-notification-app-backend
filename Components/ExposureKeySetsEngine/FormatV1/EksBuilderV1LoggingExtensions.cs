@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1
 {
-    public class LoggingExtensionsEksBuilderV1
+    public class EksBuilderV1LoggingExtensions
     {
         private const string Name = "EksBuilderV1";
         private const int Base = LoggingCodex.EksBuilderV1;
@@ -17,15 +17,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBu
 
         private readonly ILogger _Logger;
 
-        public LoggingExtensionsEksBuilderV1(ILogger<LoggingExtensionsEksBuilderV1> logger)
+        public EksBuilderV1LoggingExtensions(ILogger<EksBuilderV1LoggingExtensions> logger)
 		{
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public void WriteNlSig(byte[]? sig)
         {
-            if (sig == null) throw new ArgumentNullException(nameof(sig));
-            
+            if (sig == null)
+            {
+                throw new ArgumentNullException(nameof(sig));
+            }
+
             _Logger.LogDebug("[{name}/{id}] NL Sig: {NlSig}.",
                 Name, NlSig,
                 Convert.ToBase64String(sig));
@@ -33,7 +36,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBu
 
         public void WriteGaenSig(byte[]? sig)
         {
-            if (sig == null) throw new ArgumentNullException(nameof(sig));
+            if (sig == null)
+            {
+                throw new ArgumentNullException(nameof(sig));
+            }
 
             _Logger.LogDebug("[{name}/{id}] GAEN Sig: {GaenSig}.",
                 Name, GaenSig,

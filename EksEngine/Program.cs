@@ -92,7 +92,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<ManifestBuilder>();
             
-            services.AddSingleton<LoggingExtensionsEksBuilderV1>();
+            services.AddSingleton<EksBuilderV1LoggingExtensions>();
             services.AddSingleton<ResignerLoggingExtensions>();
             services.AddSingleton<EksEngineLoggingExtensions>();
             services.AddSingleton<SnapshotLoggingExtensions>();

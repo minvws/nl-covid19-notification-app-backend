@@ -28,7 +28,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Embed
 			if (name == null)
 			{
                 throw new ArgumentNullException(nameof(name));
-
             }
 
             _Logger.LogInformation("[{name}/{id}] Opening resource: {ResName}.",
@@ -44,6 +43,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Embed
 
         public void WriteResourceFail(Exception exception)
         {
+			if (exception == null)
+			{
+                throw new ArgumentNullException(nameof(exception));
+            }
+
             _Logger.LogError(exception, "[{name}/{id}] Failed to get manifest resource stream.",
                 Name, ResourceFail,
                 exception);

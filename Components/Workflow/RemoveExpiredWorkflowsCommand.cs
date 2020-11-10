@@ -16,12 +16,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expi
     public class RemoveExpiredWorkflowsCommand
     {
         private readonly Func<WorkflowDbContext> _DbContextProvider;
-        private readonly LoggingExtensionsExpiredWorkflow _Logger;
+        private readonly ExpiredWorkflowLoggingExtensions _Logger;
         private readonly IUtcDateTimeProvider _Dtp;
         private RemoveExpiredWorkflowsResult _Result;
         private readonly IWorkflowConfig _Config;
 
-        public RemoveExpiredWorkflowsCommand(Func<WorkflowDbContext> dbContext, LoggingExtensionsExpiredWorkflow logger, IUtcDateTimeProvider dtp, IWorkflowConfig config)
+        public RemoveExpiredWorkflowsCommand(Func<WorkflowDbContext> dbContext, ExpiredWorkflowLoggingExtensions logger, IUtcDateTimeProvider dtp, IWorkflowConfig config)
         {
             _DbContextProvider = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));

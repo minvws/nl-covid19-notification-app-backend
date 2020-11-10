@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredWorkflow
 {
-    public class LoggingExtensionsExpiredWorkflow
+    public class ExpiredWorkflowLoggingExtensions
     {
         private const string Name = "RemoveExpiredWorkflow";
         private const int Base = LoggingCodex.RemoveExpiredWorkflow;
@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Expir
 
         private readonly ILogger _Logger;
 
-        public LoggingExtensionsExpiredWorkflow(ILogger<LoggingExtensionsExpiredWorkflow> logger)
+        public ExpiredWorkflowLoggingExtensions(ILogger<ExpiredWorkflowLoggingExtensions> logger)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }

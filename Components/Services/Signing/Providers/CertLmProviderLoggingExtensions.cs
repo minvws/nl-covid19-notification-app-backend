@@ -47,6 +47,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Local
 
         public void WriteCertReadError(Exception exception)
         {
+			if (exception == null)
+			{
+                throw new ArgumentNullException(nameof(exception));
+            }
+
             _Logger.LogError(exception, "[{name}/{id}] Error reading certificate store.",
                 Name, CertReadError);
         }

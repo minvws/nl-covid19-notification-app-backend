@@ -23,7 +23,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Suppr
 
         public void WriteCallFailed(ActionDescriptor actionDescriptor)
         {
-            if (actionDescriptor == null) throw new ArgumentNullException(nameof(actionDescriptor));
+            if (actionDescriptor == null)
+            { 
+                throw new ArgumentNullException(nameof(actionDescriptor));
+            }
 
             _Logger.LogDebug("[{name}/{id}] Call to {ActionDescriptor} failed, overriding response code to return 200.",
                 Name, CallFailed,

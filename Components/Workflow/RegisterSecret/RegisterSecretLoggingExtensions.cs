@@ -31,11 +31,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Regis
                 Name, Start);
         }
 
-        public void WriteFailed(Exception ex)
+        public void WriteFailed(Exception exception)
         {
-            if (ex == null) throw new ArgumentNullException(nameof(ex));
+            if (exception == null)
+            {
+                throw new ArgumentNullException(nameof(exception));
+            }
 
-            _Logger.LogCritical(ex, "[{name}/{id}] Failed to create an enrollment response.",
+            _Logger.LogCritical(exception, "[{name}/{id}] Failed to create an enrollment response.",
                 Name, Failed);
         }
         
