@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PublishContent
 {
-    public static class LoggingExtensionsPublishContent
+    public class PublishContentLoggingExtensions
     {
         private const string Name = "PublishContent";
         private const int Base = LoggingCodex.PublishContent;
@@ -15,20 +15,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Publi
         private const int StartWriting = Base + 1;
         private const int FinishedWriting = Base + 2;
 
-        public static void WriteStartWriting(this ILogger logger, string contentType)
-        {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+        private readonly ILogger _Logger;
 
-            logger.LogDebug("[{name}/{id}] Writing {ContentType} to database.",
+        public PublishContentLoggingExtensions(ILogger<PublishContentLoggingExtensions> logger)
+        {
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
+        public void WriteStartWriting(string contentType)
+        {
+            _Logger.LogDebug("[{name}/{id}] Writing {ContentType} to database.",
                 Name, StartWriting,
                 contentType);
         }
 
-        public static void WriteFinishedWriting(this ILogger logger, string contentType)
+        public void WriteFinishedWriting(string contentType)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
-
-            logger.LogDebug("[{name}/{id}] Done writing {ContentType} to database.",
+            _Logger.LogDebug("[{name}/{id}] Done writing {ContentType} to database.",
                 Name, FinishedWriting,
                 contentType);
         }

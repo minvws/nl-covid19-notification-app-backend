@@ -2,7 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PublishContent;
@@ -19,9 +18,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
         private readonly ContentInsertDbCommand _InsertDbCommand;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly ContentDbContext _ContentDbContext;
-        private readonly ILogger<PublishContentCommand> _Logger;
+        private readonly PublishContentLoggingExtensions _Logger;
 
-        public PublishContentCommand(ContentValidator validator, ContentInsertDbCommand insertDbCommand, IUtcDateTimeProvider dateTimeProvider, ContentDbContext contentDbContext, ILogger<PublishContentCommand> logger)
+        public PublishContentCommand(ContentValidator validator, ContentInsertDbCommand insertDbCommand, IUtcDateTimeProvider dateTimeProvider, ContentDbContext contentDbContext, PublishContentLoggingExtensions logger)
         {
             _Validator = validator ?? throw new ArgumentNullException(nameof(validator));
             _InsertDbCommand = insertDbCommand ?? throw new ArgumentNullException(nameof(insertDbCommand));

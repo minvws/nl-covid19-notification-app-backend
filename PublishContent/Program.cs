@@ -9,6 +9,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PublishContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
@@ -47,6 +48,8 @@ namespace PublishContent
 
             services.AddTransient<ContentValidator>();
             services.AddTransient<ContentInsertDbCommand>();
+
+            services.AddSingleton<PublishContentLoggingExtensions>();
 
             services.DummySignerStartup();
         }
