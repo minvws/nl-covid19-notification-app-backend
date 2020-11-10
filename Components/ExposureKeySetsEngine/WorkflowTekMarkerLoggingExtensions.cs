@@ -7,17 +7,22 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.MarkWorkFlowTeksAsUsed
 {
-    public static class LoggingExtensionsMarkWorkFlowTeksAsUsed
+    public class MarkWorkFlowTeksAsUsedLoggingExtensions
     {
         private const string Name = "MarkWorkFlowTeksAsUsed";
         private const int Base = LoggingCodex.MarkWorkflowTeksAsUsed;
         private const int MarkAsPublished = Base + 1;
 
-        public static void WriteMarkingAsPublished(this ILogger logger, int zapcount, int total)
-        {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+        private readonly ILogger _Logger;
 
-            logger.LogInformation("[{name}/{id}] Marking as Published - Count:{Count}, Running total:{RunningTotal}.",
+        public MarkWorkFlowTeksAsUsedLoggingExtensions(ILogger<MarkWorkFlowTeksAsUsedLoggingExtensions> logger)
+        {
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
+        public void WriteMarkingAsPublished(int zapcount, int total)
+        {
+            _Logger.LogInformation("[{name}/{id}] Marking as Published - Count:{Count}, Running total:{RunningTotal}.",
                 Name, MarkAsPublished,
                 zapcount, total);
         }

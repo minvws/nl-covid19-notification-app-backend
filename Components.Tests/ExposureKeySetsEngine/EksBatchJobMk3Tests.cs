@@ -22,6 +22,7 @@ using Xunit;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Snapshot;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksJobContentWriter;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.MarkWorkFlowTeksAsUsed;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
 {
@@ -31,10 +32,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         private Func<PublishingJobDbContext> _PublishingFac;
         private Func<ContentDbContext> _ContentFac;
 
-        private LoggerFactory _Lf;
         private Mock<EksEngineLoggingExtensions> _EksLogMock;
         private Mock<SnapshotLoggingExtensions> _SnapshotLogMock;
-        private Mock<EksJobContentWriterLoggingExtensions> _ContentWriterMock;
+        private Mock<EksJobContentWriterLoggingExtensions> _ContentWriterLogMock;
+        private Mock<MarkWorkFlowTeksAsUsedLoggingExtensions> _WorkflowMarkerLogMock;
         private FakeEksConfig _FakeEksConfig;
         private ExposureKeySetBatchJobMk3 _Engine;
         private DateTime _Now;
@@ -69,9 +70,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
             _FakeEksConfig = new FakeEksConfig { LifetimeDays = 14, PageSize = 1000, TekCountMax = 10, TekCountMin = 5 };
 
-            _Lf = new LoggerFactory();
             _EksLogMock = new Mock<EksEngineLoggingExtensions>();
             _SnapshotLogMock = new Mock<SnapshotLoggingExtensions>();
+            _ContentWriterLogMock = new Mock<EksJobContentWriterLoggingExtensions>();
+            _WorkflowMarkerLogMock = new Mock<MarkWorkFlowTeksAsUsedLoggingExtensions>();
         }
 
 
@@ -302,8 +304,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                 _EksLogMock.Object,
                 new EksStuffingGenerator(new StandardRandomNumberGenerator(), new FakeTekValidatorConfig()),
                 new SnapshotEksInputMk1(_SnapshotLogMock.Object, new TransmissionRiskLevelCalculationV1(), _WorkflowFac(), _PublishingFac),
-                new MarkWorkFlowTeksAsUsed(_WorkflowFac, _FakeEksConfig, _PublishingFac, _Lf.CreateLogger<MarkWorkFlowTeksAsUsed>()),
-                new EksJobContentWriter(_ContentFac, _PublishingFac, new Sha256HexPublishingIdService(), _ContentWriterMock.Object)
+                new MarkWorkFlowTeksAsUsed(_WorkflowFac, _FakeEksConfig, _PublishingFac, _WorkflowMarkerLogMock.Object),
+                new EksJobContentWriter(_ContentFac, _PublishingFac, new Sha256HexPublishingIdService(), _ContentWriterLogMock.Object)
                 );
 
             return _Engine.Execute().GetAwaiter().GetResult();
