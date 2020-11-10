@@ -6,7 +6,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EmbeddedCertProvider;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers
@@ -14,9 +13,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
     public class EmbeddedResourceCertificateProvider : ICertificateProvider
     {
         private readonly ICertificateLocationConfig _Config;
-        private readonly ILogger _Logger;
+        private readonly EmbeddedCertProviderLoggingExtensions _Logger;
 
-        public EmbeddedResourceCertificateProvider(ICertificateLocationConfig config, ILogger<EmbeddedResourceCertificateProvider> logger)
+        public EmbeddedResourceCertificateProvider(ICertificateLocationConfig config, EmbeddedCertProviderLoggingExtensions logger)
         {
             _Config = config ?? throw new ArgumentNullException(nameof(config));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));

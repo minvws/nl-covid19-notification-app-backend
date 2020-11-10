@@ -9,6 +9,7 @@ using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EmbeddedCertProvider;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
@@ -32,7 +33,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
         public void ResignManifest()
         {
             var lf = new LoggerFactory();
-            var loggerMock = new Mock<ResignerLoggingExtensions>();
+            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
+            var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
 
             //Add some db rows to Content
             Func<ContentDbContext> dbp = () =>
@@ -70,13 +72,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
 
             //resign some
             var signer = new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), lf.CreateLogger<EmbeddedResourceCertificateProvider>()), //Not a secret.
+                new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
                 //TODO add a better test chain.
                 new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
                 new StandardUtcDateTimeProvider()
             );
 
-            var resigner = new NlContentResignCommand(dbp, signer, loggerMock.Object);
+            var resigner = new NlContentResignCommand(dbp, signer, resignerLogger);
             resigner.Execute(ContentTypes.Manifest, ContentTypes.ManifestV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
@@ -101,7 +103,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
         public void Re_sign_all_existing_earlier_content()
         {
             var lf = new LoggerFactory();
-            var loggerMock = new Mock<ResignerLoggingExtensions>();
+            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
+            var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
 
             //Add some db rows to Content
             Func<ContentDbContext> dbp = () =>
@@ -142,13 +145,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
 
             //resign some
             var signer = new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), lf.CreateLogger<EmbeddedResourceCertificateProvider>()), //Not a secret.
+                new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
                                                                                                                                                                                      //TODO add a better test chain.
                 new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
                 new StandardUtcDateTimeProvider()
             );
 
-            var resigner = new NlContentResignCommand(dbp, signer, loggerMock.Object);
+            var resigner = new NlContentResignCommand(dbp, signer, resignerLogger);
             resigner.Execute(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
@@ -179,7 +182,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
         public void Re_sign_content_that_does_not_already_have_an_equivalent_resigned_entry()
         {
             var lf = new LoggerFactory();
-            var loggerMock = new Mock<ResignerLoggingExtensions>();
+            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
+            var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
 
             //Add some db rows to Content
             Func<ContentDbContext> dbp = () =>
@@ -220,13 +224,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
 
             //resign some
             var signer = new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), lf.CreateLogger<EmbeddedResourceCertificateProvider>()), //Not a secret.
+                new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
                                                                                                                                                                                      //TODO add a better test chain.
                 new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
                 new StandardUtcDateTimeProvider()
             );
 
-            var resigner = new NlContentResignCommand(dbp, signer, loggerMock.Object);
+            var resigner = new NlContentResignCommand(dbp, signer, resignerLogger);
             resigner.Execute(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
