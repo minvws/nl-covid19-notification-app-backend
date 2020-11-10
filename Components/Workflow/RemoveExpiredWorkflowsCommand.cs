@@ -6,7 +6,6 @@ using System;
 using System.Linq;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredWorkflow;
@@ -17,12 +16,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expi
     public class RemoveExpiredWorkflowsCommand
     {
         private readonly Func<WorkflowDbContext> _DbContextProvider;
-        private readonly ILogger<RemoveExpiredWorkflowsCommand> _Logger;
+        private readonly LoggingExtensionsExpiredWorkflow _Logger;
         private readonly IUtcDateTimeProvider _Dtp;
         private RemoveExpiredWorkflowsResult _Result;
         private readonly IWorkflowConfig _Config;
 
-        public RemoveExpiredWorkflowsCommand(Func<WorkflowDbContext> dbContext, ILogger<RemoveExpiredWorkflowsCommand> logger, IUtcDateTimeProvider dtp, IWorkflowConfig config)
+        public RemoveExpiredWorkflowsCommand(Func<WorkflowDbContext> dbContext, LoggingExtensionsExpiredWorkflow logger, IUtcDateTimeProvider dtp, IWorkflowConfig config)
         {
             _DbContextProvider = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
