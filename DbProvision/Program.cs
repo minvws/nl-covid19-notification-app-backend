@@ -11,6 +11,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DbProvision;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -57,6 +58,8 @@ namespace DbProvision
             services.AddTransient<ContentValidator>();
             services.AddTransient<ContentInsertDbCommand>();
             services.AddTransient<ZippedSignedContentFormatter>();
+
+            services.AddSingleton<DbProvisionLoggingExtensions>();
 
             services.DummySignerStartup();
         }

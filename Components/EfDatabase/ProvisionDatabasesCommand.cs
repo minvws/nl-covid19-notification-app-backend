@@ -5,7 +5,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DbProvision;
@@ -17,9 +16,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
         private readonly WorkflowDatabaseCreateCommand _Workflow;
         private readonly ContentDatabaseCreateCommand _Content;
         private readonly PublishingJobDatabaseCreateCommand _Job;
-        private readonly ILogger _Logger;
+        private readonly DbProvisionLoggingExtensions _Logger;
 
-        public ProvisionDatabasesCommand(WorkflowDatabaseCreateCommand workflow, ContentDatabaseCreateCommand content, PublishingJobDatabaseCreateCommand job, ILogger<ProvisionDatabasesCommand> logger)
+        public ProvisionDatabasesCommand(WorkflowDatabaseCreateCommand workflow, ContentDatabaseCreateCommand content, PublishingJobDatabaseCreateCommand job, DbProvisionLoggingExtensions logger)
         {
             _Workflow = workflow ?? throw new ArgumentNullException(nameof(workflow));
             _Content = content ?? throw new ArgumentNullException(nameof(content));
