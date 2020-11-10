@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredManifest;
@@ -16,11 +15,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     {
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly Func<ContentDbContext> _DbContextProvider;
-        private readonly ILogger<RemoveExpiredManifestsCommand> _Logger;
+        private readonly ExpiredManifestLoggingExtensions _Logger;
         private readonly IManifestConfig _ManifestConfig;
         private RemoveExpiredManifestsCommandResult? _Result;
 
-        public RemoveExpiredManifestsCommand(Func<ContentDbContext> dbContextProvider, ILogger<RemoveExpiredManifestsCommand> logger, IManifestConfig manifestConfig, IUtcDateTimeProvider dateTimeProvider)
+        public RemoveExpiredManifestsCommand(Func<ContentDbContext> dbContextProvider, ExpiredManifestLoggingExtensions logger, IManifestConfig manifestConfig, IUtcDateTimeProvider dateTimeProvider)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
