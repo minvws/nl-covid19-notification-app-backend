@@ -4,6 +4,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
@@ -18,6 +19,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NCrunch.Framework;
 using Xunit;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksEngine;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
 {
@@ -28,6 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         private Func<ContentDbContext> _ContentFac;
 
         private LoggerFactory _Lf;
+        private Mock<EksEngineLoggingExtensions> _EksLogMock;
         private FakeEksConfig _FakeEksConfig;
         private ExposureKeySetBatchJobMk3 _Engine;
         private DateTime _Now;
@@ -63,6 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             _FakeEksConfig = new FakeEksConfig { LifetimeDays = 14, PageSize = 1000, TekCountMax = 10, TekCountMin = 5 };
 
             _Lf = new LoggerFactory();
+            _EksLogMock = new Mock<EksEngineLoggingExtensions>();
         }
 
 
@@ -290,7 +294,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                 new FakeEksBuilder(),
                 _PublishingFac,
                 new StandardUtcDateTimeProvider(),
-                _Lf.CreateLogger<ExposureKeySetBatchJobMk3>(),
+                _EksLogMock.Object,
                 new EksStuffingGenerator(new StandardRandomNumberGenerator(), new FakeTekValidatorConfig()),
                 new SnapshotEksInputMk1(_Lf.CreateLogger<SnapshotEksInputMk1>(), new TransmissionRiskLevelCalculationV1(), _WorkflowFac(), _PublishingFac),
                 new MarkWorkFlowTeksAsUsed(_WorkflowFac, _FakeEksConfig, _PublishingFac, _Lf.CreateLogger<MarkWorkFlowTeksAsUsed>()),

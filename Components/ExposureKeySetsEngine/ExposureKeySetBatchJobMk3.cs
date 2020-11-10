@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly IEksBuilder _SetBuilder;
         private readonly IEksStuffingGenerator _EksStuffingGenerator;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly ILogger _Logger;
+        private readonly EksEngineLoggingExtensions _Logger;
         private readonly ISnapshotEksInput _Snapshotter;
         private readonly IMarkWorkFlowTeksAsUsed _MarkWorkFlowTeksAsUsed;
 
@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly Stopwatch _BuildEksStopwatch = new Stopwatch();
         private readonly Func<PublishingJobDbContext> _PublishingDbContextFac;
 
-        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, Func<PublishingJobDbContext> publishingDbContextFac, IUtcDateTimeProvider dateTimeProvider, ILogger<ExposureKeySetBatchJobMk3> logger, IEksStuffingGenerator eksStuffingGenerator, ISnapshotEksInput snapshotter, IMarkWorkFlowTeksAsUsed markWorkFlowTeksAsUsed, EksJobContentWriter contentWriter)
+        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, Func<PublishingJobDbContext> publishingDbContextFac, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGenerator eksStuffingGenerator, ISnapshotEksInput snapshotter, IMarkWorkFlowTeksAsUsed markWorkFlowTeksAsUsed, EksJobContentWriter contentWriter)
         {
             //_JobConfig = jobConfig;
             _EksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));

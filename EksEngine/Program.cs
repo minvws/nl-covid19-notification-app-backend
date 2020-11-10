@@ -14,6 +14,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
@@ -88,6 +89,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             
             services.AddSingleton<LoggingExtensionsEksBuilderV1>();
             services.AddSingleton<ResignerLoggingExtensions>();
+            services.AddSingleton<EksEngineLoggingExtensions>();
 
             services.NlResignerStartup();
             services.DummySignerStartup();
