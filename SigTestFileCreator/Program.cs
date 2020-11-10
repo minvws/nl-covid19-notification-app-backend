@@ -12,7 +12,8 @@ namespace SigTestFileCreator
     using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
     using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
     using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+	using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.SigTestFileCreator;
+	using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
     using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 
     internal class Program
@@ -38,6 +39,8 @@ namespace SigTestFileCreator
             services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
             services.AddTransient<IEksBuilder, EksBuilderV1>();
             services.AddSingleton<LoggingExtensionsEksBuilderV1>();
+            services.AddSingleton<SigTestFileCreatorLoggingExtensions>();
+
             services.NlSignerStartup();
             services.GaSignerStartup();
         }
