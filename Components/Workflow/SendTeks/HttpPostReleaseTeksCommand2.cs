@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,10 +10,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PostKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
@@ -24,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
 {
     public class HttpPostReleaseTeksCommand2
     {
-        private readonly ILogger<HttpPostReleaseTeksCommand2> _Logger;
+        private readonly PostKeysLoggingExtensions _Logger;
         private readonly WorkflowDbContext _DbContext;
 
         private readonly IPostTeksValidator _KeyValidator;
@@ -42,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         private byte[] _BodyBytes;
 
 
-        public HttpPostReleaseTeksCommand2(ILogger<HttpPostReleaseTeksCommand2> logger, IWorkflowConfig workflowConfig,
+        public HttpPostReleaseTeksCommand2(PostKeysLoggingExtensions logger, IWorkflowConfig workflowConfig,
             WorkflowDbContext dbContextProvider, IPostTeksValidator keyValidator, ITekWriter writer,
             IJsonSerializer jsonSerializer, ISignatureValidator signatureValidator,
             ITekListWorkflowFilter tekListWorkflowFilter, IUtcDateTimeProvider dateTimeProvider, ITekValidPeriodFilter tekApplicableWindowFilter)

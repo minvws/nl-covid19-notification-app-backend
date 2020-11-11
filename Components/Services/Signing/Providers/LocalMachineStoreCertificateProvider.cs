@@ -5,7 +5,7 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.LocalMachineStoreCertificateProvider;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers
@@ -13,9 +13,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
     public class LocalMachineStoreCertificateProvider : ICertificateProvider
     {
         private readonly IThumbprintConfig _ThumbprintConfig;
-        private readonly ILogger _Logger;
+        private readonly LocalMachineStoreCertificateProviderLoggingExtensions _Logger;
 
-        public LocalMachineStoreCertificateProvider(IThumbprintConfig thumbprintConfig, ILogger<LocalMachineStoreCertificateProvider> logger)
+        public LocalMachineStoreCertificateProvider(IThumbprintConfig thumbprintConfig, LocalMachineStoreCertificateProviderLoggingExtensions logger)
         {
             _ThumbprintConfig = thumbprintConfig ?? throw new ArgumentNullException(nameof(thumbprintConfig));
             _Logger = logger;
@@ -26,18 +26,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             store.Open(OpenFlags.ReadOnly);
 
-            _Logger.LogInformation("Finding certificate - Thumbprint:{Thumbprint}, RootTrusted:{RootTrusted}.", _ThumbprintConfig.Thumbprint, _ThumbprintConfig.RootTrusted);
+            _Logger.WriteFindingCert(_ThumbprintConfig.Thumbprint, _ThumbprintConfig.RootTrusted);
 
             var result = ReadCertFromStore(store);
             if (result == null)
             {
-                _Logger.LogCritical("Certificate not found: {Thumbprint}", _ThumbprintConfig.Thumbprint);
+                _Logger.WriteCertNotFound(_ThumbprintConfig.Thumbprint);
                 throw new InvalidOperationException("Certificate not found.");
             }
 
             if (!result.HasPrivateKey)
             {
-                _Logger.LogCritical("Certificate has no private key: {Thumbprint}", _ThumbprintConfig.Thumbprint);
+                _Logger.WriteNoPrivateKey(_ThumbprintConfig.Thumbprint);
                 throw new InvalidOperationException("Private key not found.");
             }
 
@@ -54,7 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
             }
             catch (Exception e)
             {
-                _Logger.LogError(e, "Error reading certificate store");
+                _Logger.WriteCertReadError(e);
                 throw;
             }
         }

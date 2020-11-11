@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.RegisterSecret;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PostKeys;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
@@ -18,11 +20,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
     [Route("[controller]")]
     public class WorkflowController : ControllerBase
     {
-        private readonly ILogger _Logger;
+        private readonly RegisterSecretLoggingExtensions _LoggerRegisterSecret;
+        private readonly PostKeysLoggingExtensions _LoggerPostKeys;
+        private readonly DecoyKeysLoggingExtensions _LoggerDecoyKeys;
 
-        public WorkflowController(ILogger<WorkflowController> logger)
+        public WorkflowController(RegisterSecretLoggingExtensions loggerRegisterSecret, PostKeysLoggingExtensions loggerPostKeys, DecoyKeysLoggingExtensions LoggerDecoyKeys)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _LoggerRegisterSecret = loggerRegisterSecret ?? throw new ArgumentNullException(nameof(loggerRegisterSecret));
+            _LoggerPostKeys = loggerPostKeys ?? throw new ArgumentNullException(nameof(loggerPostKeys));
+            _LoggerDecoyKeys = LoggerDecoyKeys ?? throw new ArgumentNullException(nameof(LoggerDecoyKeys));
         }
 
         [ResponsePaddingFilterFactory]
@@ -32,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand2 command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-            _Logger.LogInformation("POST postkeys triggered.");
+            _LoggerPostKeys.WriteStartPostKeys();
             return await command.Execute(sig, Request);
         }
 
@@ -43,6 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         public async Task<IActionResult> PostSecret([FromServices]HttpPostRegisterSecret command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
+            _LoggerRegisterSecret.WriteStartSecret();
             return await command.Execute();
         }
 
@@ -53,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         [Route(EndPointNames.MobileAppApi.RandomNoise)]
         public async Task<IActionResult> StopKeys()
         {
-            _Logger.LogInformation("POST stopkeys triggered.");
+            _LoggerDecoyKeys.WriteStartDecoy();
             return new OkResult();
         }
 

@@ -3,26 +3,26 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.GetCdnContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using System;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
-    /// <summary>
-    /// Includes mitigations for CDN cache miss/stale item edge cases.
-    /// </summary>
-    public class HttpGetCdnContentCommand
+	/// <summary>
+	/// Includes mitigations for CDN cache miss/stale item edge cases.
+	/// </summary>
+	public class HttpGetCdnContentCommand
     {
         private readonly ContentDbContext _DbContext;
         private readonly IPublishingIdService _PublishingIdService;
-        private readonly ILogger _Logger;
+        private readonly GetCdnContentLoggingExtensions _Logger;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IUtcDateTimeProvider dateTimeProvider)
+        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, GetCdnContentLoggingExtensions logger, IUtcDateTimeProvider dateTimeProvider)
         {
             _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _PublishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
@@ -39,21 +39,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             if (!ContentTypes.IsValid(type))
             {
-                _Logger.LogError("Invalid generic content type - {Id}.", id);
+                _Logger.WriteInvalidType(id);
                 httpContext.Response.StatusCode = 400;
                 httpContext.Response.ContentLength = 0;
             }
 
             if (!_PublishingIdService.Validate(id))
             {
-                _Logger.LogError("Invalid content id - {Id}.", id);
+                _Logger.WriteInvalidId(id);
                 httpContext.Response.StatusCode = 400;
                 httpContext.Response.ContentLength = 0;
             }
 
             if (!httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
             {
-                _Logger.LogError("Required request header missing - if-none-match.");
+                _Logger.WriteHeaderMissing();
                 httpContext.Response.ContentLength = 0;
                 httpContext.Response.StatusCode = 400;
             }
@@ -62,7 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             
             if (content == null)
             {
-                _Logger.LogError("Content not found - {Id}.", id);
+                _Logger.WriteNotFound(id);
                 httpContext.Response.StatusCode = 404;
                 httpContext.Response.ContentLength = 0;
                 return null;
@@ -70,7 +70,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             if (etagValue == content.PublishingId)
             {
-                _Logger.LogWarning("Matching etag found, responding with 304 - {Id}.", id);
+                _Logger.WriteEtagFound(id);
                 httpContext.Response.StatusCode = 304;
                 httpContext.Response.ContentLength = 0;
                 return null;

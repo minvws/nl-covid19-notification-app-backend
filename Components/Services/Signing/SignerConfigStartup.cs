@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.LocalMachineStoreCertificateProvider;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
                     new LocalMachineStoreCertificateProvider(
                         new LocalMachineStoreCertificateProviderConfig(
                             x.GetRequiredService<IConfiguration>(), NlSettingPrefix),
-                            x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>()),
+                            x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()),
                         new EmbeddedResourcesCertificateChainProvider(
                             new StandardCertificateLocationConfig(
                                 x.GetRequiredService<IConfiguration>(),
@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
                         new LocalMachineStoreCertificateProviderConfig(
                             x.GetRequiredService<IConfiguration>(),
                             GaSettingPrefix),
-                        x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>()
+                        x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
                     )));
         }
 

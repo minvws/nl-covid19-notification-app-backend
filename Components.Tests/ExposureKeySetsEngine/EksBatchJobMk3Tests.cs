@@ -18,6 +18,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using NCrunch.Framework;
 using Xunit;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksEngine;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Snapshot;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksJobContentWriter;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.MarkWorkFlowTeksAsUsed;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
 {
@@ -27,7 +31,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         private Func<PublishingJobDbContext> _PublishingFac;
         private Func<ContentDbContext> _ContentFac;
 
-        private LoggerFactory _Lf;
+        private EksEngineLoggingExtensions _EksEngineLogger;
+        private SnapshotLoggingExtensions _SnapshotLogger;
+        private EksJobContentWriterLoggingExtensions _ContentWriterLogger;
+        private MarkWorkFlowTeksAsUsedLoggingExtensions _WorkflowTeksMarkerLogger;
         private FakeEksConfig _FakeEksConfig;
         private ExposureKeySetBatchJobMk3 _Engine;
         private DateTime _Now;
@@ -62,7 +69,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
             _FakeEksConfig = new FakeEksConfig { LifetimeDays = 14, PageSize = 1000, TekCountMax = 10, TekCountMin = 5 };
 
-            _Lf = new LoggerFactory();
+            var lf = new LoggerFactory();
+            _EksEngineLogger = new EksEngineLoggingExtensions(lf.CreateLogger<EksEngineLoggingExtensions>());
+            _SnapshotLogger = new SnapshotLoggingExtensions(lf.CreateLogger<SnapshotLoggingExtensions>());
+            _ContentWriterLogger = new EksJobContentWriterLoggingExtensions(lf.CreateLogger<EksJobContentWriterLoggingExtensions>());
+            _WorkflowTeksMarkerLogger = new MarkWorkFlowTeksAsUsedLoggingExtensions(lf.CreateLogger<MarkWorkFlowTeksAsUsedLoggingExtensions>());
         }
 
 
@@ -290,11 +301,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                 new FakeEksBuilder(),
                 _PublishingFac,
                 new StandardUtcDateTimeProvider(),
-                _Lf.CreateLogger<ExposureKeySetBatchJobMk3>(),
+                _EksEngineLogger,
                 new EksStuffingGenerator(new StandardRandomNumberGenerator(), new FakeTekValidatorConfig()),
-                new SnapshotEksInputMk1(_Lf.CreateLogger<SnapshotEksInputMk1>(), new TransmissionRiskLevelCalculationV1(), _WorkflowFac(), _PublishingFac),
-                new MarkWorkFlowTeksAsUsed(_WorkflowFac, _FakeEksConfig, _PublishingFac, _Lf.CreateLogger<MarkWorkFlowTeksAsUsed>()),
-                new EksJobContentWriter(_ContentFac, _PublishingFac, new Sha256HexPublishingIdService(), _Lf.CreateLogger<EksJobContentWriter>())
+                new SnapshotEksInputMk1(_SnapshotLogger, new TransmissionRiskLevelCalculationV1(), _WorkflowFac(), _PublishingFac),
+                new MarkWorkFlowTeksAsUsed(_WorkflowFac, _FakeEksConfig, _PublishingFac, _WorkflowTeksMarkerLogger),
+                new EksJobContentWriter(_ContentFac, _PublishingFac, new Sha256HexPublishingIdService(), _ContentWriterLogger)
                 );
 
             return _Engine.Execute().GetAwaiter().GetResult();

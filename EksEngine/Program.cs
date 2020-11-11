@@ -13,6 +13,14 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksEngine;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksJobContentWriter;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.LocalMachineStoreCertificateProvider;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ManifestUpdateCommand;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.MarkWorkFlowTeksAsUsed;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Snapshot;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
@@ -71,7 +79,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
             services.AddTransient<IEksStuffingGenerator, EksStuffingGenerator>();
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
-            services.AddTransient<EksBuilderV1>();
             services.AddTransient<GeneratedProtobufEksContentFormatter>();
             services.AddTransient<IEksBuilder, EksBuilderV1>();
             services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
@@ -84,9 +91,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<ManifestBuilder>();
+            
+            services.AddSingleton<EksBuilderV1LoggingExtensions>();
+            services.AddSingleton<ResignerLoggingExtensions>();
+            services.AddSingleton<EksEngineLoggingExtensions>();
+            services.AddSingleton<SnapshotLoggingExtensions>();
+            services.AddSingleton<EksJobContentWriterLoggingExtensions>();
+            services.AddSingleton<MarkWorkFlowTeksAsUsedLoggingExtensions>();
+            services.AddSingleton<ManifestUpdateCommandLoggingExtensions>();
+            services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
 
             services.NlResignerStartup();
-
             services.DummySignerStartup();
             services.GaSignerStartup();
         }

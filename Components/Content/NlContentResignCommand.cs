@@ -7,15 +7,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net.Mime;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
-using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
@@ -23,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     {
         private readonly Func<ContentDbContext> _ContentDbContext;
         private readonly IContentSigner _ContentSigner;
-        private readonly ILogger<NlContentResignCommand> _Logger;
+        private readonly ResignerLoggingExtensions _Logger;
 
         private string _ContentEntryName;
         private string _ToType;
@@ -41,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             public int GetHashCode(ContentEntity obj) => HashCode.Combine(obj.Created, obj.Release, obj.PublishingId);
         }
 
-        public NlContentResignCommand(Func<ContentDbContext> contentDbContext, IContentSigner contentSigner, ILogger<NlContentResignCommand> logger)
+        public NlContentResignCommand(Func<ContentDbContext> contentDbContext, IContentSigner contentSigner, ResignerLoggingExtensions logger)
         {
             _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _ContentSigner = contentSigner ?? throw new ArgumentNullException(nameof(contentSigner));
@@ -62,18 +59,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             var toItems = db.Content.Where(x => x.Type == toType).ToArray();
             var todo = fromItems.Except(toItems,  new ContentEntityComparer()).ToArray();
 
-            var sb = new StringBuilder();
-            sb.AppendLine($"Re-signing {todo.Length} items:");
-            foreach (var i in todo)
-                sb.AppendLine($"PK:{i.Id} PublishingId:{i.PublishingId} Created:{i.Created:O} Release:{i.Release:O}");
-
-            var m = sb.ToString();
-            _Logger.LogInformation(m);
+            _Logger.WriteReport(todo);
 
             foreach (var i in todo)
                 await Resign(i);
 
-            _Logger.LogInformation("Re-signing complete,");
+            _Logger.WriteFinished();
         }
 
         private async Task Resign(ContentEntity item)

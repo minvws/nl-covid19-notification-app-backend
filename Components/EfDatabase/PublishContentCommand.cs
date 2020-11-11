@@ -2,9 +2,9 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PublishContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using System;
 using System.IO;
@@ -18,9 +18,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
         private readonly ContentInsertDbCommand _InsertDbCommand;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly ContentDbContext _ContentDbContext;
-        private readonly ILogger<PublishContentCommand> _Logger;
+        private readonly PublishContentLoggingExtensions _Logger;
 
-        public PublishContentCommand(ContentValidator validator, ContentInsertDbCommand insertDbCommand, IUtcDateTimeProvider dateTimeProvider, ContentDbContext contentDbContext, ILogger<PublishContentCommand> logger)
+        public PublishContentCommand(ContentValidator validator, ContentInsertDbCommand insertDbCommand, IUtcDateTimeProvider dateTimeProvider, ContentDbContext contentDbContext, PublishContentLoggingExtensions logger)
         {
             _Validator = validator ?? throw new ArgumentNullException(nameof(validator));
             _InsertDbCommand = insertDbCommand ?? throw new ArgumentNullException(nameof(insertDbCommand));
@@ -44,13 +44,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
             if (!_Validator.IsValid(contentArgs))
                 throw new InvalidOperationException("Content not valid.");
 
-            _Logger.LogDebug("Writing {ContentType} to database.", contentArgs.ContentType);
+            _Logger.WriteStartWriting(contentArgs.ContentType);
 
             _ContentDbContext.BeginTransaction();
             await _InsertDbCommand.Execute(contentArgs);
             _ContentDbContext.SaveAndCommit();
 
-            _Logger.LogDebug("Done writing {ContentType} to database.", contentArgs.ContentType);
+            _Logger.WriteFinishedWriting(contentArgs.ContentType);
         }
 
         private string ParseContentType(string arg)

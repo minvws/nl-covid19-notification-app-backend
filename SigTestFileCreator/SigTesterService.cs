@@ -2,10 +2,10 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
     using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
     using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
     using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Framework;
+    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.SigTestFileCreator;
     using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
     using System.IO;
 
@@ -13,7 +13,7 @@
     {
         private readonly IEksBuilder _EksZipBuilder;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly ILogger _Logger;
+        private readonly SigTestFileCreatorLoggingExtensions _Logger;
 
         private byte[] _fileContents;
         private string _fileInputLocation;
@@ -22,7 +22,7 @@
         public SigTesterService(
             IEksBuilder eksZipBuilder,
             IUtcDateTimeProvider dateTimeProvider,
-            ILogger<SigTesterService> logger
+            SigTestFileCreatorLoggingExtensions logger
             )
         {
             _EksZipBuilder = eksZipBuilder ?? throw new ArgumentNullException(nameof(eksZipBuilder));
@@ -35,7 +35,7 @@
 
         public async Task Execute(string[] args)
         {
-            _Logger.LogDebug("Key presence Test started ({time})", _DateTimeProvider.Snapshot);
+            _Logger.WriteStart(_DateTimeProvider.Snapshot);
 
             if (args.Length > 1)
             {
@@ -51,15 +51,15 @@
             }
 
             if (Environment.UserInteractive && !WindowsIdentityQueries.CurrentUserIsAdministrator())
-                _Logger.LogError("The test was started WITHOUT elevated privileges - errors may occur when signing content.");
+                _Logger.WriteNoElevatedPrivs();
 
             LoadFile(_fileInputLocation);
             var eksZipOutput = await BuildEksOutput();
             
-            _Logger.LogDebug("Saving EKS-engine resultfile.");
+            _Logger.WriteSavingResultfile();
             ExportOutput(_eksFileOutputLocation, eksZipOutput);
 
-            _Logger.LogDebug("Key presence test complete.\nResults can be found in: {_fileOutputLocation}", _eksFileOutputLocation);
+            _Logger.WriteFinished(_eksFileOutputLocation);
         }
 
         private void LoadFile(string filename)
@@ -88,7 +88,7 @@
 
         private async Task<byte[]> BuildEksOutput()
         {
-            _Logger.LogDebug("Building EKS-engine resultfile.");
+            _Logger.WriteBuildingResultFile();
 
             var args = new TemporaryExposureKeyArgs[]
             {

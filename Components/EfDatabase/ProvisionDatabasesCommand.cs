@@ -5,9 +5,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DbProvision;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 {
@@ -16,9 +16,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
         private readonly WorkflowDatabaseCreateCommand _Workflow;
         private readonly ContentDatabaseCreateCommand _Content;
         private readonly PublishingJobDatabaseCreateCommand _Job;
-        private readonly ILogger _Logger;
+        private readonly DbProvisionLoggingExtensions _Logger;
 
-        public ProvisionDatabasesCommand(WorkflowDatabaseCreateCommand workflow, ContentDatabaseCreateCommand content, PublishingJobDatabaseCreateCommand job, ILogger<ProvisionDatabasesCommand> logger)
+        public ProvisionDatabasesCommand(WorkflowDatabaseCreateCommand workflow, ContentDatabaseCreateCommand content, PublishingJobDatabaseCreateCommand job, DbProvisionLoggingExtensions logger)
         {
             _Workflow = workflow ?? throw new ArgumentNullException(nameof(workflow));
             _Content = content ?? throw new ArgumentNullException(nameof(content));
@@ -30,18 +30,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
         {
             var nuke = !args.Contains("nonuke");
 
-            _Logger.LogInformation("Start.");
+            _Logger.WriteStart();
 
-            _Logger.LogInformation("Workflow...");
+            _Logger.WriteWorkFlowDb();
             await _Workflow.Execute(nuke);
 
-            _Logger.LogInformation("Content...");
+            _Logger.WriteContentDb();
             await _Content.Execute(nuke);
 
-            _Logger.LogInformation("Job...");
+            _Logger.WriteJobDb();
             await _Job.Execute(nuke);
 
-            _Logger.LogInformation("Complete.");
+            _Logger.WriteFinished();
         }
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.GetCdnContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -57,6 +58,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
 
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
+
+            services.AddSingleton<GetCdnContentLoggingExtensions>();
 
             if (_IsDev)
                 services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredEks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using Xunit;
@@ -47,6 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         public void Cleaner()
         {
             var lf = new LoggerFactory();
+            var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
 
             Func<ContentDbContext> dbp = () =>
             {
@@ -59,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             db.EnsureDeleted();
             db.EnsureCreated();
 
-            var command = new RemoveExpiredEksCommand(dbp(), new FakeEksConfig(), new StandardUtcDateTimeProvider(), lf.CreateLogger<RemoveExpiredEksCommand>());
+            var command = new RemoveExpiredEksCommand(dbp(), new FakeEksConfig(), new StandardUtcDateTimeProvider(), expEksLogger);
 
             var result = command.Execute();
 
@@ -75,6 +75,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         public void NoKill()
         {
             var lf = new LoggerFactory();
+            var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
 
             Func<ContentDbContext> dbp = () =>
             {
@@ -92,7 +93,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             contentDbContext.SaveChanges();
 
             var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
-            var command = new RemoveExpiredEksCommand(contentDbContext, new FakeEksConfig(), fakeDtp, lf.CreateLogger<RemoveExpiredEksCommand>());
+            var command = new RemoveExpiredEksCommand(contentDbContext, new FakeEksConfig(), fakeDtp, expEksLogger);
 
             var result = command.Execute();
 
@@ -109,6 +110,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         public void Kill()
         {
             var lf = new LoggerFactory();
+            var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
 
             Func<ContentDbContext> dbp = () =>
             {
@@ -127,7 +129,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
             var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
             var fakeEksConfig = new FakeEksConfig() { CleanupDeletesData = true };
-            var command = new RemoveExpiredEksCommand(contentDbContext, fakeEksConfig, fakeDtp, lf.CreateLogger<RemoveExpiredEksCommand>());
+            var command = new RemoveExpiredEksCommand(contentDbContext, fakeEksConfig, fakeDtp, expEksLogger);
 
             var result = command.Execute();
 
@@ -144,6 +146,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         public void MoreRealistic()
         {
             var lf = new LoggerFactory();
+            var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
 
             Func<ContentDbContext> dbp = () =>
             {
@@ -164,7 +167,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
             var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
             var fakeEksConfig = new FakeEksConfig() { CleanupDeletesData = true };
-            var command = new RemoveExpiredEksCommand(contentDbContext, fakeEksConfig, fakeDtp, lf.CreateLogger<RemoveExpiredEksCommand>());
+            var command = new RemoveExpiredEksCommand(contentDbContext, fakeEksConfig, fakeDtp, expEksLogger);
 
             var result = command.Execute();
 

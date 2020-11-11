@@ -11,6 +11,7 @@ using JWT.Builder;
 using JWT.Exceptions;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
@@ -87,25 +88,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth
 
                 return true;
             }
-            catch (FormatException)
+            catch (FormatException exception)
             {
-                _Logger.LogWarning("Invalid jwt token, FormatException");
+                _Logger.WriteInvalidTokenFormat(exception);
             }
-            catch (InvalidTokenPartsException)
+            catch (InvalidTokenPartsException exception)
             {
-                _Logger.LogWarning("Invalid jwt token, InvalidTokenPartsException");
+                _Logger.WriteInvalidTokenParts(exception);
             }
-            catch (TokenExpiredException)
+            catch (TokenExpiredException exception)
             {
-                _Logger.LogWarning("Invalid jwt token, TokenExpiredException");
+                _Logger.WriteTokenExpired(exception);
             }
-            catch (SignatureVerificationException)
+            catch (SignatureVerificationException exception)
             {
-                _Logger.LogWarning("Invalid jwt token, SignatureVerificationException");
+                _Logger.WriteTokenSigInvalid(exception);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                _Logger.LogError(e, "Invalid jwt token, Other error");
+                _Logger.WriteTokenOtherError(exception);
             }
 
             return false;

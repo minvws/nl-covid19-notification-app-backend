@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredManifestV2;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
@@ -15,11 +15,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
     {
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly Func<ContentDbContext> _DbContextProvider;
-        private readonly ILogger<RemoveExpiredManifestsV2Command> _Logger;
+        private readonly ExpiredManifestV2LoggingExtensions _Logger;
         private readonly IManifestConfig _ManifestConfig;
         private RemoveExpiredManifestsCommandResult? _Result;
 
-        public RemoveExpiredManifestsV2Command(Func<ContentDbContext> dbContextProvider, ILogger<RemoveExpiredManifestsV2Command> logger, IManifestConfig manifestConfig, IUtcDateTimeProvider dateTimeProvider)
+        public RemoveExpiredManifestsV2Command(Func<ContentDbContext> dbContextProvider, ExpiredManifestV2LoggingExtensions logger, IManifestConfig manifestConfig, IUtcDateTimeProvider dateTimeProvider)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 
             _Result = new RemoveExpiredManifestsCommandResult();
 
-            _Logger.LogInformation("Begin removing expired ManifestV2s - Keep Alive Count:{count}", _ManifestConfig.KeepAliveCount);
+            _Logger.WriteStart(_ManifestConfig.KeepAliveCount);
 
             await using (var dbContext = _DbContextProvider())
             await using (var tx = dbContext.BeginTransaction())
@@ -52,13 +52,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                     .ToList();
 
                 _Result.Zombies = zombies.Count;
-                _Logger.LogInformation("Removing expired ManifestV2s - Count:{count}", zombies.Count);
+                _Logger.WriteRemovingManifests(zombies.Count);
                 foreach (var i in zombies)
-                    _Logger.LogInformation("Removing expired ManifestV2 - PublishingId:{PublishingId} Release:{Release}", i.PublishingId, i.Release);
+                    _Logger.WriteRemovingEntry(i.PublishingId, i.Release);
 
                 if (zombies.Count == 0)
                 {
-                    _Logger.LogInformation("Finished removing expired ManifestV2s - Nothing to remove.");
+                    _Logger.WriteFinishedNothingRemoved();
                     return _Result;
                 }
 
@@ -73,13 +73,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 tx.Commit();
             }
 
-            _Logger.LogInformation("Finished removing expired ManifestV2s - ExpectedCount:{count} ActualCount:{givenMercy}", _Result.Zombies, _Result.GivenMercy);
+            _Logger.WriteFinished(_Result.Zombies, _Result.GivenMercy);
 
             if (_Result.Reconciliation != 0)
-                _Logger.LogError("Reconciliation failed removing expired ManifestV2s - Found-GivenMercy-Remaining={reconciliation}.", _Result.Reconciliation);
+                _Logger.WriteReconciliationFailed(_Result.Reconciliation);
 
             if (_Result.DeletionReconciliation != 0)
-                _Logger.LogError("Reconciliation failed removing expired ManifestV2s - Zombies-GivenMercy={deadReconciliation}.", _Result.DeletionReconciliation);
+                _Logger.WriteDeletionReconciliationFailed(_Result.DeletionReconciliation);
 
             return _Result;
         }

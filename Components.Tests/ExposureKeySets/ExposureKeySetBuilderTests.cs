@@ -7,6 +7,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EmbeddedCertProvider;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
@@ -33,6 +35,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         {
             //Arrange
             var lf = new LoggerFactory();
+            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
+            var eksBuilderV1Logger = new EksBuilderV1LoggingExtensions(lf.CreateLogger<EksBuilderV1LoggingExtensions>());
             var dtp = new StandardUtcDateTimeProvider();
             
             var sut = new EksBuilderV1(
@@ -40,18 +44,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                 new EcdSaSigner(
                     new EmbeddedResourceCertificateProvider(
                         new HardCodedCertificateLocationConfig("TestECDSA.p12", ""),
-                        lf.CreateLogger<EmbeddedResourceCertificateProvider>())),
+                        certProviderLogger)),
                 new CmsSignerEnhanced(
                     new EmbeddedResourceCertificateProvider(
-                        new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), 
-                        lf.CreateLogger<EmbeddedResourceCertificateProvider>()),
+                        new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"),
+                        certProviderLogger),
                     new EmbeddedResourcesCertificateChainProvider(
                         new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")),
                     dtp
                     ),
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
-                lf.CreateLogger<EksBuilderV1>());
+                eksBuilderV1Logger
+                );
 
             //Act
             var result = sut.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
@@ -72,6 +77,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             //Arrange
             int KeyCount = 500;
             var lf = new LoggerFactory();
+            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
+            var eksBuilderV1Logger = new EksBuilderV1LoggingExtensions(lf.CreateLogger<EksBuilderV1LoggingExtensions>());
             var dtp = new StandardUtcDateTimeProvider();
             var dummySigner = new DummyCmsSigner();
 
@@ -80,12 +87,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                 new EcdSaSigner(
                     new EmbeddedResourceCertificateProvider(
                         new HardCodedCertificateLocationConfig("TestECDSA.p12", ""),
-                        lf.CreateLogger<EmbeddedResourceCertificateProvider>())
+                        certProviderLogger)
                     ),
                 dummySigner,
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
-                lf.CreateLogger<EksBuilderV1>());
+                eksBuilderV1Logger
+                );
 
             //Act
             var result = sut.BuildAsync(GetRandomKeys(KeyCount, 123)).GetAwaiter().GetResult();

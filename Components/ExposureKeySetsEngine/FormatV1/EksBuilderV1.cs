@@ -3,12 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
@@ -23,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IEksContentFormatter _EksContentFormatter;
         private readonly IEksHeaderInfoConfig _Config;
-        private readonly ILogger _Logger;
+        private readonly EksBuilderV1LoggingExtensions _Logger;
 
         public EksBuilderV1(
             IEksHeaderInfoConfig headerInfoConfig,
@@ -31,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             IContentSigner nlContentSigner,
             IUtcDateTimeProvider dateTimeProvider,
             IEksContentFormatter eksContentFormatter,
-            ILogger<EksBuilderV1> logger
+            EksBuilderV1LoggingExtensions logger
             )
         {
             _GaenContentSigner = gaenContentSigner ?? throw new ArgumentNullException(nameof(gaenContentSigner));
@@ -65,8 +63,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             var nlSig = _NlContentSigner.GetSignature(contentBytes);
             var gaenSig = _GaenContentSigner.GetSignature(contentBytes);
 
-            _Logger.LogDebug("GAEN Sig: {Convert.ToBase64String(GaenSig)}.", gaenSig);
-            _Logger.LogDebug("NL Sig: {Convert.ToBase64String(NlSig)}.", nlSig);
+            _Logger.WriteNlSig(nlSig);
+            _Logger.WriteGaenSig(gaenSig);
 
             var signatures = new ExposureKeySetSignaturesContentArgs
             {

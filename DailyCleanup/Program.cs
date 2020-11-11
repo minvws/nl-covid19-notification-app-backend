@@ -5,7 +5,6 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
@@ -13,6 +12,20 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DailyCleanup;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksEngine;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksJobContentWriter;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredEks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredEksV2;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredManifest;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredManifestV2;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredWorkflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.LocalMachineStoreCertificateProvider;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ManifestUpdateCommand;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.MarkWorkFlowTeksAsUsed;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Snapshot;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
@@ -42,9 +55,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
         private static void Start(IServiceProvider serviceProvider, string[] args)
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+            var logger = serviceProvider.GetRequiredService<DailyCleanupLoggingExtensions>();
 
-            logger.LogInformation("Daily cleanup - Starting.");
+            logger.WriteStart();
 
             var j1 = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
             //Remove this one when we get manifest count down to 1.
@@ -59,26 +72,34 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var j8 = serviceProvider.GetRequiredService<RemoveExpiredEksV2Command>();
             var j9 = serviceProvider.GetRequiredService<RemoveExpiredManifestsV2Command>();
 
-            logger.LogInformation("Daily cleanup - EKS engine run starting.");
+            logger.WriteEksEngineStarting();
             j1.Execute().GetAwaiter().GetResult();
-            logger.LogInformation("Daily cleanup - Manifest engine run starting.");
+            
+            logger.WriteManifestEngineStarting();
             j2.Execute().GetAwaiter().GetResult();
-            logger.LogInformation("Daily cleanup - Calculating daily stats starting.");
+            
+            logger.WriteDailyStatsCalcStarting();
             j6.Execute();
-            logger.LogInformation("Daily cleanup - Cleanup Manifests run starting.");
+            
+            logger.WriteManiFestCleanupStarting();
             j3.Execute().GetAwaiter().GetResult();
-            logger.LogInformation("Daily cleanup - Cleanup EKS run starting.");
+            
+            logger.WriteEksCleanupStarting();
             j4.Execute();
-            logger.LogInformation("Daily cleanup - Cleanup Workflows run starting.");
+            
+            logger.WriteWorkflowCleanupStarting();
             j5.Execute();
-            logger.LogInformation("Daily cleanup - Resigning existing v1 content.");
+            
+            logger.WriteResignerStarting();
             j7.Execute().GetAwaiter().GetResult();
-            logger.LogInformation("Daily cleanup - Cleanup EKSv2 run starting.");
+            
+            logger.WriteEksV2CleanupStarting();
             j8.Execute();
-            logger.LogInformation("Daily cleanup - Cleanup ManifestV2 run starting.");
+            
+            logger.WriteManifestV2CleanupStarting();
             j9.Execute();
 
-            logger.LogInformation("Daily cleanup - Finished.");
+            logger.WriteFinished();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
@@ -104,7 +125,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
             services.AddTransient<IEksStuffingGenerator, EksStuffingGenerator>();
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
-            services.AddTransient<EksBuilderV1>();
             services.AddTransient<GeneratedProtobufEksContentFormatter>();
             services.AddTransient<IEksBuilder, EksBuilderV1>();
             services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
@@ -128,6 +148,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddSingleton<IManifestConfig, ManifestConfig>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
 
+            services.AddSingleton<EksBuilderV1LoggingExtensions>();
+            services.AddSingleton<DailyCleanupLoggingExtensions>();
+            services.AddSingleton<ExpiredManifestLoggingExtensions>();
+            services.AddSingleton<ExpiredEksLoggingExtensions>();
+            services.AddSingleton<ExpiredWorkflowLoggingExtensions>();
+            services.AddSingleton<ResignerLoggingExtensions>();
+            services.AddSingleton<ExpiredEksV2LoggingExtensions>();
+            services.AddSingleton<ExpiredManifestV2LoggingExtensions>();
+            services.AddSingleton<EksEngineLoggingExtensions>();
+            services.AddSingleton<SnapshotLoggingExtensions>();
+            services.AddSingleton<EksJobContentWriterLoggingExtensions>();
+            services.AddSingleton<MarkWorkFlowTeksAsUsedLoggingExtensions>();
+            services.AddSingleton<ManifestUpdateCommandLoggingExtensions>();
+            services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
+            
             services.NlResignerStartup();
 
             services.DummySignerStartup();

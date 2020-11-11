@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.MarkWorkFlowTeksAsUsed;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 
@@ -14,10 +14,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly Func<WorkflowDbContext> _WorkflowDbContextFactory;
         private readonly IEksConfig _EksConfig;
         private readonly Func<PublishingJobDbContext> _PublishingDbContextFac;
-        private readonly ILogger<MarkWorkFlowTeksAsUsed> _Logger;
+        private readonly MarkWorkFlowTeksAsUsedLoggingExtensions _Logger;
         private int _Index;
 
-        public MarkWorkFlowTeksAsUsed(Func<WorkflowDbContext> workflowDbContextFactory, IEksConfig eksConfig, Func<PublishingJobDbContext> publishingDbContextFac, ILogger<MarkWorkFlowTeksAsUsed> logger)
+        public MarkWorkFlowTeksAsUsed(Func<WorkflowDbContext> workflowDbContextFactory, IEksConfig eksConfig, Func<PublishingJobDbContext> publishingDbContextFac, MarkWorkFlowTeksAsUsedLoggingExtensions logger)
         {
             _WorkflowDbContextFactory = workflowDbContextFactory ?? throw new ArgumentNullException(nameof(workflowDbContextFactory));
             _EksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 .ToList();
 
             _Index += used.Length;
-            _Logger.LogInformation("Marking as Published - Count:{Count}, Running total:{RunningTotal}.", zap.Count, _Index);
+            _Logger.WriteMarkingAsPublished(zap.Count, _Index);
 
             if (zap.Count == 0)
                 return;

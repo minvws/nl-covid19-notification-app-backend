@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Handlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
-            _Logger.LogInformation("POST Auth/Token triggered.");
+            _Logger.WriteAuthStart();
             return await command.Execute(HttpContext, args);
         }
 
