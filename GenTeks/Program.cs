@@ -12,6 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
@@ -54,8 +55,9 @@ namespace GenTeks
                 ));
 
             services.AddTransient<TekReleaseWorkflowStateCreate>();
-            
             services.AddTransient<IWorkflowTime, TekReleaseWorkflowTime>();
+
+            services.AddSingleton<RegisterSecretLoggingExtensions>();
         }
     }
 }
