@@ -38,7 +38,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
 
         private static void Start(IServiceProvider services, string[] args)
         {
-            services.GetRequiredService<ManifestUpdateCommand>().Execute().GetAwaiter().GetResult();
+            var job = services.GetRequiredService<ManifestUpdateCommand>();
+            job.Execute().GetAwaiter().GetResult();
+            job.ExecuteForV3().GetAwaiter().GetResult();
             
             var job2 = services.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             job2.Execute().GetAwaiter().GetResult();
@@ -70,6 +72,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
 
             services.NlResignerStartup();
             services.DummySignerStartup();
+
+            services.NlSignerForV3Startup();
+            services.ManifestForV3Startup();
         }
     }
 }

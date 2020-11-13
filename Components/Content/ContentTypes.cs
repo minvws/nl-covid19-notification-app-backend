@@ -19,6 +19,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         public const string ManifestV2 = nameof(ManifestV2);
         public const string ResourceBundleV2 = nameof(ResourceBundleV2);
 
+        public const string ManifestV3 = nameof(ManifestV3);
+        public const string ResourceBundleV3 = nameof(ResourceBundleV3);
 
         public static bool IsValid(string value) =>
             value == AppConfig
@@ -31,6 +33,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             || value == ManifestV2
             || value == ResourceBundle
             || value == ResourceBundleV2
+            || value == ManifestV3
+            || value == ResourceBundleV3
         ;
     }
 }

@@ -5,7 +5,6 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
@@ -28,7 +27,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
-using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 {
@@ -53,6 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             job.Execute().GetAwaiter().GetResult();
             var job2 = serviceProvider.GetRequiredService<ManifestUpdateCommand>();
             job2.Execute().GetAwaiter().GetResult();
+            job2.ExecuteForV3().GetAwaiter().GetResult();
             var job3 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             job3.Execute().GetAwaiter().GetResult();
         }
@@ -104,6 +103,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.NlResignerStartup();
             services.DummySignerStartup();
             services.GaSignerStartup();
+
+            services.NlSignerForV3Startup();
+            services.ManifestForV3Startup();
         }
     }
 }
