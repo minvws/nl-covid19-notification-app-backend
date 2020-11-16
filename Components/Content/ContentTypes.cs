@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         public const string ResourceBundleV2 = nameof(ResourceBundleV2);
 
         public const string ManifestV3 = nameof(ManifestV3);
-        public const string ResourceBundleV3 = nameof(ResourceBundleV3);
+        public const string ResourceBundleV3 = nameof(ResourceBundleV3); //refers to the ResourceBundleV2-files in publishcontent-repo.
 
         public static bool IsValid(string value) =>
             value == AppConfig
