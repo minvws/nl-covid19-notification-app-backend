@@ -11,13 +11,13 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
-    public class ManifestBuilderForV3
+    public class ManifestBuilderV3
     {
         private readonly ContentDbContext _ContentDbContext;
         private readonly IEksConfig _EksConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public ManifestBuilderForV3(ContentDbContext contentDbContext, IEksConfig eksConfig, IUtcDateTimeProvider dateTimeProvider)
+        public ManifestBuilderV3(ContentDbContext contentDbContext, IEksConfig eksConfig, IUtcDateTimeProvider dateTimeProvider)
         {
             _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _EksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));

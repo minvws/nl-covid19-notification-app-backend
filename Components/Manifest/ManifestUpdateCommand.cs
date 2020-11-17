@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
     public class ManifestUpdateCommand
     {
         private readonly ManifestBuilder _Builder;
-        private readonly ManifestBuilderForV3 _BuilderForV3;
+        private readonly ManifestBuilderV3 _BuilderForV3;
         private readonly Func<ContentDbContext> _ContentDbProvider;
         private readonly ManifestUpdateCommandLoggingExtensions _Logger;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 
         public ManifestUpdateCommand(
             ManifestBuilder builder,
-            ManifestBuilderForV3 builderForV3,
+            ManifestBuilderV3 builderForV3,
             Func<ContentDbContext> contentDbProvider,
             ManifestUpdateCommandLoggingExtensions logger,
             IUtcDateTimeProvider dateTimeProvider,
