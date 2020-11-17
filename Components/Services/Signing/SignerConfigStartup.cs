@@ -16,7 +16,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
         private const string NlSettingPrefix = "Certificates:NL";
         private const string GaSettingPrefix = "Certificates:GA";
         private const string ChainPrefix = NlSettingPrefix + ":Chain";
-        private const string EvSettingPrefix = "Certificates:NL2";
+        private const string Nl2SettingPrefix = "Certificates:NL2";
+        private const string Nl2ChainPrefix = Nl2SettingPrefix + ":Chain";
 
         public static void NlSignerStartup(this IServiceCollection services)
         {
@@ -25,23 +26,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
                     new LocalMachineStoreCertificateProvider(
                         new LocalMachineStoreCertificateProviderConfig(
                             x.GetRequiredService<IConfiguration>(), NlSettingPrefix),
-                            x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()),
-                        new EmbeddedResourcesCertificateChainProvider(
-                            new StandardCertificateLocationConfig(
-                                x.GetRequiredService<IConfiguration>(),
-                                ChainPrefix)),
-                        x.GetRequiredService<IUtcDateTimeProvider>()
-                    ));
-        }
-
-        //Injects a second CmsSignerEnhanced, but without an associated IContentSigner. Will be ignored by all classes but ZippedSignedContentFormatterForV3.
-        public static void NlSignerForV3Startup(this IServiceCollection services)
-        {
-            services.AddTransient(x =>
-                new CmsSignerEnhanced(
-                    new LocalMachineStoreCertificateProvider(
-                        new LocalMachineStoreCertificateProviderConfig(
-                            x.GetRequiredService<IConfiguration>(), EvSettingPrefix),
                             x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()),
                         new EmbeddedResourcesCertificateChainProvider(
                             new StandardCertificateLocationConfig(
@@ -67,5 +51,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 		{
             services.AddTransient<IContentSigner>(x => new DummyCmsSigner());
 		}
+
+        public static IContentSigner BuildEvSigner(
+            IConfiguration config,
+            LocalMachineStoreCertificateProviderLoggingExtensions extensions,
+            IUtcDateTimeProvider dateTimeProvider)
+        {
+            return new CmsSignerEnhanced(
+                new LocalMachineStoreCertificateProvider(
+                    new LocalMachineStoreCertificateProviderConfig(
+                        config,
+                        Nl2SettingPrefix),
+                    extensions),
+                    new EmbeddedResourcesCertificateChainProvider(
+                        new StandardCertificateLocationConfig(
+                            config,
+                            Nl2ChainPrefix)),
+                    dateTimeProvider
+                );
+        }
     }
 }

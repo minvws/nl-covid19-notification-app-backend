@@ -171,7 +171,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             services.DailyStatsStartup();
 
-            services.NlSignerForV3Startup();
             services.ManifestForV3Startup();
         }
     }

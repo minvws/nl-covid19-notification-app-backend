@@ -104,7 +104,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.DummySignerStartup();
             services.GaSignerStartup();
 
-            services.NlSignerForV3Startup();
             services.ManifestForV3Startup();
         }
     }

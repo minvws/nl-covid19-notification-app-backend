@@ -73,7 +73,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.NlResignerStartup();
             services.DummySignerStartup();
 
-            services.NlSignerForV3Startup();
             services.ManifestForV3Startup();
         }
     }
