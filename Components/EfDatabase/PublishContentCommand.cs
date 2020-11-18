@@ -16,14 +16,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
     {
         private readonly ContentValidator _Validator;
         private readonly ContentInsertDbCommand _InsertDbCommand;
+        private readonly Func<ContentInsertDbCommand> _InsertDbCommandV3;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly ContentDbContext _ContentDbContext;
         private readonly PublishContentLoggingExtensions _Logger;
 
-        public PublishContentCommand(ContentValidator validator, ContentInsertDbCommand insertDbCommand, IUtcDateTimeProvider dateTimeProvider, ContentDbContext contentDbContext, PublishContentLoggingExtensions logger)
+        public PublishContentCommand(
+            ContentValidator validator,
+            ContentInsertDbCommand insertDbCommand,
+            Func<ContentInsertDbCommand> insertDbCommandV3,
+            IUtcDateTimeProvider dateTimeProvider,
+            ContentDbContext contentDbContext,
+            PublishContentLoggingExtensions logger)
         {
             _Validator = validator ?? throw new ArgumentNullException(nameof(validator));
             _InsertDbCommand = insertDbCommand ?? throw new ArgumentNullException(nameof(insertDbCommand));
+            _InsertDbCommandV3 = insertDbCommandV3 ?? throw new ArgumentNullException(nameof(insertDbCommandV3));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -46,9 +54,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 
             _Logger.WriteStartWriting(contentArgs.ContentType);
 
-            _ContentDbContext.BeginTransaction();
-            await _InsertDbCommand.Execute(contentArgs);
-            _ContentDbContext.SaveAndCommit();
+			if (contentArgs.ContentType == ContentTypes.ResourceBundleV3) //needs direct signing with ev-cert
+			{
+                _ContentDbContext.BeginTransaction();
+                await _InsertDbCommandV3().Execute(contentArgs);
+                _ContentDbContext.SaveAndCommit();
+            }
+            else
+			{
+                _ContentDbContext.BeginTransaction();
+                await _InsertDbCommand.Execute(contentArgs);
+                _ContentDbContext.SaveAndCommit();
+
+            }
 
             _Logger.WriteFinishedWriting(contentArgs.ContentType);
         }
