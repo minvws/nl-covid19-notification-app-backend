@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS builder
 COPY . app/
 WORKDIR app/
 COPY docker/development/appsettings.json .
-RUN rm Components/Framework/WindowsIdentityStuff.cs
+RUN if [[ -f Components/Framework/WindowsIdentityStuff.cs ]]; then rm Components/Framework/WindowsIdentityStuff.cs; fi
 COPY docker/development/hacks/WindowsIdentityStuff.cs Components/Framework/
 
 # get rid of xcopy commands in project files
@@ -15,7 +15,8 @@ RUN dotnet publish EksEngine/EksEngine.csproj --no-self-contained  --configurati
 RUN dotnet publish ManifestEngine/ManifestEngine.csproj --no-self-contained  --configuration Release -o publish/ManifestEngine --version-suffix local
 
 RUN dotnet publish DbProvision/DbProvision.csproj --no-self-contained  --configuration Release -o publish/Tools/DbProvision --version-suffix local
-RUN dotnet publish DbFillExampleContent/DbFillExampleContent.csproj --no-self-contained  --configuration Release -o publish/Tools/DbFillExampleContent --version-suffix local
+# Due to project constraints this project has been removed
+# RUN dotnet publish DbFillExampleContent/DbFillExampleContent.csproj --no-self-contained  --configuration Release -o publish/Tools/DbFillExampleContent --version-suffix local
 RUN dotnet publish GenTeks/GenTeks.csproj --no-self-contained  --configuration Release -o publish/Tools/GenTeks --version-suffix local
 RUN dotnet publish ForceTekAuth/ForceTekAuth.csproj --no-self-contained  --configuration Release -o publish/Tools/ForceTekAuth --version-suffix local
 
