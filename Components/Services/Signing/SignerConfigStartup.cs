@@ -16,6 +16,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
         private const string NlSettingPrefix = "Certificates:NL";
         private const string GaSettingPrefix = "Certificates:GA";
         private const string ChainPrefix = NlSettingPrefix + ":Chain";
+        private const string Nl2SettingPrefix = "Certificates:NL2";
+        private const string Nl2ChainPrefix = Nl2SettingPrefix + ":Chain";
 
         public static void NlSignerStartup(this IServiceCollection services)
         {
@@ -49,5 +51,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
 		{
             services.AddTransient<IContentSigner>(x => new DummyCmsSigner());
 		}
+
+        public static IContentSigner BuildEvSigner(
+            IConfiguration config,
+            LocalMachineStoreCertificateProviderLoggingExtensions extensions,
+            IUtcDateTimeProvider dateTimeProvider)
+        {
+            return new CmsSignerEnhanced(
+                new LocalMachineStoreCertificateProvider(
+                    new LocalMachineStoreCertificateProviderConfig(
+                        config,
+                        Nl2SettingPrefix),
+                    extensions),
+                    new EmbeddedResourcesCertificateChainProvider(
+                        new StandardCertificateLocationConfig(
+                            config,
+                            Nl2ChainPrefix)),
+                    dateTimeProvider
+                );
+        }
     }
 }

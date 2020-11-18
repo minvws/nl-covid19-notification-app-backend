@@ -77,6 +77,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             
             logger.WriteManifestEngineStarting();
             j2.Execute().GetAwaiter().GetResult();
+            j2.ExecuteForV3().GetAwaiter().GetResult();
             
             logger.WriteDailyStatsCalcStarting();
             j6.Execute();
@@ -170,6 +171,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             services.DailyStatsStartup();
 
+            services.ManifestForV3Startup();
         }
     }
 }
