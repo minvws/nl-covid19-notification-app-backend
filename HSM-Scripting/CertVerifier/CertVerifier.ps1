@@ -153,11 +153,11 @@ function ExtractCert ([String] $ThumbPrint, [String] $Store, [String] $ExportPat
 
 function TestHsmConnection
 {
-	RunWithErrorCheck "`"$HSMAdminToolsDir\csadm`" Dev=$Hsm1Address GetState" 
+	& "$HSMAdminToolsDir\csadm" Dev=$Hsm1Address GetState
 	
 	if($Hsm2Address -ne "")
 	{
-		RunWithErrorCheck "`"$HSMAdminToolsDir\csadm`" Dev=$Hsm2Address GetState" 
+		& "$HSMAdminToolsDir\csadm" Dev=$Hsm2Address GetState
 	}
 }
 
