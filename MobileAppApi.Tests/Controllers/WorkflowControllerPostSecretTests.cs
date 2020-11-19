@@ -2,26 +2,26 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
-using System;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using NCrunch.Framework;
 using Xunit;
 
 namespace MobileAppApi.Tests.Controllers
 {
-
+    //TODO Sqlite version
     [Collection(nameof(WorkflowControllerPostSecretTests))]
     [ExclusivelyUses(nameof(WorkflowControllerPostSecretTests))]
     public class WorkflowControllerPostSecretTests : WebApplicationFactory<Startup>, IDisposable
@@ -34,8 +34,6 @@ namespace MobileAppApi.Tests.Controllers
         {
             WorkflowDbContext DbcFac() => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer($"Data Source=.;Database={nameof(WorkflowControllerPostSecretTests)};Integrated Security=True").Options);
             _DbContext = DbcFac();
-
-            
 
             _Factory = WithWebHostBuilder(builder =>
             {
@@ -65,12 +63,6 @@ namespace MobileAppApi.Tests.Controllers
 
             public byte[] NextByteArray(int length)
             {
-                if (length <= 0)
-                    throw new ArgumentOutOfRangeException(nameof(length));
-
-                //if (length == 0)
-                //    return new byte[0];
-
                 var buffer = new byte[length];
                 buffer[0] = (byte)Value;
                 return buffer;
@@ -101,7 +93,6 @@ namespace MobileAppApi.Tests.Controllers
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Equal(1, items.Count);
         }
-
 
         private TekReleaseWorkflowStateEntity Create(int value)
         {

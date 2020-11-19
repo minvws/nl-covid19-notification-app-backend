@@ -2,8 +2,8 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using System.IO;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
@@ -19,6 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             var folder = Path.GetDirectoryName(NCrunch.Framework.NCrunchEnvironment.GetOriginalProjectPath());
             var filename = Path.Combine(folder, eks);
             var bytes = new EksParser().ReadGaenSig(filename);
+            Assert.True(bytes.Length > 0);
             using var output = File.Create(@"D:\sig.bin", 1024, FileOptions.None);
             output.Write(bytes);
         }

@@ -6,8 +6,9 @@ using System;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     public class ResignerLoggingExtensions
     {

@@ -20,13 +20,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             return result.ToArray();
         }
         
-        public static async Task ReplaceEntry(this ZipArchive archive, string entryName, byte[] zippedContent)
+        public static async Task ReplaceEntryAsync(this ZipArchive archive, string entryName, byte[] zippedContent)
         {
             archive.GetEntry(entryName)?.Delete();
-            await WriteEntry(archive, entryName, zippedContent);
+            await WriteEntryAsync(archive, entryName, zippedContent);
         }
 
-        public static async Task WriteEntry(this ZipArchive archive, string entryName, byte[] content)
+        public static async Task WriteEntryAsync(this ZipArchive archive, string entryName, byte[] content)
         {
             await using var entryStream = archive.CreateEntry(entryName).Open();
             await using var contentStream = new MemoryStream(content);

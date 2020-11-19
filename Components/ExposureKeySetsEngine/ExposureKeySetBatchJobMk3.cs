@@ -7,33 +7,37 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Interop;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Stuffing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Framework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
 {
     /// <summary>
-    /// Add database IO to the job
+    /// Snapshots items from Diagnostic Keys table (previously the snapshot targetted the Workflows directly)
+    /// Builds an EKS for every 750k DKs
+    /// Stuffing is now written back to the DK table. NB this must occur BEFORE the DKS are built or stuffing can be inferred.
+    /// NB With at least 2 strategy pattern type changes this is, strictly speaking, the Mk4.
     /// </summary>
     public sealed class ExposureKeySetBatchJobMk3
     {
+        private readonly IWrappedEfExtensions _SqlCommands;
         private readonly IEksConfig _EksConfig;
         private readonly IEksBuilder _SetBuilder;
-        private readonly IEksStuffingGenerator _EksStuffingGenerator;
+        private readonly IEksStuffingGeneratorMk2 _EksStuffingGenerator;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly EksEngineLoggingExtensions _Logger;
         private readonly ISnapshotEksInput _Snapshotter;
-        private readonly IMarkWorkFlowTeksAsUsed _MarkWorkFlowTeksAsUsed;
+        private readonly IMarkDiagnosisKeysAsUsed _MarkWorkFlowTeksAsUsed;
 
-        private readonly EksJobContentWriter _ContentWriter;
+        private readonly IEksJobContentWriter _ContentWriter;
+        private readonly IWriteStuffingToDiagnosisKeys _WriteStuffingToDiagnosisKeys;
 
         private readonly string _JobName;
         private readonly EksEngineResult _EksEngineResult = new EksEngineResult();
@@ -44,11 +48,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
         private bool _Fired;
         private readonly Stopwatch _BuildEksStopwatch = new Stopwatch();
-        private readonly Func<PublishingJobDbContext> _PublishingDbContextFac;
+        private readonly Func<EksPublishingJobDbContext> _PublishingDbContextFac;
 
-        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, Func<PublishingJobDbContext> publishingDbContextFac, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGenerator eksStuffingGenerator, ISnapshotEksInput snapshotter, IMarkWorkFlowTeksAsUsed markWorkFlowTeksAsUsed, EksJobContentWriter contentWriter)
+        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, Func<EksPublishingJobDbContext> publishingDbContextFac, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, IMarkDiagnosisKeysAsUsed markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys, IWrappedEfExtensions sqlCommands)
         {
-            //_JobConfig = jobConfig;
             _EksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
             _SetBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
             _PublishingDbContextFac = publishingDbContextFac ?? throw new ArgumentNullException(nameof(publishingDbContextFac));
@@ -56,13 +59,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _EksStuffingGenerator = eksStuffingGenerator ?? throw new ArgumentNullException(nameof(eksStuffingGenerator));
             _Snapshotter = snapshotter;
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _MarkWorkFlowTeksAsUsed = markWorkFlowTeksAsUsed ?? throw new ArgumentNullException(nameof(markWorkFlowTeksAsUsed));
+            _MarkWorkFlowTeksAsUsed = markDiagnosisKeysAsUsed ?? throw new ArgumentNullException(nameof(markDiagnosisKeysAsUsed));
             _ContentWriter = contentWriter ?? throw new ArgumentNullException(nameof(contentWriter));
             _Output = new List<EksCreateJobInputEntity>(_EksConfig.TekCountMax);
+            _WriteStuffingToDiagnosisKeys = writeStuffingToDiagnosisKeys ?? throw new ArgumentNullException(nameof(writeStuffingToDiagnosisKeys));
             _JobName = $"ExposureKeySetsJob_{_DateTimeProvider.Snapshot:u}".Replace(" ", "_").Replace(":", "_");
+            _SqlCommands = sqlCommands ?? throw new ArgumentNullException(nameof(sqlCommands));
         }
 
-        public async Task<EksEngineResult> Execute()
+        public async Task<EksEngineResult> ExecuteAsync()
         {
             if (_Fired)
                 throw new InvalidOperationException("One use only.");
@@ -79,19 +84,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             _EksEngineResult.Started = _DateTimeProvider.Snapshot; //Align with the logged job name.
 
-            await ClearJobTables();
+            await ClearJobTablesAsync();
 
-            var snapshotResult = await _Snapshotter.Execute(_EksEngineResult.Started);
+            var snapshotResult = await _Snapshotter.ExecuteAsync(_EksEngineResult.Started);
             
             _EksEngineResult.InputCount = snapshotResult.TekInputCount;
             _EksEngineResult.SnapshotSeconds = snapshotResult.SnapshotSeconds;
-            _EksEngineResult.TransmissionRiskNoneCount = await GetTransmissionRiskNoneCount();
+            _EksEngineResult.TransmissionRiskNoneCount = await GetTransmissionRiskNoneCountAsync();
 
             if (snapshotResult.TekInputCount != 0)
             {
-                await Stuff();
-                await BuildOutput();
-                await CommitResults();
+                await StuffAsync();
+                await BuildOutputAsync();
+                await CommitResultsAsync();
             }
 
             _EksEngineResult.TotalSeconds = stopwatch.Elapsed.TotalSeconds;
@@ -105,24 +110,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             return _EksEngineResult;
         }
 
-        private async Task<int> GetTransmissionRiskNoneCount()
+        private async Task<int> GetTransmissionRiskNoneCountAsync()
         {
             await using var dbc = _PublishingDbContextFac();
             return dbc.EksInput.Count(x => x.TransmissionRiskLevel == TransmissionRiskLevel.None);
         }
 
-        private async Task ClearJobTables()
+        private async Task ClearJobTablesAsync()
         {
             _Logger.WriteCleartables();
 
             await using var dbc = _PublishingDbContextFac();
-            await using var tx = dbc.BeginTransaction();
-            await dbc.Database.ExecuteSqlRawAsync($"TRUNCATE TABLE [dbo].[{TableNames.EksEngineInput}]");
-            await dbc.Database.ExecuteSqlRawAsync($"TRUNCATE TABLE [dbo].[{TableNames.EksEngineOutput}]");
-            tx.Commit();
+            _SqlCommands.TruncateTable(dbc, TableNames.EksEngineInput);
+            _SqlCommands.TruncateTable(dbc, TableNames.EksEngineOutput);
         }
 
-        private async Task Stuff()
+        private async Task StuffAsync()
         {
             await using var dbc = _PublishingDbContextFac();
             var tekCount = dbc.EksInput.Count(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None);
@@ -142,7 +145,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             _EksEngineResult.StuffingCount = stuffingCount;
 
-            var stuffing = _EksStuffingGenerator.Execute(new StuffingArgs {Count = stuffingCount, JobTime = _EksEngineResult.Started});
+
+            //TODO Flat distributions by default. If the default changes, delegate to interfaces.
+            //TODO Any weighting of these distributions with current data will be done here.
+            //TODO If there will never be a weighted version, move this inside the generator.
+            var stuffing = _EksStuffingGenerator.Execute(stuffingCount);
 
             _Logger.WriteStuffingRequired(stuffing.Length);
 
@@ -153,10 +160,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _Logger.WriteStuffingAdded();
         }
 
-
-
-
-        private async Task BuildOutput()
+        private async Task BuildOutputAsync()
         {
             _Logger.WriteBuildEkses();
             _BuildEksStopwatch.Start();
@@ -172,7 +176,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     _Logger.WritePageFillsToCapacity(_EksConfig.TekCountMax);
                     var remainingCapacity = _EksConfig.TekCountMax - _Output.Count;
                     AddToOutput(page.Take(remainingCapacity).ToArray()); //Fill to max
-                    await WriteNewEksToOutput();
+                    await WriteNewEksToOutputAsync();
                     AddToOutput(page.Skip(remainingCapacity).ToArray()); //Use leftovers from the page
                 }
                 else
@@ -188,7 +192,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             if (_Output.Count > 0)
             {
                 _Logger.WriteRemainingTeks(_Output.Count);
-                await WriteNewEksToOutput();
+                await WriteNewEksToOutputAsync();
             }
         }
 
@@ -207,7 +211,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 RollingStartNumber = c.RollingStartNumber
             };
 
-        private async Task WriteNewEksToOutput()
+        private async Task WriteNewEksToOutputAsync()
         {
             _Logger.WriteBuildEntry();
 
@@ -268,17 +272,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             return result;
         }
 
-        private async Task CommitResults()
+        private async Task CommitResultsAsync()
         {
             _Logger.WriteCommitPublish();
 
-            await _ContentWriter.ExecuteAsyc();
+            await _ContentWriter.ExecuteAsync();
 
             _Logger.WriteCommitMarkTeks();
             var result = await _MarkWorkFlowTeksAsUsed.ExecuteAsync();
             _Logger.WriteTotalMarked(result.Marked);
             
-            await ClearJobTables();
+
+            //Write stuffing to DKs
+            await _WriteStuffingToDiagnosisKeys.ExecuteAsync();
+
+            await ClearJobTablesAsync();
         }
    }
 }

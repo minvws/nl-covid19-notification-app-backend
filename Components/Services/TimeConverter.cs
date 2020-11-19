@@ -16,10 +16,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
         public static int ToRollingStartNumber(this DateTime value)
         {
             if (value.Kind != DateTimeKind.Utc || value.Date != value)
-                throw new ArgumentException("Not a date.");
+                throw new ArgumentException("Not UTC or not a date.");
 
             return value.ToUnixTime() / RollingPeriodFactor;
         }
+
+        public static int DaysSinceSymptomOnset(this int value, DateTime dateOfSymptomsOnset) =>
+            Convert.ToInt32(Math.Floor((value.FromRollingStartNumber().Date - dateOfSymptomsOnset).TotalDays));
+
 
         public static DateTime FromRollingStartNumber(this int value)
         {

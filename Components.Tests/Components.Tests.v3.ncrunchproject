@@ -15,9 +15,6 @@
         <FixtureName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.EksBatchJobTests</FixtureName>
       </FixtureTestSelector>
       <FixtureTestSelector>
-        <FixtureName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.ExposureKeySetBuilderTests</FixtureName>
-      </FixtureTestSelector>
-      <FixtureTestSelector>
         <FixtureName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.EksBatchJobMk3Tests</FixtureName>
       </FixtureTestSelector>
       <NamedTestSelector>

@@ -1,13 +1,20 @@
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using TheIdentityHub.AspNetCore.Authentication;
 
-public static class ServiceCollectionExtensions
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
 {
-    public static IServiceCollection AddCustomOptions(this IServiceCollection serviceCollection,
-        string name, Action<TheIdentityHubOptions> options)
+    public static class ServiceCollectionExtensions
     {
-        serviceCollection.Configure(name, options);
-        return serviceCollection;
+        public static IServiceCollection AddCustomOptions(this IServiceCollection serviceCollection,
+            string name, Action<TheIdentityHubOptions> options)
+        {
+            serviceCollection.Configure(name, options);
+            return serviceCollection;
+        }
     }
 }

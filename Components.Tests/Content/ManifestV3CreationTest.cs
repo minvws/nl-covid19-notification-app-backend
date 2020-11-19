@@ -11,13 +11,11 @@ using System.Text;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ManifestUpdateCommand;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EmbeddedCertProvider;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using Xunit;
@@ -55,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
 			sut.ExecuteForV3().GetAwaiter().GetResult();
 
 			var database = _ContentDbFactory();
-			var result = database.SafeGetLatestContent(ContentTypes.ManifestV3, DateTime.Now).GetAwaiter().GetResult();
+			var result = database.SafeGetLatestContentAsync(ContentTypes.ManifestV3, DateTime.Now).GetAwaiter().GetResult();
 
 			//Assert
 			Assert.NotNull(result);

@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Validators;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -60,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.True(await _JwtClaimValidator.Validate(testClaims));
+            Assert.True(await _JwtClaimValidator.ValidateAsync(testClaims));
         }
 
         
@@ -90,7 +89,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.False(await _JwtClaimValidator.Validate(testClaims));
+            Assert.False(await _JwtClaimValidator.ValidateAsync(testClaims));
         }
         
         [Fact]
@@ -119,7 +118,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.False(await _JwtClaimValidator.Validate(testClaims));
+            Assert.False(await _JwtClaimValidator.ValidateAsync(testClaims));
         }
     }
 }

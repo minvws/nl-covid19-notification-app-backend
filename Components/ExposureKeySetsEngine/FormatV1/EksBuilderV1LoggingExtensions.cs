@@ -4,8 +4,9 @@
 
 using System;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1
 {
     public class EksBuilderV1LoggingExtensions
     {

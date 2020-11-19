@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
@@ -31,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<bool> VerifyToken(string accessToken)
+        public async Task<bool> VerifyTokenAsync(string accessToken)
         {
             if (accessToken == null) throw new ArgumentNullException(nameof(accessToken));
             var requestUri = new Uri(_Options.TheIdentityHubUrl, _Options.VerifyTokenEndpoint);
@@ -74,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
             return responseObject.ContainsKey("audience") && responseObject["audience"] != null;
         }
 
-        public async Task<bool> RevokeAccessToken(string accessToken)
+        public async Task<bool> RevokeAccessTokenAsync(string accessToken)
         {
             if (accessToken == null) throw new ArgumentNullException(nameof(accessToken));
             var requestUri = new Uri(_Options.TheIdentityHubUrl, _Options.Tenant + "/oauth2/v1/revoke");
@@ -108,12 +107,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
             return false;
         }
 
-        public async Task<bool> VerifyClaimToken(IEnumerable<Claim> userClaims)
+        public async Task<bool> VerifyClaimTokenAsync(IEnumerable<Claim> userClaims)
         {
             var accessToken = userClaims.FirstOrDefault(c => c.Type == TheIdentityHubClaimTypes.AccessToken)?.Value;
             if (accessToken != null)
             {
-                return await VerifyToken(accessToken);
+                return await VerifyTokenAsync(accessToken);
             }
 
             return false;

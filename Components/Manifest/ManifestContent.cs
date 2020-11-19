@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
@@ -30,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((ManifestContent) obj);
         }
 

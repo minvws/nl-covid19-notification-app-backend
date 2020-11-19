@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<string?> Execute(AuthorisationArgs args)
+        public async Task<string?> ExecuteAsync(AuthorisationArgs args)
         {
             if (args == null)
                 throw new ArgumentNullException(nameof(args));

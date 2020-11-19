@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {

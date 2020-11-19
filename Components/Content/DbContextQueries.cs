@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         /// e.g. GET Immutable content
         /// NB - content can be repeated with a different Publishing date.
         /// </summary>
-        public static async Task<ContentEntity> SafeGetContent(this DbContext dbContextProvider, string type, string id, DateTime now)
+        public static async Task<ContentEntity> SafeGetContentAsync(this DbContext dbContextProvider, string type, string id, DateTime now)
         {
             if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
             return await dbContextProvider.Set<ContentEntity>()
@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         /// <summary>
         /// e.g. GET Manifest
         /// </summary>
-        public static async Task<ContentEntity?> SafeGetLatestContent(this DbContext dbContextProvider, string type, DateTime now)
+        public static async Task<ContentEntity?> SafeGetLatestContentAsync(this DbContext dbContextProvider, string type, DateTime now)
         {
             if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
             return await dbContextProvider.Set<ContentEntity>()
@@ -43,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         /// <summary>
         /// Build manifest - non-EKS
         /// </summary>
-        public static async Task<string> SafeGetLatestContentId(this DbContext dbContextProvider, string type, DateTime now)
+        public static async Task<string> SafeGetLatestContentIdAsync(this DbContext dbContextProvider, string type, DateTime now)
         {
             if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
             return await dbContextProvider.Set<ContentEntity>()
@@ -57,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         /// <summary>
         /// Build manifest - EKS
         /// </summary>
-        public static async Task<string[]> SafeGetActiveContentIdList(this DbContext dbContextProvider, string type, DateTime from, DateTime to)
+        public static async Task<string[]> SafeGetActiveContentIdListAsync(this DbContext dbContextProvider, string type, DateTime from, DateTime to)
         {
             var result = await dbContextProvider.Set<ContentEntity>()
                 .Where(x => x.Release >= from && x.Release <= to && x.Type == type)

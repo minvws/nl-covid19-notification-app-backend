@@ -2,29 +2,20 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ManifestUpdateCommand;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
-using IJsonSerializer = NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping.IJsonSerializer;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
-    public class ManifestUpdateCommandResult
-    {
-        public bool Existing { get; set; }
-
-        public bool Updated { get; set; }
-    }
-
     public class ManifestUpdateCommand
     {
         private readonly ManifestBuilder _Builder;
@@ -60,14 +51,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             _FormatterForV3 = formatterForV3 ?? throw new ArgumentNullException(nameof(formatterForV3));
         }
 
-        public async Task Execute()
+        public async Task ExecuteAsync()
         {
             if (_ContentDb != null)
                 throw new InvalidOperationException("Command already used.");
 
             _ContentDb = _ContentDbProvider();
             await using var tx = _ContentDb.BeginTransaction();
-            var candidate = await _Builder.Execute();
+            var candidate = await _Builder.ExecuteAsync();
 
             if (!await WriteCandidate(candidate, ContentTypes.Manifest))
             {
@@ -84,7 +75,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
                 Release = snapshot,
                 Type = ContentTypes.Manifest
             };
-            await _Formatter.Fill(e, candidate);
+            await _Formatter.FillAsync(e, candidate);
 
             _Result.Updated = true;
 
@@ -119,7 +110,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
                 Release = snapshot,
                 Type = ContentTypes.ManifestV3
             };
-            await _FormatterForV3().Fill(e, candidate);
+            await _FormatterForV3().FillAsync(e, candidate);
 
             _Result.Updated = true;
 
@@ -131,7 +122,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 
         private async Task<bool> WriteCandidate(ManifestContent candidate, string contenttype)
         {
-            var existingContent = await _ContentDb.SafeGetLatestContent(contenttype, _DateTimeProvider.Snapshot);
+            var existingContent = await _ContentDb.SafeGetLatestContentAsync(ContentTypes.Manifest, _DateTimeProvider.Snapshot);
             if (existingContent == null)
                 return true;
 

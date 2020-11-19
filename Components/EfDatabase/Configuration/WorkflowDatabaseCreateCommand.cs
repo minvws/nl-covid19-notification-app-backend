@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 
@@ -35,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             _Provider = new WorkflowDbContext(builder.Build());
         }
 
-        public async Task Execute(bool nuke)
+        public async Task ExecuteAsync(bool nuke)
         {
             if (nuke) await _Provider.Database.EnsureDeletedAsync();
             await _Provider.Database.EnsureCreatedAsync();

@@ -4,8 +4,9 @@
 
 using System;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Snapshot
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
 {
     public class SnapshotLoggingExtensions
     {
@@ -22,17 +23,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Snaps
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public void WriteStart()
-        {
-            _Logger.LogDebug("[{name}/{id}] Snapshot publishable TEKs..",
-                Name, Start);
-        }
+        //public void WriteStart()
+        //{
+        //    _Logger.LogDebug("[{name}/{id}] Snapshot publishable TEKs..",
+        //        Name, Start);
+        //}
 
-        public void WriteTeksToPublish(int tekCount)
-        {
-            _Logger.LogInformation("[{name}/{id}] TEKs to publish - Count:{Count}.",
-                Name, TeksToPublish,
-                tekCount);
-        }
+        //public void WriteTeksToPublish(int tekCount)
+        //{
+        //    _Logger.LogInformation("[{name}/{id}] TEKs to publish - Count:{Count}.",
+        //        Name, TeksToPublish,
+        //        tekCount);
+        //}
     }
 }

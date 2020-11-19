@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks
 {
@@ -20,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
         }
 
-        public async Task Execute(TekWriteArgs args)
+        public async Task ExecuteAsync(TekWriteArgs args)
         {
             if (args == null) throw new ArgumentNullException(nameof(args));
 

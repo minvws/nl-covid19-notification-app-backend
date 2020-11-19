@@ -2,18 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,7 +13,20 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using NCrunch.Framework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
 using Xunit;
 
 namespace MobileAppApi.Tests.Controllers
@@ -42,7 +43,7 @@ namespace MobileAppApi.Tests.Controllers
         private class FakeTimeProvider : IUtcDateTimeProvider
         {
             public DateTime Value { get; set; }
-            public DateTime Now() => Value;
+            public DateTime Now() => Value; //ncrunch: no coverage
             public DateTime Snapshot => Value;
         }
 
@@ -73,7 +74,7 @@ namespace MobileAppApi.Tests.Controllers
                         ["Workflow:PostKeys:TemporaryExposureKeys:RollingStartNumber:Min"] = new DateTime(2019, 12, 31, 0, 0, 0, DateTimeKind.Utc).ToRollingStartNumber().ToString(),
                         ["Workflow:PostKeys:TemporaryExposureKeys:Count:Min"] = "0",
                         ["Validation:TemporaryExposureKey:RollingPeriod:Min"] = "1",
-                        ["Validation:TemporaryExposureKey:RollingPeriod:Max"] = "144"
+                        ["Validation:TemporaryExposureKey:RollingPeriod:Max"] = UniversalConstants.RollingPeriodMax.ToString()
                     });
                 });
             });

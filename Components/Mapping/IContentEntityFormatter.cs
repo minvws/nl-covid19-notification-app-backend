@@ -9,6 +9,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
 {
     public interface IContentEntityFormatter
     {
-        Task<TContentEntity> Fill<TContentEntity, TContent>(TContentEntity e, TContent c) where TContentEntity : ContentEntity;
+        Task<TContentEntity> FillAsync<TContentEntity, TContent>(TContentEntity e, TContent c) where TContentEntity : ContentEntity;
     }
 }

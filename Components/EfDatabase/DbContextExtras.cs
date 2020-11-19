@@ -45,6 +45,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 
             context.SaveChanges();
             context.Database.CurrentTransaction.Commit();
+
+            if (context.Database.CurrentTransaction != null)
+                throw new InvalidOperationException("Committed context still has transaction.");
         }
     }
 }

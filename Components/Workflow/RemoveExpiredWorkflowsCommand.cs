@@ -8,10 +8,9 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredWorkflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expiry
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
 {
     public class RemoveExpiredWorkflowsCommand
     {

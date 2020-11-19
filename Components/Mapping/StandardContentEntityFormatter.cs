@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
         }
 
-        public async Task<TContentEntity> Fill<TContentEntity, TContent>(TContentEntity e, TContent c) where TContentEntity : ContentEntity
+        public async Task<TContentEntity> FillAsync<TContentEntity, TContent>(TContentEntity e, TContent c) where TContentEntity : ContentEntity
         {
             if (e == null) throw new ArgumentNullException(nameof(e));
             if (c == null) throw new ArgumentNullException(nameof(c));
@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             var contentJson = _JsonSerializer.Serialize(c);
             var contentBytes = Encoding.UTF8.GetBytes(contentJson);
             e.PublishingId = _PublishingIdService.Create(contentBytes);
-            e.Content = await _SignedFormatter.SignedContentPacket(contentBytes);
+            e.Content = await _SignedFormatter.SignedContentPacketAsync(contentBytes);
             e.ContentTypeName = MediaTypeNames.Application.Zip;
             return e;
         }

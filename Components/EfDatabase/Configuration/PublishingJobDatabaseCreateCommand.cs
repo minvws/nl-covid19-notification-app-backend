@@ -10,14 +10,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
 {
     public class PublishingJobDatabaseCreateCommand
     {
-        private readonly PublishingJobDbContext _DbContextProvider;
+        private readonly EksPublishingJobDbContext _DbContextProvider;
 
-        public PublishingJobDatabaseCreateCommand(PublishingJobDbContext dbContextProvider)
+        public PublishingJobDatabaseCreateCommand(EksPublishingJobDbContext dbContextProvider)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
         }
 
-        public async Task Execute(bool nuke)
+        public async Task ExecuteAsync(bool nuke)
         {
             if (nuke) await _DbContextProvider.Database.EnsureDeletedAsync();
             await _DbContextProvider.Database.EnsureCreatedAsync();

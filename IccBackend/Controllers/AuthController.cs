@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Handlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Models;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
@@ -38,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
             if (command == null) throw new ArgumentNullException(nameof(command));
 
             _Logger.WriteAuthStart();
-            return await command.Execute(HttpContext, args);
+            return await command.ExecuteAsync(HttpContext, args);
         }
 
         [Authorize(AuthenticationSchemes = JwtAuthenticationHandler.SchemeName)]
@@ -49,6 +48,6 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Logout([FromServices] HttpGetLogoutCommand command)
-            => await command.Execute(HttpContext);
+            => await command.ExecuteAsync(HttpContext);
     }
 }

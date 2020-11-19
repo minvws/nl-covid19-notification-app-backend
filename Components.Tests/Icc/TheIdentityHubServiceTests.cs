@@ -2,10 +2,10 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
@@ -22,11 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
         public TheIdentityHubServiceTests()
         {
             _Server = WireMockServer.Start();
-            if (_Server.Urls.Length < 1)
-            {
-                throw new Exception("WireMockServer not started correctly");
-            }
-            
+            Assert.False(_Server.Urls.Length < 1, "WireMockServer not started correctly");
             _TheIdentityHubService =  TestTheIdentityHubServiceCreator.CreateInstance(_Server);
         }
 
@@ -55,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.True(_TheIdentityHubService.VerifyToken(validToken).Result);
+            Assert.True(_TheIdentityHubService.VerifyTokenAsync(validToken).Result);
         }
 
         [Fact]
@@ -76,7 +72,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                         .WithBody("{\"error\":\"Invalid Access Token\"}")
                 );
 
-            Assert.False(_TheIdentityHubService.VerifyToken(validToken).Result);
+            Assert.False(_TheIdentityHubService.VerifyTokenAsync(validToken).Result);
         }
 
 
@@ -97,7 +93,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                         .WithHeader("Content-Type", "application/json")
                         .WithBody("{\"msg\":\"Access Token revoked\"}")
                 );
-            Assert.True(_TheIdentityHubService.RevokeAccessToken(validToken).Result);
+            Assert.True(_TheIdentityHubService.RevokeAccessTokenAsync(validToken).Result);
         }
 
         [Fact]
@@ -117,7 +113,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                         .WithHeader("Content-Type", "application/json")
                         .WithBody("{\"error\":\"Invalid AccessToken\"}")
                 );
-            Assert.False(_TheIdentityHubService.RevokeAccessToken(invalidAccessToken).Result);
+            Assert.False(_TheIdentityHubService.RevokeAccessTokenAsync(invalidAccessToken).Result);
         }
 
 
@@ -141,7 +137,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.True(_TheIdentityHubService.VerifyClaimToken(identity.Claims).Result);
+            Assert.True(_TheIdentityHubService.VerifyClaimTokenAsync(identity.Claims).Result);
         }        
         
         [Fact]
@@ -164,7 +160,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.False(_TheIdentityHubService.VerifyClaimToken(identity.Claims).Result);
+            Assert.False(_TheIdentityHubService.VerifyClaimTokenAsync(identity.Claims).Result);
         }
         
     }

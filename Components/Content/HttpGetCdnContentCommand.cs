@@ -2,13 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.GetCdnContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using System;
-using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
@@ -33,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         /// <summary>
         /// Immutable content
         /// </summary>
-        public async Task<ContentEntity?> Execute(HttpContext httpContext, string type, string id)
+        public async Task<ContentEntity?> ExecuteAsync(HttpContext httpContext, string type, string id)
         {
             if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
 
@@ -58,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 httpContext.Response.StatusCode = 400;
             }
 
-            var content = await _DbContext.SafeGetContent(type, id, _DateTimeProvider.Snapshot);
+            var content = await _DbContext.SafeGetContentAsync(type, id, _DateTimeProvider.Snapshot);
             
             if (content == null)
             {

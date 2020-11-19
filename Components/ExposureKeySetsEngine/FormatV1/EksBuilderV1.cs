@@ -6,7 +6,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
@@ -81,7 +80,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             };
 
             var gaenSigFile = _EksContentFormatter.GetBytes(signatures);
-            return await new ZippedContentBuilder().BuildEks(contentBytes, gaenSigFile, nlSig);
+            return await new ZippedContentBuilder().BuildEksAsync(contentBytes, gaenSigFile, nlSig);
         }
 
         private SignatureInfoArgs GetGaenSignatureInfo()

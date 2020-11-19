@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PostKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.AuthorisationTokens;
@@ -56,15 +55,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
             _TekApplicableWindowFilter = tekApplicableWindowFilter ?? throw new ArgumentNullException(nameof(tekApplicableWindowFilter));
         }
 
-        public async Task<IActionResult> Execute(byte[] signature, HttpRequest request)
+        public async Task<IActionResult> ExecuteAsync(byte[] signature, HttpRequest request)
         {
             await using var mem = new MemoryStream();
             await request.Body.CopyToAsync(mem);
-            await InnerExecute(signature, mem.ToArray());
+            await InnerExecuteAsync(signature, mem.ToArray());
             return new OkResult();
         }
 
-        private async Task InnerExecute(byte[] signature, byte[] body)
+        private async Task InnerExecuteAsync(byte[] signature, byte[] body)
         {
             _BodyBytes = body;
 
@@ -159,7 +158,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
                 NewItems = filterResults.Items
             };
 
-            await _Writer.Execute(writeArgs);
+            await _Writer.ExecuteAsync(writeArgs);
             _DbContext.SaveAndCommit();
             _Logger.WriteDbWriteCommitted();
 

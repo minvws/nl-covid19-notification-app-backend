@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.RegisterSecret;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PostKeys;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 
@@ -39,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             _LoggerPostKeys.WriteStartPostKeys();
-            return await command.Execute(sig, Request);
+            return await command.ExecuteAsync(sig, Request);
         }
 
         [ResponsePaddingFilterFactory]
@@ -50,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             _LoggerRegisterSecret.WriteStartSecret();
-            return await command.Execute();
+            return await command.ExecuteAsync();
         }
 
         [ResponsePaddingFilterFactory]
@@ -66,6 +64,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
 
         [HttpGet]
         [Route("/")]
-        public IActionResult AssemblyDump([FromServices] IWebHostEnvironment env) => new DumpAssembliesToPlainText().Execute(env.IsDevelopment());
+        public IActionResult AssemblyDump([FromServices] IWebHostEnvironment env) => new DumpAssembliesToPlainText().Execute(env.IsDevelopment()); //ncrunch: no coverage
     }
 }

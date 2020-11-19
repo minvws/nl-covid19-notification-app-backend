@@ -11,7 +11,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.GetCdnContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;

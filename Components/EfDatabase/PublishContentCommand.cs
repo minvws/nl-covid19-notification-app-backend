@@ -2,13 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PublishContent;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 {
@@ -37,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task Execute(string[] args)
+        public async Task ExecuteAsync(string[] args)
         {
             if (args.Length < 2)
                 throw new ArgumentException("Not enough args.");
@@ -57,13 +56,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 			if (contentArgs.ContentType == ContentTypes.ResourceBundleV3) //needs direct signing with ev-cert
 			{
                 _ContentDbContext.BeginTransaction();
-                await _InsertDbCommandV3().Execute(contentArgs);
+                await _InsertDbCommandV3().ExecuteAsync(contentArgs);
                 _ContentDbContext.SaveAndCommit();
             }
             else
 			{
                 _ContentDbContext.BeginTransaction();
-                await _InsertDbCommand.Execute(contentArgs);
+                await _InsertDbCommand.ExecuteAsync(contentArgs);
                 _ContentDbContext.SaveAndCommit();
 
             }

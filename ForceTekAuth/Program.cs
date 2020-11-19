@@ -3,13 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 
 namespace ForceTekAuth
 {

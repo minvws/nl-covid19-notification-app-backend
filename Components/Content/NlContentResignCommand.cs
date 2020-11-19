@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
@@ -48,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         /// <summary>
         /// Copy and sign all content of 'fromType' that has not already been re-signed.
         /// </summary>
-        public async Task Execute(string fromType, string toType, string contentEntryName)
+        public async Task ExecuteAsync(string fromType, string toType, string contentEntryName)
         {
             _ToType = toType;
             _ContentEntryName = contentEntryName;
@@ -62,17 +61,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             _Logger.WriteReport(todo);
 
             foreach (var i in todo)
-                await Resign(i);
+                await ReSignAsync(i);
 
             _Logger.WriteFinished();
         }
 
-        private async Task Resign(ContentEntity item)
+        private async Task ReSignAsync(ContentEntity item)
         {
             await using var db = _ContentDbContext();
             await using var tx = db.BeginTransaction();
 
-            var content = await ReplaceSig(item.Content);
+            var content = await ReplaceSignatureAsync(item.Content);
             var e = new ContentEntity
             {
                 Created = item.Created,
@@ -86,7 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             db.SaveAndCommit();
         }
 
-        private async Task<byte[]> ReplaceSig(byte[] archiveBytes)
+        private async Task<byte[]> ReplaceSignatureAsync(byte[] archiveBytes)
         {
             await using var m = new MemoryStream();
             m.Write(archiveBytes, 0, archiveBytes.Length);
@@ -94,7 +93,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             {
                 var content = archive.ReadEntry(_ContentEntryName);
                 var sig = _ContentSigner.GetSignature(content);
-                await archive.ReplaceEntry(ZippedContentEntryNames.NLSignature, sig);
+                await archive.ReplaceEntryAsync(ZippedContentEntryNames.NLSignature, sig);
             }
             return m.ToArray();
         }

@@ -10,13 +10,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     public class ZippedContentBuilder
     {
-        public async Task<byte[]> Build(ZippedContentBuilderArgs[] args)
+        public async Task<byte[]> BuildAsync(ZippedContentBuilderArgs[] args)
         {
             await using var result = new MemoryStream();
             using (var archive = new ZipArchive(result, ZipArchiveMode.Create, true))
             {
                 foreach(var i in args)
-                    await archive.WriteEntry(i.EntryName, i.Value);
+                    await archive.WriteEntryAsync(i.EntryName, i.Value);
             }
 
             return result.ToArray();

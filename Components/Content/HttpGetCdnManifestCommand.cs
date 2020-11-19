@@ -26,10 +26,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             _ContentDb = contentDb ?? throw new ArgumentNullException(nameof(contentDb));
         }
 
-        public async Task Execute(HttpContext httpContext, string version)
+        public async Task ExecuteAsync(HttpContext httpContext, string version)
         {
 
-            var e = await _ContentDb.SafeGetLatestContent(version, _DateTimeProvider.Snapshot);
+            var e = await _ContentDb.SafeGetLatestContentAsync(version, _DateTimeProvider.Snapshot);
             if (e == null)
             {
                 httpContext.Response.StatusCode = 404;

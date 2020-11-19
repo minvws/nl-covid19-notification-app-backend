@@ -8,7 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
     public static class ZippedContentBuilderEx
     {
-        public static async Task<byte[]> BuildEks(this ZippedContentBuilder thiz, byte[] content, byte[] gaenSig, byte[] nlSig)
+        public static async Task<byte[]> BuildEksAsync(this ZippedContentBuilder thiz, byte[] content, byte[] gaenSig, byte[] nlSig)
         {
             var args = new[]
             {
@@ -17,11 +17,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 new ZippedContentBuilderArgs { Value = nlSig, EntryName = ZippedContentEntryNames.NLSignature},
             };
 
-            return await thiz.Build(args);
+            return await thiz.BuildAsync(args);
         }
 
         
-        public static async Task<byte[]> BuildStandard(this ZippedContentBuilder thiz, byte[] content, byte[] nlSig)
+        public static async Task<byte[]> BuildStandardAsync(this ZippedContentBuilder thiz, byte[] content, byte[] nlSig)
         {
             var args = new[]
             {
@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 new ZippedContentBuilderArgs { Value = nlSig, EntryName = ZippedContentEntryNames.NLSignature},
             };
 
-            return await thiz.Build(args);
+            return await thiz.BuildAsync(args);
         }
     }
 }

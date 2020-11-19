@@ -4,18 +4,18 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using Xunit;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Routing;
 using Moq;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.DecoyKeys
 {

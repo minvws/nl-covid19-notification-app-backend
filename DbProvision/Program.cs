@@ -5,13 +5,11 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DbProvision;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -31,7 +29,7 @@ namespace DbProvision
 
         private static void Start(IServiceProvider services, string[] args)
         {
-            services.GetRequiredService<ProvisionDatabasesCommand>().Execute(args).GetAwaiter().GetResult();
+            services.GetRequiredService<ProvisionDatabasesCommand>().ExecuteAsync(args).GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)

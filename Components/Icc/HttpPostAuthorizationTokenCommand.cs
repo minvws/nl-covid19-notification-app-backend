@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
             _AuthCodeService = authCodeService ?? throw new ArgumentNullException(nameof(authCodeService));
         }
 
-        public async Task<IActionResult> Execute(HttpContext httpContext, TokenAuthorisationArgs args)
+        public async Task<IActionResult> ExecuteAsync(HttpContext httpContext, TokenAuthorisationArgs args)
         {
             if(args == null) throw new ArgumentNullException(nameof(args));
 

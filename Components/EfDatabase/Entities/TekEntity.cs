@@ -5,7 +5,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.Azure.WebJobs.ServiceBus;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities
@@ -16,13 +15,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
         public long Id { get; set; }
         public TekReleaseWorkflowStateEntity Owner { get; set; }
         
-        [MinLength(32), MaxLength(32)]
-        public byte[] KeyData { get; set; } = new byte[32];
+        [MinLength(UniversalConstants.DailyKeyDataLength), MaxLength(UniversalConstants.DailyKeyDataLength)]
+        public byte[] KeyData { get; set; } = new byte[UniversalConstants.DailyKeyDataLength];
         public int RollingStartNumber { get; set; }
         public int RollingPeriod { get; set; }
-
-        [MinLength(2), MaxLength(2)]
-        public string Region { get; set; } = "NL";
 
         public PublishingState PublishingState { get; set; }
        

@@ -4,8 +4,9 @@
 
 using System;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EmbeddedCertProvider
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers
 {
     public class EmbeddedCertProviderLoggingExtensions
     {

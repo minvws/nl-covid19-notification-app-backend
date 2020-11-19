@@ -2,12 +2,13 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using JWT.Exceptions;
 using System;
 using System.Net;
+using JWT.Exceptions;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
 {
     public static class LoggingExtensionsIccBackend
     {

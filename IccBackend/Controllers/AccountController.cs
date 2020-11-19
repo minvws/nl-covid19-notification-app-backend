@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
         [AllowAnonymous, HttpGet]
         public IActionResult AccessDenied([FromServices] HttpGetLogoutCommand logoutCommand, [FromServices] HttpGetAccessDeniedCommand accessDeniedCommand)
         {
-            logoutCommand.Execute(HttpContext); // logs out without using the redirectresult 
+            logoutCommand.ExecuteAsync(HttpContext); // logs out without using the redirectresult 
             return accessDeniedCommand.Execute(HttpContext);
         }
     }

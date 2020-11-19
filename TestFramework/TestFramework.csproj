@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework</AssemblyName>
+    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EFCore.BulkExtensions" Version="3.2.5" />
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="3.1.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Components\Components.csproj" />
+  </ItemGroup>
+
+</Project>

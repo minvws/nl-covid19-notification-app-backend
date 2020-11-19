@@ -9,6 +9,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
 {
     public interface ISecretWriter
     {
-        Task<TekReleaseWorkflowStateEntity> Execute();
+        Task<TekReleaseWorkflowStateEntity> ExecuteAsync();
     }
 }
