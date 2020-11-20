@@ -13,39 +13,22 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entiti
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Statistics;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stats
 {
-    /// TODO use sqlite/sqlserver providers
-    [ExclusivelyUses(nameof(StatsTests))]
-    public class StatsTests
+    public abstract class StatsTests : IDisposable
     {
-        private Func<WorkflowDbContext> _WorkflowFac;
-        private Func<StatsDbContext> _StatsFac;
+
+        private readonly IDbProvider<WorkflowDbContext> _WorkflowDbProvider;
+        private readonly IDbProvider<StatsDbContext> _StatsDbProvider;
         private IUtcDateTimeProvider _FakeDtp;
 
-        public StatsTests()
+        protected StatsTests(IDbProvider<WorkflowDbContext> workflowDbProvider, IDbProvider<StatsDbContext> statsDbProvider)
         {
-            _WorkflowFac = () => new WorkflowDbContext(new DbContextOptionsBuilder()
-                .UseSqlServer("Initial Catalog=WorkflowStatTest1; Server=.;Persist Security Info=True;Integrated Security=True;Connection Timeout=60;")
-                .Options);
-
-            var wf = _WorkflowFac();
-            wf.Database.EnsureDeleted();
-            wf.Database.EnsureCreated();
-
-            _StatsFac = () => new StatsDbContext(new DbContextOptionsBuilder()
-                .UseSqlServer("Initial Catalog=StatsTest1; Server=.;Persist Security Info=True;Integrated Security=True;Connection Timeout=60;")
-                .Options);
-
-            var stats = _StatsFac();
-            stats.Database.EnsureDeleted();
-            stats.Database.EnsureCreated();
-
-            //_FakeEksConfig = new FakeEksConfig { LifetimeDays = 14, PageSize = 1000, TekCountMax = 10, TekCountMin = 5 };
-            //_Lf = new LoggerFactory();
-
+            _WorkflowDbProvider = workflowDbProvider ?? throw new ArgumentNullException(nameof(workflowDbProvider));
+            _StatsDbProvider = statsDbProvider ?? throw new ArgumentNullException(nameof(statsDbProvider));
             var snapshot = DateTime.UtcNow;
             var mock = new Mock<IUtcDateTimeProvider>(MockBehavior.Strict);
             mock.Setup(x => x.Snapshot).Returns(snapshot);
@@ -53,10 +36,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stats
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(StatsTests))]
         public void NothingToSeeHere()
         {
-            var wf = _WorkflowFac();
-            var statsDbContext = _StatsFac();
+            var wf = _WorkflowDbProvider.CreateNew();
+            var statsDbContext = _StatsDbProvider.CreateNew();
             var cmd = new StatisticsCommand(new StatisticsDbWriter(statsDbContext, _FakeDtp),
                 new IStatsQueryCommand[]
                 {
@@ -76,9 +60,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stats
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(StatsTests))]
         public void WithData()
         {
-            var wf = _WorkflowFac();
+            var wf = _WorkflowDbProvider.CreateNew();
 
             var workflows = new[] {
                 new TekReleaseWorkflowStateEntity { BucketId = new byte[]{1}, ConfirmationKey = new byte[]{1}, LabConfirmationId = "1", Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>()},
@@ -111,7 +96,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stats
             wf.KeyReleaseWorkflowStates.AddRange(workflows);
             wf.SaveChanges();
 
-            var statsDbContext = _StatsFac();
+            var statsDbContext = _StatsDbProvider.CreateNew();
             var cmd = new StatisticsCommand(new StatisticsDbWriter(statsDbContext, _FakeDtp),
                 new IStatsQueryCommand[]
                 {
@@ -128,6 +113,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stats
             Assert.Equal(3, statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _FakeDtp.Snapshot.Date && x.Name == TotalWorkflowAuthorisedCountStatsQueryCommand.Name).Value);
             Assert.Equal(4, statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _FakeDtp.Snapshot.Date && x.Name == PublishedTekCountStatsQueryCommand.Name).Value);
             Assert.Equal(9, statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _FakeDtp.Snapshot.Date && x.Name == TotalTekCountStatsQueryCommand.Name).Value);
+        }
+
+        public void Dispose()
+        {
+            _WorkflowDbProvider.Dispose();
+            _StatsDbProvider.Dispose();
         }
     }
 }

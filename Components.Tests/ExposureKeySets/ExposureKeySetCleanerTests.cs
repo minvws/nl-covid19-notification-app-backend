@@ -12,12 +12,20 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entiti
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
 {
-    public class ExposureKeySetCleanerTests
+    public abstract class ExposureKeySetCleanerTests : IDisposable
     {
+        private readonly IDbProvider<ContentDbContext> _ContentDbProvider;
+
+        protected ExposureKeySetCleanerTests(IDbProvider<ContentDbContext> contentDbProvider)
+        {
+            _ContentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
+        }
+
         private class FakeDtp : IUtcDateTimeProvider
         {
             public DateTime Now() => throw new NotImplementedException(); //ncrunch: no coverage
@@ -46,24 +54,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
-        [ExclusivelyUses("EksCleanerTests")]
+        [ExclusivelyUses(nameof(ExposureKeySetCleanerTests))]
         public void Cleaner()
         {
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
 
-            Func<ContentDbContext> dbp = () =>
-            {
-                var y = new DbContextOptionsBuilder();
-                y.UseSqlServer("Data Source=.;Initial Catalog=EksCleanerTests;Integrated Security=True");
-                return new ContentDbContext(y.Options);
-            };
-
-            var db = dbp().Database;
-            db.EnsureDeleted();
-            db.EnsureCreated();
-
-            var command = new RemoveExpiredEksCommand(dbp(), new FakeEksConfig(), new StandardUtcDateTimeProvider(), expEksLogger);
+            var command = new RemoveExpiredEksCommand(_ContentDbProvider.CreateNew(), new FakeEksConfig(), new StandardUtcDateTimeProvider(), expEksLogger);
 
             var result = command.Execute();
 
@@ -75,23 +72,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
-        [ExclusivelyUses("EksCleanerTests")]
+        [ExclusivelyUses(nameof(ExposureKeySetCleanerTests))]
         public void NoKill()
         {
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
 
-            Func<ContentDbContext> dbp = () =>
-            {
-                var y = new DbContextOptionsBuilder();
-                y.UseSqlServer("Data Source=.;Initial Catalog=EksCleanerTests;Integrated Security=True");
-                return new ContentDbContext(y.Options);
-            };
-
-            var contentDbContext = dbp();
-            var db = contentDbContext.Database;
-            db.EnsureDeleted();
-            db.EnsureCreated();
+            var contentDbContext = _ContentDbProvider.CreateNew();
 
             Add(contentDbContext, 15);
             contentDbContext.SaveChanges();
@@ -110,23 +97,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
 
         [Fact]
-        [ExclusivelyUses("EksCleanerTests")]
+        [ExclusivelyUses(nameof(ExposureKeySetCleanerTests))]
         public void Kill()
         {
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
 
-            Func<ContentDbContext> dbp = () =>
-            {
-                var y = new DbContextOptionsBuilder();
-                y.UseSqlServer("Data Source=.;Initial Catalog=EksCleanerTests;Integrated Security=True");
-                return new ContentDbContext(y.Options);
-            };
-
-            var contentDbContext = dbp();
-            var db = contentDbContext.Database;
-            db.EnsureDeleted();
-            db.EnsureCreated();
+            var contentDbContext = _ContentDbProvider.CreateNew();
 
             Add(contentDbContext, 15);
             contentDbContext.SaveChanges();
@@ -146,23 +123,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
 
         [Fact]
-        [ExclusivelyUses("EksCleanerTests")]
+        [ExclusivelyUses(nameof(ExposureKeySetCleanerTests))]
         public void MoreRealistic()
         {
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
 
-            Func<ContentDbContext> dbp = () =>
-            {
-                var y = new DbContextOptionsBuilder();
-                y.UseSqlServer("Data Source=.;Initial Catalog=EksCleanerTests;Integrated Security=True");
-                return new ContentDbContext(y.Options);
-            };
-
-            var contentDbContext = dbp();
-            var db = contentDbContext.Database;
-            db.EnsureDeleted();
-            db.EnsureCreated();
+            var contentDbContext = _ContentDbProvider.CreateNew();
 
             for (var i = 0; i < 20; i++)
                 Add(contentDbContext, i);
@@ -182,5 +149,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             Assert.Equal(0, result.Reconciliation);
         }
 
+        public void Dispose()
+        {
+            _ContentDbProvider.Dispose();
+        }
     }
 }

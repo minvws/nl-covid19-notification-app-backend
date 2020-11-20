@@ -85,6 +85,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GaenFormat\GeneratedGaenFormat.csproj" />
+    <ProjectReference Include="..\GeneratedEfgsFormat\GeneratedEfgsFormat.csproj" />
   </ItemGroup>
 
   <ItemGroup>

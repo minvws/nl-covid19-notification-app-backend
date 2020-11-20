@@ -14,14 +14,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 {
     public class EksStuffingGeneratorTests
     {
-        //[Fact]
-        //public void EksStuffingGeneratorTest()
-        //{
-        //    var tvc = new Mock<ITekValidatorConfig>().Object;
-
-        //    Assert.Throws<ArgumentOutOfRangeException>(() => new EksStuffingGenerator(new StandardRandomNumberGenerator(), tvc).Execute(new StuffingArgs {Count = 0}));
-        //}
-
 
         [Fact]
         public void NewEksStuffingGeneratorTest()

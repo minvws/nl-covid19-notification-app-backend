@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors;
@@ -93,7 +94,7 @@ namespace EksEngine.Tests
                 new EksEngineLoggingExtensions(_Lf.CreateLogger<EksEngineLoggingExtensions>()),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(), _Rng, _Dtp, eksConfig.Object),
                 new SnapshotDiagnosisKeys(_Lf.CreateLogger<SnapshotDiagnosisKeys>(), _DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew),
-                new MarkDiagnosisKeysAsUsed(_DkSourceDbProvider.CreateNew, eksConfig.Object, _EksPublishingJobDbProvider.CreateNew, _Lf.CreateLogger<MarkDiagnosisKeysAsUsed>()),
+                new MarkDiagnosisKeysAsUsedLocally(_DkSourceDbProvider.CreateNew, eksConfig.Object, _EksPublishingJobDbProvider.CreateNew, _Lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_ContentDbProvider.CreateNew, _EksPublishingJobDbProvider.CreateNew, new Sha256HexPublishingIdService(), new EksJobContentWriterLoggingExtensions(_Lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
                 new WriteStuffingToDiagnosisKeys(_DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew()),
                 _EfExtensions
@@ -122,6 +123,7 @@ namespace EksEngine.Tests
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(EksEngineTests))]
         public async Task EmptySystemNoTeks()
         {
             Assert.Equal(0, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count());
@@ -143,6 +145,7 @@ namespace EksEngine.Tests
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(EksEngineTests))]
         public async Task EmptySystemSingleTek()
         {
             var workflowConfig = new Mock<IWorkflowConfig>(MockBehavior.Strict);

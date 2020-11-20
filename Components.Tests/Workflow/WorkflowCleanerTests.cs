@@ -9,13 +9,29 @@ using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow
 {
-    public class WorkflowCleanerTests
+    public abstract class WorkflowCleanerTests : IDisposable
     {
+        private readonly IDbProvider<WorkflowDbContext> _WorkflowDbProvider;
+
+        protected WorkflowCleanerTests(IDbProvider<WorkflowDbContext> workflowDbProvider)
+        {
+            _WorkflowDbProvider = workflowDbProvider ?? throw new ArgumentNullException(nameof(workflowDbProvider));
+            _DbContext = _WorkflowDbProvider.CreateNew();
+            _FakeConfig = new FakeConfig();
+            _Dtp = new FakeDtp();
+
+            var lf = new LoggerFactory();
+            var expWorkflowLogger = new ExpiredWorkflowLoggingExtensions(lf.CreateLogger<ExpiredWorkflowLoggingExtensions>());
+            _Command = new RemoveExpiredWorkflowsCommand(_WorkflowDbProvider.CreateNew, expWorkflowLogger, _Dtp, _FakeConfig);
+        }
+
         private readonly RemoveExpiredWorkflowsCommand _Command;
         private readonly WorkflowDbContext _DbContext;
         private readonly FakeConfig _FakeConfig;
@@ -37,23 +53,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
             public DateTime Now() => throw new NotImplementedException(); //ncrunch: no coverage
             public DateTime TakeSnapshot() => throw new NotImplementedException(); //ncrunch: no coverage
             public DateTime Snapshot { get; set; }
-        }
-
-        public WorkflowCleanerTests()
-        {
-            WorkflowDbContext Func() => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer("Data Source=.;Initial Catalog=WorkflowCleanerTests;Integrated Security=True").Options);
-
-            _DbContext = Func();
-            var db = _DbContext.Database;
-            db.EnsureDeleted();
-            db.EnsureCreated();
-
-            _FakeConfig = new FakeConfig();
-            _Dtp = new FakeDtp();
-
-            var lf = new LoggerFactory();
-            var expWorkflowLogger = new ExpiredWorkflowLoggingExtensions(lf.CreateLogger<ExpiredWorkflowLoggingExtensions>());
-            _Command = new RemoveExpiredWorkflowsCommand(Func, expWorkflowLogger, _Dtp, _FakeConfig);
         }
 
         [Fact]
@@ -231,6 +230,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
                 };
                 _DbContext.TemporaryExposureKeys.Add(t);
             }
+        }
+
+        public void Dispose()
+        {
+            _WorkflowDbProvider.Dispose();
+            _DbContext.Dispose();
         }
     }
 }

@@ -60,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             await using var tx = _ContentDb.BeginTransaction();
             var candidate = await _Builder.ExecuteAsync();
 
-            if (!await WriteCandidate(candidate, ContentTypes.Manifest))
+            if (!await WriteCandidateAsync(candidate, ContentTypes.Manifest))
             {
                 _Logger.WriteUpdateNotRequired();
                 return;
@@ -95,7 +95,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             await using var tx = _ContentDb.BeginTransaction();
             var candidate = await _BuilderForV3.Execute();
 
-            if (!await WriteCandidate(candidate, ContentTypes.ManifestV3))
+            if (!await WriteCandidateAsync(candidate, ContentTypes.ManifestV3))
             {
                 _Logger.WriteUpdateNotRequired();
                 return;
@@ -120,7 +120,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             _Logger.WriteFinished();
         }
 
-        private async Task<bool> WriteCandidate(ManifestContent candidate, string contenttype)
+        private async Task<bool> WriteCandidateAsync(ManifestContent candidate, string contenttype)
         {
             var existingContent = await _ContentDb.SafeGetLatestContentAsync(ContentTypes.Manifest, _DateTimeProvider.Snapshot);
             if (existingContent == null)

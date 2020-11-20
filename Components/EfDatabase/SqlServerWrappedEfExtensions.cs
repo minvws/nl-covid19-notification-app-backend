@@ -3,9 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase

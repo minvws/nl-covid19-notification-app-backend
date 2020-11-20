@@ -17,42 +17,30 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace MobileAppApi.Tests.Controllers
 {
-    //TODO Sqlite version
     [Collection(nameof(WorkflowControllerPostSecretTests))]
     [ExclusivelyUses(nameof(WorkflowControllerPostSecretTests))]
-    public class WorkflowControllerPostSecretTests : WebApplicationFactory<Startup>, IDisposable
+    public abstract class WorkflowControllerPostSecretTests : WebApplicationFactory<Startup>, IDisposable
     {
         private readonly WebApplicationFactory<Startup> _Factory;
-        private readonly WorkflowDbContext _DbContext;
         private readonly FakeNumberGen _FakeNumbers = new FakeNumberGen();
+        private readonly IDbProvider<WorkflowDbContext> _WorkflowDbProvider;
 
-        public WorkflowControllerPostSecretTests()
+        protected WorkflowControllerPostSecretTests(IDbProvider<WorkflowDbContext> workflowDbProvider)
         {
-            WorkflowDbContext DbcFac() => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer($"Data Source=.;Database={nameof(WorkflowControllerPostSecretTests)};Integrated Security=True").Options);
-            _DbContext = DbcFac();
-
+            _WorkflowDbProvider = workflowDbProvider;
             _Factory = WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddScoped(sp =>
-                    {
-                        var context = DbcFac();
-                        context.BeginTransaction();
-                        return context;
-                    });
-
-
+                    services.AddScoped(sp => _WorkflowDbProvider.CreateNewWithTx());
                     services.Replace(new ServiceDescriptor(typeof(IRandomNumberGenerator), _FakeNumbers));
                 });
             });
-
-            _DbContext.Database.EnsureDeleted();
-            _DbContext.Database.EnsureCreated();
         }
 
         private class FakeNumberGen: IRandomNumberGenerator
@@ -72,8 +60,6 @@ namespace MobileAppApi.Tests.Controllers
         void IDisposable.Dispose()
         {
             base.Dispose();
-
-            _DbContext.Dispose();
         }
 
         [Fact]
@@ -89,7 +75,7 @@ namespace MobileAppApi.Tests.Controllers
             var result = await client.PostAsync("v1/register", null);
 
             // Assert
-            var items = await _DbContext.KeyReleaseWorkflowStates.ToListAsync();
+            var items = await _WorkflowDbProvider.CreateNew().KeyReleaseWorkflowStates.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Equal(1, items.Count);
         }
@@ -114,9 +100,9 @@ namespace MobileAppApi.Tests.Controllers
         [ExclusivelyUses("WorkflowControllerPostSecretTests")]
         public async Task PostSecretTest_5RetriesAndBang()
         {
-
-            _DbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
-            _DbContext.SaveChanges();
+            using var dbContext = _WorkflowDbProvider.CreateNew();
+            dbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
+            dbContext.SaveChanges();
             // Arrange
             var client = _Factory.CreateClient();
             _FakeNumbers.Value = 1;
@@ -132,8 +118,9 @@ namespace MobileAppApi.Tests.Controllers
         [ExclusivelyUses("WorkflowControllerPostSecretTests")]
         public async Task PostSecret_MissThe5Existing()
         {
-            _DbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
-            _DbContext.SaveChanges();
+            using var dbContext = _WorkflowDbProvider.CreateNew();
+            dbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
+            dbContext.SaveChanges();
             
             _FakeNumbers.Value = 6;
             // Arrange
@@ -143,7 +130,7 @@ namespace MobileAppApi.Tests.Controllers
             var result = await client.PostAsync("v1/register", null);
 
             // Assert
-            var items = await _DbContext.KeyReleaseWorkflowStates.ToListAsync();
+            var items = await dbContext.KeyReleaseWorkflowStates.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Equal(6, items.Count);
         }

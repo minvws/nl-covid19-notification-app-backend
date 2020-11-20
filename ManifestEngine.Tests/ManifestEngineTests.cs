@@ -22,7 +22,7 @@ namespace ManifestEngine.Tests
 {
     public abstract class ManifestEngineTests : IDisposable
     {
-        private IDbProvider<ContentDbContext> _ContentDbProvider;
+        private readonly IDbProvider<ContentDbContext> _ContentDbProvider;
 
         private readonly LoggerFactory _Lf;
 

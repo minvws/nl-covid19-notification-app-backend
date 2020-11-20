@@ -18,12 +18,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Interop
 {
-    public class SnapshotWorkflowTeksToDksResult
-    {
-        public int TekCount { get; set; }
-        public int DkCount { get; set; }
-    }
-
     public class SnapshotWorkflowTeksToDksCommand
     {
         private readonly ILogger<SnapshotWorkflowTeksToDksCommand> _Logger;

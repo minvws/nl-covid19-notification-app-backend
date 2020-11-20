@@ -7,11 +7,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
     public static class DatabaseConnectionStringNames
     {
         public const string Workflow = "Workflow";
-        public const string Publishing = "PublishingJob";
+        public const string EksPublishing = "PublishingJob";
         public const string Content = "Content";
         public const string Stats = "Stats";
         public const string IccDistMemCache = "IccDistMemCache";
         public const string DataProtectionKeys = "DataProtectionKeys";
-        public static string DkSource = "DiagnosisKeySource";
+        public const string DkSource = "DiagnosisKeySource";
+        public const string IksPublishing = "IksPublishingJob";
+        public const string IksIn = "IksIn";
+        public const string IksOut = "IksOut";
     }
 }
