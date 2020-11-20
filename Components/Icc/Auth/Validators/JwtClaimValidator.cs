@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Validators
@@ -29,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Vali
             _IccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
         }
 
-        public async Task<bool> Validate(IDictionary<string, string> decodedClaims)
+        public async Task<bool> ValidateAsync(IDictionary<string, string> decodedClaims)
         {
             if (decodedClaims == null) throw new ArgumentNullException(nameof(decodedClaims));
 
@@ -41,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Vali
             
             var maxExpiry = _DateTimeProvider.Snapshot.AddHours(_IccPortalConfig.ClaimLifetimeHours).ToUnixTimeU64();
 
-            if (!ulong.TryParse(decodedClaims["exp"], out ulong tokenExpiry))
+            if (!ulong.TryParse(decodedClaims["exp"], out var tokenExpiry))
             {
                 return false;
             }
@@ -52,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Vali
                 return false;
             }
             
-            return await _TheIdentityHubService.VerifyToken(decodedClaims["access_token"]);
+            return await _TheIdentityHubService.VerifyTokenAsync(decodedClaims["access_token"]);
         }
     }
 }

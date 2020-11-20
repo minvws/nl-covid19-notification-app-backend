@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             _SignedFormatter = signedFormatter ?? throw new ArgumentNullException(nameof(signedFormatter));
         }
 
-        public async Task Execute(ContentArgs args)
+        public async Task ExecuteAsync(ContentArgs args)
         {
             if (args == null) throw new ArgumentNullException(nameof(args));
 
@@ -40,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 Release = args.Release,
                 Type = args.ContentType,
                 PublishingId = _PublishingIdService.Create(contentBytes),
-                Content = await _SignedFormatter.SignedContentPacket(contentBytes),
+                Content = await _SignedFormatter.SignedContentPacketAsync(contentBytes),
                 ContentTypeName = MediaTypeNames.Application.Zip
             };
 

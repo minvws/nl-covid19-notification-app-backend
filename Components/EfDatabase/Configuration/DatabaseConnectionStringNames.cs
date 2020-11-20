@@ -12,5 +12,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         public const string Stats = "Stats";
         public const string IccDistMemCache = "IccDistMemCache";
         public const string DataProtectionKeys = "DataProtectionKeys";
+        public static string DkSource = "DiagnosisKeySource";
     }
 }

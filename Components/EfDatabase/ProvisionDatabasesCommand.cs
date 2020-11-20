@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DbProvision;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 {
@@ -26,20 +25,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task Execute(string[] args)
+        public async Task ExecuteAsync(string[] args)
         {
             var nuke = !args.Contains("nonuke");
 
             _Logger.WriteStart();
 
             _Logger.WriteWorkFlowDb();
-            await _Workflow.Execute(nuke);
+            await _Workflow.ExecuteAsync(nuke);
 
             _Logger.WriteContentDb();
-            await _Content.Execute(nuke);
+            await _Content.ExecuteAsync(nuke);
 
             _Logger.WriteJobDb();
-            await _Job.Execute(nuke);
+            await _Job.ExecuteAsync(nuke);
 
             _Logger.WriteFinished();
         }

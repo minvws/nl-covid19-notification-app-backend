@@ -4,7 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
@@ -22,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task Execute()
+        public async Task ExecuteAsync()
         {
             if (!_V2ThumbprintConfig.Valid)
             {
@@ -30,11 +29,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
                 return;
             }
 
-            await _Resigner.Execute(ContentTypes.Manifest, ContentTypes.ManifestV2, ZippedContentEntryNames.Content);
-            await _Resigner.Execute(ContentTypes.ExposureKeySet, ContentTypes.ExposureKeySetV2, ZippedContentEntryNames.EksContent);
-            await _Resigner.Execute(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content);
-            await _Resigner.Execute(ContentTypes.RiskCalculationParameters, ContentTypes.RiskCalculationParametersV2, ZippedContentEntryNames.Content);
-            await _Resigner.Execute(ContentTypes.ResourceBundle, ContentTypes.ResourceBundleV2, ZippedContentEntryNames.Content);
+            await _Resigner.ExecuteAsync(ContentTypes.Manifest, ContentTypes.ManifestV2, ZippedContentEntryNames.Content);
+            await _Resigner.ExecuteAsync(ContentTypes.ExposureKeySet, ContentTypes.ExposureKeySetV2, ZippedContentEntryNames.EksContent);
+            await _Resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content);
+            await _Resigner.ExecuteAsync(ContentTypes.RiskCalculationParameters, ContentTypes.RiskCalculationParametersV2, ZippedContentEntryNames.Content);
+            await _Resigner.ExecuteAsync(ContentTypes.ResourceBundle, ContentTypes.ResourceBundleV2, ZippedContentEntryNames.Content);
         }
     }
 }

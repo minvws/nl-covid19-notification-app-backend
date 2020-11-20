@@ -23,12 +23,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Auth
             _Logger = logger;
         }
 
-        public async Task<IActionResult> Execute(AuthorisationArgs args)
+        public async Task<IActionResult> ExecuteAsync(AuthorisationArgs args)
         {
             if(_Logger.LogValidationMessages( _AuthorisationArgsValidator.Validate(args)))
                 return new BadRequestResult();
 
-            var newPollToken = await _AuthorisationWriter.Execute(args);
+            var newPollToken = await _AuthorisationWriter.ExecuteAsync(args);
 
             var response = new AuthorisationResponse
             {

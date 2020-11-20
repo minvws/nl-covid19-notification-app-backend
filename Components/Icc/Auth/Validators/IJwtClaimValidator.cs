@@ -9,6 +9,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Vali
 {
     public interface IJwtClaimValidator
     {
-        public Task<bool> Validate(IDictionary<string, string> decodedClaims);
+        public Task<bool> ValidateAsync(IDictionary<string, string> decodedClaims);
     }
 }

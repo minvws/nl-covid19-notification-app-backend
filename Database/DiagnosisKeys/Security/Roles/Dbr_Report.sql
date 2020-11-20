@@ -1,0 +1,2 @@
+﻿CREATE ROLE [Dbr_Report] AUTHORIZATION [dbo];
+GO

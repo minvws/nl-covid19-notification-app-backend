@@ -4,10 +4,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Validators;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -35,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
             var testClaims = new Dictionary<string, string> {{"id", "0"}, {"access_token", "test_access_token"}};
             // test_access_token
 
-            Assert.True(await _TestJwtClaimValidator.Validate(testClaims));
+            Assert.True(await _TestJwtClaimValidator.ValidateAsync(testClaims));
         }
 
         [InlineData("12345")]
@@ -48,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
             var testClaims = new Dictionary<string, string> {{"id", "0"}, {"access_token", testAccessToken}};
             // test_access_token
 
-            Assert.False(await _TestJwtClaimValidator.Validate(testClaims));
+            Assert.False(await _TestJwtClaimValidator.ValidateAsync(testClaims));
         }
 
         [Fact]
@@ -71,7 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.True(await _TestJwtClaimValidator.Validate(testClaims));
+            Assert.True(await _TestJwtClaimValidator.ValidateAsync(testClaims));
         }
 
         [Fact]
@@ -95,7 +92,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.Aut
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.False(await _TestJwtClaimValidator.Validate(testClaims));
+            Assert.False(await _TestJwtClaimValidator.ValidateAsync(testClaims));
         }
     }
 }

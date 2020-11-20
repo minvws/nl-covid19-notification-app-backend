@@ -18,14 +18,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
 
         /// <summary>
         /// Get integer between inclusive range
+        /// Edge case of min == max to allow one value distributions to be 'randomised'
         /// </summary>
         /// <param name="min"></param>
         /// <param name="max"></param>
         /// <returns></returns>
         public int Next(int min, int max)
         {
-            if (min >= max)
-                throw new ArgumentOutOfRangeException(nameof(min), "min must be lower than max");
+            if (min > max)
+                throw new ArgumentOutOfRangeException(nameof(min), "min cannot be greater than max");
+
+            if (min == max)
+                return min;
 
             var bytes = new byte[sizeof(int)]; // 4 bytes
             _Random.GetNonZeroBytes(bytes);

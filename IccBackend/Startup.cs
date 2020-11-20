@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +30,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authoris
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
 using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend

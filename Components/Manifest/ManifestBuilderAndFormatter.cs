@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             _Formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
         }
 
-        public async Task<ContentEntity> Execute()
+        public async Task<ContentEntity> ExecuteAsync()
         {
             var snapshot = _DateTimeProvider.Snapshot;
             var e = new ContentEntity
@@ -38,9 +38,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
                 Type = ContentTypes.Manifest
             };
             _Logger.LogDebug("Build new manifest.");
-            var content = await _ManifestBuilder.Execute();
+            var content = await _ManifestBuilder.ExecuteAsync();
             _Logger.LogDebug("Format and sign new manifest.");
-            await _Formatter.Fill(e, content);
+            await _Formatter.FillAsync(e, content);
             return e;
         }
     }

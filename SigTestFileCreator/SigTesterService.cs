@@ -1,14 +1,18 @@
-﻿namespace SigTestFileCreator
-{
-    using System;
-    using System.Threading.Tasks;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Framework;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.SigTestFileCreator;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-    using System.IO;
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Framework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+
+namespace SigTestFileCreator
+{
     public sealed class SigTesterService
     {
         private readonly IEksBuilder _EksZipBuilder;
@@ -33,7 +37,7 @@
             _eksFileOutputLocation = @"H:\testresult-eks.zip";
         }
 
-        public async Task Execute(string[] args)
+        public async Task ExecuteAsync(string[] args)
         {
             _Logger.WriteStart(_DateTimeProvider.Snapshot);
 
@@ -43,8 +47,8 @@
             }
             else if (args.Length == 1)
             {
-                string CleanedInput = args[0].Trim();
-                string FilePathWithoutExtension = CleanedInput.Substring(0, CleanedInput.LastIndexOf('.'));
+                var CleanedInput = args[0].Trim();
+                var FilePathWithoutExtension = CleanedInput.Substring(0, CleanedInput.LastIndexOf('.'));
 
                 _fileInputLocation = CleanedInput;
                 _eksFileOutputLocation = FilePathWithoutExtension + "-eks" + ".Zip";
@@ -54,7 +58,7 @@
                 _Logger.WriteNoElevatedPrivs();
 
             LoadFile(_fileInputLocation);
-            var eksZipOutput = await BuildEksOutput();
+            var eksZipOutput = await BuildEksOutputAsync();
             
             _Logger.WriteSavingResultfile();
             ExportOutput(_eksFileOutputLocation, eksZipOutput);
@@ -86,7 +90,7 @@
             }
         }
 
-        private async Task<byte[]> BuildEksOutput()
+        private async Task<byte[]> BuildEksOutputAsync()
         {
             _Logger.WriteBuildingResultFile();
 

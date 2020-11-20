@@ -2,21 +2,19 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
+
 namespace SigTestFileCreator
 {
-    using System;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1;
-	using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.LocalMachineStoreCertificateProvider;
-	using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.SigTestFileCreator;
-	using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-    using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
-
     internal class Program
     {
         public static int Main(string[] args)
@@ -28,7 +26,7 @@ namespace SigTestFileCreator
         private static void Start(IServiceProvider serviceProvider, string[] args)
         {
             var job = serviceProvider.GetRequiredService<SigTesterService>();
-            job.Execute(args).GetAwaiter().GetResult();
+            job.ExecuteAsync(args).GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)

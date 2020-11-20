@@ -2,28 +2,34 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksBuilderV1;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EmbeddedCertProvider;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
 {
     public class ExposureKeySetBuilderTests
     {
+        private class FakeEksHeaderInfoConfig : IEksHeaderInfoConfig
+        {
+            public string AppBundleId => "nl.rijksoverheid.en";
+            public string VerificationKeyId => "ServerNL";
+            public string VerificationKeyVersion => "v1";
+        }
+
         //y = 4.3416x + 715.24
         [Theory]
         [InlineData(500, 123)]
@@ -75,7 +81,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         public void EksBuilderV1WithDummy_NLSigHasDummyText()
 		{
             //Arrange
-            int KeyCount = 500;
+            var KeyCount = 500;
             var lf = new LoggerFactory();
             var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
             var eksBuilderV1Logger = new EksBuilderV1LoggingExtensions(lf.CreateLogger<EksBuilderV1LoggingExtensions>());

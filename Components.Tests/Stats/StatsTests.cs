@@ -1,15 +1,15 @@
-﻿using System;
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Pkcs;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Moq;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Statistics;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
@@ -17,24 +17,13 @@ using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stats
 {
-    [ExclusivelyUses("WorkflowStatTest1")]
+    /// TODO use sqlite/sqlserver providers
+    [ExclusivelyUses(nameof(StatsTests))]
     public class StatsTests
     {
-        private class FakeEksConfig : IEksConfig
-        {
-            public int LifetimeDays { get; set; } = 14;
-
-            public int TekCountMax { get; set; } = 20;
-
-            public int TekCountMin { get; set; } = 10;
-
-            public int PageSize { get; set; } = 100;
-            public bool CleanupDeletesData => throw new NotImplementedException(); //ncrunch: no coverage
-        }
-
         private Func<WorkflowDbContext> _WorkflowFac;
         private Func<StatsDbContext> _StatsFac;
-        private FakeDtp _FakeDtp;
+        private IUtcDateTimeProvider _FakeDtp;
 
         public StatsTests()
         {
@@ -57,16 +46,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stats
             //_FakeEksConfig = new FakeEksConfig { LifetimeDays = 14, PageSize = 1000, TekCountMax = 10, TekCountMin = 5 };
             //_Lf = new LoggerFactory();
 
-            _FakeDtp = new FakeDtp();
+            var snapshot = DateTime.UtcNow;
+            var mock = new Mock<IUtcDateTimeProvider>(MockBehavior.Strict);
+            mock.Setup(x => x.Snapshot).Returns(snapshot);
+            _FakeDtp = mock.Object;
         }
-
-        private class FakeDtp : IUtcDateTimeProvider
-        {
-            public DateTime Now() => throw new NotImplementedException();
-
-            public DateTime Snapshot { get; set; }
-        }
-
 
         [Fact]
         public void NothingToSeeHere()

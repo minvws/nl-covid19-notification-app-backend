@@ -1,16 +1,18 @@
-﻿using System;
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredWorkflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Expiry;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.Cleanup
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow
 {
     public class WorkflowCleanerTests
     {
@@ -226,7 +228,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
                     PublishAfter = _Dtp.Snapshot,
                     KeyData = new byte[0],
                     PublishingState = i < (publishedCount ?? 0) ? PublishingState.Published : PublishingState.Unpublished,
-                    Region = "NL"
                 };
                 _DbContext.TemporaryExposureKeys.Add(t);
             }

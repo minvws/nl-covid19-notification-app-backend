@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
@@ -9,12 +10,10 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PublishContent;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
-using System;
 
 namespace PublishContent
 {
@@ -28,7 +27,7 @@ namespace PublishContent
 
         private static void Start(IServiceProvider services, string[] args)
         {
-            services.GetRequiredService<PublishContentCommand>().Execute(args).GetAwaiter().GetResult();
+            services.GetRequiredService<PublishContentCommand>().ExecuteAsync(args).GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)

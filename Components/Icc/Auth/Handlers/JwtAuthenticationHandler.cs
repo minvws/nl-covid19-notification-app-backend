@@ -57,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Hand
                 return AuthenticateResult.Fail("Invalid jwt token");
             }
 
-            if (!decodedClaims.ContainsKey("id") || !decodedClaims.ContainsKey("access_token") || !await _JwtClaimValidator.Validate(decodedClaims))
+            if (!decodedClaims.ContainsKey("id") || !decodedClaims.ContainsKey("access_token") || !await _JwtClaimValidator.ValidateAsync(decodedClaims))
             {
                 return AuthenticateResult.Fail("Invalid jwt token");
             }

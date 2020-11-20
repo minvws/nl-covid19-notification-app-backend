@@ -18,12 +18,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
             _ContentSigner = contentSigner ?? throw new ArgumentNullException(nameof(contentSigner));
         }
 
-        public async Task<byte[]> SignedContentPacket(byte[] content)
+        public async Task<byte[]> SignedContentPacketAsync(byte[] content)
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
 
             var signature = _ContentSigner.GetSignature(content);
-            return await new ZippedContentBuilder().BuildStandard(content, signature);
+            return await new ZippedContentBuilder().BuildStandardAsync(content, signature);
         }
     }
 }

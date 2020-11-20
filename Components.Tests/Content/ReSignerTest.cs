@@ -2,22 +2,20 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EmbeddedCertProvider;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Resigner;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Resources;
-using System;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
@@ -26,8 +24,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
     [ExclusivelyUses("ReSignerTest1")]
     public class ReSignerTest
     {
-        private static readonly Random _Random = new Random();
-
         [Fact]
         public void ResignManifest()
         {
@@ -78,7 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
             );
 
             var resigner = new NlContentResignCommand(dbp, signer, resignerLogger);
-            resigner.Execute(ContentTypes.Manifest, ContentTypes.ManifestV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
+            resigner.ExecuteAsync(ContentTypes.Manifest, ContentTypes.ManifestV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
             Assert.Equal(6, dbc.Content.Count());
@@ -151,7 +147,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
             );
 
             var resigner = new NlContentResignCommand(dbp, signer, resignerLogger);
-            resigner.Execute(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
+            resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
             Assert.Equal(6, dbc.Content.Count());
@@ -173,7 +169,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
             }
 
             //Repeating should have no effect
-            resigner.Execute(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
+            resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
             Assert.Equal(6, dbc.Content.Count());
         }
 
@@ -230,7 +226,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
             );
 
             var resigner = new NlContentResignCommand(dbp, signer, resignerLogger);
-            resigner.Execute(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
+            resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
             Assert.Equal(4, dbc.Content.Count());
@@ -253,7 +249,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
             }
 
             //Repeating should have no effect
-            resigner.Execute(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
+            resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
             Assert.Equal(4, dbc.Content.Count());
         }
     }

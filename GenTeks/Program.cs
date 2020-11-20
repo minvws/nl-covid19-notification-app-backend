@@ -3,16 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
@@ -35,7 +31,7 @@ namespace GenTeks
                 TekCountPerWorkflow = args.Length > 1 && int.TryParse(args[1], out var v1) ? v1 : 14,
             };
 
-            serviceProvider.GetRequiredService<GenerateTeksCommand>().Execute(args2).GetAwaiter().GetResult();
+            serviceProvider.GetRequiredService<GenerateTeksCommand>().ExecuteAsync(args2).GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
@@ -50,7 +46,7 @@ namespace GenTeks
 
             services.AddTransient(x => new GenerateTeksCommand(
                 x.GetRequiredService<IRandomNumberGenerator>(),
-                x.GetRequiredService<WorkflowDbContext>(), 
+                () => x.GetRequiredService<WorkflowDbContext>(), 
                 x.GetRequiredService<TekReleaseWorkflowStateCreate>
                 ));
 

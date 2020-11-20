@@ -5,7 +5,7 @@
 using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging
 {

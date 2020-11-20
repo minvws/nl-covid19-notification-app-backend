@@ -4,8 +4,9 @@
 
 using System;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.PublishContent
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
 {
     public class PublishContentLoggingExtensions
     {

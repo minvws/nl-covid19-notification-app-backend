@@ -30,10 +30,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             var from = snapshot - TimeSpan.FromDays(_EksConfig.LifetimeDays);
             return new ManifestContent
             {
-                ExposureKeySets = await _ContentDbContext.SafeGetActiveContentIdList(ContentTypes.ExposureKeySet, from, snapshot),
-                RiskCalculationParameters = await _ContentDbContext.SafeGetLatestContentId(ContentTypes.RiskCalculationParameters, snapshot),
-                AppConfig = await _ContentDbContext.SafeGetLatestContentId(ContentTypes.AppConfig, snapshot),
-                ResourceBundle = await _ContentDbContext.SafeGetLatestContentId(ContentTypes.ResourceBundleV3, snapshot)
+                ExposureKeySets = await _ContentDbContext.SafeGetActiveContentIdListAsync(ContentTypes.ExposureKeySet, from, snapshot),
+                RiskCalculationParameters = await _ContentDbContext.SafeGetLatestContentIdAsync(ContentTypes.RiskCalculationParameters, snapshot),
+                AppConfig = await _ContentDbContext.SafeGetLatestContentIdAsync(ContentTypes.AppConfig, snapshot),
+                ResourceBundle = await _ContentDbContext.SafeGetLatestContentIdAsync(ContentTypes.ResourceBundleV3, snapshot)
             };
         }
     }

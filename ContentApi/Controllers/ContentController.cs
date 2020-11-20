@@ -5,7 +5,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
 {
@@ -17,28 +16,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
         [Route("/v1/manifest")]
         public async Task GetManifest([FromServices] HttpGetCdnManifestCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.Manifest);
+            await command.ExecuteAsync(HttpContext, ContentTypes.Manifest);
         }
 
         [HttpGet]
         [Route("/v1/appconfig/{id}")]
         public async Task GetAppConfig(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.AppConfig, id);
+            await command.ExecuteAsync(HttpContext, ContentTypes.AppConfig, id);
         }
 
         [HttpGet]
         [Route("/v1/riskcalculationparameters/{id}")]
         public async Task GetRiskCalculationParameters(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.RiskCalculationParameters, id);
+            await command.ExecuteAsync(HttpContext, ContentTypes.RiskCalculationParameters, id);
         }
 
         [HttpGet]
         [Route("/v1/exposurekeyset/{id}")]
         public async Task GetExposureKeySet(string id, [FromServices] HttpGetCdnEksCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.ExposureKeySet, id);
+            await command.ExecuteAsync(HttpContext, ContentTypes.ExposureKeySet, id);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
     public class DefaultTekValidatorConfig : ITekValidatorConfig
     {
         public int RollingPeriodMin => 1;
-        public int RollingPeriodMax => 144;
+        public int RollingPeriodMax => UniversalConstants.RollingPeriodMax;
         public int RollingStartNumberMin => new DateTime(2020, 7, 1, 0, 0, 0, DateTimeKind.Utc).ToRollingStartNumber();
         public int MaxAgeDays => 14;
         public int KeyDataLength => 16;

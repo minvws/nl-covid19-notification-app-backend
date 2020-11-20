@@ -2,14 +2,14 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow
@@ -81,7 +81,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
         {
             var keyData = BitConverter.GetBytes(d * 100 + q);
             var t = new DateTime(2020, m, d, 0, 0, 0, DateTimeKind.Utc).Date.ToRollingStartNumber();
-            return new Tek {RollingStartNumber = t, KeyData = keyData, RollingPeriod = 144};
+            return new Tek {RollingStartNumber = t, KeyData = keyData, RollingPeriod = UniversalConstants.RollingPeriodMax};
         }
 
         [Fact]

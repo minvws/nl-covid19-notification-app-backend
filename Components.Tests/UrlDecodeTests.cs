@@ -5,7 +5,7 @@
 using System.Web;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests
 {
     public class UrlDecodeTests
     {

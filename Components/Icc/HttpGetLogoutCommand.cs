@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
                 theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
         }
 
-        public async Task<IActionResult> Execute(HttpContext httpContext)
+        public async Task<IActionResult> ExecuteAsync(HttpContext httpContext)
         {
             if (httpContext == null)
                 throw new ArgumentNullException(nameof(httpContext));
@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc
                 .FirstOrDefault((c => c.Type == TheIdentityHubClaimTypes.AccessToken))
                 ?.Value;
             if (accessToken != null)
-                await _TheIdentityHubService.RevokeAccessToken(accessToken);
+                await _TheIdentityHubService.RevokeAccessTokenAsync(accessToken);
 
             httpContext.Response.Cookies.Delete(".AspNetCore.Cookies");
             await httpContext.SignOutAsync();

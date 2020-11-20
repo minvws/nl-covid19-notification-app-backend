@@ -2,11 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.Extensions.Logging;
-using System;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.SuppressError
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 {
     public class SuppressErrorLoggingExtensions
     {

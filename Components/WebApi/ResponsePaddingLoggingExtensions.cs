@@ -4,8 +4,9 @@
 
 using System;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ResponsePadding
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 {
     public class ResponsePaddingLoggingExtensions
     {

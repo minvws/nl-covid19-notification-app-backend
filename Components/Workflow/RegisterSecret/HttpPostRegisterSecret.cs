@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
@@ -27,11 +26,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             _LabConfirmationIdFormatter = labConfirmationIdFormatter ?? throw new ArgumentNullException(nameof(labConfirmationIdFormatter));
         }
 
-        public async Task<IActionResult> Execute()
+        public async Task<IActionResult> ExecuteAsync()
         {
             try
             {
-                var entity = await _Writer.Execute();
+                var entity = await _Writer.ExecuteAsync();
 
                 var result = new EnrollmentResponse
                 {

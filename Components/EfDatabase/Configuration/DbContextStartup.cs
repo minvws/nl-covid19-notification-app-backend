@@ -21,11 +21,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             return result;
         }
 
-        public static PublishingJobDbContext Publishing(IServiceProvider x, bool beginTrans = true)
+        public static DkSourceDbContext DkSource(IServiceProvider x, bool beginTrans = true)
+        {
+            var config = new StandardEfDbConfig(x.GetRequiredService<IConfiguration>(), DatabaseConnectionStringNames.DkSource);
+            var builder = new SqlServerDbContextOptionsBuilder(config, x.GetRequiredService<ILoggerFactory>());
+            var result = new DkSourceDbContext(builder.Build());
+            if (beginTrans) result.BeginTransaction();
+            return result;
+        }
+
+        public static EksPublishingJobDbContext Publishing(IServiceProvider x, bool beginTrans = true)
         {
             var config = new StandardEfDbConfig(x.GetRequiredService<IConfiguration>(), DatabaseConnectionStringNames.Publishing);
             var builder = new SqlServerDbContextOptionsBuilder(config, x.GetRequiredService<ILoggerFactory>());
-            var result = new PublishingJobDbContext(builder.Build());
+            var result = new EksPublishingJobDbContext(builder.Build());
             if (beginTrans) result.BeginTransaction();
             return result;
         }

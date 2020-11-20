@@ -4,8 +4,9 @@
 
 using System;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.DailyCleanup
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 {
     public class DailyCleanupLoggingExtensions
     {
@@ -95,6 +96,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.Daily
         public void WriteManifestV2CleanupStarting()
         {
             _Logger.LogInformation("[{name}/{id}] Daily cleanup - Cleanup ManifestV2 run starting.",
+                Name, ManifestV2CleanupStarting);
+        }
+
+        public void WriteSnaphotWorkflowTeksToDks()
+        {
+            _Logger.LogInformation("[{name}/{id}] Daily cleanup - Snapshot Workflow TEKs to DKs.",
                 Name, ManifestV2CleanupStarting);
         }
     }

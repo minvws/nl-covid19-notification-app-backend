@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 {

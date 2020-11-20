@@ -1,13 +1,17 @@
-﻿using System;
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.ExpiredManifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
 {
     
     [Obsolete("Remove this class as soon as the Manifest Engine Mk2 is in place.")]
@@ -30,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
         /// <summary>
         /// Manifests are updated regularly.
         /// </summary>
-        public async Task<RemoveExpiredManifestsCommandResult> Execute()
+        public async Task<RemoveExpiredManifestsCommandResult> ExecuteAsync()
         {
             if (_Result != null)
                 throw new InvalidOperationException("Object already used.");

@@ -39,7 +39,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
 
             modelBuilder.Entity<TekEntity>().HasIndex(u => u.PublishingState);
             modelBuilder.Entity<TekEntity>().HasIndex(u => u.PublishAfter);
-            modelBuilder.Entity<TekEntity>().HasIndex(u => u.Region);
         }
     }
 }

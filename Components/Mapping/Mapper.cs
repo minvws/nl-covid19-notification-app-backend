@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 
@@ -34,7 +33,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
                 RollingStartNumber = value.RollingStartNumber,
                 PublishingState = value.PublishingState,
                 PublishAfter  = value.PublishAfter,
-                Region = value.Region
             };
         }
 
@@ -47,7 +45,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
                 RollingStartNumber = value.RollingStartNumber,
                 PublishingState = value.PublishingState,
                 PublishAfter = value.PublishAfter,
-                Region = value.Region
             };
         }
     }

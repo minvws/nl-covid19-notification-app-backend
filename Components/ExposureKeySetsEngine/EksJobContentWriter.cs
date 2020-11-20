@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -6,19 +10,19 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.EksJobContentWriter;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Interop;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
 {
-    public class EksJobContentWriter 
+    public class EksJobContentWriter : IEksJobContentWriter
     {
         private readonly Func<ContentDbContext> _ContentDbContext;
-        private readonly Func<PublishingJobDbContext> _PublishingDbContext;
+        private readonly Func<EksPublishingJobDbContext> _PublishingDbContext;
         private readonly IPublishingIdService _PublishingIdService;
         private readonly EksJobContentWriterLoggingExtensions _Logger;
 
-        public EksJobContentWriter(Func<ContentDbContext> contentDbContext, Func<PublishingJobDbContext> publishingDbContext, IPublishingIdService publishingIdService, EksJobContentWriterLoggingExtensions logger)
+        public EksJobContentWriter(Func<ContentDbContext> contentDbContext, Func<EksPublishingJobDbContext> publishingDbContext, IPublishingIdService publishingIdService, EksJobContentWriterLoggingExtensions logger)
         {
             _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _PublishingDbContext = publishingDbContext ?? throw new ArgumentNullException(nameof(publishingDbContext));
@@ -26,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task ExecuteAsyc()
+        public async Task ExecuteAsync()
         {
             await using var pdbc = _PublishingDbContext();
             await using (pdbc.BeginTransaction()) //Read consistency

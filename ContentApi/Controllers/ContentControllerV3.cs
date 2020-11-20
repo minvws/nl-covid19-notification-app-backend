@@ -16,35 +16,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
         [Route("/v3/manifest")]
         public async Task GetManifest([FromServices] HttpGetCdnManifestCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.ManifestV3);
+            await command.ExecuteAsync(HttpContext, ContentTypes.ManifestV3);
         }
 
         [HttpGet]
         [Route("/v3/appconfig/{id}")]
         public async Task GetAppConfig(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.AppConfigV2, id);
+            await command.ExecuteAsync(HttpContext, ContentTypes.AppConfigV2, id);
         }
 
         [HttpGet]
         [Route("/v3/riskcalculationparameters/{id}")]
         public async Task GetRiskCalculationParameters(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.RiskCalculationParametersV2, id);
+            await command.ExecuteAsync(HttpContext, ContentTypes.RiskCalculationParametersV2, id);
         }
 
         [HttpGet]
         [Route("/v3/exposurekeyset/{id}")]
         public async Task GetExposureKeySet(string id, [FromServices] HttpGetCdnEksCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.ExposureKeySetV2, id);
+            await command.ExecuteAsync(HttpContext, ContentTypes.ExposureKeySetV2, id);
         }
 
         [HttpGet]
         [Route("/v3/resourcebundle/{id}")]
         public async Task GetResourceBundleAsync(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
         {
-            await command.Execute(HttpContext, ContentTypes.ResourceBundleV3, id);
+            await command.ExecuteAsync(HttpContext, ContentTypes.ResourceBundleV3, id);
         }
     }
 }

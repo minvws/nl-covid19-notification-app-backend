@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
@@ -39,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<TekReleaseWorkflowStateEntity> Execute()
+        public async Task<TekReleaseWorkflowStateEntity> ExecuteAsync()
         {
             var entity = new TekReleaseWorkflowStateEntity
             {
@@ -53,6 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             var success = WriteAttempt(entity);
             while (!success)
             {
+                _WorkflowDbContext.BeginTransaction();
                 entity = new TekReleaseWorkflowStateEntity
                 {
                     Created = _DateTimeProvider.Snapshot.Date,
@@ -89,6 +89,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Regi
             }
             catch (DbUpdateException ex)
             {
+                _WorkflowDbContext.Database.CurrentTransaction.RollbackAsync();
                 _WorkflowDbContext.Remove(item);
                 if (CanRetry(ex))
                     return false;

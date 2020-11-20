@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Handlers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging.IccBackend;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
 
@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
             if (command == null) throw new ArgumentNullException(nameof(command));
 
             _Logger.WriteLabStart();
-            return await command.Execute(args);
+            return await command.ExecuteAsync(args);
         }
 
         [HttpGet]
