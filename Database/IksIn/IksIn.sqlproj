@@ -78,8 +78,8 @@
     <Build Include="Security\Roles\Dbr_Service.sql" />
     <Build Include="Security\Roles\Dbr_Users.sql" />
     <Build Include="Security\Roles\Subroles.sql" />
+    <Build Include="dbo\Tables\IksInJob.sql" />
   </ItemGroup>
-
   <ItemGroup>
     <SqlCmdVariable Include="Appbeheerders">
       <DefaultValue>

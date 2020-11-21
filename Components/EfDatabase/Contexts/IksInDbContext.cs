@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
         }
 
         public DbSet<IksInEntity> Received { get; set; }
-        //public DbSet<IksInJobEntity> InJob { get; set; }
+        public DbSet<IksInJobEntity> InJob { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

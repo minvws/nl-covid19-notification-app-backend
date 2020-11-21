@@ -4,13 +4,12 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
 {
-    /// <summary>
-    /// Implementation of ingress and egress filters.
-    /// Map values from Efgs to TekSource.LocalTekInfo.
-    /// Return null to exclude.
-    /// </summary>
-    public interface IDiagnosticKeyProcessor
+    public class MapTrlDiagnosticKeyProcessor : IDiagnosticKeyProcessor
     {
-        DkProcessingItem? Execute(DkProcessingItem? value);
+        public DkProcessingItem? Execute(DkProcessingItem? value)
+        {
+            //TODO something more interesting
+            return value;
+        }
     }
 }

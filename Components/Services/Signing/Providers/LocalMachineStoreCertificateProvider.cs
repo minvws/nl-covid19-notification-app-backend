@@ -9,7 +9,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers
 {
-    public class LocalMachineStoreCertificateProvider : ICertificateProvider
+    public class LocalMachineStoreCertificateProvider : ICertificateProvider, IAuthenticationCertificateProvider
     {
         private readonly IThumbprintConfig _ThumbprintConfig;
         private readonly LocalMachineStoreCertificateProviderLoggingExtensions _Logger;
