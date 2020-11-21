@@ -88,11 +88,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DailyCleanup.Tests", "Daily
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeneratedEfgsFormat", "GeneratedEfgsFormat\GeneratedEfgsFormat.csproj", "{16E4DAFF-6F9B-41BB-96ED-BAF7B2665B73}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "IksIn", "IksIn\IksIn.sqlproj", "{8BDFECC9-F38C-4C19-8C71-B728AC4537AD}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "IksIn", "Database\IksIn\IksIn.sqlproj", "{8BDFECC9-F38C-4C19-8C71-B728AC4537AD}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "IksOut", "IksOut\IksOut.sqlproj", "{35B037B5-DC5B-4A81-8D89-AC68A80BAD5A}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "IksOut", "Database\IksOut\IksOut.sqlproj", "{35B037B5-DC5B-4A81-8D89-AC68A80BAD5A}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "IksPublishingJob", "IksPublishingJob\IksPublishingJob.sqlproj", "{B2903BFD-1520-4899-BC86-553DFD49269C}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "IksPublishingJob", "Database\IksPublishingJob\IksPublishingJob.sqlproj", "{B2903BFD-1520-4899-BC86-553DFD49269C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
