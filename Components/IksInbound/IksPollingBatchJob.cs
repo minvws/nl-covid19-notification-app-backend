@@ -3,65 +3,102 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Efgs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 {
     public class IksPollingBatchJob
     {
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-
         private readonly Func<HttpGetIksCommand> _ReceiverFactory;
         private readonly Func<IksWriterCommand> _WriterFactory;
         private readonly IksInDbContext _IksInDbContext;
-        private readonly List<HttpGetIksResult> _Results = new List<HttpGetIksResult>();
+        private readonly IEfgsConfig _EfgsConfig;
 
-        public IksPollingBatchJob(IUtcDateTimeProvider dateTimeProvider, Func<HttpGetIksCommand> receiverFactory, Func<IksWriterCommand> writerFactory, IksInDbContext iksInDbContext)
+        public IksPollingBatchJob(IUtcDateTimeProvider dateTimeProvider, Func<HttpGetIksCommand> receiverFactory, Func<IksWriterCommand> writerFactory, IksInDbContext iksInDbContext, IEfgsConfig efgsConfig)
         {
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _ReceiverFactory = receiverFactory ?? throw new ArgumentNullException(nameof(receiverFactory));
             _WriterFactory = writerFactory ?? throw new ArgumentNullException(nameof(writerFactory));
             _IksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
+            _EfgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
         }
 
-        public async Task<IksPollingResult> ExecuteAsync()
+        public async Task ExecuteAsync()
         {
             var jobInfo = GetJobInfo();
-            var getResult = await _ReceiverFactory().ExecuteAsync(jobInfo.LastBatchTag);
 
-            while (getResult.HttpStatusCode == HttpStatusCode.OK && getResult.SuccessInfo != null)
+            var batchDate = jobInfo.LastRun;
+            var previousBatch = jobInfo.LastBatchTag;
+            var batch = jobInfo.LastBatchTag;
+
+            // All of the values on first run are empty, all we need to do is set the date to the first date and we can start
+            if (jobInfo.LastRun == DateTime.MinValue)
             {
-                _Results.Add(getResult);
+                batchDate = _DateTimeProvider.Snapshot.Date.AddDays(_EfgsConfig.DaysToDownload * -1);
+            }
+            
+            while (true)
+            {
+                var result = await _ReceiverFactory().ExecuteAsync(batch, batchDate);
 
-                var writer = _WriterFactory();
-
-                await writer.Execute(new IksWriteArgs
+                // Handle errors
+                if (result == null || result.ResponseCode == EfgsDownloadResponseCode.NoDataFound || result.SuccessInfo == null)
                 {
-                    BatchTag = getResult.SuccessInfo.BatchTag,
-                    Content = getResult.SuccessInfo.Content
-                });
-
-                if (string.IsNullOrWhiteSpace(getResult.SuccessInfo.NextBatchTag))
                     break;
+                }
 
-                getResult = await _ReceiverFactory().ExecuteAsync(getResult.SuccessInfo.NextBatchTag);
+                // Process a previous batch
+                if (result.SuccessInfo.BatchTag == previousBatch)
+                {
+                    // New batch so process it next time
+                    if (result.SuccessInfo.NextBatchTag != null)
+                    {
+                        batch = result.SuccessInfo.NextBatchTag;
+                        continue;
+                    }
+                }
+                else
+                {
+                    // Process a new batch
+                    var writer = _WriterFactory();
+                    await writer.Execute(new IksWriteArgs
+                    {
+                        BatchTag = result.SuccessInfo.BatchTag,
+                        Content = result.SuccessInfo.Content
+                    });
+
+                    previousBatch = result.SuccessInfo.BatchTag;
+
+                    // Move to the next batch if we have one
+                    if (result.SuccessInfo.NextBatchTag != null)
+                    {
+                        batch = result.SuccessInfo.NextBatchTag;
+                        continue;
+                    }
+                }
+
+                if (batchDate < _DateTimeProvider.Snapshot.Date)
+                {
+                    batchDate = batchDate.AddDays(1);
+                    batch = string.Empty;
+                }
+                else
+                {
+                    break;
+                }
             }
 
+            // Update the last-run
             jobInfo.LastRun = _DateTimeProvider.Snapshot;
-            jobInfo.LastBatchTag = _Results.LastOrDefault()?.SuccessInfo.BatchTag ?? string.Empty;
-            await _IksInDbContext.SaveChangesAsync();
+            jobInfo.LastBatchTag = batch;
 
-            return new IksPollingResult
-            {
-                ErrorItem = (getResult.HttpStatusCode == HttpStatusCode.OK && getResult.Exception) ? null : getResult,
-                Items = _Results.Select(x => x.SuccessInfo).ToArray()
-            };
+            await _IksInDbContext.SaveChangesAsync();
         }
 
         private IksInJobEntity GetJobInfo()

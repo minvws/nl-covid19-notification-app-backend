@@ -4,7 +4,8 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 {
-    public class HttpGetIksSuccessResult { 
+    public class HttpGetIksSuccessResult
+    {
         //Id for the first batch of confirmation of the request
         public string BatchTag { get; set; }
         public string? NextBatchTag { get; set; }

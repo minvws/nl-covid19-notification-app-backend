@@ -8,8 +8,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 {
     public class HttpGetIksResult
     {
-        public bool Exception { get; set; }
-        public HttpStatusCode? HttpStatusCode { get; set; }
+        public EfgsDownloadResponseCode ResponseCode { get; set; }
         public HttpGetIksSuccessResult? SuccessInfo { get; set; }
+    }
+
+    public enum EfgsDownloadResponseCode
+    {
+        Ok,
+        NoDataFound
     }
 }

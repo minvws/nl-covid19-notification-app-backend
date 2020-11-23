@@ -8,5 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Efgs
     {
         string BaseUrl { get; }
         bool SendClientAuthenticationHeaders { get; }
+        int DaysToDownload {get;}
     }
 }

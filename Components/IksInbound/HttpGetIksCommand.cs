@@ -4,44 +4,30 @@
 
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Efgs;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Helpers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Helpers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 {
     public class HttpGetIksCommand {
 
         private readonly IEfgsConfig _EfgsConfig;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IAuthenticationCertificateProvider _CertificateProvider;
         private readonly ILogger<HttpGetIksCommand> _Logger;
 
-        public HttpGetIksCommand(IEfgsConfig efgsConfig, IUtcDateTimeProvider dateTimeProvider, IAuthenticationCertificateProvider certificateProvider, ILogger<HttpGetIksCommand> logger)
+        public HttpGetIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, ILogger<HttpGetIksCommand> logger)
         {
             _EfgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _CertificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<HttpGetIksResult> ExecuteAsync(string batchTag)
+        public async Task<HttpGetIksResult?> ExecuteAsync(string batchTag, DateTime date)
         {
-            // TODO: the whole batch tag / next batch logic is weird. it's a linked list,
-            // only to have a linked list you must know what the next item is. you can't with efgs.
-            // IF the batch-tag acts as a "send me all batches after this one" filter, then it's fine
-            // (though you don't wanna send next-batch-tag then!).
-
-            // TODO: ask EFGS about this. Or test it.
-
-            // TODO: if there are no batches downloaded yet TODAY, do not send a batch tag
-
-            var date = _DateTimeProvider.Snapshot;
-
             _Logger.LogInformation("Processing data for {date}, batch {batchTag}", date, batchTag);
 
             var uri = new Uri($"{_EfgsConfig.BaseUrl}/diagnosiskeys/download/{date:yyyy-MM-dd}");
@@ -77,60 +63,55 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
                 _Logger.LogInformation("Response from EFGS: {0} {1}", (int)response.StatusCode, response.StatusCode);
                 _Logger.LogInformation("Response headers: ", response.Headers.ToString());
 
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    // EFGS returns the string 'null' if there is no batch tag.
-                    // We will represent this with an actual null.
-                    var nextBatchTag = response.Headers.SafeGetValue("nextBatchTag");
-                    nextBatchTag = nextBatchTag == "null" ? null : nextBatchTag;
-                    _Logger.LogInformation("nextBatchTag: {nextBatchTag}", nextBatchTag);
-
-                    return new HttpGetIksResult
-                    {
-                        HttpStatusCode = HttpStatusCode.OK,
-                        SuccessInfo = new HttpGetIksSuccessResult
-                        {
-                            //TODO errors if info not present
-                            BatchTag = response.Headers.SafeGetValue("batchTag"),
-                            NextBatchTag = nextBatchTag,
-                            Content = await response.Content.ReadAsByteArrayAsync()
-                        }
-                    };
-                }
-
-                //
-                // TODO: review where this goes
-                //
-                // Properly log the various fail codes
+                // Handle response
                 switch (response.StatusCode)
                 {
+                    case HttpStatusCode.OK:
+                        // EFGS returns the string 'null' if there is no batch tag. We will represent this with an actual null.
+                        var nextBatchTag = response.Headers.SafeGetValue("nextBatchTag");
+                        nextBatchTag = nextBatchTag == "null" ? null : nextBatchTag;
+                        return new HttpGetIksResult
+                        {
+                            ResponseCode = EfgsDownloadResponseCode.Ok,
+                            SuccessInfo = new HttpGetIksSuccessResult
+                            {
+                                //TODO errors if info not present
+                                BatchTag = response.Headers.SafeGetValue("batchTag"),
+                                NextBatchTag = nextBatchTag,
+                                Content = await response.Content.ReadAsByteArrayAsync()
+                            }
+                        };
                     case HttpStatusCode.NotFound:
-                        _Logger.LogInformation("EFGS: No data found");
-                        break;
+                        _Logger.LogWarning("EFGS: No data found");
+                        return new HttpGetIksResult
+                        {
+                            ResponseCode = EfgsDownloadResponseCode.NoDataFound
+                        };
                     case HttpStatusCode.Gone:
-                        _Logger.LogInformation("EFGS: No data found (expired)");
-                        break;
+                        _Logger.LogWarning("EFGS: No data found (expired)");
+                        return new HttpGetIksResult
+                        {
+                            ResponseCode = EfgsDownloadResponseCode.NoDataFound
+                        };
                     case HttpStatusCode.BadRequest:
                         _Logger.LogCritical("EFGS: missing or invalid header!");
-                        break;
+                        return null;
                     case HttpStatusCode.Forbidden:
                         _Logger.LogCritical("EFGS: missing or invalid certificate!");
-                        break;
+                        return null;
                     case HttpStatusCode.NotAcceptable:
                         _Logger.LogCritical("EFGS: data format or content is not valid!");
-                        break;
+                        return null;
                     default:
                         _Logger.LogCritical("EFGS: undefined HTTP status returned!");
-                        break;
+                        return null;
                 }
-
-                return new HttpGetIksResult { HttpStatusCode = response.StatusCode };
             }
             catch (Exception e)
             {
-                _Logger.LogError("EFGS error: {Message}", e.Message);
+                _Logger.LogCritical("EFGS error: {Message}", e.Message);
 
-                return new HttpGetIksResult { Exception = true };
+                return null;
             }
         }
     }
