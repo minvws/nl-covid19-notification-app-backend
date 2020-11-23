@@ -48,18 +48,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
                 var result = await _ReceiverFactory().ExecuteAsync(batch, batchDate);
 
                 // Handle errors
-                if (result == null || result.ResponseCode == EfgsDownloadResponseCode.NoDataFound || result.SuccessInfo == null)
+                if (result == null)
                 {
                     break;
                 }
 
                 // Process a previous batch
-                if (result.SuccessInfo.BatchTag == previousBatch)
+                if (result.BatchTag == previousBatch)
                 {
                     // New batch so process it next time
-                    if (result.SuccessInfo.NextBatchTag != null)
+                    if (result.NextBatchTag != null)
                     {
-                        batch = result.SuccessInfo.NextBatchTag;
+                        batch = result.NextBatchTag;
                         continue;
                     }
                 }
@@ -69,16 +69,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
                     var writer = _WriterFactory();
                     await writer.Execute(new IksWriteArgs
                     {
-                        BatchTag = result.SuccessInfo.BatchTag,
-                        Content = result.SuccessInfo.Content
+                        BatchTag = result.BatchTag,
+                        Content = result.Content
                     });
 
-                    previousBatch = result.SuccessInfo.BatchTag;
+                    previousBatch = result.BatchTag;
 
                     // Move to the next batch if we have one
-                    if (result.SuccessInfo.NextBatchTag != null)
+                    if (result.NextBatchTag != null)
                     {
-                        batch = result.SuccessInfo.NextBatchTag;
+                        batch = result.NextBatchTag;
                         continue;
                     }
                 }

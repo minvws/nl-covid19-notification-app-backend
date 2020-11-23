@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<HttpGetIksResult?> ExecuteAsync(string batchTag, DateTime date)
+        public async Task<HttpGetIksSuccessResult?> ExecuteAsync(string batchTag, DateTime date)
         {
             _Logger.LogInformation("Processing data for {date}, batch {batchTag}", date, batchTag);
 
@@ -70,29 +70,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
                         // EFGS returns the string 'null' if there is no batch tag. We will represent this with an actual null.
                         var nextBatchTag = response.Headers.SafeGetValue("nextBatchTag");
                         nextBatchTag = nextBatchTag == "null" ? null : nextBatchTag;
-                        return new HttpGetIksResult
+                        return new HttpGetIksSuccessResult
                         {
-                            ResponseCode = EfgsDownloadResponseCode.Ok,
-                            SuccessInfo = new HttpGetIksSuccessResult
-                            {
-                                //TODO errors if info not present
-                                BatchTag = response.Headers.SafeGetValue("batchTag"),
-                                NextBatchTag = nextBatchTag,
-                                Content = await response.Content.ReadAsByteArrayAsync()
-                            }
+                            //TODO errors if info not present
+                            BatchTag = response.Headers.SafeGetValue("batchTag"),
+                            NextBatchTag = nextBatchTag,
+                            Content = await response.Content.ReadAsByteArrayAsync()
                         };
                     case HttpStatusCode.NotFound:
                         _Logger.LogWarning("EFGS: No data found");
-                        return new HttpGetIksResult
-                        {
-                            ResponseCode = EfgsDownloadResponseCode.NoDataFound
-                        };
+                        return null;
                     case HttpStatusCode.Gone:
                         _Logger.LogWarning("EFGS: No data found (expired)");
-                        return new HttpGetIksResult
-                        {
-                            ResponseCode = EfgsDownloadResponseCode.NoDataFound
-                        };
+                        return null;
                     case HttpStatusCode.BadRequest:
                         _Logger.LogCritical("EFGS: missing or invalid header!");
                         return null;
