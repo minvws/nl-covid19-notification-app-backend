@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Interop
 {
-    public interface IMarkWorkFlowTeksAsUsed
-    {
-        Task<MarkWorkFlowTeksAsUsedResult> ExecuteAsync();
-    }
+    //public interface IMarkWorkFlowTeksAsUsed
+    //{
+    //    Task<MarkWorkFlowTeksAsUsedResult> ExecuteAsync();
+    //}
 }

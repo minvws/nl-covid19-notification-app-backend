@@ -38,7 +38,7 @@ namespace DbProvision
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddScoped(x => DbContextStartup.Workflow(x, false));
             services.AddScoped(x => DbContextStartup.Content(x, false));
-            services.AddScoped(x => DbContextStartup.Publishing(x, false));
+            services.AddScoped(x => DbContextStartup.EksPublishing(x, false));
 
             services.AddTransient<WorkflowDatabaseCreateCommand>();
             services.AddTransient<PublishingJobDatabaseCreateCommand>();

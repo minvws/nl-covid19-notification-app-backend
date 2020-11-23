@@ -16,33 +16,28 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Resources;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
 {
-
-    [ExclusivelyUses("ReSignerTest1")]
-    public class ReSignerTest
+    public abstract class ReSignerTest : IDisposable
     {
+
+        private readonly IDbProvider<ContentDbContext> _ContentDbProvider;
+
+        protected ReSignerTest(IDbProvider<ContentDbContext> contentDbProvider)
+        {
+            _ContentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
+        }
+
         [Fact]
+        [ExclusivelyUses(nameof(ReSignerTest))]
         public void ResignManifest()
         {
             var lf = new LoggerFactory();
             var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
             var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
-
-            //Add some db rows to Content
-            Func<ContentDbContext> dbp = () =>
-            {
-                var y = new DbContextOptionsBuilder();
-                y.UseSqlServer("Data Source=.;Initial Catalog=ReSignerTest1;Integrated Security=True");
-                return new ContentDbContext(y.Options);
-            };
-
-            var dbc = dbp();
-            var db = dbc.Database;
-            db.EnsureDeleted();
-            db.EnsureCreated();
 
             var d = DateTime.Now;
             var latestReleaseDate = d.AddDays(1);
@@ -55,6 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
 
             var m1 = new ContentEntity { Content = zipContent, PublishingId = "1", ContentTypeName = "Meh", Type = ContentTypes.Manifest, Created = d, Release = d };
 
+            var dbc = _ContentDbProvider.CreateNew();
             dbc.Content.AddRange(new [] {
                 m1,
                 new ContentEntity { Content = new byte[0], PublishingId = "2", ContentTypeName = "Meh", Type = ContentTypes.AppConfig, Created = d, Release = d },
@@ -73,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
                 new StandardUtcDateTimeProvider()
             );
 
-            var resigner = new NlContentResignCommand(dbp, signer, resignerLogger);
+            var resigner = new NlContentResignCommand(_ContentDbProvider.CreateNew, signer, resignerLogger);
             resigner.ExecuteAsync(ContentTypes.Manifest, ContentTypes.ManifestV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
@@ -95,6 +91,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(ReSignerTest))]
         public void Re_sign_all_existing_earlier_content()
         {
             var lf = new LoggerFactory();
@@ -102,17 +99,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
             var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
 
             //Add some db rows to Content
-            Func<ContentDbContext> dbp = () =>
-            {
-                var y = new DbContextOptionsBuilder();
-                y.UseSqlServer("Data Source=.;Initial Catalog=ReSignerTest1;Integrated Security=True");
-                return new ContentDbContext(y.Options);
-            };
-
-            var dbc = dbp();
-            var db = dbc.Database;
-            db.EnsureDeleted();
-            db.EnsureCreated();
+            var dbc = _ContentDbProvider.CreateNew();
 
             var d = DateTime.Now;
             var laterDate = d.AddDays(1);
@@ -146,7 +133,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
                 new StandardUtcDateTimeProvider()
             );
 
-            var resigner = new NlContentResignCommand(dbp, signer, resignerLogger);
+            var resigner = new NlContentResignCommand(_ContentDbProvider.CreateNew, signer, resignerLogger);
             resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
@@ -174,6 +161,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(ReSignerTest))]
         public void Re_sign_content_that_does_not_already_have_an_equivalent_resigned_entry()
         {
             var lf = new LoggerFactory();
@@ -181,17 +169,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
             var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
 
             //Add some db rows to Content
-            Func<ContentDbContext> dbp = () =>
-            {
-                var y = new DbContextOptionsBuilder();
-                y.UseSqlServer("Data Source=.;Initial Catalog=ReSignerTest1;Integrated Security=True");
-                return new ContentDbContext(y.Options);
-            };
-
-            var dbc = dbp();
-            var db = dbc.Database;
-            db.EnsureDeleted();
-            db.EnsureCreated();
+            var dbc = _ContentDbProvider.CreateNew();
 
             var d = DateTime.Now;
             var laterDate = d.AddDays(1);
@@ -225,7 +203,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
                 new StandardUtcDateTimeProvider()
             );
 
-            var resigner = new NlContentResignCommand(dbp, signer, resignerLogger);
+            var resigner = new NlContentResignCommand(_ContentDbProvider.CreateNew, signer, resignerLogger);
             resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
@@ -251,6 +229,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
             //Repeating should have no effect
             resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
             Assert.Equal(4, dbc.Content.Count());
+        }
+
+        public void Dispose()
+        {
+            _ContentDbProvider.Dispose();
         }
     }
 }

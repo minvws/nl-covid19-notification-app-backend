@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
@@ -115,7 +116,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                 new EksEngineLoggingExtensions(_Lf.CreateLogger<EksEngineLoggingExtensions>()),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(), new StandardRandomNumberGenerator(), _DateTimeProvider, _FakeEksConfig),
                 new SnapshotDiagnosisKeys(_Lf.CreateLogger<SnapshotDiagnosisKeys>(), _DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew),
-                new MarkDiagnosisKeysAsUsed(_DkSourceDbProvider.CreateNew, _FakeEksConfig, _EksPublishingJobDbProvider.CreateNew, _Lf.CreateLogger<MarkDiagnosisKeysAsUsed>()),
+                new MarkDiagnosisKeysAsUsedLocally(_DkSourceDbProvider.CreateNew, _FakeEksConfig, _EksPublishingJobDbProvider.CreateNew, _Lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_ContentDbProvider.CreateNew, _EksPublishingJobDbProvider.CreateNew, new Sha256HexPublishingIdService(), 
                     new EksJobContentWriterLoggingExtensions(_Lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
                 new WriteStuffingToDiagnosisKeys(_DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew()),
@@ -151,6 +152,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         #endregion
 
         [Fact]
+        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
         public void FireSameEngineTwice()
         {
             RunEngine();
@@ -158,6 +160,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
         public void FireTwice()
         {
             //One TEK from the dawn of time.
@@ -205,6 +208,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
         public void Teks1_NoRiskNotStuffed()
         {
             //One TEK from the dawn of time.
@@ -234,6 +238,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
         public void Teks0_NothingToSeeHereMoveAlong()
         {
             var result = RunEngine();
@@ -254,6 +259,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
         public void Teks1_GetStuffed()
         {
             var wfs = new[]
@@ -283,6 +289,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
         public void Tek5_NotStuffed()
         {
 
@@ -317,6 +324,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
         public void Tek10_NotStuffed()
         {
             var teks = Enumerable.Range(1, 10)
@@ -349,6 +357,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
         public void Tek11_NotStuffed_2Eks()
         {
             var teks = Enumerable.Range(1, 11)

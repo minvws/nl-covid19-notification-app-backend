@@ -30,9 +30,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             return result;
         }
 
-        public static EksPublishingJobDbContext Publishing(IServiceProvider x, bool beginTrans = true)
+        public static EksPublishingJobDbContext EksPublishing(IServiceProvider x, bool beginTrans = true)
         {
-            var config = new StandardEfDbConfig(x.GetRequiredService<IConfiguration>(), DatabaseConnectionStringNames.Publishing);
+            var config = new StandardEfDbConfig(x.GetRequiredService<IConfiguration>(), DatabaseConnectionStringNames.EksPublishing);
             var builder = new SqlServerDbContextOptionsBuilder(config, x.GetRequiredService<ILoggerFactory>());
             var result = new EksPublishingJobDbContext(builder.Build());
             if (beginTrans) result.BeginTransaction();
@@ -62,5 +62,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
             var builder = new SqlServerDbContextOptionsBuilder(config, x.GetRequiredService<ILoggerFactory>());
             return new DataProtectionKeysDbContext(builder.Build());
         }
+
+        public static IksPublishingJobDbContext IksPublishing(IServiceProvider x, bool beginTrans = true)
+        {
+            var config = new StandardEfDbConfig(x.GetRequiredService<IConfiguration>(), DatabaseConnectionStringNames.IksPublishing);
+            var builder = new SqlServerDbContextOptionsBuilder(config, x.GetRequiredService<ILoggerFactory>());
+            var result = new IksPublishingJobDbContext(builder.Build());
+            if (beginTrans) result.BeginTransaction();
+            return result;
+        }
+
+        public static IksInDbContext IksIn(IServiceProvider x, bool beginTrans = true)
+        {
+            var config = new StandardEfDbConfig(x.GetRequiredService<IConfiguration>(), DatabaseConnectionStringNames.IksIn);
+            var builder = new SqlServerDbContextOptionsBuilder(config, x.GetRequiredService<ILoggerFactory>());
+            var result = new IksInDbContext(builder.Build());
+            if (beginTrans) result.BeginTransaction();
+            return result;
+        }
+
+        public static IksOutDbContext IksOut(IServiceProvider x, bool beginTrans = true)
+        {
+            var config = new StandardEfDbConfig(x.GetRequiredService<IConfiguration>(), DatabaseConnectionStringNames.IksOut);
+            var builder = new SqlServerDbContextOptionsBuilder(config, x.GetRequiredService<ILoggerFactory>());
+            var result = new IksOutDbContext(builder.Build());
+            if (beginTrans) result.BeginTransaction();
+            return result;
+        }
+
     }
 }

@@ -27,18 +27,18 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace MobileAppApi.Tests.Controllers
 {
     [Collection(nameof(WorkflowControllerPostKeysDiagnosticTests))]
     [ExclusivelyUses(nameof(WorkflowControllerPostKeysDiagnosticTests))]
-    public class WorkflowControllerPostKeysDiagnosticTests : WebApplicationFactory<Startup>, IDisposable
+    public abstract class WorkflowControllerPostKeysDiagnosticTests : WebApplicationFactory<Startup>, IDisposable
     {
         private readonly WebApplicationFactory<Startup> _Factory;
-        private readonly WorkflowDbContext _DbContext;
         private readonly FakeTimeProvider _FakeTimeProvider;
-        private Func<WorkflowDbContext> _DbcFac;
+        private readonly IDbProvider<WorkflowDbContext> _WorkflowDbProvider;
 
         private class FakeTimeProvider : IUtcDateTimeProvider
         {
@@ -47,24 +47,16 @@ namespace MobileAppApi.Tests.Controllers
             public DateTime Snapshot => Value;
         }
 
-        public WorkflowControllerPostKeysDiagnosticTests()
+        protected WorkflowControllerPostKeysDiagnosticTests(IDbProvider<WorkflowDbContext> workflowDbProvider)
         {
+            _WorkflowDbProvider = workflowDbProvider ?? throw new ArgumentNullException(nameof(workflowDbProvider));
             _FakeTimeProvider = new FakeTimeProvider();
-
-            _DbcFac = () => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer($"Data Source=.;Database={nameof(WorkflowControllerPostKeysDiagnosticTests)};Integrated Security=True").Options);
-            _DbContext = _DbcFac();
 
             _Factory = WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddScoped(sp =>
-                    {
-                        var context = _DbcFac();
-                        context.BeginTransaction();
-                        return context;
-                    });
-
+                    services.AddScoped(_ => _WorkflowDbProvider.CreateNewWithTx());
                     services.AddTransient<IUtcDateTimeProvider>(x => _FakeTimeProvider);
                 });
                 builder.ConfigureAppConfiguration((ctx, config) =>
@@ -78,26 +70,25 @@ namespace MobileAppApi.Tests.Controllers
                     });
                 });
             });
-            _DbContext.Database.EnsureDeleted();
-            _DbContext.Database.EnsureCreated();
         }
 
         void IDisposable.Dispose()
         {
             base.Dispose();
-            _DbContext.Dispose();
+            _WorkflowDbProvider.Dispose();
         }
 
         private async Task WriteBucket(byte[] bucketId)
         {
-            _DbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+            var workflowDbContext = _WorkflowDbProvider.CreateNew();
+            workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
                 BucketId = bucketId,
                 ValidUntil = DateTime.UtcNow.AddHours(1),
                 Created = DateTime.UtcNow,
                 ConfirmationKey = new byte[32],
             });
-            await _DbContext.SaveChangesAsync();
+            await workflowDbContext.SaveChangesAsync();
         }
 
 
@@ -109,7 +100,7 @@ namespace MobileAppApi.Tests.Controllers
         [InlineData("Resources.payload-duplicate-TEKs-KeyData.json", 0, 7, 11)]
         [InlineData("Resources.payload-duplicate-TEKs-RSN.json", 13, 8, 13)]
         [InlineData("Resources.payload-ancient-TEKs.json", 1, 7, 1)]
-        [ExclusivelyUses("WorkflowControllerPostKeysTests")]
+        [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
         public async Task PostWorkflowTest(string file, int keyCount, int mm, int dd)
         {
 
@@ -138,7 +129,7 @@ namespace MobileAppApi.Tests.Controllers
             var result = await client.PostAsync($"v1/postkeys?sig={signature}", content);
 
             // Assert
-            var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
+            var items = await _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Equal(keyCount, items.Count);
         }

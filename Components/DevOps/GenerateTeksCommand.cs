@@ -48,8 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
             using var dbc = _WorkflowDb();
             //Have to load referenced object into new context
             var owner = dbc.KeyReleaseWorkflowStates.Single(x => x.Id == workflowId);
-            var count = _Rng.Next(1, _Args.TekCountPerWorkflow);
-            for (var i = 0; i < count; i++)
+            for (var i = 0; i < _Args.TekCountPerWorkflow; i++)
             {
                 var k = new TekEntity
                 {

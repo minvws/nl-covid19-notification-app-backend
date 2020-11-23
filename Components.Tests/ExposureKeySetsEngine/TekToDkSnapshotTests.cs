@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -108,6 +109,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         [InlineData(1, 10, 120, 10)] //Exactly
         [InlineData(1, 10, 121, 10)] //After
         [Theory]
+        [ExclusivelyUses(nameof(TekToDkSnapshotTests))]
         public async Task PublishAfter(int wfCount, int tekPerWfCount, int addMins, int resultCount)
         {
 
@@ -132,6 +134,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         [InlineData(1, 1)]
         [InlineData(1, 10)]
         [Theory]
+        [ExclusivelyUses(nameof(TekToDkSnapshotTests))]
         public async Task SecondRunShouldChangeNothing(int wfCount, int tekPerWfCount)
         {
             _DateTimeProvider.Setup(x => x.Snapshot).Returns(new DateTime(2020, 11, 5, 14, 00, 0, DateTimeKind.Utc));

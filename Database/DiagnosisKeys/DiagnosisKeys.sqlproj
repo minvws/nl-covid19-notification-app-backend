@@ -160,4 +160,7 @@
     <Build Include="Security\Roles\Subroles.sql" />
     <Build Include="dbo\Tables\DiagnosisKeysInput.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\DiagnosisKeys.sql" />
+  </ItemGroup>
 </Project>

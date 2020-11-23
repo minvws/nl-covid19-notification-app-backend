@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly EksEngineLoggingExtensions _Logger;
         private readonly ISnapshotEksInput _Snapshotter;
-        private readonly IMarkDiagnosisKeysAsUsed _MarkWorkFlowTeksAsUsed;
+        private readonly MarkDiagnosisKeysAsUsedLocally _MarkWorkFlowTeksAsUsed;
 
         private readonly IEksJobContentWriter _ContentWriter;
         private readonly IWriteStuffingToDiagnosisKeys _WriteStuffingToDiagnosisKeys;
@@ -50,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
         private readonly Stopwatch _BuildEksStopwatch = new Stopwatch();
         private readonly Func<EksPublishingJobDbContext> _PublishingDbContextFac;
 
-        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, Func<EksPublishingJobDbContext> publishingDbContextFac, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, IMarkDiagnosisKeysAsUsed markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys, IWrappedEfExtensions sqlCommands)
+        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, Func<EksPublishingJobDbContext> publishingDbContextFac, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys, IWrappedEfExtensions sqlCommands)
         {
             _EksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
             _SetBuilder = builder ?? throw new ArgumentNullException(nameof(builder));

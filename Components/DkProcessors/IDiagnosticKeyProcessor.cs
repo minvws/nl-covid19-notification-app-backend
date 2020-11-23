@@ -15,10 +15,4 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
     {
         DkProcessingItem? Execute(DkProcessingItem? value);
     }
-
-    public class NlAcceptableDiagnosticKeyProcessor : IDiagnosticKeyProcessor
-    {
-        public DkProcessingItem? Execute(DkProcessingItem? value)
-            => value.DiagnosisKey.Local.TransmissionRiskLevel == TransmissionRiskLevel.None ? null : value;
-    }
 }

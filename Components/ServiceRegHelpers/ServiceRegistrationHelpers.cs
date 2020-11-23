@@ -50,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ServiceRegHel
 
             services.AddTransient<ISnapshotEksInput, SnapshotDiagnosisKeys>();
             services.AddTransient<IEksJobContentWriter, EksJobContentWriter>();
-            services.AddTransient<IMarkDiagnosisKeysAsUsed, MarkDiagnosisKeysAsUsed>();
+            services.AddTransient<MarkDiagnosisKeysAsUsedLocally>();
             services.AddTransient<IWriteStuffingToDiagnosisKeys, WriteStuffingToDiagnosisKeys>();
 
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();

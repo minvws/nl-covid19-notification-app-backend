@@ -8,6 +8,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
@@ -103,7 +104,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
                         throw new InvalidOperationException("Authorised unpublished TEKs exist. Aborting workflow cleanup.");
                     }
 
-                    _Result.GivenMercy = dbc.Database.ExecuteSqlInterpolated($"WITH Zombies As ( SELECT Id FROM [TekReleaseWorkflowState] WHERE [ValidUntil] < {_Dtp.Snapshot}) DELETE Zombies");
+                    _Result.GivenMercy = dbc.Database.ExecuteSqlInterpolated($"DELETE FROM TekReleaseWorkflowState WHERE [ValidUntil] < {_Dtp.Snapshot}");
                     _Logger.WriteRemovedAmount(_Result.GivenMercy);
                     tx.Commit();
                 }

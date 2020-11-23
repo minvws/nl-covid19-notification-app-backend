@@ -20,36 +20,27 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace MobileAppApi.Tests.Controllers
 {
     [Collection(nameof(WorkflowControllerPostKeysTests))]
     [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
-    public class WorkflowControllerPostKeysTests : WebApplicationFactory<Startup>, IDisposable
+    public abstract class WorkflowControllerPostKeysTests : WebApplicationFactory<Startup>, IDisposable
     {
         private readonly byte[] _Key = Convert.FromBase64String(@"PwMcyc8EXF//Qkye1Vl2S6oCOo9HFS7E7vw7y9GOzJk=");
         private readonly WebApplicationFactory<Startup> _Factory;
         private readonly byte[] _BucketId = Convert.FromBase64String(@"idlVmyDGeAXTyaNN06Uejy6tLgkgWtj32sLRJm/OuP8=");
-        private readonly WorkflowDbContext _DbContext;
+        private readonly IDbProvider<WorkflowDbContext> _WorkflowDbProvider;
 
-        public WorkflowControllerPostKeysTests()
+        protected WorkflowControllerPostKeysTests(IDbProvider<WorkflowDbContext> workflowDbProvider)
         {
-            WorkflowDbContext DbcFac() => new WorkflowDbContext(new DbContextOptionsBuilder().UseSqlServer($"Data Source=.;Database={nameof(WorkflowControllerPostKeysTests)};Integrated Security=True").Options);
-            _DbContext = DbcFac();
+            _WorkflowDbProvider = workflowDbProvider;
 
             _Factory = WithWebHostBuilder(builder =>
             {
-                builder.ConfigureTestServices(services =>
-                {
-                    services.AddScoped(sp =>
-                    {
-                        var context = DbcFac();
-                        context.BeginTransaction();
-                        return context;
-                    });
-
-                });
+                builder.ConfigureTestServices(services => _WorkflowDbProvider.CreateNewWithTx());
                 builder.ConfigureAppConfiguration((ctx, config) =>
                 {
                     config.AddInMemoryCollection(new Dictionary<string, string>
@@ -59,28 +50,26 @@ namespace MobileAppApi.Tests.Controllers
                     });
                 });
             });
-            _DbContext.Database.EnsureDeleted();
-            _DbContext.Database.EnsureCreated();
 
-            _DbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+            var dbContext = _WorkflowDbProvider.CreateNew();
+            dbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
                 BucketId = _BucketId,
                 ValidUntil = DateTime.UtcNow.AddHours(1),
                 Created = DateTime.UtcNow,
                 ConfirmationKey = _Key,
             });
-            _DbContext.SaveChanges();
+            dbContext.SaveChanges();
         }
 
         void IDisposable.Dispose()
         {
             base.Dispose();
-
-             _DbContext.Dispose();
+            _WorkflowDbProvider.Dispose();
         }
 
         [Fact]
-        [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
+        [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
         public async Task PostWorkflowTest_InvalidSignature()
         {
             // Arrange
@@ -96,13 +85,13 @@ namespace MobileAppApi.Tests.Controllers
             var result = await client.PostAsync($"v1/postkeys?sig={signature}", content);
 
             // Assert
-            var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
+            var items = await _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Empty(items);
         }
 
         [Fact]
-        [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
+        [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
         public async Task PostWorkflowTest_ScriptInjectionInSignature()
         {
             // Arrange
@@ -118,13 +107,13 @@ namespace MobileAppApi.Tests.Controllers
             var result = await client.PostAsync($"v1/postkeys?sig={signature}", content);
 
             // Assert
-            var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
+            var items = await _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Empty(items);
         }
 
         [Fact]
-        [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
+        [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
         public async Task PostWorkflowTest_NullSignature()
         {
             // Arrange
@@ -139,13 +128,13 @@ namespace MobileAppApi.Tests.Controllers
             var result = await client.PostAsync("v1/postkeys", content);
 
             // Assert
-            var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
+            var items = await _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Empty(items);
         }
 
         [Fact]
-        [ExclusivelyUses("WorkflowControllerPostKeysTests2")]
+        [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
         public async Task PostWorkflowTest_EmptySignature()
         {
             // Arrange
@@ -160,7 +149,7 @@ namespace MobileAppApi.Tests.Controllers
             var result = await client.PostAsync($"v1/postkeys?sig={string.Empty}", content);
 
             // Assert
-            var items = await _DbContext.TemporaryExposureKeys.ToListAsync();
+            var items = await _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode); //All coerced by middleware to 200 now.
             Assert.Empty(items);
         }
