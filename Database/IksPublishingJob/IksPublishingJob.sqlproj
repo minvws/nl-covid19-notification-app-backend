@@ -3,16 +3,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <Name>IksOut</Name>
+    <Name>IksPublishingJob</Name>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
-    <ProjectGuid>{35b037b5-dc5b-4a81-8d89-ac68a80bad5a}</ProjectGuid>
+    <ProjectGuid>{b2903bfd-1520-4899-bc86-553dfd49269c}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
-    <RootNamespace>IksOut</RootNamespace>
-    <AssemblyName>IksOut</AssemblyName>
+    <RootNamespace>IksPublishingJob</RootNamespace>
+    <AssemblyName>IksPublishingJob</AssemblyName>
     <ModelCollation>1033, CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
@@ -64,20 +64,6 @@
     <Folder Include="Security\Roles" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\IksIn.sql" />
-    <None Include="PostDeploy\Scripts\Permissions.sql" />
-    <None Include="PostDeploy\Scripts\RoleMemberships.sql" />
-    <None Include="PostDeploy\Scripts\Users.sql" />
-    <PostDeploy Include="PostDeploy\PostDeploy.sql" />
-    <Build Include="Security\Roles\Dbr_Appbeheerders.sql" />
-    <Build Include="Security\Roles\Dbr_Funcbeheerders.sql" />
-    <Build Include="Security\Roles\Dbr_Ontwikkelaars.sql" />
-    <Build Include="Security\Roles\Dbr_Report.sql" />
-    <Build Include="Security\Roles\Dbr_Service.sql" />
-    <Build Include="Security\Roles\Dbr_Users.sql" />
-    <Build Include="Security\Roles\Subroles.sql" />
-  </ItemGroup>
-<ItemGroup>
     <SqlCmdVariable Include="Appbeheerders">
       <DefaultValue>
       </DefaultValue>
@@ -158,4 +144,20 @@
       </DefaultValue>
       <Value>$(SqlCmdVar__7)</Value>
     </SqlCmdVariable>
-  </ItemGroup></Project>
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\IksCreateJobInput.sql" />
+    <Build Include="dbo\Tables\IksCreateJobOutput.sql" />
+    <None Include="PostDeploy\Scripts\Permissions.sql" />
+    <None Include="PostDeploy\Scripts\RoleMemberships.sql" />
+    <None Include="PostDeploy\Scripts\Users.sql" />
+    <PostDeploy Include="PostDeploy\PostDeploy.sql" />
+    <Build Include="Security\Roles\Dbr_Appbeheerders.sql" />
+    <Build Include="Security\Roles\Dbr_Funcbeheerders.sql" />
+    <Build Include="Security\Roles\Dbr_Ontwikkelaars.sql" />
+    <Build Include="Security\Roles\Dbr_Report.sql" />
+    <Build Include="Security\Roles\Dbr_Service.sql" />
+    <Build Include="Security\Roles\Dbr_Users.sql" />
+    <Build Include="Security\Roles\Subroles.sql" />
+  </ItemGroup>
+</Project>
