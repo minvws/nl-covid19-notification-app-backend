@@ -38,7 +38,7 @@ GRANT INSERT ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EksEngine];
 GRANT UPDATE ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EksEngine];
 GRANT DELETE ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EksEngine];
 
-GRANT ALTER ON [dbo].[EksCreateJobOutput] TO [Dbr_Service_EksEngine];
+GRANT ALTER ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EksEngine];
 
 --[Dbr_Service_CleanupJob] 
 GRANT INSERT ON [dbo].[IksCreateJobInput] TO [Dbr_Service_CleanupJob];
