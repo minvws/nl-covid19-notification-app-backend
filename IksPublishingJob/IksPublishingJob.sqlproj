@@ -56,8 +56,14 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
+    <Folder Include="dbo\Tables" />
+    <Folder Include="dbo" />
+    <Folder Include="PostDeploy" />
+    <Folder Include="PostDeploy\Scripts" />
+    <Folder Include="Security" />
+    <Folder Include="Security\Roles" />
   </ItemGroup>
-<ItemGroup>
+  <ItemGroup>
     <SqlCmdVariable Include="Appbeheerders">
       <DefaultValue>
       </DefaultValue>
@@ -138,4 +144,20 @@
       </DefaultValue>
       <Value>$(SqlCmdVar__7)</Value>
     </SqlCmdVariable>
-  </ItemGroup></Project>
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\IksCreateJobInput.sql" />
+    <Build Include="dbo\Tables\IksCreateJobOutput.sql" />
+    <Build Include="PostDeploy\Scripts\Permissions.sql" />
+    <Build Include="PostDeploy\Scripts\RoleMemberships.sql" />
+    <Build Include="PostDeploy\Scripts\Users.sql" />
+    <Build Include="PostDeploy\PostDeploy.sql" />
+    <Build Include="Security\Roles\Dbr_Appbeheerders.sql" />
+    <Build Include="Security\Roles\Dbr_Funcbeheerders.sql" />
+    <Build Include="Security\Roles\Dbr_Ontwikkelaars.sql" />
+    <Build Include="Security\Roles\Dbr_Report.sql" />
+    <Build Include="Security\Roles\Dbr_Service.sql" />
+    <Build Include="Security\Roles\Dbr_Users.sql" />
+    <Build Include="Security\Roles\Subroles.sql" />
+  </ItemGroup>
+</Project>
