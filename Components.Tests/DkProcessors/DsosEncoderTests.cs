@@ -64,27 +64,49 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DkProce
             Assert.False(result.DatePrecision == DatePrecision.Unknown ^ result.ValueType == EncodedDsosType.DaysSinceSubmissionOfKeys);
         }
 
-        [InlineData(-14, SymptomStatus.Symptomatic, DatePrecision.Exact, EncodedDsosType.NotEncoded)]
-        [InlineData(21, SymptomStatus.Symptomatic, DatePrecision.Exact, EncodedDsosType.NotEncoded)]
-        
-        [InlineData(22, SymptomStatus.Symptomatic, DatePrecision.Range, EncodedDsosType.DaysSinceLastDayOfInterval)]
-        [InlineData(1949, SymptomStatus.Symptomatic, DatePrecision.Range, EncodedDsosType.DaysSinceLastDayOfInterval)]
 
-        [InlineData(1986, SymptomStatus.Symptomatic, DatePrecision.Unknown, EncodedDsosType.DaysSinceSubmissionOfKeys)]
-        [InlineData(2000, SymptomStatus.Symptomatic, DatePrecision.Unknown, EncodedDsosType.DaysSinceSubmissionOfKeys)]
-
-        [InlineData(2986, SymptomStatus.Asymptomatic, DatePrecision.Unknown, EncodedDsosType.DaysSinceSubmissionOfKeys)]
-        [InlineData(3000, SymptomStatus.Asymptomatic, DatePrecision.Unknown, EncodedDsosType.DaysSinceSubmissionOfKeys)]
+        /// <summary>
+        /// Do not bother testing derivable DatePrecision
+        /// </summary>
+        [InlineData(-14, SymptomStatus.Symptomatic, EncodedDsosType.NotEncoded)]
+        [InlineData(21, SymptomStatus.Symptomatic, EncodedDsosType.NotEncoded)]
         
-        [InlineData(3986, SymptomStatus.Unknown, DatePrecision.Unknown, EncodedDsosType.DaysSinceSubmissionOfKeys)]
-        [InlineData(4000, SymptomStatus.Unknown, DatePrecision.Unknown, EncodedDsosType.DaysSinceSubmissionOfKeys)]
+        [InlineData(22, SymptomStatus.Symptomatic, EncodedDsosType.DaysSinceLastDayOfInterval)]
+        [InlineData(1949, SymptomStatus.Symptomatic, EncodedDsosType.DaysSinceLastDayOfInterval)]
+
+        [InlineData(1986, SymptomStatus.Symptomatic, EncodedDsosType.DaysSinceSubmissionOfKeys)]
+        [InlineData(2000, SymptomStatus.Symptomatic, EncodedDsosType.DaysSinceSubmissionOfKeys)]
+
+        [InlineData(2986, SymptomStatus.Asymptomatic, EncodedDsosType.DaysSinceSubmissionOfKeys)]
+        [InlineData(3000, SymptomStatus.Asymptomatic, EncodedDsosType.DaysSinceSubmissionOfKeys)]
+
+        [InlineData(3986, SymptomStatus.Unknown, EncodedDsosType.DaysSinceSubmissionOfKeys)]
+        [InlineData(4000, SymptomStatus.Unknown, EncodedDsosType.DaysSinceSubmissionOfKeys)]
         [Theory]
-        public void Valid(int value, SymptomStatus ss, DatePrecision dp, EncodedDsosType edt)
+        public void Valid(int value, SymptomStatus ss, EncodedDsosType edt)
         {
             Assert.True(_Service.TryDecode(value, out var result));
             Assert.Equal(ss, result.SymptomStatus);
-            Assert.Equal(dp, result.DatePrecision);
             Assert.Equal(edt, result.ValueType);
+        }
+
+
+        [InlineData(-15, false)]
+        [InlineData(-14, true)]
+        [InlineData(21, true)]
+        [InlineData(22, false)]
+        [Theory]
+        public void SymptomaticWithDsos(int value, bool encoded)
+        {
+            Assert.Equal(encoded, _Service.TryEncodeSymptomatic(value, out var result));
+            if (!encoded) return;
+            Assert.Equal(value, result);
+            Assert.True(_Service.TryDecode(result, out var decodeResult));
+            Assert.Equal(SymptomStatus.Symptomatic, decodeResult.SymptomStatus);
+            Assert.Equal(DatePrecision.Exact, decodeResult.DatePrecision);
+            Assert.Equal(1, decodeResult.IntervalDuration);
+            Assert.Equal(0, decodeResult.Offset);
+            Assert.Equal(EncodedDsosType.NotEncoded, decodeResult.ValueType);
         }
     }
 }
