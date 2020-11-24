@@ -29,6 +29,8 @@ REM 7z a -tzip packages\Batch\CommandLine.ManifestEngine.zip publish\Batch.Manif
 xcopy ..\s\publish\EksEngine Artifacts\EksEngine /E /I
 xcopy ..\s\publish\ManifestEngine Artifacts\ManifestEngine /E /I
 xcopy ..\s\publish\DailyCleanup Artifacts\DailyCleanup /E /I
+xcopy ..\s\publish\EfgsDownloader Artifacts\EfgsDownloader /E /I
+xcopy ..\s\publish\EfgsUploader Artifacts\EfgsUploader /E /I
 
 REM Database
 REM 7z a -tzip packages\SQL\SQL.DbProvision.zip publish\Tools\DbProvision"
