@@ -9,7 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
 
         public NlAcceptableCountryInboundDiagnosticKeyProcessor(IAcceptableCountriesSetting settings)
         {
-            _Include = settings.Include.ToHashSet();
+            _Include = settings.AcceptableCountries.ToHashSet();
         }
 
         //Assumes a cleaning processor has already done Trim/ToUpper

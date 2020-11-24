@@ -6,6 +6,6 @@
     /// </summary>
     public interface IAcceptableCountriesSetting
     {
-        string[] Include { get; }
+        string[] AcceptableCountries { get; }
     }
 }

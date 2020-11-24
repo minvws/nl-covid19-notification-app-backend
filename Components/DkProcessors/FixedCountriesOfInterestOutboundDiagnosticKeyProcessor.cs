@@ -12,7 +12,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
             _Value = settings.CountriesOfInterest;
         }
 
-        //Assumes a cleaning processor has already done Trim/ToUpper
         public DkProcessingItem? Execute(DkProcessingItem? value)
         { 
             value.Metadata.Remove("CountriesOfInterest");

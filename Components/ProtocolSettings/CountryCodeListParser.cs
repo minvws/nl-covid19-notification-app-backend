@@ -10,14 +10,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSetti
         public string[] Parse(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException();
+                throw new ArgumentException(nameof(value));
 
             var items = value.Split(",", StringSplitOptions.RemoveEmptyEntries);
 
             items = items.Select(x => x.Trim().ToUpper()).ToArray();
 
             if (items.Any(x => !_Validator.IsValid(x)))
-                throw new ArgumentException();
+                throw new ArgumentException("One or more country codes are not valid.", nameof(value));
 
             return items;
         }
