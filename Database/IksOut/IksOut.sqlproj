@@ -103,6 +103,16 @@
       </DefaultValue>
       <Value>$(SqlCmdVar__2)</Value>
     </SqlCmdVariable>
+    <SqlCmdVariable Include="EfgsDownloader">
+      <DefaultValue>
+      </DefaultValue>
+      <Value>$(SqlCmdVar__17)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="EfgsUploader">
+      <DefaultValue>
+      </DefaultValue>
+      <Value>$(SqlCmdVar__18)</Value>
+    </SqlCmdVariable>
     <SqlCmdVariable Include="EksEngine">
       <DefaultValue>
       </DefaultValue>
