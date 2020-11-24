@@ -1,6 +1,6 @@
 ﻿namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
 {
-    public enum SymptomStatus
+    public enum SymptomObservation
     { 
         Unknown,
         Symptomatic,

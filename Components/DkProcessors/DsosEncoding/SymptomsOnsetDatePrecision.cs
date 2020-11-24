@@ -2,14 +2,13 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
 {
-    [Obsolete("Derivable from EncodedDsosType.")]
-    public enum DatePrecision
+    public enum SymptomsOnsetDatePrecision
     {
         Unknown,
         Range,
         
         /// <summary>
-        /// Not encoded
+        /// Not encoded => DSOS
         /// </summary>
         Exact
     }
