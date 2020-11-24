@@ -34,13 +34,9 @@ GRANT UPDATE ON [dbo].[IksOut] TO [Dbr_Service_CleanupJob];
 GRANT DELETE ON [dbo].[IksOut] TO [Dbr_Service_CleanupJob];
 
 --[Dbr_Service_EfgsUploader] 
-GRANT INSERT ON [dbo].[IksIn] TO [Dbr_Service_EfgsUploader];
-GRANT SELECT ON [dbo].[IksIn] TO [Dbr_Service_EfgsUploader];
-GRANT UPDATE ON [dbo].[IksIn] TO [Dbr_Service_EfgsUploader];
-
-GRANT INSERT ON [dbo].[IksInJob] TO [Dbr_Service_EfgsUploader];
-GRANT SELECT ON [dbo].[IksInJob] TO [Dbr_Service_EfgsUploader];
-GRANT UPDATE ON [dbo].[IksInJob] TO [Dbr_Service_EfgsUploader];
+GRANT INSERT ON [dbo].[IksOut] TO [Dbr_Service_EfgsUploader];
+GRANT SELECT ON [dbo].[IksOut] TO [Dbr_Service_EfgsUploader];
+GRANT UPDATE ON [dbo].[IksOut] TO [Dbr_Service_EfgsUploader];
 
 --end
 
