@@ -94,6 +94,10 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "IksOut", "Database\IksOut\I
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "IksPublishingJob", "Database\IksPublishingJob\IksPublishingJob.sqlproj", "{B2903BFD-1520-4899-BC86-553DFD49269C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfgsDownloader", "EfgsDownloader\EfgsDownloader.csproj", "{D0F534CC-D908-4AFA-A4D2-6B30E0297D8E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfgsUploader", "EfgsUploader\EfgsUploader.csproj", "{0D13D399-0983-4986-A7E1-A219ED9093C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -242,6 +246,14 @@ Global
 		{B2903BFD-1520-4899-BC86-553DFD49269C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2903BFD-1520-4899-BC86-553DFD49269C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2903BFD-1520-4899-BC86-553DFD49269C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{D0F534CC-D908-4AFA-A4D2-6B30E0297D8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0F534CC-D908-4AFA-A4D2-6B30E0297D8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0F534CC-D908-4AFA-A4D2-6B30E0297D8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0F534CC-D908-4AFA-A4D2-6B30E0297D8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D13D399-0983-4986-A7E1-A219ED9093C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D13D399-0983-4986-A7E1-A219ED9093C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D13D399-0983-4986-A7E1-A219ED9093C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D13D399-0983-4986-A7E1-A219ED9093C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

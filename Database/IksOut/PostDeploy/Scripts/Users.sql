@@ -36,6 +36,10 @@ IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'$(Domain)\$
 	CREATE LOGIN [$(Domain)\$(DbProvision)] FROM WINDOWS;
 IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'$(Domain)\$(GenTeks)')
 	CREATE LOGIN [$(Domain)\$(GenTeks)] FROM WINDOWS;
+IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'$(Domain)\$(EfgsDownloader)')
+	CREATE LOGIN [$(Domain)\$(EfgsDownloader)] FROM WINDOWS;
+IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'$(Domain)\$(EfgsUploader)')
+	CREATE LOGIN [$(Domain)\$(EfgsUploader)] FROM WINDOWS;
 
 
 
@@ -76,3 +80,7 @@ IF NOT EXISTS (SELECT name FROM [sys].[database_principals] WHERE name = N'$(Dom
 	CREATE USER [$(Domain)\$(DbProvision)];
 IF NOT EXISTS (SELECT name FROM [sys].[database_principals] WHERE name = N'$(Domain)\$(GenTeks)')
 	CREATE USER [$(Domain)\$(GenTeks)];
+IF NOT EXISTS (SELECT name FROM [sys].[database_principals] WHERE name = N'$(Domain)\$(EfgsDownloader)')
+	CREATE USER [$(Domain)\$(EfgsDownloader)];
+IF NOT EXISTS (SELECT name FROM [sys].[database_principals] WHERE name = N'$(Domain)\$(EfgsUploader)')
+	CREATE USER [$(Domain)\$(EfgsUploader)];

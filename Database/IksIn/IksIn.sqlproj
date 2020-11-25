@@ -78,8 +78,8 @@
     <Build Include="Security\Roles\Dbr_Service.sql" />
     <Build Include="Security\Roles\Dbr_Users.sql" />
     <Build Include="Security\Roles\Subroles.sql" />
+    <Build Include="dbo\Tables\IksInJob.sql" />
   </ItemGroup>
-
   <ItemGroup>
     <SqlCmdVariable Include="Appbeheerders">
       <DefaultValue>
@@ -105,6 +105,16 @@
       <DefaultValue>
       </DefaultValue>
       <Value>$(SqlCmdVar__2)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="EfgsDownloader">
+      <DefaultValue>
+      </DefaultValue>
+      <Value>$(SqlCmdVar__17)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="EfgsUploader">
+      <DefaultValue>
+      </DefaultValue>
+      <Value>$(SqlCmdVar__18)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="EksEngine">
       <DefaultValue>
