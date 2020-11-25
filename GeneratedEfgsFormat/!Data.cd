@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="Eu.Interop.EfgsReflection">
+    <Position X="17" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Efgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Eu.Interop.DiagnosisKeyBatch" BaseTypeListCollapsed="true">
+    <Position X="12.5" Y="1" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAACQEAAACYEiAAAAAAACEEAAIAhAAAAAAAAABA=</HashCode>
+      <FileName>Efgs.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Eu.Interop.DiagnosisKey" BaseTypeListCollapsed="true">
+    <Position X="3.75" Y="0.5" Width="3.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAoAAACAcQAAC4EgCcAIAAACOMEAIAiAgAEgBkRABA=</HashCode>
+      <FileName>Efgs.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ReportType" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Enum Name="Eu.Interop.EfgsReportType">
+    <Position X="8.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAEAAAAIgAIAAAAACAAAAAABA=</HashCode>
+      <FileName>Efgs.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
