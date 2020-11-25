@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 {
-    public class HttpGetIksCommand {
+    public class HttpGetIksCommand : IIHttpGetIksCommand {
 
         private readonly IEfgsConfig _EfgsConfig;
         private readonly IAuthenticationCertificateProvider _CertificateProvider;

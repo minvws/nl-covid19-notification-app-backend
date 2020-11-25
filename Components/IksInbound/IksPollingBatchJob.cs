@@ -15,12 +15,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
     public class IksPollingBatchJob
     {
         private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly Func<HttpGetIksCommand> _ReceiverFactory;
-        private readonly Func<IksWriterCommand> _WriterFactory;
+        private readonly Func<IIHttpGetIksCommand> _ReceiverFactory;
+        private readonly Func<IIksWriterCommand> _WriterFactory;
         private readonly IksInDbContext _IksInDbContext;
         private readonly IEfgsConfig _EfgsConfig;
 
-        public IksPollingBatchJob(IUtcDateTimeProvider dateTimeProvider, Func<HttpGetIksCommand> receiverFactory, Func<IksWriterCommand> writerFactory, IksInDbContext iksInDbContext, IEfgsConfig efgsConfig)
+        public IksPollingBatchJob(IUtcDateTimeProvider dateTimeProvider, Func<IIHttpGetIksCommand> receiverFactory, Func<IIksWriterCommand> writerFactory, IksInDbContext iksInDbContext, IEfgsConfig efgsConfig)
         {
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _ReceiverFactory = receiverFactory ?? throw new ArgumentNullException(nameof(receiverFactory));
