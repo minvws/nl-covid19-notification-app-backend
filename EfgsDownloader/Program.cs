@@ -23,16 +23,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
             try
             {
                 new ConsoleAppRunner().Execute(args, Configure, Start);
-
-                Console.Read();
-
                 return 0;
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
-
                 return -1;
             }
         }
