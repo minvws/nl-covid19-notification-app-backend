@@ -8,6 +8,8 @@ REM double check later
 echo f|xcopy ..\s\EksEngine\appsettings.release.json Artifacts\EksEngine\appsettings.json /Y
 echo f|xcopy ..\s\ManifestEngine\appsettings.release.json Artifacts\ManifestEngine\appsettings.json /Y
 echo f|xcopy ..\s\DailyCleanup\appsettings.release.json Artifacts\DailyCleanup\appsettings.json /Y
+echo f|xcopy ..\s\EfgsDownloader\appsettings.release.json Artifacts\EfgsDownloader\appsettings.json /Y
+echo f|xcopy ..\s\EfgsUploader\appsettings.release.json Artifacts\EfgsUploader\appsettings.json /Y
 
 echo f|xcopy ..\s\DbProvision\appsettings.release.json Artifacts\DbProvision\appsettings.json /Y
 echo f|xcopy ..\s\PublishContent\appsettings.release.json Artifacts\PublishContent\appsettings.json /Y
