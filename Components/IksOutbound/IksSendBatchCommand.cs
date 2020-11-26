@@ -11,6 +11,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entiti
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
 {
+    // TODO: this class (together with HttpPostIksCommand) will be refactored soon!
     public class IksSendBatchCommand
     {
         private readonly Func<HttpPostIksCommand> _IksSendCommandFactory;
@@ -41,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
                     .ToList();
             }
 
-            for (var i = 0; i < _Todo.Count && (_LastResult == null || _LastResult.HttpResponseCode == HttpStatusCode.OK); i++)
+            for (var i = 0; i < _Todo.Count && (_LastResult == null || _LastResult.HttpResponseCode == HttpStatusCode.Created); i++)
             {
                 await ProcessOne(_Todo[i]);
             }
@@ -91,8 +92,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
 
             _Results.Add(result);
             
-            item.Sent = _LastResult?.HttpResponseCode == HttpStatusCode.OK;
-
+            // Note: EFGS returns Created on successful upload, not OK.
+            item.Sent = _LastResult?.HttpResponseCode == HttpStatusCode.Created;
 
             // TODO: Implement a state machine for batches; this is useful around error cases.
             // * Re-try for selected states.
