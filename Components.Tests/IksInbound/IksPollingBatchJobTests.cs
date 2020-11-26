@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.IksInbound
@@ -32,6 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.IksInbo
             var downloadedBatches = new List<IksWriteArgs>();
 
             // Assemble: other object
+            var logger = new Mock<ILogger<IksPollingBatchJob>>();
             var now = DateTime.UtcNow;
             var dtp = new Mock<IUtcDateTimeProvider>();
             dtp.Setup(_ => _.Snapshot).Returns(now);
@@ -49,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.IksInbo
             var receiver = new FixedResultHttpGetIksCommand(responses);
 
             // Assemble: create the job to be tested
-            IksPollingBatchJob sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object, _IksInDbProvider.CreateNew(), new EfgsConfig());
+            IksPollingBatchJob sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object, _IksInDbProvider.CreateNew(), new EfgsConfig(), logger.Object);
 
             // Act
             await sut.ExecuteAsync();
@@ -68,6 +70,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.IksInbo
             var downloadedBatches = new List<IksWriteArgs>();
 
             // Assemble: other object
+            var logger = new Mock<ILogger<IksPollingBatchJob>>();
             var now = DateTime.UtcNow;
             var dtp = new Mock<IUtcDateTimeProvider>();
             dtp.Setup(_ => _.Snapshot).Returns(now);
@@ -83,7 +86,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.IksInbo
             var receiver = new FixedResultHttpGetIksCommand(responses);
 
             // Assemble: create the job to be tested
-            IksPollingBatchJob sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object, _IksInDbProvider.CreateNew(), new EfgsConfig());
+            IksPollingBatchJob sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object, _IksInDbProvider.CreateNew(), new EfgsConfig(), logger.Object);
 
             // Act
             await sut.ExecuteAsync();
@@ -101,6 +104,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.IksInbo
             var downloadedBatches = new List<IksWriteArgs>();
 
             // Assemble: other object
+            var logger = new Mock<ILogger<IksPollingBatchJob>>();
+
             var now = DateTime.UtcNow;
             var dtp = new Mock<IUtcDateTimeProvider>();
             dtp.Setup(_ => _.Snapshot).Returns(now);
@@ -116,7 +121,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.IksInbo
             var receiver = new FixedResultHttpGetIksCommand(responses);
 
             // Assemble: create the job to be tested
-            IksPollingBatchJob sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object, _IksInDbProvider.CreateNew(), new EfgsConfig());
+            IksPollingBatchJob sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object, _IksInDbProvider.CreateNew(), new EfgsConfig(), logger.Object);
 
             // Act
             await sut.ExecuteAsync();
@@ -190,5 +195,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.IksInbo
         public string BaseUrl => "";
         public bool SendClientAuthenticationHeaders => true;
         public int DaysToDownload => 1;
+        public int MaxBatchesPerRun => 10;
     }
 }

@@ -13,6 +13,10 @@ using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 {
+    public class EfgsCommunicationException : Exception
+    {
+    }
+
     public class HttpGetIksCommand : IIHttpGetIksCommand {
 
         private readonly IEfgsConfig _EfgsConfig;
@@ -85,23 +89,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
                         return null;
                     case HttpStatusCode.BadRequest:
                         _Logger.LogCritical("EFGS: missing or invalid header!");
-                        return null;
+                        throw new EfgsCommunicationException();
                     case HttpStatusCode.Forbidden:
                         _Logger.LogCritical("EFGS: missing or invalid certificate!");
-                        return null;
+                        throw new EfgsCommunicationException();
                     case HttpStatusCode.NotAcceptable:
                         _Logger.LogCritical("EFGS: data format or content is not valid!");
-                        return null;
+                        throw new EfgsCommunicationException();
                     default:
-                        _Logger.LogCritical("EFGS: undefined HTTP status returned!");
-                        return null;
+                        _Logger.LogCritical("EFGS: undefined HTTP status ({status}) returned!", response.StatusCode);
+                        throw new EfgsCommunicationException();
                 }
             }
             catch (Exception e)
             {
                 _Logger.LogCritical("EFGS error: {Message}", e.Message);
 
-                return null;
+                throw;
             }
         }
     }
