@@ -194,8 +194,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
                         x.GetRequiredService<DosDecodingDiagnosticKeyProcessor>(), //Adds result to metadata
                         x.GetRequiredService<NlTrlFromDecodedDosDiagnosticKeyProcessor>(),
                         x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
-                    })
-                    );
+                    },
+                    x.GetRequiredService<ITekValidatorConfig>(),
+                    x.GetRequiredService<IUtcDateTimeProvider>()
+                    ));
 
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
 

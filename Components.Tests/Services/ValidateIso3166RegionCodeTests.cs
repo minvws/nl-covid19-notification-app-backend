@@ -7,7 +7,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
 {
     public class ValidateIso3166RegionCodeTests
     {
-        private readonly ValidateIso3166RegionCode _Validator = new ValidateIso3166RegionCode();
+        private readonly Iso3166RegionCodeValidator _Validator = new Iso3166RegionCodeValidator();
 
         [InlineData("GB")] //We live in hope.
         [InlineData("BE")]

@@ -148,7 +148,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                         x.GetRequiredService<DosDecodingDiagnosticKeyProcessor>(), //Adds result to metadata
                         x.GetRequiredService<NlTrlFromDecodedDosDiagnosticKeyProcessor>(),
                         x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
-                    })
+                    },
+                    x.GetRequiredService<ITekValidatorConfig>(),
+                    x.GetRequiredService<IUtcDateTimeProvider>()
+                    )
             );
 
             services.AddTransient<IksEngine>();

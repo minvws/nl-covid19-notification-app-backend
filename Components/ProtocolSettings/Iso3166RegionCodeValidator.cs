@@ -4,12 +4,12 @@ using System.Linq;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings
 {
-    public class ValidateIso3166RegionCode
+    public class Iso3166RegionCodeValidator
     {
         private static readonly HashSet<string> _ValidValues;
         private static readonly string[] _NotSupportedDirectlyInDotNet = { "CY" };
 
-        static ValidateIso3166RegionCode()
+        static Iso3166RegionCodeValidator()
         {
             _ValidValues = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
                 .Select(x => new RegionInfo(x.LCID).TwoLetterISORegionName.ToUpper())
