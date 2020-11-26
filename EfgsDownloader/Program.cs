@@ -23,16 +23,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
             try
             {
                 new ConsoleAppRunner().Execute(args, Configure, Start);
-
-                Console.Read();
-
                 return 0;
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
-
                 return -1;
             }
         }
@@ -51,10 +45,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
             services.AddTransient(x => DbContextStartup.IksIn(x, false));
 
             services.AddSingleton<IEfgsConfig, EfgsConfig>();
-            services.AddTransient<HttpGetIksCommand>();
-            services.AddTransient<IksWriterCommand>();
-            services.AddTransient<Func<HttpGetIksCommand>>(x => x.GetService<HttpGetIksCommand>);
-            services.AddTransient<Func<IksWriterCommand>>(x => x.GetService<IksWriterCommand>);
+            services.AddTransient<IIHttpGetIksCommand, HttpGetIksCommand>();
+            services.AddTransient<IIksWriterCommand, IksWriterCommand>();
+            services.AddTransient<Func<IIHttpGetIksCommand>>(x => x.GetService<IIHttpGetIksCommand>);
+            services.AddTransient<Func<IIksWriterCommand>>(x => x.GetService<IIksWriterCommand>);
             services.AddTransient<IksPollingBatchJob>();
 
             services
