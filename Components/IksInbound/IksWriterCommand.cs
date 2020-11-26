@@ -10,7 +10,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 {
-    public class IksWriterCommand
+    public class IksWriterCommand : IIksWriterCommand
     {
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IksInDbContext _DbContext;
