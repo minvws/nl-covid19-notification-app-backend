@@ -209,6 +209,27 @@
       <NamedTestSelector>
         <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.DkToIksSnapshotTestsSqlServer.PublishAfter("0", "0", "120", "0")</TestName>
       </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.TekToDkSnapshotTestsSqlServer.SecondRunShouldChangeNothing("1", "4")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.TekToDkSnapshotTestsSqlServer.PublishAfter("1", "10", "121", "4")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.TekToDkSnapshotTestsSqlServer.PublishAfter("1", "10", "120", "4")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.TekToDkSnapshotTestsSqlServer.PublishAfter("1", "10", "121", "10", "4")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.TekToDkSnapshotTestsSqlServer.PublishAfter("1", "10", "120", "10", "4")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.TekToDkSnapshotTestsSqlServer.PublishAfter("1", "10", "119", "0", "0")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.TekToDkSnapshotTestsSqlServer.PublishAfter("0", "0", "120", "0", "0")</TestName>
+      </NamedTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

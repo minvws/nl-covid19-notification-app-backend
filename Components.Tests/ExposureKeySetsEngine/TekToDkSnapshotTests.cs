@@ -25,18 +25,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         private readonly IWrappedEfExtensions _EfExtensions;
         private readonly LoggerFactory _Lf;
         private readonly Mock<IUtcDateTimeProvider> _DateTimeProvider;
-
+        private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _OutboundCountries;
         protected TekToDkSnapshotTests(IDbProvider<WorkflowDbContext> workflowFac, IDbProvider<DkSourceDbContext> dkSourceFac, IWrappedEfExtensions efExtensions)
         {
             _WorkflowDbProvider = workflowFac ?? throw new ArgumentNullException(nameof(workflowFac));
             _DkSourceDbProvider = dkSourceFac ?? throw new ArgumentNullException(nameof(dkSourceFac));
             _EfExtensions = efExtensions ?? throw new ArgumentNullException(nameof(efExtensions));
             _DateTimeProvider = new Mock<IUtcDateTimeProvider>();
+            _OutboundCountries = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
             _Lf = new LoggerFactory();
         }
 
         private SnapshotWorkflowTeksToDksCommand Create()
         {
+            _OutboundCountries.Setup(x => x.CountriesOfInterest).Returns(new[] { "GB" });
+
             return new SnapshotWorkflowTeksToDksCommand(_Lf.CreateLogger<SnapshotWorkflowTeksToDksCommand>(),
                 _DateTimeProvider.Object,
                 new TransmissionRiskLevelCalculationMk2(),
@@ -44,7 +47,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                 _WorkflowDbProvider.CreateNew,
                 _DkSourceDbProvider.CreateNew,
                 _EfExtensions,
-                new IDiagnosticKeyProcessor[0]
+                new IDiagnosticKeyProcessor[] {
+                    new ExcludeTrlNoneDiagnosticKeyProcessor(),
+                    new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_OutboundCountries.Object),
+                    new NlToEfgsDsosDiagnosticKeyProcessorMk1()
+                }
             );
         }
 
@@ -104,13 +111,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
         #endregion
 
-        [InlineData(0, 0, 120, 0)] //Null case
-        [InlineData(1, 10, 119, 0)] //Just before
-        [InlineData(1, 10, 120, 10)] //Exactly
-        [InlineData(1, 10, 121, 10)] //After
+        [InlineData(0, 0, 120, 0, 0)] //Null case
+        [InlineData(1, 10, 119, 0, 0)] //Just before
+        [InlineData(1, 10, 120, 10, 4)] //Exactly - was 10 - 6 are now filtered out as they have TRL None
+        [InlineData(1, 10, 121, 10, 4)] //After- was 10 - 6 are now filtered out as they have TRL None
         [Theory]
         [ExclusivelyUses(nameof(TekToDkSnapshotTests))]
-        public async Task PublishAfter(int wfCount, int tekPerWfCount, int addMins, int resultCount)
+        public async Task PublishAfter(int wfCount, int tekPerWfCount, int addMins, int resultCount, int writtenCount)
         {
 
             var t = new DateTime(2020, 11, 5, 12, 0, 0, DateTimeKind.Utc);
@@ -125,14 +132,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             var c = Create();
             var result = await c.ExecuteAsync();
 
-            Assert.Equal(resultCount, result.TekCount);
+            Assert.Equal(resultCount, result.TekReadCount);
             Assert.Equal(tekCount - resultCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Unpublished));
-            Assert.Equal(resultCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
+            Assert.Equal(writtenCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.Local.TransmissionRiskLevel != TransmissionRiskLevel.None));
         }
 
         [InlineData(0, 0)] //Null case
         [InlineData(1, 1)]
-        [InlineData(1, 10)]
+        [InlineData(1, 4)] //was 10 - 6 are now filtered out as they have TRL None
         [Theory]
         [ExclusivelyUses(nameof(TekToDkSnapshotTests))]
         public async Task SecondRunShouldChangeNothing(int wfCount, int tekPerWfCount)
@@ -148,7 +155,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             Assert.True(_DkSourceDbProvider.CreateNew().DiagnosisKeys.All(x => x.DailyKey.RollingPeriod == UniversalConstants.RollingPeriodMax)); //Compatible with Apple API
 
             var result = await Create().ExecuteAsync();
-            Assert.Equal(tekCount, result.TekCount);
+            Assert.Equal(tekCount, result.TekReadCount);
             Assert.Equal(tekCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState != PublishingState.Unpublished));
             Assert.Equal(tekCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
 
@@ -156,7 +163,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             result = await Create().ExecuteAsync();
 
             //No changes
-            Assert.Equal(0, result.TekCount);
+            Assert.Equal(0, result.TekReadCount);
             Assert.Equal(tekCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState != PublishingState.Unpublished));
             Assert.Equal(tekCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
         }

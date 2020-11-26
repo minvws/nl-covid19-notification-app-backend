@@ -81,7 +81,9 @@ namespace EksEngine.Tests
                 _WorkflowDbProvider.CreateNew,
                 _DkSourceDbProvider.CreateNew,
                 _EfExtensions,
-                new IDiagnosticKeyProcessor[0]);
+                new IDiagnosticKeyProcessor[] {
+                    
+                }); 
 
             _Rng = new StandardRandomNumberGenerator();
             _EksJob = new ExposureKeySetBatchJobMk3(

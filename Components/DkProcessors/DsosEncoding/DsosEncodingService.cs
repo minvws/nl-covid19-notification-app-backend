@@ -2,7 +2,7 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
 {
-    public class DsosEncoder
+    public class DsosEncodingService
     {
         public static readonly Range<int> ValidRange = new Range<int>(-14, 21);
 
@@ -14,6 +14,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
         public int EncodeRange(int daysSinceLastDayOfInterval, int durationDays)
         {
             return durationDays * 100 + daysSinceLastDayOfInterval;
+        }
+
+        public int EncodeSymptomaticOnsetDateUnknown(int notTheDsos)
+        {
+            return OffsetSymptomaticOnsetDateUnknown + notTheDsos;
         }
 
         public Range<int> ParseToRange(int value)

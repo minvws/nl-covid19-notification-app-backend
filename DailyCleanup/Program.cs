@@ -158,6 +158,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             
             services.AddSingleton<IManifestConfig, ManifestConfig>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
+            services.AddSingleton<IAcceptableCountriesSetting, EfgsInteropConfig>();
+            services.AddSingleton<IOutboundFixedCountriesOfInterestSetting, EfgsInteropConfig>();
 
             services.AddSingleton<EksBuilderV1LoggingExtensions>();
             services.AddSingleton<DailyCleanupLoggingExtensions>();
@@ -173,7 +175,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<MarkWorkFlowTeksAsUsedLoggingExtensions>();
             services.AddSingleton<ManifestUpdateCommandLoggingExtensions>();
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
-            
+
             services.NlResignerStartup();
 
             services.DummySignerStartup();
@@ -183,12 +185,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             services.AddTransient<IksImportBatchJob>();
 
-            services.AddTransient<Func<IksImportCommand>>(
-                x => () => new IksImportCommand(
+            services.AddTransient(
+                x => new IksImportCommand(
                     x.GetRequiredService<DkSourceDbContext>(),
-                    new IDiagnosticKeyProcessor[0]
-                    )
-                );
+                    new IDiagnosticKeyProcessor[]
+                    {
+                        x.GetRequiredService<OnlyIncludeCountryOfOriginKeyProcessor>(), //
+                        x.GetRequiredService<DosDecodingDiagnosticKeyProcessor>(), //Adds result to metadata
+                        x.GetRequiredService<NlTrlFromDecodedDosDiagnosticKeyProcessor>(),
+                        x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
+                    })
+                    );
+
+            services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
 
             services.AddTransient<IksEngine>();
 
@@ -201,4 +210,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.ManifestForV3Startup();
         }
     }
+
 }

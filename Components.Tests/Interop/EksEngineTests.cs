@@ -16,6 +16,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Interop;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Stuffing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.Publishing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -195,8 +196,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
         {
             var dkCount = new IksTestDataGenerator(_IksInDbContextProvider).CreateIks(2);
 
+            var acceptableCountriesSettingMock = new Mock<IAcceptableCountriesSetting>(MockBehavior.Strict);
+            acceptableCountriesSettingMock.Setup(x => x.AcceptableCountries).Returns(new []{"DE"});
+
             await new IksImportBatchJob(_UtcDateTimeProvider, _IksInDbContextProvider.CreateNew(),
-                () => new IksImportCommand(_DkSourceDbContextProvider.CreateNew(), new IDiagnosticKeyProcessor[0])
+                () => new IksImportCommand(_DkSourceDbContextProvider.CreateNew(), new IDiagnosticKeyProcessor[] {
+                    //Current prod config
+                    new OnlyIncludeCountryOfOriginKeyProcessor(acceptableCountriesSettingMock.Object),
+                    new DosDecodingDiagnosticKeyProcessor(),
+                    new NlTrlFromDecodedDosDiagnosticKeyProcessor(new TransmissionRiskLevelCalculationMk2()),
+                    new ExcludeTrlNoneDiagnosticKeyProcessor(),
+                })
             ).ExecuteAsync();
 
             Assert.Equal(dkCount, _DkSourceDbContextProvider.CreateNew().DiagnosisKeys.Count());

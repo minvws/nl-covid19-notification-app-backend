@@ -47,6 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.P
                     Efgs = new EfgsTekInfo 
                     {
                         TransmissionRiskLevel = (TransmissionRiskLevel)x.TransmissionRiskLevel,
+                        CountryOfOrigin = x.Origin,
                         CountriesOfInterest = string.Join(",", x.VisitedCountries),
                         DaysSinceSymptomsOnset = x.DaysSinceOnsetOfSymptoms,
                         ReportType = (ReportType)x.ReportType,

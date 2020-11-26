@@ -6,7 +6,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entiti
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
 {
-    public class NlAcceptableDiagnosticKeyProcessor : IDiagnosticKeyProcessor
+    public class ExcludeTrlNoneDiagnosticKeyProcessor : IDiagnosticKeyProcessor
     {
         public DkProcessingItem? Execute(DkProcessingItem? value)
             => value.DiagnosisKey.Local.TransmissionRiskLevel == TransmissionRiskLevel.None ? null : value;

@@ -84,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                 page = ReadFromWorkflow(index, pagesize);
             }
 
-            _Result.TekCount = index;
+            _Result.TekReadCount = index;
         }
 
         private IList<DiagnosisKeyInputEntity> ReadFromWorkflow(int index, int pageSize)
@@ -147,8 +147,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     DailyKey = x.DailyKey,
                     Local = x.Local,
                     Origin = TekOrigin.Local,
-                }
-                ,
+                },
                 Metadata = new Dictionary<string, object>
                 {
                     //Depends on complex filtering requiring intermediate results to be communicated between filters.
@@ -157,7 +156,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 
             var q4 = _OrderedProcessorList.Execute(q3);
             var items = q4.Select(x => x.DiagnosisKey).ToList();
-
             _Result.DkCount += items.Count;
 
             await db.BulkInsertAsync2(items, new SubsetBulkArgs());

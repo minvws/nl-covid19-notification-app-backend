@@ -129,7 +129,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             var c = Create();
             var result = await c.ExecuteAsync();
 
-            Assert.Equal(resultCount, result.TekCount);
+            Assert.Equal(resultCount, result.TekReadCount);
             Assert.Equal(tekCount - resultCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Unpublished));
             Assert.Equal(resultCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
         }
@@ -152,7 +152,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             Assert.True(_DkSourceDbProvider.CreateNew().DiagnosisKeys.All(x => x.DailyKey.RollingPeriod == UniversalConstants.RollingPeriodMax)); //Compatible with Apple API
 
             var result = await Create().ExecuteAsync();
-            Assert.Equal(tekCount, result.TekCount);
+            Assert.Equal(tekCount, result.TekReadCount);
             Assert.Equal(tekCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState != PublishingState.Unpublished));
             Assert.Equal(tekCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
 
@@ -160,7 +160,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             result = await Create().ExecuteAsync();
 
             //No changes
-            Assert.Equal(0, result.TekCount);
+            Assert.Equal(0, result.TekReadCount);
             Assert.Equal(tekCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState != PublishingState.Unpublished));
             Assert.Equal(tekCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
         }
