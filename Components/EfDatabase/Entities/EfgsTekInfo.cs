@@ -22,6 +22,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
         public ReportType? ReportType { get; set; } = Entities.ReportType.ConfirmedTest;
         
         //TODO length 2
-        public string CountryOfOrigin { get; set; }
+        public string? CountryOfOrigin { get; set; }
     }
 }
