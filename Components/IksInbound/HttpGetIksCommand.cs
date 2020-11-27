@@ -19,6 +19,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 
     public class HttpGetIksCommand : IIHttpGetIksCommand {
 
+        const string ApplicationProtobuf = "application/protobuf; version=1.0";
+
         private readonly IEfgsConfig _EfgsConfig;
         private readonly IAuthenticationCertificateProvider _CertificateProvider;
         private readonly ILogger<HttpGetIksCommand> _Logger;
@@ -50,7 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 
                 // Build the request
                 var request = new HttpRequestMessage {RequestUri = uri};
-                request.Headers.Add("Accept", "application/json;version=1.0");
+                request.Headers.Add("Accept", ApplicationProtobuf);
                 if(!string.IsNullOrWhiteSpace(batchTag)) request.Headers.Add("batchTag", batchTag);
                 if (_EfgsConfig.SendClientAuthenticationHeaders)
                 {
