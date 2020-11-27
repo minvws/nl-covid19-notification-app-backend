@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Moq;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors;
@@ -44,6 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
         private ExposureKeySetBatchJobMk3 _Engine;
         private readonly SnapshotWorkflowTeksToDksCommand _Snapshot;
+        private Mock<IOutboundFixedCountriesOfInterestSetting> _CountriesOut;
 
         protected WfToEks_EksBatchJobMk3Tests(IDbProvider<WorkflowDbContext> workflowFac, IDbProvider<DkSourceDbContext> dkSourceFac, IDbProvider<EksPublishingJobDbContext> publishingFac, IDbProvider<ContentDbContext> contentFac, IWrappedEfExtensions efExtensions)
         {
@@ -102,6 +104,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
         private EksEngineResult RunEngine()
         {
+            _CountriesOut = new Mock<IOutboundFixedCountriesOfInterestSetting>();
+            _CountriesOut.Setup(x => x.CountriesOfInterest).Returns(new[] { "ET" });
             _Engine = new ExposureKeySetBatchJobMk3(
                 _FakeEksConfig,
                 new FakeEksBuilder(),
@@ -113,7 +117,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                 new MarkDiagnosisKeysAsUsedLocally(_DkSourceDbProvider.CreateNew, _FakeEksConfig, _EksPublishingJobDbProvider.CreateNew, _Lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_ContentDbProvider.CreateNew, _EksPublishingJobDbProvider.CreateNew, new Sha256HexPublishingIdService(), 
                     new EksJobContentWriterLoggingExtensions(_Lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
-                new WriteStuffingToDiagnosisKeys(_DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew()),
+                new WriteStuffingToDiagnosisKeys(_DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew(),
+                    new IDiagnosticKeyProcessor[] {
+                        new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_CountriesOut.Object),
+                        new NlToEfgsDsosDiagnosticKeyProcessorMk1()}
+
+
+                    ),
                 _EfExtensions
                 );
 

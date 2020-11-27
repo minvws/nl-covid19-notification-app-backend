@@ -43,17 +43,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ServiceRegHel
                 x.GetRequiredService<Func<WorkflowDbContext>>(),
                 x.GetRequiredService<Func<DkSourceDbContext>>(),
                 x.GetRequiredService<IWrappedEfExtensions>(),
-                new IDiagnosticKeyProcessor[] { 
-                    new ExcludeTrlNoneDiagnosticKeyProcessor(),
-                    new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(x.GetRequiredService<IOutboundFixedCountriesOfInterestSetting>()),
-                    new NlToEfgsDsosDiagnosticKeyProcessorMk1()
+                new IDiagnosticKeyProcessor[] {
+                    x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
+                    x.GetRequiredService<FixedCountriesOfInterestOutboundDiagnosticKeyProcessor>(),
+                    x.GetRequiredService<NlToEfgsDsosDiagnosticKeyProcessorMk1>()
                 }
                 ));
 
             services.AddTransient<ISnapshotEksInput, SnapshotDiagnosisKeys>();
             services.AddTransient<IEksJobContentWriter, EksJobContentWriter>();
             services.AddTransient<MarkDiagnosisKeysAsUsedLocally>();
-            services.AddTransient<IWriteStuffingToDiagnosisKeys, WriteStuffingToDiagnosisKeys>();
+            services.AddTransient<IWriteStuffingToDiagnosisKeys>(x =>
+                new WriteStuffingToDiagnosisKeys(
+                    x.GetRequiredService<DkSourceDbContext>(),
+                    x.GetRequiredService<EksPublishingJobDbContext>(),
+                    new IDiagnosticKeyProcessor[] {
+                        x.GetRequiredService<FixedCountriesOfInterestOutboundDiagnosticKeyProcessor>(),
+                        x.GetRequiredService<NlToEfgsDsosDiagnosticKeyProcessorMk1>()
+                    }));
 
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
             services.AddTransient<GeneratedProtobufEksContentFormatter>();

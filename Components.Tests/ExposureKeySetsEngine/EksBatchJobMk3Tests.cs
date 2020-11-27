@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Moq;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors;
@@ -33,12 +34,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         private SnapshotLoggingExtensions _SnapshotLogger;
         private EksJobContentWriterLoggingExtensions _ContentWriterLogger;
         private MarkWorkFlowTeksAsUsedLoggingExtensions _WorkflowTeksMarkerLogger;
-        private FakeEksConfig _FakeEksConfig;
+        private readonly FakeEksConfig _FakeEksConfig;
         private readonly IDbProvider<WorkflowDbContext> _WorkflowFac;
         private readonly IDbProvider<DkSourceDbContext> _DkSourceDbProvider;
         private readonly IDbProvider<EksPublishingJobDbContext> _EksPublishingJobDbProvider;
         private readonly IDbProvider<ContentDbContext> _ContentDbProvider;
         private readonly IWrappedEfExtensions _EfExtensions;
+        private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _OutboundCountriesMock;
 
         private readonly LoggerFactory _Lf;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
@@ -70,8 +72,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                 _WorkflowFac.CreateNew,
                 _DkSourceDbProvider.CreateNew, 
                 _EfExtensions,
-                new IDiagnosticKeyProcessor[0]
+                new IDiagnosticKeyProcessor[] { 
+                
+                }
                 );
+
+            _OutboundCountriesMock = new Mock<IOutboundFixedCountriesOfInterestSetting>();
+            _OutboundCountriesMock.Setup(x => x.CountriesOfInterest).Returns(new []{"CY","BG"});
         }
 
         private void Write(TekReleaseWorkflowStateEntity[] workflows)
@@ -119,7 +126,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
                 new MarkDiagnosisKeysAsUsedLocally(_DkSourceDbProvider.CreateNew, _FakeEksConfig, _EksPublishingJobDbProvider.CreateNew, _Lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_ContentDbProvider.CreateNew, _EksPublishingJobDbProvider.CreateNew, new Sha256HexPublishingIdService(), 
                     new EksJobContentWriterLoggingExtensions(_Lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
-                new WriteStuffingToDiagnosisKeys(_DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew()),
+                new WriteStuffingToDiagnosisKeys(_DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew(),
+                    new IDiagnosticKeyProcessor[] {
+                    new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_OutboundCountriesMock.Object),
+                    new NlToEfgsDsosDiagnosticKeyProcessorMk1()
+                    }
+                    ),
                 _EfExtensions
                 );
 

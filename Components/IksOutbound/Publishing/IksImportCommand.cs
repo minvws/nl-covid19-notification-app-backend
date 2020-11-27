@@ -68,7 +68,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.P
                     PublishedToEfgs = true, //Do not send back to EFGS
                     Efgs = new EfgsTekInfo 
                     {
-                        TransmissionRiskLevel = (TransmissionRiskLevel)x.TransmissionRiskLevel,
                         CountryOfOrigin = x.Origin,
                         CountriesOfInterest = string.Join(",", x.VisitedCountries),
                         DaysSinceSymptomsOnset = x.DaysSinceOnsetOfSymptoms,
@@ -87,7 +86,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.P
             }).ToArray();
 
             items = _ImportProcessors.Execute(items);
-
             var result = items.Select(x => x.DiagnosisKey).ToList(); //Can't get rid of compiler warning.
             await _DkSourceDbContext.BulkInsertAsync2(result, new SubsetBulkArgs());
         }
