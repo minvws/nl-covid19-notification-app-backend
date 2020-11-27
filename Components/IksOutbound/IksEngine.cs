@@ -110,6 +110,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
 
             await using var dbc = _PublishingDbContextFac();
             _SqlCommands.TruncateTable(dbc, TableNames.IksEngineInput);
+            _SqlCommands.TruncateTable(dbc, TableNames.IksEngineOutput);
         }
 
         private async Task BuildOutput()
