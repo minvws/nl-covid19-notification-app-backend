@@ -1,9 +1,16 @@
-﻿CREATE TABLE [dbo].[IksIn] (
-    [Id]       INT             IDENTITY (1, 1) NOT NULL,
-    [BatchTag] NVARCHAR (MAX)  NOT NULL,
-    [Created]  DATETIME2 (7)   NOT NULL,
-    [Content]  VARBINARY (MAX) NOT NULL,
-    [Accepted] DATETIME2 (7)   NULL,
-    CONSTRAINT [PK_IksIn] PRIMARY KEY CLUSTERED ([Id] ASC)
-);
+﻿CREATE TABLE [dbo].[IksIn](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[BatchTag] [nvarchar](max) NOT NULL,
+	[Created] [datetime2](7) NOT NULL,
+	[Content] [varbinary](max) NOT NULL,
+	[Accepted] [datetime2](7) NULL,
+	[Error] [bit] NOT NULL,
+ CONSTRAINT [PK_IksIn] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
 
+ALTER TABLE [dbo].[IksIn] ADD  CONSTRAINT [DF_IksIn_Error]  DEFAULT ((0)) FOR [Error]
+GO
