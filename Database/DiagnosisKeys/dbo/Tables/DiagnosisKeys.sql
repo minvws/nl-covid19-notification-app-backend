@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[DiagnosisKeys] (
+﻿CREATE TABLE [dbo].[DiagnosisKeys](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL,
 	[PublishedLocally] [bit] NOT NULL,
 	[DailyKey_KeyData] [varbinary](max) NULL,
@@ -13,10 +13,16 @@
 	[Efgs_TransmissionRiskLevel] [int] NULL,
 	[Efgs_DaysSinceSymptomsOnset] [int] NULL,
 	[Efgs_ReportType] [int] NULL,
+	[Efgs_CountryOfOrigin] [nvarchar](2) NULL,
+	[Created] [datetime2](7) NULL,
  CONSTRAINT [PK_DiagnosisKeys] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+
+ALTER TABLE [dbo].[DiagnosisKeys] ADD  CONSTRAINT [DF_DiagnosisKeys_Created]  DEFAULT (getdate()) FOR [Created]
+GO
+
 

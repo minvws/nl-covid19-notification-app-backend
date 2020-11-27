@@ -214,11 +214,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
                     new OnlyIncludeCountryOfOriginKeyProcessor(acceptableCountriesSettingMock.Object),
                     new DosDecodingDiagnosticKeyProcessor(),
                     new NlTrlFromDecodedDosDiagnosticKeyProcessor(new TransmissionRiskLevelCalculationMk2()),
-                    new ExcludeTrlNoneDiagnosticKeyProcessor(),
+                    new ExcludeTrlNoneDiagnosticKeyProcessor()
                 },
                 _TekValidatorConfigMock.Object,
-                new StandardUtcDateTimeProvider()))
-                .ExecuteAsync();
+                new StandardUtcDateTimeProvider(),
+                _LoggerFactory.CreateLogger<IksImportCommand>()
+                )).ExecuteAsync();
 
             Assert.Equal(dkCount, _DkSourceDbContextProvider.CreateNew().DiagnosisKeys.Count());
             Assert.Equal(dkCount, _DkSourceDbContextProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedToEfgs));

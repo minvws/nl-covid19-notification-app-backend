@@ -4,10 +4,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Eu.Interop;
 using Google.Protobuf;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -28,22 +30,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.P
         private readonly Iso3166RegionCodeValidator _CountryValidator = new Iso3166RegionCodeValidator();
         private readonly ITekValidatorConfig _TekValidatorConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly ILogger<IksImportCommand> _Logger;
 
-        public IksImportCommand(DkSourceDbContext dkSourceDbContext, IDiagnosticKeyProcessor[] importProcessors, ITekValidatorConfig tekValidatorConfig, IUtcDateTimeProvider dateTimeProvider)
+        public IksImportCommand(DkSourceDbContext dkSourceDbContext, IDiagnosticKeyProcessor[] importProcessors, ITekValidatorConfig tekValidatorConfig, IUtcDateTimeProvider dateTimeProvider, ILogger<IksImportCommand> logger)
         {
             _DkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
             _ImportProcessors = importProcessors ?? throw new ArgumentNullException(nameof(importProcessors));
             _TekValidatorConfig = tekValidatorConfig ?? throw new ArgumentNullException(nameof(tekValidatorConfig));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task Execute(IksInEntity entity)
         {
-            var parser = new MessageParser<DiagnosisKeyBatch>(() => new DiagnosisKeyBatch());
-            var batch = parser.ParseFrom(entity.Content);
 
-            if (batch == null || batch.Keys == null)
+            if (!TryParse(entity.Content, out var batch))
+            {
+                entity.Error = true;
                 return;
+            }
+
+            if (batch?.Keys == null || batch.Keys.Count == 0)
+            {
+                //TODO log.
+                entity.Error = true;
+                return;
+            }
 
             var items = batch.Keys
                 .Where(Valid)
@@ -78,6 +90,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.P
 
             var result = items.Select(x => x.DiagnosisKey).ToList(); //Can't get rid of compiler warning.
             await _DkSourceDbContext.BulkInsertAsync2(result, new SubsetBulkArgs());
+        }
+
+        private bool TryParse(byte[] buffer, out DiagnosisKeyBatch? result)
+        {
+            result = null;
+            try
+            {
+                var parser = new MessageParser<DiagnosisKeyBatch>(() => new DiagnosisKeyBatch());
+                result = parser.ParseFrom(buffer);
+                return true;
+            }
+            catch (InvalidProtocolBufferException e)
+            {
+                _Logger.LogError("Error reading IKS protobuf.", e.ToString());
+                return false;
+            }
         }
 
         private bool Valid(DiagnosisKey value)

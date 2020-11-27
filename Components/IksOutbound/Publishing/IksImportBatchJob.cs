@@ -41,7 +41,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.P
             {
                 var processor = _InboundIksReaderFunc();
                 await processor.Execute(item);
-                item.Accepted = _DateTimeProvider.Snapshot;
+
+                if (!item.Error)
+                    item.Accepted = _DateTimeProvider.Snapshot;
+
                 _IksInDbContext.Update(item);
                 _IksInDbContext.SaveChanges();
             }
@@ -56,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.P
         private IksInEntity? GetItem()
         {
             return _IksInDbContext.Received
-                .Where(x => x.Content != null && x.Accepted == null)
+                .Where(x => x.Content != null && x.Accepted == null && !x.Error)
                 .OrderBy(x => x.Created)
                 .Take(1)
                 .SingleOrDefault();

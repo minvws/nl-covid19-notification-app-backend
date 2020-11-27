@@ -21,5 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
         /// DKs have been processed and are in TekSource
         /// </summary>
         public DateTime? Accepted { get; set; }
+
+        public bool Error { get; set; }
     }
 }

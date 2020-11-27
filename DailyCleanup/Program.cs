@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors;
@@ -196,8 +197,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
                         x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
                     },
                     x.GetRequiredService<ITekValidatorConfig>(),
-                    x.GetRequiredService<IUtcDateTimeProvider>()
+                    x.GetRequiredService<IUtcDateTimeProvider>(),
+                    x.GetRequiredService<ILogger<IksImportCommand>>()
                     ));
+
+            services.AddTransient<OnlyIncludeCountryOfOriginKeyProcessor>();
+            services.AddTransient<DosDecodingDiagnosticKeyProcessor>();
+            services.AddTransient<NlTrlFromDecodedDosDiagnosticKeyProcessor>();
+            services.AddTransient<ExcludeTrlNoneDiagnosticKeyProcessor>();
 
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
 
