@@ -120,9 +120,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest
             _Logger.WriteFinished();
         }
 
-        private async Task<bool> WriteCandidateAsync(ManifestContent candidate, string contenttype)
+        private async Task<bool> WriteCandidateAsync(ManifestContent candidate, string contentType)
         {
-            var existingContent = await _ContentDb.SafeGetLatestContentAsync(ContentTypes.Manifest, _DateTimeProvider.Snapshot);
+            var existingContent = await _ContentDb.SafeGetLatestContentAsync(contentType, _DateTimeProvider.Snapshot);
             if (existingContent == null)
                 return true;
 
