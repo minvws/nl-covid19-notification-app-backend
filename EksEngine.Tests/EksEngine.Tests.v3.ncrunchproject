@@ -1,13 +1,5 @@
 ﻿<ProjectConfiguration>
   <Settings>
     <DefaultTestTimeout>120000</DefaultTestTimeout>
-    <IgnoredTests>
-      <NamedTestSelector>
-        <TestName>EksEngine.Tests.EksEngineTestsSqlServer.EmptySystemNoTeks</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>EksEngine.Tests.EksEngineTestsSqlServer.EmptySystemSingleTek</TestName>
-      </NamedTestSelector>
-    </IgnoredTests>
   </Settings>
 </ProjectConfiguration>
