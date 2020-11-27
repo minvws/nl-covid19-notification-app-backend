@@ -2,6 +2,8 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components
 {
     /// <summary>
@@ -10,6 +12,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components
     public class UniversalConstants
     {
         public const int DailyKeyDataLength = 16;
+        
+        [Obsolete("RollingPeriodRange.Hi")]
         public const int RollingPeriodMax = 144;
+
+        public static readonly Range<int> RollingPeriodRange = new Range<int>(1, 144);
+
     }
 }

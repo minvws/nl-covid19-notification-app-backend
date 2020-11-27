@@ -6,7 +6,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
 {
-    public class LocalTrlCalculation : IDiagnosticKeyProcessor
+    public class LocalTrlCalculationDiagnosticKeyProcessor : IDiagnosticKeyProcessor
     {
         public DkProcessingItem? Execute(DkProcessingItem? value)
         {

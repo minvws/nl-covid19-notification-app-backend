@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
 {
@@ -6,16 +9,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
     {
         private readonly string[] _Value;
 
-        public FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(IFixedCountriesOfInterestSetting settings)
+        public FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(IOutboundFixedCountriesOfInterestSetting settings)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             _Value = settings.CountriesOfInterest;
         }
 
         public DkProcessingItem? Execute(DkProcessingItem? value)
-        { 
-            value.Metadata.Remove("CountriesOfInterest");
-            value.Metadata.Add("CountriesOfInterest", _Value);
+        {
+            if (value.DiagnosisKey.Origin != TekOrigin.Local)
+                throw new InvalidOperationException("This is a local processor for local DKs. You wouldn't like it here...");
+
+            value.DiagnosisKey.Efgs.CountriesOfInterest = string.Join(",", _Value);
             return value;
         }
     }

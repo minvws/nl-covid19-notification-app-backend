@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCrunch.Framework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
@@ -41,6 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
         private readonly ILoggerFactory _LoggerFactory = new SerilogLoggerFactory();
 
         private readonly Mock<IIksConfig> _IksConfigMock = new Mock<IIksConfig>(MockBehavior.Strict);
+        private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _CountriesConfigMock = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
         private readonly Mock<IUtcDateTimeProvider> _UtcDateTimeProviderMock = new Mock<IUtcDateTimeProvider>(MockBehavior.Strict);
 
         protected IksEngineTest(IDbProvider<WorkflowDbContext> workflowDbContextProvider, IDbProvider<IksInDbContext> iksInDbContextProvider, IDbProvider<DkSourceDbContext> dkSourceDbContextProvider, IDbProvider<IksPublishingJobDbContext> iksPublishingJobDbContextProvider, IDbProvider<IksOutDbContext> iksOutDbContextProvider, IWrappedEfExtensions efExtensions)
@@ -57,10 +59,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
         {
             _IksConfigMock.Setup(x => x.ItemCountMax).Returns(750);
             _IksConfigMock.Setup(x => x.PageSize).Returns(1000);
-
+            _CountriesConfigMock.Setup(x => x.CountriesOfInterest).Returns(new []{"GB", "AU"});
             return new IksEngine(
                 _LoggerFactory.CreateLogger<IksEngine>(),
-                new IksInputSnapshotCommand(_LoggerFactory.CreateLogger<IksInputSnapshotCommand>(), _DkSourceDbContextProvider.CreateNew(), _IksPublishingJobDbContextProvider.CreateNew),
+                new IksInputSnapshotCommand(_LoggerFactory.CreateLogger<IksInputSnapshotCommand>(), _DkSourceDbContextProvider.CreateNew(), _IksPublishingJobDbContextProvider.CreateNew, _CountriesConfigMock.Object),
                 new IksFormatter(),
                 _IksConfigMock.Object,
                 _UtcDateTimeProviderMock.Object,
@@ -108,7 +110,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
             var idk = new InteropKeyFormatterArgs
             {
                 TransmissionRiskLevel = 1,
-                CountriesOfInterest = new[] {"Outer Mongolia"},
+                CountriesOfInterest = new[] {"Any rock on an M-class."},
                 ReportType = Eu.Interop.EfgsReportType.ConfirmedTest,
                 Origin = "DE",
                 DaysSinceSymtpomsOnset = 1,

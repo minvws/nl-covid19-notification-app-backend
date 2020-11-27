@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DkProce
             Assert.Equal(expected, JavascriptMaths.Round(input));
         }
 
-        private readonly DsosEncoder _Encoder = new DsosEncoder();
+        private readonly DsosEncodingService _EncodingService = new DsosEncodingService();
 
         [InlineData(int.MinValue)]
         [InlineData(-15)]
@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DkProce
         [Theory]
         public void Invalid(int value)
         {
-            Assert.False(_Encoder.TryDecode(value, out _));
+            Assert.False(_EncodingService.TryDecode(value, out _));
         }
 
         [InlineData(-14)]
@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DkProce
         [Theory]
         public void SimpleValid(int value)
         {
-            Assert.True(_Encoder.TryDecode(value, out var _));
+            Assert.True(_EncodingService.TryDecode(value, out var _));
         }
 
         [InlineData(-14)]
@@ -57,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DkProce
         [Theory]
         public void SymptomaticExact(int value)
         {
-            Assert.True(_Encoder.TryDecode(value, out var result));
+            Assert.True(_EncodingService.TryDecode(value, out var result));
             Assert.Equal(SymptomObservation.Symptomatic, result.SymptomObservation);
             Assert.Throws<InvalidOperationException>(() => result.DaysSinceSubmission);
 
@@ -72,9 +72,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DkProce
         [Theory]
         public void SymptomaticExactWithEncode(int original)
         {
-            Assert.True(_Encoder.TryEncodeSymptomatic(original, out var value));
+            Assert.True(_EncodingService.TryEncodeSymptomatic(original, out var value));
 
-            Assert.True(_Encoder.TryDecode(value, out var result));
+            Assert.True(_EncodingService.TryDecode(value, out var result));
             Assert.Equal(SymptomObservation.Symptomatic, result.SymptomObservation);
             Assert.Throws<InvalidOperationException>(() => result.DaysSinceSubmission);
 
@@ -96,7 +96,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DkProce
         [Theory]
         public void Parse(int value, int lastDay, int duration)
         {
-            var result = _Encoder.ParseToRange(value);
+            var result = _EncodingService.ParseToRange(value);
             Assert.Equal(new Range<int>(lastDay, duration), result);
         }
 
@@ -114,7 +114,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DkProce
         [Theory]
         public void SymptomaticRange(int value, int lo, int hi)
         {
-            Assert.True(_Encoder.TryDecode(value, out var result));
+            Assert.True(_EncodingService.TryDecode(value, out var result));
             Assert.Equal(SymptomObservation.Symptomatic, result.SymptomObservation);
             Assert.Throws<InvalidOperationException>(() => result.DaysSinceSubmission);
 
@@ -129,7 +129,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DkProce
         [Theory]
         public void SymptomaticOnsetUnknown(int value, int expected)
         {
-            Assert.True(_Encoder.TryDecode(value, out var result));
+            Assert.True(_EncodingService.TryDecode(value, out var result));
             Assert.Equal(SymptomObservation.Symptomatic, result.SymptomObservation);
             Assert.Equal(expected, result.DaysSinceSubmission);
 
@@ -144,7 +144,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DkProce
         [Theory]
         public void Asymptomatic(int value, int expected)
         {
-            Assert.True(_Encoder.TryDecode(value, out var result));
+            Assert.True(_EncodingService.TryDecode(value, out var result));
             Assert.Equal(SymptomObservation.Asymptomatic, result.SymptomObservation);
             Assert.Equal(expected, result.DaysSinceSubmission);
             Assert.Throws<InvalidOperationException>(() => result.AsSymptomatic());
@@ -154,7 +154,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DkProce
         [Theory]
         public void SymptomaticnessAllABitVague(int value, int expected)
         {
-            Assert.True(_Encoder.TryDecode(value, out var result));
+            Assert.True(_EncodingService.TryDecode(value, out var result));
             Assert.Equal(SymptomObservation.Unknown, result.SymptomObservation);
             Assert.Equal(expected, result.DaysSinceSubmission);
             Assert.Throws<InvalidOperationException>(() => result.AsSymptomatic());

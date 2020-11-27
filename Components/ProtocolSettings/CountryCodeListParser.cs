@@ -5,7 +5,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSetti
 {
     public class CountryCodeListParser
     {
-        private readonly ValidateIso3166RegionCode _Validator = new ValidateIso3166RegionCode();
+        private readonly Iso3166RegionCodeValidator _Validator = new Iso3166RegionCodeValidator();
 
         public string[] Parse(string value)
         {

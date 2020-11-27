@@ -6,7 +6,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
 {
     public class SnapshotWorkflowTeksToDksResult
     {
-        public int TekCount { get; set; }
+        public int TekReadCount { get; set; }
         public int DkCount { get; set; }
     }
 }

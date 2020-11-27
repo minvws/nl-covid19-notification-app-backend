@@ -16,6 +16,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Interop;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Stuffing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.Publishing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -50,6 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
         private readonly IDbProvider<ContentDbContext> _ContentDbContextProvider;
 
         private readonly IWrappedEfExtensions _EfExtensions;
+        private Mock<ITekValidatorConfig> _TekValidatorConfigMock;
         private const int EksMinTekCount = 150;
         private const int TekCountMax = 750;
 
@@ -61,6 +63,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
             _PublishingJobDbContextProvider = publishingJobDbContextProvider ?? throw new ArgumentNullException(nameof(publishingJobDbContextProvider));
             _ContentDbContextProvider = contentDbContextProvider ?? throw new ArgumentNullException(nameof(contentDbContextProvider));
             _EfExtensions = efExtensions ?? throw new ArgumentNullException(nameof(efExtensions));
+
+            _TekValidatorConfigMock = new Mock<ITekValidatorConfig>(MockBehavior.Strict);
         }
         
 
@@ -78,10 +82,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
             eksHeaderInfoMock.Setup(x => x.VerificationKeyId).Returns("FakeVerificationKeyId");
             eksHeaderInfoMock.Setup(x => x.VerificationKeyVersion).Returns("FakeVerificationKeyVersion");
 
-            var tekValidatorConfigMock = new Mock<ITekValidatorConfig>(MockBehavior.Loose);
-            tekValidatorConfigMock.Setup(x => x.RollingPeriodMax).Returns(UniversalConstants.RollingPeriodMax);
-            tekValidatorConfigMock.Setup(x => x.MaxAgeDays).Returns(14);
-            tekValidatorConfigMock.Setup(x => x.KeyDataLength).Returns(30);
+            _TekValidatorConfigMock = new Mock<ITekValidatorConfig>(MockBehavior.Strict);
+            _TekValidatorConfigMock.Setup(x => x.RollingPeriodMax).Returns(UniversalConstants.RollingPeriodMax);
+            _TekValidatorConfigMock.Setup(x => x.MaxAgeDays).Returns(14);
+            _TekValidatorConfigMock.Setup(x => x.KeyDataLength).Returns(30);
 
             //Real objects:
             var lf = new LoggerFactory();
@@ -195,9 +199,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
         {
             var dkCount = new IksTestDataGenerator(_IksInDbContextProvider).CreateIks(2);
 
+            var acceptableCountriesSettingMock = new Mock<IAcceptableCountriesSetting>(MockBehavior.Strict);
+            acceptableCountriesSettingMock.Setup(x => x.AcceptableCountries).Returns(new []{"DE"});
+
+            _TekValidatorConfigMock.Setup(x => x.KeyDataLength).Returns(UniversalConstants.DailyKeyDataLength);
+            _TekValidatorConfigMock.Setup(x => x.MaxAgeDays).Returns(21);
+            _TekValidatorConfigMock.Setup(x => x.RollingPeriodMin).Returns(UniversalConstants.RollingPeriodRange.Lo);
+            _TekValidatorConfigMock.Setup(x => x.RollingPeriodMax).Returns(UniversalConstants.RollingPeriodRange.Hi);
+            _TekValidatorConfigMock.Setup(x => x.RollingStartNumberMin).Returns(new DateTime(2020,1,1,0,0,0,DateTimeKind.Utc).Date.ToRollingStartNumber());
+
             await new IksImportBatchJob(_UtcDateTimeProvider, _IksInDbContextProvider.CreateNew(),
-                () => new IksImportCommand(_DkSourceDbContextProvider.CreateNew(), new IDiagnosticKeyProcessor[0])
-            ).ExecuteAsync();
+                () => new IksImportCommand(_DkSourceDbContextProvider.CreateNew(), new IDiagnosticKeyProcessor[] {
+                    //Current prod config
+                    new OnlyIncludeCountryOfOriginKeyProcessor(acceptableCountriesSettingMock.Object),
+                    new DosDecodingDiagnosticKeyProcessor(),
+                    new NlTrlFromDecodedDosDiagnosticKeyProcessor(new TransmissionRiskLevelCalculationMk2()),
+                    new ExcludeTrlNoneDiagnosticKeyProcessor(),
+                },
+                _TekValidatorConfigMock.Object,
+                new StandardUtcDateTimeProvider()))
+                .ExecuteAsync();
 
             Assert.Equal(dkCount, _DkSourceDbContextProvider.CreateNew().DiagnosisKeys.Count());
             Assert.Equal(dkCount, _DkSourceDbContextProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedToEfgs));

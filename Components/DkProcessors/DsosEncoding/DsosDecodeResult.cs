@@ -27,26 +27,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
         public static DsosDecodeResult CreateSymptomatic(Range<int> relativeDayRange) => new SymptomaticDsosDecodeResult(relativeDayRange);
         public static DsosDecodeResult CreateSymptomatic(int daysSinceOnsetOfSymptoms) => new SymptomaticDsosDecodeResult(daysSinceOnsetOfSymptoms, true);
         public static DsosDecodeResult CreateSymptomaticOnsetUnknown(int daysSinceSubmission) => new SymptomaticDsosDecodeResult(daysSinceSubmission, false);
-
         public SymptomaticDsosDecodeResult AsSymptomatic() => this as SymptomaticDsosDecodeResult ?? throw new InvalidOperationException();
-    }
-
-    public class SymptomaticDsosDecodeResult : DsosDecodeResult
-    {
-        public SymptomaticDsosDecodeResult(Range<int> dayRange) : base(SymptomObservation.Symptomatic, dayRange)
-        {
-            SymptomsOnsetDatePrecision = SymptomsOnsetDatePrecision.Range;
-        }
-
-        public SymptomaticDsosDecodeResult(int value, bool exact) : base(SymptomObservation.Symptomatic, new Range<int>(value))
-        {
-            SymptomsOnsetDatePrecision = exact ? SymptomsOnsetDatePrecision.Exact : SymptomsOnsetDatePrecision.Unknown;
-        }
-
-        public SymptomsOnsetDatePrecision SymptomsOnsetDatePrecision { get; }
-
-        public Range<int> DaysSinceLastSymptoms => SymptomsOnsetDatePrecision == SymptomsOnsetDatePrecision.Range ? Values : throw new InvalidOperationException();
-        public int DaysSinceOnsetOfSymptoms => SymptomsOnsetDatePrecision == SymptomsOnsetDatePrecision.Exact ? Values.Hi : throw new InvalidOperationException();
-        public override int DaysSinceSubmission => SymptomsOnsetDatePrecision == SymptomsOnsetDatePrecision.Unknown ? Values.Hi : throw new InvalidOperationException();
     }
 }

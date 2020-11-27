@@ -107,6 +107,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddSingleton<IEksHeaderInfoConfig, EksHeaderInfoConfig>();
             services.AddSingleton<IEksConfig, StandardEksConfig>();
 
+            services.AddSingleton<IAcceptableCountriesSetting, EfgsInteropConfig>();
+            services.AddSingleton<IOutboundFixedCountriesOfInterestSetting, EfgsInteropConfig>();
+
             //EKS Engine
             services.EksEngine();
 
@@ -135,12 +138,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
 
             services.AddTransient<IksImportBatchJob>();
-
-            services.AddTransient<Func<IksImportCommand>>(
-                x => () => new IksImportCommand(
+            services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
+            services.AddTransient(
+                x => new IksImportCommand(
                     x.GetRequiredService<DkSourceDbContext>(),
-                    new IDiagnosticKeyProcessor[0]
-                )
+                    new IDiagnosticKeyProcessor[]
+                    {
+                        x.GetRequiredService<OnlyIncludeCountryOfOriginKeyProcessor>(), //
+                        x.GetRequiredService<DosDecodingDiagnosticKeyProcessor>(), //Adds result to metadata
+                        x.GetRequiredService<NlTrlFromDecodedDosDiagnosticKeyProcessor>(),
+                        x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
+                    },
+                    x.GetRequiredService<ITekValidatorConfig>(),
+                    x.GetRequiredService<IUtcDateTimeProvider>()
+                    )
             );
 
             services.AddTransient<IksEngine>();

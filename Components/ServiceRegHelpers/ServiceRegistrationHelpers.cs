@@ -44,7 +44,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ServiceRegHel
                 x.GetRequiredService<Func<DkSourceDbContext>>(),
                 x.GetRequiredService<IWrappedEfExtensions>(),
                 new IDiagnosticKeyProcessor[] { 
-                    new NlAcceptableDiagnosticKeyProcessor()
+                    new ExcludeTrlNoneDiagnosticKeyProcessor(),
+                    new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(x.GetRequiredService<IOutboundFixedCountriesOfInterestSetting>()),
+                    new NlToEfgsDsosDiagnosticKeyProcessorMk1()
                 }
                 ));
 

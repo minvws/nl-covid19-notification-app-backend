@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCrunch.Framework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.Publishing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
@@ -25,6 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
         private readonly IDbProvider<IksPublishingJobDbContext> _IksPublishingDbProvider;
         private readonly LoggerFactory _Lf = new LoggerFactory();
         private readonly Mock<IUtcDateTimeProvider> _DateTimeProvider = new Mock<IUtcDateTimeProvider>();
+        private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _CountriesConfigMock = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
 
         protected DkToIksSnapshotTests(IDbProvider<DkSourceDbContext> dkSourceDbProvider, IDbProvider<IksPublishingJobDbContext> iksPublishingDbProvider)
         {
@@ -34,9 +37,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
 
         private IksInputSnapshotCommand Create()
         {
+            _CountriesConfigMock.Setup(x => x.CountriesOfInterest).Returns(new[] { "GB", "AU" });
+
+
             return new IksInputSnapshotCommand(_Lf.CreateLogger<IksInputSnapshotCommand>(),
                 _DkSourceDbProvider.CreateNew(),
-                _IksPublishingDbProvider.CreateNew
+                _IksPublishingDbProvider.CreateNew,
+                _CountriesConfigMock.Object
             );
         }
 

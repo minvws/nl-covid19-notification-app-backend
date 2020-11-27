@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
@@ -20,12 +21,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.P
         private readonly ILogger<IksInputSnapshotCommand> _Logger;
         private readonly DkSourceDbContext _DkSourceDbContext;
         private readonly Func<IksPublishingJobDbContext> _PublishingDbContextFactory;
+        private readonly IOutboundFixedCountriesOfInterestSetting _Config;
 
-        public IksInputSnapshotCommand(ILogger<IksInputSnapshotCommand> logger, DkSourceDbContext dkSourceDbContext, Func<IksPublishingJobDbContext> tekSourceDbContextFunc)
+        public IksInputSnapshotCommand(ILogger<IksInputSnapshotCommand> logger, DkSourceDbContext dkSourceDbContext, Func<IksPublishingJobDbContext> tekSourceDbContextFunc, IOutboundFixedCountriesOfInterestSetting config)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _DkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
             _PublishingDbContextFactory = tekSourceDbContextFunc ?? throw new ArgumentNullException(nameof(tekSourceDbContextFunc));
+            _Config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public async Task<SnapshotIksInputResult> ExecuteAsync()
@@ -76,7 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.P
                 DkId = x.Id,
                 x.DailyKey,
                 Trl = x.Local.TransmissionRiskLevel.Value,
-                x.Local.DaysSinceSymptomsOnset
+                x.Local.DaysSinceSymptomsOnset,
             }).ToList();
 
             var q2 = q1.Select(x => new IksCreateJobInputEntity 
@@ -86,7 +89,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.P
                 TransmissionRiskLevel = x.Trl,
                 ReportType = ReportType.ConfirmedClinicalDiagnosis,
                 DailyKey = x.DailyKey,
-                CountriesOfInterest = "NL,DE,BE",
+                CountriesOfInterest = string.Join(",", _Config.CountriesOfInterest)
             })
             .ToList();
 

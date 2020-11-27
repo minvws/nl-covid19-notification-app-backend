@@ -93,4 +93,8 @@
     <Resource Include="Resources\TestCert.p12" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="IksInbound\!FromOutboundPublishing\" />
+  </ItemGroup>
+
 </Project>

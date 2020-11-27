@@ -23,6 +23,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
         public string? CountriesOfInterest { get; set; }
         public TransmissionRiskLevel? TransmissionRiskLevel { get; set; }
         public int? DaysSinceSymptomsOnset { get; set; }
+
+        //TODO ConfirmedTest by default NOT diagnosis
         public ReportType? ReportType { get; set; }
+        
+        //TODO length 2
+        public string CountryOfOrigin { get; set; }
     }
 }
