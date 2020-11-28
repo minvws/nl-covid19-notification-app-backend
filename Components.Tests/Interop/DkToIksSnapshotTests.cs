@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
 
         private IksInputSnapshotCommand Create()
         {
-            _CountriesConfigMock.Setup(x => x.CountriesOfInterest).Returns(new[] { "GB", "AU" });
+            _CountriesConfigMock.Setup(x => x.CountriesOfInterest).Returns(new[] { "DE", "BG" });
 
 
             return new IksInputSnapshotCommand(_Lf.CreateLogger<IksInputSnapshotCommand>(),
@@ -72,12 +72,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
             {
                 i.Origin = TekOrigin.Local;
                 i.PublishedLocally = true;
+                i.Local = new LocalTekInfo
+                {
+                    //DaysSinceSymptomsOnset = 4,
+                    //TransmissionRiskLevel = TransmissionRiskLevel.High,
+                };
                 i.Efgs = new EfgsTekInfo
                 {
-                    DaysSinceSymptomsOnset = 4,
-                    CountriesOfInterest = "",
-                    ReportType = ReportType.ConfirmedClinicalDiagnosis,
-                    TransmissionRiskLevel = TransmissionRiskLevel.High,
+                    CountriesOfInterest = null,
+                    ReportType = ReportType.ConfirmedTest,
+                    DaysSinceSymptomsOnset = 0,
+                    CountryOfOrigin = "DE"
                 };
             }
 
@@ -90,10 +95,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
             {
                 i.Origin = TekOrigin.Efgs;
                 i.PublishedToEfgs = true;
+                i.Efgs = new EfgsTekInfo
+                {
+                    DaysSinceSymptomsOnset = 0,
+                    CountriesOfInterest = "NL",
+                    CountryOfOrigin = "DE",
+                    ReportType = ReportType.Recursive
+                };
                 i.Local = new LocalTekInfo
                 {
-                    TransmissionRiskLevel = TransmissionRiskLevel.Medium,
-                    DaysSinceSymptomsOnset = 3
                 };
             }
 

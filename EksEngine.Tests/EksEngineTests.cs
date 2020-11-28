@@ -48,6 +48,7 @@ namespace EksEngine.Tests
         private readonly ManifestUpdateCommand _ManifestJob;
         private readonly NlContentResignExistingV1ContentCommand _Resign;
         private StandardRandomNumberGenerator _Rng;
+        private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _CountriesOut;
 
         public EksEngineTests(IDbProvider<WorkflowDbContext> workflowDbProvider, IDbProvider<DkSourceDbContext> dkSourceDbProvider, IDbProvider<EksPublishingJobDbContext> eksPublishingJobDbProvider, IDbProvider<ContentDbContext> contentDbProvider, IWrappedEfExtensions efExtensions)
         {
@@ -83,8 +84,11 @@ namespace EksEngine.Tests
                 _EfExtensions,
                 new IDiagnosticKeyProcessor[] {
                     
-                }); 
+                });
 
+
+            _CountriesOut = new Mock<IOutboundFixedCountriesOfInterestSetting>();
+            _CountriesOut.Setup(x => x.CountriesOfInterest).Returns(new[]{"ET"});
             _Rng = new StandardRandomNumberGenerator();
             _EksJob = new ExposureKeySetBatchJobMk3(
                 eksConfig.Object,
@@ -98,7 +102,11 @@ namespace EksEngine.Tests
                 new SnapshotDiagnosisKeys(_Lf.CreateLogger<SnapshotDiagnosisKeys>(), _DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew),
                 new MarkDiagnosisKeysAsUsedLocally(_DkSourceDbProvider.CreateNew, eksConfig.Object, _EksPublishingJobDbProvider.CreateNew, _Lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_ContentDbProvider.CreateNew, _EksPublishingJobDbProvider.CreateNew, new Sha256HexPublishingIdService(), new EksJobContentWriterLoggingExtensions(_Lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
-                new WriteStuffingToDiagnosisKeys(_DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew()),
+                new WriteStuffingToDiagnosisKeys(_DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew(),
+                new IDiagnosticKeyProcessor[] {
+                    new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_CountriesOut.Object),
+                    new NlToEfgsDsosDiagnosticKeyProcessorMk1()}
+                ),
                 _EfExtensions
             );
 

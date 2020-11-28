@@ -14,20 +14,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
     public class EfgsTekInfo
     {
         /// <summary>
-        /// The batch it was imported from or published to.
-        /// </summary>
-        public string? BatchTag { get; set; }
-        /// <summary>
         /// Comma-seperated list of 2 character country codes
         /// </summary>
         public string? CountriesOfInterest { get; set; }
-        public TransmissionRiskLevel? TransmissionRiskLevel { get; set; }
         public int? DaysSinceSymptomsOnset { get; set; }
 
-        //TODO ConfirmedTest by default NOT diagnosis
-        public ReportType? ReportType { get; set; }
+        public ReportType? ReportType { get; set; } = Entities.ReportType.ConfirmedTest;
         
         //TODO length 2
-        public string CountryOfOrigin { get; set; }
+        public string? CountryOfOrigin { get; set; }
     }
 }

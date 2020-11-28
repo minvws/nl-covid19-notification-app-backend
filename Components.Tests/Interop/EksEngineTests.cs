@@ -52,6 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
 
         private readonly IWrappedEfExtensions _EfExtensions;
         private Mock<ITekValidatorConfig> _TekValidatorConfigMock;
+        private Mock<IOutboundFixedCountriesOfInterestSetting> _CountriesOut;
         private const int EksMinTekCount = 150;
         private const int TekCountMax = 750;
 
@@ -115,6 +116,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
                 new EksBuilderV1LoggingExtensions(lf.CreateLogger<EksBuilderV1LoggingExtensions>())
             );
 
+            _CountriesOut = new Mock<IOutboundFixedCountriesOfInterestSetting>();
+            _CountriesOut.Setup(x => x.CountriesOfInterest).Returns(new[] { "ET" });
+
             var eksJob = new ExposureKeySetBatchJobMk3(
                 eksConfigMock.Object,
                 sut,
@@ -125,7 +129,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
                 new SnapshotDiagnosisKeys(_LoggerFactory.CreateLogger<SnapshotDiagnosisKeys>(), _DkSourceDbContextProvider.CreateNew(), _PublishingJobDbContextProvider.CreateNew),
                 new MarkDiagnosisKeysAsUsedLocally(_DkSourceDbContextProvider.CreateNew, eksConfigMock.Object, _PublishingJobDbContextProvider.CreateNew, _LoggerFactory.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_ContentDbContextProvider.CreateNew, _PublishingJobDbContextProvider.CreateNew, new Sha256HexPublishingIdService(), new EksJobContentWriterLoggingExtensions(_LoggerFactory.CreateLogger<EksJobContentWriterLoggingExtensions>())),
-                new WriteStuffingToDiagnosisKeys(_DkSourceDbContextProvider.CreateNew(), _PublishingJobDbContextProvider.CreateNew()),
+                new WriteStuffingToDiagnosisKeys(_DkSourceDbContextProvider.CreateNew(), _PublishingJobDbContextProvider.CreateNew(),
+                new IDiagnosticKeyProcessor []{
+                    new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_CountriesOut.Object),
+                    new NlToEfgsDsosDiagnosticKeyProcessorMk1()}
+                ),
                 _EfExtensions
             );
             return eksJob;

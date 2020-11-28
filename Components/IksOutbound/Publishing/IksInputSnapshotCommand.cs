@@ -68,26 +68,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.P
         /// Maps the Local Tek info to Efgs info using 
         /// </summary>
         private IList<IksCreateJobInputEntity> Read(int index, int pageSize)
-        {
+        {//All imported IKS DKs are mark PublishedToEfgs as true at the point of import
             var q1 = _DkSourceDbContext.DiagnosisKeys
-            .Where(x => x.Origin == TekOrigin.Local && !x.PublishedToEfgs) //All imported IKS DKs are marked as true at the point of import
-            .Skip(index)
-            .Take(pageSize)
-            .AsNoTracking() //EF treats DTO property classes as 'owned tables'
+                .Include(x => x.Efgs)
+                .Skip(index)
+                .Take(pageSize)
+                .AsNoTracking() //EF treats DTO property classes as 'owned tables'
+                .Where(x => x.Origin == TekOrigin.Local && !x.PublishedToEfgs)
+                .Select(x => new {x.Efgs.DaysSinceSymptomsOnset, x.DailyKey, Dkid = x.Id})
+                .ToList();
+            
+            var q1a = q1.Where(x => x.DaysSinceSymptomsOnset.HasValue)
             .Select(x => new
             {
-                DkId = x.Id,
+                x.Dkid,
                 x.DailyKey,
-                Trl = x.Local.TransmissionRiskLevel.Value,
-                x.Local.DaysSinceSymptomsOnset,
+                x.DaysSinceSymptomsOnset,
             }).ToList();
 
-            var q2 = q1.Select(x => new IksCreateJobInputEntity 
+            var q2 = q1a.Select(x => new IksCreateJobInputEntity 
             { 
-                DkId = x.DkId,
+                DkId = x.Dkid,
                 DaysSinceSymptomsOnset = x.DaysSinceSymptomsOnset.Value,
-                TransmissionRiskLevel = x.Trl,
-                ReportType = ReportType.ConfirmedClinicalDiagnosis,
+                TransmissionRiskLevel = TransmissionRiskLevel.None, //Remove this isnt in used in any calculations
+                ReportType = ReportType.ConfirmedClinicalDiagnosis, //TODO move setting this to a DK Processors later.
                 DailyKey = x.DailyKey,
                 CountriesOfInterest = string.Join(",", _Config.CountriesOfInterest)
             })

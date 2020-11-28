@@ -110,14 +110,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
             var idk = new InteropKeyFormatterArgs
             {
                 TransmissionRiskLevel = 1,
-                CountriesOfInterest = new[] {"Any rock on an M-class."},
+                CountriesOfInterest = new[] {"DE"},
                 ReportType = Eu.Interop.EfgsReportType.ConfirmedTest,
                 Origin = "DE",
-                DaysSinceSymtpomsOnset = 1,
+                DaysSinceSymtpomsOnset = 0,
                 Value = new DailyKey
                 {
                     RollingStartNumber = _UtcDateTimeProviderMock.Object.Snapshot.Date.ToRollingStartNumber(),
-                    RollingPeriod = UniversalConstants.RollingPeriodMax,
+                    RollingPeriod = UniversalConstants.RollingPeriodRange.Hi,
                     KeyData = new byte[UniversalConstants.DailyKeyDataLength]
                 }
             };

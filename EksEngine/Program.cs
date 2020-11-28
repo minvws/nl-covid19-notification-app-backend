@@ -145,7 +145,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                     x.GetRequiredService<DkSourceDbContext>(),
                     new IDiagnosticKeyProcessor[]
                     {
-                        x.GetRequiredService<OnlyIncludeCountryOfOriginKeyProcessor>(), //
+                        x.GetRequiredService<OnlyIncludeCountryOfOriginKeyProcessor>(),
                         x.GetRequiredService<DosDecodingDiagnosticKeyProcessor>(), //Adds result to metadata
                         x.GetRequiredService<NlTrlFromDecodedDosDiagnosticKeyProcessor>(),
                         x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),

@@ -29,6 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider = new StandardUtcDateTimeProvider();
         private readonly StandardRandomNumberGenerator _Rng = new StandardRandomNumberGenerator();
         private readonly IWrappedEfExtensions _EfExtensions;
+        private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _CountriesOut = new Mock<IOutboundFixedCountriesOfInterestSetting>();
 
         public WorkflowTestDataGenerator(IDbProvider<WorkflowDbContext> workflowDbContextProvider, IDbProvider<DkSourceDbContext> dkSourceDbContextProvider, IWrappedEfExtensions efExtensions)
         {
@@ -47,6 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
 
         public async Task SnapshotToDks()
         {
+            _CountriesOut.Setup(x => x.CountriesOfInterest).Returns(new[] { "DE" });
             await new SnapshotWorkflowTeksToDksCommand(_LoggerFactory.CreateLogger<SnapshotWorkflowTeksToDksCommand>(),
                 _UtcDateTimeProvider,
                 new TransmissionRiskLevelCalculationMk2(),
@@ -54,7 +56,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
                 _WorkflowDbContextProvider.CreateNew,
                 _DkSourceDbContextProvider.CreateNew,
                 _EfExtensions,
-                new IDiagnosticKeyProcessor[0]
+                new IDiagnosticKeyProcessor[] {
+                    new ExcludeTrlNoneDiagnosticKeyProcessor(),
+                    new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_CountriesOut.Object),
+                    new NlToEfgsDsosDiagnosticKeyProcessorMk1()
+                }
             ).ExecuteAsync();
         }
 
