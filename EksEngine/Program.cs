@@ -2,8 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,7 +24,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using System;
+using System.Collections.Generic;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 {
@@ -39,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                 new ConsoleAppRunner().Execute(args, Configure, Start);
                 return 0;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return -1;
             }
@@ -54,8 +53,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var c10 = serviceProvider.GetRequiredService<SnapshotWorkflowTeksToDksCommand>();
             run.Add(() => c10.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c20 = serviceProvider.GetRequiredService<IksImportBatchJob>();
-            run.Add(() => c20.ExecuteAsync().GetAwaiter().GetResult());
+            var eksEngineSettings = serviceProvider.GetRequiredService<IEksEngineConfig>();
+            if (eksEngineSettings.IksImportEnabled)
+            {
+                var c20 = serviceProvider.GetRequiredService<IksImportBatchJob>();
+                run.Add(() => c20.ExecuteAsync().GetAwaiter().GetResult());
+            }
+            else
+            {
+                var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+                logger.LogInformation("IksImport is disabled; Iks files will not be processed.");
+            }
 
             var c30 = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
             run.Add(() => c30.ExecuteAsync().GetAwaiter().GetResult());
@@ -110,6 +118,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             services.AddSingleton<IAcceptableCountriesSetting, EfgsInteropConfig>();
             services.AddSingleton<IOutboundFixedCountriesOfInterestSetting, EfgsInteropConfig>();
+            services.AddSingleton<IEksEngineConfig, EfgsInteropConfig>();
 
             //EKS Engine
             services.EksEngine();
@@ -119,7 +128,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<ManifestBuilder>();
-            
+
             services.AddSingleton<EksBuilderV1LoggingExtensions>();
             services.AddSingleton<ResignerLoggingExtensions>();
             services.AddSingleton<EksEngineLoggingExtensions>();
@@ -153,7 +162,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                     x.GetRequiredService<ITekValidatorConfig>(),
                     x.GetRequiredService<IUtcDateTimeProvider>(),
                     x.GetRequiredService<ILogger<IksImportCommand>>()
-                    )
+                )
             );
 
             services.AddTransient<OnlyIncludeCountryOfOriginKeyProcessor>();
@@ -163,11 +172,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             services.AddTransient<IksEngine>();
 
-            services.AddTransient < IksInputSnapshotCommand>(); 
-            services.AddTransient < IksFormatter>();
+            services.AddTransient<IksInputSnapshotCommand>();
+            services.AddTransient<IksFormatter>();
             services.AddSingleton<IIksConfig, IksConfig>();
-            services.AddTransient < MarkDiagnosisKeysAsUsedByIks>();
-            services.AddTransient < IksJobContentWriter>();
+            services.AddTransient<MarkDiagnosisKeysAsUsedByIks>();
+            services.AddTransient<IksJobContentWriter>();
 
             services.ManifestForV3Startup();
         }
