@@ -10,5 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Efgs
         bool SendClientAuthenticationHeaders { get; }
         int DaysToDownload { get; }
         int MaxBatchesPerRun { get; }
+        bool UploaderEnabled { get; }
+        bool DownloaderEnabled { get; }
     }
 }

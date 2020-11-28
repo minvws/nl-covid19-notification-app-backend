@@ -1,7 +1,12 @@
-﻿using System.Text;
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings
 {
@@ -10,9 +15,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSetti
     /// Do not use in production.
     /// Create specific classes for the required settings but ensure and invalid value is set for the default.
     /// </summary>
-    public class EfgsInteropConfig : AppSettingsReader, IAcceptableCountriesSetting, IOutboundFixedCountriesOfInterestSetting
+    public class EfgsInteropConfig : AppSettingsReader, IAcceptableCountriesSetting, IOutboundFixedCountriesOfInterestSetting, IEksEngineConfig
     {
-
         private readonly CountryCodeListParser _CountryCodeListParser = new CountryCodeListParser();
 
         //TODO organise settings properly
@@ -31,5 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSetti
         /// Outbound setting
         /// </summary>
         public string[] CountriesOfInterest => _CountryCodeListParser.Parse(GetConfigValue(nameof(CountriesOfInterest), DefaultCountryList));
+
+        public bool IksImportEnabled => GetConfigValue(nameof(IksImportEnabled), true);
     }
 }

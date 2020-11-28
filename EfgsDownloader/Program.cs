@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Efgs;
@@ -33,6 +34,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
 
         private static void Start(IServiceProvider serviceProvider, string[] args)
         {
+            var config = serviceProvider.GetService<IEfgsConfig>();
+
+            if (!config.DownloaderEnabled)
+            {
+                var logger = serviceProvider.GetService<ILogger<Program>>();
+                logger.LogWarning("EfgsDownloader is disabled by the configuration.");
+
+                return;
+            }
+
             var pollingBatchJob = serviceProvider.GetService<IksPollingBatchJob>();
             pollingBatchJob.ExecuteAsync().GetAwaiter().GetResult();
         }
