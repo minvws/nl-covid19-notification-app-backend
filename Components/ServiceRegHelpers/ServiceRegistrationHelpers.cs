@@ -62,6 +62,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ServiceRegHel
                         x.GetRequiredService<NlToEfgsDsosDiagnosticKeyProcessorMk1>()
                     }));
 
+            services.AddSingleton<EfgsInteropConfig>();
+            services.AddSingleton<IOutboundFixedCountriesOfInterestSetting>(x => x.GetRequiredService<EfgsInteropConfig>());
+            services.AddTransient<FixedCountriesOfInterestOutboundDiagnosticKeyProcessor>();
+            services.AddTransient<NlToEfgsDsosDiagnosticKeyProcessorMk1>();
+            services.AddTransient<ExcludeTrlNoneDiagnosticKeyProcessor>();
+
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
             services.AddTransient<GeneratedProtobufEksContentFormatter>();
             services.AddTransient<IEksBuilder, EksBuilderV1>();
