@@ -70,11 +70,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.P
         private IList<IksCreateJobInputEntity> Read(int index, int pageSize)
         {//All imported IKS DKs are mark PublishedToEfgs as true at the point of import
             var q1 = _DkSourceDbContext.DiagnosisKeys
-                .Include(x => x.Efgs)
-                .Skip(index)
-                .Take(pageSize)
                 .AsNoTracking() //EF treats DTO property classes as 'owned tables'
                 .Where(x => x.Origin == TekOrigin.Local && !x.PublishedToEfgs)
+                .Skip(index)
+                .Take(pageSize)
                 .Select(x => new {x.Efgs.DaysSinceSymptomsOnset, x.DailyKey, Dkid = x.Id})
                 .ToList();
             
