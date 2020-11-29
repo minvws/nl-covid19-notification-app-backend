@@ -10,5 +10,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
     {
         public HttpStatusCode? HttpResponseCode { get; set; }
         public bool Exception { get; set; }
+        public string? Content { get; set; }
     }
 }

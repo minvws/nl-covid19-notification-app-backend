@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Eu.Interop;
+﻿using Eu.Interop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
 {
@@ -126,6 +126,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
                     case HttpStatusCode.OK:
                     case HttpStatusCode.Created:
                         _Logger.LogInformation("EFGS: Success");
+                        return;
+                    case HttpStatusCode.MultiStatus:
+                        _Logger.LogWarning("EFGS: Successful but with warnings: {content}", result.Content);
                         return;
                     case HttpStatusCode.BadRequest:
                         _Logger.LogError("EFGS: Invalid request (either errors in the data or an invalid signature)");

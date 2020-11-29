@@ -60,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
             _ContentWriter = contentWriter ?? throw new ArgumentNullException(nameof(contentWriter));
             _PublishingDbContextFac = publishingDbContextFac ?? throw new ArgumentNullException(nameof(publishingDbContextFac));
             _SqlCommands = sqlCommands ?? throw new ArgumentNullException(nameof(sqlCommands));
-            _JobName = "TODO";
+            _JobName = "IksEngine";
         }
 
         public async Task<IksEngineResult> ExecuteAsync()
