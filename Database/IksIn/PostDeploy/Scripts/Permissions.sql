@@ -26,8 +26,6 @@ GRANT UPDATE  ON SCHEMA::[dbo] TO [Dbr_Service];
 
 GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 
---specific permissions for DataProtectionKeys
-
 --[Dbr_Service_EfgsDownnloader] 
 GRANT INSERT ON [dbo].[IksIn] TO [Dbr_Service_EfgsDownloader];
 GRANT SELECT ON [dbo].[IksIn] TO [Dbr_Service_EfgsDownloader];
