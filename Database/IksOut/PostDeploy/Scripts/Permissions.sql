@@ -26,7 +26,6 @@ GRANT UPDATE  ON SCHEMA::[dbo] TO [Dbr_Service];
 
 GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 
---specific permissions for DataProtectionKeys
 --[Dbr_Service_CleanupJob]
 GRANT INSERT ON [dbo].[IksOut] TO [Dbr_Service_CleanupJob];
 GRANT SELECT ON [dbo].[IksOut] TO [Dbr_Service_CleanupJob];

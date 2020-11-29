@@ -24,8 +24,6 @@ GRANT UPDATE  ON SCHEMA::[dbo] TO [Dbr_Service];
 
 GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 
---specific permissions for DataProtectionKeys
-
 --[Dbr_Service_EksEngine]
 GRANT SELECT ON [dbo].[DiagnosisKeys] TO [Dbr_Service_EksEngine];
 GRANT INSERT ON [dbo].[DiagnosisKeys] TO [Dbr_Service_EksEngine];
