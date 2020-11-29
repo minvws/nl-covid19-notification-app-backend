@@ -27,18 +27,32 @@ GRANT UPDATE  ON SCHEMA::[dbo] TO [Dbr_Service];
 GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 
 --specific permissions for PublishingJob here..
---[Dbr_Service_EfgsUploader] 
-GRANT INSERT ON [dbo].[IksCreateJobInput] TO [Dbr_Service_EfgsUploader];
-GRANT SELECT ON [dbo].[IksCreateJobInput] TO [Dbr_Service_EfgsUploader];
-GRANT UPDATE ON [dbo].[IksCreateJobInput] TO [Dbr_Service_EfgsUploader];
-GRANT DELETE ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EfgsUploader];
-GRANT ALTER ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EfgsUploader];
 
-GRANT INSERT ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EfgsUploader];
-GRANT SELECT ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EfgsUploader];
-GRANT UPDATE ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EfgsUploader];
-GRANT DELETE ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EfgsUploader];
-GRANT ALTER ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EfgsUploader];
+--[Dbr_Service_EksEngine] 
+GRANT INSERT ON [dbo].[IksCreateJobInput] TO [Dbr_Service_EksEngine];
+GRANT SELECT ON [dbo].[IksCreateJobInput] TO [Dbr_Service_EksEngine];
+GRANT UPDATE ON [dbo].[IksCreateJobInput] TO [Dbr_Service_EksEngine];
+GRANT DELETE ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EksEngine];
+GRANT ALTER ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EksEngine];
+
+GRANT INSERT ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EksEngine];
+GRANT SELECT ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EksEngine];
+GRANT UPDATE ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EksEngine];
+GRANT DELETE ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EksEngine];
+GRANT ALTER ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_EksEngine];
+
+--[Dbr_Service_CleanupJob]
+GRANT INSERT ON [dbo].[IksCreateJobInput] TO [Dbr_Service_CleanupJob];
+GRANT SELECT ON [dbo].[IksCreateJobInput] TO [Dbr_Service_CleanupJob];
+GRANT UPDATE ON [dbo].[IksCreateJobInput] TO [Dbr_Service_CleanupJob];
+GRANT DELETE ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_CleanupJob];
+GRANT ALTER ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_CleanupJob];
+
+GRANT INSERT ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_CleanupJob];
+GRANT SELECT ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_CleanupJob];
+GRANT UPDATE ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_CleanupJob];
+GRANT DELETE ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_CleanupJob];
+GRANT ALTER ON [dbo].[IksCreateJobOutput] TO [Dbr_Service_CleanupJob];
 
 --end 
 
