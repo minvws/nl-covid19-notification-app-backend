@@ -24,21 +24,16 @@ GRANT UPDATE  ON SCHEMA::[dbo] TO [Dbr_Service];
 
 GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 
---specific permissions for DataProtectionKeys
-
 --[Dbr_Service_EksEngine]
 GRANT SELECT ON [dbo].[DiagnosisKeys] TO [Dbr_Service_EksEngine];
 GRANT INSERT ON [dbo].[DiagnosisKeys] TO [Dbr_Service_EksEngine];
 GRANT UPDATE ON [dbo].[DiagnosisKeys] TO [Dbr_Service_EksEngine];
 GRANT DELETE ON [dbo].[DiagnosisKeys] TO [Dbr_Service_EksEngine];
 
-GRANT ALTER ON [dbo].[DiagnosisKeys] TO [Dbr_Service_EksEngine];
-
 GRANT SELECT ON [dbo].[DiagnosisKeysInput] TO [Dbr_Service_EksEngine];
 GRANT INSERT ON [dbo].[DiagnosisKeysInput] TO [Dbr_Service_EksEngine];
 GRANT UPDATE ON [dbo].[DiagnosisKeysInput] TO [Dbr_Service_EksEngine];
 GRANT DELETE ON [dbo].[DiagnosisKeysInput] TO [Dbr_Service_EksEngine];
-
 GRANT ALTER ON [dbo].[DiagnosisKeysInput] TO [Dbr_Service_EksEngine];
 
 --[Dbr_Service_CleanupJob] 
@@ -46,7 +41,6 @@ GRANT INSERT ON [dbo].[DiagnosisKeys] TO [Dbr_Service_CleanupJob];
 GRANT SELECT ON [dbo].[DiagnosisKeys] TO [Dbr_Service_CleanupJob];
 GRANT UPDATE ON [dbo].[DiagnosisKeys] TO [Dbr_Service_CleanupJob];
 GRANT DELETE ON [dbo].[DiagnosisKeys] TO [Dbr_Service_CleanupJob];
-GRANT ALTER ON [dbo].[DiagnosisKeys] TO [Dbr_Service_CleanupJob];
 
 GRANT INSERT ON [dbo].[DiagnosisKeysInput] TO [Dbr_Service_CleanupJob];
 GRANT SELECT ON [dbo].[DiagnosisKeysInput] TO [Dbr_Service_CleanupJob];

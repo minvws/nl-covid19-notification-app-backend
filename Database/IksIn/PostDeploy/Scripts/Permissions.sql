@@ -26,13 +26,6 @@ GRANT UPDATE  ON SCHEMA::[dbo] TO [Dbr_Service];
 
 GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 
---specific permissions for DataProtectionKeys
---[Dbr_Service_CleanupJob] 
-GRANT INSERT ON [dbo].[IksIn] TO [Dbr_Service_CleanupJob];
-GRANT SELECT ON [dbo].[IksIn] TO [Dbr_Service_CleanupJob];
-GRANT UPDATE ON [dbo].[IksIn] TO [Dbr_Service_CleanupJob];
-GRANT DELETE ON [dbo].[IksIn] TO [Dbr_Service_CleanupJob];
-
 --[Dbr_Service_EfgsDownnloader] 
 GRANT INSERT ON [dbo].[IksIn] TO [Dbr_Service_EfgsDownloader];
 GRANT SELECT ON [dbo].[IksIn] TO [Dbr_Service_EfgsDownloader];
@@ -41,6 +34,21 @@ GRANT UPDATE ON [dbo].[IksIn] TO [Dbr_Service_EfgsDownloader];
 GRANT INSERT ON [dbo].[IksInJob] TO [Dbr_Service_EfgsDownloader];
 GRANT SELECT ON [dbo].[IksInJob] TO [Dbr_Service_EfgsDownloader];
 GRANT UPDATE ON [dbo].[IksInJob] TO [Dbr_Service_EfgsDownloader];
+
+--[Dbr_Service_EksEngine] 
+GRANT SELECT ON [dbo].[IksIn] TO [Dbr_Service_EksEngine];
+GRANT UPDATE ON [dbo].[IksIn] TO [Dbr_Service_EksEngine];
+
+GRANT SELECT ON [dbo].[IksInJob] TO [Dbr_Service_EksEngine];
+GRANT UPDATE ON [dbo].[IksInJob] TO [Dbr_Service_EksEngine];
+
+--[Dbr_Service_CleanupJob] 
+GRANT SELECT ON [dbo].[IksIn] TO [Dbr_Service_CleanupJob];
+GRANT UPDATE ON [dbo].[IksIn] TO [Dbr_Service_CleanupJob];
+GRANT DELETE ON [dbo].[IksIn] TO [Dbr_Service_CleanupJob];
+
+GRANT SELECT ON [dbo].[IksInJob] TO [Dbr_Service_CleanupJob];
+GRANT UPDATE ON [dbo].[IksInJob] TO [Dbr_Service_CleanupJob];
 
 --end
 
