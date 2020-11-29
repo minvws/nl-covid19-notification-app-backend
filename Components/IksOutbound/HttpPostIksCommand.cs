@@ -65,6 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
                 return new HttpPostIksResult
                 {
                     HttpResponseCode = response.StatusCode,
+                    Content = await response.Content.ReadAsStringAsync()
                     //TODO How is this used?
                     //TODO BatchTag = response.Headers.GetSingleValueOrDefault("batchTag")
                 };
