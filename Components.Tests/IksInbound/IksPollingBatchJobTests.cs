@@ -196,5 +196,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.IksInbo
         public bool SendClientAuthenticationHeaders => true;
         public int DaysToDownload => 1;
         public int MaxBatchesPerRun => 10;
+        public bool UploaderEnabled => true;
+        public bool DownloaderEnabled => true;
     }
 }
