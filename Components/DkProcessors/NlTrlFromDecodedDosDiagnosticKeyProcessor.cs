@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Interop;
@@ -50,10 +51,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
 
         private TransmissionRiskLevel GetTrl(Range<int> range)
         {
-            var result = Enumerable.Range(range.Lo, range.Hi)
-                .Select(x => _TrlCalculation.Calculate(x))
-                .ToArray();
-
+            var result = new List<TransmissionRiskLevel>();
+            for (var i = range.Lo; i <= range.Hi; i++)
+            {
+                result.Add(_TrlCalculation.Calculate(i));
+            }
+            
             if (result.All(x => x == TransmissionRiskLevel.None))
                 return TransmissionRiskLevel.None;
 
