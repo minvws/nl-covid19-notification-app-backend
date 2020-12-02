@@ -50,13 +50,15 @@ steps:
 - task: BatchScript@1
   displayName: run build.bat
   inputs:
-    filename: build.bat
+    filename: src\build.bat
     arguments: $(Build.BuildId)
+    workingFolder: '$(Build.SourcesDirectory)\src'
 
 - task: replacetokens@3
   inputs:
     rootDirectory: '$(Build.ArtifactStagingDirectory)'
-    targetFiles: 'package-CIBG.bat'
+    targetFiles: 'src\package-CIBG.bat'
+    workingFolder: '$(Build.SourcesDirectory)\src'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -69,13 +71,13 @@ steps:
 # Execute the publish script
 - task: BatchScript@1
   inputs:
-    filename: 'package-CIBG.bat'
+    filename: 'src\package-CIBG.bat'
     workingFolder: '$(Build.ArtifactStagingDirectory)'
     
 # Execute the publish script
 - task: BatchScript@1
   inputs:
-    filename: 'copy-CIBG-configs.bat'
+    filename: 'src\copy-CIBG-configs.bat'
     workingFolder: '$(Build.ArtifactStagingDirectory)'
 
 # Save the published files into the artifact repository
