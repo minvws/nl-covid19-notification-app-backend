@@ -99,9 +99,8 @@ function Pause ($Message = "Press any key to continue...`n") {
 
 function SetErrorToStop
 {
-	$ErrorAtStart = $ErrorActionPreference
-	$ErrorActionPreference = "Stop"
-	write-host "Error-behaviour is set from $ErrorAtStart to $ErrorActionPreference."
+	$script:ErrorActionPreference = "Stop"
+	write-host "Error-behaviour of script is set to $script:ErrorActionPreference."
 }
 
 function CheckNotIse
@@ -163,6 +162,7 @@ function SetKeyFilenames ()
 function GenRequests
 {
 	$FriendlyName = read-host "`nPlease enter a `'Friendly name`' for the certificates.`n Make sure the name is not already in use! (look inside the machine personal keystore)"
+	$Host.UI.RawUI.FlushInputBuffer() #clears any annoying newlines that were accidentally copied in
 	
 	GenerateRequestInf -filename $requestRSAname -hashAlgorithm "SHA256" -keyAlgorithm "RSA" -keyLength "2048" -friendlyName "$FriendlyName-RSA"
 	GenerateRequestInf -filename $requestECDSAname -hashAlgorithm "SHA256" -keyAlgorithm "ECDSA_P256" -keyLength "256" -friendlyName "$FriendlyName-ECDSA" -AddOIDs $false
@@ -173,11 +173,14 @@ function GenRequests
 	}
 }
 
+
 #
 # Start
 #
 
+
 write-host "Keygenerator script for Utimaco HSM"
+write-host "Location and date: $env:computername. $(Get-Date -Format `"dd MMM, HH:mm:ss`")."
 CheckNotIse
 
 write-warning "`nPlease check the following:`
