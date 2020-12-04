@@ -263,9 +263,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             _Logger.WriteStartReadPage(skip, take);
 
             using var dbc = _PublishingDbContextFac();
-            var result = dbc.Set<EksCreateJobInputEntity>()
+            var result = dbc.EksInput
                 .Where(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None)
-                .OrderBy(x => x.KeyData).Skip(skip).Take(take).ToArray();
+                .OrderBy(x => x.KeyData)
+                .ThenBy(x => x.Id)
+                .Skip(skip)
+                .Take(take)
+                .ToArray();
 
             _Logger.WriteFinishedReadPage(result.Length);
 
