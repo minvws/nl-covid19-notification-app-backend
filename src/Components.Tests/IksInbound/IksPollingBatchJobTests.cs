@@ -2,8 +2,10 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using Microsoft.Extensions.Logging;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Efgs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
@@ -12,7 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.IksInbound
@@ -139,6 +140,57 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.IksInbo
             Assert.Equal(2, downloadedBatches.Count);
             Assert.Equal("1", downloadedBatches[0].BatchTag);
             Assert.Equal("2", downloadedBatches[1].BatchTag);
+        }
+
+        [Fact]
+        public async void Tests_that_batches_are_downloaded_once_if_received_multiple_times()
+        {
+            // Assemble: test state
+            var downloadedBatches = new List<IksWriteArgs>();
+
+            // Assemble: other object
+            var logger = new Mock<ILogger<IksPollingBatchJob>>();
+            var now = DateTime.UtcNow;
+            var dtp = new Mock<IUtcDateTimeProvider>();
+            dtp.Setup(_ => _.Snapshot).Returns(now);
+            var writer = new Mock<IIksWriterCommand>();
+            writer.Setup(_ => _.Execute(It.IsAny<IksWriteArgs>()))
+                .Callback((IksWriteArgs args) =>
+                {
+                    downloadedBatches.Add(args);
+                    using var iksInCtx = _IksInDbProvider.CreateNew();
+                    iksInCtx.Received.Add(new IksInEntity
+                    {
+                        BatchTag = args.BatchTag,
+                        Content = args.Content,
+                        Created = now
+                    });
+                    iksInCtx.SaveChanges();
+                });
+
+            // Assemble: configure the receiver to return the first sequence of files
+            var responses = new List<HttpGetIksSuccessResult>
+            {
+                new HttpGetIksSuccessResult {BatchTag = "1", Content = new byte[] {0x0, 0x0}, NextBatchTag = "2"},
+                new HttpGetIksSuccessResult {BatchTag = "2", Content = new byte[] {0x0, 0x0}, NextBatchTag = "3"},
+                new HttpGetIksSuccessResult {BatchTag = "3", Content = new byte[] {0x0, 0x0}, NextBatchTag = "1"},
+                new HttpGetIksSuccessResult {BatchTag = "1", Content = new byte[] {0x0, 0x0}, NextBatchTag = "3"},
+                new HttpGetIksSuccessResult {BatchTag = "2", Content = new byte[] {0x0, 0x0}, NextBatchTag = "2"},
+                new HttpGetIksSuccessResult {BatchTag = "3", Content = new byte[] {0x0, 0x0}, NextBatchTag = null}
+            };
+            var receiver = new FixedResultHttpGetIksCommand(responses);
+
+            // Assemble: create the job to be tested
+            IksPollingBatchJob sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object, _IksInDbProvider.CreateNew(), new EfgsConfig(), logger.Object);
+
+            // Act
+            await sut.ExecuteAsync();
+
+            // Assert
+            Assert.Equal(3, downloadedBatches.Count);
+            Assert.Equal("1", downloadedBatches[0].BatchTag);
+            Assert.Equal("2", downloadedBatches[1].BatchTag);
+            Assert.Equal("3", downloadedBatches[2].BatchTag);
         }
 
         // Day -2: A

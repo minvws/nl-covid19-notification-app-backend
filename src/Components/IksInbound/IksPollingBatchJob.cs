@@ -78,7 +78,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
                     result.NextBatchTag);
 
                 // Process a previous batch
-                if (result.BatchTag == previousBatch)
+                if (result.BatchTag == previousBatch || _IksInDbContext.Received.Any(_ => _.BatchTag == batch))
                 {
                     _Logger.LogInformation("Batch {BatchTag} has already been processed.", result.BatchTag);
 
