@@ -25,6 +25,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
         public int RollingStartNumber { get; set; }
         public int RollingPeriod { get; set; }
         public TransmissionRiskLevel TransmissionRiskLevel { get; set; }
-        public int? DaysSinceSymptomsOnset { get; internal set; }
+        public int? DaysSinceSymptomsOnset { get; set; }
     }
 }

@@ -1,16 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Components</RootNamespace>
   </PropertyGroup>
-
-  <PropertyGroup>
-    <LangVersion>8.0</LangVersion>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningsAsErrors>NU1605;CS8625</WarningsAsErrors>
     <DocumentationFile>$(SolutionDir)\Components\NL.Rijksoverheid.ExposureNotification.BackEnd.Components.xml</DocumentationFile>
@@ -84,8 +78,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AspNet.DataProtection.Entities\AspNet.DataProtection.EntityFramework.csproj" />
+    <ProjectReference Include="..\ContentApi.Entities\ContentApi.Entities.csproj" />
+    <ProjectReference Include="..\ContentApi.EntityFramework\ContentApi.EntityFramework.csproj" />
+    <ProjectReference Include="..\DiagnosisKeys.Entities\DiagnosisKeys.Entities.csproj" />
+    <ProjectReference Include="..\DiagnosisKeys.EntityFramework\DiagnosisKeys.EntityFramework.csproj" />
+    <ProjectReference Include="..\Efgs.IksDownloader.Entities\Efgs.IksDownloader.Entities.csproj" />
+    <ProjectReference Include="..\Efgs.IksDownloader.EntityFramework\Efgs.IksDownloader.EntityFramework.csproj" />
+    <ProjectReference Include="..\Efgs.IksUploader.Entities\Efgs.IksUploader.Entities.csproj" />
+    <ProjectReference Include="..\Efgs.IksUploader.EntityFramework\Efgs.IksUploader.EntityFramework.csproj" />
+    <ProjectReference Include="..\EksPublishing.Entities\EksPublishing.Entities.csproj" />
+    <ProjectReference Include="..\EksPublishing.EntityFramework\EksPublishing.EntityFramework.csproj" />
     <ProjectReference Include="..\GaenFormat\GeneratedGaenFormat.csproj" />
     <ProjectReference Include="..\GeneratedEfgsFormat\GeneratedEfgsFormat.csproj" />
+    <ProjectReference Include="..\IksPublishing.Entities\IksPublishing.Entities.csproj" />
+    <ProjectReference Include="..\IksPublishing.EntityFramework\IksPublishing.EntityFramework.csproj" />
+    <ProjectReference Include="..\MobileApp.Workflow.Entities\MobileAppApi.Workflow.Entities.csproj" />
+    <ProjectReference Include="..\MobileAppApi.Workflow.EntityFramework\MobileAppApi.Workflow.EntityFramework.csproj" />
+    <ProjectReference Include="..\Stats.Entities\Stats.Entities.csproj" />
+    <ProjectReference Include="..\Stats.EntityFramework\Stats.EntityFramework.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -94,6 +105,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="EfDatabase\Contexts\" />
+    <Folder Include="EfDatabase\Entities\" />
     <Folder Include="IksInbound\!FromOutboundPublishing\" />
   </ItemGroup>
 

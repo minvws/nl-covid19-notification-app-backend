@@ -254,6 +254,9 @@
       <FixtureTestSelector>
         <FixtureName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.DkToIksSnapshotTestsSqlite</FixtureName>
       </FixtureTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.IksEngineTestsSqlserver.Execute("2")</TestName>
+      </NamedTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

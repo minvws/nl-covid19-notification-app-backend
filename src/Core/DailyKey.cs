@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using Microsoft.EntityFrameworkCore;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities
 {
-    [Owned]
     public class DailyKey //: IEquatable<DailyKey>
     {
         public DailyKey()

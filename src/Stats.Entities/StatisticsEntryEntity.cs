@@ -15,7 +15,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
         public DateTime Created { get; set; }
         
         public string Name { get; set; }
-        public string? Qualifier { get; set; }
+
+        //TODO nullable
+        public string Qualifier { get; set; }
         public double Value { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Send
         }
 
         public bool Valid => Item != null;
-        public T? Item { get; }
+        public T Item { get; }
         public string[] Messages { get; }
     }
 }
