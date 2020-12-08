@@ -52,7 +52,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="3.1.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -81,8 +81,10 @@
     <ProjectReference Include="..\AspNet.DataProtection.Entities\AspNet.DataProtection.EntityFramework.csproj" />
     <ProjectReference Include="..\ContentApi.Entities\ContentApi.Entities.csproj" />
     <ProjectReference Include="..\ContentApi.EntityFramework\ContentApi.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\DiagnosisKeys.Entities\DiagnosisKeys.Entities.csproj" />
     <ProjectReference Include="..\DiagnosisKeys.EntityFramework\DiagnosisKeys.EntityFramework.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Efgs.IksDownloader.Entities\Efgs.IksDownloader.Entities.csproj" />
     <ProjectReference Include="..\Efgs.IksDownloader.EntityFramework\Efgs.IksDownloader.EntityFramework.csproj" />
     <ProjectReference Include="..\Efgs.IksUploader.Entities\Efgs.IksUploader.Entities.csproj" />

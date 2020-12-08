@@ -16,18 +16,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Co
     {
         private readonly WorkflowDbContext _Provider;
 
-        private readonly IWorkflowConfig _WorkflowConfig;
-        private readonly ITekValidatorConfig _TekValidatorConfig;
-        private readonly ILabConfirmationIdService _LabConfirmationIdService;
-
-        public WorkflowDatabaseCreateCommand(IConfiguration configuration, ITekValidatorConfig tekValidatorConfig, ILabConfirmationIdService labConfirmationIdService, IWorkflowConfig workflowConfig, ILoggerFactory loggerFactory)
+        public WorkflowDatabaseCreateCommand(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
 
-            _TekValidatorConfig = tekValidatorConfig ?? throw new ArgumentNullException(nameof(tekValidatorConfig));
-            _LabConfirmationIdService = labConfirmationIdService ?? throw new ArgumentNullException(nameof(labConfirmationIdService));
-            _WorkflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));
-            
             var config = new StandardEfDbConfig(configuration, "Workflow");
             var builder = new SqlServerDbContextOptionsBuilder(config, loggerFactory);
             _Provider = new WorkflowDbContext(builder.Build());

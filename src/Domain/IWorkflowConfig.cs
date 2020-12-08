@@ -11,6 +11,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
         int PostKeysSignatureLength { get; }
         int BucketIdLength { get; }
         int ConfirmationKeyLength { get; }
+        
+        /// <summary>
+        /// TODO this one should be moved to a new config concerning the Daily Cleanup itself or the functionality removed entirely
+        /// </summary>
         bool CleanupDeletesData { get; }
     }
 }

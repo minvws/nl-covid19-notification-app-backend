@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration
         private readonly IConfiguration _Config;
         private readonly string _Prefix;
 
-        protected AppSettingsReader(IConfiguration config, string? prefix = null)
+        protected AppSettingsReader(IConfiguration config, string prefix = null)
         {
             _Config = config ?? throw new ArgumentNullException(nameof(config));
 

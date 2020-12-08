@@ -17,7 +17,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Serilog.Extensions.Logging;
-using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.TestData
 {
@@ -84,8 +83,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
             var gen = new GenerateTeksCommand(_Rng, _WorkflowDbContextProvider.CreateNew, createWf);
             await gen.ExecuteAsync(new GenerateTeksCommandArgs { WorkflowCount = workflowCount , TekCountPerWorkflow = tekPerWOrkflowCount });
 
-            Assert.Equal(workflowCount, _WorkflowDbContextProvider.CreateNew().KeyReleaseWorkflowStates.Count());
-            Assert.Equal(workflowCount * tekPerWOrkflowCount, _WorkflowDbContextProvider.CreateNew().TemporaryExposureKeys.Count());
+            if (workflowCount != _WorkflowDbContextProvider.CreateNew().KeyReleaseWorkflowStates.Count()) throw new InvalidOperationException();
+            if (workflowCount * tekPerWOrkflowCount == _WorkflowDbContextProvider.CreateNew().TemporaryExposureKeys.Count()) throw new InvalidOperationException();
         }
 
         public async Task AuthoriseAllWorkflowsAsync()

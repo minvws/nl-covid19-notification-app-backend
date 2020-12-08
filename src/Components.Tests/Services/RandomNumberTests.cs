@@ -24,6 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
         }
 
         // TODO test looks like it's in the wrong class and looks old / wrong?
+        // TODO agreed - move to Domain.Tests
         [InlineData(1)]
         [InlineData(256)]
         [InlineData(3030)]

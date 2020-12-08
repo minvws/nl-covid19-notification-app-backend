@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Components\Components.csproj" />
+    <ProjectReference Include="..\IccPortal.Components\IccPortal.Components.csproj" />
   </ItemGroup>
 
   <ItemGroup>
