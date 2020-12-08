@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Components\Components.csproj" />
+    <ProjectReference Include="..\Manifest.Commands\Manifest.Commands.csproj" />
     <ProjectReference Include="..\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
     <ProjectReference Include="..\TestDataGeneration\TestDataGeneration.Commands.csproj" />
     <ProjectReference Include="..\TestFramework\TestFramework.csproj" />

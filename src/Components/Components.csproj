@@ -110,6 +110,7 @@
     <Folder Include="EfDatabase\Contexts\" />
     <Folder Include="EfDatabase\Entities\" />
     <Folder Include="IksInbound\!FromOutboundPublishing\" />
+    <Folder Include="Logging\" />
   </ItemGroup>
 
 </Project>

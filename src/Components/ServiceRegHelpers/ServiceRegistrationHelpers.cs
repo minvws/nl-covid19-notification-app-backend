@@ -13,8 +13,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Interop;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Stuffing;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
@@ -43,12 +41,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ServiceRegHel
                 x.GetRequiredService<Func<WorkflowDbContext>>(),
                 x.GetRequiredService<Func<DkSourceDbContext>>(),
                 x.GetRequiredService<IWrappedEfExtensions>(),
-                new IDiagnosticKeyProcessor[] {
+                new IDiagnosticKeyProcessor[]
+                {
                     x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
                     x.GetRequiredService<FixedCountriesOfInterestOutboundDiagnosticKeyProcessor>(),
                     x.GetRequiredService<NlToEfgsDsosDiagnosticKeyProcessorMk1>()
                 }
-                ));
+            ));
 
             services.AddTransient<ISnapshotEksInput, SnapshotDiagnosisKeys>();
             services.AddTransient<IEksJobContentWriter, EksJobContentWriter>();
@@ -57,7 +56,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ServiceRegHel
                 new WriteStuffingToDiagnosisKeys(
                     x.GetRequiredService<DkSourceDbContext>(),
                     x.GetRequiredService<EksPublishingJobDbContext>(),
-                    new IDiagnosticKeyProcessor[] {
+                    new IDiagnosticKeyProcessor[]
+                    {
                         x.GetRequiredService<FixedCountriesOfInterestOutboundDiagnosticKeyProcessor>(),
                         x.GetRequiredService<NlToEfgsDsosDiagnosticKeyProcessorMk1>()
                     }));
@@ -73,15 +73,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ServiceRegHel
             services.AddTransient<IEksBuilder, EksBuilderV1>();
             services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
             services.AddTransient<ISnapshotEksInput, SnapshotDiagnosisKeys>();
-        }
-
-        public static void ManifestEngine(this IServiceCollection services)
-        {
-            services.AddTransient<ManifestUpdateCommand>();
-            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
-            services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
-            services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient<ManifestBuilder>();
         }
     }
 }

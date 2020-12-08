@@ -10,9 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		appsettings.release.json = appsettings.release.json
 		azure-pipelines.yml = azure-pipelines.yml
 		build.bat = build.bat
+		CodeMap2.dgml = CodeMap2.dgml
 		copy-CIBG-configs.bat = copy-CIBG-configs.bat
 		deploy-example.bat = deploy-example.bat
 		ExposureNotification.Backend.sln.DotSettings = ExposureNotification.Backend.sln.DotSettings
+		Main Code Map.dgml = Main Code Map.dgml
 		package-CIBG.bat = package-CIBG.bat
 		package.bat = package.bat
 	EndProjectSection
@@ -142,9 +144,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccPortal.Components.Tests"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{7EF3DC84-57C7-47D9-9DEC-E94558B1AFC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileAppApi.Commands", "MobileAppApi.Commands\MobileAppApi.Commands.csproj", "{9BC13105-9A51-4382-94B6-36A17C2A24FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Commands", "MobileAppApi.Commands\MobileAppApi.Commands.csproj", "{9BC13105-9A51-4382-94B6-36A17C2A24FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDataGeneration.Commands", "TestDataGeneration\TestDataGeneration.Commands.csproj", "{30144375-4118-4A8E-9C78-55BB4C1C9E1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDataGeneration.Commands", "TestDataGeneration\TestDataGeneration.Commands.csproj", "{30144375-4118-4A8E-9C78-55BB4C1C9E1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manifest.Commands", "Manifest.Commands\Manifest.Commands.csproj", "{7337E1AF-88FB-4789-8498-7699044C958B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manifest.Commands.Tests", "Manifest.Commands.Tests\Manifest.Commands.Tests.csproj", "{983D17A4-31F5-4BA1-87BC-AA5225C69C0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -394,6 +400,14 @@ Global
 		{30144375-4118-4A8E-9C78-55BB4C1C9E1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30144375-4118-4A8E-9C78-55BB4C1C9E1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30144375-4118-4A8E-9C78-55BB4C1C9E1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7337E1AF-88FB-4789-8498-7699044C958B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7337E1AF-88FB-4789-8498-7699044C958B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7337E1AF-88FB-4789-8498-7699044C958B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7337E1AF-88FB-4789-8498-7699044C958B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{983D17A4-31F5-4BA1-87BC-AA5225C69C0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{983D17A4-31F5-4BA1-87BC-AA5225C69C0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{983D17A4-31F5-4BA1-87BC-AA5225C69C0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{983D17A4-31F5-4BA1-87BC-AA5225C69C0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Components\Components.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Manifest.Commands\Manifest.Commands.csproj" />
   </ItemGroup>
 
 </Project>
