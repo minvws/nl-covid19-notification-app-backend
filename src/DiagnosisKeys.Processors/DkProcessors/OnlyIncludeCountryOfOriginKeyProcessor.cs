@@ -5,7 +5,6 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
 {

@@ -12,8 +12,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Interop;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.Publishing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
@@ -26,6 +24,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
 using System;
 using System.Collections.Generic;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Interop;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 {

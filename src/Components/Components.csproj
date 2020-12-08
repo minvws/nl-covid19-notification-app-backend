@@ -21,7 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="EfDatabase\Configuration\Workflow\KeysFirstTekReleaseWorkflow.cs" />
-    <Compile Remove="ExposureKeySetsEngine\FormatV1\HardCodedExposureKeySetSigningConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Resources\BdCertChain.p7b" />
@@ -107,10 +106,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DevOps\" />
     <Folder Include="EfDatabase\Contexts\" />
     <Folder Include="EfDatabase\Entities\" />
-    <Folder Include="IksInbound\!FromOutboundPublishing\" />
     <Folder Include="Logging\" />
+    <Folder Include="ServiceRegHelpers\" />
   </ItemGroup>
 
 </Project>

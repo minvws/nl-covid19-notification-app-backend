@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Components\Components.csproj" />
+    <ProjectReference Include="..\Content.Commands\Content.Commands.csproj" />
   </ItemGroup>
 
 </Project>

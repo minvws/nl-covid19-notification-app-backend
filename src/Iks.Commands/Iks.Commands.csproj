@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Components\Components.csproj" />
+    <ProjectReference Include="..\Crypto\Crypto.csproj" />
+    <ProjectReference Include="..\DiagnosisKeys.Entities\DiagnosisKeys.Entities.csproj" />
+    <ProjectReference Include="..\DiagnosisKeys.EntityFramework\DiagnosisKeys.EntityFramework.csproj" />
+    <ProjectReference Include="..\DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj" />
+    <ProjectReference Include="..\Efgs.IksDownloader.Entities\Efgs.IksDownloader.Entities.csproj" />
+    <ProjectReference Include="..\Efgs.IksDownloader.EntityFramework\Efgs.IksDownloader.EntityFramework.csproj" />
+    <ProjectReference Include="..\Efgs.IksUploader.Entities\Efgs.IksUploader.Entities.csproj" />
+    <ProjectReference Include="..\Efgs.IksUploader.EntityFramework\Efgs.IksUploader.EntityFramework.csproj" />
+    <ProjectReference Include="..\GeneratedEfgsFormat\GeneratedEfgsFormat.csproj" />
+    <ProjectReference Include="..\IksPublishing.Entities\IksPublishing.Entities.csproj" />
+    <ProjectReference Include="..\IksPublishing.EntityFramework\IksPublishing.EntityFramework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="IksInbound\!FromOutboundPublishing\" />
+  </ItemGroup>
+
+</Project>

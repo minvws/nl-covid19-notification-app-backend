@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Components\Components.csproj" />
+    <ProjectReference Include="..\Iks.Commands\Iks.Commands.csproj" />
   </ItemGroup>
 
   <ItemGroup>

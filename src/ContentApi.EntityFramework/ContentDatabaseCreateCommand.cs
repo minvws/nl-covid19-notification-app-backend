@@ -4,25 +4,17 @@
 
 using System;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps
 {
     public class ContentDatabaseCreateCommand
     {
         private readonly ContentDbContext _DbContextProvider;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly ContentValidator _Validator;
-        private readonly ContentInsertDbCommand _InsertDbCommand;
 
-        public ContentDatabaseCreateCommand(ContentDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, ContentValidator validator, ContentInsertDbCommand insertDbCommand)
+        public ContentDatabaseCreateCommand(ContentDbContext dbContextProvider)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _Validator = validator ?? throw new ArgumentNullException(nameof(validator));
-            _InsertDbCommand = insertDbCommand ?? throw new ArgumentNullException(nameof(insertDbCommand));
         }
 
         public async Task ExecuteAsync(bool nuke)

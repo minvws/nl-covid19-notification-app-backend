@@ -22,6 +22,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Components\Components.csproj" />
+    <ProjectReference Include="..\Crypto\Crypto.csproj" />
+    <ProjectReference Include="..\EksEngine.Commands\EksEngine.Commands.csproj" />
   </ItemGroup>
 
 </Project>

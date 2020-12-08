@@ -18,8 +18,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Components\Components.csproj" />
+    <ProjectReference Include="..\Content.Commands\Content.Commands.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\EksEngine.Commands\EksEngine.Commands.csproj" />
+    <ProjectReference Include="..\Iks.Commands\Iks.Commands.csproj" />
     <ProjectReference Include="..\Manifest.Commands\Manifest.Commands.csproj" />
   </ItemGroup>
 

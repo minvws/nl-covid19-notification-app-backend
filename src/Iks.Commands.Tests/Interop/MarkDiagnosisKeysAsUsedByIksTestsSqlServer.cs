@@ -4,7 +4,6 @@
 
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
@@ -15,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
     [Trait("db", "ss")]
     public class MarkDiagnosisKeysAsUsedByIksTestsSqlServer : MarkDiagnosisKeysAsUsedByIksTests
     {
-        private const string Prefix = nameof(WfToDkSnapshotTests) + "_";
+        private const string Prefix = nameof(MarkDiagnosisKeysAsUsedByIksTests) + "_";
         public MarkDiagnosisKeysAsUsedByIksTestsSqlServer() : base(
             new SqlServerDbProvider<DkSourceDbContext>(Prefix + "D"),
             new SqlServerDbProvider<IksPublishingJobDbContext>(Prefix+"IPJ")
