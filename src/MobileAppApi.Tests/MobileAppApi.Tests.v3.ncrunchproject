@@ -3,16 +3,34 @@
     <DefaultTestTimeout>50000</DefaultTestTimeout>
     <IgnoredTests>
       <NamedTestSelector>
-        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-duplicate-TEKs-RSN-and-RP.json", "0", "7", "11")</TestName>
+        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysTestsSqlserver.PostWorkflowTest_InvalidSignature</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-duplicate-TEKs-RSN.json", "13", "8", "13")</TestName>
+        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysTestsSqlserver.PostWorkflowTest_NullSignature</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysTestsSqlserver.PostWorkflowTest_ScriptInjectionInSignature</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostSecretTestsSqlserver.PostSecretTest_5RetriesAndBang</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostSecretTestsSqlserver.PostSecretTest_EmptyDb</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostSecretTestsSqlserver.PostSecret_MissThe5Existing</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-ancient-TEKs.json", "1", "7", "1")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
         <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-duplicate-TEKs-KeyData.json", "0", "7", "11")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-ancient-TEKs.json", "1", "7", "1")</TestName>
+        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-duplicate-TEKs-RSN.json", "13", "8", "13")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-duplicate-TEKs-RSN-and-RP.json", "0", "7", "11")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
         <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-good00.json", "0", "7", "2")</TestName>
@@ -27,22 +45,19 @@
         <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysTestsSqlserver.PostWorkflowTest_EmptySignature</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysTestsSqlserver.PostWorkflowTest_InvalidSignature</TestName>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.WorkflowCleanerTestsSqlserver.Abort</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysTestsSqlserver.PostWorkflowTest_NullSignature</TestName>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.WorkflowCleanerTestsSqlserver.Cleaner</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysTestsSqlserver.PostWorkflowTest_ScriptInjectionInSignature</TestName>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.WorkflowCleanerTestsSqlserver.Kill</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostSecretTestsSqlserver.PostSecret_MissThe5Existing</TestName>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.WorkflowCleanerTestsSqlserver.MoreRealistic</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostSecretTestsSqlserver.PostSecretTest_5RetriesAndBang</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostSecretTestsSqlserver.PostSecretTest_EmptyDb</TestName>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.WorkflowCleanerTestsSqlserver.NoKill</TestName>
       </NamedTestSelector>
     </IgnoredTests>
   </Settings>

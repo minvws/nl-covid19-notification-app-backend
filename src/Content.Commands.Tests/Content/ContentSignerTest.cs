@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
                 new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
                 new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
                 new StandardUtcDateTimeProvider()
-                ); 
+                );
             var content = Encoding.UTF8.GetBytes(CreateString(length));
 
             var sig = signer.GetSignature(content);

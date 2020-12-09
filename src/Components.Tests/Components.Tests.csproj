@@ -21,21 +21,10 @@
   <ItemGroup>
     <Compile Remove="Assemblies\**" />
     <Compile Remove="Stubs\**" />
-    <Compile Remove="Workflow\Authorisation\**" />
     <EmbeddedResource Remove="Assemblies\**" />
     <EmbeddedResource Remove="Stubs\**" />
-    <EmbeddedResource Remove="Workflow\Authorisation\**" />
     <None Remove="Assemblies\**" />
     <None Remove="Stubs\**" />
-    <None Remove="Workflow\Authorisation\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Resources\ResignAppConfig.zip" />
-    <None Remove="Resources\ResignTestManifest.zip" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\ResignAppConfig.zip" />
-    <EmbeddedResource Include="Resources\ResignTestManifest.zip" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,7 +32,7 @@
     <ProjectReference Include="..\Core.Web\Core.AspNet.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\TestDataGeneration\TestDataGeneration.Commands.csproj" />
+    <ProjectReference Include="..\MobileAppApi.Workflow.EntityFramework\MobileAppApi.Workflow.EntityFramework.csproj" />
     <ProjectReference Include="..\TestFramework\TestFramework.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -62,10 +51,5 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="1a082a5e05cd791ef7fbabdf3b653d3d9363d1dfb791d026e81db519500b090c">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>

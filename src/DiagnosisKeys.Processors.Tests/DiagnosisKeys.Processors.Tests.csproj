@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
+    <ProjectReference Include="..\DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj" />
   </ItemGroup>
 
 </Project>

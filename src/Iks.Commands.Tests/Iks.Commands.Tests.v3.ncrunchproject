@@ -2,12 +2,6 @@
   <Settings>
     <IgnoredTests>
       <NamedTestSelector>
-        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.DkToIksSnapshotTestsSqlServer.Run1("0")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.DkToIksSnapshotTestsSqlServer.Run1("100")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
         <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.IksEngineTestsSqlserver.Empty</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
@@ -20,6 +14,9 @@
         <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.IksEngineTestsSqlserver.ExecuteFromWorkflowsTwice</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.MarkDiagnosisKeysAsUsedByIksTestsSqlServer.Simple("100")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
         <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.MarkDiagnosisKeysAsUsedByIksTestsSqlServer.RealisticBothSourcesOfDks("0")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
@@ -29,7 +26,10 @@
         <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.MarkDiagnosisKeysAsUsedByIksTestsSqlServer.Simple("0")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.MarkDiagnosisKeysAsUsedByIksTestsSqlServer.Simple("100")</TestName>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.DkToIksSnapshotTestsSqlServer.Run1("0")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.DkToIksSnapshotTestsSqlServer.Run1("100")</TestName>
       </NamedTestSelector>
     </IgnoredTests>
   </Settings>

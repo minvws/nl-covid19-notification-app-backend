@@ -3,10 +3,112 @@
     <DefaultTestTimeout>120000</DefaultTestTimeout>
     <IgnoredTests>
       <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.TekToDkSnapshotTestsSqlServer.PublishAfter("0", "0", "120", "0", "0")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToEksEksBatchJobMk3TestsSqlServer.Tek11_NotStuffed_2Eks</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToEksEksBatchJobMk3TestsSqlServer.Tek5_NotStuffed</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToEksEksBatchJobMk3TestsSqlServer.Teks0_NothingToSeeHereMoveAlong</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToEksEksBatchJobMk3TestsSqlServer.Teks1_GetStuffed</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToEksEksBatchJobMk3TestsSqlServer.Teks1_NoRiskNotStuffed</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.EksBatchJobMk3TestsSqlServer.FireTwice</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.EksBatchJobMk3TestsSqlServer.FireSameEngineTwice</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.TekToDkSnapshotTestsSqlServer.SecondRunShouldChangeNothing("0", "0")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.TekToDkSnapshotTestsSqlServer.SecondRunShouldChangeNothing("1", "1")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.TekToDkSnapshotTestsSqlServer.SecondRunShouldChangeNothing("1", "4")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.TekToDkSnapshotTestsSqlServer.PublishAfter("1", "10", "120", "10", "4")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.EksBatchJobMk3TestsSqlServer.Teks1_NoRiskNotStuffed</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.EksBatchJobMk3TestsSqlServer.Teks1_GetStuffed</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.EksBatchJobMk3TestsSqlServer.Teks0_NothingToSeeHereMoveAlong</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.EksBatchJobMk3TestsSqlServer.Tek5_NotStuffed</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.EksBatchJobMk3TestsSqlServer.Tek11_NotStuffed_2Eks</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.TekToDkSnapshotTestsSqlServer.PublishAfter("1", "10", "121", "10", "4")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToEksEksBatchJobMk3TestsSqlServer.FireSameEngineTwice</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToEksEksBatchJobMk3TestsSqlServer.FireTwice</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToEksEksBatchJobMk3TestsSqlServer.Tek10_NotStuffed</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.EksBatchJobMk3TestsSqlServer.Tek10_NotStuffed</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.TekToDkSnapshotTestsSqlServer.PublishAfter("1", "10", "119", "0", "0")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToDkSnapshotTestsSqlServer.PublishAfter("0", "0", "120", "0")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToDkSnapshotTestsSqlServer.PublishAfter("1", "10", "119", "0")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToDkSnapshotTestsSqlServer.PublishAfter("1", "10", "120", "10")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToDkSnapshotTestsSqlServer.PublishAfter("1", "10", "121", "10")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToDkSnapshotTestsSqlServer.SecondRunShouldChangeNothing("0", "0")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToDkSnapshotTestsSqlServer.SecondRunShouldChangeNothing("1", "1")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine.WfToDkSnapshotTestsSqlServer.SecondRunShouldChangeNothing("1", "10")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
         <TestName>EksEngine.Tests.EksEngineTestsSqlServer.EmptySystemNoTeks</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
         <TestName>EksEngine.Tests.EksEngineTestsSqlServer.EmptySystemSingleTek</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.ExposureKeySetCleanerTestsSqlserver.NoKill</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.ExposureKeySetCleanerTestsSqlserver.MoreRealistic</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.ExposureKeySetCleanerTestsSqlserver.Kill</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets.ExposureKeySetCleanerTestsSqlserver.Cleaner</TestName>
       </NamedTestSelector>
     </IgnoredTests>
   </Settings>

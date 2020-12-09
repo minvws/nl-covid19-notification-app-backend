@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
+    <ProjectReference Include="..\Crypto\Crypto.csproj" />
   </ItemGroup>
 
 </Project>

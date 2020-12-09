@@ -23,23 +23,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Service
             Assert.True(result <= maxValue);
         }
 
-        // TODO test looks like it's in the wrong class and looks old / wrong?
-        // TODO agreed - move to Domain.Tests
-        [InlineData(1)]
-        [InlineData(256)]
-        [InlineData(3030)]
-        [Theory]
-        public void GenerateToken(int length)
-        {
-            var random = new LabConfirmationIdService(new StandardRandomNumberGenerator());
-            var result = random.Next();
-            Assert.True(result.Length == 6);
-
-            Assert.True(random.Validate(result).Length == 0);
-
-        }
-
-
         [Fact]
         public void GetZero()
         {
