@@ -19,18 +19,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		package.bat = package.bat
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.EntityFramework", "Components\Core.EntityFramework.csproj", "{6142B884-72B0-4941-99BE-BBCCF0C24DA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.EntityFramework", "Core.EntityFramework\Core.EntityFramework.csproj", "{6142B884-72B0-4941-99BE-BBCCF0C24DA0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{D5A96A79-CFC9-46F8-9719-9840D7F717A1}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeneratedGaenFormat", "GaenFormat\GeneratedGaenFormat.csproj", "{4EE95C11-79EE-4ECB-940E-205AA3C4EAC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeneratedGaenFormat", "Eks.Protobuf\GeneratedGaenFormat.csproj", "{4EE95C11-79EE-4ECB-940E-205AA3C4EAC8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi", "MobileAppApi\MobileAppApi.csproj", "{DC54D593-4B03-4879-AA7A-5294170AEB49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.WebApi", "MobileAppApi.WebApi\MobileAppApi.WebApi.csproj", "{DC54D593-4B03-4879-AA7A-5294170AEB49}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccBackend", "IccBackend\IccBackend.csproj", "{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.WebApi", "IccPortal.WebApi\Icc.WebApi.csproj", "{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5CB694D0-78E1-4347-BF78-A557E0780125}"
 	ProjectSection(SolutionItems) = preProject
@@ -38,7 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5CB694
 		docker\README.md = docker\README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentApi", "ContentApi\ContentApi.csproj", "{E9B743F3-6643-4BD6-A136-2887F64A5BEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content.WebApi", "Content.WebApi\Content.WebApi.csproj", "{E9B743F3-6643-4BD6-A136-2887F64A5BEB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksEngine", "EksEngine\EksEngine.csproj", "{48F9CA7D-BE9A-423F-8F9C-4387271A96FD}"
 EndProject
@@ -54,11 +54,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PublishContent", "PublishCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ForceTekAuth", "ForceTekAuth\ForceTekAuth.csproj", "{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccBackend.Tests", "IccBackend.Tests\IccBackend.Tests.csproj", "{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccBackend.Tests", "IccPortal.WebApi.Tests\IccBackend.Tests.csproj", "{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SigTestFileCreator", "SigTestFileCreator\SigTestFileCreator.csproj", "{D3D483FA-9F25-489A-B27A-5A6F0549BE1C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksParser", "EksParser\EksParser.csproj", "{ABAF7EEC-3FF1-4900-A941-F268458DE385}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eks.Parser", "Eks.Parser\Eks.Parser.csproj", "{ABAF7EEC-3FF1-4900-A941-F268458DE385}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DailyCleanup", "DailyCleanup\DailyCleanup.csproj", "{8E025BC6-8D21-40DA-8141-461F82AC6509}"
 EndProject
@@ -82,27 +82,25 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksEngine.Tests", "EksEngin
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DiagnosisKeys", "Database\DiagnosisKeys\DiagnosisKeys.sqlproj", "{AB93BB3F-A599-422A-A4A9-2E8C83013A51}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeneratedEfgsFormat", "GeneratedEfgsFormat\GeneratedEfgsFormat.csproj", "{16E4DAFF-6F9B-41BB-96ED-BAF7B2665B73}"
-EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "IksIn", "Database\IksIn\IksIn.sqlproj", "{8BDFECC9-F38C-4C19-8C71-B728AC4537AD}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "IksOut", "Database\IksOut\IksOut.sqlproj", "{35B037B5-DC5B-4A81-8D89-AC68A80BAD5A}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "IksPublishingJob", "Database\IksPublishingJob\IksPublishingJob.sqlproj", "{B2903BFD-1520-4899-BC86-553DFD49269C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfgsDownloader", "EfgsDownloader\EfgsDownloader.csproj", "{D0F534CC-D908-4AFA-A4D2-6B30E0297D8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Downloader", "Iks.Downloader\Iks.Downloader.csproj", "{D0F534CC-D908-4AFA-A4D2-6B30E0297D8E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfgsUploader", "EfgsUploader\EfgsUploader.csproj", "{0D13D399-0983-4986-A7E1-A219ED9093C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfgsUploader", "Iks.Uploader\EfgsUploader.csproj", "{0D13D399-0983-4986-A7E1-A219ED9093C9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Workflow.Entities", "MobileApp.Workflow.Entities\MobileAppApi.Workflow.Entities.csproj", "{5F522AFF-98E7-4607-978C-ABAB99B7A685}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Workflow.Entities", "MobileAppApi.Entities\MobileAppApi.Workflow.Entities.csproj", "{5F522AFF-98E7-4607-978C-ABAB99B7A685}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{208B2F94-0B7B-4EB5-80AB-1C30F22B4057}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Workflow.EntityFramework", "MobileAppApi.Workflow.EntityFramework\MobileAppApi.Workflow.EntityFramework.csproj", "{85A2B9CB-C09E-4FCE-ABBD-725DFEF8834D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Workflow.EntityFramework", "MobileAppApi.EntityFramework\MobileAppApi.Workflow.EntityFramework.csproj", "{85A2B9CB-C09E-4FCE-ABBD-725DFEF8834D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentApi.Entities", "ContentApi.Entities\ContentApi.Entities.csproj", "{F592DCA1-443A-499A-AABB-8EC19C32D0C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content.Entities", "Content.Entities\Content.Entities.csproj", "{F592DCA1-443A-499A-AABB-8EC19C32D0C2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentApi.EntityFramework", "ContentApi.EntityFramework\ContentApi.EntityFramework.csproj", "{B8A380DF-BBF0-4BFC-BB94-CA7B5D462B41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content.EntityFramework", "Content.EntityFramework\Content.EntityFramework.csproj", "{B8A380DF-BBF0-4BFC-BB94-CA7B5D462B41}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiagnosisKeys.Entities", "DiagnosisKeys.Entities\DiagnosisKeys.Entities.csproj", "{172B81ED-D3F5-401A-ACE2-C268C2683158}"
 EndProject
@@ -110,29 +108,29 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiagnosisKeys.EntityFramewo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNet.DataProtection.EntityFramework", "AspNet.DataProtection.Entities\AspNet.DataProtection.EntityFramework.csproj", "{491AB2C1-1B84-4743-8198-204F05B27A78}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksPublishing.Entities", "EksPublishing.Entities\EksPublishing.Entities.csproj", "{8164CDEA-1A05-49FE-B9C9-E682633F1AA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eks.Publishing.Entities", "Eks.Publishing.Entities\Eks.Publishing.Entities.csproj", "{8164CDEA-1A05-49FE-B9C9-E682633F1AA2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksPublishing.EntityFramework", "EksPublishing.EntityFramework\EksPublishing.EntityFramework.csproj", "{F9FC6957-6094-4EF6-8369-EA67693B1B99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksPublishing.EntityFramework", "Eks.Publishing.EntityFramework\EksPublishing.EntityFramework.csproj", "{F9FC6957-6094-4EF6-8369-EA67693B1B99}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Efgs.IksDownloader.Entities", "Efgs.IksDownloader.Entities\Efgs.IksDownloader.Entities.csproj", "{A9F508A6-7D56-4B5C-A645-F0733FB1DB56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Downloader.Entities", "Iks.Downloader.Entities\Iks.Downloader.Entities.csproj", "{A9F508A6-7D56-4B5C-A645-F0733FB1DB56}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Efgs.IksDownloader.EntityFramework", "Efgs.IksDownloader.EntityFramework\Efgs.IksDownloader.EntityFramework.csproj", "{FFAC68B2-655F-4609-A249-9EE92C845E24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Downloader.EntityFramework", "Iks.Downloader.EntityFramework\Iks.Downloader.EntityFramework.csproj", "{FFAC68B2-655F-4609-A249-9EE92C845E24}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Efgs.IksUploader.Entities", "Efgs.IksUploader.Entities\Efgs.IksUploader.Entities.csproj", "{428C13D6-461F-48E4-9C2B-D286EA36EDA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Uploader.Entities", "Iks.Uploader.Entities\Iks.Uploader.Entities.csproj", "{428C13D6-461F-48E4-9C2B-D286EA36EDA3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Efgs.IksUploader.EntityFramework", "Efgs.IksUploader.EntityFramework\Efgs.IksUploader.EntityFramework.csproj", "{A731B7F2-83E5-4B0C-BC12-FF100014BD0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Uploader.EntityFramework", "Iks.Uploader.EntityFramework\Iks.Uploader.EntityFramework.csproj", "{A731B7F2-83E5-4B0C-BC12-FF100014BD0B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IksPublishing.Entities", "IksPublishing.Entities\IksPublishing.Entities.csproj", "{D7057933-2A2D-4181-B7DF-62AE4C969E6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Publishing.Entities", "Iks.Publishing.Entities\Iks.Publishing.Entities.csproj", "{D7057933-2A2D-4181-B7DF-62AE4C969E6A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IksPublishing.EntityFramework", "IksPublishing.EntityFramework\IksPublishing.EntityFramework.csproj", "{C2D42562-860F-488B-9022-532E717C9D1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Publishing.EntityFramework", "Iks.Publishing.EntityFramework\Iks.Publishing.EntityFramework.csproj", "{C2D42562-860F-488B-9022-532E717C9D1B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.Entities", "Stats.Entities\Stats.Entities.csproj", "{90EAB53C-C8AA-4500-B960-2E83E69E3551}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.EntityFramework", "Stats.EntityFramework\Stats.EntityFramework.csproj", "{60320E64-20C1-4B56-ADA8-4C316D29148A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccPortal.Components", "IccPortal.Components\IccPortal.Components.csproj", "{201F23D3-CC4D-46F0-ADC5-259520BAA0E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccPortal.Components", "IccPortal.Commands\IccPortal.Components.csproj", "{201F23D3-CC4D-46F0-ADC5-259520BAA0E0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccPortal.Components.Tests", "IccPortal.Components.Tests\IccPortal.Components.Tests.csproj", "{E62A3914-9A82-4CF3-9ECA-BE898FB84422}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccPortal.Components.Tests", "IccPortal.Commands.Tests\IccPortal.Components.Tests.csproj", "{E62A3914-9A82-4CF3-9ECA-BE898FB84422}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{7EF3DC84-57C7-47D9-9DEC-E94558B1AFC0}"
 EndProject
@@ -148,7 +146,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content.Commands", "Content
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content.Commands.Tests", "Content.Commands.Tests\Content.Commands.Tests.csproj", "{AA3BC0C5-9F40-4C1C-9F6F-0DD1AFC89480}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksEngine.Commands", "EksEngine.Commands\EksEngine.Commands.csproj", "{3F358EE4-A249-4FEA-BA6A-62D193CC0539}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksEngine.Commands", "Eks.Commands\EksEngine.Commands.csproj", "{3F358EE4-A249-4FEA-BA6A-62D193CC0539}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiagnosisKeys.Processors", "DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj", "{CB098768-3539-4824-9144-A619AA1FF9D0}"
 EndProject
@@ -160,9 +158,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Commands.Tests", "Iks.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.ConsoleApps", "Core.ConsoleApps\Core.ConsoleApps.csproj", "{E4106746-299D-4B93-92C2-97BC8DBA7C27}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.AspNet", "Core.Web\Core.AspNet.csproj", "{18EC9E9E-AB75-4A26-A475-36A98A4BB5A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.AspNet", "Core.AspNet\Core.AspNet.csproj", "{18EC9E9E-AB75-4A26-A475-36A98A4BB5A9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.Commands", "Stats\Stats.Commands.csproj", "{BBC8BCB6-8AF2-4CD2-A007-0D3A727568C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.Commands", "Stats.Commands\Stats.Commands.csproj", "{BBC8BCB6-8AF2-4CD2-A007-0D3A727568C5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.Commands.Tests", "Stats.Commands.Tests\Stats.Commands.Tests.csproj", "{6A16A550-9562-49AD-97A8-0E45DE68B96B}"
 EndProject
@@ -177,6 +175,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Tests", "Core.Tests\Core.Tests.csproj", "{C572A7E5-F771-43A8-BDE4-3279E041D39F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.AspNet.Tests", "Core.AspNet.Tests\Core.AspNet.Tests.csproj", "{534EC211-E342-4DDC-9C10-14331808E139}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Deployable", "!Deployable", "{CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -292,10 +292,6 @@ Global
 		{AB93BB3F-A599-422A-A4A9-2E8C83013A51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB93BB3F-A599-422A-A4A9-2E8C83013A51}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AB93BB3F-A599-422A-A4A9-2E8C83013A51}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{16E4DAFF-6F9B-41BB-96ED-BAF7B2665B73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16E4DAFF-6F9B-41BB-96ED-BAF7B2665B73}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{16E4DAFF-6F9B-41BB-96ED-BAF7B2665B73}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16E4DAFF-6F9B-41BB-96ED-BAF7B2665B73}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8BDFECC9-F38C-4C19-8C71-B728AC4537AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8BDFECC9-F38C-4C19-8C71-B728AC4537AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BDFECC9-F38C-4C19-8C71-B728AC4537AD}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
@@ -495,6 +491,11 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{DC54D593-4B03-4879-AA7A-5294170AEB49} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
+		{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
+		{E9B743F3-6643-4BD6-A136-2887F64A5BEB} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
+		{48F9CA7D-BE9A-423F-8F9C-4387271A96FD} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
+		{030A4188-9ADF-46A1-9DC8-9774970B4243} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
 		{0417A9FB-86E7-4AEF-90DE-6D715BC9C7DB} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 		{DC65200F-DDCD-40FF-93E9-F12E3CE006C9} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 		{C7481CC9-76CE-4782-81EC-C30FB65ECA0E} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
@@ -509,6 +510,8 @@ Global
 		{8BDFECC9-F38C-4C19-8C71-B728AC4537AD} = {3D8860B5-E55F-4EC3-8FC0-FF9188136CE1}
 		{35B037B5-DC5B-4A81-8D89-AC68A80BAD5A} = {3D8860B5-E55F-4EC3-8FC0-FF9188136CE1}
 		{B2903BFD-1520-4899-BC86-553DFD49269C} = {3D8860B5-E55F-4EC3-8FC0-FF9188136CE1}
+		{D0F534CC-D908-4AFA-A4D2-6B30E0297D8E} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
+		{0D13D399-0983-4986-A7E1-A219ED9093C9} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}
