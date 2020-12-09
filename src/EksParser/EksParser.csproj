@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Components.csproj" />
+    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Content.Commands\Content.Commands.csproj" />
     <ProjectReference Include="..\EksEngine.Commands\EksEngine.Commands.csproj" />
   </ItemGroup>

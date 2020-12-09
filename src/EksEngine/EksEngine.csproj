@@ -17,14 +17,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Components.csproj" />
+    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Content.Commands\Content.Commands.csproj" />
+    <ProjectReference Include="..\Core.ConsoleApps\Core.ConsoleApps.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\EksEngine.Commands\EksEngine.Commands.csproj" />
     <ProjectReference Include="..\Iks.Commands\Iks.Commands.csproj" />
     <ProjectReference Include="..\Manifest.Commands\Manifest.Commands.csproj" />
+    <ProjectReference Include="..\MobileAppApi.Workflow.EntityFramework\MobileAppApi.Workflow.EntityFramework.csproj" />
+    <ProjectReference Include="..\Stats.EntityFramework\Stats.EntityFramework.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

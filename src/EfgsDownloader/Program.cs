@@ -14,6 +14,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using System;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
 {
@@ -53,7 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
-            services.AddTransient(x => DbContextStartup.IksIn(x, false));
+            services.AddTransient(x => x.CreateDbContext(y => new IksInDbContext(y), DatabaseConnectionStringNames.IksIn, false));
 
             services.AddSingleton<IEfgsConfig, EfgsConfig>();
             services.AddTransient<IIHttpGetIksCommand, HttpGetIksCommand>();

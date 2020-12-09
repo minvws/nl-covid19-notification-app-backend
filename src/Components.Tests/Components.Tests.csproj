@@ -20,8 +20,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Assemblies\**" />
+    <Compile Remove="Stubs\**" />
+    <Compile Remove="Workflow\Authorisation\**" />
     <EmbeddedResource Remove="Assemblies\**" />
+    <EmbeddedResource Remove="Stubs\**" />
+    <EmbeddedResource Remove="Workflow\Authorisation\**" />
     <None Remove="Assemblies\**" />
+    <None Remove="Stubs\**" />
+    <None Remove="Workflow\Authorisation\**" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Resources\ResignAppConfig.zip" />
@@ -33,7 +39,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Components.csproj" />
+    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core.Web\Core.AspNet.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\TestDataGeneration\TestDataGeneration.Commands.csproj" />
@@ -60,9 +67,5 @@
     <None Update="1a082a5e05cd791ef7fbabdf3b653d3d9363d1dfb791d026e81db519500b090c">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Stubs\" />
-    <Folder Include="Workflow\Authorisation\" />
   </ItemGroup>
 </Project>

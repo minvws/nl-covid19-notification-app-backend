@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Components.csproj" />
+    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\ContentApi.Entities\ContentApi.Entities.csproj" />
     <ProjectReference Include="..\ContentApi.EntityFramework\ContentApi.EntityFramework.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />

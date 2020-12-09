@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Components\Components.csproj" />
+    <ProjectReference Include="..\Core.ConsoleApps\Core.ConsoleApps.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Database\WorkFlow\WorkFlow.sqlproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />

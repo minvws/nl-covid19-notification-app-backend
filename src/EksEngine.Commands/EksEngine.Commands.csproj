@@ -11,6 +11,10 @@
     <ProjectReference Include="..\DiagnosisKeys.EntityFramework\DiagnosisKeys.EntityFramework.csproj" />
     <ProjectReference Include="..\DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\EksPublishing.Entities\EksPublishing.Entities.csproj" />
+    <ProjectReference Include="..\EksPublishing.EntityFramework\EksPublishing.EntityFramework.csproj" />
+    <ProjectReference Include="..\GaenFormat\GeneratedGaenFormat.csproj" />
+    <ProjectReference Include="..\MobileAppApi.Workflow.EntityFramework\MobileAppApi.Workflow.EntityFramework.csproj" />
   </ItemGroup>
 
 </Project>

@@ -29,9 +29,9 @@ namespace DbProvision
         {
             //services.AddSingleton<IConfiguration>(configuration);
             //services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddScoped(x => DbContextStartup.Workflow(x, false));
-            services.AddScoped(x => DbContextStartup.Content(x, false));
-            services.AddScoped(x => DbContextStartup.EksPublishing(x, false));
+            services.AddScoped(x => x.Workflow(x, false));
+            services.AddScoped(x => x.Content(x, false));
+            services.AddScoped(x => x.EksPublishing(x, false));
 
             services.AddTransient<WorkflowDatabaseCreateCommand>();
             services.AddTransient<PublishingJobDatabaseCreateCommand>();

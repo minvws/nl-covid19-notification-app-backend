@@ -62,7 +62,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Components\Components.csproj" />
+      <ProjectReference Include="..\AspNet.DataProtection.Entities\AspNet.DataProtection.EntityFramework.csproj" />
+      <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
+      <ProjectReference Include="..\Core.Web\Core.AspNet.csproj" />
       <ProjectReference Include="..\IccPortal.Components\IccPortal.Components.csproj" />
     </ItemGroup>
 

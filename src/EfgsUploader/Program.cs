@@ -52,8 +52,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
+            //TODO why services.AddTransient(x => x.CreateDbContext(y => new IksInDbContext(y), DatabaseConnectionStringNames.IksIn));
+            services.AddTransient(x => x.CreateDbContext(y => new IksOutDbContext(y), DatabaseConnectionStringNames.IksOut, false));
+
             services.AddSingleton<IConfiguration>(configuration);
-            services.AddTransient(x => DbContextStartup.IksIn(x));
             services.AddSingleton<IEfgsConfig, EfgsConfig>();
             services.AddTransient<IksSendBatchCommand>();
             services.AddTransient<HttpPostIksCommand>();
@@ -61,7 +63,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
             services.AddSingleton<Func<HttpPostIksCommand>>(x => x.GetService<HttpPostIksCommand>);
             services.AddTransient<IBatchTagProvider, BatchTagProvider>();
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddTransient(_ => DbContextStartup.IksOut(_, false));
 
             // IKS Signing
             services.AddTransient<IIksSigner, EfgsCmsSigner>();

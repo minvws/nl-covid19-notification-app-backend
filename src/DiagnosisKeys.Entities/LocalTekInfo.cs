@@ -2,12 +2,14 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using Microsoft.EntityFrameworkCore;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities
 {
     /// <summary>
     /// Info from standard info 
     /// </summary>
-    //TODO mapping [Owned]
+    [Owned]
     public class LocalTekInfo
     {
         public TransmissionRiskLevel? TransmissionRiskLevel { get; set; }
