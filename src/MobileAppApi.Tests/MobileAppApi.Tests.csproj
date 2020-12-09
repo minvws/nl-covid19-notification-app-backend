@@ -36,7 +36,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MobileAppApi\MobileAppApi.csproj" />
+      <ProjectReference Include="..\MobileAppApi.WebApi\MobileAppApi.WebApi.csproj" />
       <ProjectReference Include="..\TestFramework\TestFramework.csproj" />
     </ItemGroup>
 

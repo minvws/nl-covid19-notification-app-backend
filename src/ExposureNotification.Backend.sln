@@ -30,7 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eks.Protobuf", "Eks.Protobu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.WebApi", "MobileAppApi.WebApi\MobileAppApi.WebApi.csproj", "{DC54D593-4B03-4879-AA7A-5294170AEB49}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.WebApi", "IccPortal.WebApi\Icc.WebApi.csproj", "{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.WebApi", "Icc.WebApi\Icc.WebApi.csproj", "{AC3CB088-A5D1-4CCC-B021-BBBBB60F3464}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5CB694D0-78E1-4347-BF78-A557E0780125}"
 	ProjectSection(SolutionItems) = preProject
@@ -50,11 +50,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{3F8DB099
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Tests", "MobileAppApi.Tests\MobileAppApi.Tests.csproj", "{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PublishContent", "PublishContent\PublishContent.csproj", "{DC65200F-DDCD-40FF-93E9-F12E3CE006C9}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ForceTekAuth", "ForceTekAuth\ForceTekAuth.csproj", "{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccPortal.Tests", "IccPortal.WebApi.Tests\IccPortal.Tests.csproj", "{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.WebApi.Tests", "IccPortal.WebApi.Tests\Icc.WebApi.Tests.csproj", "{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SigTestFileCreator", "SigTestFileCreator\SigTestFileCreator.csproj", "{D3D483FA-9F25-489A-B27A-5A6F0549BE1C}"
 EndProject
@@ -90,13 +88,13 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "IksPublishingJob", "Databas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Downloader", "Iks.Downloader\Iks.Downloader.csproj", "{D0F534CC-D908-4AFA-A4D2-6B30E0297D8E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfgsUploader", "Iks.Uploader\EfgsUploader.csproj", "{0D13D399-0983-4986-A7E1-A219ED9093C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Uploader", "Iks.Uploader\Iks.Uploader.csproj", "{0D13D399-0983-4986-A7E1-A219ED9093C9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Workflow.Entities", "MobileAppApi.Entities\MobileAppApi.Workflow.Entities.csproj", "{5F522AFF-98E7-4607-978C-ABAB99B7A685}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Entities", "MobileAppApi.Entities\MobileAppApi.Entities.csproj", "{5F522AFF-98E7-4607-978C-ABAB99B7A685}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{208B2F94-0B7B-4EB5-80AB-1C30F22B4057}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Workflow.EntityFramework", "MobileAppApi.EntityFramework\MobileAppApi.Workflow.EntityFramework.csproj", "{85A2B9CB-C09E-4FCE-ABBD-725DFEF8834D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.EntityFramework", "MobileAppApi.EntityFramework\MobileAppApi.EntityFramework.csproj", "{85A2B9CB-C09E-4FCE-ABBD-725DFEF8834D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content.Entities", "Content.Entities\Content.Entities.csproj", "{F592DCA1-443A-499A-AABB-8EC19C32D0C2}"
 EndProject
@@ -128,15 +126,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.Entities", "Stats.Ent
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.EntityFramework", "Stats.EntityFramework\Stats.EntityFramework.csproj", "{60320E64-20C1-4B56-ADA8-4C316D29148A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccPortal.Components", "IccPortal.Commands\IccPortal.Components.csproj", "{201F23D3-CC4D-46F0-ADC5-259520BAA0E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.Commands", "Icc.Commands\Icc.Commands.csproj", "{201F23D3-CC4D-46F0-ADC5-259520BAA0E0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccPortal.Components.Tests", "IccPortal.Commands.Tests\IccPortal.Components.Tests.csproj", "{E62A3914-9A82-4CF3-9ECA-BE898FB84422}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.Commands.Tests", "Icc.Commands.Tests\Icc.Commands.Tests.csproj", "{E62A3914-9A82-4CF3-9ECA-BE898FB84422}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{7EF3DC84-57C7-47D9-9DEC-E94558B1AFC0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Commands", "MobileAppApi.Commands\MobileAppApi.Commands.csproj", "{9BC13105-9A51-4382-94B6-36A17C2A24FB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDataGeneration.Commands", "TestDataGeneration\TestDataGeneration.Commands.csproj", "{30144375-4118-4A8E-9C78-55BB4C1C9E1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDataGeneration.Commands", "TestDataGeneration.Commands\TestDataGeneration.Commands.csproj", "{30144375-4118-4A8E-9C78-55BB4C1C9E1D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manifest.Commands", "Manifest.Commands\Manifest.Commands.csproj", "{7337E1AF-88FB-4789-8498-7699044C958B}"
 EndProject
@@ -146,7 +144,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content.Commands", "Content
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content.Commands.Tests", "Content.Commands.Tests\Content.Commands.Tests.csproj", "{AA3BC0C5-9F40-4C1C-9F6F-0DD1AFC89480}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksEngine.Commands", "Eks.Commands\EksEngine.Commands.csproj", "{3F358EE4-A249-4FEA-BA6A-62D193CC0539}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eks.Commands", "Eks.Commands\Eks.Commands.csproj", "{3F358EE4-A249-4FEA-BA6A-62D193CC0539}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiagnosisKeys.Processors", "DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj", "{CB098768-3539-4824-9144-A619AA1FF9D0}"
 EndProject
@@ -177,6 +175,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.AspNet.Tests", "Core.AspNet.Tests\Core.AspNet.Tests.csproj", "{534EC211-E342-4DDC-9C10-14331808E139}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Deployable", "!Deployable", "{CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Protobuf", "Iks.Protobuf\Iks.Protobuf.csproj", "{98B48918-654A-493C-82AE-EBF4ACEEEC04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -220,10 +220,6 @@ Global
 		{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC65200F-DDCD-40FF-93E9-F12E3CE006C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC65200F-DDCD-40FF-93E9-F12E3CE006C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC65200F-DDCD-40FF-93E9-F12E3CE006C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC65200F-DDCD-40FF-93E9-F12E3CE006C9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -486,6 +482,10 @@ Global
 		{534EC211-E342-4DDC-9C10-14331808E139}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{534EC211-E342-4DDC-9C10-14331808E139}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{534EC211-E342-4DDC-9C10-14331808E139}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98B48918-654A-493C-82AE-EBF4ACEEEC04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98B48918-654A-493C-82AE-EBF4ACEEEC04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98B48918-654A-493C-82AE-EBF4ACEEEC04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98B48918-654A-493C-82AE-EBF4ACEEEC04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -497,10 +497,10 @@ Global
 		{48F9CA7D-BE9A-423F-8F9C-4387271A96FD} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
 		{030A4188-9ADF-46A1-9DC8-9774970B4243} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
 		{0417A9FB-86E7-4AEF-90DE-6D715BC9C7DB} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
-		{DC65200F-DDCD-40FF-93E9-F12E3CE006C9} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 		{C7481CC9-76CE-4782-81EC-C30FB65ECA0E} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 		{D3D483FA-9F25-489A-B27A-5A6F0549BE1C} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 		{ABAF7EEC-3FF1-4900-A941-F268458DE385} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
+		{8E025BC6-8D21-40DA-8141-461F82AC6509} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
 		{DCE516D6-26DD-4DAA-9AF9-09936F91279D} = {3D8860B5-E55F-4EC3-8FC0-FF9188136CE1}
 		{8CBD7876-8033-4AD4-AE50-8C121DC3E31E} = {3D8860B5-E55F-4EC3-8FC0-FF9188136CE1}
 		{1B43A591-F224-4A8B-B50E-53BAF0710B08} = {3D8860B5-E55F-4EC3-8FC0-FF9188136CE1}

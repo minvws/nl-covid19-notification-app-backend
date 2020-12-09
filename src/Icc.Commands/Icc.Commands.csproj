@@ -12,10 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\MobileAppApi.Workflow.EntityFramework\MobileAppApi.Workflow.EntityFramework.csproj" />
+    <ProjectReference Include="..\MobileAppApi.EntityFramework\MobileAppApi.EntityFramework.csproj" />
   </ItemGroup>
 
 </Project>

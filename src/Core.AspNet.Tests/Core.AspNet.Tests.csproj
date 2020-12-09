@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core.Web\Core.AspNet.csproj" />
+    <ProjectReference Include="..\Core.AspNet\Core.AspNet.csproj" />
   </ItemGroup>
 
 </Project>

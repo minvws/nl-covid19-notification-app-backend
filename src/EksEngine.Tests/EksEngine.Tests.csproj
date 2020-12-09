@@ -17,10 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Manifest.Commands\Manifest.Commands.csproj" />
     <ProjectReference Include="..\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
-    <ProjectReference Include="..\TestDataGeneration\TestDataGeneration.Commands.csproj" />
+    <ProjectReference Include="..\TestDataGeneration.Commands\TestDataGeneration.Commands.csproj" />
     <ProjectReference Include="..\TestFramework\TestFramework.csproj" />
   </ItemGroup>
 

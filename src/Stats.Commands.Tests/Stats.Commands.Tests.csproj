@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Stats\Stats.Commands.csproj" />
+    <ProjectReference Include="..\Stats.Commands\Stats.Commands.csproj" />
     <ProjectReference Include="..\TestFramework\TestFramework.csproj" />
   </ItemGroup>
 

@@ -28,14 +28,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Core.ConsoleApps\Core.ConsoleApps.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\EksEngine.Commands\EksEngine.Commands.csproj" />
+    <ProjectReference Include="..\Eks.Commands\Eks.Commands.csproj" />
     <ProjectReference Include="..\Iks.Commands\Iks.Commands.csproj" />
     <ProjectReference Include="..\Manifest.Commands\Manifest.Commands.csproj" />
     <ProjectReference Include="..\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
-    <ProjectReference Include="..\Stats\Stats.Commands.csproj" />
+    <ProjectReference Include="..\Stats.Commands\Stats.Commands.csproj" />
   </ItemGroup>
 
 </Project>

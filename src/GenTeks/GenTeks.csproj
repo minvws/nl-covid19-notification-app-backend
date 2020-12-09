@@ -21,11 +21,11 @@
   </ItemGroup>
 
     <ItemGroup>
-    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Core.ConsoleApps\Core.ConsoleApps.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
-    <ProjectReference Include="..\TestDataGeneration\TestDataGeneration.Commands.csproj" />
+    <ProjectReference Include="..\TestDataGeneration.Commands\TestDataGeneration.Commands.csproj" />
   </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">

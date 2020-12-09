@@ -8,19 +8,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
-    <ProjectReference Include="..\Core.Web\Core.AspNet.csproj" />
+    <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core.AspNet\Core.AspNet.csproj" />
     <ProjectReference Include="..\Crypto\Crypto.csproj" />
     <ProjectReference Include="..\DiagnosisKeys.Entities\DiagnosisKeys.Entities.csproj" />
+    <ProjectReference Include="..\Iks.Protobuf\Iks.Protobuf.csproj" />
+
     <ProjectReference Include="..\DiagnosisKeys.EntityFramework\DiagnosisKeys.EntityFramework.csproj" />
     <ProjectReference Include="..\DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj" />
-    <ProjectReference Include="..\Efgs.IksDownloader.Entities\Efgs.IksDownloader.Entities.csproj" />
-    <ProjectReference Include="..\Efgs.IksDownloader.EntityFramework\Efgs.IksDownloader.EntityFramework.csproj" />
-    <ProjectReference Include="..\Efgs.IksUploader.Entities\Efgs.IksUploader.Entities.csproj" />
-    <ProjectReference Include="..\Efgs.IksUploader.EntityFramework\Efgs.IksUploader.EntityFramework.csproj" />
-    <ProjectReference Include="..\GeneratedEfgsFormat\GeneratedEfgsFormat.csproj" />
-    <ProjectReference Include="..\IksPublishing.Entities\IksPublishing.Entities.csproj" />
-    <ProjectReference Include="..\IksPublishing.EntityFramework\IksPublishing.EntityFramework.csproj" />
+
+    <ProjectReference Include="..\Iks.Downloader.Entities\Iks.Downloader.Entities.csproj" />
+    <ProjectReference Include="..\Iks.Downloader.EntityFramework\Iks.Downloader.EntityFramework.csproj" />
+
+    <ProjectReference Include="..\Iks.Uploader.Entities\Iks.Uploader.Entities.csproj" />
+    <ProjectReference Include="..\Iks.Uploader.EntityFramework\Iks.Uploader.EntityFramework.csproj" />
+    
+    <ProjectReference Include="..\Iks.Publishing.Entities\Iks.Publishing.Entities.csproj" />
+    <ProjectReference Include="..\Iks.Publishing.EntityFramework\Iks.Publishing.EntityFramework.csproj" />
   </ItemGroup>
 
   <ItemGroup>

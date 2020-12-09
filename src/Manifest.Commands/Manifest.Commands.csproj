@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Content.Commands\Content.Commands.csproj" />
   </ItemGroup>
 

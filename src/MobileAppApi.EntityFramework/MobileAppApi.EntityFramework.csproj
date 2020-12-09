@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MobileApp.Workflow.Entities\MobileAppApi.Workflow.Entities.csproj" />
+    <ProjectReference Include="..\MobileAppApi.Entities\MobileAppApi.Entities.csproj" />
   </ItemGroup>
 
 </Project>

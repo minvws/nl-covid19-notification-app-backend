@@ -8,9 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
-    <ProjectReference Include="..\ContentApi.Entities\ContentApi.Entities.csproj" />
-    <ProjectReference Include="..\ContentApi.EntityFramework\ContentApi.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Content.Entities\Content.Entities.csproj" />
+    <ProjectReference Include="..\Content.EntityFramework\Content.EntityFramework.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Crypto\Crypto.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />

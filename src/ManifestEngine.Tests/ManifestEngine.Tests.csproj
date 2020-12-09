@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EksEngine\EksEngine.csproj" />
+    <ProjectReference Include="..\ManifestEngine\ManifestEngine.csproj" />
     <ProjectReference Include="..\TestFramework\TestFramework.csproj" />
   </ItemGroup>
 

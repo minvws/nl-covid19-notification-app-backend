@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EksPublishing.Entities\EksPublishing.Entities.csproj" />
+    <ProjectReference Include="..\Eks.Publishing.Entities\Eks.Publishing.Entities.csproj" />
   </ItemGroup>
 
 </Project>

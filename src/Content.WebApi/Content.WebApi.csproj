@@ -33,10 +33,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Content.Commands\Content.Commands.csproj" />
-    <ProjectReference Include="..\Core.Web\Core.AspNet.csproj" />
-    <ProjectReference Include="..\IccPortal.Components\IccPortal.Components.csproj" />
+    <ProjectReference Include="..\Core.AspNet\Core.AspNet.csproj" />
+    <ProjectReference Include="..\Icc.Commands\Icc.Commands.csproj" />
   </ItemGroup>
 
   <ItemGroup>

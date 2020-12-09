@@ -1,6 +1,9 @@
 ﻿<ProjectConfiguration>
   <Settings>
     <DefaultTestTimeout>50000</DefaultTestTimeout>
+    <HiddenComponentWarnings>
+      <Value>AspNetTestHostCompatibility</Value>
+    </HiddenComponentWarnings>
     <IgnoredTests>
       <NamedTestSelector>
         <TestName>MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysTestsSqlserver.PostWorkflowTest_InvalidSignature</TestName>

@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Core.ConsoleApps\Core.ConsoleApps.csproj" />
     <ProjectReference Include="..\Iks.Commands\Iks.Commands.csproj" />
   </ItemGroup>

@@ -16,8 +16,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
-    <ProjectReference Include="..\Core.Web\Core.AspNet.csproj" />
+    <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core.AspNet\Core.AspNet.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
   </ItemGroup>

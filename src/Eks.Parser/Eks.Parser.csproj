@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Content.Commands\Content.Commands.csproj" />
-    <ProjectReference Include="..\EksEngine.Commands\EksEngine.Commands.csproj" />
+    <ProjectReference Include="..\Eks.Commands\Eks.Commands.csproj" />
   </ItemGroup>
 
 </Project>

@@ -12,9 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj" />
-    <ProjectReference Include="..\EksEngine.Commands\EksEngine.Commands.csproj" />
+    <ProjectReference Include="..\Eks.Commands\Eks.Commands.csproj" />
     <ProjectReference Include="..\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
     <ProjectReference Include="..\TestFramework\TestFramework.csproj" />
   </ItemGroup>

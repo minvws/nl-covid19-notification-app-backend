@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IksPublishing.Entities\IksPublishing.Entities.csproj" />
+    <ProjectReference Include="..\Iks.Publishing.Entities\Iks.Publishing.Entities.csproj" />
   </ItemGroup>
 
 </Project>

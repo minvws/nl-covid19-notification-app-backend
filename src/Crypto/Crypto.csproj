@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <None Remove="Resources\BdCertChain.p7b" />
+    <None Remove="Resources\efgs\efgs-trustanchor\trustanchor.key" />
+    <None Remove="Resources\efgs\efgs-trustanchor\trustanchor.pem" />
     <None Remove="Resources\StaatDerNLChain-EV-Expires-2022-12-05.p7b" />
     <None Remove="Resources\StaatDerNLChain-Expires2020-08-28.p7b" />
     <None Remove="Resources\TestECDSA.p12" />
@@ -17,6 +19,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\BdCertChain.p7b" />
+    <EmbeddedResource Include="Resources\efgs\efgs-trustanchor\trustanchor.key" />
+    <EmbeddedResource Include="Resources\efgs\efgs-trustanchor\trustanchor.pem" />
     <EmbeddedResource Include="Resources\StaatDerNLChain-EV-Expires-2022-12-05.p7b" />
     <EmbeddedResource Include="Resources\StaatDerNLChain-Expires2020-08-28.p7b" />
     <EmbeddedResource Include="Resources\TestECDSA.p12" />
