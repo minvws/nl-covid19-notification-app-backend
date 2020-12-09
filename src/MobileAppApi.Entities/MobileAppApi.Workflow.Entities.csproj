@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileApp.Workflow.Entities</AssemblyName>
-    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileApp.Workflow.Entities</RootNamespace>
+    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities</AssemblyName>
+    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components</AssemblyName>
-    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Components</RootNamespace>
+    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework</AssemblyName>
+    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningsAsErrors>NU1605;CS8625</WarningsAsErrors>

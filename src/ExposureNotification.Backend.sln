@@ -26,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeneratedGaenFormat", "Eks.Protobuf\GeneratedGaenFormat.csproj", "{4EE95C11-79EE-4ECB-940E-205AA3C4EAC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eks.Protobuf", "Eks.Protobuf\Eks.Protobuf.csproj", "{4EE95C11-79EE-4ECB-940E-205AA3C4EAC8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.WebApi", "MobileAppApi.WebApi\MobileAppApi.WebApi.csproj", "{DC54D593-4B03-4879-AA7A-5294170AEB49}"
 EndProject
@@ -54,7 +54,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PublishContent", "PublishCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ForceTekAuth", "ForceTekAuth\ForceTekAuth.csproj", "{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccBackend.Tests", "IccPortal.WebApi.Tests\IccBackend.Tests.csproj", "{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IccPortal.Tests", "IccPortal.WebApi.Tests\IccPortal.Tests.csproj", "{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SigTestFileCreator", "SigTestFileCreator\SigTestFileCreator.csproj", "{D3D483FA-9F25-489A-B27A-5A6F0549BE1C}"
 EndProject
@@ -110,7 +110,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNet.DataProtection.Entit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eks.Publishing.Entities", "Eks.Publishing.Entities\Eks.Publishing.Entities.csproj", "{8164CDEA-1A05-49FE-B9C9-E682633F1AA2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksPublishing.EntityFramework", "Eks.Publishing.EntityFramework\EksPublishing.EntityFramework.csproj", "{F9FC6957-6094-4EF6-8369-EA67693B1B99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eks.Publishing.EntityFramework", "Eks.Publishing.EntityFramework\Eks.Publishing.EntityFramework.csproj", "{F9FC6957-6094-4EF6-8369-EA67693B1B99}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Downloader.Entities", "Iks.Downloader.Entities\Iks.Downloader.Entities.csproj", "{A9F508A6-7D56-4B5C-A645-F0733FB1DB56}"
 EndProject

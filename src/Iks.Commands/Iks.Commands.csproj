@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands</AssemblyName>
+    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands</RootNamespace>
+
   </PropertyGroup>
 
   <ItemGroup>

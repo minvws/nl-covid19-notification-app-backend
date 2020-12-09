@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework</AssemblyName>
+    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

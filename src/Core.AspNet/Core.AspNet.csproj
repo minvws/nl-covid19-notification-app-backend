@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+        <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet</AssemblyName>
+    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet</RootNamespace>
+
   </PropertyGroup>
 
   <ItemGroup>

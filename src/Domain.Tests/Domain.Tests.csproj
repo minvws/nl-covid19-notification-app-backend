@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+  <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Tests</AssemblyName>
+    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
