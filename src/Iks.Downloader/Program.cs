@@ -11,10 +11,10 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Config
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Efgs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Configs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Providers;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
 {

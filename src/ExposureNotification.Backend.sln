@@ -52,8 +52,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Tests", "Mobil
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ForceTekAuth", "ForceTekAuth\ForceTekAuth.csproj", "{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.WebApi.Tests", "IccPortal.WebApi.Tests\Icc.WebApi.Tests.csproj", "{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SigTestFileCreator", "SigTestFileCreator\SigTestFileCreator.csproj", "{D3D483FA-9F25-489A-B27A-5A6F0549BE1C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eks.Parser", "Eks.Parser\Eks.Parser.csproj", "{ABAF7EEC-3FF1-4900-A941-F268458DE385}"
@@ -224,10 +222,6 @@ Global
 		{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7481CC9-76CE-4782-81EC-C30FB65ECA0E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{55F11CBF-1CBE-4FAD-BC96-469335AC3EF1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D3D483FA-9F25-489A-B27A-5A6F0549BE1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D3D483FA-9F25-489A-B27A-5A6F0549BE1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3D483FA-9F25-489A-B27A-5A6F0549BE1C}.Release|Any CPU.ActiveCfg = Release|Any CPU

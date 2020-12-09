@@ -27,6 +27,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.SendTeks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 

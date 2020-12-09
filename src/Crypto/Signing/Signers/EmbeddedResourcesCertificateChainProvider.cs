@@ -5,10 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Resources;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Providers;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Signers
 {
     public class EmbeddedResourcesCertificateChainProvider : ICertificateChainProvider
     {

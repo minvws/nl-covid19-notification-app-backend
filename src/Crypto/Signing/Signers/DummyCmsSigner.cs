@@ -4,7 +4,7 @@
 
 using System.Text;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Signers
 {
 	/// <summary>
 	/// Returns a byte array that indicates no RSA-signature is created

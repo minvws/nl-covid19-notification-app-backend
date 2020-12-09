@@ -6,20 +6,18 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Resources;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Providers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests.Content
 {
     public abstract class ReSignerTest : IDisposable
     {
@@ -42,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
             var d = DateTime.Now;
             var latestReleaseDate = d.AddDays(1);
 
-            using var testContentStream = ResourcesHook.GetManifestResourceStream("ResignTestManifest.zip");
+            using var testContentStream = ResourcesHook.GetManifestResourceStream("Resources.ResignTestManifest.zip");
 
             using var m = new MemoryStream();
             testContentStream.CopyTo(m);
@@ -65,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
             var signer = new CmsSignerEnhanced(
                 new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
                 //TODO add a better test chain.
-                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
+                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("Resources.StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
                 new StandardUtcDateTimeProvider()
             );
 
@@ -105,7 +103,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
             var laterDate = d.AddDays(1);
             var publishingId = "1";
 
-            using var testContentStream = ResourcesHook.GetManifestResourceStream("ResignAppConfig.zip");
+            using var testContentStream = ResourcesHook.GetManifestResourceStream("Resources.ResignAppConfig.zip");
             using var m = new MemoryStream();
             testContentStream.CopyTo(m);
             var zipContent = m.ToArray();
@@ -129,7 +127,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
             var signer = new CmsSignerEnhanced(
                 new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
                                                                                                                                                                                      //TODO add a better test chain.
-                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
+                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("Resources.StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
                 new StandardUtcDateTimeProvider()
             );
 
@@ -175,7 +173,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
             var laterDate = d.AddDays(1);
             var publishingId = "1";
 
-            using var testContentStream = ResourcesHook.GetManifestResourceStream("ResignAppConfig.zip");
+            using var testContentStream = ResourcesHook.GetManifestResourceStream("Resources.ResignAppConfig.zip");
             using var m = new MemoryStream();
             testContentStream.CopyTo(m);
             var zipContent = m.ToArray();
@@ -199,7 +197,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
             var signer = new CmsSignerEnhanced(
                 new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
                                                                                                                                                                                      //TODO add a better test chain.
-                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
+                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("Resources.StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
                 new StandardUtcDateTimeProvider()
             );
 

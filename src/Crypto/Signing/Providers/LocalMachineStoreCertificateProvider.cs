@@ -5,9 +5,9 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Configs;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Providers
 {
     public class LocalMachineStoreCertificateProvider : ICertificateProvider, IAuthenticationCertificateProvider
     {

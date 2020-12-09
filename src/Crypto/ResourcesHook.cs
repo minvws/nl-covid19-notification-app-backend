@@ -4,7 +4,7 @@
 
 using System.IO;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Resources
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto
 {
     internal static class ResourcesHook
     {

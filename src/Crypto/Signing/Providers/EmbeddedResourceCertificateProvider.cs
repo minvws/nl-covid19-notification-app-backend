@@ -7,7 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Providers
 {
     public class EmbeddedResourceCertificateProvider : ICertificateProvider
     {
@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Sign
         {
             var a = typeof(EmbeddedResourceCertificateProvider).Assembly;
 
-            var resName = $"NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Resources.{_Config.Path}";
+            var resName = $"NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Resources.{_Config.Path}";
 
             _Logger.WriteOpening(resName);
 

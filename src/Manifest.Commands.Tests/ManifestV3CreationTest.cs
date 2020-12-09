@@ -13,15 +13,14 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
 using Xunit;
 using System.IO;
 using System.IO.Compression;
 using NCrunch.Framework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Providers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Signers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
@@ -80,7 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
 					new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), //Not a secret.
 					certProviderLogger),
 				new EmbeddedResourcesCertificateChainProvider(
-					new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
+					new HardCodedCertificateLocationConfig("Resources.StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
 				dateTimeProvider);
 
 			Func<IContentEntityFormatter> formatterForV3 = () =>

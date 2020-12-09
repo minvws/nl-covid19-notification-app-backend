@@ -8,7 +8,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Content
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests.Content
 {
     public class EksMaxageCalculatorTests
     {

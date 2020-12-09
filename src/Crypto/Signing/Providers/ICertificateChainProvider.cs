@@ -4,7 +4,7 @@
 
 using System.Security.Cryptography.X509Certificates;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Providers
 {
     public interface ICertificateChainProvider
     {

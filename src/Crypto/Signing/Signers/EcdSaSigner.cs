@@ -5,9 +5,9 @@
 using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Providers;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Signers
 {
     /// <summary>
     /// For GAEN EKS Signing

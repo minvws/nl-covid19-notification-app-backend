@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Configs
 {
     public class LocalMachineStoreCertificateProviderConfig : AppSettingsReader, IThumbprintConfig
     {

@@ -6,9 +6,10 @@ using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Pkcs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Framework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Providers;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Signers
 {
     public class CmsSignerEnhanced : IContentSigner
     {

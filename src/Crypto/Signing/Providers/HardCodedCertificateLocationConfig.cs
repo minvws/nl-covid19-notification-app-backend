@@ -4,7 +4,7 @@
 
 using System;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Providers
 {
     public class HardCodedCertificateLocationConfig : ICertificateLocationConfig
     {

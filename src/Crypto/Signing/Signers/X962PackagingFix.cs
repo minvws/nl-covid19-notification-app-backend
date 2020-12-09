@@ -66,7 +66,7 @@
 using System;
 using System.Diagnostics;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Signers
 {
 
     public class X962PackagingFix

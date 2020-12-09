@@ -4,7 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Configs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Configs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content
 {
