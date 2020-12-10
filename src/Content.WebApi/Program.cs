@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
 {
     public static class Program
     {

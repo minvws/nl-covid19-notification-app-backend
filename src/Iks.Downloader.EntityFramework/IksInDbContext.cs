@@ -4,9 +4,9 @@
 
 using System;
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework
 {
     public class IksInDbContext : DbContext
     {

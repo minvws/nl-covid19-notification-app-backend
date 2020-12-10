@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.Extensions.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
 {
     public class ContentApiConfig : AppSettingsReader
     {

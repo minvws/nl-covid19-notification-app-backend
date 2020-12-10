@@ -16,17 +16,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="BleCalibration\**" />
-    <Compile Remove="EfDatabase\Contexts\**" />
-    <Compile Remove="EfDatabase\Entities\**" />
     <EmbeddedResource Remove="BleCalibration\**" />
-    <EmbeddedResource Remove="EfDatabase\Contexts\**" />
-    <EmbeddedResource Remove="EfDatabase\Entities\**" />
     <None Remove="BleCalibration\**" />
-    <None Remove="EfDatabase\Contexts\**" />
-    <None Remove="EfDatabase\Entities\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="EfDatabase\Configuration\Workflow\KeysFirstTekReleaseWorkflow.cs" />
   </ItemGroup>
 
   <ItemGroup>

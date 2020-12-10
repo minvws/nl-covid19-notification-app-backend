@@ -6,12 +6,11 @@ using System;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation;
 using TheIdentityHub.AspNetCore.Authentication;
 using WireMock.Server;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests.Icc
 {
     public static class TestTheIdentityHubServiceCreator
     {

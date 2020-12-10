@@ -5,7 +5,7 @@
 using System;
 using System.Text.Json;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public class StandardJsonSerializer : IJsonSerializer
     {

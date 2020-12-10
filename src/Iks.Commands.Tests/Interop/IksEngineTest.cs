@@ -8,19 +8,24 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCrunch.Framework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.Publishing;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop.TestData;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Serilog.Extensions.Logging;
 using Xunit;
+using EfgsReportType = Iks.Protobuf.EfgsReportType;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop
 {
     /// <summary>
     /// Tests the command sequence for:
@@ -111,7 +116,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
             {
                 TransmissionRiskLevel = 1,
                 CountriesOfInterest = new[] {"DE"},
-                ReportType = Eu.Interop.EfgsReportType.ConfirmedTest,
+                ReportType = EfgsReportType.ConfirmedTest,
                 Origin = "DE",
                 DaysSinceSymtpomsOnset = 0,
                 Value = new DailyKey

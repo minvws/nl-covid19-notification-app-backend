@@ -4,14 +4,13 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Validators;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation.Validators;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc.AuthHandlers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests.Icc.AuthHandlers
 {
     public class TestJwtClaimValidatorTests
     {

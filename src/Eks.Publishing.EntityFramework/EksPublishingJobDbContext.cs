@@ -4,9 +4,9 @@
 
 using System;
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework
 {
     public class EksPublishingJobDbContext : DbContext
     {

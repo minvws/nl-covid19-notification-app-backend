@@ -6,10 +6,10 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 {
     // NOTE: do not apply this attribute directly, apply DecoyTimeGeneratorAttributeFactory
     public class DecoyTimeGeneratorAttribute : ActionFilterAttribute

@@ -11,13 +11,11 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using Moq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflow.DecoyKeys
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.DecoyKeys
 {
     public class DecoyTimeFilterTest
     {

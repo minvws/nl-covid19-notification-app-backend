@@ -5,7 +5,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stubs
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.DecoyKeys
 {
     /// <summary>
     /// Logger stub for use during testing

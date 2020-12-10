@@ -2,10 +2,9 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Helpers;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Helpers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Tests
 {
     public class ByteArrayEqualityComparerTests
     {

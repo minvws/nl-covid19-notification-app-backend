@@ -2,7 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
 {
     /// <summary>
     /// Implementation of ingress and egress filters.

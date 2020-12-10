@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public interface IContentEntityFormatter
     {

@@ -6,7 +6,7 @@ using Google.Protobuf;
 using Google.Protobuf.Collections;
 using Google.Protobuf.Reflection;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf
 {
     public sealed partial class TEKSignatureList : IMessage<TEKSignatureList> {
         private static readonly MessageParser<TEKSignatureList> _parser = new MessageParser<TEKSignatureList>(() => new TEKSignatureList());

@@ -3,11 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using NCrunch.Framework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Interop
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop
 {
     [Collection(nameof(MarkDiagnosisKeysAsUsedByIksTestsSqlServer))]
     [ExclusivelyUses(nameof(MarkDiagnosisKeysAsUsedByIksTestsSqlServer))]

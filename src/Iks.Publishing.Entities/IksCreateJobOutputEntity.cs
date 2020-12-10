@@ -5,7 +5,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.Entities
 {
     [Table("IksCreateJobOutput")]
     public class IksCreateJobOutputEntity

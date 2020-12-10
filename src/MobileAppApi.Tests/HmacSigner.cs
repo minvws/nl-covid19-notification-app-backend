@@ -5,7 +5,7 @@
 using System;
 using System.Security.Cryptography;
 
-namespace MobileAppApi.Tests
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
 {
     public static class HmacSigner
     {

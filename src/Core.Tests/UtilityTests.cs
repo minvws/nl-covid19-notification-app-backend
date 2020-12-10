@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Commands
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Tests
 {
     public class UtilityTests
     {

@@ -1,8 +1,7 @@
 ﻿using System;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Services
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Tests
 {
     public class ValidateIso3166RegionCodeListTests
     {

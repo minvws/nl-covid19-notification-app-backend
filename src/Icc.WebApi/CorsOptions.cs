@@ -4,9 +4,9 @@
 
 using System;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Helpers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Config;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Config;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend
 {

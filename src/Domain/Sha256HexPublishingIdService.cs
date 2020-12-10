@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 {
     public class Sha256HexPublishingIdService : IPublishingIdService
     {

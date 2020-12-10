@@ -4,10 +4,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Configs;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Providers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Signers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 {

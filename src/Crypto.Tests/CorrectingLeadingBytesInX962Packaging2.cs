@@ -2,10 +2,10 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Signers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Services
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
 {
     public class CorrectingLeadingBytesInX962Packaging2
     {

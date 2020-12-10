@@ -6,7 +6,7 @@ using System;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 {
     public class DecoyTimeGeneratorAttributeFactory : Attribute, IFilterFactory
     {

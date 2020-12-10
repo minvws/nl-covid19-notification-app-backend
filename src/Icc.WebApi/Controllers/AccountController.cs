@@ -4,7 +4,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 {

@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.EntityFrameworkCore;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities
 {
     /// <summary>
     /// What was received from the EFGS
@@ -19,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.En
         public string? CountriesOfInterest { get; set; }
         public int? DaysSinceSymptomsOnset { get; set; }
 
-        public ReportType? ReportType { get; set; } = Entities.ReportType.ConfirmedTest;
+        public ReportType? ReportType { get; set; } = Domain.ReportType.ConfirmedTest;
         
         //TODO length 2
         public string? CountryOfOrigin { get; set; }

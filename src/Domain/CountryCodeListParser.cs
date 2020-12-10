@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 {
     public class CountryCodeListParser
     {

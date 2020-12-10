@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework
 {

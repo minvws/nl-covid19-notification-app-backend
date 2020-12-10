@@ -2,20 +2,17 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Moq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Efgs;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Moq;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.IksInbound
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksInbound
 {
     public class IksPollingBatchJobTests
     {
@@ -152,51 +149,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.IksInbo
 
             // Assert
         }
-    }
-
-    /// <summary>
-    /// IHttpGetIksCommand which returns the provided results in order.
-    /// Use for tests.
-    /// </summary>
-    class FixedResultHttpGetIksCommand : IIHttpGetIksCommand
-    {
-        private readonly List<HttpGetIksSuccessResult> _Responses;
-        private int _CallIndex;
-
-        public FixedResultHttpGetIksCommand(List<HttpGetIksSuccessResult> responses)
-        {
-            _Responses = responses;
-        }
-        
-        public void AddItem(HttpGetIksSuccessResult item)
-        {
-            if (_Responses.Count > 0) _Responses.Last().NextBatchTag = item.BatchTag;
-            _Responses.Add(item);
-        }
-
-        public Task<HttpGetIksSuccessResult?> ExecuteAsync(string batchTag, DateTime date)
-        {
-            HttpGetIksSuccessResult? result = null;
-
-            if(_CallIndex < _Responses.Count)
-            {
-                result = _Responses[_CallIndex++];
-            }
-
-            return Task.FromResult(result);
-        }
-    }
-
-    /// <summary>
-    /// Stub for my config
-    /// </summary>
-    class EfgsConfig : IEfgsConfig
-    {
-        public string BaseUrl => "";
-        public bool SendClientAuthenticationHeaders => true;
-        public int DaysToDownload => 1;
-        public int MaxBatchesPerRun => 10;
-        public bool UploaderEnabled => true;
-        public bool DownloaderEnabled => true;
     }
 }

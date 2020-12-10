@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
-using Xunit;
+﻿using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Services
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Tests
 {
     public class ValidateIso3166RegionCodeTests
     {

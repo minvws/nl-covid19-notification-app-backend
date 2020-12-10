@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 {
     public class DefaultTekValidatorConfig : ITekValidatorConfig
     {

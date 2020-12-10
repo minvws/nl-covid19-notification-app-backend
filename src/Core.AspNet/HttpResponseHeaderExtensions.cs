@@ -5,7 +5,7 @@
 using System.Linq;
 using System.Net.Http.Headers;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Helpers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
 {
     public static class HttpResponseHeaderExtensions
     {

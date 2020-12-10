@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc.Auth.Handlers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation.Handlers;
 
 namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
 {

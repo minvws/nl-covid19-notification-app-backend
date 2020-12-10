@@ -4,7 +4,7 @@
 
 using Microsoft.AspNetCore.Cors.Infrastructure;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Helpers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
 {
     public interface ICorsOptions
     {

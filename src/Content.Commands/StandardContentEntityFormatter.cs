@@ -6,10 +6,11 @@ using System;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public class StandardContentEntityFormatter : IContentEntityFormatter
     {

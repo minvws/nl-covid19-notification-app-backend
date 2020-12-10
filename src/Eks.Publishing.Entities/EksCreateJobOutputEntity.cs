@@ -4,8 +4,9 @@
 
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities
 {
     [Table(TableNames.EksEngineOutput)]
     public class EksCreateJobOutputEntity

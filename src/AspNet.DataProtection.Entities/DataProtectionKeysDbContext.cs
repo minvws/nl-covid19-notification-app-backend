@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.EntityFramework
 {
     public class DataProtectionKeysDbContext : DbContext, IDataProtectionKeyContext
     {

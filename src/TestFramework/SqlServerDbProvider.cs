@@ -5,7 +5,7 @@
 using System;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework
 {

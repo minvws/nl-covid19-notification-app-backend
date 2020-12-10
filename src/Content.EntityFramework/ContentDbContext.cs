@@ -4,9 +4,9 @@
 
 using System;
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework
 {
     public class ContentDbContext : DbContext
     {

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Linq;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public class Iso3166RegionCodeValidator
     {

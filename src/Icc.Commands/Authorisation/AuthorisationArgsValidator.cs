@@ -4,10 +4,10 @@
 
 using System;
 using System.Collections.Generic;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation
 {
     public class AuthorisationArgsValidator
     {

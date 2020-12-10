@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Text;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.WebApi
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet.Tests
 {
     public class CryptoRandomPaddingGeneratorTests
     {   

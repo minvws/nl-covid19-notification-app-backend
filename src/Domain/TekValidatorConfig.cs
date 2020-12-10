@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.Extensions.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 {
     public class TekValidatorConfig : AppSettingsReader, ITekValidatorConfig
     {

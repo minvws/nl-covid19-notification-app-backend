@@ -3,10 +3,10 @@
 // // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.Extensions.DependencyInjection;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ServiceRegHelpers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
     public static class ManifestServiceRegistrationHelpers
     {

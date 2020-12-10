@@ -6,7 +6,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using TheIdentityHub.AspNetCore.Authentication;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests.Icc
 {
     public static class ServiceCollectionExtensions
     {

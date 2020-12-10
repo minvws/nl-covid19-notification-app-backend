@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Collections.Generic;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
 {
     /// <summary>
     /// Additional metadata for inbound filter processing the contents of a received DKS

@@ -5,9 +5,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]

@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKeyExportReflection.Descriptor.MessageTypes[0]; }
+      get { return global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.TemporaryExposureKeyExportReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -185,44 +185,44 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat {
 
     /// <summary>Field number for the "signature_infos" field.</summary>
     public const int SignatureInfosFieldNumber = 6;
-    private static readonly pb::FieldCodec<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo> _repeated_signatureInfos_codec
-        = pb::FieldCodec.ForMessage(50, global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo.Parser);
-    private readonly pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo> signatureInfos_ = new pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo>();
+    private static readonly pb::FieldCodec<global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.SignatureInfo> _repeated_signatureInfos_codec
+        = pb::FieldCodec.ForMessage(50, global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.SignatureInfo.Parser);
+    private readonly pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.SignatureInfo> signatureInfos_ = new pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.SignatureInfo>();
     /// <summary>
     /// Information about associated signatures
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.SignatureInfo> SignatureInfos {
+    public pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.SignatureInfo> SignatureInfos {
       get { return signatureInfos_; }
     }
 
     /// <summary>Field number for the "keys" field.</summary>
     public const int KeysFieldNumber = 7;
-    private static readonly pb::FieldCodec<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> _repeated_keys_codec
-        = pb::FieldCodec.ForMessage(58, global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Parser);
-    private readonly pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> keys_ = new pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey>();
+    private static readonly pb::FieldCodec<global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.TemporaryExposureKey> _repeated_keys_codec
+        = pb::FieldCodec.ForMessage(58, global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.TemporaryExposureKey.Parser);
+    private readonly pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.TemporaryExposureKey> keys_ = new pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.TemporaryExposureKey>();
     /// <summary>
     /// The TemporaryExposureKeys for initial release of keys.
     /// Keys should be included in this list for initial release,
     /// whereas revised or revoked keys should go in revised_keys.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> Keys {
+    public pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.TemporaryExposureKey> Keys {
       get { return keys_; }
     }
 
     /// <summary>Field number for the "revised_keys" field.</summary>
     public const int RevisedKeysFieldNumber = 8;
-    private static readonly pb::FieldCodec<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> _repeated_revisedKeys_codec
-        = pb::FieldCodec.ForMessage(66, global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey.Parser);
-    private readonly pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> revisedKeys_ = new pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey>();
+    private static readonly pb::FieldCodec<global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.TemporaryExposureKey> _repeated_revisedKeys_codec
+        = pb::FieldCodec.ForMessage(66, global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.TemporaryExposureKey.Parser);
+    private readonly pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.TemporaryExposureKey> revisedKeys_ = new pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.TemporaryExposureKey>();
     /// <summary>
     /// TemporaryExposureKeys that have changed status.
     /// Keys should be included in this list if they have changed status
     /// or have been revoked.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat.TemporaryExposureKey> RevisedKeys {
+    public pbc::RepeatedField<global::NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf.TemporaryExposureKey> RevisedKeys {
       get { return revisedKeys_; }
     }
 

@@ -4,7 +4,7 @@
 
 using System;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public struct Range<T> : IEquatable<Range<T>>
         where T : struct, IComparable<T>, IEquatable<T>

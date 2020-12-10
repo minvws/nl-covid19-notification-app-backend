@@ -4,10 +4,9 @@
 
 using System;
 using System.Diagnostics;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.WebApi
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Tests
 {
     public class AssemblyStuffTests
     {

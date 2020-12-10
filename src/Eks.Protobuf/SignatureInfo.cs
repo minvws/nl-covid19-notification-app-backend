@@ -5,7 +5,7 @@
 using Google.Protobuf;
 using Google.Protobuf.Reflection;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf
 {
     public sealed partial class SignatureInfo : IMessage<SignatureInfo> {
         private static readonly MessageParser<SignatureInfo> _parser = new MessageParser<SignatureInfo>(() => new SignatureInfo());

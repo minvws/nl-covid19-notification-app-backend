@@ -6,9 +6,8 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation
 {
     public class HttpPostAuthoriseCommand
     {

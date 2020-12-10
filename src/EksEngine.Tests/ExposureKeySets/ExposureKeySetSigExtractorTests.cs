@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.IO;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySets
 {
     public class ExposureKeySetSigExtractorTests
     {

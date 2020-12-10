@@ -4,8 +4,9 @@
 
 using System;
 using System.IO;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 
-namespace EksParser
+namespace Eks.Parser
 {
     class Program
     {
@@ -17,7 +18,7 @@ namespace EksParser
                 return;
             }
 
-            var parser = new NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.ContentFormatters.EksParser();
+            var parser = new EksParser();
 
             using (var output = File.Create("export.sig", 1024, FileOptions.None))
                 output.Write(parser.ReadGaenSig(args[0]));

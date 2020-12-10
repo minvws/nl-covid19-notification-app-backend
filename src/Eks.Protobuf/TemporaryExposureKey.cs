@@ -5,7 +5,7 @@
 using Google.Protobuf;
 using Google.Protobuf.Reflection;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf
 {
     public sealed partial class TemporaryExposureKey : IMessage<TemporaryExposureKey> {
         private static readonly MessageParser<TemporaryExposureKey> _parser = new MessageParser<TemporaryExposureKey>(() => new TemporaryExposureKey());

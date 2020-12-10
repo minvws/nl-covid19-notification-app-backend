@@ -4,9 +4,9 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]

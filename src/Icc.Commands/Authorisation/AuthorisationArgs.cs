@@ -4,7 +4,7 @@
 
 using System;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.Authorisation
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation
 {
     /// <summary>
     /// Lab confirmation...

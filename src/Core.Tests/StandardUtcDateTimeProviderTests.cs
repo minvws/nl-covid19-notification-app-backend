@@ -4,10 +4,9 @@
 
 using System;
 using System.Threading;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Services
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Tests
 {
     public class StandardUtcDateTimeProviderTests
     {

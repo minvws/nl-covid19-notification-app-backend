@@ -5,10 +5,10 @@
 using System;
 using System.Diagnostics;
 using System.Text;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing.Signers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Services
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
 {
     public class CorrectingGaenSigFormat
     {

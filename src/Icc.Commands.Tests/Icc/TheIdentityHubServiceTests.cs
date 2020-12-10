@@ -4,13 +4,13 @@
 
 using System.Collections.Generic;
 using System.Security.Claims;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Icc;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Icc
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests.Icc
 {
     public class TheIdentityHubServiceTests
     {

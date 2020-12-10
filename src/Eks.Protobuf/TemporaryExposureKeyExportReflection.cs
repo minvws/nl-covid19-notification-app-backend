@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Google.Protobuf.Reflection;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf
 {
     /// <summary>Holder for reflection information generated from TemporaryExposureKeyExport.proto</summary>
     public static partial class TemporaryExposureKeyExportReflection {

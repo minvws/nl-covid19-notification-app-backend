@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.ComponentModel.DataAnnotations.Schema;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities
 {
     /// <summary>
     /// Job table for importing TEKs

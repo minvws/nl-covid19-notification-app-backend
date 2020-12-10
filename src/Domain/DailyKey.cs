@@ -5,7 +5,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 {
     [Owned]
     public class DailyKey //: IEquatable<DailyKey>

@@ -5,8 +5,9 @@
 using System;
 using System.Linq;
 using System.Text;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 {
     public class LabConfirmationIdService : ILabConfirmationIdService
     {

@@ -5,11 +5,11 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public class PublishContentCommand
     {

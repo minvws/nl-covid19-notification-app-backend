@@ -1,8 +1,8 @@
-﻿using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+﻿using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySets
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySets
 {
     [Trait("db", "ss")]
     public class ExposureKeySetCleanerTestsSqlserver : ExposureKeySetCleanerTests

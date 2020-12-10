@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Inbound\!FromOutboundPublishing\**" />
+    <EmbeddedResource Remove="Inbound\!FromOutboundPublishing\**" />
+    <None Remove="Inbound\!FromOutboundPublishing\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Core.AspNet\Core.AspNet.csproj" />
     <ProjectReference Include="..\Crypto\Crypto.csproj" />
@@ -25,10 +31,6 @@
     
     <ProjectReference Include="..\Iks.Publishing.Entities\Iks.Publishing.Entities.csproj" />
     <ProjectReference Include="..\Iks.Publishing.EntityFramework\Iks.Publishing.EntityFramework.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="IksInbound\!FromOutboundPublishing\" />
   </ItemGroup>
 
 </Project>

@@ -4,7 +4,7 @@
 
 using System;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public interface IUtcDateTimeProvider
     {

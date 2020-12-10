@@ -5,7 +5,7 @@
 using System;
 using System.Security.Cryptography;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public class StandardRandomNumberGenerator : IRandomNumberGenerator
     {

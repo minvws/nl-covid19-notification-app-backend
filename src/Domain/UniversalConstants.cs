@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 {
     /// <summary>
     /// This should replace certain config values as it is highly unlikely they will ever change.

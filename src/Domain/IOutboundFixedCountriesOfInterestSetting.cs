@@ -1,4 +1,4 @@
-﻿namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors
+﻿namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 {
     /// <summary>
     /// Very granular if/until we design string-based config for DK processors.

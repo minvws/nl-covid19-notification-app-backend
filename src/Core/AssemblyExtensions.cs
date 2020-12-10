@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public static class AssemblyExtensions
     { 
