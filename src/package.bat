@@ -21,14 +21,7 @@ REM Zip command-line
 7z a -tzip packages\Batch\CommandLine.EfgsDownloader.zip publish\EfgsDownloader"
 7z a -tzip packages\Batch\CommandLine.EfgsUploader.zip publish\EfgsUploader"
 
-REM Database
-7z a -tzip packages\SQL\SQL.DbProvision.zip publish\Tools\DbProvision"
-
-REM Zip tools
-7z a -tzip packages\Tools\CommandLine.GenTeks.zip publish\Tools\GenTeks"
-7z a -tzip packages\Tools\CommandLine.PublishContent.zip publish\Tools\PublishContent"
-7z a -tzip packages\Tools\CommandLine.ForceTekAuth.zip publish\Tools\ForceTekAuth"
+REM Zip tools - TODO ask Yorim
 7z a -tzip packages\Tools\CommandLine.SigTestFileCreator.zip publish\Tools\SigTestFileCreator"
-7z a -tzip packages\Tools\CommandLine.EksParser.zip publish\Tools\EksParser"
 
 @echo on

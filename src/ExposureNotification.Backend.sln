@@ -172,7 +172,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Tests", "Core.Tests\Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.AspNet.Tests", "Core.AspNet.Tests\Core.AspNet.Tests.csproj", "{534EC211-E342-4DDC-9C10-14331808E139}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Deployable", "!Deployable", "{CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Protobuf", "Iks.Protobuf\Iks.Protobuf.csproj", "{98B48918-654A-493C-82AE-EBF4ACEEEC04}"
 EndProject
