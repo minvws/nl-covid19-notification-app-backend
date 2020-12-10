@@ -46,6 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 batchDate = _DateTimeProvider.Snapshot.Date.AddDays(_EfgsConfig.DaysToDownload * -1);
             }
 
+            // TODO: save JobInfo for each loop and refresh it for each loop. Remove the other variables.
             while (true)
             {
                 downloadCount++;
@@ -78,7 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                     result.NextBatchTag);
 
                 // Process a previous batch
-                if (result.BatchTag == previousBatch)
+                if (result.BatchTag == previousBatch || _IksInDbContext.Received.Any(_ => _.BatchTag == batch))
                 {
                     _Logger.LogInformation("Batch {BatchTag} has already been processed.", result.BatchTag);
 
@@ -94,6 +95,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 {
                     // Process a new batch
                     var writer = _WriterFactory();
+
                     await writer.Execute(new IksWriteArgs
                     {
                         BatchTag = result.BatchTag,
@@ -102,7 +104,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
                     // Update the job info as a batch has been downloaded
                     jobInfo.LastRun = batchDate;
-                    jobInfo.LastBatchTag = batch;
+                    jobInfo.LastBatchTag =  result.BatchTag;
 
                     previousBatch = result.BatchTag;
 

@@ -10,29 +10,62 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
     /// IHttpGetIksCommand which returns the provided results in order.
     /// Use for tests.
     /// </summary>
-    class FixedResultHttpGetIksCommand : IIHttpGetIksCommand
+    internal class FixedResultHttpGetIksCommand : IIHttpGetIksCommand
     {
-        private readonly List<HttpGetIksSuccessResult> _Responses;
-        private int _CallIndex;
+        private const string DateFormatString = "yyyyMMdd";
+        private readonly Dictionary<string, List<HttpGetIksSuccessResult>> _Responses;
+        private readonly Dictionary<string, int> _CallIndexes = new Dictionary<string, int>();
 
-        public FixedResultHttpGetIksCommand(List<HttpGetIksSuccessResult> responses)
+        public static FixedResultHttpGetIksCommand Create(List<HttpGetIksSuccessResult> responses)
+        {
+            return Create(responses, DateTime.Now);
+        }
+
+        public static FixedResultHttpGetIksCommand Create(List<HttpGetIksSuccessResult> responses, DateTime date)
+        {
+            return new FixedResultHttpGetIksCommand(new Dictionary<string, List<HttpGetIksSuccessResult>>
+            {
+                {date.ToString(DateFormatString), responses}
+            });
+        }
+
+        private FixedResultHttpGetIksCommand(Dictionary<string, List<HttpGetIksSuccessResult>> responses)
         {
             _Responses = responses;
+            foreach (var key in responses.Keys) _CallIndexes[key] = 0;
         }
-        
+
+        public void AddItem(HttpGetIksSuccessResult item, DateTime date)
+        {
+            var dateString = date.ToString(DateFormatString);
+
+            if (!_Responses.ContainsKey(dateString))
+            {
+                _Responses[dateString] = new List<HttpGetIksSuccessResult>();
+                _CallIndexes[dateString] = 0;
+            }
+
+            var dateResponses = _Responses[dateString];
+
+            if (dateResponses.Count > 0)
+                dateResponses.Last().NextBatchTag = item.BatchTag;
+
+            dateResponses.Add(item);
+        }
+
         public void AddItem(HttpGetIksSuccessResult item)
         {
-            if (_Responses.Count > 0) _Responses.Last().NextBatchTag = item.BatchTag;
-            _Responses.Add(item);
+            AddItem(item, DateTime.Now);
         }
 
         public Task<HttpGetIksSuccessResult?> ExecuteAsync(string batchTag, DateTime date)
         {
             HttpGetIksSuccessResult? result = null;
+            var dateString = date.ToString(DateFormatString);
 
-            if(_CallIndex < _Responses.Count)
+            if (_CallIndexes.ContainsKey(dateString) && _CallIndexes[dateString] < _Responses[dateString].Count)
             {
-                result = _Responses[_CallIndex++];
+                result = _Responses[dateString][_CallIndexes[dateString]++];
             }
 
             return Task.FromResult(result);

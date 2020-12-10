@@ -44,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
             using var tx = _DkSourceDbContext.BeginTransaction();
             var page = Read(index, pagesize);
-
+            
             while (page.Length > 0)
             {
                 var db = _PublishingDbContextFactory();
@@ -68,6 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private EksCreateJobInputEntity[] Read(int index, int pageSize)
             => _DkSourceDbContext.DiagnosisKeys
                 .Where(x => !x.PublishedLocally)
+                .OrderBy(x => x.Id)
                 .AsNoTracking()
                 .Skip(index)
                 .Take(pageSize)

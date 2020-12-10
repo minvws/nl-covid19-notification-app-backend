@@ -16,14 +16,14 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    cd Testautomation
+    cd ../tests/Testautomation
     npm install
     npm install -g mocha
     npm install -g mocha-junit-reporter
   displayName: 'npm install and build'
 
 - script: |
-    cd Testautomation
+    cd ../tests/Testautomation
     mocha --recursive --grep "$(TESTS)" --environment=$(ENVIRONMENT) --token=$(GGD-AUTH-TOKEN) --reporter mocha-junit-reporter --reporter-options mochaFile=../TEST-RESULTS.xml
   displayName: 'run tests'
   
