@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation
 {
     /// <summary>
     /// Transient

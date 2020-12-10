@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components</AssemblyName>
-    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components</RootNamespace>
+    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands</AssemblyName>
+    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

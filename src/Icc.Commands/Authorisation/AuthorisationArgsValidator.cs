@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation
 {
     public class AuthorisationArgsValidator
     {

@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Config
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config
 {
     public class IccPortalConfig : AppSettingsReader, IIccPortalConfig
     {

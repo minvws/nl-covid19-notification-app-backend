@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Config;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Models;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 {
     public class HttpGetLogoutCommand
     {

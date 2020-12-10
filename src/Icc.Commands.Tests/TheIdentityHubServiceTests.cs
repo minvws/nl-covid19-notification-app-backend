@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 using System.Security.Claims;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;

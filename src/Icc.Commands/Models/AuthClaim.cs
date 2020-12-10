@@ -4,7 +4,7 @@
 
 using System;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Models
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Models
 {
     public class AuthClaim
     {

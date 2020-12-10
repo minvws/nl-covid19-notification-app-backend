@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation
 {
     public class TestJwtGeneratorService
     {

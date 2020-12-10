@@ -4,7 +4,7 @@
 
 using System;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 {
     public class OriginBuilder
     {

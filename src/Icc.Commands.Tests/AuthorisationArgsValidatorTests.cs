@@ -4,7 +4,7 @@
 
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests

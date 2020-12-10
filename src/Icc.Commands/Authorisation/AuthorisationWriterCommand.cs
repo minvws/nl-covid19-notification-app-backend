@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation
 {
     public class AuthorisationWriterCommand
     {

@@ -20,18 +20,18 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.Entity
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation.Code;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation.Handlers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation.Validators;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Config;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Code;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Handlers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Validators;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using TheIdentityHub.AspNetCore.Authentication;
 
-namespace NL.Rijksoverheid.ExposureNotification.IccBackend
+namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
 {
     public class Startup
     {

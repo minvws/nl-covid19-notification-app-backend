@@ -6,7 +6,7 @@ using System;
 using System.Text;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation.Code
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Code
 {
     public class AuthCodeGenerator : IAuthCodeGenerator
     {

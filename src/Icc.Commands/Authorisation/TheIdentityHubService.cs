@@ -12,10 +12,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Models;
 using TheIdentityHub.AspNetCore.Authentication;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation
 {
     public class TheIdentityHubService : ITheIdentityHubService
     {

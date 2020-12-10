@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation.Handlers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Handlers;
 
-namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtAuthenticationHandler.SchemeName)]
     public class WorkflowController : Controller

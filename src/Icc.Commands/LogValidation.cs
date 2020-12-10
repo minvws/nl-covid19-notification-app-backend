@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 {
 
     public static class LogValidation

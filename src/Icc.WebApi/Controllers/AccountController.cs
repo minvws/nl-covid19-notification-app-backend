@@ -4,9 +4,9 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
 
-namespace NL.Rijksoverheid.ExposureNotification.IccBackend.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi.Controllers
 {
     public class AccountController : Controller
     {

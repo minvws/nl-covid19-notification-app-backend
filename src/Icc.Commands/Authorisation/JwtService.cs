@@ -11,10 +11,10 @@ using JWT.Builder;
 using JWT.Exceptions;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Config;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Models;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation
 {
     public class JwtService : IJwtService
     {

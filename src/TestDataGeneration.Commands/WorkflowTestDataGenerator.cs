@@ -84,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
             await gen.ExecuteAsync(new GenerateTeksCommandArgs { WorkflowCount = workflowCount , TekCountPerWorkflow = tekPerWOrkflowCount });
 
             if (workflowCount != _WorkflowDbContextProvider.CreateNew().KeyReleaseWorkflowStates.Count()) throw new InvalidOperationException();
-            if (workflowCount * tekPerWOrkflowCount == _WorkflowDbContextProvider.CreateNew().TemporaryExposureKeys.Count()) throw new InvalidOperationException();
+            if (workflowCount * tekPerWOrkflowCount != _WorkflowDbContextProvider.CreateNew().TemporaryExposureKeys.Count()) throw new InvalidOperationException();
         }
 
         public async Task AuthoriseAllWorkflowsAsync()

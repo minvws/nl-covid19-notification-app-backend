@@ -6,9 +6,9 @@ using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Config;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 {
     public class HttpGetAccessDeniedCommand
     {

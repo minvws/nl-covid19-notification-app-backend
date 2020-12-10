@@ -5,9 +5,9 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Models;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Models;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation.Code
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Code
 {
     public interface IAuthCodeService
     {

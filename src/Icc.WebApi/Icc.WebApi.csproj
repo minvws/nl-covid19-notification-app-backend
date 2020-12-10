@@ -2,13 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <RootNamespace>NL.Rijksoverheid.ExposureNotification.IccBackend</RootNamespace>
-        <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccBackend</AssemblyName>
+        <RootNamespace>NL.Rijksoverheid.ExposureNotification.Icc.WebApi</RootNamespace>
+        <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApi</AssemblyName>
         <UserSecretsId>0caed3b4-1e4a-402f-a697-c35c966064d0</UserSecretsId>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-      <DocumentationFile>$(SolutionDir)\IccBackend\NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccBackend.xml</DocumentationFile>
+      <DocumentationFile></DocumentationFile>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

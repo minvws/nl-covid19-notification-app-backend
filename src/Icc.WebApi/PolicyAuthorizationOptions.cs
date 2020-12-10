@@ -8,9 +8,9 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Config;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 
-namespace NL.Rijksoverheid.ExposureNotification.IccBackend
+namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
 {
     public class PolicyAuthorizationOptions
     {

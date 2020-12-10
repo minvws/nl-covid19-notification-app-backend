@@ -5,8 +5,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Authorisation.Validators;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Config;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Validators;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;

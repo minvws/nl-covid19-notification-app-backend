@@ -8,7 +8,7 @@ using JWT.Exceptions;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 {
     public static class LoggingExtensionsIccBackend
     {

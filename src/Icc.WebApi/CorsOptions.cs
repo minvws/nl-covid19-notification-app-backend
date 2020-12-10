@@ -5,10 +5,10 @@
 using System;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Config;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 
-namespace NL.Rijksoverheid.ExposureNotification.IccBackend
+namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
 {
     public class CorsOptions : ICorsOptions
     {

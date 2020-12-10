@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests</AssemblyName>
+    <AssemblyName>Icc.Commands.Tests.!DONOTDEPLOY!</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests</RootNamespace>
 
   </PropertyGroup>
