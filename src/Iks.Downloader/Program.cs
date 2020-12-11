@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
@@ -38,8 +37,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
 
             if (!config.DownloaderEnabled)
             {
-                var logger = serviceProvider.GetService<ILogger<Program>>();
-                logger.LogWarning("EfgsDownloader is disabled by the configuration.");
+                var logger = serviceProvider.GetService<IksDownloaderLoggingExtensions>();
+                logger.WriteDisabledByConfig();
 
                 return;
             }
@@ -68,13 +67,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
 
             services.AddSingleton<IThumbprintConfig, LocalMachineStoreCertificateProviderConfig>();
             
-            services.AddTransient<LocalMachineStoreCertificateProviderLoggingExtensions>();
-            services.AddTransient<IAuthenticationCertificateProvider>(x =>
-                new LocalMachineStoreCertificateProvider(
-                    new LocalMachineStoreCertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:EfgsAuthentication"),
+            services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
+            services.AddSingleton<IksDownloaderLoggingExtensions>();
+
+            services.AddTransient<IAuthenticationCertificateProvider>(
+                x => new LocalMachineStoreCertificateProvider(
+                    new LocalMachineStoreCertificateProviderConfig(
+                        x.GetRequiredService<IConfiguration>(), "Certificates:EfgsAuthentication"),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
-                )
-            );
+                ));
         }
     }
 }

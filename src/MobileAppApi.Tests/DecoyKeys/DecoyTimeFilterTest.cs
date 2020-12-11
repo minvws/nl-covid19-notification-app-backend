@@ -13,7 +13,9 @@ using Microsoft.AspNetCore.Routing;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
+
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.DecoyKeys
 {
@@ -28,12 +30,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
         {
             //Arrange
             var mockRNG = new Mock<IRandomNumberGenerator>();
-            mockRNG.Setup(x =>
-                        x.Next(It.IsAny<int>(), It.IsAny<int>())
-                    ).Returns(delayMs);
+            mockRNG.Setup(x => 
+                    x.Next(It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(delayMs);
 
             var sut = new DecoyTimeGeneratorAttribute(
-                new TestLogger<DecoyTimeGeneratorAttribute>(),
+                new DecoyKeysLoggingExtensions(
+                    new TestLogger<DecoyKeysLoggingExtensions>()),
                 mockRNG.Object,
                 new DefaultDecoyKeysConfig());
 

@@ -5,7 +5,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
@@ -20,9 +19,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         private readonly Func<IIksWriterCommand> _WriterFactory;
         private readonly IksInDbContext _IksInDbContext;
         private readonly IEfgsConfig _EfgsConfig;
-        private readonly ILogger<IksPollingBatchJob> _Logger;
+        private readonly IksDownloaderLoggingExtensions _Logger;
 
-        public IksPollingBatchJob(IUtcDateTimeProvider dateTimeProvider, Func<IIHttpGetIksCommand> receiverFactory, Func<IIksWriterCommand> writerFactory, IksInDbContext iksInDbContext, IEfgsConfig efgsConfig, ILogger<IksPollingBatchJob> logger)
+        public IksPollingBatchJob(
+            IUtcDateTimeProvider dateTimeProvider,
+            Func<IIHttpGetIksCommand> receiverFactory,
+            Func<IIksWriterCommand> writerFactory,
+            IksInDbContext iksInDbContext, 
+            IEfgsConfig efgsConfig,
+            IksDownloaderLoggingExtensions logger)
         {
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _ReceiverFactory = receiverFactory ?? throw new ArgumentNullException(nameof(receiverFactory));
@@ -53,8 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
                 if (downloadCount == _EfgsConfig.MaxBatchesPerRun)
                 {
-                    _Logger.LogInformation("Maximum number of batches per run of {maxBatches} reached.",
-                        _EfgsConfig.MaxBatchesPerRun);
+                    _Logger.WriteBatchMaximumReached(_EfgsConfig.MaxBatchesPerRun);
                     break;
                 }
 
@@ -75,18 +79,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                     break;
                 }
 
-                _Logger.LogInformation("Batch {BatchTag} with next batch {NextBatchTag} received.", result.BatchTag,
-                    result.NextBatchTag);
+                _Logger.WriteNextBatchReceived(result.BatchTag, result.NextBatchTag);
 
                 // Process a previous batch
                 if (result.BatchTag == previousBatch || _IksInDbContext.Received.Any(_ => _.BatchTag == batch))
                 {
-                    _Logger.LogInformation("Batch {BatchTag} has already been processed.", result.BatchTag);
+                    _Logger.WriteBatchAlreadyProcessed(result.BatchTag);
 
                     // New batch so process it next time
                     if (!string.IsNullOrWhiteSpace(result.NextBatchTag))
                     {
-                        _Logger.LogInformation("New NextBatchTag { NextBatchTag }, it will be processed next loop.", result.NextBatchTag);
+                        _Logger.WriteBatchProcessedInNextLoop(result.NextBatchTag);
 
                         batch = result.NextBatchTag;
                     }
@@ -124,17 +127,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                         batchDate = batchDate.AddDays(1);
                         batch = string.Empty;
 
-                        _Logger.LogInformation("Moving to the next day!");
+                        _Logger.WriteMovingToNextDay();
 
                         continue;
                     }
 
-                    _Logger.LogInformation("No next batch so ending.");
+                    _Logger.WriteNoNextBatch();
                     break;
                 }
 
-                _Logger.LogInformation("We have a nextBatch with value {NextBatchTag} so we keep going",
-                    result.NextBatchTag);
+                _Logger.WriteNextBatchFound(result.NextBatchTag);
             }
 
             // TODO the downloaded batches must also be done in one transaction
