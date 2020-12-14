@@ -74,6 +74,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var c50 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             run.Add(() => c50.ExecuteAsync().GetAwaiter().GetResult());
 
+            var c60 = serviceProvider.GetService<RemoveDuplicateDiagnosisKeysCommand>();
+            run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());
+
             var c35 = serviceProvider.GetRequiredService<IksEngine>();
             run.Add(() => c35.ExecuteAsync().GetAwaiter().GetResult());
 
