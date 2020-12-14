@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
 {
-    public class RemoveDuplicateDiagnosisKeysCommand
+    public class RemoveDuplicateDiagnosisKeysForIksCommand
     {
         private readonly Func<DkSourceDbContext> _DkSourceDbProvider;
 
-        public RemoveDuplicateDiagnosisKeysCommand(Func<DkSourceDbContext> dkSourceDbProvider)
+        public RemoveDuplicateDiagnosisKeysForIksCommand(Func<DkSourceDbContext> dkSourceDbProvider)
         {
             _DkSourceDbProvider = dkSourceDbProvider ?? throw new ArgumentNullException(nameof(dkSourceDbProvider));
         }
@@ -27,48 +27,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             await using var transaction = context.BeginTransaction();
 
             var duplicates = context.DiagnosisKeys
-                .GroupBy(_ => _.DailyKey)
-                .Where(_ => _.Count() > 1)
-                .Select(_ => _.Key);
+                .GroupBy(x => x.DailyKey)
+                .Where(x => x.Count() > 1)
+                .Where(duplicate => !duplicate.All(x => x.PublishedToEfgs));
 
             foreach (var duplicate in duplicates)
             {
-                var keys = context.DiagnosisKeys
-                    .Where(_ => _.DailyKey.KeyData == duplicate.KeyData
-                                && _.DailyKey.RollingPeriod == duplicate.RollingPeriod
-                                && _.DailyKey.RollingStartNumber == duplicate.RollingStartNumber)
-                    .Select(_ => _)
-                    .ToList();
-
-                if (keys.All(_ => _.PublishedToEfgs))
-                {
-                    // Do nothing
-                }
-                else if (keys.Any(_ => _.PublishedToEfgs))
-                {
-                    MarkAllAsSent(keys);
-                }
+                if (duplicate.Any(x => x.PublishedToEfgs))
+                    MarkAllAsSent(duplicate);
                 else
-                {
-                    MarkLowestTransmissionRiskLevelsAsSent(keys);
-                }
+                    MarkLowestTransmissionRiskLevelsAsSent(duplicate);
             }
 
             await context.SaveChangesAsync();
             await transaction.CommitAsync();
         }
 
-        private void MarkAllAsSent(IEnumerable<DiagnosisKeyEntity> keys)
+        private static void MarkAllAsSent(IEnumerable<DiagnosisKeyEntity> keys)
         {
             foreach (var key in keys) key.PublishedToEfgs = true;
         }
 
-        private void MarkLowestTransmissionRiskLevelsAsSent(IEnumerable<DiagnosisKeyEntity> keys)
+        private static void MarkLowestTransmissionRiskLevelsAsSent(IEnumerable<DiagnosisKeyEntity> keys)
         {
-            foreach (var key in keys.OrderByDescending(_ => _.Local.TransmissionRiskLevel).Skip(1))
-            {
+            foreach (var key in keys.OrderByDescending(x => x.Local.TransmissionRiskLevel).Skip(1))
                 key.PublishedToEfgs = true;
-            }
         }
     }
 }
