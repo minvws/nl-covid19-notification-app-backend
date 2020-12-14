@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 	public class IksDownloaderLoggingExtensions
 	{
 		private const string Name = "IksDownloader";
-		private const int Base = LoggingCodex.DailyCleanup;
+		private const int Base = LoggingCodex.IksDownloader;
 
 		private const int DisabledByConfig = Base + 1;
 		private const int ProcessingData = Base + 2;
@@ -50,7 +50,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 				Name, DisabledByConfig);
 		}
 
-
 		public void WriteProcessingData(DateTime date, string batchtag)
 		{
 			_Logger.LogInformation("[{name}/{id}] Processing data for {date}, batch {batchTag}",
@@ -71,7 +70,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
 		public void WriteResponse(HttpStatusCode statusCode)
 		{
-			_Logger.LogInformation("[{name}/{id}] Response from EFGS: {statusCodeInt} {statuscode}",
+			_Logger.LogInformation("[{name}/{id}] Response from EFGS: {statusCodeInt} {statuscode}.",
 				Name, Response,
 				(int)statusCode, statusCode);
 		}
@@ -83,20 +82,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 				throw new ArgumentNullException(nameof(responseHeaders));
 			}
 
-			_Logger.LogInformation("[{name}/{id}] Response headers: ",
+			_Logger.LogInformation("[{name}/{id}] Response headers: {headers}",
 				Name, ResponseHeaders,
 				responseHeaders.ToString());
 		}
 
 		public void WriteResponseNotFound()
 		{
-			_Logger.LogWarning("[{name}/{id}] EFGS: No data found",
+			_Logger.LogWarning("[{name}/{id}] EFGS: No data found.",
 				Name, ResponseNotFound);
 		}
 
 		public void WriteResponseGone()
 		{
-			_Logger.LogWarning("[{name}/{id}] EFGS: No data found (expired)",
+			_Logger.LogWarning("[{name}/{id}] EFGS: No data found (expired).",
 				Name, ResponseGone);
 		}
 
