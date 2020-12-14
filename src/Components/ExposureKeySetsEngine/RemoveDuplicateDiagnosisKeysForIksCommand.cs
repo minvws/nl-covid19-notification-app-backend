@@ -27,9 +27,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
             await using var transaction = context.BeginTransaction();
 
             var duplicates = context.DiagnosisKeys
-                .GroupBy(x => x.DailyKey)
-                .Where(x => x.Count() > 1)
-                .Where(duplicate => !duplicate.All(x => x.PublishedToEfgs));
+                .AsEnumerable() // Yeah this is a WTF, thanks EF!
+                .GroupBy(key => new
+                {
+                    key.DailyKey.KeyData,
+                    key.DailyKey.RollingPeriod,
+                    key.DailyKey.RollingStartNumber
+                })
+                .Where(grouping => grouping.Count() > 1)
+                .Where(grouping => !grouping.All(key => key.PublishedToEfgs));
 
             foreach (var duplicate in duplicates)
             {

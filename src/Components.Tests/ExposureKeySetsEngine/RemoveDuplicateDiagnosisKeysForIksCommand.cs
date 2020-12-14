@@ -65,11 +65,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         {
             // Assemble
             Func<DkSourceDbContext> factory = () => _DkSourceDbProvider.CreateNew();
-            using var context = factory();
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, TransmissionRiskLevel.Low));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, TransmissionRiskLevel.Low));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, TransmissionRiskLevel.High));
-            context.SaveChanges();
+            using var assembleContext = factory();
+            assembleContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, TransmissionRiskLevel.Low));
+            assembleContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, TransmissionRiskLevel.Low));
+            assembleContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, TransmissionRiskLevel.High));
+            assembleContext.SaveChanges();
 
             var sut = new RemoveDuplicateDiagnosisKeysForIksCommand(factory);
 
@@ -77,7 +77,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             await sut.ExecuteAsync();
 
             // Assert
-            Assert.Single(context.DiagnosisKeys.Where(x => x.PublishedToEfgs == false));
+            using var resultContext = factory();
+            var all = resultContext.DiagnosisKeys.ToList();
+            Assert.Single(resultContext.DiagnosisKeys.Where(x => x.PublishedToEfgs == false));
         }
 
         private static DiagnosisKeyEntity CreateDk(byte[] keyData, int rsn, int rp, bool pEfgs, TransmissionRiskLevel trl = TransmissionRiskLevel.Low)
