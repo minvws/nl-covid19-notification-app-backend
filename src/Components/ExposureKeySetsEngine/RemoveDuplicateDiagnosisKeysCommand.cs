@@ -40,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySe
                     .Select(_ => _)
                     .ToList();
 
-                if (keys.TrueForAll(_ => _.PublishedToEfgs))
+                if (keys.All(_ => _.PublishedToEfgs))
                 {
                     // Do nothing
                 }
