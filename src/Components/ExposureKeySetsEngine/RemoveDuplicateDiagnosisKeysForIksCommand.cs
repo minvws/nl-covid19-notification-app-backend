@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
 {
-    public class RemoveDuplicateDiagnosisKeysForIksCommand
+    public class RemoveDuplicateDiagnosisKeysForIksCommand : IRemoveDuplicateDiagnosisKeysForIksCommand
     {
         private readonly Func<DkSourceDbContext> _DkSourceDbProvider;
 
