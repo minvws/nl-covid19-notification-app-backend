@@ -7,6 +7,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contex
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
+using System.IO;
 using System.Linq;
 using Xunit;
 
@@ -111,73 +112,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
 
         private void InitSp()
         {
-            var sp = @"
-CREATE PROCEDURE RemoveDuplicateDiagnosisKeysForIks
-AS
-BEGIN
-
-	DECLARE @keyData varbinary(max);
-	DECLARE @rsn int;
-	DECLARE @rp int;
-	
-	-- Get the natural IDs of all duplicate keys (this is one row per key)
-	DECLARE duplicates_cursor CURSOR FOR
-	SELECT [DailyKey_KeyData], [DailyKey_RollingStartNumber], [DailyKey_RollingPeriod]
-	FROM [dbo].[DiagnosisKeys]
-	GROUP BY [DailyKey_KeyData], [DailyKey_RollingStartNumber], [DailyKey_RollingPeriod]
-	HAVING count(*) > 1;
-
-	OPEN duplicates_cursor
-
-	FETCH NEXT FROM duplicates_cursor INTO @keyData, @rsn, @rp
-
-	WHILE @@FETCH_STATUS = 0
-	BEGIN
-		--
-		-- Mark ALL as Published if any has been published
-		IF EXISTS(
-			SELECT 1
-			FROM [dbo].[DiagnosisKeys]
-			WHERE [DailyKey_KeyData] = @keyData AND [DailyKey_RollingStartNumber] = @rsn AND [DailyKey_RollingPeriod] = @rp
-			  AND [PublishedToEfgs] = 0x1
-		)
-		BEGIN
-			UPDATE [dbo].[DiagnosisKeys]
-			SET [PublishedToEfgs] = 0x1
-			WHERE [DailyKey_KeyData] = @keyData AND [DailyKey_RollingStartNumber] = @rsn AND [DailyKey_RollingPeriod] = @rp 
-		END
-
-		--
-		-- Mark all except the row with the highest TRL if non are published
-		IF EXISTS(
-			SELECT 1
-			FROM [dbo].[DiagnosisKeys]
-			WHERE [DailyKey_KeyData] = @keyData AND [DailyKey_RollingStartNumber] = @rsn AND [DailyKey_RollingPeriod] = @rp
-			  AND [PublishedToEfgs] = 0x0
-		)
-		BEGIN
-			UPDATE [dbo].[DiagnosisKeys]
-			SET [PublishedToEfgs] = 0x1
-			WHERE [DailyKey_KeyData] = @keyData AND [DailyKey_RollingStartNumber] = @rsn AND [DailyKey_RollingPeriod] = @rp
-              AND Id NOT IN (
-				SELECT TOP 1 Id
-				FROM [dbo].[DiagnosisKeys]
-				WHERE [DailyKey_KeyData] = @keyData AND [DailyKey_RollingStartNumber] = @rsn AND [DailyKey_RollingPeriod] = @rp
-					AND [Local_TransmissionRiskLevel] = (
-						SELECT MAX([Local_TransmissionRiskLevel])
-						FROM [dbo].[DiagnosisKeys]
-						WHERE [DailyKey_KeyData] = @keyData AND [DailyKey_RollingStartNumber] = @rsn AND [DailyKey_RollingPeriod] = @rp
-				)
-			)
-		END
-
-		FETCH NEXT FROM duplicates_cursor INTO @keyData, @rsn, @rp
-	END
-
-	CLOSE duplicates_cursor
-	DEALLOCATE duplicates_cursor
-
-END";
+            var sp = File.ReadAllText(@"..\..\..\..\Database\DiagnosisKeys\dbo\StoredProcedures\RemoveDuplicateDiagnosisKeysForIks.sql");
             using var ctx = _DkSourceDbProvider.CreateNew();
             ctx.Database.ExecuteSqlRaw(sp);
         }
