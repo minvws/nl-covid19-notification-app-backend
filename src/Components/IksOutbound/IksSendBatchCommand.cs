@@ -37,15 +37,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
             using (var dbc = _IksOutboundDbContextFactory())
             {
                 _Todo = dbc.Iks
-                    .Where(x => !x.Sent)
+                    .Where(x => !x.Sent && !x.Error)
+                    .OrderBy(x => x.Created)
+                    .ThenBy(x => x.Qualifier)
                     .Select(x => x.Id)
                     .ToList();
             }
 
-            for (var i = 0; i < _Todo.Count && (_LastResult == null || _LastResult.HttpResponseCode == HttpStatusCode.Created); i++)
-            {
-                await ProcessOne(_Todo[i]);
-            }
+            foreach (var t in _Todo) await ProcessOne(t);
 
             return new IksSendBatchResult 
             { 
@@ -92,8 +91,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
 
             _Results.Add(result);
             
-            // Note: EFGS returns Created on successful upload, not OK.
+            // Note: EFGS returns Created or OK on creation
             item.Sent = _LastResult?.HttpResponseCode == HttpStatusCode.Created;
+            item.Error = !item.Sent;
 
             // TODO: Implement a state machine for batches; this is useful around error cases.
             // * Re-try for selected states.
@@ -101,8 +101,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
             // * Allow for manual fixing of data errors with a special retry state?
             //
 
-            if (item.Sent)
-                await dbc.SaveChangesAsync();
+            await dbc.SaveChangesAsync();
         }
 
         /// <summary>
