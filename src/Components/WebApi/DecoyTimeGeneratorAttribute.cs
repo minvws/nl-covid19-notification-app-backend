@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
 
@@ -14,12 +13,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
     // NOTE: do not apply this attribute directly, apply DecoyTimeGeneratorAttributeFactory
     public class DecoyTimeGeneratorAttribute : ActionFilterAttribute
     {
-        private readonly ILogger _Logger;
+        private readonly DecoyKeysLoggingExtensions _Logger;
         private readonly IRandomNumberGenerator _RandomNumberGenerator;
         private readonly IDecoyKeysConfig _Config;
 
         public DecoyTimeGeneratorAttribute(
-            ILogger<DecoyTimeGeneratorAttribute> logger,
+            DecoyKeysLoggingExtensions logger,
             IRandomNumberGenerator randomNumberGenerator,
             IDecoyKeysConfig config)
         {
@@ -30,10 +29,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.WebApi
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var delayInMilliseconds = _RandomNumberGenerator.Next(_Config.MinimumDelayInMilliseconds, _Config.MaximumDelayInMilliseconds);
-            _Logger.LogDebug("Delaying for {DelayInMilliseconds} seconds", delayInMilliseconds);
-
-            await Task.Delay(delayInMilliseconds);
+            var delayMs = _RandomNumberGenerator.Next(_Config.MinimumDelayInMilliseconds, _Config.MaximumDelayInMilliseconds);
+            
+            _Logger.WriteDelaying(delayMs);
+            await Task.Delay(delayMs);
             await next();
         }
     }
