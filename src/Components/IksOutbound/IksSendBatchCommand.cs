@@ -92,7 +92,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
             _Results.Add(result);
             
             // Note: EFGS returns Created or OK on creation
-            item.Sent = _LastResult?.HttpResponseCode == HttpStatusCode.OK || _LastResult?.HttpResponseCode == HttpStatusCode.Created;
+            item.Sent = _LastResult?.HttpResponseCode == HttpStatusCode.Created;
             item.Error = !item.Sent;
 
             // TODO: Implement a state machine for batches; this is useful around error cases.
