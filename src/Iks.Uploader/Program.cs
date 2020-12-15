@@ -39,8 +39,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
 
             if (!config.UploaderEnabled)
             {
-                var logger = serviceProvider.GetService<ILogger<Program>>();
-                logger.LogWarning("EfgsUploader is disabled by the configuration.");
+                var logger = serviceProvider.GetService<IksUploaderLoggingExtensions>();
+                logger.WriteDisabledByConfig();
 
                 return;
             }
@@ -52,7 +52,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
             //TODO why services.AddTransient(x => x.CreateDbContext(y => new IksInDbContext(y), DatabaseConnectionStringNames.IksIn));
-            services.AddTransient(x => x.CreateDbContext(y => new IksOutDbContext(y), DatabaseConnectionStringNames.IksOut, false));
+            services.AddTransient(x =>
+                x.CreateDbContext(y => new IksOutDbContext(y), DatabaseConnectionStringNames.IksOut, false));
 
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IEfgsConfig, EfgsConfig>();
@@ -62,6 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
             services.AddSingleton<Func<HttpPostIksCommand>>(x => x.GetService<HttpPostIksCommand>);
             services.AddTransient<IBatchTagProvider, BatchTagProvider>();
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.AddSingleton<IksUploaderLoggingExtensions>();
 
             // IKS Signing
             services.AddTransient<IIksSigner, EfgsCmsSigner>();
@@ -69,7 +71,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
             services.AddTransient<ICertificateChainProvider, EmbeddedResourcesCertificateChainProvider>();
             services.AddTransient<ICertificateProvider>(x =>
                 new LocalMachineStoreCertificateProvider(
-                    new LocalMachineStoreCertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:EfgsSigning"),
+                    new LocalMachineStoreCertificateProviderConfig(
+                        x.GetRequiredService<IConfiguration>(), "Certificates:EfgsSigning"),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
                 )
             );
@@ -81,7 +84,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
             services.AddTransient<LocalMachineStoreCertificateProviderLoggingExtensions>();
             services.AddTransient<IAuthenticationCertificateProvider>(x =>
                 new LocalMachineStoreCertificateProvider(
-                    new LocalMachineStoreCertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:EfgsAuthentication"),
+                    new LocalMachineStoreCertificateProviderConfig(
+                        x.GetRequiredService<IConfiguration>(), "Certificates:EfgsAuthentication"),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
                 )
             );

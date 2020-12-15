@@ -14,6 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 		private const int Base = LoggingCodex.Decoy;
 
 		private const int Start = Base;
+		private const int Delay = Base + 1;
 
 		private readonly ILogger _Logger;
 
@@ -26,6 +27,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 		{
 			_Logger.LogInformation("[{name}/{id}] POST triggered.",
 				Name, Start);
+		}
+
+		public void WriteDelaying(int delayMs)
+		{
+			_Logger.LogDebug("[{name}/{id}] Delaying for {delayMs} milliseconds", 
+				Name, Delay,
+				delayMs);
 		}
 	}
 }

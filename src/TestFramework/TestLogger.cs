@@ -5,12 +5,12 @@
 using System;
 using Microsoft.Extensions.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.DecoyKeys
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework
 {
     /// <summary>
     /// Logger stub for use during testing
     /// </summary>
-    internal class TestLogger<T> : ILogger<T>
+    public class TestLogger<T> : ILogger<T>
     {
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
