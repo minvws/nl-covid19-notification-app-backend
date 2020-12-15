@@ -2,7 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Efgs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Helpers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
@@ -17,15 +16,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
     {
     }
 
-    public class HttpGetIksCommand : IIHttpGetIksCommand {
-
+    public class HttpGetIksCommand : IIHttpGetIksCommand 
+    {
         const string ApplicationProtobuf = "application/protobuf; version=1.0";
 
         private readonly IEfgsConfig _EfgsConfig;
         private readonly IAuthenticationCertificateProvider _CertificateProvider;
-        private readonly ILogger<HttpGetIksCommand> _Logger;
+        private readonly IksDownloaderLoggingExtensions _Logger;
 
-        public HttpGetIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, ILogger<HttpGetIksCommand> logger)
+        public HttpGetIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IksDownloaderLoggingExtensions logger)
         {
             _EfgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
             _CertificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
@@ -34,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 
         public async Task<HttpGetIksSuccessResult?> ExecuteAsync(string batchTag, DateTime date)
         {
-            _Logger.LogInformation("Processing data for {date}, batch {batchTag}", date, batchTag);
+            _Logger.WriteProcessingData(date, batchTag);
 
             var uri = new Uri($"{_EfgsConfig.BaseUrl}/diagnosiskeys/download/{date:yyyy-MM-dd}");
 
@@ -62,12 +61,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
                 
                 using var client = new HttpClient(clientHandler);
 
-                _Logger.LogInformation("EFGS request:  {request}", request);
+                _Logger.WriteRequest(request);
 
                 var response = await client.SendAsync(request);
 
-                _Logger.LogInformation("Response from EFGS: {0} {1}", (int)response.StatusCode, response.StatusCode);
-                _Logger.LogInformation("Response headers: ", response.Headers.ToString());
+                _Logger.WriteResponse(response.StatusCode);
+                _Logger.WriteResponseHeaders(response.Headers);
 
                 // Handle response
                 switch (response.StatusCode)
@@ -84,28 +83,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
                             Content = await response.Content.ReadAsByteArrayAsync()
                         };
                     case HttpStatusCode.NotFound:
-                        _Logger.LogWarning("EFGS: No data found");
+                        _Logger.WriteResponseNotFound();
                         return null;
                     case HttpStatusCode.Gone:
-                        _Logger.LogWarning("EFGS: No data found (expired)");
+                        _Logger.WriteResponseGone();
                         return null;
                     case HttpStatusCode.BadRequest:
-                        _Logger.LogCritical("EFGS: missing or invalid header!");
+                        _Logger.WriteResponseBadRequest();
                         throw new EfgsCommunicationException();
                     case HttpStatusCode.Forbidden:
-                        _Logger.LogCritical("EFGS: missing or invalid certificate!");
+                        _Logger.WriteResponseForbidden();
                         throw new EfgsCommunicationException();
                     case HttpStatusCode.NotAcceptable:
-                        _Logger.LogCritical("EFGS: data format or content is not valid!");
+                        _Logger.WriteResponseNotAcceptable();
                         throw new EfgsCommunicationException();
                     default:
-                        _Logger.LogCritical("EFGS: undefined HTTP status ({status}) returned!", response.StatusCode);
+                        _Logger.WriteResponseUndefined(response.StatusCode);
                         throw new EfgsCommunicationException();
                 }
             }
             catch (Exception e)
             {
-                _Logger.LogCritical("EFGS error: {Message}", e.Message);
+                _Logger.WriteEfgsError(e);
 
                 throw;
             }

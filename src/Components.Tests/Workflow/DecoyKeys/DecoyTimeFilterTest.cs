@@ -30,12 +30,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Workflo
         {
             //Arrange
             var mockRNG = new Mock<IRandomNumberGenerator>();
-            mockRNG.Setup(x =>
-                        x.Next(It.IsAny<int>(), It.IsAny<int>())
-                    ).Returns(delayMs);
+            mockRNG.Setup(x => x.Next(It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(delayMs);
 
             var sut = new DecoyTimeGeneratorAttribute(
-                new TestLogger<DecoyTimeGeneratorAttribute>(),
+                new DecoyKeysLoggingExtensions(
+                    new TestLogger<DecoyKeysLoggingExtensions>()),
                 mockRNG.Object,
                 new DefaultDecoyKeysConfig());
 

@@ -1,6 +1,5 @@
 ﻿using Eu.Interop;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
 using System;
@@ -21,9 +20,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
         private IBatchTagProvider _BatchTagProvider;
         private readonly List<IksSendResult> _Results = new List<IksSendResult>();
         private HttpPostIksResult _LastResult;
-        private ILogger<IksSendBatchCommand> _Logger;
+        private IksUploaderLoggingExtensions _Logger;
 
-        public IksSendBatchCommand(Func<IksOutDbContext> iksOutboundDbContextFactory, Func<HttpPostIksCommand> iksSendCommandFactory, IIksSigner signer, IBatchTagProvider batchTagProvider, ILogger<IksSendBatchCommand> logger)
+        public IksSendBatchCommand(
+            Func<IksOutDbContext> iksOutboundDbContextFactory,
+            Func<HttpPostIksCommand> iksSendCommandFactory,
+            IIksSigner signer,
+            IBatchTagProvider batchTagProvider,
+            IksUploaderLoggingExtensions logger)
         {
             _IksSendCommandFactory = iksSendCommandFactory ?? throw new ArgumentNullException(nameof(iksSendCommandFactory));
             _IksOutboundDbContextFactory = iksOutboundDbContextFactory ?? throw new ArgumentNullException(nameof(iksOutboundDbContextFactory));
@@ -124,28 +128,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
                 {
                     case HttpStatusCode.OK:
                     case HttpStatusCode.Created:
-                        _Logger.LogInformation("EFGS: Success");
+                        _Logger.WriteResponseSuccess();
                         return;
                     case HttpStatusCode.MultiStatus:
-                        _Logger.LogWarning("EFGS: Successful but with warnings: {content}", result.Content);
+                        _Logger.WriteResponseWithWarnings(result.Content);
                         return;
                     case HttpStatusCode.BadRequest:
-                        _Logger.LogError("EFGS: Invalid request (either errors in the data or an invalid signature)");
+                        _Logger.WriteResponseBadRequest();
                         break;
                     case HttpStatusCode.Forbidden:
-                        _Logger.LogError("EFGS: Invalid/missing certificates");
+                        _Logger.WriteResponseForbidden();
                         break;
                     case HttpStatusCode.NotAcceptable:
-                        _Logger.LogError("EFGS:  Data format or content is not valid.");
+                        _Logger.WriteResponseNotAcceptable();
                         break;
                     case HttpStatusCode.RequestEntityTooLarge:
-                        _Logger.LogError("EFGS: Data already exist");
+                        _Logger.WriteResponseRequestTooLarge();
                         break;
                     case HttpStatusCode.InternalServerError:
-                        _Logger.LogError("EFGS: Not able to write data. Retry please.");
+                        _Logger.WriteResponseInternalServerError();
                         break;
                     default:
-                        _Logger.LogError("Unknown error: {httpResponseCode}", result.HttpResponseCode);
+                        _Logger.WriteResponseUnknownError(result.HttpResponseCode);
                         break;
                 }
             }
