@@ -37,8 +37,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
             using (var dbc = _IksOutboundDbContextFactory())
             {
                 _Todo = dbc.Iks
-                    .Where(x => !x.Sent)
-                    .Where(x => x.Qualifier > -1)
+                    .Where(x => !x.Sent && !x.Error)
+                    .OrderBy(x => x.Created)
+                    .ThenBy(x => x.Qualifier)
                     .Select(x => x.Id)
                     .ToList();
             }
@@ -100,12 +101,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
             else
             {
                 item.Sent = false;
-
-                // HOTFIX: storing the return state in the (currently unused) field Qualifier as
-                // as negative integer equal to -1 (unknown) or the negated HTTP response code.
-                // Horrible code because nulls.
-                item.Qualifier = -1 * (_LastResult == null ? 0 :
-                    _LastResult.HttpResponseCode == null ? 0 : (int) _LastResult.HttpResponseCode);
+                item.Error = true;
             }
 
             // TODO: Implement a state machine for batches; this is useful around error cases.
