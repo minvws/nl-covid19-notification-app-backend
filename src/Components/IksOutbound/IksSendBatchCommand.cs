@@ -38,14 +38,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
             {
                 _Todo = dbc.Iks
                     .Where(x => !x.Sent)
+                    .Where(x => x.Qualifier > -1)
                     .Select(x => x.Id)
                     .ToList();
             }
 
-            for (var i = 0; i < _Todo.Count && (_LastResult == null || _LastResult.HttpResponseCode == HttpStatusCode.Created); i++)
-            {
-                await ProcessOne(_Todo[i]);
-            }
+            foreach (var t in _Todo) await ProcessOne(t);
 
             return new IksSendBatchResult 
             { 
@@ -95,14 +93,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
             // Note: EFGS returns Created on successful upload, not OK.
             item.Sent = _LastResult?.HttpResponseCode == HttpStatusCode.Created;
 
+            if (_LastResult?.HttpResponseCode == HttpStatusCode.Created)
+            {
+                item.Sent = true;
+            }
+            else
+            {
+                item.Sent = false;
+
+                // HOTFIX: storing the return state in the (currently unused) field Qualifier as
+                // as negative integer equal to -1 (unknown) or the negated HTTP response code.
+                // Horrible code because nulls.
+                item.Qualifier = -1 * (_LastResult == null ? 0 :
+                    _LastResult.HttpResponseCode == null ? 0 : (int) _LastResult.HttpResponseCode);
+            }
+
             // TODO: Implement a state machine for batches; this is useful around error cases.
             // * Re-try for selected states.
             // * For data errors, end state with invalid (initially).
             // * Allow for manual fixing of data errors with a special retry state?
             //
 
-            if (item.Sent)
-                await dbc.SaveChangesAsync();
+            await dbc.SaveChangesAsync();
         }
 
         /// <summary>
