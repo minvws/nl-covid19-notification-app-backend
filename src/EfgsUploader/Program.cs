@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
@@ -40,8 +39,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
 
             if (!config.UploaderEnabled)
             {
-                var logger = serviceProvider.GetService<ILogger<Program>>();
-                logger.LogWarning("EfgsUploader is disabled by the configuration.");
+                var logger = serviceProvider.GetService<IksUploaderLoggingExtensions>();
+                logger.WriteDisabledByConfig();
 
                 return;
             }
@@ -62,29 +61,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
             services.AddTransient<IBatchTagProvider, BatchTagProvider>();
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddTransient(_ => DbContextStartup.IksOut(_, false));
+            services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
+            services.AddSingleton<IksUploaderLoggingExtensions>();
 
             // IKS Signing
             services.AddTransient<IIksSigner, EfgsCmsSigner>();
             services.AddTransient<ICertificateLocationConfig, StandardCertificateLocationConfig>();
             services.AddTransient<ICertificateChainProvider, EmbeddedResourcesCertificateChainProvider>();
-            services.AddTransient<ICertificateProvider>(x =>
-                new LocalMachineStoreCertificateProvider(
-                    new LocalMachineStoreCertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:EfgsSigning"),
+            services.AddTransient<ICertificateProvider>(
+                x => new LocalMachineStoreCertificateProvider(
+                    new LocalMachineStoreCertificateProviderConfig(
+                        x.GetRequiredService<IConfiguration>(), "Certificates:EfgsSigning"),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
-                )
-            );
+                ));
             
             // Authentication (with certs)
             services
                 .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
                 .AddCertificate();
-            services.AddTransient<LocalMachineStoreCertificateProviderLoggingExtensions>();
-            services.AddTransient<IAuthenticationCertificateProvider>(x =>
-                new LocalMachineStoreCertificateProvider(
-                    new LocalMachineStoreCertificateProviderConfig(x.GetRequiredService<IConfiguration>(), "Certificates:EfgsAuthentication"),
+            services.AddTransient<IAuthenticationCertificateProvider>(
+                x => new LocalMachineStoreCertificateProvider(
+                    new LocalMachineStoreCertificateProviderConfig(
+                        x.GetRequiredService<IConfiguration>(), "Certificates:EfgsAuthentication"),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
-                )
-            );
+                ));
         }
     }
 }

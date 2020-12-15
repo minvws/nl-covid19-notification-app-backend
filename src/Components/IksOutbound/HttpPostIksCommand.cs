@@ -2,7 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Efgs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
@@ -16,9 +15,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
     {
         private readonly IEfgsConfig _EfgsConfig;
         private readonly IAuthenticationCertificateProvider _CertificateProvider;
-        private readonly ILogger<HttpPostIksCommand> _Logger;
+        private readonly IksUploaderLoggingExtensions _Logger;
 
-        public HttpPostIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, ILogger<HttpPostIksCommand> logger)
+        public HttpPostIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IksUploaderLoggingExtensions logger)
         {
             _EfgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
             _CertificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
@@ -31,7 +30,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
 
             // Configure authentication certificate
             using var clientCert = _CertificateProvider.GetCertificate();
-            using var clientHandler = new HttpClientHandler {
+            using var clientHandler = new HttpClientHandler
+            {
                 ClientCertificateOptions = ClientCertificateOption.Manual
             };
 
@@ -46,14 +46,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
             request.Headers.Add("BatchTag", args.BatchTag);
             request.Headers.Add("batchSignature", Convert.ToBase64String(args.Signature));
             request.Headers.Add("Accept", "application/json;version=1.0");
+            
             if (_EfgsConfig.SendClientAuthenticationHeaders)
             {
                 request.Headers.Add("X-SSL-Client-SHA256", clientCert.ComputeSha256Hash());
                 request.Headers.Add("X-SSL-Client-DN", clientCert.Subject.Replace(" ", string.Empty));
             }
 
-            _Logger.LogInformation("EFGS request: {request}", request);
-            _Logger.LogInformation("EFGS request content: {content}", Convert.ToBase64String(args.Content));
+            _Logger.WriteRequest(request);
+            _Logger.WriteRequestContent(args.Content);
 
             using var client = new HttpClient(clientHandler);
             client.Timeout = TimeSpan.FromSeconds(5); //TODO config
@@ -72,15 +73,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
             }
             catch (Exception e)
             {
-                _Logger.LogError("Error calling EFGS, see exception for details");
-                _Logger.LogError(e.Message);
-                _Logger.LogError(e.StackTrace);
+                _Logger.WriteEfgsError(e);
 
                 if (e.InnerException != null)
                 {
-                    _Logger.LogError("Inner exception:");
-                    _Logger.LogError(e.InnerException.Message);
-                    _Logger.LogError(e.InnerException.StackTrace);
+                    _Logger.WriteEfgsInnerException(e.InnerException);
                 }
 
                 return new HttpPostIksResult
