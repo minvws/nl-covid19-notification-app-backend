@@ -103,9 +103,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => logger.WriteManifestV2CleanupStarting());
             run.Add(() => c120.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c130 = serviceProvider.GetRequiredService<RemovePublishedDiagnosticKeys>();
-            //run.Add(() => TODO);
-            run.Add(() => c130.Execute());
+            var c130 = serviceProvider.GetRequiredService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
+            run.Add(() => c130.ExecuteAsync().GetAwaiter().GetResult());
 
             var c100 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             run.Add(() => logger.WriteResignerStarting());
@@ -155,7 +154,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<RemoveExpiredEksCommand>();
             services.AddTransient<RemoveExpiredEksV2Command>();
             services.AddTransient<RemoveExpiredWorkflowsCommand>();
-            services.AddTransient<RemovePublishedDiagnosticKeys>();
+            services.AddTransient<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             
             services.AddSingleton<IManifestConfig, ManifestConfig>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
