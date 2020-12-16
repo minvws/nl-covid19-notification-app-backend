@@ -1,9 +1,0 @@
-﻿<ProjectConfiguration>
-  <Settings>
-    <IgnoredTests>
-      <NamedTestSelector>
-        <TestName>DailyCleanup.Tests.Placeholder.Argle</TestName>
-      </NamedTestSelector>
-    </IgnoredTests>
-  </Settings>
-</ProjectConfiguration>
