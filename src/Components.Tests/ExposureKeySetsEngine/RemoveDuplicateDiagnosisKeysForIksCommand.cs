@@ -2,6 +2,8 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
@@ -9,23 +11,29 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEn
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using System.IO;
 using System.Linq;
+using NCrunch.Framework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine
 {
-    public class RemoveDuplicateDiagnosisKeysForIksCommandTests
+    [Trait("db", "ss")]
+    public class RemoveDuplicateDiagnosisKeysForIksCommandTests:IDisposable
     {
         private readonly IDbProvider<DkSourceDbContext> _DkSourceDbProvider;
 
         public RemoveDuplicateDiagnosisKeysForIksCommandTests()
         {
-            _DkSourceDbProvider = new SqlServerDbProvider<DkSourceDbContext>(nameof(RemoveDuplicateDiagnosisKeysForIksCommandTests));
-            InitSp();
+            _DkSourceDbProvider = new SqlServerDbProvider<DkSourceDbContext>(nameof(RemoveDuplicateDiagnosisKeysForIksCommandTests)+"_DK");
+            var sp = File.ReadAllText(Path.Combine(Path.GetDirectoryName(NCrunch.Framework.NCrunchEnvironment.GetOriginalSolutionPath()), @"Database\DiagnosisKeys\dbo\StoredProcedures\RemoveDuplicateDiagnosisKeysForIks.sql"));
+            using var ctx = _DkSourceDbProvider.CreateNew();
+            ctx.Database.ExecuteSqlRaw(sp);
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(RemoveDuplicateDiagnosisKeysForIksCommandTests))]
         public async void Tests_that_no_action_taken_for_published_duplicates()
         {
+
             // Assemble
             using var context = _DkSourceDbProvider.CreateNew();
             context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, true));
@@ -44,6 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(RemoveDuplicateDiagnosisKeysForIksCommandTests))]
         public async void Tests_that_when_DK_has_been_published_that_all_duplicates_marked_as_published()
         {
             // Assemble
@@ -65,6 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
         }
 
         [Fact]
+        [ExclusivelyUses(nameof(RemoveDuplicateDiagnosisKeysForIksCommandTests))]
         public async void Tests_that_when_DK_has_not_been_published_that_all_duplicates_except_the_highest_TRL_are_marked_as_published()
         {
             // Assemble
@@ -110,11 +120,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Exposur
             return new RemoveDuplicateDiagnosisKeysForIksWithSpCommand(() => _DkSourceDbProvider.CreateNew());
         }
 
-        private void InitSp()
+        public void Dispose()
         {
-            var sp = File.ReadAllText(@"..\..\..\..\Database\DiagnosisKeys\dbo\StoredProcedures\RemoveDuplicateDiagnosisKeysForIks.sql");
-            using var ctx = _DkSourceDbProvider.CreateNew();
-            ctx.Database.ExecuteSqlRaw(sp);
+            _DkSourceDbProvider.Dispose();
         }
     }
 }

@@ -150,11 +150,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 
 		public void WriteNextBatchReceived(string batchTag, string? nextBatchTag)
 		{
-			if (nextBatchTag == null)
-			{
-				throw new ArgumentNullException(nameof(nextBatchTag));
-			}
-
 			_Logger.LogInformation("[{name}/{id}] Batch {BatchTag} with next batch {NextBatchTag} received.",
 				Name, NextBatchReceived,
 				batchTag, nextBatchTag);
