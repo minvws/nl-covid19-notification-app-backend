@@ -54,6 +54,7 @@ steps:
     filename: src\build.bat
     arguments: $(Build.BuildId)
     workingFolder: '$(Build.SourcesDirectory)\src'
+    failOnStandardError: true
 
 - task: replacetokens@3
   inputs:
