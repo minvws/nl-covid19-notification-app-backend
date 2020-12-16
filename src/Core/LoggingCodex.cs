@@ -6,7 +6,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public static class LoggingCodex
     {
-        //Current ordering is mainly by project
         public const int Register = 1100;
         public const int PostTeks = 1200;
         public const int Decoy = 1300;
@@ -33,5 +32,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public const int ManifestUpdate = 3400;
         public const int EmbeddedCertProvider = 3500;
         public const int CertLmProvider = 3600;
+        public const int IksDownloader = 3700;
+        public const int IksUploader = 3800;
+        public const int IKSEngine = 3900;
+        public const int WorkFlowTeksToDksCommand = 4000;
+        public const int IksImportBatchJob = 4100;
+        public const int ConsoleAppRunner = 4200; //not entirely sure yet
     }
 }
