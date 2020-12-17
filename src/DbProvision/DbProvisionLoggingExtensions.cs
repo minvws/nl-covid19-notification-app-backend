@@ -16,6 +16,11 @@ namespace DbProvision
         private const int ContentDb = Base + 2;
         private const int JobDb = Base + 3;
         private const int DataProtectionKeysDb = Base + 4;
+        private const int StatsDb = Base + 5;
+        private const int DkSourceDb = Base + 6;
+        private const int IksInDb = Base + 7;
+        private const int IksOutDb = Base + 8;
+        private const int IksPublishingJobDb = Base + 9;
 
         private readonly ILogger _Logger;
 
@@ -59,6 +64,35 @@ namespace DbProvision
                 Name, DataProtectionKeysDb);
         }
 
-        
+
+        public void WriteStatsDb()
+        {
+            _Logger.LogInformation("[{name}/{id}] Stats...",
+                Name, StatsDb);
+        }
+
+        public void WriteDkSourceDb()
+        {
+            _Logger.LogInformation("[{name}/{id}] DkSource...",
+                Name, DkSourceDb);
+        }
+
+        public void WriteIksInDb()
+        {
+            _Logger.LogInformation("[{name}/{id}] IksIn...",
+                Name, IksInDb);
+        }
+
+        public void WriteIksOutDb()
+        {
+            _Logger.LogInformation("[{name}/{id}] IksOut...",
+                Name, IksOutDb);
+        }
+
+        public void WriteIksPublishingJobDb()
+        {
+            _Logger.LogInformation("[{name}/{id}] eIksPublishingJob...",
+                Name, IksPublishingJobDb);
+        }
     }
 }

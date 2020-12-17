@@ -12,9 +12,14 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.EntityFramework;
 
 namespace DbProvision
 {
@@ -55,6 +60,11 @@ namespace DbProvision
             services.AddScoped(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content, false));
             services.AddScoped(x => x.CreateDbContext(y => new EksPublishingJobDbContext(y), DatabaseConnectionStringNames.EksPublishing, false));
             services.AddScoped(x => x.CreateDbContext(y => new DataProtectionKeysDbContext(y), DatabaseConnectionStringNames.DataProtectionKeys, false));
+            services.AddScoped(x => x.CreateDbContext(y => new StatsDbContext(y), DatabaseConnectionStringNames.Stats, false));
+            services.AddScoped(x => x.CreateDbContext(y => new DkSourceDbContext(y), DatabaseConnectionStringNames.DkSource, false));
+            services.AddScoped(x => x.CreateDbContext(y => new IksInDbContext(y), DatabaseConnectionStringNames.IksIn, false));
+            services.AddScoped(x => x.CreateDbContext(y => new IksOutDbContext(y), DatabaseConnectionStringNames.IksOut, false));
+            services.AddScoped(x => x.CreateDbContext(y => new IksPublishingJobDbContext(y), DatabaseConnectionStringNames.IksPublishing, false));
 
             services.AddTransient<DatabaseProvisioner>();
             services.AddTransient<ContentPublisher>();

@@ -28,9 +28,14 @@
     <ProjectReference Include="..\Core.ConsoleApps\Core.ConsoleApps.csproj" />
     <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Crypto\Crypto.csproj" />
+    <ProjectReference Include="..\DiagnosisKeys.EntityFramework\DiagnosisKeys.EntityFramework.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Eks.Publishing.EntityFramework\Eks.Publishing.EntityFramework.csproj" />
+    <ProjectReference Include="..\Iks.Downloader.EntityFramework\Iks.Downloader.EntityFramework.csproj" />
+    <ProjectReference Include="..\Iks.Publishing.EntityFramework\Iks.Publishing.EntityFramework.csproj" />
+    <ProjectReference Include="..\Iks.Uploader.EntityFramework\Iks.Uploader.EntityFramework.csproj" />
     <ProjectReference Include="..\MobileAppApi.EntityFramework\MobileAppApi.EntityFramework.csproj" />
+    <ProjectReference Include="..\Stats.EntityFramework\Stats.EntityFramework.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
