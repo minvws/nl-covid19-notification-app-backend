@@ -77,12 +77,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 
 		public void WriteResponseHeaders(HttpResponseHeaders responseHeaders)
 		{
-			if (responseHeaders == null)
-			{
-				throw new ArgumentNullException(nameof(responseHeaders));
-			}
+            if (responseHeaders == null)
+            {
+                throw new ArgumentNullException(nameof(responseHeaders));
+            }
 
-			_Logger.LogInformation("[{name}/{id}] Response headers: {headers}",
+            _Logger.LogInformation("[{name}/{id}] Response headers: {headers}",
 				Name, ResponseHeaders,
 				responseHeaders.ToString());
 		}
@@ -119,11 +119,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 
 		public void WriteResponseUndefined(HttpStatusCode statusCode)
 		{
-			if (statusCode == null)
-			{
-				throw new ArgumentNullException(nameof(statusCode));
-			}
-
 			_Logger.LogCritical("[{name}/{id}] EFGS: undefined HTTP status ({status}) returned!",
 				Name, ResponseUndefined,
 				statusCode);
@@ -164,11 +159,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 
 		public void WriteBatchProcessedInNextLoop(string? nextBatchTag)
 		{
-			if (nextBatchTag == null)
-			{
-				throw new ArgumentNullException(nameof(nextBatchTag));
-			}
-
 			_Logger.LogInformation("[{name}/{id}] New NextBatchTag { NextBatchTag }, it will be processed next loop.",
 				Name, BatchProcessedInNextLoop,
 				nextBatchTag);
@@ -188,13 +178,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 
 		public void WriteNextBatchFound(string? nextBatchTag)
 		{
-			if (nextBatchTag == null)
-			{
-				throw new ArgumentNullException(nameof(nextBatchTag));
-			}
-
 			_Logger.LogInformation("[{name}/{id}] We have a nextBatch with value {NextBatchTag} so we keep going.",
-				Name, NextBatchFound);
+				Name, NextBatchFound, nextBatchTag);
 		}
 
 	}
