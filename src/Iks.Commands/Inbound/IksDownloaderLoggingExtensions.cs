@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 		private const int ResponseGone = Base + 7;
 		private const int ResponseBadRequest = Base + 8;
 		private const int ResponseForbidden = Base + 9;
-		private const int ResponseNotAcceptable= Base + 10;
+		private const int ResponseNotAcceptable = Base + 10;
 		private const int ResponseUndefined = Base + 11;
 		private const int EfgsError = Base + 12;
 
@@ -63,6 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 			{
 				throw new ArgumentNullException(nameof(requestMessage));
 			}
+			
 			_Logger.LogInformation("[{name}/{id}] EFGS request: {request}",
 				Name, Request,
 				requestMessage);
@@ -119,11 +120,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
 		public void WriteResponseUndefined(HttpStatusCode statusCode)
 		{
-			if (statusCode == null)
-			{
-				throw new ArgumentNullException(nameof(statusCode));
-			}
-
 			_Logger.LogCritical("[{name}/{id}] EFGS: undefined HTTP status ({status}) returned!",
 				Name, ResponseUndefined,
 				statusCode);
@@ -150,11 +146,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
 		public void WriteNextBatchReceived(string batchTag, string? nextBatchTag)
 		{
-			if (nextBatchTag == null)
-			{
-				throw new ArgumentNullException(nameof(nextBatchTag));
-			}
-
 			_Logger.LogInformation("[{name}/{id}] Batch {BatchTag} with next batch {NextBatchTag} received.",
 				Name, NextBatchReceived,
 				batchTag, nextBatchTag);
@@ -169,12 +160,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
 		public void WriteBatchProcessedInNextLoop(string? nextBatchTag)
 		{
-			if (nextBatchTag == null)
-			{
-				throw new ArgumentNullException(nameof(nextBatchTag));
-			}
-
-			_Logger.LogInformation("[{name}/{id}] New NextBatchTag { NextBatchTag }, it will be processed next loop.",
+			_Logger.LogInformation("[{name}/{id}] New NextBatchTag {NextBatchTag}, it will be processed next loop.",
 				Name, BatchProcessedInNextLoop,
 				nextBatchTag);
 		}
@@ -193,13 +179,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
 		public void WriteNextBatchFound(string? nextBatchTag)
 		{
-			if (nextBatchTag == null)
-			{
-				throw new ArgumentNullException(nameof(nextBatchTag));
-			}
-
 			_Logger.LogInformation("[{name}/{id}] We have a nextBatch with value {NextBatchTag} so we keep going.",
-				Name, NextBatchFound);
+				Name, NextBatchFound,
+				nextBatchTag);
 		}
 
 	}

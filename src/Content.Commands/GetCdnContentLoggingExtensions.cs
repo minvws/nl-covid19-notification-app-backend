@@ -42,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
 		public void WriteHeaderMissing()
 		{
-			_Logger.LogError("[{name}/{id}] Required request header missing - if-none-match.",
+			_Logger.LogDebug("[{name}/{id}] Required request header missing - if-none-match.",
 				Name, HeaderMissing);
 		}
 

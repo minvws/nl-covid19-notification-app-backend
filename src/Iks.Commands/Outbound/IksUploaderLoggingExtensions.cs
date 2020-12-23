@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
 		public void WriteRequestContent(byte[] content)
 		{
-			_Logger.LogInformation("[{name}/{id}] EFGS request content: {content}",
+			_Logger.LogDebug("[{name}/{id}] EFGS request content: {content}",
 				Name, RequestContent,
 				Convert.ToBase64String(content));
 		}
@@ -111,7 +111,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 			}
 
 			_Logger.LogWarning("[{name}/{id}] EFGS: Successful but with warnings: {content}",
-				Name, ResponseWithWarnings);
+				Name, ResponseWithWarnings,
+				responseContent);
 		}
 
 		public void WriteResponseBadRequest()

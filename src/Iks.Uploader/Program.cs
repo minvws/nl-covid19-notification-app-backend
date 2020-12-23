@@ -64,7 +64,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
             services.AddTransient<IBatchTagProvider, BatchTagProvider>();
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<IksUploaderLoggingExtensions>();
-
+			services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
+			
             // IKS Signing
             services.AddTransient<IIksSigner, EfgsCmsSigner>();
             services.AddTransient<ICertificateLocationConfig, StandardCertificateLocationConfig>();
@@ -81,7 +82,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
             services
                 .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
                 .AddCertificate();
-            services.AddTransient<LocalMachineStoreCertificateProviderLoggingExtensions>();
             services.AddTransient<IAuthenticationCertificateProvider>(x =>
                 new LocalMachineStoreCertificateProvider(
                     new LocalMachineStoreCertificateProviderConfig(
