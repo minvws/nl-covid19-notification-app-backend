@@ -23,17 +23,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        //public void WriteStart()
-        //{
-        //    _Logger.LogDebug("[{name}/{id}] Snapshot publishable TEKs..",
-        //        Name, Start);
-        //}
+		public void WriteStart()
+		{
+			_Logger.LogDebug("[{name}/{id}] Snapshot publishable TEKs..",
+				Name, Start);
+		}
 
-        //public void WriteTeksToPublish(int tekCount)
-        //{
-        //    _Logger.LogInformation("[{name}/{id}] TEKs to publish - Count:{Count}.",
-        //        Name, TeksToPublish,
-        //        tekCount);
-        //}
-    }
+		public void WriteTeksToPublish(int tekCount)
+		{
+			_Logger.LogInformation("[{name}/{id}] TEKs to publish - Count:{Count}.",
+				Name, TeksToPublish,
+				tekCount);
+		}
+	}
 }
