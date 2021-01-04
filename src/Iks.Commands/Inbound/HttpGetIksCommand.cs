@@ -6,14 +6,15 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 {
-    public class HttpGetIksCommand : IIHttpGetIksCommand
-    {
+    public class HttpGetIksCommand : IIHttpGetIksCommand {
+
         const string ApplicationProtobuf = "application/protobuf; version=1.0";
 
         private readonly IEfgsConfig _EfgsConfig;

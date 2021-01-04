@@ -41,11 +41,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
 
         public void WritePaddingContent(string? padding)
         {
-			if (padding == null)
-			{
-                throw new ArgumentNullException(nameof(padding));
-            }
-
             _Logger.LogDebug("[{name}/{id}] Response padding:{Padding}",
                 Name, ResponsePaddingContent,
                 padding);
