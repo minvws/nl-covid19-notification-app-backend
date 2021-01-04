@@ -25,5 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.Entities
         /// TODO CreatingJobQualifier?
         /// </summary>
         public int Qualifier { get; set; }
+
+        public bool Error { get; set; }
     }
 }

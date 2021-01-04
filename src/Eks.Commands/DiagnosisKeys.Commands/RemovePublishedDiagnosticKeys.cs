@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -14,10 +15,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
     {
         private RemovePublishedDiagnosticKeysResult _Result;
         private readonly Func<DkSourceDbContext> _DiagnosticKeyDbContextProvider;
+        private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
 
-        public RemovePublishedDiagnosticKeys(Func<DkSourceDbContext> diagnosticKeyDbContextProvider)
+        public RemovePublishedDiagnosticKeys(Func<DkSourceDbContext> diagnosticKeyDbContextProvider, IUtcDateTimeProvider utcDateTimeProvider)
         {
             _DiagnosticKeyDbContextProvider = diagnosticKeyDbContextProvider ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContextProvider));
+            _UtcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
         }
 
         public RemovePublishedDiagnosticKeysResult Execute()
@@ -27,13 +30,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             _Result = new RemovePublishedDiagnosticKeysResult();
 
+            //TODO setting
+            var cutoff = _UtcDateTimeProvider.Snapshot.AddDays(-14).Date.ToRollingStartNumber();
+
             using (var dbc = _DiagnosticKeyDbContextProvider())
             {
                 using (var tx = dbc.BeginTransaction())
                 {
-                    _Result.GivenMercy = dbc.Database.ExecuteSqlRaw($"DELETE FROM {TableNames.DiagnosisKeys} WHERE [PublishedLocally] = 1 AND [PublishedToEfgs] = 1;");
+                    _Result.GivenMercy = dbc.Database.ExecuteSqlRaw($"DELETE FROM {TableNames.DiagnosisKeys} WHERE [PublishedLocally] = 1 AND [PublishedToEfgs] = 1 AND DailyKey_RollingStartNumber < {cutoff};");
                     tx.Commit();
                 }
+
+                _Result.RemainingExpiredCount = dbc.DiagnosisKeys.Count(x => x.DailyKey.RollingStartNumber < cutoff);
             }
 
             return _Result;

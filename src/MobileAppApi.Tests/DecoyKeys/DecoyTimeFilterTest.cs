@@ -30,8 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
         {
             //Arrange
             var mockRNG = new Mock<IRandomNumberGenerator>();
-            mockRNG.Setup(x => 
-                    x.Next(It.IsAny<int>(), It.IsAny<int>()))
+            mockRNG.Setup(x => x.Next(It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(delayMs);
 
             var sut = new DecoyTimeGeneratorAttribute(

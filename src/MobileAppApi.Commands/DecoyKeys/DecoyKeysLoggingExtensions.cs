@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 
 		public void WriteDelaying(int delayMs)
 		{
-			_Logger.LogDebug("[{name}/{id}] Delaying for {delayMs} milliseconds", 
+			_Logger.LogDebug("[{name}/{id}] Delaying for {delayMs} milliseconds",
 				Name, Delay,
 				delayMs);
 		}
