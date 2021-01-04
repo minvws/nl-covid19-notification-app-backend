@@ -5,9 +5,9 @@ set suffix=%1
 if "%suffix%"=="" set suffix=0
 
 REM Append the current git hash to the version suffix
-REM FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-parse --short HEAD`) DO (
-REM   SET suffix= "%suffix%-%%F"  
-REM )
+FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-parse --short HEAD`) DO (
+   SET suffix= "%suffix%-%%F"  
+)
 
 REM Publish websites
 dotnet publish Content.WebApi\Content.WebApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\ContentApi.WebApi --version-suffix %suffix%
