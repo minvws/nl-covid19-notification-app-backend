@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands</AssemblyName>
+    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands</RootNamespace>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Inbound\!FromOutboundPublishing\**" />
+    <EmbeddedResource Remove="Inbound\!FromOutboundPublishing\**" />
+    <None Remove="Inbound\!FromOutboundPublishing\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Core.AspNet\Core.AspNet.csproj" />
+    <ProjectReference Include="..\Crypto\Crypto.csproj" />
+    <ProjectReference Include="..\DiagnosisKeys.Entities\DiagnosisKeys.Entities.csproj" />
+    <ProjectReference Include="..\Iks.Protobuf\Iks.Protobuf.csproj" />
+
+    <ProjectReference Include="..\DiagnosisKeys.EntityFramework\DiagnosisKeys.EntityFramework.csproj" />
+    <ProjectReference Include="..\DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj" />
+
+    <ProjectReference Include="..\Iks.Downloader.Entities\Iks.Downloader.Entities.csproj" />
+    <ProjectReference Include="..\Iks.Downloader.EntityFramework\Iks.Downloader.EntityFramework.csproj" />
+
+    <ProjectReference Include="..\Iks.Uploader.Entities\Iks.Uploader.Entities.csproj" />
+    <ProjectReference Include="..\Iks.Uploader.EntityFramework\Iks.Uploader.EntityFramework.csproj" />
+    
+    <ProjectReference Include="..\Iks.Publishing.Entities\Iks.Publishing.Entities.csproj" />
+    <ProjectReference Include="..\Iks.Publishing.EntityFramework\Iks.Publishing.EntityFramework.csproj" />
+  </ItemGroup>
+
+</Project>

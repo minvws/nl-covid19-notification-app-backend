@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using NCrunch.Framework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
-namespace ManifestEngine.Tests
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 {
     [Trait("db", "ss")]
     [Collection(nameof(ManifestEngineTestsSqlServer))]

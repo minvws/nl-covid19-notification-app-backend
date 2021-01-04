@@ -1,0 +1,8 @@
+﻿<ProjectConfiguration>
+  <Settings>
+    <DefaultTestTimeout>50000</DefaultTestTimeout>
+    <HiddenComponentWarnings>
+      <Value>AspNetTestHostCompatibility</Value>
+    </HiddenComponentWarnings>
+  </Settings>
+</ProjectConfiguration>

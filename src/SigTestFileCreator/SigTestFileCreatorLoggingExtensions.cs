@@ -4,7 +4,7 @@
 
 using System;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace SigTestFileCreator
 {
