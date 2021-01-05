@@ -3,8 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
@@ -34,19 +37,19 @@ namespace DbProvision
         private static void Start(IServiceProvider services, string[] args)
         {
             services.GetRequiredService<DatabaseProvisioner>().ExecuteAsync(args).GetAwaiter().GetResult();
+            
+            if (args.Length < 2) return; // No ContentPublisher arguments given
 
-            // TODO: 
-            //if (args.Length < 2) return; // No ContentPublisher arguments given
+            for (var i = 0; i < args.Length; i++)
+            {
+                if (args[i].StartsWith('-'))
+                {
+                    var subArgs = new[] { args[i], args[++i] }; // Get contenttype argument with value 
 
-            //for (var i = 0; i <= args.Length; i++)
-            //{
-            //    if (args[i].StartsWith('-'))
-            //    {
-            //        var subArgs = new[] {args[i], args[++i]}; // Get contenttype argument with value 
-            //        services.GetRequiredService<ContentPublisher>().ExecuteAsync(subArgs).GetAwaiter().GetResult();
-            //    }
+                    services.GetRequiredService<ContentPublisher>().ExecuteAsync(subArgs).GetAwaiter().GetResult();
+                }
 
-            //}
+            }
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)

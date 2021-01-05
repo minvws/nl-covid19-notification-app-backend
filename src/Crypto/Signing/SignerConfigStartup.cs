@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 
@@ -47,7 +48,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 
         public static void DummySignerStartup(this IServiceCollection services)
 		{
-            services.AddTransient<IContentSigner>(x => new DummyCmsSigner());
+            var lf = new LoggerFactory();
+            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
+
+            // Add hardcoded test cert to sign
+            services.AddTransient<IContentSigner>(x =>
+                new CmsSignerEnhanced(new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
+                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("Resources.StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
+                new StandardUtcDateTimeProvider()));
 		}
 
         public static IContentSigner BuildEvSigner(

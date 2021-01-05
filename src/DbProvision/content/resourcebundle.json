@@ -1,0 +1,215 @@
+{
+  "guidance": {
+    "layout": [
+      {
+        "body": "exposure_notification_body",
+        "title": "exposure_notification_title",
+        "type": "paragraph"
+      },
+      {
+        "body": "next_steps_body",
+        "title": "next_steps_title",
+        "type": "paragraph"
+      },
+      {
+        "body": "stay_home_body",
+        "title": "stay_home_title",
+        "type": "paragraph"
+      },
+      {
+        "body": "medical_help_body",
+        "title": "medical_help_title",
+        "type": "paragraph"
+      },
+      {
+        "body": "test_negative_body",
+        "title": "test_negative_title",
+        "type": "paragraph"
+      },
+      {
+        "body": "symptoms_body",
+        "title": "symptoms_title",
+        "type": "paragraph"
+      }
+    ],
+    "quarantineDays": 10
+  },
+  "resources": {
+    "ar": {
+      "after_stay_home_body": "ألم تظهر عليك أعراض إلى غاية {StayHomeUntilDate}؟ لم يعد عليك البقاء في المنزل إذًا. لكن استمر في اتباع القواعد العامة ضد كورونا.",
+      "after_stay_home_title": "بعد {StayHomeUntilDate}",
+      "exposure_notification_body": "قد تعرضت للإصابة في {ExposureDate} ({ExposureDaysAgo}). كنت قريبًا من شخص مصاب بكورونا لمدة 15 دقيقة على الأقل في ذلك اليوم. إذا كنت مصابًا بالفعل، يمكنك نقل الفيروس إلى الآخرين. حتى لو لم تشعر بالمرض الآن.",
+      "exposure_notification_title": "لقد كنت بالقرب من شخص مصاب بفيروس كورونا",
+      "medical_help_body": "<ul><li>لا تذهب إلى الطبيب أو المستشفى، ولكن اتصل بطبيبك أولاً. قل له أنك كنت بالقرب من شخص مصاب بفيروس كورونا.</li><li>.بإمكان طبيب العائلة أو مساعدة طبية أخرى القيام بزيارتك.</li></ul>",
+      "medical_help_title": "هل أنت بحاجة الى مساعدة طبية؟",
+      "next_steps_body": "<li><ul>هل ظهرت لديك مؤخرًا أعراض تتناسب مع فيروس كورونا؟ قم بإجراء اختبار كورونا في أسرع وقت ممكن.<li></li> أليست لديك أعراض؟ اتصل الآن من أجل إجراء اختبار كورونا بعد خمسة أيام من {ExposureDate}. فقط اعتبارًا من هذا التاريخ تكون نتيجة اختبار كورونا في حالتك موثوقة بدرجة كافية. <li></li> ألم تتمكن من إجراء الاختبار؟ ابق في المنزل حتى عشرة أيام بعد {ExposureDate}. تستطيع بعد ذلك الخروج من المنزل إذا لم تظهر لديك أعراض.</li><li> هل لديك أعراض خطيرة كارتفاع درجة الحرارة أو صعوبة في التنفس؟ أم أنك من ضمن مجموعة معرضة للخطر وأصبت بالحمى؟ اتصل بطبيبك أولاً </ul></li>.\n<b> هل تعطيك الـ GGD عبر الهاتف نصائح مختلفة عن النصائح الموجودة في التطبيق؟ اتبع إذًا نصيحة الـ GGD.</b>",
+      "next_steps_title": "ما الذي يمكنك القيام به الآن؟",
+      "stay_home_body": "<ul><li>دع الآخرين يقومون بمهمة شراء البقالة لك. هل هذا غير ممكن وهل ليست لديك أعراض؟ يمكنك الخروج للقيام بشراء البقالة. حافظ على مسافة 1.5 متر ولا تلمس أي شخص.</li><li>يمكنك الجلوس في الحديقة أو الشرفة.</li><li>يُسمح للأطفال في سن التمدرس الذين أعمارهم تقل عن 18عامًا بالذهاب إلى المدرسة و/أو ممارسة الرياضة.</li></ul>",
+      "stay_home_title": "ابق في المنزل إلى غاية {StayHomeUntilDate}",
+      "symptoms_body": "<ul><li>أعراص الزكام مثل حساسية الأنف وسيلان الأنف والعطس وألم في الحلق</li><li>السعال </li><li>ضيق في التنفس</li><li>ارتفاع في درجة حرارة الجسم</li><li>فقدان مفاجئ لحاسة الشم و/أو التذوق (بدون احتقان في الأنف)</li></ul>",
+      "symptoms_title": "الأعراض التي تتناسب مع فيروس كورونا",
+      "test_negative_body": "<ul><li> لم تعد مضطرًا للبقاء في المنزل، إلا أنه عليك الانتباه لصحتك أكثر. هل ظهرت لديك أعراض؟ ابق في المنزل واخضع للفحص مرة أخرى على الفور.</li><li> تجنب الاتصال بالأشخاص ذوي الصحة الضعيفة أو الاشخاص الأكثر عرضة للخطر لمدة تصل إلى 10 أيام بعد {ExposureDate}. تجنب الأماكن المزدحمة وابق على مسافة 1.5 متر.</li></ul>",
+      "test_negative_title": "إذا لم يكشف الاختبار عن إصابتك بكورونا"
+    },
+    "bg": {
+      "after_stay_home_body": "Ако до {StayHomeUntilDate} включително не си получил оплаквания, няма нужда повече да си стоиш вкъщи. Все пак продължи да спазваш общите правила срещу коронавирус.",
+      "after_stay_home_title": "След {StayHomeUntilDate}",
+      "exposure_notification_body": "На {ExposureDate} ({ExposureDaysAgo}) може би си се заразил. На този ден най-малко 15 минути си бил близо до човек с коронавирус.\n\nАко наистина си заразен, може да предадеш вируса на други хора. Дори сега да не се чувстваш болен.",
+      "exposure_notification_title": "Бил си близо до някой с коронавирус",
+      "medical_help_body": "<ul><li>Не ходи при личния лекар или в болницата, а първо се обади по телефона на личния си лекар. Кажи, че си бил при някой, който има коронавирус.</li><li>Позволено е на личния ти лекар или на друго медицинско лице да дойде при теб.</li></ul>",
+      "medical_help_title": "Необходима ти е медицинска помощ?",
+      "next_steps_body": "<ul><li>Отскоро имаш оплаквания, които са характерни за коронавируса? Направи си тест за коронавирус възможно най-бързо.</li><li>Нямаш оплаквания? Обади се, за да си запишеш час за тест за коронавирус 5 дни след {ExposureDate}. Едва след тази дата резултатът от тест за коронавирус е достатъчно надежден в твоя случай.</li><li>Не си успял да си направиш тест? Остани си вкъщи в продължение на 10 пълни дни след {ExposureDate}. След това отново можеш да излизаш, ако нямаш оплаквания.</li><li>Имаш сериозни оплаквания като висока температура или затруднено дишане? Или се намираш в рискова група и си вдигнал температура? Обади се първо на личния си лекар.</li></ul>\n<b>Ако Общинската здравна инспекция (GGD) по телефона ти дава  съвети, които са различни от тези на приложението, тогава следвай съветите на GGD.</b>",
+      "next_steps_title": "Какво можеш да направиш сега?",
+      "stay_home_body": "<ul><li>Остави други хора да ти пазаруват. Ако наистина не може и нямаш оплаквания, може да излезеш за малко, за да напазаруваш. Спазвай дистанция от 1,5 метра и не докосвай никого.</li><li>Може да седиш в градината или на балкона.</li><li>Деца в училищна възраст до 18 г. може да ходят на училище и/или да спортуват.</li></ul>",
+      "stay_home_title": "Остани си вкъщи до {StayHomeUntilDate} включително",
+      "symptoms_body": "<ul><li>настинка като хрема, течащ нос, кихане, болки в гърлото</li><li>кашлица</li><li>задух</li><li>повишена температура или треска</li><li>внезапна загуба на обоняние и/или вкус (без запушен нос)</li></ul>",
+      "symptoms_title": "Оплаквания, характерни за коронавируса",
+      "test_negative_body": "<ul><li>Повече не е необходимо да стоиш вкъщи, но бъди особено бдителен за здравето си. Ако при теб се появят някакви симптоми, остани си вкъщи и веднага си направи нов тест.</li><li> В продължение на 10 пълни дни след {ExposureDate} не се срещай с хора с нестабилно здраве или повишен риск от заболяване. Избягвай оживени места и спазвай дистанция от 1,5 метра.</li></ul>",
+      "test_negative_title": "Ако тестът ти не е показал коронавирус"
+    },
+    "de": {
+      "after_stay_home_body": "Haben Sie bis einschließlich {StayHomeUntilDate} keine Beschwerden bekommen? Dann brauchen Sie nicht mehr zu Hause zu bleiben. Halten Sie aber weiterhin die allgemeinen Corona-Verhaltensregeln ein.",
+      "after_stay_home_title": "Ab dem {StayHomeUntilDate}",
+      "exposure_notification_body": "Am {ExposureDate} ({ExposureDaysAgo}) wurden Sie möglicherweise angesteckt. Sie waren an diesem Tag mindestens 15 Minuten in der Nähe einer Person mit Corona.  \n\nWenn Sie tatsächlich Corona haben, können Sie andere anstecken. Auch wenn Sie sich jetzt nicht krank fühlen.",
+      "exposure_notification_title": "Sie waren in der Nähe einer Person mit Corona.",
+      "medical_help_body": "<ul><li>Gehen Sie nicht zu Ihrem Hausarzt oder ins Krankenhaus, sondern rufen Sie zuerst Ihren Hausarzt an.</li><li>Erzählen Sie, dass Sie Kontakt zu einer Person hatten, die Corona hat. Ihr Hausarzt oder medizinisches Personal darf Sie zu Hause besuchen.</li></ul>",
+      "medical_help_title": "Brauchen Sie medizinische Hilfe?",
+      "next_steps_body": "<ul><li>Haben Sie kürzlich Beschwerden bekommen, die zu Corona passen? Lassen Sie sich schnellstmöglich testen.</li><li>Haben Sie keine Beschwerden? Rufen Sie jetzt an und machen Sie einen Termin für einen Corona-Test 5 Tage nach {ExposureDate}. Erst ab diesem Datum ist in Ihrem Fall das Ergebnis des Corona-Tests zuverlässig.</li><li>Konnten Sie sich nicht testen lassen? Bleiben Sie 10 Tage nach {ExposureDate} zu Hause. Danach dürfen Sie wieder nach draußen, sofern Sie keine Beschwerden haben.</li><li>Haben Sie ernste Beschwerden wie hohes Fieber oder Atembeschwerden? Oder gehören Sie zu einer Risikogruppe und bekommen Fieber? Rufen Sie erst Ihren Hausarzt an.</li></ul>\n<b>Gibt der GGD Ihnen am Telefon andere Anweisungen als die App? Befolgen Sie dann die Anweisungen des GGD.</b>",
+      "next_steps_title": "Was können Sie jetzt tun?",
+      "stay_home_body": "<ul><li>Lassen Sie Ihre Einkäufe von anderen erledigen. Ist dies wirklich nicht möglich und haben Sie keine Beschwerden? Dann können Sie für kurze Zeit das Haus verlassen, um einzukaufen. Halten Sie einen Abstand von 1,5 Metern ein und berühren Sie niemanden.</li><li>Sie dürfen im Garten oder auf dem Balkon sitzen.</li><li>Schulkinder unter 18 Jahren dürfen in die Schule und/oder zum Sport.</li></ul>",
+      "stay_home_title": "Bleiben Sie bis einschließlich {StayHomeUntilDate} zu Hause.",
+      "symptoms_body": "<ul><li>Erkältungsbeschwerden wie Schnupfen, laufende Nase, Niesen, Halsschmerzen,</li><li>Husten,</li><li>Atembeschwerden,</li><li>erhöhte Temperatur oder Fieber,</li><li>plötzlicher Geruchs- und/oder Geschmacksverlust (ohne verstopfte Nase)</li></ul>",
+      "symptoms_title": "Beschwerden, die zu Corona passen",
+      "test_negative_body": "<ul><li>Sie brauchen dann nicht mehr zu Hause zu bleiben. Aber achten Sie besonders gut auf Ihre Gesundheit. Bekommen Sie Beschwerden? Bleiben Sie dann zu Hause und lassen sich sofort wieder testen.</li><li>Halten Sie 10 Tage nach {ExposureDate} Abstand zu Menschen mit schwacher Gesundheit oder erhöhtem Risiko. Meiden Sie Orte mit vielen Menschen und halten Sie 1,5 Meter Abstand. </li></ul>",
+      "test_negative_title": "Wenn der Test bei Ihnen kein Corona festgestellt hat"
+    },
+    "en": {
+      "after_stay_home_body": "No symptoms up to and including {StayHomeUntilDate}? You don't have to stay at home anymore. Do keep following the basic rules.",
+      "after_stay_home_title": "After {StayHomeUntilDate}",
+      "exposure_notification_body": "You were near someone on {ExposureDate} ({ExposureDaysAgo}) who was later found to have coronavirus. You were exposed to a higher risk of infection in this situation.\n\nIf you are indeed infected, you can infect other people with coronavirus. Even if you don't feel sick right now.",
+      "exposure_notification_title": "You've been near someone with coronavirus",
+      "medical_help_body": "<ul><li>Don't go to see your doctor or go to the hospital, but call your doctor first. Tell them you've been in contact with someone who has coronavirus.</li><li>Your doctor and other medical personnel are allowed to visit you.</li></ul>",
+      "medical_help_title": "Do you need medical help?",
+      "next_steps_body": "<ul><li>Have you recently developed symptoms related to the coronavirus? Get tested for coronavirus as soon as possible. </li><li>If you don't have any symptoms, call now to make an appointment for a coronavirus test. Schedule this test 5 days after {ExposureDate}. Only from that date on will the results of the corona test be reliable in your situation.</li><li>Weren’t able to get tested? Stay at home up to and including 10 days after {ExposureDate}. After that date you’re allowed to go outside again, if you don’t have any symptoms.</li><li>Do you have serious symptoms like high fever or difficulty breathing? Or part of a high-risk group and having a fever? Call your doctor first.</li></ul>\n<b>Does the GGD on the phone give you other advice than the app? Follow the advice given by the GGD, not the advice given by the app.</b>",
+      "next_steps_title": "What can you do now?",
+      "stay_home_body": "<ul><li>Ask someone else to get groceries. Is this impossible and are you free of symptoms? Then it's alright if you quickly go to the shop. Keep a 1.5 metre distance and don't touch anyone.</li><li>You're allowed to enjoy your own yard or balcony.</li><li>Children under the age of 18 are allowed to go to school and/or play sports.</li></ul>",
+      "stay_home_title": "Stay home up to and including {StayHomeUntilDate}",
+      "symptoms_body": "<ul><li>cold symptoms like nasal cold, runny nose, sneezing, sore throat</li><li>cough</li><li>shortness of breath</li><li>elevated temperature or fever</li><li>sudden loss of smell or taste (without nasal congestion)</li></ul>",
+      "symptoms_title": "Possible coronavirus symptoms",
+      "test_negative_body": "<ul><li>You won't have to stay at home anymore, but be extra careful about your health. Do you get symptoms? Stay at home and get tested again immediately.</li><li>Stay away from people who are part of a high-risk group or who have fragile health up to and including 10 days after {ExposureDate}. Avoid visiting busy places and keep a 1.5 metre distance.</li></ul>",
+      "test_negative_title": "If you weren't found to have coronavirus"
+    },
+    "es": {
+      "after_stay_home_body": "¿No has mostrado ningún síntoma hasta el {StayHomeUntilDate}? Entonces ya no tienes que quedarte en casa. Aun así, no te olvides de seguir respetando las medidas generales contra el coronavirus.",
+      "after_stay_home_title": "Después del {StayHomeUntilDate}",
+      "exposure_notification_body": "El {ExposureDate} ({ExposureDaysAgo}) corriste riesgo de contagio. Estuviste ese día al menos 15 minutos cerca de alguien con coronavirus.\n\nSi estás realmente contagiado, puedes transmitir el virus a otros, incluso aunque no te sientas mal ahora.",
+      "exposure_notification_title": "Has estado cerca de alguien con coronavirus",
+      "medical_help_body": "<ul><li>No vayas al médico de cabecera ni al hospital; llama primero a tu médico de cabecera. Cuéntale que has estado cerca de alguien que tiene el coronavirus.</li><li>Tu médico de cabecera u otro servicio de asistencia médica pueden venir a verte.</li></ul>",
+      "medical_help_title": "¿Necesitas asistencia médica?",
+      "next_steps_body": "<ul><li>¿Has mostrado recientemente nuevos síntomas relacionados con el coronavirus? Hazte un test lo antes posible.</li><li>¿No muestras síntomas? Llama ahora para concertar una cita para hacerte un test 5 días después del {ExposureDate}, ya que en tu caso solo después de esa fecha son los resultados fiables.</li><li>¿No has podido hacerte un test? Quédate en casa al menos 10 días después del {ExposureDate}. Si después no muestras ningún síntoma, puedes volver a salir afuera.</li><li>¿Muestras síntomas graves, como fiebre alta o problemas de respiración, o formas parte de un grupo de riesgo y tienes fiebre? Llama primero a tu médico de cabecera.</li></ul>\n<b>¿El GGD (servicio de salud municipal) te ha dado recomendaciones que difieren con las de la app? En ese caso, sigue las recomendaciones del GGD.</b>",
+      "next_steps_title": "¿Qué puedo hacer ahora?",
+      "stay_home_body": "<ul><li>Deja que te hagan la compra otras personas. ¿Realmente no puedes y no muestras síntomas? Entonces puedes salir afuera para hacer la compra. Mantén una distancia de 1,5 metros y no toques a nadie.</li><li>Puedes estar en tu jardín o balcón.</li><li>Los escolares menores de 18 años pueden ir al colegio o hacer deporte.</li></ul>",
+      "stay_home_title": "Quédate en casas hasta el {StayHomeUntilDate}",
+      "symptoms_body": "<ul><li>síntomas de resfriado como congestión nasal, moqueo, estornudos, dolor de garganta</li><li>tos</li><li>problemas respiratorios</li><li>fiebre</li><li>una pérdida súbita del olfato o el gusto (sin congestión nasal)</li></ul>",
+      "symptoms_title": "Síntomas relacionados con el coronavirus",
+      "test_negative_body": "<ul><li>Ya no tiene que quedarte en casa, pero cuida tu salud. ¿Muestras síntomas? Quédate en casa y vuelve a hacerte un test inmediatamente.</li><li> Mantente alejado de personas vulnerables y de riesgo hasta 10 días después de {ExposureDate}.</li><li>Evita lugares concurridos y mantén una distancia de 1,5 metros.</li></ul>",
+      "test_negative_title": "Si te has hecho un test y no has dado positivo en coronavirus"
+    },
+    "fr": {
+      "after_stay_home_body": "Si vous n'avez pas de symptôme jusqu'au {StayHomeUntilDate}, il n'est plus nécessaire de rester chez vous. Continuez toutefois à suivre les règles générales de lutte contre la diffusion du Covid-19.",
+      "after_stay_home_title": "Après le {StayHomeUntilDate}",
+      "exposure_notification_body": "Vous étiez, {ExposureDate} ({ExposureDaysAgo}), à proximité de quelqu'un qui, par la suite, s'est avéré avoir le Covid-19. Lors de cette situation, vous avez probablement couru un plus grand risque d’être contaminé(e). \n\nSi vous avez effectivement été contaminé(e), vous pouvez transmettre le virus aux personnes autour de vous, même si vous n'avez aucun symptôme pour l'instant.",
+      "exposure_notification_title": "Vous étiez à proximité de quelqu'un qui a le Covid-19",
+      "medical_help_body": "<ul><li>N'allez pas chez le médecin ni à l’hôpital, mais appelez d'abord votre médecin traitant. Dites-lui que vous avez été en contact avec quelqu'un qui a le Covid-19.</li><li>votre médecin ou une autre assistance médicale peut passer chez vous.</li></ul>",
+      "medical_help_title": "Besoin d'une assistance médicale ?",
+      "next_steps_body": "<ul><li>Vous avez récemment ressenti des symptômes qui correspondent à ceux du Covid-19 ? Faites dès que possible un test de dépistage.</li><li>Vous n'avez pas de (nouveaux) symptômes ? Appelez dès à présent pour fixer un rendez-vous pour faire un test de dépistage dans les 5 jours après le {ExposureDate}. Ce n'est qu'après ce délai que le résultat d'un test de dépistage pourra s'avérer suffisamment fiable.</li><li>Vous n'avez pas pu faire le test ? Restez chez vous jusqu'à 10 jours après le {ExposureDate}. Vous pouvez ensuite sortir si vous n'avez pas de symptômes.</li><li>Vous avez de graves symptômes comme de la fièvre élevée ou des difficultés à respirer ? Ou vous faites partie d'un groupe à risques et vous avez de la fièvre ? Appelez d'abord votre médecin traitant.</li></ul>\n<b>Au téléphone, le GGD vous donne d'autres conseils que ceux de l'application ? Suivez alors les conseils du GGD.</b>",
+      "next_steps_title": "Que pouvez-vous faire ?",
+      "stay_home_body": "<ul><li>Faites faire vos courses par d'autres personnes. Si ce n'est vraiment pas possible et que vous n'avez aucun symptôme, vous pouvez sortir pour faire vos courses. Veillez à maintenir une distance d'1,5 mètre et ne touchez personne.</li><li>Vous pouvez vous installer au jardin ou sur le balcon.</li><li>Les écoliers de moins de 18 ans peuvent aller à l'école et/ou faire du sport.</li></ul>",
+      "stay_home_title": "Restez chez vous jusqu'au {StayHomeUntilDate}",
+      "symptoms_body": "<ul><li>symptômes du rhume comme un nez qui coule, éternuements, mal de gorge</li><li>toux</li><li>angoisse</li><li>fièvre</li><li>perte soudaine de l'odorat et/ou du goût (sans congestion nasale)</li></ul>",
+      "symptoms_title": "Symptômes qui correspondent à ceux du Covid-19",
+      "test_negative_body": "<ul><li>Vous ne devez plus rester chez vous, mais soyez particulièrement attentif à votre état de santé. Vous avez des symptômes ? Restez alors chez vous et faites-vous retester immédiatement.</li><li>Restez jusqu'à 10 jours après le {ExposureDate} à l'écart des personnes ayant une santé fragile ou à risque élevé. Évitez de vous rendre dans les endroits très fréquentés et maintenez une distance d'1,5 mètre.</li></ul>",
+      "test_negative_title": "Si le test ne révèle pas de coronavirus chez vous"
+    },
+    "fy": {
+      "after_stay_home_body": "Hast oant en mei {StayHomeUntilDate} gjin klachten krige? Dan hoechst net mear thús te bliuwen. Hâld wol de algemiene regels tsjin koroana yn acht.",
+      "after_stay_home_title": "Nei {StayHomeUntilDate}",
+      "exposure_notification_body": "Op {ExposureDate} ({ExposureDaysAgo}) bist mooglik besmet rekke. Do wiest dy dei op syn minst 15 minuten ticht by immen mei koroana.\n\nAst yndie besmet bist, kinst it firus oan oaren trochjaan. Ek ast dy no net siik fielst.",
+      "exposure_notification_title": "Do wiest yn 'e buert fan immen mei it koroanafirus",
+      "medical_help_body": "<ul><li>Gean net nei de húsdokter of it sikehûs, mar belje earst mei dyn húsdokter. Fertel datst yn 'e buert fan immen, dy't it koroanafirus hat, west hast.</li><li>Dyn húsdokter of oare medyske help mei wol by dy lânskomme.</li></ul>",
+      "medical_help_title": "Medyske help nedich?",
+      "next_steps_body": "<ul><li>Hast koartlyn nije klachten krige dy't by it koroanafirus passe? Doch sa gau mooglik in koroanatest.</li><li>Hast gjin klachten? Belje no om in ôfspraak te meitsjen foar in koroanatest 5 dagen nei {ExposureDate}.Earst fan dy datum ôf is yn dyn situaasje de útslach fan in koroanatest betrouber.</li><li>Hast net in test dwaan kinnen? Bliuw thús oant en mei 10 dagen nei {ExposureDate}. Dêrnei meist wer nei bûten ast gjin klachten hast.</li><li>Hast earnstige klachten lykas hege koarts of muoite mei sykheljen? Of sitst yn in risikogroep en krigest koarts? Belje earst dyn húsdokter.</li></ul>\n<b>Jout de GGD dy oan de telefoan oare advizen as de app? Folgje dan it advys fan de GGD.</b>",
+      "next_steps_title": "Wat kinst no dwaan?",
+      "stay_home_body": "<ul><li>Lit oaren boadskippen dwaan. Kin dat echt net en hast gjin klachten? Dan meist wol efkes nei bûten om boadskippen te dwaan. Hâld 1,5 meter ôfstân en reitsje nimmen oan.</li><li>Do meist yn 'e tún of op it balkon sitte.</li><li>Skoalgeande bern ûnder de 18 jier meie nei skoalle en/of sporte.</li></ul>",
+      "stay_home_title": "Bliuw oant en mei {StayHomeUntilDate} thús.",
+      "symptoms_body": "<ul><li>ferkâldheidsklachten lykas noasferkâldheid, dripnoas, prûste, seare kiel</li><li>hoastje</li><li>benaudens</li><li>ferheging of koarts</li><li>ynienen gjin rook en/of smaak mear hawwe (sûnder dat de noas ferstoppe is)</li></ul>",
+      "symptoms_title": "Klachten dy't by it koroanafirus passe",
+      "test_negative_body": "<ul><li>Do hoechst dan net mear thús te bliuwen, mar hâld dyn sûnens wol ekstra goed yn 'e gaten. Krigest klachten? Bliuw dan thús en lit dy daliks op 'en nij teste.</li><li>Bliuw oant en mei 10 dagen nei {ExposureDate} út 'e buert fan minsken mei in kwetsbere sûnens of ferhege risiko. Mij drokke plakken en hâld 1,5 meter ôfstân.</li></ul>",
+      "test_negative_title": "As de test by dy gjin koroanafirus fûn hat"
+    },
+    "nl": {
+      "after_stay_home_body": "Heb je tot en met {StayHomeUntilDate} geen klachten gekregen? Dan hoef je niet meer thuis te blijven. Blijf wel de algemene regels tegen corona volgen.",
+      "after_stay_home_title": "Na {StayHomeUntilDate}",
+      "exposure_notification_body": "Op {ExposureDate} ({ExposureDaysAgo}) ben jij misschien besmet geraakt. Je was die dag minstens 15 minuten dicht bij iemand met corona.\n\nAls je inderdaad besmet bent, kun je het virus aan anderen doorgeven. Ook als je je nu niet ziek voelt.",
+      "exposure_notification_title": "Je was in de buurt van iemand met het coronavirus",
+      "medical_help_body": "<ul><li>Ga niet naar de huisarts of het ziekenhuis, maar bel eerst met je huisarts. Vertel dat je in de buurt was van iemand die het coronavirus heeft.</li><li>Je huisarts of andere medische hulp mag wel bij je langskomen.</li></ul>",
+      "medical_help_title": "Medische hulp nodig?",
+      "next_steps_body": "<ul><li>Heb je kort geleden klachten gekregen die passen bij het coronavirus? Doe zo snel mogelijk een coronatest.</li><li>Heb je geen klachten? Bel nu om een afspraak te maken voor een coronatest 5 dagen na {ExposureDate}. Pas vanaf die datum is in jouw situatie de uitslag van een coronatest betrouwbaar.</li><li>Heb je geen test kunnen doen? Blijf thuis tot en met 10 dagen na {ExposureDate}. Daarna mag je weer naar buiten als je geen klachten hebt.</li><li>Heb je ernstige klachten zoals hoge koorts of moeite met ademhalen? Of zit je in een risicogroep en krijg je koorts? Bel eerst je huisarts.</li></ul>\n<b>Geeft de GGD je aan de telefoon andere adviezen dan de app? Volg dan het advies van de GGD.</b>",
+      "next_steps_title": "Wat kun je nu doen?",
+      "stay_home_body": "<ul><li>Laat anderen boodschappen doen. Kan dit echt niet en heb je geen klachten? Dan mag je wel even naar buiten om boodschappen te doen. Houd 1,5 meter afstand en raak niemand aan.</li><li>Je mag in de tuin of op het balkon zitten.</li><li>Schoolgaande kinderen onder de 18 jaar mogen naar school en/of sporten.</li></ul>",
+      "stay_home_title": "Blijf tot en met {StayHomeUntilDate} thuis",
+      "symptoms_body": "<ul><li>verkoudheidsklachten zoals neusverkoudheid, loopneus, niezen, keelpijn</li><li>hoesten</li><li>benauwdheid</li><li>verhoging of koorts</li><li>plotseling verlies van reuk en/of smaak (zonder neusverstopping)</li></ul>",
+      "symptoms_title": "Klachten die passen bij het coronavirus",
+      "test_negative_body": "<ul><li>Je hoeft dan niet meer thuis te blijven, maar let wel extra goed op je gezondheid. Krijg je klachten? Blijf dan thuis en laat je meteen opnieuw testen.</li><li>Blijf tot en met 10 dagen na {ExposureDate} uit de buurt van mensen met een kwetsbare gezondheid of verhoogd risico. Vermijd drukke plekken en houd 1,5 meter afstand. </li></ul>",
+      "test_negative_title": "Als de test bij jou geen coronavirus heeft gevonden"
+    },
+    "pl": {
+      "after_stay_home_body": "Do {StayHomeUntilDate} włącznie nie pojawiły się żadne dolegliwości? A więc nie musisz dłużej pozostawać w domu. Jednak trzymaj się ogólnych zasad zapobiegających koronawirusowi.",
+      "after_stay_home_title": "Po {StayHomeUntilDate}",
+      "exposure_notification_body": "{ExposureDate} ({ExposureDaysAgo}) mogłeś zostać zarażony. Tego dnia znajdowałeś się przez co najmniej 15 minut w pobliżu osoby zakażonej koronawirusem.\n\nJeśli rzeczywiście jesteś zarażony, możesz przekazywać wirusa innym. Nawet jeśli teraz nie czujesz się chory.",
+      "exposure_notification_title": "Znajdowałeś się w pobliżu osoby z koronawirusem",
+      "medical_help_body": "<ul><li>W pierwszej kolejności zadzwoń do swojego lekarza rodzinnego zamiast iść do przychodni lub szpitala. Poinformuj lekarza o kontakcie z osobą zarażoną koronawirusem.</li><li>Twój lekarz rodzinny lub inna pomoc medyczna może przyjść do Ciebie.</li></ul>",
+      "medical_help_title": "Potrzebujesz pomocy medycznej?",
+      "next_steps_body": "<ul><li>Niedawno pojawiły się nowe dolegliwości typowe dla koronawirusa? Jak najszybciej wykonaj test na jego obecność.</li><li>Nie masz żadnych dolegliwości? Zadzwoń teraz, aby umówić się na wykonanie testu na obecność koronawirusa 5 dni po {ExposureDate}. W tej sytuacji dopiero wtedy uzyskany wynik testu jest wiarygodny.</li><li>Nie mogłeś wykonać testu? Pozostań w domu przez 10 dni od {ExposureDate}. Po tym okresie możesz ponownie wyjść na zewnątrz, jeśli nie masz żadnych dolegliwości.</li><li>Masz poważne dolegliwości tj. wysoką gorączkę lub trudności z oddychaniem? Albo znajdujesz się w grupie wysokiego ryzyka i masz gorączkę? W pierwszej kolejności zadzwoń do swojego lekarza rodzinnego.</li></ul>\n<b>GGD w rozmowie telefonicznej podaje inne zalecenia niż aplikacja? Postępuj zgodnie z zaleceniami GGD.</b>",
+      "next_steps_title": "Co możesz teraz zrobić?",
+      "stay_home_body": "<ul><li>Niech inni zrobią za Ciebie zakupy. Naprawdę nikt nie może tego zrobić, a Ty nie masz żadnych dolegliwości? W takim razie możesz wyjść, aby zrobić zakupy. Zachowuj 1,5 metra odległości i nikogo nie dotykaj.</li><li>Możesz przebywać w ogrodzie lub siedzieć na balkonie.</li><li>Dzieci w wieku szkolnym poniżej 18 roku życia mogą chodzić do szkoły lub uprawiać sport.</li></ul>",
+      "stay_home_title": "Pozostań w domu do {StayHomeUntilDate} włącznie",
+      "symptoms_body": "<ul><li>objawy przeziębienia takie jak nieżyt nosa, katar, kichanie, ból gardła</li><li>kaszel</li><li>duszności</li><li>podwyższona temperatura ciała</li><li>nagła utrata zmysłu zapachu lub smaku (bez przekrwienia nosa)</li></ul>",
+      "symptoms_title": "Dolegliwości typowe dla koronawirusa",
+      "test_negative_body": "<ul><li>Nie musisz pozostawać w domu, jednak zwracaj szczególną uwagę na swoje zdrowie. Masz dolegliwości? Pozostań w domu i natychmiast ponownie wykonaj test na obecność koronawirusa.</li><li>Przez 10 dni od {ExposureDate} nie zbliżaj się do osób z problemami zdrowotnymi i znajdujących się w grupie o podwyższonym ryzyku. Unikaj zatłoczonych miejsc i zachowuj 1,5 metra odległości.</li></ul>",
+      "test_negative_title": "Jeśli Twój test na obecność koronawirusa dał wynik negatywny"
+    },
+    "ro": {
+      "after_stay_home_body": "Nu ați avut până la data de {StayHomeUntilDate} (inclusiv) niciun simptom? Atunci nu trebuie să mai rămâneți în casă. Respectați în continuare regulile generale împotriva coronavirusului.",
+      "after_stay_home_title": "După {StayHomeUntilDate}",
+      "exposure_notification_body": "Este posibil ca pe {ExposureDate} ({ExposureDaysAgo}) să fi fost infectat. In acea zi ați fost timp de minimum 15 minute în apropierea cuiva infectat cu coronavirus.\n\nDacă sunteți într-adevăr infectat, puteți transmite virusul altora. Chiar dacă acum nu vă simțiți rău.",
+      "exposure_notification_title": "Ați fost aproape de cineva infectat cu coronavirus",
+      "medical_help_body": "<ul><li>Nu mergeți la medicul de familie sau la spital, sunați mai întâi medicul de familie. Spuneți-i că ați fost în apropierea cuiva infectat cu coronavirus.</li><li>Medicul de familie sau alte persoane care acordă asistență medicală au voie să vă viziteze.</li></ul>",
+      "medical_help_title": "Aveți nevoie de asistență medicală?",
+      "next_steps_body": "<ul><li>Prezentați de curând simptome noi care pot fi asociate cu coronavirus? Faceți cât de repede posibil un test pentru depistarea coronavirusului. </li><li>Nu aveți simptome? Sunați acum pentru programarea testului la 5 zile de la data {ExposureDate}. În situația dvs., doar după acea dată rezultatul testului pentru coronavirus este sigur.</li><li> Nu ați putut face un test? Rămâneți acasă timp de 10 zile de la data de {ExposureDate}. După această dată, dacă nu prezentați simptome, puteți ieși din casă. </li><li>Aveți simptome grave cum ar fi febră ridicată sau respirație greoaie?  Sau faceți parte dintr-un grup de risc și aveți febră? Sunați întâi medicul de familie.</li></ul>\n<b>Primiți de la GGD (Serviciul de Sănătate Municipal),  în timpul convorbirii telefonice, alte recomandări decât cele din aplicație?  Atunci trebuie să urmați recomandările GGD-ului.</b>",
+      "next_steps_title": "Ce puteți face acum?",
+      "stay_home_body": "<ul><li>Lăsați-i pe alții să facă cumpărături. Nu este posibil acest lucru și nu aveți simptome? Atunci puteți ieși din casă pentru a face cumpărături. Păstrați distanța de 1,5 metri și nu atingeți alte persoane.</li><li>Puteți sta în grădină sau pe balcon.</li><li>Elevii sub 18 ani au voie să meargă la școală și/sau să facă sport.</li></ul>",
+      "stay_home_title": "Rămâneți acasă până la data de  {StayHomeUntilDate} (inclusiv)",
+      "symptoms_body": "<ul><li>simptome de răceală cum ar fi rinită, curgerea nasului, strănut, dureri în gât</li><li>tuse</li><li>senzație de sufocare</li><li>temperatură</li><li>dispariția bruscă a simțului mirosului și /sau gustului (fără a avea nasul înfundat)</li></ul>",
+      "symptoms_title": "Simptome are pot fi asociate coronavirusului",
+      "test_negative_body": "<ul><li>Nu mai este necesar să rămâneți în casă, dar fiți încă atent la starea sănătății dvs. Apar simptome? Rămâneți acasă și retestați-vă imediat. </li><li>Timp de 10 zile după data de {ExposureDate} evitați contactul cu persoane cu o sănătate vulnerabilă sau cu un risc ridicat de îmbolnăvire. Evitați locurile aglomerate și păstrați 1,5 metri distanță. </li></ul>",
+      "test_negative_title": "Dacă în urma testului rezultă că nu aveți coronavirus"
+    },
+    "tr": {
+      "after_stay_home_body": "{StayHomeUntilDate} tarihine kadar sizde şikayetler oluşmadı mı? Öyleyse artık evinizde kalmak zorunda değilsiniz. Korona'dan korunmak için genel önlemleri almaya devam edin.",
+      "after_stay_home_title": "{StayHomeUntilDate} tarihinden sonra",
+      "exposure_notification_body": "{ExposureDate} ({ExposureDaysAgo}) tarihinde enfekte olmuş olabilirsiniz. O gün Korona olan birinin en az 15 dakika yakınında bulundunuz.  \n\nGerçekten enfekte olursanız, virüsü başkalarına bulaştırabilirsiniz. Şimdilik kendinizi hasta hissetmeseniz bile.",
+      "exposure_notification_title": "Koronavirüs olan birisinin yakınında bulundunuz",
+      "medical_help_body": "<ul><li>Doktora veya hastaneye gitmeyin, önce doktorunuzu arayın. Korona virüsü olan birinin yakınında bulunmuş olduğunuzu söyleyin. </li><li>Doktorunuz veya diğer tıbbi yardımcı sizi ziyaret edebilir.</li></ul>",
+      "medical_help_title": "Tıbbi yardıma mı ihtiyacınız var?",
+      "next_steps_body": "<ul><li>Sizde kısa süre önce Korona virüsüne uyan yeni şikayetler mi oluştu? O zaman en kısa süre içınde Korona testi yaptırın.</li><li>Şikayetleriniz yok mu? {ExposureDate} tarihinden 5 gün sonra Korona testi yaptırmak üzere randevu için hemen arayın. Sizin durumunuzda ancak bu tarihten itibaren Korona testinin sonucu güvenilir olacaktır.</li><li>Test yaptıramadınız mı? {ExposureDate} tarihinden itibaren 10 gün boyunca evde kalın. Sonrasında hiç şikayetiniz yoksa tekrar dışarı çıkabilirsiniz.</li><li>Yüksek ateş veya nefes almakta güçlük çekme gibi ciddi şikayetleriniz mi var? Veya risk grubuna dahilsiniz ve ateşiniz mi var? Önce ev doktorunuzu arayın.</li></ul>\n<b></b>GGD size telefonda uygulamaya kıyasla farklı tavsiyeler mi veriyor? O durumda GGD'nin tavsiyelerine uyun.</b>",
+      "next_steps_title": "Şimdi ne yapabilirsiniz?",
+      "stay_home_body": "<ul><li>Alışverişlerinizi başkalarına yaptırın. Bu gerçekten mümkün değil mi ve hiç şikayetiniz yok mu? O zaman alışveriş yapmak için dışarı çıkabilirsiniz. 1,5 metre mesafe koruyun ve kimseye dokunmayın.</li><li>Bahçede veya balkonda oturabilirsiniz.</li><li> 18 yaşın altında olan okul çağındaki çocuklar okula gidebilirler ve / veya spor yapabilirler.</li></ul>",
+      "stay_home_title": "{StayHomeUntilDate} tarihine kadar evinizde kalın",
+      "symptoms_body": "<ul><li>burun nezlesi, burun akıntısı, hapşırma, boğaz ağrısı gibi soğuk algınlığı semptomları</li><li>öksürme</li><li>göğüste daralma</li><li>vücut ısısınin yükselmesi veya ateş </li><li> ani koku ve / veya tat alma (burun tıkanıklığı olmadan) kaybı</li></ul>",
+      "symptoms_title": "Korona virüsü ile ilgili şikayetler",
+      "test_negative_body": "<ul><li>Artık evde kalmak zorunda değilsiniz, ancak sağlığınıza daha fazla dikkat edin. Şikayetleriniz mi oluştu? O halde evde kalın ve hemen tekrar test yaptırın.</li><li> {ExposureDate} tarihinden sonra 10 güne kadar, sağlığı zayıf veya risk altında olan kişilerden uzak durun. Kalabalık yerlerden kaçının ve 1,5 metre mesafe uygulayın.</li></ul>",
+      "test_negative_title": "Test sizde Korona virüsü bulamadıysa"
+    }
+  }
+}

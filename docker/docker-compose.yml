@@ -1,5 +1,12 @@
 version: '3.9'
 services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - "1433:1433"    
+    environment:
+      SA_PASSWORD: "mss-nl-covid-19-dev"
+      ACCEPT_EULA: "Y"
   tools:
     build:
       context: ..
@@ -45,10 +52,4 @@ services:
       - 'db:database'
     depends_on:
       - 'tools'
-  db:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    ports:
-      - "1433:1433"    
-    environment:
-      SA_PASSWORD: "mss-nl-covid-19-dev"
-      ACCEPT_EULA: "Y"
+ 

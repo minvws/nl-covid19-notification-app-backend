@@ -16,16 +16,14 @@ namespace DbProvision
         private readonly ContentDbContext _ContentDbContext;
 
         private readonly ContentInsertDbCommand _InsertDbCommand;
-        private readonly Func<ContentInsertDbCommand> _InsertDbCommandV3;
 
-        public ContentPublisher(PublishContentLoggingExtensions logger, IUtcDateTimeProvider dateTimeProvider, ContentValidator validator, ContentDbContext contentDbContext, ContentInsertDbCommand insertDbCommand, Func<ContentInsertDbCommand> insertDbCommandV3)
+        public ContentPublisher(PublishContentLoggingExtensions logger, IUtcDateTimeProvider dateTimeProvider, ContentValidator validator, ContentDbContext contentDbContext, ContentInsertDbCommand insertDbCommand)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _Validator = validator ?? throw new ArgumentNullException(nameof(validator));
             _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _InsertDbCommand = insertDbCommand ?? throw new ArgumentNullException(nameof(insertDbCommand));
-            _InsertDbCommandV3 = insertDbCommandV3 ?? throw new ArgumentNullException(nameof(insertDbCommandV3));
         }
 
         public async Task ExecuteAsync(string[] args)
@@ -47,19 +45,9 @@ namespace DbProvision
 
             _Logger.WriteStartWriting(contentArgs.ContentType);
 
-            if (contentArgs.ContentType == ContentTypes.ResourceBundleV3) //needs direct signing with ev-cert
-            {
-                _ContentDbContext.BeginTransaction();
-                await _InsertDbCommandV3().ExecuteAsync(contentArgs);
-                _ContentDbContext.SaveAndCommit();
-            }
-            else
-            {
-                _ContentDbContext.BeginTransaction();
-                await _InsertDbCommand.ExecuteAsync(contentArgs);
-                _ContentDbContext.SaveAndCommit();
-
-            }
+            _ContentDbContext.BeginTransaction();
+            await _InsertDbCommand.ExecuteAsync(contentArgs);
+            _ContentDbContext.SaveAndCommit();
 
             _Logger.WriteFinishedWriting(contentArgs.ContentType);
         }
