@@ -27,16 +27,16 @@ jobs:
           performMultiLevelLookup: true
       - task: NuGetToolInstaller@1
 
-      # Restore 
-      - task: NuGetCommand@2
-        inputs:
-          restoreSolution: '$(solution)'
-
       # Remove PostBuildEvents
       - task: CmdLine@2
         inputs:
           script: 'find . -name \*.csproj -exec sed -i "/<Exec Command="xcopy.*>/d" {} \;' 
           
+      # Restore 
+      - task: NuGetCommand@2
+        inputs:
+          restoreSolution: '$(solution)'
+      
       # Build 
       - task: DotNetCoreCLI@2
         displayName: Run dotnet build --configuration $(buildConfiguration)
