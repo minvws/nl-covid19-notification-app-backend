@@ -18,13 +18,7 @@ jobs:
   - job: Test
     workspace:
       clean: all # what to clean up before the job runs - outputs | resources | all
-    steps:
-      - task: SonarCloudPrepare@1
-        displayName: 'Prepare analysis on SonarCloud'
-        inputs:
-           SonarCloud: 'CIBG SonarCloud'        # naam van de Service Connection in devops naar SonarCloud
-           organization: 'cibg' 
-           scannerMode: 'MSBuild'
+    steps:     
       # Install .Net Core Version
       - task: UseDotNet@2
         displayName: 'Install .NET Core SDK'
