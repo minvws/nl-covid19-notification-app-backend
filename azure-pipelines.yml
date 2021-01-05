@@ -11,52 +11,66 @@ pool:
 
 variables:
   solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-jobs:
-  - job: Test
-    workspace:
-      clean: all # what to clean up before the job runs - outputs | resources | all
-    steps:     
-      # Install .Net Core Version
-      - task: UseDotNet@2
-        displayName: 'Install .NET Core SDK'
-        inputs:
-          version: 3.1.x
-          performMultiLevelLookup: true
-      - task: NuGetToolInstaller@1
+stages:
+- stage: Test
+  jobs:
+    - job: Test
+      workspace:
+        clean: all # what to clean up before the job runs - outputs | resources | all
+      steps:     
+        # Install .Net Core Version
+        - task: UseDotNet@2
+          displayName: 'Install .NET Core SDK'
+          inputs:
+            version: 3.1.x
+            performMultiLevelLookup: true
 
-      # Remove PostBuildEvents
-      - task: CmdLine@2
-        inputs:
-          script: find . -name \*.csproj -exec sed -i '/<Exec Command="xcopy.*>/d' {} \;
-          
-      # Restore 
-      - task: NuGetCommand@2
-        inputs:
-          restoreSolution: '$(solution)'
-      
-      # Build 
-      - task: DotNetCoreCLI@2
-        displayName: Run dotnet build --configuration $(buildConfiguration)
-        inputs:
-          command: "build"
-          projects: "**/*.csproj"
-          arguments: '--configuration $(buildConfiguration)' # Update this to match your need
+        # Remove PostBuildEvents
+        - task: CmdLine@2
+          inputs:
+            script: find . -name \*.csproj -exec sed -i '/<Exec Command="xcopy.*>/d' {} \;
+            
+        # Restore 
+        - task: NuGetToolInstaller@1
+        - task: NuGetCommand@2
+          inputs:
+            restoreSolution: '$(solution)'
+        
+        # Build 
+        - task: DotNetCoreCLI@2
+          displayName: Run dotnet build --configuration $(buildConfiguration)
+          inputs:
+            command: "build"
+            projects: "**/*.csproj"
+            arguments: '--configuration $(buildConfiguration)'
 
-      # Run Unit Tests
-      - task: DotNetCoreCLI@2
-        displayName: Run dotnet test
-        inputs:
-          command: "test"
-          projects: "**/*.Tests.csproj"
-          arguments: "--logger trx"     
+        # Run Unit Tests
+        - task: DotNetCoreCLI@2
+          displayName: Run dotnet test
+          inputs:
+            command: "test"
+            projects: "**/*.Tests.csproj"
+            arguments: "--logger trx"     
 
-      # Run Sonar Code Analysis
-      - task: SonarCloudAnalyze@1
+        # Run Sonar Code Analysis
+        - task: SonarCloudAnalyze@1
 
-      # Publish Sonar Analysis op sonarcloud.io
-      - task: SonarCloudPublish@1
-        inputs:
-          pollingTimeoutSec: '600'
+        # Publish Sonar Analysis op sonarcloud.io
+        - task: SonarCloudPublish@1
+          inputs:
+            pollingTimeoutSec: '600'
+
+- stage: Build
+  dependsOn: Test
+  displayName: Build and push stage
+  jobs:  
+    - job: Build
+      displayName: Build
+      steps:
+       - task: PublishBuildArtifacts@1
+         inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
+          ArtifactName: 'BackendAppTest'
+          publishLocation: 'Container'
