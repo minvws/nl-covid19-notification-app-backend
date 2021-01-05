@@ -9,11 +9,55 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line scripts'
+jobs:
+  - job: Test
+    workspace:
+      clean: all # what to clean up before the job runs - outputs | resources | all
+    steps:
+      - task: SonarCloudPrepare@1
+        displayName: 'Prepare analysis on SonarCloud'
+        inputs:
+           SonarCloud: 'CIBG SonarCloud'        # naam van de Service Connection in devops naar SonarCloud
+           organization: 'cibg' 
+           scannerMode: 'MSBuild'
+      # Install .Net Core Version
+      - task: UseDotNet@2
+        displayName: 'Install .NET Core SDK'
+        inputs:
+          version: 3.1.x
+          performMultiLevelLookup: true
+      - task: NuGetToolInstaller@1
+
+      # Restore 
+      - task: NuGetCommand@2
+        inputs:
+          restoreSolution: '$(solution)'
+
+      # Build 
+      - task: DotNetCoreCLI@2
+        displayName: Run dotnet build --configuration $(buildConfiguration)
+        inputs:
+          command: "build"
+          projects: "**/*.csproj"
+          arguments: '--configuration $(buildConfiguration)' # Update this to match your need
+
+      # Run Unit Tests
+      - task: DotNetCoreCLI@2
+        displayName: Run dotnet test
+        inputs:
+          command: "test"
+          projects: "**/*.Tests.csproj"
+          arguments: "--logger trx"     
+
+      # Run Sonar Code Analysis
+      - task: SonarCloudAnalyze@1
+
+      # Publish Sonar Analysis op sonarcloud.io
+      - task: SonarCloudPublish@1
+        inputs:
+          pollingTimeoutSec: '600'
