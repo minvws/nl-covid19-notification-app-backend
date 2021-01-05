@@ -30,7 +30,7 @@ jobs:
       # Remove PostBuildEvents
       - task: CmdLine@2
         inputs:
-          script: 'find . -name \*.csproj -exec sed -i "/<Exec Command="xcopy.*>/d" {} \;' 
+          script: find . -name \*.csproj -exec sed -i '/<Exec Command="xcopy.*>/d' {} \;
           
       # Restore 
       - task: NuGetCommand@2
