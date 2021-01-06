@@ -58,9 +58,9 @@ stages:
         - task: DotNetCoreCLI@2
           displayName: Run unittests
           inputs:
-            command: "test"            
+            command: "test"
             projects: "**/*.Tests.csproj"
-            arguments: "--filter Traits!~ss --logger trx"     
+            arguments: "--filter Traits\!~ss --logger trx"
 
         # Run Sonar Code Analysis
         - task: SonarCloudAnalyze@1
