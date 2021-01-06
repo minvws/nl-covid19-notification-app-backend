@@ -20,8 +20,13 @@ variables:
   solution: '**/*.sln'
   buildConfiguration: 'Release'
   runtime: 'win-x64'
+  Content.WebApi.ProjectsToBuildAndPublish: "src/Content.WebApi/**/*.csproj"
+  ProjectsToTest: "**/*.Tests.csproj"
 
 stages:
+# test, sonar
+- template: /build/pipelines/stages/test-stage.yaml
+
 # Publish build and push content.webapi stage
 - template: /build/pipelines/stages/publish-contentwebapi-artifact-stage.yaml
 

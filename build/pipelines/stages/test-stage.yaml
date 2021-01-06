@@ -17,14 +17,7 @@ stages:
           displayName: 'Remove PostBuildEvents from .csproj files'
           inputs:
             script: find . -name \*.csproj -exec sed -i '/<Exec Command="xcopy.*>/d' {} \;
-            
-        # Restore 
-        - task: NuGetToolInstaller@1
-          displayName: 'Install NuGet Tool'
-        - task: NuGetCommand@2
-          inputs:
-            restoreSolution: '$(solution)'
-
+       
         # Prepare analysis on SonarCloud
         #- task: SonarCloudPrepare@1
         #  displayName: 'Prepare analysis on SonarCloud'
@@ -35,13 +28,12 @@ stages:
         #    projectKey: ''
         #    projectName: ''
         
-        # Build 
-        - task: DotNetCoreCLI@2
-          displayName: Run dotnet build $(buildConfiguration) 
+        # Restore 
+        - task: NuGetToolInstaller@1
+          displayName: 'Install NuGet Tool'
+        - task: NuGetCommand@2
           inputs:
-            command: "build"
-            projects: $(ProjectsToBuildAndPublish)
-            arguments: '--configuration $(buildConfiguration) --runtime $(runtime)'
+            restoreSolution: '$(solution)'
 
         # Run Unit Tests
         - task: DotNetCoreCLI@2
