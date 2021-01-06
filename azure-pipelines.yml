@@ -22,66 +22,8 @@ variables:
   runtime: 'win-x64'
 
 stages:
-- stage: Test
-  jobs:
-    - job: Test
-      workspace:
-        clean: all # what to clean up before the job runs - outputs | resources | all
-      steps:     
-        # Install .Net Core LTS Version
-        - task: UseDotNet@2
-          displayName: 'Install .NET Core SDK'
-          inputs:
-            version: 3.1.x
-            performMultiLevelLookup: true
-
-        # Remove PostBuildEvents
-        - task: CmdLine@2
-          displayName: 'Remove PostBuildEvents from .csproj files'
-          inputs:
-            script: find . -name \*.csproj -exec sed -i '/<Exec Command="xcopy.*>/d' {} \;
-            
-        # Restore 
-        - task: NuGetToolInstaller@1
-          displayName: 'Install NuGet Tool'
-        - task: NuGetCommand@2
-          inputs:
-            restoreSolution: '$(solution)'
-
-        # Prepare analysis on SonarCloud
-        #- task: SonarCloudPrepare@1
-        #  displayName: 'Prepare analysis on SonarCloud'
-        #  inputs:
-        #    SonarCloud: 'CIBG SonarCloud'        # Name of the Service Connection in devops for SonarCloud
-        #    organization: 'cibg' 
-        #    scannerMode: 'MSBuild'
-        #    projectKey: ''
-        #    projectName: ''
-        
-        # Build 
-        - task: DotNetCoreCLI@2
-          displayName: Run dotnet build $(buildConfiguration) 
-          inputs:
-            command: "build"
-            projects: "**/*.csproj"
-            arguments: '--configuration $(buildConfiguration) --runtime $(runtime)'
-
-        # Run Unit Tests
-        - task: DotNetCoreCLI@2
-          displayName: Run unittests
-          inputs:
-            command: "test"
-            projects: "**/*.Tests.csproj"
-            arguments: '--filter db!=ss --logger trx'
-
-        # Run Sonar Code Analysis
-        - task: SonarCloudAnalyze@1
-          displayName: 'Run Sonar Code Analysis'
-
-        # Publish Sonar Analysis op sonarcloud.io
-        - task: SonarCloudPublish@1
-          inputs:
-            pollingTimeoutSec: '600'
+# test, sonar
+- template: /build/pipelines/stages/teststage.yaml
 
 - stage: Build
   dependsOn: Test
