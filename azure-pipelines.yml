@@ -4,8 +4,15 @@
 # https://aka.ms/yaml
 
 trigger:
-- main
-
+  # batch = true so not every commit triggers the build
+  batch: true 
+  branches:
+    include:
+    - master
+  paths:
+    # include all paths as trigger for changes
+    include:
+    - .
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -48,7 +55,7 @@ stages:
 
         # Run Unit Tests
         - task: DotNetCoreCLI@2
-          displayName: Run dotnet test
+          displayName: Run dotnet test --filter  Category!=ss
           inputs:
             command: "test"
             projects: "**/*.Tests.csproj"
