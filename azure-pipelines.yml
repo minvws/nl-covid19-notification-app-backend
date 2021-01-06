@@ -27,3 +27,6 @@ stages:
 # test, sonar
 - template: /build/pipelines/stages/test-stage.yaml
 
+# Publish build and push content.webapi stage
+- template: /build/pipelines/stages/publish-contentwebapi-artifact-stage.yaml
+
