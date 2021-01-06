@@ -21,7 +21,7 @@ variables:
   buildConfiguration: 'Release'
   runtime: 'win-x64'
   Content.WebApi.ProjectsToBuildAndPublish: "src/Content.WebApi/**/*.csproj"
-  ProjectsToTest: "**/*.Tests.csproj"
+  ProjectsToTest: "src/Content.Commands.Tests/**/*.Tests.csproj"
 
 stages:
 # test, sonar
