@@ -95,5 +95,6 @@ stages:
         - task: PublishBuildArtifacts@1
           inputs:
             PathtoPublish: '$(Build.ArtifactStagingDirectory)/Artifacts'
-            ArtifactName: 'BackendAppTest\ContentApi'
+            ArtifactName: 'drop2'
+            publishLocation: 'Container'
 
