@@ -19,6 +19,7 @@ pool:
 variables:
   solution: '**/*.sln'
   buildConfiguration: 'Release'
+  runtime: 'win-x64'
 
 stages:
 - stage: Test
@@ -48,11 +49,11 @@ stages:
         
         # Build 
         - task: DotNetCoreCLI@2
-          displayName: Run dotnet build --configuration $(buildConfiguration)
+          displayName: Run dotnet build $(buildConfiguration) 
           inputs:
             command: "build"
             projects: "**/*.csproj"
-            arguments: '--configuration $(buildConfiguration)'
+            arguments: '--configuration $(buildConfiguration) --runtime $(runtime)'
 
         # Run Unit Tests
         - task: DotNetCoreCLI@2
