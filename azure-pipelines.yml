@@ -94,7 +94,7 @@ stages:
           arguments: '--configuration $(buildConfiguration) --runtime $(runtime)'
       - task: PublishBuildArtifacts@1
         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
           ArtifactName: 'BackendAppTest\ContentApi'
           publishLocation: 'Container'
 
