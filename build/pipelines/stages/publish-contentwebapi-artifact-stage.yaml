@@ -1,0 +1,20 @@
+variables:
+  # vars tbv .Net builden, testen, sonar stage
+  ProjectsToBuildAndPublish: "src/Content.WebApi/**/*.csproj"
+  ProjectsToTest: "src/Content.Commands.Tests/**/*.Tests.csproj"
+
+  # test, sonar
+- template: /build/pipelines/stages/test-stage.yaml
+
+- stage: Build
+  dependsOn: Test
+  displayName: 'Publish build and push content.webapi stage'
+  jobs:  
+    - job: Build
+      displayName: Publish Build Artifacts
+      steps:
+       - task: PublishBuildArtifacts@1
+         inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
+          ArtifactName: 'BackendAppTest\ContentApi'
+          publishLocation: 'Container'

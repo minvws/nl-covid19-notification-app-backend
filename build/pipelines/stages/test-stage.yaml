@@ -40,7 +40,7 @@ stages:
           displayName: Run dotnet build $(buildConfiguration) 
           inputs:
             command: "build"
-            projects: "**/*.csproj"
+            projects: $(ProjectsToBuildAndPublish)
             arguments: '--configuration $(buildConfiguration) --runtime $(runtime)'
 
         # Run Unit Tests
@@ -48,7 +48,7 @@ stages:
           displayName: Run unittests
           inputs:
             command: "test"
-            projects: "**/*.Tests.csproj"
+            projects: $(ProjectsToTest)
             arguments: '--filter db!=ss --logger trx'
 
         # Run Sonar Code Analysis
