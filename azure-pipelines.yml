@@ -5,7 +5,7 @@
 
 trigger:
   # batch = true so not every commit triggers the build
-  batch: true 
+  batch: 'true'
   branches:
     include:
     - master
@@ -22,18 +22,6 @@ variables:
   runtime: 'win-x64'
 
 stages:
-# test, sonar
-- template: /build/pipelines/stages/teststage.yaml
+# Publish build and push content.webapi stage
+- template: /build/pipelines/stages/publish-contentwebapi-artifact-stage.yaml
 
-- stage: Build
-  dependsOn: Test
-  displayName: Build and push stage
-  jobs:  
-    - job: Build
-      displayName: Build
-      steps:
-       - task: PublishBuildArtifacts@1
-         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
-          ArtifactName: 'BackendAppTest'
-          publishLocation: 'Container'
