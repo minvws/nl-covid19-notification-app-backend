@@ -28,5 +28,23 @@ stages:
 - template: /build/pipelines/stages/test-stage.yaml
 
 # Publish build and push content.webapi stage
-- template: /build/pipelines/stages/publish-contentwebapi-artifact-stage.yaml
+- stage: Build
+  dependsOn: Test
+  displayName: 'Publish build and push content.webapi stage'
+  jobs:  
+    - job: Build
+      displayName: Publish Build Artifacts
+      steps:
+      # Build 
+        - task: DotNetCoreCLI@2
+          displayName: Run dotnet build $(buildConfiguration) 
+          inputs:
+            command: "build"
+            projects: $(Content.WebApi.ProjectsToBuildAndPublish)
+            arguments: '--configuration $(buildConfiguration) --runtime $(runtime)'
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
+            ArtifactName: 'BackendAppTest\ContentApi'
+            publishLocation: 'Container'
 
