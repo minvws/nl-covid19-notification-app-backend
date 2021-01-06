@@ -86,16 +86,14 @@ stages:
     - job: Build
       displayName: Publish Build Artifacts
       steps:
-      - task: DotNetCoreCLI@2
-        displayName: Run dotnet build $(buildConfiguration) 
-        inputs:
-          command: "build"
-          projects: $(Content.WebApi.ProjectsToBuildAndPublish)
-          arguments: '--configuration $(buildConfiguration) --runtime $(runtime)'
-          outputDir: '$(Build.ArtifactStagingDirectory)/TestDir'
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)/TestDir'
-          ArtifactName: 'BackendAppTest\ContentApi'
-          publishLocation: 'Container'
+        - task: DotNetCoreCLI@2
+          displayName: 'dotnet publish'
+          inputs:
+            command: 'publish'
+            projects: $(Content.WebApi.ProjectsToBuildAndPublish)
+            arguments: '-o $(Build.ArtifactStagingDirectory)/Artifacts --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)/Artifacts'
+            ArtifactName: 'BackendAppTest\ContentApi'
 
