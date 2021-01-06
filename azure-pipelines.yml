@@ -92,6 +92,7 @@ stages:
             command: 'publish'
             projects: $(Content.WebApi.ProjectsToBuildAndPublish)
             arguments: '-o $(Build.ArtifactStagingDirectory)/ContentApi.WebApi --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
+            zipAfterPublish: false
         - task: PublishBuildArtifacts@1
           inputs:
             PathtoPublish: '$(Build.ArtifactStagingDirectory)/ContentApi.WebApi'
