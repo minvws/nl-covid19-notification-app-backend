@@ -28,7 +28,7 @@ stages:
       workspace:
         clean: all # what to clean up before the job runs - outputs | resources | all
       steps:     
-        # Install .Net Core Version
+        # Install .Net Core LTS Version
         - task: UseDotNet@2
           displayName: 'Install .NET Core SDK'
           inputs:
@@ -37,6 +37,7 @@ stages:
 
         # Remove PostBuildEvents
         - task: CmdLine@2
+          displayName: 'Remove PostBuildEvents from .csproj files'
           inputs:
             script: find . -name \*.csproj -exec sed -i '/<Exec Command="xcopy.*>/d' {} \;
             
@@ -46,6 +47,16 @@ stages:
         - task: NuGetCommand@2
           inputs:
             restoreSolution: '$(solution)'
+
+        # Prepare analysis on SonarCloud
+        #- task: SonarCloudPrepare@1
+        #  displayName: 'Prepare analysis on SonarCloud'
+        #  inputs:
+        #    SonarCloud: 'CIBG SonarCloud'        # Name of the Service Connection in devops for SonarCloud
+        #    organization: 'cibg' 
+        #    scannerMode: 'MSBuild'
+        #    projectKey: ''
+        #    projectName: ''
         
         # Build 
         - task: DotNetCoreCLI@2
@@ -65,6 +76,7 @@ stages:
 
         # Run Sonar Code Analysis
         - task: SonarCloudAnalyze@1
+          displayName: 'Run Sonar Code Analysis'
 
         # Publish Sonar Analysis op sonarcloud.io
         - task: SonarCloudPublish@1
