@@ -91,10 +91,10 @@ stages:
           inputs:
             command: 'publish'
             projects: $(Content.WebApi.ProjectsToBuildAndPublish)
-            arguments: '-o $(Build.ArtifactStagingDirectory)/Artifacts --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
+            arguments: '-o $(Build.ArtifactStagingDirectory)/ContentApi.WebApi --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
         - task: PublishBuildArtifacts@1
           inputs:
-            PathtoPublish: '$(Build.ArtifactStagingDirectory)/Artifacts'
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)/ContentApi.WebApi'
             ArtifactName: 'drop2'
             publishLocation: 'Container'
 
