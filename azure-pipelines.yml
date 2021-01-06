@@ -41,6 +41,7 @@ stages:
             
         # Restore 
         - task: NuGetToolInstaller@1
+          displayName: 'Install NuGet Tool'
         - task: NuGetCommand@2
           inputs:
             restoreSolution: '$(solution)'
@@ -55,11 +56,11 @@ stages:
 
         # Run Unit Tests
         - task: DotNetCoreCLI@2
-          displayName: Run dotnet test --filter  Category!=ss
+          displayName: Run unittests
           inputs:
-            command: "test"
+            command: "test"            
             projects: "**/*.Tests.csproj"
-            arguments: "--logger trx"     
+            arguments: "--filter Category!=ss --logger trx"     
 
         # Run Sonar Code Analysis
         - task: SonarCloudAnalyze@1
