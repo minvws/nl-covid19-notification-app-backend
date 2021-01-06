@@ -14,7 +14,7 @@ trigger:
     include:
     - .
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'Ubuntu-20.04'
 
 variables:
   solution: '**/*.sln'
@@ -61,7 +61,7 @@ stages:
           inputs:
             command: "test"
             projects: "**/*.Tests.csproj"
-            arguments: '--filter db!~ss --logger trx'
+            arguments: '--filter db!=ss --logger trx'
 
         # Run Sonar Code Analysis
         - task: SonarCloudAnalyze@1
