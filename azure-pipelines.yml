@@ -92,9 +92,10 @@ stages:
           command: "build"
           projects: $(Content.WebApi.ProjectsToBuildAndPublish)
           arguments: '--configuration $(buildConfiguration) --runtime $(runtime)'
+          outputDir: '$(Build.ArtifactStagingDirectory)/TestDir'
       - task: PublishBuildArtifacts@1
         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/TestDir'
           ArtifactName: 'BackendAppTest\ContentApi'
           publishLocation: 'Container'
 
