@@ -6,6 +6,10 @@ stages:
     - job: Build
       displayName: Publish Build Artifacts
       steps:
+        - task: UseDotNet@2
+          displayName: 'Install .NET Core SDK'
+          inputs:
+            version: 3.1.x
         - task: DotNetCoreCLI@2
           displayName: 'dotnet publish'
           inputs:

@@ -10,7 +10,6 @@ stages:
           displayName: 'Install .NET Core SDK'
           inputs:
             version: 3.1.x
-            performMultiLevelLookup: true
 
         # Remove PostBuildEvents
         - task: CmdLine@2
