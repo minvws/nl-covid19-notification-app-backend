@@ -17,11 +17,8 @@ pool:
   vmImage: 'Ubuntu-20.04'
 
 variables:
-  template: /build/pipelines/variables/contentwebapi-variables.yaml
-  solution: '**/*.sln'
-  buildConfiguration: 'Release'
-  runtime: 'win-x64'  
-  ProjectsToTest: "src/Content.Commands.Tests/**/*.Tests.csproj"
+  - template: /build/pipelines/variables/common-variables.yaml
+  - template: /build/pipelines/variables/contentwebapi-variables.yaml
   
 
 stages:
