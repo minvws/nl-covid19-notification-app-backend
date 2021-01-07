@@ -38,5 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public const int WorkFlowTeksToDksCommand = 4000;
         public const int IksImportBatchJob = 4100;
         public const int ConsoleAppRunner = 4200; //not entirely sure yet
+        public const int RemoveExpiredIksIn = 4100;
+        public const int RemoveExpiredIksOut = 4200;
     }
 }
