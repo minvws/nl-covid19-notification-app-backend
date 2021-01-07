@@ -5,11 +5,11 @@ stages:
       workspace:
         clean: all # what to clean up before the job runs - outputs | resources | all
       steps:     
-        # Install .Net Core LTS Version
+        # Install .Net Core 2.0 Version
         - task: UseDotNet@2
-          displayName: 'Install .NET Core SDK'
+          displayName: 'Install .NET Core SDK 2.0'
           inputs:
-            version: 3.1.x
+            version: 2.0.x
 
         # Remove PostBuildEvents
         - task: CmdLine@2
@@ -27,6 +27,11 @@ stages:
             projectKey: 'MSS.Backend'
             projectName: 'CoronaMelder.Backend'
         
+        # Install .Net Core 3.1 LTS Version
+        - task: UseDotNet@2
+          displayName: 'Install .NET Core SDK'
+          inputs:
+            version: 3.1.x
         # Restore 
         - task: NuGetToolInstaller@1
           displayName: 'Install NuGet Tool'
@@ -42,6 +47,11 @@ stages:
             projects: $(ProjectsToTest)
             arguments: '--filter db!=ss --logger trx'
 
+        # Install .Net Core 2.0 Version
+        - task: UseDotNet@2
+          displayName: 'Install .NET Core SDK 2.0'
+          inputs:
+            version: 2.0.x
         # Run Sonar Code Analysis
         - task: SonarCloudAnalyze@1
           displayName: 'Run Sonar Code Analysis'
