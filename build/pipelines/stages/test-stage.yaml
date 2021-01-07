@@ -18,14 +18,14 @@ stages:
             script: find . -name \*.csproj -exec sed -i '/<Exec Command="xcopy.*>/d' {} \;
        
         # Prepare analysis on SonarCloud
-        #- task: SonarCloudPrepare@1
-        #  displayName: 'Prepare analysis on SonarCloud'
-        #  inputs:
-        #    SonarCloud: 'CIBG SonarCloud'        # Name of the Service Connection in devops for SonarCloud
-        #    organization: 'cibg' 
-        #    scannerMode: 'MSBuild'
-        #    projectKey: ''
-        #    projectName: ''
+        - task: SonarCloudPrepare@1
+          displayName: 'Prepare analysis on SonarCloud'
+          inputs:
+            SonarCloud: 'CIBG SonarCloud'        # Name of the Service Connection in devops for SonarCloud
+            organization: 'cibg' 
+            scannerMode: 'MSBuild'
+            projectKey: 'MSS.Backend'
+            projectName: 'CoronaMelder.Backend'
         
         # Restore 
         - task: NuGetToolInstaller@1
@@ -43,10 +43,10 @@ stages:
             arguments: '--filter db!=ss --logger trx'
 
         # Run Sonar Code Analysis
-        #- task: SonarCloudAnalyze@1
-        #  displayName: 'Run Sonar Code Analysis'
+        - task: SonarCloudAnalyze@1
+          displayName: 'Run Sonar Code Analysis'
 
         # Publish Sonar Analysis op sonarcloud.io
-        #- task: SonarCloudPublish@1
-        #  inputs:
-        #    pollingTimeoutSec: '600'
+        - task: SonarCloudPublish@1
+          inputs:
+            pollingTimeoutSec: '600'
