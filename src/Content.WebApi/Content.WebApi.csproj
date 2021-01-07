@@ -36,7 +36,6 @@
     <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Content.Commands\Content.Commands.csproj" />
     <ProjectReference Include="..\Core.AspNet\Core.AspNet.csproj" />
-    <ProjectReference Include="..\Icc.Commands\Icc.Commands.csproj" />
   </ItemGroup>
 
   <ItemGroup>
