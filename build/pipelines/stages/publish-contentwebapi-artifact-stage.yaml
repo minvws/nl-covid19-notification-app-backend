@@ -1,4 +1,4 @@
-
+stages:
 - stage: Build
   dependsOn: Test
   displayName: 'Publish build and push content.webapi stage'

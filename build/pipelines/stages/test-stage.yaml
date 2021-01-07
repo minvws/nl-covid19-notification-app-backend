@@ -1,3 +1,4 @@
+stages:
 - stage: Test
   jobs:
     - job: Test
