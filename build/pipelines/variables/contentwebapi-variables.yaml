@@ -1,0 +1,2 @@
+variables:
+ Content.WebApi.ProjectsToBuildAndPublish: "src/Content.WebApi/**/*.csproj"

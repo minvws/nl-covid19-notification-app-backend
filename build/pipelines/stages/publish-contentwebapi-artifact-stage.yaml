@@ -13,8 +13,8 @@
             command: "build"
             projects: $(Content.WebApi.ProjectsToBuildAndPublish)
             arguments: '--configuration $(buildConfiguration) --runtime $(runtime)'
-       - task: PublishBuildArtifacts@1
-         inputs:
+        - task: PublishBuildArtifacts@1
+          inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
           ArtifactName: 'BackendAppTest\ContentApi'
           publishLocation: 'Container'

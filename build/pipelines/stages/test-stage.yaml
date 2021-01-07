@@ -43,10 +43,10 @@
             arguments: '--filter db!=ss --logger trx'
 
         # Run Sonar Code Analysis
-        - task: SonarCloudAnalyze@1
-          displayName: 'Run Sonar Code Analysis'
+        #- task: SonarCloudAnalyze@1
+        #  displayName: 'Run Sonar Code Analysis'
 
         # Publish Sonar Analysis op sonarcloud.io
-        - task: SonarCloudPublish@1
-          inputs:
-            pollingTimeoutSec: '600'
+        #- task: SonarCloudPublish@1
+        #  inputs:
+        #    pollingTimeoutSec: '600'
