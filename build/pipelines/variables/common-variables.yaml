@@ -1,4 +1,5 @@
-solution: '**/*.sln'
-buildConfiguration: 'Release'
-runtime: 'win-x64'  
-ProjectsToTest: "src/Content.Commands.Tests/**/*.Tests.csproj"
+variables:
+ solution: '**/*.sln'
+ buildConfiguration: 'Release'
+ runtime: 'win-x64'  
+ ProjectsToTest: "src/Content.Commands.Tests/**/*.Tests.csproj"
