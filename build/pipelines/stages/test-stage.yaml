@@ -35,6 +35,7 @@ stages:
         # Restore 
         - task: NuGetToolInstaller@1
           displayName: 'Install NuGet Tool'
+
         - task: NuGetCommand@2
           inputs:
             restoreSolution: '$(solution)'

@@ -5,7 +5,7 @@
     <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi</RootNamespace>
     <UserSecretsId>6ed3ed32-c60c-4e42-9889-58044293730a</UserSecretsId>
-    <ProjectGuid>{8ABBE398-7B3C-4137-A186-A8288B93D6C3}</ProjectGuid>
+    <ProjectGuid>{E9B743F3-6643-4BD6-A136-2887F64A5BEB}</ProjectGuid>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
