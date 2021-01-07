@@ -6,15 +6,17 @@ stages:
     - job: Build
       displayName: Publish Build Artifacts
       steps:
-      # Build 
         - task: DotNetCoreCLI@2
-          displayName: Run dotnet build $(buildConfiguration) 
+          displayName: 'dotnet publish'
           inputs:
-            command: "build"
+            command: 'publish'
             projects: $(Content.WebApi.ProjectsToBuildAndPublish)
-            arguments: '--configuration $(buildConfiguration) --runtime $(runtime)'
+            # Version suffix starts with build number and Append the current git hash to the version suffix
+            arguments: '-o $(Build.ArtifactStagingDirectory)/ContentApi.WebApi --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
+            # CIBG don't use ZIP files for artifacts
+            zipAfterPublish: false
         - task: PublishBuildArtifacts@1
           inputs:
-            PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
-            ArtifactName: 'BackendAppTest\ContentApi'
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)/ContentApi.WebApi'
+            ArtifactName: 'drop2'
             publishLocation: 'Container'
