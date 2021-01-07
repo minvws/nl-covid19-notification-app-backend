@@ -12,11 +12,11 @@ stages:
             command: 'publish'
             projects: $(Content.WebApi.ProjectsToBuildAndPublish)
             # Version suffix starts with build number and Append the current git hash to the version suffix
-            arguments: '-o $(Build.ArtifactStagingDirectory)/ContentApi.WebApi --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
+            arguments: '-o $(Build.ArtifactStagingDirectory)/$(Content.WebApi.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
             # CIBG don't use ZIP files for artifacts
             zipAfterPublish: false
         - task: PublishBuildArtifacts@1
           inputs:
-            PathtoPublish: '$(Build.ArtifactStagingDirectory)/ContentApi.WebApi'
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Content.WebApi.ArtifactSubDirectory)'
             ArtifactName: 'drop2'
             publishLocation: 'Container'
