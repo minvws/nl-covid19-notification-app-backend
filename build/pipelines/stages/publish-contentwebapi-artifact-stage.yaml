@@ -5,6 +5,8 @@ stages:
   jobs:  
     - job: Build
       displayName: Publish Build Artifacts
+      pool:
+        vmImage: 'windows-latest'
       steps:
         - task: UseDotNet@2
           displayName: 'Install .NET Core SDK'
