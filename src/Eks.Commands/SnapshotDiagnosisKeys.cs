@@ -21,11 +21,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     /// </summary>
     public class SnapshotDiagnosisKeys : ISnapshotEksInput
     {
-        private readonly ILogger<SnapshotDiagnosisKeys> _Logger;
+        private readonly SnapshotLoggingExtensions _Logger;
         private readonly DkSourceDbContext _DkSourceDbContext;
         private readonly Func<EksPublishingJobDbContext> _PublishingDbContextFactory;
 
-        public SnapshotDiagnosisKeys(ILogger<SnapshotDiagnosisKeys> logger, DkSourceDbContext dkSourceDbContext, Func<EksPublishingJobDbContext> publishingDbContextFactory)
+        public SnapshotDiagnosisKeys(SnapshotLoggingExtensions logger, DkSourceDbContext dkSourceDbContext, Func<EksPublishingJobDbContext> publishingDbContextFactory)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _DkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         public async Task<SnapshotEksInputResult> ExecuteAsync(DateTime snapshotStart)
         {
-            _Logger.LogDebug("Snapshot publishable DKs.");
+            _Logger.WriteStart();
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -60,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 TekInputCount = index
             };
 
-            _Logger.LogInformation("TEKs to publish - Count:{Count}.", index);
+            _Logger.WriteTeksToPublish(index);
 
             return result;
         }

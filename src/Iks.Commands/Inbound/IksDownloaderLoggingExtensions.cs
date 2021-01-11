@@ -63,6 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 			{
 				throw new ArgumentNullException(nameof(requestMessage));
 			}
+			
 			_Logger.LogInformation("[{name}/{id}] EFGS request: {request}",
 				Name, Request,
 				requestMessage);
@@ -159,7 +160,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 
 		public void WriteBatchProcessedInNextLoop(string? nextBatchTag)
 		{
-			_Logger.LogInformation("[{name}/{id}] New NextBatchTag { NextBatchTag }, it will be processed next loop.",
+			_Logger.LogInformation("[{name}/{id}] New NextBatchTag {NextBatchTag}, it will be processed next loop.",
 				Name, BatchProcessedInNextLoop,
 				nextBatchTag);
 		}
@@ -179,7 +180,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 		public void WriteNextBatchFound(string? nextBatchTag)
 		{
 			_Logger.LogInformation("[{name}/{id}] We have a nextBatch with value {NextBatchTag} so we keep going.",
-				Name, NextBatchFound, nextBatchTag);
+				Name, NextBatchFound,
+				nextBatchTag);
 		}
 
 	}

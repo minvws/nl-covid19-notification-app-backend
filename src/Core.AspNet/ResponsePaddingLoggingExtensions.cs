@@ -9,7 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
 {
     public class ResponsePaddingLoggingExtensions
     {
-        private const string Name = "PostDecoyPadding";
+        private const string Name = "ResponsePadding";
         private const int Base = LoggingCodex.ResponsePadding;
 
         private const int NoPaddingNeeded = Base + 1;
@@ -24,7 +24,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-
         public void WriteNoPaddingNeeded(int resultLength, int minimumLength)
         {
             _Logger.LogInformation("[{name}/{id}] No padding needed as response length of {Length} is greater than the minimum of {MinimumLengthInBytes}.",
@@ -35,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
         public void WriteLengthOfResponsePadding(int paddingLength)
         {
             _Logger.LogInformation("[{name}/{id}] Length of response padding:{PaddingLength}.",
-            Name, ResponsePaddingLength,
+				Name, ResponsePaddingLength,
                 paddingLength);
         }
 
