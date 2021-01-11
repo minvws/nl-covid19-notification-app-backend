@@ -9,7 +9,7 @@ using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
 {
 	public class IksDownloaderLoggingExtensions
 	{
@@ -36,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 		private const int MovingToNextDay = Base + 17;
 		private const int NoNextBatch = Base + 18;
 		private const int NextBatchFound = Base + 19;
-		
+
 		private readonly ILogger _Logger;
 
 		public IksDownloaderLoggingExtensions(ILogger<IksDownloaderLoggingExtensions> logger)
@@ -78,12 +78,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
 		public void WriteResponseHeaders(HttpResponseHeaders responseHeaders)
 		{
-			if (responseHeaders == null)
-			{
-				throw new ArgumentNullException(nameof(responseHeaders));
-			}
+            if (responseHeaders == null)
+            {
+                throw new ArgumentNullException(nameof(responseHeaders));
+            }
 
-			_Logger.LogInformation("[{name}/{id}] Response headers: {headers}",
+            _Logger.LogInformation("[{name}/{id}] Response headers: {headers}",
 				Name, ResponseHeaders,
 				responseHeaders.ToString());
 		}

@@ -8,7 +8,7 @@ using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
 {
 	public class IksUploaderLoggingExtensions
 	{
@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 		private const int Base = LoggingCodex.IksUploader;
 
 		private const int DisabledByConfig = Base + 1;
-		
+
 		private const int Request = Base + 2;
 		private const int RequestContent = Base + 3;
 		private const int EfgsError = Base + 4;
@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 		private const int ResponseRequestTooLarge = Base + 11;
 		private const int ResponseServerError = Base + 12;
 		private const int ResponseUnknownError = Base + 13;
-		
+
 		private readonly ILogger _Logger;
 
 		public IksUploaderLoggingExtensions(ILogger<IksUploaderLoggingExtensions> logger)

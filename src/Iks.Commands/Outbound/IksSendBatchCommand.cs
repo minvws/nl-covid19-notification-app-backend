@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Iks.Protobuf;
-using Microsoft.EntityFrameworkCore;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
 
@@ -25,7 +26,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         public IksSendBatchCommand(
             Func<IksOutDbContext> iksOutboundDbContextFactory,
             Func<HttpPostIksCommand> iksSendCommandFactory,
-            IIksSigner signer, IBatchTagProvider batchTagProvider,
+            IIksSigner signer,
+            IBatchTagProvider batchTagProvider,
             IksUploaderLoggingExtensions logger)
         {
             _IksSendCommandFactory = iksSendCommandFactory ?? throw new ArgumentNullException(nameof(iksSendCommandFactory));
@@ -40,15 +42,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             using (var dbc = _IksOutboundDbContextFactory())
             {
                 _Todo = dbc.Iks
-                    .Where(x => !x.Sent)
+                    .Where(x => !x.Sent && !x.Error)
+                    .OrderBy(x => x.Created)
+                    .ThenBy(x => x.Qualifier)
                     .Select(x => x.Id)
                     .ToList();
             }
 
-            for (var i = 0; i < _Todo.Count && (_LastResult == null || _LastResult.HttpResponseCode == HttpStatusCode.Created); i++)
-            {
-                await ProcessOne(_Todo[i]);
-            }
+            foreach (var t in _Todo) await ProcessOne(t);
 
             return new IksSendBatchResult 
             { 
@@ -95,8 +96,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             _Results.Add(result);
             
-            // Note: EFGS returns Created on successful upload, not OK.
+            // Note: EFGS returns Created or OK on creation
             item.Sent = _LastResult?.HttpResponseCode == HttpStatusCode.Created;
+            item.Error = !item.Sent;
 
             // TODO: Implement a state machine for batches; this is useful around error cases.
             // * Re-try for selected states.
@@ -104,8 +106,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             // * Allow for manual fixing of data errors with a special retry state?
             //
 
-            if (item.Sent)
-                await dbc.SaveChangesAsync();
+            await dbc.SaveChangesAsync();
         }
 
         /// <summary>

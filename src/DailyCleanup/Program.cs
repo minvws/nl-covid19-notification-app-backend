@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -108,9 +109,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => logger.WriteManifestV2CleanupStarting());
             run.Add(() => c120.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c130 = serviceProvider.GetRequiredService<RemovePublishedDiagnosticKeys>();
-            //run.Add(() => TODO);
-            run.Add(() => c130.Execute());
+            var c125 = serviceProvider.GetRequiredService<RemovePublishedDiagnosticKeys>();
+            run.Add(() => c125.Execute());
+
+            var c130 = serviceProvider.GetRequiredService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
+            run.Add(() => c130.ExecuteAsync().GetAwaiter().GetResult());
 
             var c100 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             run.Add(() => logger.WriteResignerStarting());
@@ -154,14 +157,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.EksEngine();
 
             services.ManifestEngine();
-
             services.AddTransient<RemoveExpiredManifestsCommand>();
             services.AddTransient<RemoveExpiredManifestsV2Command>();
             services.AddTransient<RemoveExpiredEksCommand>();
             services.AddTransient<RemoveExpiredEksV2Command>();
             services.AddTransient<RemoveExpiredWorkflowsCommand>();
+            services.AddTransient<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             services.AddTransient<RemovePublishedDiagnosticKeys>();
-            
+
             services.AddSingleton<IManifestConfig, ManifestConfig>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
             services.AddSingleton<IAcceptableCountriesSetting, EfgsInteropConfig>();

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -67,7 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                 var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
                 logger.LogInformation("IksImport is disabled; Iks files will not be processed.");
             }
-
+            
             var c30 = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
             run.Add(() => c30.ExecuteAsync().GetAwaiter().GetResult());
 
@@ -76,6 +77,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             var c50 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             run.Add(() => c50.ExecuteAsync().GetAwaiter().GetResult());
+
+            var c55 = serviceProvider.GetRequiredService<RemovePublishedDiagnosticKeys>();
+            run.Add(() => c55.Execute());
+
+            var c60 = serviceProvider.GetService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
+            run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());
 
             var c35 = serviceProvider.GetRequiredService<IksEngine>();
             run.Add(() => c35.ExecuteAsync().GetAwaiter().GetResult());
@@ -131,6 +138,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<ManifestBuilder>();
+            services.AddTransient<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
+            services.AddTransient<RemovePublishedDiagnosticKeys>();
 
             services.AddSingleton<EksBuilderV1LoggingExtensions>();
             services.AddSingleton<ResignerLoggingExtensions>();

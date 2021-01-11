@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;

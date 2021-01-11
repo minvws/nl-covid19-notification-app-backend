@@ -5,8 +5,8 @@
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -63,20 +63,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
             services.AddSingleton<Func<HttpPostIksCommand>>(x => x.GetService<HttpPostIksCommand>);
             services.AddTransient<IBatchTagProvider, BatchTagProvider>();
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.AddSingleton(x => x.CreateDbContext(y => new IksOutDbContext(y), DatabaseConnectionStringNames.IksOut, false));
+            services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
             services.AddSingleton<IksUploaderLoggingExtensions>();
-			services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
 			
             // IKS Signing
             services.AddTransient<IIksSigner, EfgsCmsSigner>();
             services.AddTransient<ICertificateLocationConfig, StandardCertificateLocationConfig>();
             services.AddTransient<ICertificateChainProvider, EmbeddedResourcesCertificateChainProvider>();
-            services.AddTransient<ICertificateProvider>(x =>
-                new LocalMachineStoreCertificateProvider(
+            services.AddTransient<ICertificateProvider>(
+                x => new LocalMachineStoreCertificateProvider(
                     new LocalMachineStoreCertificateProviderConfig(
                         x.GetRequiredService<IConfiguration>(), "Certificates:EfgsSigning"),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
-                )
-            );
+                ));
             
             // Authentication (with certs)
             services
@@ -87,8 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
                     new LocalMachineStoreCertificateProviderConfig(
                         x.GetRequiredService<IConfiguration>(), "Certificates:EfgsAuthentication"),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
-                )
-            );
+                ));
         }
     }
 }
