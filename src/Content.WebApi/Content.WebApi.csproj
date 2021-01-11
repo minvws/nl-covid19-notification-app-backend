@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi</AssemblyName>
+    <AssemblyName>ContentApi</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi</RootNamespace>
     <UserSecretsId>6ed3ed32-c60c-4e42-9889-58044293730a</UserSecretsId>
   </PropertyGroup>
