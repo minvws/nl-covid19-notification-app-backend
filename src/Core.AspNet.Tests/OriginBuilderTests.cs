@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests.Icc
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet.Tests
 {
     public class OriginBuilderTests
     {
@@ -24,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
             var builder = new OriginBuilder(testFrontendBaseUrl);
 
             // Assert
-            var result = builder.getOrigin();
+            var result = builder.GetOrigin();
             
             // Act
             Assert.IsType<string>(result);
@@ -45,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
 
             // Assert
             var testUri = new Uri(testFrontendBaseUrl);
-            var origin = builder.getOrigin();
+            var origin = builder.GetOrigin();
             
             var result = origin.EndsWith(testUri.Host) || origin.EndsWith(testUri.Port.ToString());
 

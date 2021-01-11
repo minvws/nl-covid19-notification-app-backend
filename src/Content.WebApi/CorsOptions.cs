@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
 {
@@ -35,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
                 var originBuilder = new OriginBuilder(_Config.Url);
                 return new[]
                 {
-                    originBuilder.getOrigin()
+                    originBuilder.GetOrigin()
                 };
             }
 
