@@ -30,6 +30,8 @@ dotnet publish Iks.Uploader\Iks.Uploader.csproj --no-self-contained --runtime wi
 IF %ERRORLEVEL% NEQ 0 EXIT 1
 
 REM Publish tools
+dotnet publish PublishContent\PublishContent.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\PublishContent --version-suffix %suffix%
+IF %ERRORLEVEL% NEQ 0 EXIT 1
 dotnet publish GenTeks\GenTeks.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\GenTeks --version-suffix %suffix%
 IF %ERRORLEVEL% NEQ 0 EXIT 1
 dotnet publish ForceTekAuth\ForceTekAuth.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\ForceTekAuth --version-suffix %suffix%
