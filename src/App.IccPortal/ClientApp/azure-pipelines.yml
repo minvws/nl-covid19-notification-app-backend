@@ -1,0 +1,66 @@
+# Node.js with Angular
+# Build a Node.js project that uses Angular.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+  - master
+pool:
+  name: 'CIBG-BuildRelease-O'
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'Install Node.js'
+
+  - script: |
+      npm install -g @angular/cli
+    displayName: 'install angular cli'
+
+  - script: |
+      npm install -g yarn
+    displayName: 'install yarn'
+
+  - script: |
+      yarn
+    displayName: 'run yarn'
+
+  - script: |
+      ng lint
+    displayName: 'ng lint'
+
+  - script: |
+      npm run test:ci
+    displayName: 'npm run test:ci'
+
+  - script: |
+      ng build --prod
+    displayName: 'ng build --prod'
+
+  - task: CmdLine@2
+    inputs:
+      script: 'echo F|xcopy /Y "appConfig.release.json" "appConfig.json"'
+      workingDirectory: '$(Build.SourcesDirectory)/dist/assets/data'
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)'
+      Contents: 'web.config'
+      TargetFolder: '$(Build.SourcesDirectory)/dist'
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/dist'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/TESTS-*.xml'

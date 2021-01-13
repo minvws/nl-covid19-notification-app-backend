@@ -1,0 +1,16 @@
+<div [class.opacity-25]="scrollDown" *ngIf="authenticationService.currentUserValue"
+     [title]="authenticationService.currentUserValue.email"
+     class="user-info transition ease-in-out duration-200 flex items-center absolute right-0 top-0 mr-5 mt-5 bg-white rounded px-5 py-3 shadow-md">
+    <a class="mr-6" href="tel:+31 088-9324332" target="_blank" title="Bel met support op 088-9324332">Support <u>088-9324332</u></a>
+    <a class="mr-6" href="https://leeromgeving.nspoh.nl/course/view.php?id=727" title="Ga naar E-Learning" target="_blank">E-Learning</a>
+    <p>Ingelogd als {{authenticationService.currentUserValue.displayName}}</p>
+    <a class="cursor-pointer text-gray-500 hover:text-gray-800 ml-2" title="Uitloggen"
+       (click)="authenticationService.logout()">Uitloggen</a>
+</div>
+
+<div class="container">
+    <div class="wrapper lg:w-3/4 pt-20">
+        <router-outlet></router-outlet>
+    </div>
+</div>
+
