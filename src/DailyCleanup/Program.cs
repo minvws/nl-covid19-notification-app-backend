@@ -191,6 +191,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<MarkWorkFlowTeksAsUsedLoggingExtensions>();
             services.AddSingleton<ManifestUpdateCommandLoggingExtensions>();
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
+            
+            services.AddTransient<RemoveExpiredIksInCommand>();
+            services.AddTransient<RemoveExpiredIksInCommandLoggingExtensions>();
+            services.AddTransient<RemoveExpiredIksOutCommand>();
+            services.AddTransient<RemoveExpiredIksOutCommandLoggingExtensions>();
 
             services.NlResignerStartup();
 
