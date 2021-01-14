@@ -3,6 +3,18 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+trigger:
+  # batch = true so not every commit triggers the build
+  batch: 'true'
+  branches:
+    include:
+    - 'master'
+    - '59725'
+  paths:
+    # include all paths as trigger for changes
+    include:
+    - .
+
 
 pool:
   #vmImage: 'Ubuntu-20.04'
@@ -14,6 +26,8 @@ variables:
   runtime: 'win-x64'  
   ProjectsToTest: "src/**/*.Tests.csproj"
 
+  # Publishing
+  Publish.ArtifactName: "drop2"
   Apps.Content.WebApi.ArtifactSubDirectory: "ContentApi"
   Apps.App.IccPortal.ArtifactSubDirectory: "IccPortalApp"
   Apps.Icc.WebApi.ArtifactSubDirectory: "IccWebApi"
@@ -28,15 +42,17 @@ variables:
   Tools.ForceTekAuth.ArtifactSubDirectory: "ForceTekAuth"
   Tools.SigTestFileCreator.ArtifactSubDirectory: "SigTestFileCreator"
   Tools.Eks.Parser.ArtifactSubDirectory: "Eks.Parser"
-
+  
 stages:
-#- template: /build/pipelines/stages/test-stage.yaml
+# Tests all unittest in 'ProjectsToTest'
+- template: /build/pipelines/stages/test-stage.yaml
 
 # Publish build and push content.webapi stage
 - stage: Build
-  #dependsOn: Test
+  dependsOn: Test
   displayName: 'Publish builds'
   jobs:  
+  #Apps
   - template: /build/pipelines/jobs/apps-publish-contentwebapi-artifact.yaml
   #- template: /build/pipelines/jobs/apps-publish-appiccportal-artifact.yaml
   - template: /build/pipelines/jobs/apps-publish-iccwebapi-artifact.yaml
@@ -46,9 +62,11 @@ stages:
   - template: /build/pipelines/jobs/apps-publish-iksdownloader-artifact.yaml
   - template: /build/pipelines/jobs/apps-publish-iksuploader-artifact.yaml
   - template: /build/pipelines/jobs/apps-publish-manifestengine-artifact.yaml
-
+  #Tools
   - template: /build/pipelines/jobs/tools-publish-eksparcer-artifact.yaml
   - template: /build/pipelines/jobs/tools-publish-forcetekauth-artifact.yaml
   - template: /build/pipelines/jobs/tools-publish-genteks-artifact.yaml
   - template: /build/pipelines/jobs/tools-publish-publishcontent-artifact.yaml
   - template: /build/pipelines/jobs/tools-publish-sigtestfilecreator-artifact.yaml
+  #Other
+  #- template:

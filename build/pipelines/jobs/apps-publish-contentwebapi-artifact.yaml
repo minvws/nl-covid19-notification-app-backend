@@ -15,5 +15,5 @@ jobs:
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Apps.Content.WebApi.ArtifactSubDirectory)'
-          ArtifactName: 'drop2'
+          ArtifactName: $(Publish.ArtifactName)
           publishLocation: 'Container'

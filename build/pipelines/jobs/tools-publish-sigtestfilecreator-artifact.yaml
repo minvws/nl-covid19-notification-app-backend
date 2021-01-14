@@ -19,5 +19,5 @@ jobs:
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Tools.SigTestFileCreator.ArtifactSubDirectory)'
-          ArtifactName: 'drop2'
+          ArtifactName: $(Publish.ArtifactName)
           publishLocation: 'Container'

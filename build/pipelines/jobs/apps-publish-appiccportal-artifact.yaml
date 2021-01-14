@@ -19,5 +19,5 @@ jobs:
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Apps.App.IccPortal.ArtifactSubDirectory)'
-          ArtifactName: 'drop2'
+          ArtifactName: $(Publish.ArtifactName)
           publishLocation: 'Container'

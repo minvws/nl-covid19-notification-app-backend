@@ -18,6 +18,6 @@ jobs:
           zipAfterPublish: false            
       - task: PublishBuildArtifacts@1
         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Tools.ForceTekAuth .ArtifactSubDirectory)'
-          ArtifactName: 'drop2'
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Tools.ForceTekAuth.ArtifactSubDirectory)'
+          ArtifactName: $(Publish.ArtifactName)
           publishLocation: 'Container'
