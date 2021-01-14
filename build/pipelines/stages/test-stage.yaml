@@ -12,10 +12,10 @@ stages:
             version: 2.0.x
 
         # Remove PostBuildEvents
-        - task: CmdLine@2
-          displayName: 'Remove PostBuildEvents from .csproj files'
-          inputs:
-            script: find . -name \*.csproj -exec sed -i '/<Exec Command="xcopy.*>/d' {} \;
+        #- task: CmdLine@2
+        #  displayName: 'Remove PostBuildEvents from .csproj files'
+        #  inputs:
+        #    script: find . -name \*.csproj -exec sed -i '/<Exec Command="xcopy.*>/d' {} \;
        
         # Prepare analysis on SonarCloud
         - task: SonarCloudPrepare@1
