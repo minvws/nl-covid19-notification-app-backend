@@ -1,6 +1,6 @@
 stages:
 - stage: Build_Icc_WebApi
-  dependsOn: Test
+  #dependsOn: Test
   displayName: 'Publish build and push icc.webapi stage'
   jobs:  
     - job: Build
