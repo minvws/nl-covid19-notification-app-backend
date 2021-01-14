@@ -11,8 +11,7 @@ jobs:
         inputs:
           command: 'publish'
           publishWebProjects: false
-          workingFolder: '$(Build.SourcesDirectory)\src'
-          projects: 'App.IccPortal/App.IccPortal.csproj'
+          projects: 'src/App.IccPortal/App.IccPortal.csproj'
           # Version suffix starts with build number and Append the current git hash to the version suffix
           arguments: '-o $(Build.ArtifactStagingDirectory)/$(App.IccPortal.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
           # CIBG don't use ZIP files for artifacts

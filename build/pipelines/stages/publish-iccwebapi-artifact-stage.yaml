@@ -11,7 +11,6 @@ jobs:
         inputs:
           command: 'publish'
           publishWebProjects: false
-          workingFolder: '$(Build.SourcesDirectory)\src'
           projects: 'src/Icc.WebApi/App.IccPortal.csproj'
           # Version suffix starts with build number and Append the current git hash to the version suffix
           arguments: '-o $(Build.ArtifactStagingDirectory)/$(Icc.WebApi.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
