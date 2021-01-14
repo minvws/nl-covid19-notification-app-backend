@@ -1,27 +1,23 @@
-stages:
-- stage: Build_Icc_WebApi
-  #dependsOn: Test
-  displayName: 'Publish build and push icc.webapi stage'
-  jobs:  
-    - job: Build
-      displayName: Publish Build Artifacts
-      steps:
-        - task: UseDotNet@2
-          displayName: 'Install .NET Core SDK'
-          inputs:
-            version: 3.1.x
-        - task: DotNetCoreCLI@2
-          displayName: 'dotnet publish'
-          inputs:
-            command: 'publish'
-            workingFolder: '$(Build.SourcesDirectory)\src'
-            projects: 'src/Icc.WebApi/App.IccPortal.csproj'
-            # Version suffix starts with build number and Append the current git hash to the version suffix
-            arguments: '-o $(Build.ArtifactStagingDirectory)/$(Icc.WebApi.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
-            # CIBG don't use ZIP files for artifacts
-            zipAfterPublish: false
-        - task: PublishBuildArtifacts@1
-          inputs:
-            PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Icc.WebApi.ArtifactSubDirectory)'
-            ArtifactName: 'drop2'
-            publishLocation: 'Container'
+jobs:  
+  - job: Build_Icc_WebApi
+    displayName: Publish Build Artifact Icc_WebApi
+    steps:
+      - task: UseDotNet@2
+        displayName: 'Install .NET Core SDK'
+        inputs:
+          version: 3.1.x
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet publish'
+        inputs:
+          command: 'publish'
+          workingFolder: '$(Build.SourcesDirectory)\src'
+          projects: 'src/Icc.WebApi/App.IccPortal.csproj'
+          # Version suffix starts with build number and Append the current git hash to the version suffix
+          arguments: '-o $(Build.ArtifactStagingDirectory)/$(Icc.WebApi.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
+          # CIBG don't use ZIP files for artifacts
+          zipAfterPublish: false
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Icc.WebApi.ArtifactSubDirectory)'
+          ArtifactName: 'drop2'
+          publishLocation: 'Container'

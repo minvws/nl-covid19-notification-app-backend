@@ -32,7 +32,11 @@ stages:
 #- template: /build/pipelines/stages/test-stage.yaml
 
 # Publish build and push content.webapi stage
-#- template: /build/pipelines/stages/publish-contentwebapi-artifact-stage.yaml
-- template: /build/pipelines/stages/publish-appiccportal-artifact-stage.yaml
-- template: /build/pipelines/stages/publish-iccwebapi-artifact-stage.yaml
-#- template: /build/pipelines/stages/publish-mobileappipawebapi-artifact-stage.yaml
+- stage: Build
+  #dependsOn: Test
+  displayName: 'Publish builds'
+  jobs:  
+  #- template: /build/pipelines/stages/publish-contentwebapi-artifact-stage.yaml
+  - template: /build/pipelines/stages/publish-appiccportal-artifact-stage.yaml
+  - template: /build/pipelines/stages/publish-iccwebapi-artifact-stage.yaml
+  #- template: /build/pipelines/stages/publish-mobileappipawebapi-artifact-stage.yaml
