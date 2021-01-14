@@ -8,11 +8,10 @@ using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySets
 {
-    [Trait("build", "false")]
     public class ExposureKeySetSigExtractorTests
     {
 
-        [Fact]
+        //[Fact]
         public void Yank()
         {
             const string eks = "1a082a5e05cd791ef7fbabdf3b653d3d9363d1dfb791d026e81db519500b090c";
