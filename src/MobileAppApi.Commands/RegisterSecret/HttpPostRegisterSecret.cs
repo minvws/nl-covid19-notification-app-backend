@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private readonly IWorkflowTime _WorkflowTime;
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
         private readonly ILabConfirmationIdFormatter _LabConfirmationIdFormatter;
-        private readonly DecoyTimeCalculator _DecoyTimeCalculator;
+        private readonly IDecoyTimeCalculator _DecoyTimeCalculator;
         private Stopwatch _Stopwatch;
 
         public HttpPostRegisterSecret(
@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             IWorkflowTime workflowTime, 
             IUtcDateTimeProvider utcDateTimeProvider,
             ILabConfirmationIdFormatter labConfirmationIdFormatter,
-            DecoyTimeCalculator decoyTimeCalculator)
+            IDecoyTimeCalculator decoyTimeCalculator)
         {
             _Writer = writer ?? throw new ArgumentNullException(nameof(writer));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));

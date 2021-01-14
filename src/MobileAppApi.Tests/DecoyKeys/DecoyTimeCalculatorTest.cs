@@ -57,27 +57,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DecoyTi
 			Assert.Throws<ArgumentOutOfRangeException>(runSut);
 		}
 
-		[Theory]
-		[InlineData(42)]
-		[InlineData(343)]
-		[InlineData(2416)]
-		[InlineData(10000)]
-		public async void PerformDecoyWaitAsync_ExecutionTakesAtleastNMilliseconds(int timeMs)
-		{
-			//Arrange
-			var sut = new DecoyTimeCalculator(_Logger);
-			var timer = new Stopwatch();
-
-			//Act
-			sut.RegisterTime(timeMs);
-			timer.Start();
-			await sut.PerformDecoyWaitAsync();
-			timer.Stop();
-
-			//Assert
-			Assert.True(timer.ElapsedMilliseconds >= timeMs, $"Recorded time: {timer.ElapsedMilliseconds}ms.");
-		}
-
 		private class DecoyTimeTestData : IEnumerable<object[]>
 		{
 			public IEnumerator<object[]> GetEnumerator()

@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         private readonly IWorkflowConfig _WorkflowConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly ITekValidPeriodFilter _TekApplicableWindowFilter;
-        private readonly DecoyTimeCalculator _DecoyTimeCalculator;
+        private readonly IDecoyTimeCalculator _DecoyTimeCalculator;
         private Stopwatch _Stopwatch;
 
         private PostTeksArgs _ArgsObject;
@@ -50,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             ITekListWorkflowFilter tekListWorkflowFilter, 
             IUtcDateTimeProvider dateTimeProvider, 
             ITekValidPeriodFilter tekApplicableWindowFilter,
-            DecoyTimeCalculator decoyTimeCalculator)
+            IDecoyTimeCalculator decoyTimeCalculator)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _WorkflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));

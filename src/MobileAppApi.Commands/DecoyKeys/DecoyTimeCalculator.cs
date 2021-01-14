@@ -3,12 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Threading.Tasks;
 using MathNet.Numerics.Distributions;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys
 {
-	public class DecoyTimeCalculator
+	public class DecoyTimeCalculator : IDecoyTimeCalculator
 	{
 		private readonly DecoyKeysLoggingExtensions _Logger;
 
@@ -50,13 +49,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 			_Logger.WriteTimeRegistered(_Count, timeMs, DecoyTimeMean, DecoyTimeStDev);
 		}
 
-		public async Task PerformDecoyWaitAsync()
+		public int GenerateDelayTime()
 		{
 			var gaussian = new Normal(DecoyTimeMean, DecoyTimeStDev);
-			var timeMs = (int)gaussian.Sample();
-
-			_Logger.WriteGeneratingDelay(timeMs);
-			await Task.Delay(timeMs);
+			var delayMs = (int)gaussian.Sample();
+			
+			_Logger.WriteGeneratingDelay(delayMs);
+			return delayMs;
 		}
 	}
 }

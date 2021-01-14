@@ -12,16 +12,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
     // NOTE: do not apply this attribute directly, apply DecoyTimeGeneratorAttributeFactory
     public class DecoyTimeGeneratorAttribute : ActionFilterAttribute
     {
-        private readonly DecoyTimeCalculator _Calculator;
+        private readonly IDecoyTimeCalculator _Calculator;
 
-        public DecoyTimeGeneratorAttribute(DecoyTimeCalculator calculator)
+        public DecoyTimeGeneratorAttribute(IDecoyTimeCalculator calculator)
         {
             _Calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
         }
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            await _Calculator.PerformDecoyWaitAsync();
+            await Task.Delay(_Calculator.GenerateDelayTime());
             await next();
         }
     }

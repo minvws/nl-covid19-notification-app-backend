@@ -63,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddScoped<IPaddingGenerator, CryptoRandomPaddingGenerator>();
             services.AddScoped<SuppressErrorAttribute>();
             services.AddScoped<DecoyTimeGeneratorAttribute>();
-            services.AddSingleton<DecoyTimeCalculator>();
+            services.AddSingleton<IDecoyTimeCalculator, DecoyTimeCalculator>();
 
             services.AddSingleton<RegisterSecretLoggingExtensions>();
             services.AddSingleton<PostKeysLoggingExtensions>();
