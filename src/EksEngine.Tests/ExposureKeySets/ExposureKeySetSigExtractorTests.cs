@@ -12,6 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     {
 
         [Fact]
+        [Trait("build", "false")]
         public void Yank()
         {
             const string eks = "1a082a5e05cd791ef7fbabdf3b653d3d9363d1dfb791d026e81db519500b090c";
@@ -20,8 +21,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var filename = Path.Combine(folder, eks);
             var bytes = new EksParser().ReadGaenSig(filename);
             Assert.True(bytes.Length > 0);
-            //using var output = File.Create(@"D:\sig.bin", 1024, FileOptions.None);
-            //output.Write(bytes);
+            using var output = File.Create(@"D:\sig.bin", 1024, FileOptions.None);
+            output.Write(bytes);
         }
     }
 }
