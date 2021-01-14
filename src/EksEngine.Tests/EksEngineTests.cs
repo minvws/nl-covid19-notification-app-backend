@@ -53,12 +53,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 
         public EksEngineTests(IDbProvider<WorkflowDbContext> workflowDbProvider, IDbProvider<DkSourceDbContext> dkSourceDbProvider, IDbProvider<EksPublishingJobDbContext> eksPublishingJobDbProvider, IDbProvider<ContentDbContext> contentDbProvider, IWrappedEfExtensions efExtensions)
         {
-
-            var mockedIdentity = new Mock<WindowsIdentity>(WindowsIdentity.GetCurrent());
-            var mockedPrincipal = new Mock<WindowsPrincipal>(mockedIdentity);
-
-            mockedPrincipal.Setup(x => x.IsInRole(WindowsBuiltInRole.Administrator)).Returns(true);
-
             _Lf = new LoggerFactory();
 
             _EfExtensions = efExtensions;
