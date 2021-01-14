@@ -1,5 +1,5 @@
 stages:
-- stage: Build
+- stage: Build MobileAppApi.WebApi
   dependsOn: Test
   displayName: 'Publish build and push mobileapi.webapi stage'
   jobs:  

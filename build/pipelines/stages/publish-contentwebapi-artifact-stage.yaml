@@ -1,5 +1,5 @@
 stages:
-- stage: Build
+- stage: Build Content.WebApi
   dependsOn: Test
   displayName: 'Publish build and push content.webapi stage'
   jobs:  
