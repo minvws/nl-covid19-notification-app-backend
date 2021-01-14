@@ -4,7 +4,7 @@
 
 using System;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
 {
     public class OriginBuilder
     {
@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
             _BaseUrl = new Uri(baseUrl);
         }
 
-        public string getOrigin()
+        public string GetOrigin()
         {
             var portAppendix = ((_BaseUrl.Port != 80 && _BaseUrl.Port != 443) ? ":" + _BaseUrl.Port : "");
             return $"{_BaseUrl.Scheme}://{_BaseUrl.Host}{portAppendix}";

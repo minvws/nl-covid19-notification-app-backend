@@ -111,7 +111,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
 			}
 
 			_Logger.LogWarning("[{name}/{id}] EFGS: Successful but with warnings: {content}",
-				Name, ResponseWithWarnings, ResponseWithWarnings);
+				Name, ResponseWithWarnings,
+				responseContent);
 		}
 
 		public void WriteResponseBadRequest()
@@ -152,7 +153,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound
 			}
 
 			_Logger.LogError("[{name}/{id}] Unknown error: {httpResponseCode}.",
-				Name, ResponseUnknownError, statusCode);
+				Name, ResponseUnknownError,
+				statusCode);
 		}
 	}
 }

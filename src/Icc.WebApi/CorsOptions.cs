@@ -5,7 +5,6 @@
 using System;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 
 namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
@@ -45,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
         
         private string[] GetOrigins()
         {
-            var origin = new OriginBuilder(_IccPortalConfig.FrontendBaseUrl).getOrigin();
+            var origin = new OriginBuilder(_IccPortalConfig.FrontendBaseUrl).GetOrigin();
             return new[] {origin};
         }
 
