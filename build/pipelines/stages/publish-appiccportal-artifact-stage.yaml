@@ -1,5 +1,5 @@
 stages:
-- stage: Build App.IccPortal
+- stage: Build_App_IccPortal
   dependsOn: Test
   displayName: 'Publish build and push app.iccportal stage'
   jobs:  
