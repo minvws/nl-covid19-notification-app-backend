@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             var delayMs = _RandomNumberGenerator.Next(_Config.MinimumDelayInMilliseconds, _Config.MaximumDelayInMilliseconds);
             
             _Logger.WriteDelaying(delayMs);
-            await Task.Delay(delayMs);
+            await DelayTimer.Delay(delayMs);
             await next();
         }
     }
