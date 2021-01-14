@@ -10,7 +10,7 @@ jobs:
         displayName: 'dotnet publish'
         inputs:
           command: 'publish'
-          publishWebProjects: true
+          publishWebProjects: false
           workingFolder: '$(Build.SourcesDirectory)\src'
           projects: 'src/Icc.WebApi/App.IccPortal.csproj'
           # Version suffix starts with build number and Append the current git hash to the version suffix

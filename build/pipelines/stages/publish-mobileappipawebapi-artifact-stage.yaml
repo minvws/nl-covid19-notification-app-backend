@@ -10,7 +10,7 @@ jobs:
         displayName: 'dotnet publish'
         inputs:
           command: 'publish'
-          publishWebProjects: true
+          publishWebProjects: false
           projects: 'src/MobileAppApi.WebApi/MobileAppApi.WebApi.csproj'
           # Version suffix starts with build number and Append the current git hash to the version suffix
           arguments: '-o $(Build.ArtifactStagingDirectory)/$(MobileAppApi.WebApi.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
