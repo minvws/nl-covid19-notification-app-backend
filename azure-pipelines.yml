@@ -3,16 +3,7 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-trigger:
-  # batch = true so not every commit triggers the build
-  batch: 'true'
-  branches:
-    include:
-    - '59725'
-  paths:
-    # include all paths as trigger for changes
-    include:
-    - .
+
 pool:
   #vmImage: 'Ubuntu-20.04'
   name: 'CIBG-BuildRelease-O'
