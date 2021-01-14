@@ -43,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 			else
 			{
 				var newMean = DecoyTimeMean + (timeMs - DecoyTimeMean) / _Count;
-				_SumSquareDiff = _SumSquareDiff + (timeMs - DecoyTimeMean) * (timeMs - newMean);
+				_SumSquareDiff += (timeMs - DecoyTimeMean) * (timeMs - newMean);
 				DecoyTimeMean = newMean;
 			}
 
