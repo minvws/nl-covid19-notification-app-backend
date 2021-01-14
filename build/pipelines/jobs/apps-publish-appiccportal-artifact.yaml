@@ -1,0 +1,23 @@
+jobs:  
+  - job: Build_App_IccPortal
+    displayName: Publish Build Artifact App_IccPortal
+    steps:
+      - task: UseDotNet@2
+        displayName: 'Install .NET Core SDK'
+        inputs:
+          version: 3.1.x        
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet publish'
+        inputs:
+          command: 'publish'
+          publishWebProjects: false
+          projects: 'src/App.IccPortal/App.IccPortal.csproj'
+          # Version suffix starts with build number and Append the current git hash to the version suffix
+          arguments: '-o $(Build.ArtifactStagingDirectory)/$(Apps.App.IccPortal.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
+          # CIBG don't use ZIP files for artifacts
+          zipAfterPublish: false            
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Apps.App.IccPortal.ArtifactSubDirectory)'
+          ArtifactName: 'drop2'
+          publishLocation: 'Container'

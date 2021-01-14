@@ -1,6 +1,6 @@
 jobs:  
-  - job: Build_App_IccPortal
-    displayName: Publish Build Artifact App_IccPortal
+  - job: Build_App_IksDownloader
+    displayName: Publish Build Artifact Iks.Downloader
     steps:
       - task: UseDotNet@2
         displayName: 'Install .NET Core SDK'
@@ -11,13 +11,13 @@ jobs:
         inputs:
           command: 'publish'
           publishWebProjects: false
-          projects: 'src/App.IccPortal/App.IccPortal.csproj'
+          projects: 'src/Iks.Downloader/Iks.Downloader.csproj'
           # Version suffix starts with build number and Append the current git hash to the version suffix
-          arguments: '-o $(Build.ArtifactStagingDirectory)/$(App.IccPortal.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
+          arguments: '-o $(Build.ArtifactStagingDirectory)/$(Apps.IksDownloader.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
           # CIBG don't use ZIP files for artifacts
           zipAfterPublish: false            
       - task: PublishBuildArtifacts@1
         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(App.IccPortal.ArtifactSubDirectory)'
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Apps.IksDownloader.ArtifactSubDirectory)'
           ArtifactName: 'drop2'
           publishLocation: 'Container'

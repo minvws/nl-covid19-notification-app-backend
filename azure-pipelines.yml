@@ -14,10 +14,20 @@ variables:
   runtime: 'win-x64'  
   ProjectsToTest: "src/**/*.Tests.csproj"
 
-  Content.WebApi.ArtifactSubDirectory: "ContentApi"
-  App.IccPortal.ArtifactSubDirectory: "IccPortalApp"
-  Icc.WebApi.ArtifactSubDirectory: "IccWebApi"
-  MobileAppApi.WebApi.ArtifactSubDirectory: "MobileAppApi"
+  Apps.Content.WebApi.ArtifactSubDirectory: "ContentApi"
+  Apps.App.IccPortal.ArtifactSubDirectory: "IccPortalApp"
+  Apps.Icc.WebApi.ArtifactSubDirectory: "IccWebApi"
+  Apps.MobileAppApi.WebApi.ArtifactSubDirectory: "MobileAppApi"
+  Apps.DailyCleanup.ArtifactSubDirectory: "DailyCleanup"
+  Apps.EksEngine.ArtifactSubDirectory: "EksEngine"
+  Apps.IksDownloader.ArtifactSubDirectory: "EfgsDownloader"
+  Apps.IksUploader.ArtifactSubDirectory: "EfgsUploader"
+  Apps.ManifestEngine.ArtifactSubDirectory: "ManifestEngine"
+  Tools.PublishContent.ArtifactSubDirectory: "PublishContent"
+  Tools.GenTeks.ArtifactSubDirectory: "GenTeks"
+  Tools.ForceTekAuth.ArtifactSubDirectory: "ForceTekAuth"
+  Tools.SigTestFileCreator.ArtifactSubDirectory: "SigTestFileCreator"
+  Tools.Eks.Parser.ArtifactSubDirectory: "Eks.Parser"
 
 stages:
 #- template: /build/pipelines/stages/test-stage.yaml
@@ -27,7 +37,18 @@ stages:
   #dependsOn: Test
   displayName: 'Publish builds'
   jobs:  
-  - template: /build/pipelines/stages/publish-contentwebapi-artifact-stage.yaml
-  #- template: /build/pipelines/stages/publish-appiccportal-artifact-stage.yaml
-  - template: /build/pipelines/stages/publish-iccwebapi-artifact-stage.yaml
-  - template: /build/pipelines/stages/publish-mobileappipawebapi-artifact-stage.yaml
+  - template: /build/pipelines/jobs/apps-publish-contentwebapi-artifact.yaml
+  #- template: /build/pipelines/jobs/apps-publish-appiccportal-artifact.yaml
+  - template: /build/pipelines/jobs/apps-publish-iccwebapi-artifact.yaml
+  - template: /build/pipelines/jobs/apps-publish-mobileappipawebapi-artifact.yaml
+  - template: /build/pipelines/jobs/apps-publish-dailycleanup-artifact.yaml
+  - template: /build/pipelines/jobs/apps-publish-eksengine-artifact.yaml
+  - template: /build/pipelines/jobs/apps-publish-iksdownloader-artifact.yaml
+  - template: /build/pipelines/jobs/apps-publish-iksuploader-artifact.yaml
+  - template: /build/pipelines/jobs/apps-publish-manifestengine-artifact.yaml
+
+  - template: /build/pipelines/jobs/tools-publish-eksparcer-artifact.yaml
+  - template: /build/pipelines/jobs/tools-publish-forcetekauth-artifact.yaml
+  - template: /build/pipelines/jobs/tools-publish-genteks-artifact.yaml
+  - template: /build/pipelines/jobs/tools-publish-publishcontent-artifact.yaml
+  - template: /build/pipelines/jobs/tools-publish-sigtestfilecreator-artifact.yaml

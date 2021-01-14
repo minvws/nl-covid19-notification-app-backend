@@ -1,0 +1,23 @@
+jobs:  
+  - job: Build_Eks_Parser
+    displayName: Publish Build Artifact Eks_Parser
+    steps:
+      - task: UseDotNet@2
+        displayName: 'Install .NET Core SDK'
+        inputs:
+          version: 3.1.x        
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet publish'
+        inputs:
+          command: 'publish'
+          publishWebProjects: false
+          projects: 'src/Eks.Parser/Eks.Parser.csproj'
+          # Version suffix starts with build number and Append the current git hash to the version suffix
+          arguments: '-o $(Build.ArtifactStagingDirectory)/$(Tools.Eks.Parser.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
+          # CIBG don't use ZIP files for artifacts
+          zipAfterPublish: false            
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Tools.Eks.Parser.ArtifactSubDirectory)'
+          ArtifactName: 'drop2'
+          publishLocation: 'Container'

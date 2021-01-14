@@ -13,11 +13,11 @@ jobs:
           publishWebProjects: false
           projects: 'src/MobileAppApi.WebApi/MobileAppApi.WebApi.csproj'
           # Version suffix starts with build number and Append the current git hash to the version suffix
-          arguments: '-o $(Build.ArtifactStagingDirectory)/$(MobileAppApi.WebApi.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
+          arguments: '-o $(Build.ArtifactStagingDirectory)/$(Apps.MobileAppApi.WebApi.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
           # CIBG don't use ZIP files for artifacts
           zipAfterPublish: false
       - task: PublishBuildArtifacts@1
         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(MobileAppApi.WebApi.ArtifactSubDirectory)'
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Apps.MobileAppApi.WebApi.ArtifactSubDirectory)'
           ArtifactName: 'drop2'
           publishLocation: 'Container'
