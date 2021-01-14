@@ -9,16 +9,17 @@ stages:
         - task: UseDotNet@2
           displayName: 'Install .NET Core SDK'
           inputs:
-            version: 3.1.x
+            version: 3.1.x        
         - task: DotNetCoreCLI@2
           displayName: 'dotnet publish'
           inputs:
             command: 'publish'
-            projects: 'src/App.IccPortal/App.IccPortal.csproj'
+            workingFolder: '$(Build.SourcesDirectory)\src'
+            projects: 'App.IccPortal/App.IccPortal.csproj'
             # Version suffix starts with build number and Append the current git hash to the version suffix
             arguments: '-o $(Build.ArtifactStagingDirectory)/$(App.IccPortal.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
             # CIBG don't use ZIP files for artifacts
-            zipAfterPublish: false
+            zipAfterPublish: false            
         - task: PublishBuildArtifacts@1
           inputs:
             PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(App.IccPortal.ArtifactSubDirectory)'

@@ -23,10 +23,10 @@ variables:
   runtime: 'win-x64'  
   ProjectsToTest: "src/**/*.Tests.csproj"
 
-  Content.WebApi.ArtifactSubDirectory: "ContentApi.WebApi"
-  App.IccPortal.ArtifactSubDirectory: "App.IccPortal"
-  Icc.WebApi.ArtifactSubDirectory: "Icc.WebApi"
-  MobileAppApi.WebApi.ArtifactSubDirectory: "MobileAppApi.WebApi"
+  Content.WebApi.ArtifactSubDirectory: "ContentApi"
+  App.IccPortal.ArtifactSubDirectory: "IccPortalApp"
+  Icc.WebApi.ArtifactSubDirectory: "IccWebApi"
+  MobileAppApi.WebApi.ArtifactSubDirectory: "MobileAppApi"
 
 stages:
 #- template: /build/pipelines/stages/test-stage.yaml
