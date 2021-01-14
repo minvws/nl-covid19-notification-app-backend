@@ -14,8 +14,8 @@ trigger:
     include:
     - .
 pool:
-  vmImage: 'Ubuntu-20.04'
-  #name: 'CIBG-BuildRelease-O'
+  #vmImage: 'Ubuntu-20.04'
+  name: 'CIBG-BuildRelease-O'
 
 variables:
   - template: /build/pipelines/variables/common-variables.yaml
