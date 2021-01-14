@@ -2,31 +2,25 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
 {
-    public class WorkflowControllerStopKeysTests : WebApplicationFactory<Startup>, IDisposable
+    public class WorkflowControllerStopKeysTests
     {
-        private WebApplicationFactory<Startup> _Factory;
+        private readonly CustomWebApplicationFactory<Startup, WorkflowDbContext> _Factory;
 
         public WorkflowControllerStopKeysTests()
         {
-            _Factory = WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                });
-            });
+            _Factory = new CustomWebApplicationFactory<Startup, WorkflowDbContext>();
         }
 
         [Fact]

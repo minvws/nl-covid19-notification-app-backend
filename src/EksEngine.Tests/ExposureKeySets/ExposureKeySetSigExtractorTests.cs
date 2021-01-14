@@ -20,8 +20,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var filename = Path.Combine(folder, eks);
             var bytes = new EksParser().ReadGaenSig(filename);
             Assert.True(bytes.Length > 0);
-            using var output = File.Create(@"D:\sig.bin", 1024, FileOptions.None);
-            output.Write(bytes);
+            //using var output = File.Create(@"D:\sig.bin", 1024, FileOptions.None);
+            //output.Write(bytes);
         }
     }
 }

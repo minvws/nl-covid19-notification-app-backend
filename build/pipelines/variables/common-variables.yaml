@@ -2,4 +2,4 @@ variables:
  solution: '**/*.sln'
  buildConfiguration: 'Release'
  runtime: 'win-x64'  
- ProjectsToTest: "src/Content.Commands.Tests/**/*.Tests.csproj"
+ ProjectsToTest: "src/**/*.Tests.csproj"
