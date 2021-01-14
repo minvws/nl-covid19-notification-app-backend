@@ -24,22 +24,15 @@ variables:
   ProjectsToTest: "src/**/*.Tests.csproj"
 
   Content.WebApi.ArtifactSubDirectory: "ContentApi.WebApi"
-  Content.WebApi.ProjectsToBuildAndPublish: "src/Content.WebApi/Content.WebApi.csproj"
   App.IccPortal.ArtifactSubDirectory: "App.IccPortal"
-  App.IccPortal.ProjectsToBuildAndPublish: "src/App.IccPortal/App.IccPortal.csproj"
   Icc.WebApi.ArtifactSubDirectory: "Icc.WebApi"
-  Icc.WebApi.ProjectsToBuildAndPublish: "src/Icc.WebApi/App.IccPortal.csproj"
   MobileAppApi.WebApi.ArtifactSubDirectory: "MobileAppApi.WebApi"
-  MobileAppApi.WebApi.ProjectsToBuildAndPublish: "src/MobileAppApi.WebApi/MobileAppApi.WebApi.csproj"
-
-  # template: /build/pipelines/variables/contentwebapi-variables.yaml   
-  
 
 stages:
-- template: /build/pipelines/stages/test-stage.yaml
+#- template: /build/pipelines/stages/test-stage.yaml
 
 # Publish build and push content.webapi stage
-- template: /build/pipelines/stages/publish-contentwebapi-artifact-stage.yaml
+#- template: /build/pipelines/stages/publish-contentwebapi-artifact-stage.yaml
 - template: /build/pipelines/stages/publish-appiccportal-artifact-stage.yaml
 - template: /build/pipelines/stages/publish-iccwebapi-artifact-stage.yaml
-- template: /build/pipelines/stages/publish-mobileappipawebapi-artifact-stage.yaml
+#- template: /build/pipelines/stages/publish-mobileappipawebapi-artifact-stage.yaml

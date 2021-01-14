@@ -5,8 +5,6 @@ stages:
   jobs:  
     - job: Build
       displayName: Publish Build Artifacts
-      #pool:
-      #  vmImage: 'windows-latest'
       steps:
         - task: UseDotNet@2
           displayName: 'Install .NET Core SDK'
@@ -16,7 +14,7 @@ stages:
           displayName: 'dotnet publish'
           inputs:
             command: 'publish'
-            projects: $(MobileAppApi.WebApi.ProjectsToBuildAndPublish)
+            projects: 'src/MobileAppApi.WebApi/MobileAppApi.WebApi.csproj'
             # Version suffix starts with build number and Append the current git hash to the version suffix
             arguments: '-o $(Build.ArtifactStagingDirectory)/$(MobileAppApi.WebApi.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
             # CIBG don't use ZIP files for artifacts
