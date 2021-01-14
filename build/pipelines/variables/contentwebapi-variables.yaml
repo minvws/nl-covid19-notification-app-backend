@@ -1,3 +1,3 @@
 variables:
  Content.WebApi.ArtifactSubDirectory: "ContentApi.WebApi"
- Content.WebApi.ProjectsToBuildAndPublish: "src/Content.WebApi/*.csproj"
+ Content.WebApi.ProjectsToBuildAndPublish: "src/**/Content.WebApi.csproj"
