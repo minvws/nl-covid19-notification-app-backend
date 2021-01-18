@@ -87,7 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         public async Task ExecuteForV3()
         {
             if (_ContentDb == null)
-			{
+            {
                 _ContentDb = _ContentDbProvider();
             }
 

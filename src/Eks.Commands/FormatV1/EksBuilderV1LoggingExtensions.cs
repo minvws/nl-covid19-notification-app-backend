@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
         private readonly ILogger _Logger;
 
         public EksBuilderV1LoggingExtensions(ILogger<EksBuilderV1LoggingExtensions> logger)
-		{
+        {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         

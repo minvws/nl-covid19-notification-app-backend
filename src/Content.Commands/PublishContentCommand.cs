@@ -53,14 +53,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
             _Logger.WriteStartWriting(contentArgs.ContentType);
 
-			if (contentArgs.ContentType == ContentTypes.ResourceBundleV3) //needs direct signing with ev-cert
-			{
+            if (contentArgs.ContentType == ContentTypes.ResourceBundleV3) //needs direct signing with ev-cert
+            {
                 _ContentDbContext.BeginTransaction();
                 await _InsertDbCommandV3().ExecuteAsync(contentArgs);
                 _ContentDbContext.SaveAndCommit();
             }
             else
-			{
+            {
                 _ContentDbContext.BeginTransaction();
                 await _InsertDbCommand.ExecuteAsync(contentArgs);
                 _ContentDbContext.SaveAndCommit();

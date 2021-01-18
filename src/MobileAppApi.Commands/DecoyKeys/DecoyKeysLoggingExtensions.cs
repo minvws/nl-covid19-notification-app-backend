@@ -8,40 +8,40 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys
 {
-	public class DecoyKeysLoggingExtensions
-	{
+    public class DecoyKeysLoggingExtensions
+    {
         private const string Name = "Decoykeys(PostSecret)";
-		private const int Base = LoggingCodex.Decoy;
+        private const int Base = LoggingCodex.Decoy;
 
-		private const int Start = Base;
-		private const int RegisterTime = Base + 1;
-		private const int CreateDelay = Base + 2;
+        private const int Start = Base;
+        private const int RegisterTime = Base + 1;
+        private const int CreateDelay = Base + 2;
 
-		private readonly ILogger _Logger;
+        private readonly ILogger _Logger;
 
-		public DecoyKeysLoggingExtensions(ILogger<DecoyKeysLoggingExtensions> logger)
-		{
-			_Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-		}
+        public DecoyKeysLoggingExtensions(ILogger<DecoyKeysLoggingExtensions> logger)
+        {
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
 
-		public void WriteStartDecoy()
-		{
-			_Logger.LogInformation("[{name}/{id}] POST triggered.",
-				Name, Start);
-		}
+        public void WriteStartDecoy()
+        {
+            _Logger.LogInformation("[{name}/{id}] POST triggered.",
+                Name, Start);
+        }
 
-		public void WriteTimeRegistered(int entryNr, double entryTime, double entryMean, double entryStDev)
-		{
-			_Logger.LogDebug("[{name}/{id}] Entry no. {entryNr} registered. Time: {entryTime}. Mean: {entryMean:xx3}, Stdev: {entryStDev:xx3}]",
-				Name, RegisterTime,
-				entryNr, entryTime, entryMean, entryStDev);
-		}
+        public void WriteTimeRegistered(int entryNr, double entryTime, double entryMean, double entryStDev)
+        {
+            _Logger.LogDebug("[{name}/{id}] Entry no. {entryNr} registered. Time: {entryTime}. Mean: {entryMean:xx3}, Stdev: {entryStDev:xx3}]",
+                Name, RegisterTime,
+                entryNr, entryTime, entryMean, entryStDev);
+        }
 
-		public void WriteGeneratingDelay(TimeSpan delayMs)
-		{
-			_Logger.LogDebug("[{name}/{id}] Delaying for {delayMs} milliseconds",
-				Name, CreateDelay,
-				delayMs.Milliseconds);
-		}
-	}
+        public void WriteGeneratingDelay(TimeSpan delayMs)
+        {
+            _Logger.LogDebug("[{name}/{id}] Delaying for {delayMs} milliseconds",
+                Name, CreateDelay,
+                delayMs.Milliseconds);
+        }
+    }
 }

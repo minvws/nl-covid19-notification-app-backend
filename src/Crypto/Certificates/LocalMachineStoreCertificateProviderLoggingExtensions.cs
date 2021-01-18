@@ -48,8 +48,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 
         public void WriteCertReadError(Exception exception)
         {
-			if (exception == null)
-			{
+            if (exception == null)
+            {
                 throw new ArgumentNullException(nameof(exception));
             }
 

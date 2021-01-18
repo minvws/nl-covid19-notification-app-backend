@@ -8,8 +8,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
-	public class GetCdnContentLoggingExtensions
-	{
+    public class GetCdnContentLoggingExtensions
+    {
         private const string Name = "HttpGetCdnContent";
         private const int Base = LoggingCodex.GetCdnContent;
 
@@ -19,45 +19,45 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         private const int NotFound = Base + 4;
         private const int EtagFound = Base + 5;
 
-		private readonly ILogger _Logger;
+        private readonly ILogger _Logger;
 
-		public GetCdnContentLoggingExtensions(ILogger<GetCdnContentLoggingExtensions> logger)
-		{
-			_Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-		}
+        public GetCdnContentLoggingExtensions(ILogger<GetCdnContentLoggingExtensions> logger)
+        {
+            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
 
-		public void WriteInvalidType(string cdnId)
-		{
-			_Logger.LogError("[{name}/{id}] Invalid generic content type - {Id}.",
-				Name, InvalidType,
-				cdnId);
-		}
+        public void WriteInvalidType(string cdnId)
+        {
+            _Logger.LogError("[{name}/{id}] Invalid generic content type - {Id}.",
+                Name, InvalidType,
+                cdnId);
+        }
 
-		public void WriteInvalidId(string cdnId)
-		{
-			_Logger.LogError("[{name}/{id}] Invalid content id - {Id}.",
-				Name, InvalidId,
-				cdnId);
-		}
+        public void WriteInvalidId(string cdnId)
+        {
+            _Logger.LogError("[{name}/{id}] Invalid content id - {Id}.",
+                Name, InvalidId,
+                cdnId);
+        }
 
-		public void WriteHeaderMissing()
-		{
-			_Logger.LogDebug("[{name}/{id}] Required request header missing - if-none-match.",
-				Name, HeaderMissing);
-		}
+        public void WriteHeaderMissing()
+        {
+            _Logger.LogDebug("[{name}/{id}] Required request header missing - if-none-match.",
+                Name, HeaderMissing);
+        }
 
-		public void WriteNotFound(string cdnId)
-		{
-			_Logger.LogError("[{name}/{id}] Content not found - {Id}.",
-				Name, NotFound,
-				cdnId);
-		}
+        public void WriteNotFound(string cdnId)
+        {
+            _Logger.LogError("[{name}/{id}] Content not found - {Id}.",
+                Name, NotFound,
+                cdnId);
+        }
 
-		public void WriteEtagFound(string cdnId)
-		{
-			_Logger.LogWarning("[{name}/{id}] Matching etag found, responding with 304 - {Id}.",
-				Name, EtagFound,
-				cdnId);
-		}
-	}
+        public void WriteEtagFound(string cdnId)
+        {
+            _Logger.LogWarning("[{name}/{id}] Matching etag found, responding with 304 - {Id}.",
+                Name, EtagFound,
+                cdnId);
+        }
+    }
 }

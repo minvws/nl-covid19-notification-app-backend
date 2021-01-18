@@ -26,8 +26,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 
         public void WriteOpening(string? name)
         {
-			if (name == null)
-			{
+            if (name == null)
+            {
                 throw new ArgumentNullException(nameof(name));
             }
 
@@ -44,8 +44,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 
         public void WriteResourceFail(Exception exception)
         {
-			if (exception == null)
-			{
+            if (exception == null)
+            {
                 throw new ArgumentNullException(nameof(exception));
             }
 
