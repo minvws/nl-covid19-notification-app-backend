@@ -55,7 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
             timer.Stop();
 
             //Assert
-            Assert.True(timer.ElapsedMilliseconds >= delayMs, $"Recorded time: {timer.ElapsedMilliseconds}ms.");
+            Assert.True(timer.ElapsedMilliseconds >= 0.90 * delayMs, $"Recorded time: {timer.ElapsedMilliseconds}ms.");
         }
     }
 }

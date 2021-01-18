@@ -8,7 +8,6 @@ using System.Collections;
 using Xunit;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DecoyTime
 {
