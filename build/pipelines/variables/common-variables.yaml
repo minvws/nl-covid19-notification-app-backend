@@ -1,5 +1,0 @@
-variables:
- solution: '**/*.sln'
- buildConfiguration: 'Release'
- runtime: 'win-x64'  
- ProjectsToTest: "src/**/*.Tests.csproj"
