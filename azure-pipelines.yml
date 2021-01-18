@@ -42,7 +42,6 @@ variables:
   #Tools.ForceTekAuth.ArtifactSubDirectory: 'ForceTekAuth'
   Tools.SigTestFileCreator.ArtifactSubDirectory: 'SigTestFileCreator'
   #Tools.Eks.Parser.ArtifactSubDirectory: 'Eks.Parser'
-
   DacPac.ArtifactSubDirectory: 'Database'
   HSMScripting.ArtifactSubDirectory: 'HSM-Scripting'
   
@@ -74,7 +73,7 @@ stages:
   - template: /build/pipelines/jobs/tools-publish-sigtestfilecreator-artifact.yaml
   
   # Database  
-  - template: dacpac-publish-database-artifact.yaml
+  - template: /build/pipelines/dacpac-publish-database-artifact.yaml
 
   # Scripts
-  - template: files-publish-hsm-scripting-artifact.yaml
+  - template: /build/pipelines/files-publish-hsm-scripting-artifact.yaml
