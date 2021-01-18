@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
+using System;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.DecoyKeys
@@ -28,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
             //Arrange
             var mockTimeCalculator = new Mock<IDecoyTimeCalculator>();
             mockTimeCalculator.Setup(x => x.GenerateDelayTime())
-                .Returns(delayMs);
+                .Returns(TimeSpan.FromMilliseconds(delayMs));
 
             var sut = new DecoyTimeGeneratorAttribute(mockTimeCalculator.Object);
 

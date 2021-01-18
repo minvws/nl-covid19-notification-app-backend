@@ -37,11 +37,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 				entryNr, entryTime, entryMean, entryStDev);
 		}
 
-		public void WriteGeneratingDelay(int delayMs)
+		public void WriteGeneratingDelay(TimeSpan delayMs)
 		{
 			_Logger.LogDebug("[{name}/{id}] Delaying for {delayMs} milliseconds",
 				Name, CreateDelay,
-				delayMs);
+				delayMs.Milliseconds);
 		}
 	}
 }

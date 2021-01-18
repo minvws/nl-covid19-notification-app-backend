@@ -56,7 +56,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var sw = new Stopwatch();
             var mockTimeCalculator = new Mock<IDecoyTimeCalculator>();
             mockTimeCalculator.Setup(x => x.GenerateDelayTime())
-                .Returns(delayMs);
+                .Returns(TimeSpan.FromMilliseconds(delayMs));
 
             var client = _Factory.WithWebHostBuilder(
                 builder =>
