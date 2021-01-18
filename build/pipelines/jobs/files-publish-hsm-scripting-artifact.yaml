@@ -1,5 +1,5 @@
 jobs:  
-  - job: Copy_HSM-Scripting
+  - job: Copy_HSM_Scripting
     displayName: Publish Artifact HSM-Scripting files
     steps:
      - task: CopyFiles@2
