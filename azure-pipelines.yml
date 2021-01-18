@@ -73,7 +73,7 @@ stages:
   - template: /build/pipelines/jobs/tools-publish-sigtestfilecreator-artifact.yaml
   
   # Database  
-  - template: /build/pipelines/dacpac-publish-database-artifact.yaml
+  - template: /build/pipelines/jobs/dacpac-publish-database-artifact.yaml
 
   # Scripts
-  - template: /build/pipelines/files-publish-hsm-scripting-artifact.yaml
+  - template: /build/pipelines/jobs/files-publish-hsm-scripting-artifact.yaml
