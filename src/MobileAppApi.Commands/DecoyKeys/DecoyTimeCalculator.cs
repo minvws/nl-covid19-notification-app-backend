@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 
 		private int _Count;
 		private double _SumSquareDiff;
-		private object _Lock = new object();
+		private readonly object _Lock = new object();
 
 		public double DecoyTimeMean { get; private set; }
 		public double DecoyTimeStDev => _Count > 1 ? Math.Sqrt(_SumSquareDiff / (_Count - 1)) : 0;
