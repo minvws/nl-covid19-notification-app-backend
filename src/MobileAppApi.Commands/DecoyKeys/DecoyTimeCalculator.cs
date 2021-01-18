@@ -11,20 +11,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 	{
 		private readonly DecoyKeysLoggingExtensions _Logger;
 
-		private int _count;
-		private double _sumSquareDiff;
-		private object _lock = new object();
+		private int _Count;
+		private double _SumSquareDiff;
+		private object _Lock = new object();
 
 		public double DecoyTimeMean { get; private set; }
-		public double DecoyTimeStDev => _count > 1 ? Math.Sqrt(_sumSquareDiff / (_count - 1)) : 0;
+		public double DecoyTimeStDev => _Count > 1 ? Math.Sqrt(_SumSquareDiff / (_Count - 1)) : 0;
 
 		public DecoyTimeCalculator(DecoyKeysLoggingExtensions logger)
 		{
 			_Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-			_count = 0;
+			_Count = 0;
 			DecoyTimeMean = 0;
-			_sumSquareDiff = 0;
+			_SumSquareDiff = 0;
 		}
 
 		public void RegisterTime(double timeMs) //Welford's algorithm
@@ -34,17 +34,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 				throw new ArgumentOutOfRangeException($"RegisterTime was called with a non-positive time: {timeMs}");
 			}
 
-			lock (_lock)
+			lock (_Lock)
 			{
-				_count++;
+				_Count++;
 				UpdateMeanAndSumSquareDiff(timeMs);
-				_Logger.WriteTimeRegistered(_count, timeMs, DecoyTimeMean, DecoyTimeStDev);
+				_Logger.WriteTimeRegistered(_Count, timeMs, DecoyTimeMean, DecoyTimeStDev);
 			}
 		}
 
 		public TimeSpan GenerateDelayTime()
 		{
-			lock (_lock)
+			lock (_Lock)
 			{
 				var gaussian = new Normal(DecoyTimeMean, DecoyTimeStDev);
 				var delayMs = TimeSpan.FromMilliseconds(gaussian.Sample());
@@ -56,14 +56,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 
 		private void UpdateMeanAndSumSquareDiff(double timeMs)
 		{
-			if (_count == 1)
+			if (_Count == 1)
 			{
 				DecoyTimeMean = timeMs;
 				return;
 			}
 			
-			var newMean = DecoyTimeMean + (timeMs - DecoyTimeMean) / _count;
-			_sumSquareDiff += (timeMs - DecoyTimeMean) * (timeMs - newMean);
+			var newMean = DecoyTimeMean + (timeMs - DecoyTimeMean) / _Count;
+			_SumSquareDiff += (timeMs - DecoyTimeMean) * (timeMs - newMean);
 			DecoyTimeMean = newMean;
 		}
 	}
