@@ -1,0 +1,12 @@
+jobs:  
+  - job: Build_SigTestFileCreator
+    displayName: Publish Build Artifact SigTestFileCreator
+    steps:
+     - task: CopyFiles@2
+       inputs:
+         contents: '$(Build.Repository.LocalPath)/src/HSM-Scripting/**'
+         targetFolder: $(Build.ArtifactStagingDirectory)/$(HSMScripting.ArtifactSubDirectory)
+     - task: PublishBuildArtifacts@1
+       inputs:
+         pathToPublish: $(Build.ArtifactStagingDirectory)/$(HSMScripting.ArtifactSubDirectory)
+         artifactName: $(Publish.ArtifactName)
