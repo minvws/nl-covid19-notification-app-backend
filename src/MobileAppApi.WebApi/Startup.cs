@@ -46,7 +46,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
             services.AddSingleton<ITekListValidationConfig, StandardTekListValidationConfig>();
             services.AddSingleton<ITekValidatorConfig, TekValidatorConfig>();
-            services.AddSingleton<IDecoyKeysConfig, StandardDecoyKeysConfig>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
             services.AddTransient<ISignatureValidator, SignatureValidator>();
             services.AddTransient<IWorkflowTime, TekReleaseWorkflowTime>();
@@ -64,6 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddScoped<IPaddingGenerator, CryptoRandomPaddingGenerator>();
             services.AddScoped<SuppressErrorAttribute>();
             services.AddScoped<DecoyTimeGeneratorAttribute>();
+            services.AddSingleton<IDecoyTimeCalculator, DecoyTimeCalculator>();
 
             services.AddSingleton<RegisterSecretLoggingExtensions>();
             services.AddSingleton<PostKeysLoggingExtensions>();

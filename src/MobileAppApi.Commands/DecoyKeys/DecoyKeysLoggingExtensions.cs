@@ -14,7 +14,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 		private const int Base = LoggingCodex.Decoy;
 
 		private const int Start = Base;
-		private const int Delay = Base + 1;
+		private const int RegisterTime = Base + 1;
+		private const int CreateDelay = Base + 2;
 
 		private readonly ILogger _Logger;
 
@@ -29,11 +30,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 				Name, Start);
 		}
 
-		public void WriteDelaying(int delayMs)
+		public void WriteTimeRegistered(int entryNr, double entryTime, double entryMean, double entryStDev)
+		{
+			_Logger.LogDebug("[{name}/{id}] Entry no. {entryNr} registered. Time: {entryTime}. Mean: {entryMean:xx3}, Stdev: {entryStDev:xx3}]",
+				Name, RegisterTime,
+				entryNr, entryTime, entryMean, entryStDev);
+		}
+
+		public void WriteGeneratingDelay(TimeSpan delayMs)
 		{
 			_Logger.LogDebug("[{name}/{id}] Delaying for {delayMs} milliseconds",
-				Name, Delay,
-				delayMs);
+				Name, CreateDelay,
+				delayMs.Milliseconds);
 		}
 	}
 }
