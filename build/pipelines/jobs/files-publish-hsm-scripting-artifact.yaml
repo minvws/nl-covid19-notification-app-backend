@@ -1,6 +1,6 @@
 jobs:  
-  - job: Build_SigTestFileCreator
-    displayName: Publish Build Artifact SigTestFileCreator
+  - job: Copy_HSM-Scripting
+    displayName: Publish Artifact HSM-Scripting files
     steps:
      - task: CopyFiles@2
        inputs:
