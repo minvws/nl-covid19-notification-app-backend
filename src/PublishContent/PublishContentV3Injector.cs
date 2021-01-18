@@ -14,23 +14,23 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace PublishContent
 {
-	public static class PublishContentV3Injector
-	{
-		public static void PublishContentForV3Startup(this IServiceCollection services)
-		{
-			services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
+    public static class PublishContentV3Injector
+    {
+        public static void PublishContentForV3Startup(this IServiceCollection services)
+        {
+            services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
 
-			services.AddTransient<Func<ContentInsertDbCommand>>(x =>
-				() => new ContentInsertDbCommand(
-						x.GetRequiredService<ContentDbContext>(),
-						x.GetRequiredService<IUtcDateTimeProvider>(),
-						x.GetRequiredService<IPublishingIdService>(),
-						new ZippedSignedContentFormatter(
-							SignerConfigStartup.BuildEvSigner(
-								x.GetRequiredService<IConfiguration>(),
-								x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
-								x.GetRequiredService<IUtcDateTimeProvider>())))
-				);
-		}
-	}
+            services.AddTransient<Func<ContentInsertDbCommand>>(x =>
+                () => new ContentInsertDbCommand(
+                        x.GetRequiredService<ContentDbContext>(),
+                        x.GetRequiredService<IUtcDateTimeProvider>(),
+                        x.GetRequiredService<IPublishingIdService>(),
+                        new ZippedSignedContentFormatter(
+                            SignerConfigStartup.BuildEvSigner(
+                                x.GetRequiredService<IConfiguration>(),
+                                x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                                x.GetRequiredService<IUtcDateTimeProvider>())))
+                );
+        }
+    }
 }

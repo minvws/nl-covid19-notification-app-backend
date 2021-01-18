@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
         public void WriteLengthOfResponsePadding(int paddingLength)
         {
             _Logger.LogInformation("[{name}/{id}] Length of response padding:{PaddingLength}.",
-				Name, ResponsePaddingLength,
+                Name, ResponsePaddingLength,
                 paddingLength);
         }
 

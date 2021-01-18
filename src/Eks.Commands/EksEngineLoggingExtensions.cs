@@ -70,7 +70,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         {
             _Logger.LogInformation("[{name}/{id}] {JobName} complete.",
                 Name, Finished,
-				jobName);
+                jobName);
         }
 
         public void WriteNoElevatedPrivs(string jobName)
@@ -148,8 +148,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         public void WriteRemainingTeks(int count)
         {
             _Logger.LogDebug("[{name}/{id}] Write remaining TEKs - Count:{Count}.",
-				Name, WriteRemainingTekCount,
-				count);
+                Name, WriteRemainingTekCount,
+                count);
         }
 
         public void WriteAddTeksToOutput(int count, int total)

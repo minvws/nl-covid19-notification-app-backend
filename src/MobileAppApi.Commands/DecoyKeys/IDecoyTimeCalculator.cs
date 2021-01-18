@@ -6,12 +6,12 @@ using System;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys
 {
-	public interface IDecoyTimeCalculator
-	{
-		double DecoyTimeMean { get; }
-		double DecoyTimeStDev { get; }
+    public interface IDecoyTimeCalculator
+    {
+        double DecoyTimeMean { get; }
+        double DecoyTimeStDev { get; }
 
-		void RegisterTime(double timeMs);
-		TimeSpan GenerateDelayTime();
-	}
+        void RegisterTime(double timeMs);
+        TimeSpan GenerateDelayTime();
+    }
 }
