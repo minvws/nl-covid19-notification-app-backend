@@ -55,9 +55,9 @@
       <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
       <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
       <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="8.4.1" />
-      <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.5.1" />
-      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.5.1" />
-      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.5.1" />
+      <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.6.3" />
+      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.6.3" />
+      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.6.3" />
       <PackageReference Include="TheIdentityHub.AspNetCore.Authentication" Version="3.0.0" />
     </ItemGroup>
 
