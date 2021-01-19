@@ -10,11 +10,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
 {
     public class SqlServerWrappedEfExtensions : IWrappedEfExtensions
     {
-        public Task TruncateTableAsync(DbContext db, string tableName)
+        public async Task TruncateTableAsync(DbContext db, string tableName)
         {
             if (db == null) throw new ArgumentNullException(nameof(db));
             if (string.IsNullOrWhiteSpace(tableName)) throw new ArgumentException(nameof(tableName));
-            return db.Database.ExecuteSqlRawAsync($"TRUNCATE TABLE [dbo].[{tableName}];");
+            await db.Database.ExecuteSqlRawAsync($"TRUNCATE TABLE [dbo].[{tableName}];");
         }
     }
 }
