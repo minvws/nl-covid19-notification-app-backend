@@ -119,7 +119,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         {
             _Logger.WriteCleartables();
 
-            await using var dbc = _PublishingDbContextFac();
+            var dbc = _PublishingDbContextFac();
             await _SqlCommands.TruncateTableAsync(dbc, TableNames.EksEngineInput);
             await _SqlCommands.TruncateTableAsync(dbc, TableNames.EksEngineOutput);
         }
