@@ -59,11 +59,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
         private async Task ClearJobTablesAsync()
         {
-            await Task.Run(() =>
-            {
-                var dbc = _DkSourceDbContextFactory();
-                _SqlCommands.TruncateTable(dbc, TableNames.DiagnosisKeysInput);
-            });
+            var dbc = _DkSourceDbContextFactory();
+            await _SqlCommands.TruncateTableAsync(dbc, TableNames.DiagnosisKeysInput);
         }
 
         private async Task SnapshotTeks()

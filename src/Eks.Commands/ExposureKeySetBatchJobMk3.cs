@@ -120,8 +120,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _Logger.WriteCleartables();
 
             await using var dbc = _PublishingDbContextFac();
-            _SqlCommands.TruncateTable(dbc, TableNames.EksEngineInput);
-            _SqlCommands.TruncateTable(dbc, TableNames.EksEngineOutput);
+            await _SqlCommands.TruncateTableAsync(dbc, TableNames.EksEngineInput);
+            await _SqlCommands.TruncateTableAsync(dbc, TableNames.EksEngineOutput);
         }
 
         private async Task StuffAsync()
