@@ -16,19 +16,27 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
 {
     public class WorkflowControllerStopKeysTests : WebApplicationFactory<Startup>, IDisposable
     {
-        private WebApplicationFactory<Startup> _Factory;
+        private readonly WebApplicationFactory<Startup> _Factory;
+        private readonly Mock<IDecoyTimeCalculator> _MockTimeCalculator = new Mock<IDecoyTimeCalculator>();
 
         public WorkflowControllerStopKeysTests()
         {
             _Factory = WithWebHostBuilder(
                 builder =>
                 {
-                    builder.ConfigureTestServices(services => {});
+                    builder.ConfigureTestServices(services => {
+
+                        services.Replace(new ServiceDescriptor(typeof(IDecoyTimeCalculator), _MockTimeCalculator.Object));
+                        services.AddTransient<DecoyTimeGeneratorAttribute>();
+                        services.AddTransient<DecoyTimeAggregatorAttribute>();
+                        services.AddTransient<ResponsePaddingFilterAttribute>();
+                    });
                 });
         }
 
@@ -54,19 +62,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         {
             // Arrange
             var sw = new Stopwatch();
-            var mockTimeCalculator = new Mock<IDecoyTimeCalculator>();
-            mockTimeCalculator.Setup(x => x.GenerateDelayTime())
+            _MockTimeCalculator.Setup(x => x.GetDelay())
                 .Returns(TimeSpan.FromMilliseconds(delayMs));
 
-            var client = _Factory.WithWebHostBuilder(
-                builder =>
-                {
-                    builder.ConfigureTestServices(
-                        services =>
-                        {
-                            services.Replace(new ServiceDescriptor(typeof(IDecoyTimeCalculator), mockTimeCalculator.Object));
-                        });
-                }).CreateClient();
+            var client = _Factory.CreateClient();
 
             // Act
             sw.Start();

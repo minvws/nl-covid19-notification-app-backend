@@ -3,64 +3,61 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections.Generic;
 using System.Collections;
-using Xunit;
+using System.Collections.Generic;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
-using Microsoft.Extensions.Logging;
+using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DecoyTime
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.DecoyKeys
 {
-    public class DecoyTimeCalculatorTest
+    public class WelfordsAlgorithmTests
     {
-        private DecoyKeysLoggingExtensions _Logger;
-
-        public DecoyTimeCalculatorTest()
+        [Fact]
+        public void NoRegistrations()
         {
-            var loggerfactory = new LoggerFactory();
-
-            _Logger = new DecoyKeysLoggingExtensions(loggerfactory.CreateLogger<DecoyKeysLoggingExtensions>());
+            //Arrange
+            var wa = new WelfordsAlgorithm();
+            
+            //Assert
+            Assert.Equal(0, wa.GetCurrent(), 2);
         }
 
         [Theory]
         [ClassData(typeof(DecoyTimeTestData))]
-        public void RegisterTime_CalculateMeanAndStdDev(double[] inputValues, double expectedMean, double expectedStDev)
+        public void CalculateMeanAndStdDev(double[] inputValues, double expectedMean, double expectedStDev)
         {
             //Arrange
-            var sut = new DecoyTimeCalculator(_Logger);
+            var sut = new WelfordsAlgorithm();
+            WelfordsAlgorithmState result = null;
 
             //Act
             foreach (var dataPoint in inputValues)
             {
-                sut.RegisterTime(dataPoint);
+                result = sut.AddDataPoint(dataPoint);
             }
 
-            var resultMean = sut.DecoyTimeMean;
-            var resultStDev = sut.DecoyTimeStDev;
-
             //Assert
-            Assert.Equal(expectedMean, resultMean, 2);
-            Assert.Equal(expectedStDev, resultStDev, 2);
+            Assert.NotNull(result);
+            Assert.Equal(expectedMean, result.Mean, 2);
+            Assert.Equal(expectedStDev, result.StandardDeviation, 2);
         }
 
         [Theory]
         [InlineData(0.0)]
         [InlineData(-12.4)]
-        public void RegisterTime_ThrowsOnNonPositiveInput(double incorrectTime)
+        public void ThrowsOnNonPositiveInput(double incorrectTime)
         {
             //Arrange
-            var sut = new DecoyTimeCalculator(_Logger);
-            Action runSut = () => sut.RegisterTime(incorrectTime);
-
+            var wa = new WelfordsAlgorithm();
             //Assert
-            Assert.Throws<ArgumentOutOfRangeException>(runSut);
+            Assert.Throws<ArgumentOutOfRangeException>(() => wa.AddDataPoint(incorrectTime));
         }
 
         private class DecoyTimeTestData : IEnumerable<object[]>
         {
+            //ncrunch: no coverage start
             public IEnumerator<object[]> GetEnumerator()
             {
-                yield return new object[] { new double[] { }, 0, 0 };
                 yield return new object[] { new double[] { 10.0 }, 10.0, 0 };
                 yield return new object[] { new double[] { 10.0, 10.0 }, 10.0, 0 };
                 yield return new object[] { new double[] { 10.0, 9.0, 11.0 }, 10.0, 1.0 };
@@ -69,6 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.DecoyTi
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+            //ncrunch: no coverage end
         }
     }
 }

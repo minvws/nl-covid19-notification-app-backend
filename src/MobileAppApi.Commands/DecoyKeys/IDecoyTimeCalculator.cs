@@ -8,10 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 {
     public interface IDecoyTimeCalculator
     {
-        double DecoyTimeMean { get; }
-        double DecoyTimeStDev { get; }
-
-        void RegisterTime(double timeMs);
-        TimeSpan GenerateDelayTime();
+        IDisposable GetTimeRegistrationHandle();
+        TimeSpan GetDelay();
     }
 }

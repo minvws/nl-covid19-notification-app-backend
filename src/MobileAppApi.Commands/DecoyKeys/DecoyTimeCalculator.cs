@@ -3,68 +3,63 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using MathNet.Numerics.Distributions;
+using System.Diagnostics;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys
+ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys
 {
     public class DecoyTimeCalculator : IDecoyTimeCalculator
     {
+        private sealed class DecoyTimeCalculatorHandle : IDisposable
+        {
+            private readonly Stopwatch _Stopwatch = new Stopwatch();
+            private readonly Action<TimeSpan> _Register;
+
+            public DecoyTimeCalculatorHandle(Action<TimeSpan> register)
+            {
+                _Stopwatch.Start();
+                _Register = register ?? throw new ArgumentNullException(nameof(register));
+            }
+
+            public void Dispose()
+            {
+                _Stopwatch.Stop();
+                _Register(_Stopwatch.Elapsed);
+            }
+        }
+
         private readonly DecoyKeysLoggingExtensions _Logger;
-
-        private int _Count;
-        private double _SumSquareDiff;
         private readonly object _Lock = new object();
-
-        public double DecoyTimeMean { get; private set; }
-        public double DecoyTimeStDev => _Count > 1 ? Math.Sqrt(_SumSquareDiff / (_Count - 1)) : 0;
+        private readonly WelfordsAlgorithm _Algorithm = new WelfordsAlgorithm();
 
         public DecoyTimeCalculator(DecoyKeysLoggingExtensions logger)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-            _Count = 0;
-            DecoyTimeMean = 0;
-            _SumSquareDiff = 0;
         }
 
-        public void RegisterTime(double timeMs) //Welford's algorithm
+        public IDisposable GetTimeRegistrationHandle() => new DecoyTimeCalculatorHandle(AddDataPoint);
+
+        private void AddDataPoint(TimeSpan t)
         {
-            if (timeMs <= 0)
+            if (t <= TimeSpan.Zero)
             {
-                throw new ArgumentOutOfRangeException($"RegisterTime was called with a non-positive time: {timeMs}");
+                throw new ArgumentOutOfRangeException(nameof(t), "Must be positive.");
             }
 
             lock (_Lock)
             {
-                _Count++;
-                UpdateMeanAndSumSquareDiff(timeMs);
-                _Logger.WriteTimeRegistered(_Count, timeMs, DecoyTimeMean, DecoyTimeStDev);
+                var result = _Algorithm.AddDataPoint(t.Milliseconds);
+                _Logger.WriteTimeRegistered(result.Count, t.Milliseconds, result.Mean, result.StandardDeviation); //TODO This would alter the actual total time?
             }
         }
 
-        public TimeSpan GenerateDelayTime()
+        public TimeSpan GetDelay()
         {
             lock (_Lock)
             {
-                var gaussian = new Normal(DecoyTimeMean, DecoyTimeStDev);
-                var delayMs = TimeSpan.FromMilliseconds(gaussian.Sample());
-                
-                _Logger.WriteGeneratingDelay(delayMs);
-                return delayMs;
+                var result = TimeSpan.FromMilliseconds(_Algorithm.GetCurrent());
+                _Logger.WriteGeneratingDelay(result);
+                return result;
             }
-        }
-
-        private void UpdateMeanAndSumSquareDiff(double timeMs)
-        {
-            if (_Count == 1)
-            {
-                DecoyTimeMean = timeMs;
-                return;
-            }
-            
-            var newMean = DecoyTimeMean + (timeMs - DecoyTimeMean) / _Count;
-            _SumSquareDiff += (timeMs - DecoyTimeMean) * (timeMs - newMean);
-            DecoyTimeMean = newMean;
         }
     }
 }
