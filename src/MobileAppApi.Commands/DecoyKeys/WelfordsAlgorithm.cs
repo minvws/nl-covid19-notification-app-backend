@@ -11,10 +11,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 
         private double GetStdDev() => _Count > 1 ? Math.Sqrt(_SumSquareDiff / (_Count - 1)) : 0;
 
+        public WelfordsAlgorithmState CurrentState => new WelfordsAlgorithmState(_Count, _Mean, GetStdDev());
+
         public WelfordsAlgorithmState AddDataPoint(double amount)
         {
             Update(amount);
-            return new WelfordsAlgorithmState(_Count, _Mean, GetStdDev());
+            return CurrentState;
         }
 
         public double GetNormalSample() => new Normal(_Mean, GetStdDev()).Sample();
