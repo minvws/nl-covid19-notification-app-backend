@@ -4,8 +4,7 @@
 
 using System;
 using System.Diagnostics;
-
- namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys
 {
     public class DecoyTimeCalculator : IDecoyTimeCalculator
     {
@@ -56,7 +55,7 @@ using System.Diagnostics;
         {
             lock (_Lock)
             {
-                var result = TimeSpan.FromMilliseconds(_Algorithm.GetCurrent());
+                var result = TimeSpan.FromMilliseconds(_Algorithm.GetNormalSample());
                 _Logger.WriteGeneratingDelay(result);
                 return result;
             }

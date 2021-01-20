@@ -17,9 +17,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
         {
             //Arrange
             var wa = new WelfordsAlgorithm();
-            
+
             //Assert
-            Assert.Equal(0, wa.GetCurrent(), 2);
+            Assert.Equal(0, wa.GetNormalSample(), 2);
+        }
+
+        [Fact]
+        public void NegativeAmount()
+        {
+            //Arrange
+            var wa = new WelfordsAlgorithm();
+            wa.AddDataPoint(-1);
+            //Assert
+            Assert.Equal(-1, wa.GetNormalSample());
+        }
+
+        [Fact]
+        public void ZeroAmount()
+        {
+            //Arrange
+            var wa = new WelfordsAlgorithm();
+            wa.AddDataPoint(0);
+            //Assert
+            Assert.Equal(0, wa.GetNormalSample(), 0);
         }
 
         [Theory]
@@ -40,17 +60,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
             Assert.NotNull(result);
             Assert.Equal(expectedMean, result.Mean, 2);
             Assert.Equal(expectedStDev, result.StandardDeviation, 2);
-        }
-
-        [Theory]
-        [InlineData(0.0)]
-        [InlineData(-12.4)]
-        public void ThrowsOnNonPositiveInput(double incorrectTime)
-        {
-            //Arrange
-            var wa = new WelfordsAlgorithm();
-            //Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() => wa.AddDataPoint(incorrectTime));
         }
 
         private class DecoyTimeTestData : IEnumerable<object[]>
