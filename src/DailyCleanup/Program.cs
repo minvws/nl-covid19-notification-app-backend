@@ -22,6 +22,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramewo
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
@@ -118,6 +119,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             var c100 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             run.Add(() => logger.WriteResignerStarting());
             run.Add(() => c100.ExecuteAsync().GetAwaiter().GetResult());
+
+            var c140 = serviceProvider.GetRequiredService<RemoveExpiredIksInCommand>();
+            run.Add(() => logger.WriteExpiredIksInCleanupStarting());
+            run.Add(() => c140.ExecuteAsync().GetAwaiter().GetResult());
+
+            var c150 = serviceProvider.GetRequiredService<RemoveExpiredIksOutCommand>();
+            run.Add(() => logger.WriteExpiredIksOutCleanupStarting());
+            run.Add(() => c150.ExecuteAsync().GetAwaiter().GetResult());
 
             run.Add(() => logger.WriteFinished());
 
@@ -223,6 +232,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<IIksConfig, IksConfig>();
             services.AddTransient<MarkDiagnosisKeysAsUsedByIks>();
             services.AddTransient<IksJobContentWriter>();
+
+            services.AddSingleton<IksCleaningConfig>();
+            services.AddSingleton<RemoveExpiredIksLoggingExtensions>();
+            services.AddTransient<RemoveExpiredIksInCommand>();
+            services.AddTransient<RemoveExpiredIksOutCommand>();
 
             services.ManifestForV3Startup();
         }

@@ -25,6 +25,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
         private const int ResignerStarting = Base + 7;
         private const int EksV2CleanupStarting = Base + 8;
         private const int ManifestV2CleanupStarting = Base + 9;
+        private const int ExpiredIksInCleanupStarting = Base + 10;
+        private const int ExpiredIksOutCleanupStarting = Base + 11;
 
         private readonly ILogger _Logger;
 
@@ -103,6 +105,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
         {
             _Logger.LogInformation("[{name}/{id}] Daily cleanup - Snapshot Workflow TEKs to DKs.",
                 Name, ManifestV2CleanupStarting);
+        }
+
+        public void WriteExpiredIksInCleanupStarting()
+        {
+            _Logger.LogInformation("[{name}/{id}] Daily cleanup - Cleanup Expired IksIn run starting.",
+                Name, ExpiredIksInCleanupStarting);
+        }
+
+        public void WriteExpiredIksOutCleanupStarting()
+        {
+            _Logger.LogInformation("[{name}/{id}] Daily cleanup - Cleanup Expired IksOut run starting.",
+                Name, ExpiredIksOutCleanupStarting);
         }
     }
 }
