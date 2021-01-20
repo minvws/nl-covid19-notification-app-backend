@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.SendTeks
@@ -30,17 +32,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         private readonly IWorkflowConfig _WorkflowConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly ITekValidPeriodFilter _TekApplicableWindowFilter;
+        private readonly IDecoyTimeCalculator _DecoyTimeCalculator;
+        private Stopwatch _Stopwatch;
 
         private PostTeksArgs _ArgsObject;
         private byte[] _BucketIdBytes;
-
         private byte[] _BodyBytes;
 
-
-        public HttpPostReleaseTeksCommand2(PostKeysLoggingExtensions logger, IWorkflowConfig workflowConfig,
-            WorkflowDbContext dbContextProvider, IPostTeksValidator keyValidator, ITekWriter writer,
-            IJsonSerializer jsonSerializer, ISignatureValidator signatureValidator,
-            ITekListWorkflowFilter tekListWorkflowFilter, IUtcDateTimeProvider dateTimeProvider, ITekValidPeriodFilter tekApplicableWindowFilter)
+        public HttpPostReleaseTeksCommand2(
+            PostKeysLoggingExtensions logger, 
+            IWorkflowConfig workflowConfig,
+            WorkflowDbContext dbContextProvider, 
+            IPostTeksValidator keyValidator,
+            ITekWriter writer,
+            IJsonSerializer jsonSerializer,
+            ISignatureValidator signatureValidator,
+            ITekListWorkflowFilter tekListWorkflowFilter, 
+            IUtcDateTimeProvider dateTimeProvider, 
+            ITekValidPeriodFilter tekApplicableWindowFilter,
+            IDecoyTimeCalculator decoyTimeCalculator)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _WorkflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));
@@ -52,13 +62,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             _TekListWorkflowFilter = tekListWorkflowFilter ?? throw new ArgumentNullException(nameof(tekListWorkflowFilter));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _TekApplicableWindowFilter = tekApplicableWindowFilter ?? throw new ArgumentNullException(nameof(tekApplicableWindowFilter));
+            _DecoyTimeCalculator = decoyTimeCalculator ?? throw new ArgumentNullException(nameof(decoyTimeCalculator));
         }
 
         public async Task<IActionResult> ExecuteAsync(byte[] signature, HttpRequest request)
         {
+            _Stopwatch = new Stopwatch();
+            _Stopwatch.Start();
+
             await using var mem = new MemoryStream();
             await request.Body.CopyToAsync(mem);
             await InnerExecuteAsync(signature, mem.ToArray());
+
+            _Stopwatch.Stop();
+            _DecoyTimeCalculator.RegisterTime(_Stopwatch.ElapsedMilliseconds);
+            _Stopwatch.Reset();
+
             return new OkResult();
         }
 

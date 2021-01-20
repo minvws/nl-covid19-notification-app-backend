@@ -108,8 +108,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             _Logger.LogDebug("Clear job tables.");
 
             await using var dbc = _PublishingDbContextFac();
-            _SqlCommands.TruncateTable(dbc, TableNames.IksEngineInput);
-            _SqlCommands.TruncateTable(dbc, TableNames.IksEngineOutput);
+            await _SqlCommands.TruncateTableAsync(dbc, TableNames.IksEngineInput);
+            await _SqlCommands.TruncateTableAsync(dbc, TableNames.IksEngineOutput);
         }
 
         private async Task BuildOutput()

@@ -6,19 +6,19 @@ using System.Text;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 {
-	/// <summary>
-	/// Returns a byte array that indicates no RSA-signature is created
-	/// </summary>
-	public class DummyCmsSigner : IContentSigner
-	{
-		public string SignatureOid => "OID for Dummy signer";
+    /// <summary>
+    /// Returns a byte array that indicates no RSA-signature is created
+    /// </summary>
+    public class DummyCmsSigner : IContentSigner
+    {
+        public string SignatureOid => "OID for Dummy signer";
 
-		public byte[] DummyContent => Encoding.ASCII.GetBytes("Signature intentionally left empty");
+        public byte[] DummyContent => Encoding.ASCII.GetBytes("Signature intentionally left empty");
 
-		public byte[] GetSignature(byte[] content)
-		{
-			return DummyContent;
-		}
+        public byte[] GetSignature(byte[] content)
+        {
+            return DummyContent;
+        }
 
-	}
+    }
 }

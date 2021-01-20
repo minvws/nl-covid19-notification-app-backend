@@ -56,8 +56,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
 
         public void WritePostBodyParsingFailed(Exception exception)
         {
-			if (exception == null)
-			{
+            if (exception == null)
+            {
                 throw new ArgumentNullException(nameof(exception));
             }
 
@@ -66,9 +66,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
 
         public void WriteBucketIdParsingFailed(string input, string[] messages)
         {
-            _Logger.LogInformation("[{name}/{id}] BucketId failed validation - BucketId:{input} Messages:{messages}",
+            _Logger.LogInformation("[{name}/{id}] BucketId failed validation - BucketId:{input} Messages:\n{messages}",
                 Name, BucketIdParsingFailed,
-                input, string.Join(",", messages));
+                input, string.Join("\n", messages));
         }
 
         public void WriteTekValidationFailed(string[] messages)
@@ -78,16 +78,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
                 return;
             }
 
-            _Logger.LogInformation("[{name}/{id}] Tek failed validation - Messages:{messages}",
+            _Logger.LogInformation("[{name}/{id}] Tek failed validation - Messages:\n{messages}",
                 Name, TekValidationFailed,
-                string.Join(",", messages));
+                string.Join("\n", messages));
         }
 
         public void WriteTekDuplicatesFound(string[] messages)
         {
-            _Logger.LogInformation("[{name}/{id}] Tek duplicates found - Messages:{messages}",
+            _Logger.LogInformation("[{name}/{id}] Tek duplicates found - Messages:\n{messages}",
                 Name, TekValidationFailed,
-                string.Join(",", messages));
+                string.Join("\n", messages));
         }
 
         public void WriteApplicableWindowFilterResult(string[] messages)
@@ -97,26 +97,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
                 return;
             }
 
-            _Logger.LogInformation("[{name}/{id}] Tek failed validation - Messages:{messages}",
+            _Logger.LogInformation("[{name}/{id}] Tek failed validation - Messages:\n{messages}",
                 Name, TekValidationFailed,
-                string.Join(",", messages));
+                string.Join("\n", messages));
         }
 
         public void WriteValidTekCount(int count)
         {
             _Logger.LogInformation("[{name}/{id}] TEKs remaining - Count:{Count}.",
-                Name, ValidTekCount, count);
+                Name, ValidTekCount,
+                count);
         }
 
         public void WriteBucketDoesNotExist(string bucketId)
         {
             _Logger.LogError("[{name}/{id}] Bucket does not exist - Id:{BucketId}.",
-                Name, BucketDoesNotExist, bucketId); //_ArgsObject.BucketId
+                Name, BucketDoesNotExist,
+                bucketId);
         }
 
         public void WriteSignatureInvalid(byte[] bucketId, byte[] signature)
         {
-            _Logger.LogError("[{name}/{id}] Signature not valid - Signature:{Signature} Bucket:{}",
+            _Logger.LogError("[{name}/{id}] Signature not valid - Signature:{Signature} Bucket:{BucketId}",
                 Name, SignatureInvalid,
                 Convert.ToBase64String(signature), Convert.ToBase64String(bucketId));
         }
@@ -128,9 +130,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
                 return;
             }
 
-            _Logger.LogInformation("[{name}/{id}] WriteWorkflowFilterResults - Count:{Count}.",
+            _Logger.LogInformation("[{name}/{id}] WriteWorkflowFilterResults:\n{Messages}.",
                 Name, WorkflowFilterResults,
-                string.Join(",", messages));
+                string.Join("\n", messages));
         }
 
         public void WriteValidTekCountSecondPass(int count)
@@ -142,9 +144,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
 
         public void WriteTekDuplicatesFoundWholeWorkflow(string[] messages)
         {
-            _Logger.LogInformation("[{name}/{id}] Tek duplicates found - Whole Workflow - Messages:{messages}",
+            _Logger.LogInformation("[{name}/{id}] Tek duplicates found - Whole Workflow - Messages:\n{messages}",
                 Name, TekDuplicatesFoundWholeWorkflow,
-                string.Join(",", messages));
+                string.Join("\n", messages));
         }
         public void WriteDbWriteStart()
         {
@@ -160,7 +162,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         public void WriteTekCountAdded(int count)
         {
             _Logger.LogInformation("[{name}/{id}] Teks added - Count:{count}.",
-                Name, TekCountAdded, count);
+                Name, TekCountAdded,
+                count);
         }
     }
 }

@@ -13,10 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CodeMap2.dgml = CodeMap2.dgml
 		copy-CIBG-configs.bat = copy-CIBG-configs.bat
 		deploy-example.bat = deploy-example.bat
+		Deprecated - package.bat = Deprecated - package.bat
 		ExposureNotification.Backend.sln.DotSettings = ExposureNotification.Backend.sln.DotSettings
 		Main Code Map.dgml = Main Code Map.dgml
 		package-CIBG.bat = package-CIBG.bat
-		package.bat = package.bat
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.EntityFramework", "Core.EntityFramework\Core.EntityFramework.csproj", "{6142B884-72B0-4941-99BE-BBCCF0C24DA0}"
@@ -176,6 +176,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{CF7C78F1-D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Protobuf", "Iks.Protobuf\Iks.Protobuf.csproj", "{98B48918-654A-493C-82AE-EBF4ACEEEC04}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PublishContent", "PublishContent\PublishContent.csproj", "{F74DB79B-6049-4E32-9475-58AE4567650E}"
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App.IccPortal", "App.IccPortal\App.IccPortal.csproj", "{7CC27870-8651-49D3-BF86-5F60E48435EB}"
 EndProject
 Global
@@ -486,6 +487,10 @@ Global
 		{7CC27870-8651-49D3-BF86-5F60E48435EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CC27870-8651-49D3-BF86-5F60E48435EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CC27870-8651-49D3-BF86-5F60E48435EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F74DB79B-6049-4E32-9475-58AE4567650E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F74DB79B-6049-4E32-9475-58AE4567650E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F74DB79B-6049-4E32-9475-58AE4567650E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F74DB79B-6049-4E32-9475-58AE4567650E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -513,6 +518,7 @@ Global
 		{D0F534CC-D908-4AFA-A4D2-6B30E0297D8E} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
 		{0D13D399-0983-4986-A7E1-A219ED9093C9} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
 		{7CC27870-8651-49D3-BF86-5F60E48435EB} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
+		{F74DB79B-6049-4E32-9475-58AE4567650E} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}

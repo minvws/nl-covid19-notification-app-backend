@@ -99,7 +99,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 _Dtp,
                 new EksEngineLoggingExtensions(_Lf.CreateLogger<EksEngineLoggingExtensions>()),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(), _Rng, _Dtp, eksConfig.Object),
-                new SnapshotDiagnosisKeys(_Lf.CreateLogger<SnapshotDiagnosisKeys>(), _DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew),
+                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new TestLogger<SnapshotLoggingExtensions>()), _DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew),
                 new MarkDiagnosisKeysAsUsedLocally(_DkSourceDbProvider.CreateNew, eksConfig.Object, _EksPublishingJobDbProvider.CreateNew, _Lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_ContentDbProvider.CreateNew, _EksPublishingJobDbProvider.CreateNew, new Sha256HexPublishingIdService(), new EksJobContentWriterLoggingExtensions(_Lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
                 new WriteStuffingToDiagnosisKeys(_DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew(),

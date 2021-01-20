@@ -3,9 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret
 {
@@ -16,20 +18,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private readonly IWorkflowTime _WorkflowTime;
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
         private readonly ILabConfirmationIdFormatter _LabConfirmationIdFormatter;
+        private readonly IDecoyTimeCalculator _DecoyTimeCalculator;
+        private Stopwatch _Stopwatch;
 
-        public HttpPostRegisterSecret(ISecretWriter writer, RegisterSecretLoggingExtensions logger, IWorkflowTime workflowTime, IUtcDateTimeProvider utcDateTimeProvider, ILabConfirmationIdFormatter labConfirmationIdFormatter)
+        public HttpPostRegisterSecret(
+            ISecretWriter writer,
+            RegisterSecretLoggingExtensions logger,
+            IWorkflowTime workflowTime, 
+            IUtcDateTimeProvider utcDateTimeProvider,
+            ILabConfirmationIdFormatter labConfirmationIdFormatter,
+            IDecoyTimeCalculator decoyTimeCalculator)
         {
             _Writer = writer ?? throw new ArgumentNullException(nameof(writer));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _WorkflowTime = workflowTime ?? throw new ArgumentNullException(nameof(workflowTime));
             _UtcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
             _LabConfirmationIdFormatter = labConfirmationIdFormatter ?? throw new ArgumentNullException(nameof(labConfirmationIdFormatter));
+            _DecoyTimeCalculator = decoyTimeCalculator ?? throw new ArgumentNullException(nameof(decoyTimeCalculator));
         }
 
         public async Task<IActionResult> ExecuteAsync()
         {
             try
             {
+                _Stopwatch = new Stopwatch();
+                _Stopwatch.Start();
+
                 var entity = await _Writer.ExecuteAsync();
 
                 var result = new EnrollmentResponse
@@ -50,6 +64,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             finally
             {
                 _Logger.WriteFinished();
+                _Stopwatch.Stop();
+                _DecoyTimeCalculator.RegisterTime(_Stopwatch.ElapsedMilliseconds);
+                _Stopwatch.Reset();
             }
         }
     }

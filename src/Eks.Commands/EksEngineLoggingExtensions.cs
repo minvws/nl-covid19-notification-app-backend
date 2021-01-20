@@ -69,12 +69,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         public void WriteFinished(string jobName)
         {
             _Logger.LogInformation("[{name}/{id}] {JobName} complete.",
-                Name, Finished, jobName);
+                Name, Finished,
+                jobName);
         }
 
         public void WriteNoElevatedPrivs(string jobName)
         {
-            _Logger.LogWarning("[{name}/{id}] JobName} started WITHOUT elevated privileges - errors may occur when signing content.",
+            _Logger.LogWarning("[{name}/{id}] {JobName} started WITHOUT elevated privileges - errors may occur when signing content.",
                 Name, NoElevatedPrivs,
                 jobName);
         }
@@ -146,7 +147,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         public void WriteRemainingTeks(int count)
         {
-            _Logger.LogDebug("[{name}/{id}] Write remaining TEKs - Count:{Count}.", Name, WriteRemainingTekCount, count);
+            _Logger.LogDebug("[{name}/{id}] Write remaining TEKs - Count:{Count}.",
+                Name, WriteRemainingTekCount,
+                count);
         }
 
         public void WriteAddTeksToOutput(int count, int total)

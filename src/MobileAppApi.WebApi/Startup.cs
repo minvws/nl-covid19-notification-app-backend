@@ -39,14 +39,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddControllers();
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Content));
+            services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
 
             services.AddScoped<HttpPostReleaseTeksCommand2>();
             services.AddScoped<HttpPostRegisterSecret>();
 
             services.AddSingleton<ITekListValidationConfig, StandardTekListValidationConfig>();
             services.AddSingleton<ITekValidatorConfig, TekValidatorConfig>();
-            services.AddSingleton<IDecoyKeysConfig, StandardDecoyKeysConfig>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
             services.AddTransient<ISignatureValidator, SignatureValidator>();
             services.AddTransient<IWorkflowTime, TekReleaseWorkflowTime>();
@@ -57,13 +56,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddTransient<ISecretWriter, TekReleaseWorkflowStateCreate>();
             services.AddTransient<ITekWriter, TekWriter>();
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
-            services.AddTransient<ILabConfirmationIdFormatter,StandardLabConfirmationIdFormatter>();
+            services.AddTransient<ILabConfirmationIdFormatter, StandardLabConfirmationIdFormatter>();
             services.AddTransient<ITekValidPeriodFilter, TekValidPeriodFilter>();
             services.AddScoped<ResponsePaddingFilterAttribute>();
             services.AddScoped<IResponsePaddingConfig, ResponsePaddingConfig>();
             services.AddScoped<IPaddingGenerator, CryptoRandomPaddingGenerator>();
             services.AddScoped<SuppressErrorAttribute>();
             services.AddScoped<DecoyTimeGeneratorAttribute>();
+            services.AddSingleton<IDecoyTimeCalculator, DecoyTimeCalculator>();
 
             services.AddSingleton<RegisterSecretLoggingExtensions>();
             services.AddSingleton<PostKeysLoggingExtensions>();
@@ -72,7 +72,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<SuppressErrorLoggingExtensions>();
 
             if (_IsDev)
-                services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });
+                services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });
         }
 
         public void Configure(IApplicationBuilder app)
