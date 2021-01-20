@@ -3,17 +3,18 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
 {
     public class SqlServerWrappedEfExtensions : IWrappedEfExtensions
     {
-        public void TruncateTable(DbContext db, string tableName)
+        public async Task TruncateTableAsync(DbContext db, string tableName)
         {
             if (db == null) throw new ArgumentNullException(nameof(db));
             if (string.IsNullOrWhiteSpace(tableName)) throw new ArgumentException(nameof(tableName));
-            db.Database.ExecuteSqlRaw($"TRUNCATE TABLE [dbo].[{tableName}];");
+            await db.Database.ExecuteSqlRawAsync($"TRUNCATE TABLE [dbo].[{tableName}];");
         }
     }
 }

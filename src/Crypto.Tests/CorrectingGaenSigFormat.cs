@@ -33,9 +33,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
 //    # much like .NET its cert.GetECDsaPrivateKey().SignData() does.
 //
 //    openssl asn1parse -inform DER -in signature.bin |\
-//    	grep INTEGER |\
-//    	sed -e 's/.*://' |\
-//    	xxd -r -p - | base64 > signature.r64
+//        grep INTEGER |\
+//        sed -e 's/.*://' |\
+//        xxd -r -p - | base64 > signature.r64
 //
 //    echo \[DataRow\(\"`base64 signature.r64`\",\"`base64 signature.bin`\"\)\]
 // }
