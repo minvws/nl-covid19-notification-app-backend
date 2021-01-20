@@ -28,9 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\BdCertChain.p7b">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\BdCertChain.p7b" />
     <EmbeddedResource Include="Resources\efgs\efgs-cb-client.jks" />
     <EmbeddedResource Include="Resources\efgs\efgs-ta.jks" />
     <EmbeddedResource Include="Resources\efgs\efgs-trustanchor\trustanchor.key" />
@@ -43,18 +41,10 @@
     <EmbeddedResource Include="Resources\efgs\nl-signing\nbbs-nl-cert.crt" />
     <EmbeddedResource Include="Resources\efgs\nl-signing\nbbs-nl-cert.csr" />
     <EmbeddedResource Include="Resources\efgs\nl-signing\nbbs-nl-priv.key" />
-    <EmbeddedResource Include="Resources\StaatDerNLChain-EV-Expires-2022-12-05.p7b">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\StaatDerNLChain-Expires2020-08-28.p7b">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\TestECDSA.p12">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\TestRSA.p12">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StaatDerNLChain-EV-Expires-2022-12-05.p7b" />
+    <EmbeddedResource Include="Resources\StaatDerNLChain-Expires2020-08-28.p7b" />
+    <EmbeddedResource Include="Resources\TestECDSA.p12" />
+    <EmbeddedResource Include="Resources\TestRSA.p12" />
   </ItemGroup>
 
   <ItemGroup>
