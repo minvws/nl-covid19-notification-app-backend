@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
 
                     _Logger.WriteTotalIksFound(cutoff, _Result.Zombies);
 
-                    // DELETE FROM IksIn.dbo.IksIn WHERE Created > (today - 14-days)
+                    // DELETE FROM IksIn.dbo.IksIn WHERE Created < (today - 14-days)
                     _Result.GivenMercy = await dbc.Database.ExecuteSqlRawAsync($"DELETE FROM {TableNames.IksOut} WHERE [Created] < '{cutoff:yyyy-MM-dd HH:mm:ss.fff}';");
                     await tx.CommitAsync();
 
