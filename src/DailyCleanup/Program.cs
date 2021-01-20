@@ -2,8 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -22,6 +20,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramewo
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
@@ -32,6 +32,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.EntityFramework;
+using System;
+using System.Collections.Generic;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 {
@@ -115,6 +117,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             var c130 = serviceProvider.GetRequiredService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             run.Add(() => c130.ExecuteAsync().GetAwaiter().GetResult());
 
+            var c140 = serviceProvider.GetRequiredService<RemoveExpiredIksInCommand>();
+            run.Add(() => c140.ExecuteAsync().GetAwaiter().GetResult());
+
+            var c150 = serviceProvider.GetRequiredService<RemoveExpiredIksOutCommand>();
+            run.Add(() => c150.ExecuteAsync().GetAwaiter().GetResult());
+
             var c100 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             run.Add(() => logger.WriteResignerStarting());
             run.Add(() => c100.ExecuteAsync().GetAwaiter().GetResult());
@@ -184,7 +192,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<MarkWorkFlowTeksAsUsedLoggingExtensions>();
             services.AddSingleton<ManifestUpdateCommandLoggingExtensions>();
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
-
+            
             services.NlResignerStartup();
 
             services.DummySignerStartup();
@@ -223,6 +231,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<IIksConfig, IksConfig>();
             services.AddTransient<MarkDiagnosisKeysAsUsedByIks>();
             services.AddTransient<IksJobContentWriter>();
+
+            services.AddSingleton<IIksCleaningConfig, IksCleaningConfig>();
+            services.AddSingleton<RemoveExpiredIksLoggingExtensions>();
+            services.AddTransient<RemoveExpiredIksInCommand>();
+            services.AddTransient<RemoveExpiredIksOutCommand>();
 
             services.ManifestForV3Startup();
         }
