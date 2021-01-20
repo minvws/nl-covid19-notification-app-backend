@@ -44,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddScoped(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content));
+            services.AddScoped(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content, false));
             services.AddTransient<Func<ContentDbContext>>(x => x.GetRequiredService<ContentDbContext>);
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
