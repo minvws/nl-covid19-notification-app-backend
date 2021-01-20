@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
@@ -13,11 +14,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
 {
     public class RemoveExpiredIksOutCommandTests
     {
-        private readonly IDbProvider<IksOutDbContext> _IksInDbProvider;
+        private readonly IDbProvider<IksOutDbContext> _IksOutDbProvider;
 
         public RemoveExpiredIksOutCommandTests()
         {
-            _IksInDbProvider = new SqliteInMemoryDbProvider<IksOutDbContext>();
+            _IksOutDbProvider = new SqliteInMemoryDbProvider<IksOutDbContext>();
         }
 
         [Fact]
@@ -27,8 +28,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
             var currentDate = DateTime.Parse("2020-12-26T03:30:00Z").ToUniversalTime();
             var dateTimeProvider = new Mock<IUtcDateTimeProvider>();
             dateTimeProvider.Setup(_ => _.Snapshot).Returns(currentDate);
-            var logger = new Mock<ILogger<RemoveExpiredIksOutCommandLoggingExtensions>>();
-            var context = _IksInDbProvider.CreateNew();
+            var configurationMock = new Mock<IIksCleaningConfig>();
+            configurationMock.Setup(p => p.LifetimeDays).Returns(14);
+            var logger = new Mock<ILogger<RemoveExpiredIksLoggingExtensions>>();
+            var contextFunc = _IksOutDbProvider.CreateNew;
+            var context = contextFunc();
 
             // Assemble - add data up to "now"
             var firstDate = DateTime.Parse("2020-12-01T20:00:00Z");
@@ -48,11 +52,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
 
             // Act
             var command = new RemoveExpiredIksOutCommand(
-                context,
+                contextFunc,
+                new RemoveExpiredIksLoggingExtensions(logger.Object),
                 dateTimeProvider.Object,
-                new RemoveExpiredIksOutCommandLoggingExtensions(logger.Object)
+                configurationMock.Object
             );
-            command.Execute();
+            command.ExecuteAsync();
 
             // Assert
             Assert.Empty(context.Iks.Where(x => x.Created < DateTime.Parse("2020-12-12T00:00:00Z")));

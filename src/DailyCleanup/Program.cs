@@ -118,22 +118,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => c130.ExecuteAsync().GetAwaiter().GetResult());
 
             var c140 = serviceProvider.GetRequiredService<RemoveExpiredIksInCommand>();
-            run.Add(() => c140.Execute());
+            run.Add(() => c140.ExecuteAsync().GetAwaiter().GetResult());
 
             var c150 = serviceProvider.GetRequiredService<RemoveExpiredIksOutCommand>();
-            run.Add(() => c150.Execute());
+            run.Add(() => c150.ExecuteAsync().GetAwaiter().GetResult());
 
             var c100 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             run.Add(() => logger.WriteResignerStarting());
             run.Add(() => c100.ExecuteAsync().GetAwaiter().GetResult());
-
-            var c140 = serviceProvider.GetRequiredService<RemoveExpiredIksInCommand>();
-            run.Add(() => logger.WriteExpiredIksInCleanupStarting());
-            run.Add(() => c140.ExecuteAsync().GetAwaiter().GetResult());
-
-            var c150 = serviceProvider.GetRequiredService<RemoveExpiredIksOutCommand>();
-            run.Add(() => logger.WriteExpiredIksOutCleanupStarting());
-            run.Add(() => c150.ExecuteAsync().GetAwaiter().GetResult());
 
             run.Add(() => logger.WriteFinished());
 
@@ -201,11 +193,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<ManifestUpdateCommandLoggingExtensions>();
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
             
-            services.AddTransient<RemoveExpiredIksInCommand>();
-            services.AddTransient<RemoveExpiredIksInCommandLoggingExtensions>();
-            services.AddTransient<RemoveExpiredIksOutCommand>();
-            services.AddTransient<RemoveExpiredIksOutCommandLoggingExtensions>();
-
             services.NlResignerStartup();
 
             services.DummySignerStartup();
@@ -245,7 +232,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<MarkDiagnosisKeysAsUsedByIks>();
             services.AddTransient<IksJobContentWriter>();
 
-            services.AddSingleton<IksCleaningConfig>();
+            services.AddSingleton<IIksCleaningConfig, IksCleaningConfig>();
             services.AddSingleton<RemoveExpiredIksLoggingExtensions>();
             services.AddTransient<RemoveExpiredIksInCommand>();
             services.AddTransient<RemoveExpiredIksOutCommand>();

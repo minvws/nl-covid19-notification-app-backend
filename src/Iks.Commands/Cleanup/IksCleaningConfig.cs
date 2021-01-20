@@ -3,7 +3,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
 {
-    public class IksCleaningConfig : AppSettingsReader
+    public class IksCleaningConfig : AppSettingsReader, IIksCleaningConfig
     {
         private const int DefaultLifetimeDays = 14;
 

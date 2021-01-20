@@ -15,9 +15,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
 
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
         private RemoveExpiredIksCommandResult _Result;
-        private readonly IksCleaningConfig _IksCleaningConfig;
+        private readonly IIksCleaningConfig _IksCleaningConfig;
 
-        public RemoveExpiredIksInCommand(Func<IksInDbContext> dbContext, RemoveExpiredIksLoggingExtensions logger,  IUtcDateTimeProvider utcDateTimeProvider, IksCleaningConfig iksCleaningConfig)
+        public RemoveExpiredIksInCommand(Func<IksInDbContext> dbContext, RemoveExpiredIksLoggingExtensions logger,  IUtcDateTimeProvider utcDateTimeProvider, IIksCleaningConfig iksCleaningConfig)
         {
             _DbContextProvider = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -58,8 +58,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
 
                     _Logger.WriteTotalIksFound(cutoff, _Result.Zombies);
 
-                    // DELETE FROM IksIn.dbo.IksIn WHERE Created > (today - 14-days)
-                    _Result.GivenMercy = await dbc.Database.ExecuteSqlRawAsync($"DELETE FROM {TableNames.IksIn} WHERE [Created] > DATEADD(day, -{lifetimeDays}, [Created]);");
+                    // DELETE FROM IksIn.dbo.IksIn WHERE Created > (today - 14-days)                    
+                    _Result.GivenMercy = await dbc.Database.ExecuteSqlRawAsync($"DELETE FROM {TableNames.IksIn} WHERE [Created] < '{cutoff:yyyy-MM-dd HH:mm:ss.fff}';");
                     await tx.CommitAsync();
 
                     _Result.Remaining = dbc.Received.Count();
