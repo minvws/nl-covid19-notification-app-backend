@@ -23,6 +23,7 @@ steps:
   displayName: 'npm install and build'
 
 - script: |
+    cd tests/Testautomation
     mocha --recursive --grep "$(TESTS)" --environment=$(ENVIRONMENT) --token=$(GGD-AUTH-TOKEN) --reporter mocha-junit-reporter --reporter-options mochaFile=../TEST-RESULTS.xml
   displayName: 'run tests'
   
