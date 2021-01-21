@@ -1,9 +1,3 @@
 ﻿<ProjectConfiguration>
-  <Settings>
-    <IgnoredTests>
-      <NamedTestSelector>
-        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests.ManifestV3CreationTestSqlserver.ManifestUpdateCommand_ExecuteForV3</TestName>
-      </NamedTestSelector>
-    </IgnoredTests>
-  </Settings>
+  <Settings />
 </ProjectConfiguration>

@@ -54,7 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                         new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"),
                         certProviderLogger),
                     new EmbeddedResourcesCertificateChainProvider(
-                        new HardCodedCertificateLocationConfig("Resources.StaatDerNLChain-Expires2020-08-28.p7b", "")),
+                        new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")),
                     dtp
                     ),
                 dtp,
