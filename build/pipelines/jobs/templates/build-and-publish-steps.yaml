@@ -13,10 +13,10 @@ steps:
     displayName: 'Copy files to: $(ArtifactSubfolder)'
     inputs:
       script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder) $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder) /E /I'          
-  - task: CmdLine@2
-    displayName: 'Copy config file to: $(ArtifactSubfolder)'
-    inputs:
-      script: 'xcopy $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder)\appsettings.release.json $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder)\appsettings.json /Y'          
+  #- task: CmdLine@2
+  #  displayName: 'Copy config file to: $(ArtifactSubfolder)'
+  #  inputs:
+  #    script: 'xcopy $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder)\appsettings.release.json $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder)\appsettings.json /Y'          
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
