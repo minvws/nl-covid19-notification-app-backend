@@ -9,11 +9,11 @@ jobs:
           publishWebProjects: false
           projects: 'src/Content.WebApi/Content.WebApi.csproj'
           # Version suffix starts with build number and Append the current git hash to the version suffix
-          arguments: '-o $(Build.ArtifactStagingDirectory)/$(Apps.Content.WebApi.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
+          arguments: '-o $(Build.ArtifactStagingDirectory)/publish/$(Apps.Content.WebApi.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
           # CIBG don't use ZIP files for artifacts
           zipAfterPublish: false     
       - task: PublishBuildArtifacts@1
         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Apps.Content.WebApi.ArtifactSubDirectory)/Content.WebApi'
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/publish/$(Apps.Content.WebApi.ArtifactSubDirectory)/Content.WebApi'
           ArtifactName: $(Publish.ArtifactName)/$(Apps.Content.WebApi.ArtifactSubDirectory)
           publishLocation: 'Container'
