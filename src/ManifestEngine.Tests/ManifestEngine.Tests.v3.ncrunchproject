@@ -1,19 +1,5 @@
 ﻿<ProjectConfiguration>
   <Settings>
     <DefaultTestTimeout>120000</DefaultTestTimeout>
-    <IgnoredTests>
-      <NamedTestSelector>
-        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests.ManifestEngineTestsSqlite.EmptySystem</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests.ManifestEngineTestsSqlite.RunTwice</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests.ManifestEngineTestsSqlServer.EmptySystem</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests.ManifestEngineTestsSqlServer.RunTwice</TestName>
-      </NamedTestSelector>
-    </IgnoredTests>
   </Settings>
 </ProjectConfiguration>
