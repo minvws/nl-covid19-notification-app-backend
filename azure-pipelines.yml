@@ -54,7 +54,14 @@ stages:
 - stage: Build
   dependsOn: Test
   displayName: 'Publish builds'
-  jobs: 
+  jobs:  
+  - job: Install_SDK_31x
+    steps:
+      # Install .Net Core 3.1 LTS Version
+      - task: UseDotNet@2
+        displayName: 'Install .NET Core SDK'
+        inputs:
+          version: 3.1.x
   # ---- Apps:
   # ContentApi
   - template: /build/pipelines/jobs/apps-publish-contentwebapi-artifact.yaml
