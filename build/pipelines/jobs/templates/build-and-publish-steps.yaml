@@ -16,7 +16,7 @@ steps:
   - task: CmdLine@2
     displayName: 'Copy config file to: $(ArtifactSubfolder)'
     inputs:
-      script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder)\appsettings.release.json $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder)\appsettings.json /Y'          
+      script: 'xcopy $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder)\appsettings.release.json $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder)\appsettings.json /Y'          
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
