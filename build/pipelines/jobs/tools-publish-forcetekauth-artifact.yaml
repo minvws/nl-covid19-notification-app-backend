@@ -7,28 +7,6 @@ jobs:
       value: 'ForceTekAuth'
     - name: ProjectPath
       value: 'src/ForceTekAuth/ForceTekAuth.csproj'
-    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
+    displayName: 'Publish Build Artifact ForceTekAuth'
     steps:
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet publish'
-        inputs:
-          command: 'publish'
-          publishWebProjects: false
-          projects: $(ProjectPath)
-          # Version suffix starts with build number and Append the current git hash to the version suffix
-          arguments: '-o $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
-          # CIBG don't use ZIP files for artifacts
-          zipAfterPublish: false  
-      - task: CmdLine@2
-        displayName: 'Copy files to: $(ArtifactSubfolder)'
-        inputs:
-          script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder) $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder) /E /I'              
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
-          ArtifactName: $(Publish.ArtifactName)
-          publishLocation: 'Container'
-      - task: CmdLine@2
-        displayName: 'Cleanup build artifact folder'
-        inputs:
-          script: 'rmdir /q /s $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder)'
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'
