@@ -32,8 +32,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         private readonly IWorkflowConfig _WorkflowConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly ITekValidPeriodFilter _TekApplicableWindowFilter;
-        private readonly IDecoyTimeCalculator _DecoyTimeCalculator;
-        private Stopwatch _Stopwatch;
 
         private PostTeksArgs _ArgsObject;
         private byte[] _BucketIdBytes;
@@ -49,8 +47,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             ISignatureValidator signatureValidator,
             ITekListWorkflowFilter tekListWorkflowFilter, 
             IUtcDateTimeProvider dateTimeProvider, 
-            ITekValidPeriodFilter tekApplicableWindowFilter,
-            IDecoyTimeCalculator decoyTimeCalculator)
+            ITekValidPeriodFilter tekApplicableWindowFilter
+            )
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _WorkflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));
@@ -62,22 +60,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             _TekListWorkflowFilter = tekListWorkflowFilter ?? throw new ArgumentNullException(nameof(tekListWorkflowFilter));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _TekApplicableWindowFilter = tekApplicableWindowFilter ?? throw new ArgumentNullException(nameof(tekApplicableWindowFilter));
-            _DecoyTimeCalculator = decoyTimeCalculator ?? throw new ArgumentNullException(nameof(decoyTimeCalculator));
         }
 
         public async Task<IActionResult> ExecuteAsync(byte[] signature, HttpRequest request)
         {
-            _Stopwatch = new Stopwatch();
-            _Stopwatch.Start();
-
             await using var mem = new MemoryStream();
             await request.Body.CopyToAsync(mem);
             await InnerExecuteAsync(signature, mem.ToArray());
-
-            _Stopwatch.Stop();
-            _DecoyTimeCalculator.RegisterTime(_Stopwatch.ElapsedMilliseconds);
-            _Stopwatch.Reset();
-
             return new OkResult();
         }
 

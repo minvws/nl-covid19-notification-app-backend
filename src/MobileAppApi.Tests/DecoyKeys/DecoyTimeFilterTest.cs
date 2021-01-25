@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
         {
             //Arrange
             var mockTimeCalculator = new Mock<IDecoyTimeCalculator>();
-            mockTimeCalculator.Setup(x => x.GenerateDelayTime())
+            mockTimeCalculator.Setup(x => x.GetDelay())
                 .Returns(TimeSpan.FromMilliseconds(delayMs));
 
             var sut = new DecoyTimeGeneratorAttribute(mockTimeCalculator.Object);
