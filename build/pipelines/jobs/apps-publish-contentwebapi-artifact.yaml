@@ -10,4 +10,4 @@ jobs:
 
     displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
     steps:
-    - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'
