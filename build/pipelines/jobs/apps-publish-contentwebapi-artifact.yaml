@@ -15,7 +15,7 @@ jobs:
       - task: CmdLine@2
         displayName: 'Copy files to: $(Apps.Content.WebApi.ArtifactSubDirectory)'
         inputs:
-          script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(Apps.Content.WebApi.ArtifactSubDirectory) $(Build.ArtifactStagingDirectory)\Artifacts\$(Apps.Content.WebApi.ArtifactSubDirectory) /E /I'          
+          script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(Apps.Content.WebApi.ArtifactSubDirectory)\Content.WebApi $(Build.ArtifactStagingDirectory)\Artifacts\$(Apps.Content.WebApi.ArtifactSubDirectory) /E /I'          
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
