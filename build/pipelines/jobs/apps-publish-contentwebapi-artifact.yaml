@@ -1,6 +1,12 @@
+variables:
+ - name: ArtifactSubfolder
+   value: $(Apps.Content.WebApi.ArtifactSubDirectory)
+ - name: ProjectBuildFolder
+   value: 'Content.WebApi'
+
 jobs:  
-  - job: Build_Content_WebApi
-    displayName: Publish Build Artifact Content_WebApi
+  - job: Build_$(ArtifactSubfolder)
+    displayName: Publish Build Artifact $(ArtifactSubfolder)
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish'
@@ -9,20 +15,20 @@ jobs:
           publishWebProjects: false
           projects: 'src\Content.WebApi\Content.WebApi.csproj'
           # Version suffix starts with build number and Append the current git hash to the version suffix
-          arguments: '-o $(Build.ArtifactStagingDirectory)\publish\$(Apps.Content.WebApi.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
+          arguments: '-o $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
           # CIBG don't use ZIP files for artifacts
           zipAfterPublish: false
       - task: CmdLine@2
-        displayName: 'Copy files to: $(Apps.Content.WebApi.ArtifactSubDirectory)'
+        displayName: 'Copy files to: $(ArtifactSubfolder)'
         inputs:
-          script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(Apps.Content.WebApi.ArtifactSubDirectory)\Content.WebApi $(Build.ArtifactStagingDirectory)\Artifacts\$(Apps.Content.WebApi.ArtifactSubDirectory) /E /I'          
+          script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder) $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder) /E /I'          
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
           ArtifactName: $(Publish.ArtifactName)
           publishLocation: 'Container'
       - task: CmdLine@2
-        displayName: 'Cleanup publish folder'
+        displayName: 'Cleanup build artifact folder'
         inputs:
-          script: 'rmdir /q /s $(Build.ArtifactStagingDirectory)\Artifacts\$(Apps.Content.WebApi.ArtifactSubDirectory)'          
+          script: 'rmdir /q /s $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder)'          
      

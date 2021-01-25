@@ -1,23 +1,35 @@
+variables:
+ - name: ArtifactSubfolder
+   value: $(Apps.ManifestEngine.ArtifactSubDirectory)
+ - name: ProjectBuildFolder
+   value: 'ManifestEngine'
+ - name: ProjectPath
+   value: 'src/ManifestEngine/ManifestEngine.csproj'
+
 jobs:  
-  - job: Build_ManifestEngine
-    displayName: Publish Build Artifact ManifestEngine
+  - job: Build_$(ArtifactSubfolder)
+    displayName: Publish Build Artifact $(ArtifactSubfolder)
     steps:
-      - task: UseDotNet@2
-        displayName: 'Install .NET Core SDK'
-        inputs:
-          version: 3.1.x        
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish'
         inputs:
           command: 'publish'
           publishWebProjects: false
-          projects: 'src/ManifestEngine/ManifestEngine.csproj'
+          projects: $(ProjectPath)
           # Version suffix starts with build number and Append the current git hash to the version suffix
-          arguments: '-o $(Build.ArtifactStagingDirectory)/$(Apps.ManifestEngine.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
+          arguments: '-o $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
           # CIBG don't use ZIP files for artifacts
-          zipAfterPublish: false            
+          zipAfterPublish: false  
+      - task: CmdLine@2
+        displayName: 'Copy files to: $(ArtifactSubfolder)'
+        inputs:
+          script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder) $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder) /E /I'              
       - task: PublishBuildArtifacts@1
         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Apps.ManifestEngine.ArtifactSubDirectory)'
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
           ArtifactName: $(Publish.ArtifactName)
           publishLocation: 'Container'
+      - task: CmdLine@2
+        displayName: 'Cleanup build artifact folder'
+        inputs:
+          script: 'rmdir /q /s $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder)'
