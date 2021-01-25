@@ -13,10 +13,16 @@ jobs:
           # CIBG don't use ZIP files for artifacts
           zipAfterPublish: false
       - task: CmdLine@2
+        displayName: 'Copy files to: $(Apps.Content.WebApi.ArtifactSubDirectory)'
         inputs:
-          script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(Apps.Content.WebApi.ArtifactSubDirectory) $(Build.ArtifactStagingDirectory)\Artifacts\ContentApi /E /I'          
+          script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(Apps.Content.WebApi.ArtifactSubDirectory) $(Build.ArtifactStagingDirectory)\Artifacts\$(Apps.Content.WebApi.ArtifactSubDirectory) /E /I'          
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
           ArtifactName: $(Publish.ArtifactName)
           publishLocation: 'Container'
+      - task: CmdLine@2
+        displayName: 'Cleanup publish folder'
+        inputs:
+          script: 'Rmdir /S $(Build.ArtifactStagingDirectory)\Artifacts\$(Apps.Content.WebApi.ArtifactSubDirectory)'          
+     
