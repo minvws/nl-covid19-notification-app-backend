@@ -48,11 +48,11 @@ variables:
   
 stages:
 # Tests all unittest in 'ProjectsToTest'
-#- template: /build/pipelines/stages/test-stage.yaml
+- template: /build/pipelines/stages/test-stage.yaml
 
 # Publish build and push content.webapi stage
 - stage: Build
-  #dependsOn: Test
+  dependsOn: Test
   displayName: 'Publish builds'
   jobs:  
   - job: Install_SDK_31x
