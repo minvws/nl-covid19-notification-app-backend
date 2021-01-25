@@ -15,9 +15,9 @@ jobs:
       - task: CopyFiles@2
         inputs:
           contents: '$(Build.ArtifactStagingDirectory)/publish/$(Apps.Content.WebApi.ArtifactSubDirectory)/Content.WebApi/**'
-          targetFolder: '$(Build.ArtifactStagingDirectory)/$(Apps.Content.WebApi.ArtifactSubDirectory)'
+          targetFolder: '$(Build.ArtifactStagingDirectory)/Artifacts/Content_WebApi/$(Apps.Content.WebApi.ArtifactSubDirectory)'
       - task: PublishBuildArtifacts@1
         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Apps.Content.WebApi.ArtifactSubDirectory)'
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/Artifacts/Content_WebApi'
           ArtifactName: $(Publish.ArtifactName)
           publishLocation: 'Container'
