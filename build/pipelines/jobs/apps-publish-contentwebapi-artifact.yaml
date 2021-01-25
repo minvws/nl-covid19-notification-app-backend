@@ -24,5 +24,5 @@ jobs:
       - task: CmdLine@2
         displayName: 'Cleanup publish folder'
         inputs:
-          script: 'Rmdir /S $(Build.ArtifactStagingDirectory)\Artifacts\$(Apps.Content.WebApi.ArtifactSubDirectory)'          
+          script: 'rmdir /q /s $(Build.ArtifactStagingDirectory)\Artifacts\$(Apps.Content.WebApi.ArtifactSubDirectory)'          
      
