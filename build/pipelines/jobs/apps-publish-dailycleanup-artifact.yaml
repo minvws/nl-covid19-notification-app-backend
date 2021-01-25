@@ -8,7 +8,7 @@ jobs:
     - name: ProjectPath
       value: 'src/DailyCleanup/DailyCleanup.csproj'
 
-    displayName: Publish Build Artifact $(ArtifactSubfolder)
+    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish'

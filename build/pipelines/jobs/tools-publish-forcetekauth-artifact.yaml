@@ -7,7 +7,7 @@ jobs:
       value: 'ForceTekAuth'
     - name: ProjectPath
       value: 'src/ForceTekAuth/ForceTekAuth.csproj'
-    displayName: Publish Build Artifact $(ArtifactSubfolder)
+    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish'

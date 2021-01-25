@@ -7,7 +7,7 @@ jobs:
       value: 'App.IccPortal'
     - name: ProjectPath
       value: 'src\App.IccPortal\App.IccPortal.csproj'
-    displayName: Publish Build Artifact $(ArtifactSubfolder)
+    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish'

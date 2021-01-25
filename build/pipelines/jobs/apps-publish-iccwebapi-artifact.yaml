@@ -7,7 +7,7 @@ jobs:
       value: 'Icc.WebApi'
     - name: ProjectPath
       value: 'src/Icc.WebApi/Icc.WebApi.csproj'
-    displayName: Publish Build Artifact $(ArtifactSubfolder)
+    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish'

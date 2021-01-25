@@ -7,7 +7,7 @@ jobs:
       value: 'SigTestFileCreator'
     - name: ProjectPath
       value: 'src/SigTestFileCreator/SigTestFileCreator.csproj'
-    displayName: Publish Build Artifact $(ArtifactSubfolder)
+    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish'

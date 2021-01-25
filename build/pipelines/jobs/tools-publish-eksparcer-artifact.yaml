@@ -7,7 +7,7 @@ jobs:
       value: 'Eks.Parser'
     - name: ProjectPath
       value: 'src/Eks.Parser/Eks.Parser.csproj'
-    displayName: Publish Build Artifact $(ArtifactSubfolder)
+    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish'

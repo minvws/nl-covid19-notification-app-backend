@@ -7,7 +7,7 @@ jobs:
       value: 'EksEngine'
     - name: ProjectPath
       value: 'src/EksEngine/EksEngine.csproj'
-    displayName: Publish Build Artifact $(ArtifactSubfolder)
+    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish'

@@ -7,7 +7,7 @@ jobs:
       value: 'Iks.Downloader'
     - name: ProjectPath
       value: 'src/Iks.Downloader/Iks.Downloader.csproj'
-    displayName: Publish Build Artifact $(ArtifactSubfolder)
+    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish'

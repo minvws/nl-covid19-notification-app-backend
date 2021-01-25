@@ -7,7 +7,7 @@ jobs:
       value: 'ManifestEngine'
     - name: ProjectPath
       value: 'src/ManifestEngine/ManifestEngine.csproj'
-    displayName: Publish Build Artifact $(ArtifactSubfolder)
+    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish'

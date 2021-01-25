@@ -7,7 +7,7 @@ jobs:
       value: 'GenTeks'
     - name: ProjectPath
       value: 'src/GenTeks/GenTeks.csproj'
-    displayName: Publish Build Artifact $(ArtifactSubfolder)
+    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish'
