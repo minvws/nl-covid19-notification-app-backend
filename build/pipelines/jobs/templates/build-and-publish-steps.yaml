@@ -12,7 +12,7 @@ steps:
   - task: CmdLine@2
     displayName: 'Copy files to: $(ArtifactSubfolder)'
     inputs:
-      script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder) $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder) /E /I /EXCLUDE:appsettings.release.json'          
+      script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder) $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder) /E /I /EXCLUDE:$(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder)\appsettings.release.json'          
   - task: CmdLine@2
     displayName: 'Copy config file to: $(ArtifactSubfolder)'
     inputs:
