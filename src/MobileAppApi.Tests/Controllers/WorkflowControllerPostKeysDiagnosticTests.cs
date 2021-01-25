@@ -55,6 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                 {
                     services.AddScoped(_ => _WorkflowDbProvider.CreateNewWithTx());
                     services.AddTransient<IUtcDateTimeProvider>(x => _FakeTimeProvider);
+                    services.AddTransient<DecoyTimeAggregatorAttribute>();
                 });
                 builder.ConfigureAppConfiguration((ctx, config) =>
                 {

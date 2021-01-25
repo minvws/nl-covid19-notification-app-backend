@@ -11,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto
         public static Stream? GetManifestResourceStream(string path)
         {
             var a = typeof(ResourcesHook).Assembly;
-            var resPath = $"{typeof(ResourcesHook).Namespace}.{path}";
+            var resPath = $"{typeof(ResourcesHook).Namespace}.Resources.{path}";
             return a.GetManifestResourceStream(resPath);
         }
     }
