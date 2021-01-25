@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
@@ -41,8 +40,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddScoped(sp => _WorkflowDbProvider.CreateNewWithTx());
+                    _WorkflowDbProvider.CreateNewWithTx();
+                    services.AddTransient<DecoyTimeAggregatorAttribute>();
                 });
+
                 builder.ConfigureAppConfiguration((ctx, config) =>
                 {
                     config.AddInMemoryCollection(new Dictionary<string, string>

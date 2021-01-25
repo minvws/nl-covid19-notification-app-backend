@@ -40,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
-            services.AddScoped(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.DataProtectionKeys));
+            services.AddScoped(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content));
 
             services.AddScoped<HttpGetCdnManifestCommand>();
             services.AddScoped<HttpGetCdnEksCommand>();
@@ -61,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
             services.AddSingleton<GetCdnContentLoggingExtensions>();
 
             if (_IsDev)
-                services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"}); });
+                services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });
         }
 
         public void Configure(IApplicationBuilder app)

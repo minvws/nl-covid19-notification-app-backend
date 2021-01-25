@@ -3,9 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret
 {
@@ -17,7 +19,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
         private readonly ILabConfirmationIdFormatter _LabConfirmationIdFormatter;
 
-        public HttpPostRegisterSecret(ISecretWriter writer, RegisterSecretLoggingExtensions logger, IWorkflowTime workflowTime, IUtcDateTimeProvider utcDateTimeProvider, ILabConfirmationIdFormatter labConfirmationIdFormatter)
+        public HttpPostRegisterSecret(
+            ISecretWriter writer,
+            RegisterSecretLoggingExtensions logger,
+            IWorkflowTime workflowTime, 
+            IUtcDateTimeProvider utcDateTimeProvider,
+            ILabConfirmationIdFormatter labConfirmationIdFormatter
+            )
         {
             _Writer = writer ?? throw new ArgumentNullException(nameof(writer));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));

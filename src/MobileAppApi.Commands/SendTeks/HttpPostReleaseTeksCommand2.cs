@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.SendTeks
@@ -33,14 +35,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
 
         private PostTeksArgs _ArgsObject;
         private byte[] _BucketIdBytes;
-
         private byte[] _BodyBytes;
 
-
-        public HttpPostReleaseTeksCommand2(PostKeysLoggingExtensions logger, IWorkflowConfig workflowConfig,
-            WorkflowDbContext dbContextProvider, IPostTeksValidator keyValidator, ITekWriter writer,
-            IJsonSerializer jsonSerializer, ISignatureValidator signatureValidator,
-            ITekListWorkflowFilter tekListWorkflowFilter, IUtcDateTimeProvider dateTimeProvider, ITekValidPeriodFilter tekApplicableWindowFilter)
+        public HttpPostReleaseTeksCommand2(
+            PostKeysLoggingExtensions logger, 
+            IWorkflowConfig workflowConfig,
+            WorkflowDbContext dbContextProvider, 
+            IPostTeksValidator keyValidator,
+            ITekWriter writer,
+            IJsonSerializer jsonSerializer,
+            ISignatureValidator signatureValidator,
+            ITekListWorkflowFilter tekListWorkflowFilter, 
+            IUtcDateTimeProvider dateTimeProvider, 
+            ITekValidPeriodFilter tekApplicableWindowFilter
+            )
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _WorkflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));

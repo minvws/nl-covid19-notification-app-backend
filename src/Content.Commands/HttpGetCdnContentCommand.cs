@@ -12,10 +12,10 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
-	/// <summary>
-	/// Includes mitigations for CDN cache miss/stale item edge cases.
-	/// </summary>
-	public class HttpGetCdnContentCommand
+    /// <summary>
+    /// Includes mitigations for CDN cache miss/stale item edge cases.
+    /// </summary>
+    public class HttpGetCdnContentCommand
     {
         private readonly ContentDbContext _DbContext;
         private readonly IPublishingIdService _PublishingIdService;

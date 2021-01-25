@@ -50,8 +50,8 @@
 //
 //  Resulting X9.62 DER encoded Dss-Sig-Value is:
 //
-//     0x30		 0x10 (sequence) + (1<<6) (contructed)
-//     <len>		 Length of the next elements 2 x (2 + 32 + 0/1)
+//     0x30         0x10 (sequence) + (1<<6) (contructed)
+//     <len>         Length of the next elements 2 x (2 + 32 + 0/1)
 //        0x02           0x02 integer + (0<<6) primitive
 //          <len>        Length of the next elements (32 + 0/1)
 //          0 ?          0 prefix is the the top bit is set

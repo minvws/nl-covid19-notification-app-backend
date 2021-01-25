@@ -11,11 +11,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using Moq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
+using System;
 using Xunit;
-
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.DecoyKeys
 {
@@ -29,40 +27,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
         public async void DecoyTimeAttribute_ExecutionTakesAtleastNMilliseconds(int delayMs)
         {
             //Arrange
-            var mockRNG = new Mock<IRandomNumberGenerator>();
-            mockRNG.Setup(x => x.Next(It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(delayMs);
+            var mockTimeCalculator = new Mock<IDecoyTimeCalculator>();
+            mockTimeCalculator.Setup(x => x.GetDelay())
+                .Returns(TimeSpan.FromMilliseconds(delayMs));
 
-            var sut = new DecoyTimeGeneratorAttribute(
-                new DecoyKeysLoggingExtensions(
-                    new TestLogger<DecoyKeysLoggingExtensions>()),
-                mockRNG.Object,
-                new DefaultDecoyKeysConfig());
+            var sut = new DecoyTimeGeneratorAttribute(mockTimeCalculator.Object);
 
-            
             var actionContext = new ActionContext(
-                    new DefaultHttpContext(),
-                    new RouteData(),
-                    new ActionDescriptor(),
-                    new ModelStateDictionary());
+                new DefaultHttpContext(),
+                new RouteData(),
+                new ActionDescriptor(),
+                new ModelStateDictionary());
 
             var actionExecutingContext = new ActionExecutingContext(
-                    actionContext,
-                    new List<IFilterMetadata>(),
-                    new Dictionary<string, object>(),
-                    null);
-            
+                actionContext,
+                new List<IFilterMetadata>(),
+                new Dictionary<string, object>(),
+                null);
+
             ActionExecutionDelegate nullAction = async () => { return null; };
-            
+
             var timer = new Stopwatch();
 
             //Act
             timer.Start();
             await sut.OnActionExecutionAsync(actionExecutingContext, nullAction);
             timer.Stop();
-            
+
             //Assert
-            Assert.True(timer.ElapsedMilliseconds >= delayMs, $"Recorded time: {timer.ElapsedMilliseconds}ms.");
+            Assert.True(timer.ElapsedMilliseconds >= 0.90 * delayMs, $"Recorded time: {timer.ElapsedMilliseconds}ms.");
         }
     }
 }

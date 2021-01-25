@@ -56,8 +56,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
 
         public void WritePostBodyParsingFailed(Exception exception)
         {
-			if (exception == null)
-			{
+            if (exception == null)
+            {
                 throw new ArgumentNullException(nameof(exception));
             }
 
@@ -106,14 +106,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         {
             _Logger.LogInformation("[{name}/{id}] TEKs remaining - Count:{Count}.",
                 Name, ValidTekCount,
-				count);
+                count);
         }
 
         public void WriteBucketDoesNotExist(string bucketId)
         {
             _Logger.LogError("[{name}/{id}] Bucket does not exist - Id:{BucketId}.",
                 Name, BucketDoesNotExist,
-				bucketId);
+                bucketId);
         }
 
         public void WriteSignatureInvalid(byte[] bucketId, byte[] signature)
@@ -163,7 +163,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         {
             _Logger.LogInformation("[{name}/{id}] Teks added - Count:{count}.",
                 Name, TekCountAdded,
-				count);
+                count);
         }
     }
 }

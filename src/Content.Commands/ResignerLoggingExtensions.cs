@@ -40,8 +40,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         
         public void WriteReport(ContentEntity[]? reportContent)
         {
-			if (reportContent == null)
-			{
+            if (reportContent == null)
+            {
                 throw new ArgumentNullException(nameof(reportContent));
             }
 

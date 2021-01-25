@@ -17,6 +17,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
 
             return serviceProvider.GetRequiredService<DecoyTimeGeneratorAttribute>();
-        } 
+        }
     }
 }

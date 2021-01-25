@@ -13,22 +13,22 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
-	public static class ManifestV3Injector
-	{
-		public static void ManifestForV3Startup(this IServiceCollection services)
-		{
-			services.AddTransient<ManifestBuilderV3>();
+    public static class ManifestV3Injector
+    {
+        public static void ManifestForV3Startup(this IServiceCollection services)
+        {
+            services.AddTransient<ManifestBuilderV3>();
 
-			services.AddTransient<Func<IContentEntityFormatter>>(x =>
-				() => new StandardContentEntityFormatter(
-					new ZippedSignedContentFormatter(
-						SignerConfigStartup.BuildEvSigner(
-							x.GetRequiredService<IConfiguration>(),
-							x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
-							x.GetRequiredService<IUtcDateTimeProvider>())),
-					x.GetRequiredService<IPublishingIdService>(),
-					x.GetRequiredService<IJsonSerializer>()
-				));
-		}
-	}
+            services.AddTransient<Func<IContentEntityFormatter>>(x =>
+                () => new StandardContentEntityFormatter(
+                    new ZippedSignedContentFormatter(
+                        SignerConfigStartup.BuildEvSigner(
+                            x.GetRequiredService<IConfiguration>(),
+                            x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                            x.GetRequiredService<IUtcDateTimeProvider>())),
+                    x.GetRequiredService<IPublishingIdService>(),
+                    x.GetRequiredService<IJsonSerializer>()
+                ));
+        }
+    }
 }

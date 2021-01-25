@@ -77,7 +77,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         [Fact]
         public void EksBuilderV1WithDummy_NLSigHasDummyText()
-		{
+        {
             //Arrange
             var KeyCount = 500;
             var lf = new LoggerFactory();

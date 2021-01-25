@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private readonly ILogger _Logger;
 
         public RegisterSecretLoggingExtensions(ILogger<RegisterSecretLoggingExtensions> logger)
-		{
+        {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 

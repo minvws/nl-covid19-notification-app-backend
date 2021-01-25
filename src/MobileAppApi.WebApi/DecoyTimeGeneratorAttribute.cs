@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
@@ -13,26 +13,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
     // NOTE: do not apply this attribute directly, apply DecoyTimeGeneratorAttributeFactory
     public class DecoyTimeGeneratorAttribute : ActionFilterAttribute
     {
-        private readonly DecoyKeysLoggingExtensions _Logger;
-        private readonly IRandomNumberGenerator _RandomNumberGenerator;
-        private readonly IDecoyKeysConfig _Config;
+        private readonly IDecoyTimeCalculator _Calculator;
 
-        public DecoyTimeGeneratorAttribute(
-            DecoyKeysLoggingExtensions logger,
-            IRandomNumberGenerator randomNumberGenerator,
-            IDecoyKeysConfig config)
+        public DecoyTimeGeneratorAttribute(IDecoyTimeCalculator calculator)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _RandomNumberGenerator = randomNumberGenerator ?? throw new ArgumentNullException(nameof(randomNumberGenerator));
-            _Config = config ?? throw new ArgumentNullException(nameof(config));
+            _Calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
         }
-
+        
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var delayMs = _RandomNumberGenerator.Next(_Config.MinimumDelayInMilliseconds, _Config.MaximumDelayInMilliseconds);
-            
-            _Logger.WriteDelaying(delayMs);
-            await DelayTimer.Delay(delayMs);
+            await Task.Delay(_Calculator.GetDelay());
             await next();
         }
     }

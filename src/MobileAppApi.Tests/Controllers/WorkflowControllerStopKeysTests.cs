@@ -2,25 +2,42 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
+using Moq;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
 using Xunit;
+using Microsoft.Extensions.DependencyInjection;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
 {
-    public class WorkflowControllerStopKeysTests
+    public class WorkflowControllerStopKeysTests : WebApplicationFactory<Startup>, IDisposable
     {
-        private readonly CustomWebApplicationFactory<Startup, WorkflowDbContext> _Factory;
+        private readonly WebApplicationFactory<Startup> _Factory;
+        private readonly Mock<IDecoyTimeCalculator> _MockTimeCalculator = new Mock<IDecoyTimeCalculator>();
 
         public WorkflowControllerStopKeysTests()
         {
-            _Factory = new CustomWebApplicationFactory<Startup, WorkflowDbContext>();
+            _Factory = WithWebHostBuilder(
+                builder =>
+                {
+                    builder.ConfigureTestServices(services => {
+
+                        services.Replace(new ServiceDescriptor(typeof(IDecoyTimeCalculator), _MockTimeCalculator.Object));
+                        services.AddTransient<DecoyTimeGeneratorAttribute>();
+                        services.AddTransient<DecoyTimeAggregatorAttribute>();
+                        services.AddTransient<ResponsePaddingFilterAttribute>();
+                    });
+                });
         }
 
         [Fact]
@@ -36,33 +53,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
 
-        // Ticket raised to move/refactor, this tests the delay feature not if it's enabled for an endpoint
-        /// <summary>
-        /// Tests whether or not the response is delayed by at least the minimum time.
-        /// </summary>
-        /// <param name="min">Minimum wait time</param>
-        /// <param name="max">Maximum wait time</param>
         [Theory]
-        [InlineData(100L, 200L)]
-        [InlineData(200L, 300L)]
-        [InlineData(300L, 400L)]
-        [InlineData(50L, 100L)]
-        [InlineData(10L, 50L)]
-        public async Task DelayTest(long min, long max)
+        [InlineData(42)]
+        [InlineData(343)]
+        [InlineData(2416)]
+        [InlineData(10000)]
+        public async Task DelayTest(int delayMs)
         {
             // Arrange
             var sw = new Stopwatch();
-            var client = _Factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureAppConfiguration((ctx, config) =>
-                {
-                    config.AddInMemoryCollection(new Dictionary<string, string>
-                    {
-                        ["Workflow:Decoys:DelayInMilliseconds:Min"] = $"{min}",
-                        ["Workflow:Decoys:DelayInMilliseconds:Max"] = $"{max}"
-                    });
-                });
-            }).CreateClient();
+            _MockTimeCalculator.Setup(x => x.GetDelay())
+                .Returns(TimeSpan.FromMilliseconds(delayMs));
+
+            var client = _Factory.CreateClient();
 
             // Act
             sw.Start();
@@ -71,7 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            Assert.True(sw.ElapsedMilliseconds > min);
+            Assert.True(sw.ElapsedMilliseconds >= delayMs);
         }
 
         // Ticket raised to move/refactor, this tests the delay feature not if it's enabled for an endpoint
@@ -91,8 +94,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                     {
                         ["Workflow:ResponsePadding:ByteCount:Min"] = $"{min}",
                         ["Workflow:ResponsePadding:ByteCount:Max"] = $"{max}",
-                        ["Workflow:Decoys:DelayInMilliseconds:Min"] = $"0",
-                        ["Workflow:Decoys:DelayInMilliseconds:Max"] = $"8"
                     });
                 });
             }).CreateClient();
