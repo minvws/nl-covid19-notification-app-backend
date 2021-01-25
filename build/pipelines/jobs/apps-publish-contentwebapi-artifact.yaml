@@ -8,6 +8,6 @@ jobs:
     - name: ProjectPath
       value: 'src\Content.WebApi\Content.WebApi.csproj'
 
-    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
+    displayName: 'Publish Build Artifact $(Apps.Content.WebApi.ArtifactSubDirectory)'
     steps:
       - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'
