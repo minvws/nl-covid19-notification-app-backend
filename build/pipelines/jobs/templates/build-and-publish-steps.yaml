@@ -12,7 +12,11 @@ steps:
   - task: CmdLine@2
     displayName: 'Copy files to: $(ArtifactSubfolder)'
     inputs:
-      script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder) $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder) /E /I'          
+      script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder) $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder) /E /I /EXCLUDE:appsettings.release.json'          
+  - task: CmdLine@2
+    displayName: 'Copy config file to: $(ArtifactSubfolder)'
+    inputs:
+      script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder)\appsettings.release.json $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder)\appsettings.json /Y'          
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
@@ -22,3 +26,5 @@ steps:
     displayName: 'Cleanup build artifact folder'
     inputs:
       script: 'rmdir /q /s $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder)'
+
+      
