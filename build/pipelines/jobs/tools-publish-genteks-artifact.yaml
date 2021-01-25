@@ -1,13 +1,12 @@
-variables:
- - name: ArtifactSubfolder
-   value: $(Tools.GenTeks.ArtifactSubDirectory)
- - name: ProjectBuildFolder
-   value: 'GenTeks'
- - name: ProjectPath
-   value: 'src/GenTeks/GenTeks.csproj'
-
 jobs:  
-  - job: Build_$(ArtifactSubfolder)
+  - job: Build_GenTeks
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Tools.GenTeks.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'GenTeks'
+    - name: ProjectPath
+      value: 'src/GenTeks/GenTeks.csproj'
     displayName: Publish Build Artifact $(ArtifactSubfolder)
     steps:
       - task: DotNetCoreCLI@2

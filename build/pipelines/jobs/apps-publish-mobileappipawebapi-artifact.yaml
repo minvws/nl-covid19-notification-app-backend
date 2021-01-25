@@ -1,13 +1,12 @@
-variables:
- - name: ArtifactSubfolder
-   value: $(Apps.MobileAppApi.WebApi.ArtifactSubDirectory)
- - name: ProjectBuildFolder
-   value: 'MobileAppApi.WebApi'
- - name: ProjectPath
-   value: 'src/MobileAppApi.WebApi/MobileAppApi.WebApi.csproj'
-
 jobs:  
-  - job: Build_$(ArtifactSubfolder)
+  - job: Build_MobileAppApi_WebApi
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.MobileAppApi.WebApi.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'MobileAppApi.WebApi'
+    - name: ProjectPath
+      value: 'src/MobileAppApi.WebApi/MobileAppApi.WebApi.csproj'
     displayName: Publish Build Artifact $(ArtifactSubfolder)
     steps:
       - task: DotNetCoreCLI@2

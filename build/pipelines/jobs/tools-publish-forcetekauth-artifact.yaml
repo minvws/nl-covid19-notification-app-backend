@@ -1,13 +1,12 @@
-variables:
- - name: ArtifactSubfolder
-   value: $(Tools.ForceTekAuth.ArtifactSubDirectory)
- - name: ProjectBuildFolder
-   value: 'ForceTekAuth'
- - name: ProjectPath
-   value: 'src/ForceTekAuth/ForceTekAuth.csproj'
-
 jobs:  
-  - job: Build_$(ArtifactSubfolder)
+  - job: Build_ForceTekAuth
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Tools.ForceTekAuth.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'ForceTekAuth'
+    - name: ProjectPath
+      value: 'src/ForceTekAuth/ForceTekAuth.csproj'
     displayName: Publish Build Artifact $(ArtifactSubfolder)
     steps:
       - task: DotNetCoreCLI@2

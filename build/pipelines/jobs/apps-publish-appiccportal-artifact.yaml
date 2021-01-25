@@ -1,13 +1,12 @@
-variables:
- - name: ArtifactSubfolder
-   value: $(Apps.App.IccPortal.ArtifactSubDirectory)
- - name: ProjectBuildFolder
-   value: 'App.IccPortal'
- - name: ProjectPath
-   value: 'src\App.IccPortal\App.IccPortal.csproj'
-
 jobs:  
-  - job: Build_$(ArtifactSubfolder)
+  - job: Build_App_IccPortal
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.App.IccPortal.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'App.IccPortal'
+    - name: ProjectPath
+      value: 'src\App.IccPortal\App.IccPortal.csproj'
     displayName: Publish Build Artifact $(ArtifactSubfolder)
     steps:
       - task: DotNetCoreCLI@2

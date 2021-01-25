@@ -1,11 +1,13 @@
-variables:
- - name: ArtifactSubfolder
-   value: $(Apps.Content.WebApi.ArtifactSubDirectory)
- - name: ProjectBuildFolder
-   value: 'Content.WebApi'
+jobs:
+  - job: Build_ContentApi
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.Content.WebApi.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'Content.WebApi'
+    - name: ProjectPath
+      value: 'src\Content.WebApi\Content.WebApi.csproj'
 
-jobs:  
-  - job: Build_$(ArtifactSubfolder)
     displayName: Publish Build Artifact $(ArtifactSubfolder)
     steps:
       - task: DotNetCoreCLI@2
@@ -13,7 +15,7 @@ jobs:
         inputs:
           command: 'publish'
           publishWebProjects: false
-          projects: 'src\Content.WebApi\Content.WebApi.csproj'
+          projects: $(ProjectPath)
           # Version suffix starts with build number and Append the current git hash to the version suffix
           arguments: '-o $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
           # CIBG don't use ZIP files for artifacts

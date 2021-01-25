@@ -1,13 +1,12 @@
-variables:
- - name: ArtifactSubfolder
-   value: $(Apps.IksDownloader.ArtifactSubDirectory)
- - name: ProjectBuildFolder
-   value: 'Iks.Downloader'
- - name: ProjectPath
-   value: 'src/Iks.Downloader/Iks.Downloader.csproj'
-
 jobs:  
-  - job: Build_$(ArtifactSubfolder)
+  - job: Build_Iks_Downloader
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.IksDownloader.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'Iks.Downloader'
+    - name: ProjectPath
+      value: 'src/Iks.Downloader/Iks.Downloader.csproj'
     displayName: Publish Build Artifact $(ArtifactSubfolder)
     steps:
       - task: DotNetCoreCLI@2

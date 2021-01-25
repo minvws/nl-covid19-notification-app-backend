@@ -1,13 +1,12 @@
-variables:
- - name: ArtifactSubfolder
-   value: $(Tools.SigTestFileCreator.ArtifactSubDirectory)
- - name: ProjectBuildFolder
-   value: 'SigTestFileCreator'
- - name: ProjectPath
-   value: 'src/SigTestFileCreator/SigTestFileCreator.csproj'
-
 jobs:  
-  - job: Build_$(ArtifactSubfolder)
+  - job: Build_SigTestFileCreator
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Tools.SigTestFileCreator.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'SigTestFileCreator'
+    - name: ProjectPath
+      value: 'src/SigTestFileCreator/SigTestFileCreator.csproj'
     displayName: Publish Build Artifact $(ArtifactSubfolder)
     steps:
       - task: DotNetCoreCLI@2
