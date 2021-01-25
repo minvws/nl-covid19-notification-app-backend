@@ -14,10 +14,11 @@ jobs:
           zipAfterPublish: false
       - task: CopyFiles@2
         inputs:
-          contents: '$(Build.ArtifactStagingDirectory)/publish/$(Apps.Content.WebApi.ArtifactSubDirectory)/Content.WebApi/**'
-          targetFolder: '$(Build.ArtifactStagingDirectory)/Artifacts/Content_WebApi/$(Apps.Content.WebApi.ArtifactSubDirectory)'
+          contents: '$(Build.ArtifactStagingDirectory)/publish/$(Apps.Content.WebApi.ArtifactSubDirectory)/Content.WebApi/*'
+          targetFolder: '$(Build.ArtifactStagingDirectory)/Artifacts/$(Apps.Content.WebApi.ArtifactSubDirectory)'
+          CleanTargetFolder: true
       - task: PublishBuildArtifacts@1
         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)/Artifacts/Content_WebApi'
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/Artifacts'
           ArtifactName: $(Publish.ArtifactName)
           publishLocation: 'Container'
