@@ -1,5 +1,6 @@
 jobs:  
   - job: Build_Eks_Parser
+    dependsOn: Install_SDK_31x
     variables:
     - name: ArtifactSubfolder
       value: $(Tools.Eks.Parser.ArtifactSubDirectory)

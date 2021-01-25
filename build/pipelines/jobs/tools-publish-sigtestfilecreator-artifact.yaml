@@ -1,5 +1,6 @@
 jobs:  
   - job: Build_SigTestFileCreator
+    dependsOn: Install_SDK_31x
     variables:
     - name: ArtifactSubfolder
       value: $(Tools.SigTestFileCreator.ArtifactSubDirectory)

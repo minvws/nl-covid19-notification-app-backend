@@ -1,5 +1,6 @@
 jobs:  
   - job: Build_Iks_Uploader
+    dependsOn: Install_SDK_31x
     variables:
     - name: ArtifactSubfolder
       value: $(Apps.IksUploader.ArtifactSubDirectory)

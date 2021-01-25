@@ -1,5 +1,6 @@
 jobs:  
   - job: Build_DailyCleanup
+    dependsOn: Install_SDK_31x
     variables:
     - name: ArtifactSubfolder
       value: $(Apps.DailyCleanup.ArtifactSubDirectory)
