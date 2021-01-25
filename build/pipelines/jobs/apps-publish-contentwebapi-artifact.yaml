@@ -12,11 +12,9 @@ jobs:
           arguments: '-o $(Build.ArtifactStagingDirectory)\publish\$(Apps.Content.WebApi.ArtifactSubDirectory) --no-self-contained --runtime $(runtime) --configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)-$(Build.SourceVersion)'
           # CIBG don't use ZIP files for artifacts
           zipAfterPublish: false
-      - task: CopyFiles@2
+      - task: CmdLine@2
         inputs:
-          contents: '$(Build.ArtifactStagingDirectory)\publish\$(Apps.Content.WebApi.ArtifactSubDirectory)\Content.WebApi\**'
-          targetFolder: '$(Build.ArtifactStagingDirectory)\Artifacts\$(Apps.Content.WebApi.ArtifactSubDirectory)'
-          CleanTargetFolder: true
+          script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(Apps.Content.WebApi.ArtifactSubDirectory) $(Build.ArtifactStagingDirectory)\Artifacts\ContentApi /E /I'          
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
