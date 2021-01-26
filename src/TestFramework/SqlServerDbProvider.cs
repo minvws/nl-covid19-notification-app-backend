@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework
         {
             if (string.IsNullOrWhiteSpace(databaseName)) throw new ArgumentException(nameof(databaseName));
 
-            var csb = new SqlConnectionStringBuilder($"Data Source=COVTSTDB01;Initial Catalog={databaseName};Integrated Security=True")
+            var csb = new SqlConnectionStringBuilder($"Data Source=.;Initial Catalog={databaseName};Integrated Security=True")
             {
                 MultipleActiveResultSets = true
             };
