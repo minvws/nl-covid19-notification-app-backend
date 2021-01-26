@@ -40,28 +40,28 @@ stages:
             arguments: ' --configuration $(buildConfiguration)'
 
         # Run Unit Tests
-        - task: DotNetCoreCLI@2
-          displayName: Run Non Sql tests
-          inputs:
-            command: 'test'
-            projects: $(ProjectsToTest)
-            arguments: '--filter db!=ss&db!=mem --logger trx'
+        #- task: DotNetCoreCLI@2
+        #  displayName: Run Non Sql tests
+        #  inputs:
+        #    command: 'test'
+        #    projects: $(ProjectsToTest)
+        #    arguments: '--filter db!=ss&db!=mem --logger trx'
+        #
+        #    # Run Unit Tests
+        #- task: DotNetCoreCLI@2
+        #  displayName: Run Sqlite tests
+        #  inputs:
+        #    command: 'test'
+        #    projects: $(ProjectsToTest)
+        #    arguments: '--filter db=mem --logger trx'
 
             # Run Unit Tests
         - task: DotNetCoreCLI@2
-          displayName: Run Sqlite tests
+          displayName: Run tests
           inputs:
             command: 'test'
             projects: $(ProjectsToTest)
-            arguments: '--filter db=mem --logger trx'
-
-            # Run Unit Tests
-        - task: DotNetCoreCLI@2
-          displayName: Run SqlServer tests
-          inputs:
-            command: 'test'
-            projects: $(ProjectsToTest)
-            arguments: '--filter db=ss --logger trx'
+            arguments: '--filter --logger trx'
 
         # Install .Net Core 2.0 Version
         - task: UseDotNet@2
