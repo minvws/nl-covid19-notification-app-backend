@@ -55,7 +55,7 @@ stages:
             projects: $(ProjectsToTest)
             arguments: '--filter db=mem --logger trx --no-build'
         
-        - ${{ if eq(parameters.RUN_SQLESERVER_TESTS, true) }}:
+        - ${{ if eq(parameters.RUN_SQLSERVER_TESTS, true) }}:
               # Run Unit Tests
           - task: DotNetCoreCLI@2
             displayName: Run SqlServer tests
