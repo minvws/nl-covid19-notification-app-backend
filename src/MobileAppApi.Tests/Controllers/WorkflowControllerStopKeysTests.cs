@@ -137,31 +137,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             // Assert
             Assert.True(result.Headers.Contains("padding"));
         }
-
-        [Fact]
-        public async Task Register_has_padding()
-        {
-            // Arrange
-            var client = _Factory.CreateClient();
-
-            // Act
-            var result = await client.PostAsync("v1/register", null);
-
-            // Assert
-            Assert.True(result.Headers.Contains("padding"));
-        }
-
-        [Fact]
-        public async Task Postkeys_has_padding()
-        {
-            // Arrange
-            var client = _Factory.CreateClient();
-
-            // Act
-            var result = await client.PostAsync("v1/postkeys", null);
-
-            // Assert
-            Assert.True(result.Headers.Contains("padding"));
-        }
     }
 }
