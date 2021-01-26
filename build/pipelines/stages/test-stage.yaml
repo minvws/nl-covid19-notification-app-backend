@@ -36,7 +36,7 @@ stages:
           displayName: Run dotnet build $(buildConfiguration)
           inputs:
             command: 'build'
-            projects: '**/*.sln'
+            projects: '**/*.csproj'
             arguments: ' --configuration $(buildConfiguration)'
 
         # Run Unit Tests
