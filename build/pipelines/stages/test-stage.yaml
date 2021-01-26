@@ -1,7 +1,8 @@
 stages:
-- stage: Test
+- stage: Test 
   jobs:
-    - job: Test
+    - job: RunTests
+      displayName: 'Run unittests'
       workspace:
         clean: all # what to clean up before the job runs - outputs | resources | all
       steps:     
@@ -11,12 +12,6 @@ stages:
           inputs:
             version: 2.0.x
 
-        # Remove PostBuildEvents
-        #- task: CmdLine@2
-        #  displayName: 'Remove PostBuildEvents from .csproj files'
-        #  inputs:
-        #    script: find . -name \*.csproj -exec sed -i '/<Exec Command="xcopy.*>/d' {} \;
-       
         # Prepare analysis on SonarCloud
         - task: SonarCloudPrepare@1
           displayName: 'Prepare analysis on SonarCloud'
@@ -36,17 +31,37 @@ stages:
         - task: NuGetToolInstaller@1
           displayName: 'Install NuGet Tool'
 
-        #- task: NuGetCommand@2
-        #  inputs:
-        #    restoreSolution: '$(solution)'
+        # Build 
+        - task: DotNetCoreCLI@2
+          displayName: Run dotnet build $(buildConfiguration)
+          inputs:
+            command: 'build'
+            projects: '**/*.csproj'
+            arguments: ' --configuration $(buildConfiguration)'
 
         # Run Unit Tests
         - task: DotNetCoreCLI@2
-          displayName: Run unittests
+          displayName: Run Non Sql releated tests
           inputs:
-            command: "test"
+            command: 'test'
             projects: $(ProjectsToTest)
-            arguments: '--filter db!=ss --logger trx'
+            arguments: '--filter db!=ss&db!=mem --logger trx'
+
+            # Run Unit Tests
+        - task: DotNetCoreCLI@2
+          displayName: Run Sqlite releated tests
+          inputs:
+            command: 'test'
+            projects: $(ProjectsToTest)
+            arguments: '--filter db=mem --logger trx'
+
+            # Run Unit Tests
+        - task: DotNetCoreCLI@2
+          displayName: Run SqlServer releated tests
+          inputs:
+            command: 'test'
+            projects: $(ProjectsToTest)
+            arguments: '--filter db=ss --logger trx'
 
         # Install .Net Core 2.0 Version
         - task: UseDotNet@2
