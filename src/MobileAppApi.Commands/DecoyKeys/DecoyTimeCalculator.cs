@@ -28,11 +28,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 
         private readonly DecoyKeysLoggingExtensions _Logger;
         private readonly object _Lock = new object();
-        private readonly WelfordsAlgorithm _Algorithm = new WelfordsAlgorithm();
+        private readonly IWelfordsAlgorithm _Algorithm;
 
-        public DecoyTimeCalculator(DecoyKeysLoggingExtensions logger)
+        public DecoyTimeCalculator(DecoyKeysLoggingExtensions logger, IWelfordsAlgorithm algorithm)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _Algorithm = algorithm ?? throw new ArgumentNullException(nameof(algorithm));
         }
 
         public IDisposable GetTimeRegistrationHandle() => new DecoyTimeCalculatorHandle(AddDataPoint);
@@ -55,7 +56,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
         {
             lock (_Lock)
             {
-                var result = TimeSpan.FromMilliseconds(_Algorithm.GetNormalSample());
+                var timeMs = _Algorithm.GetNormalSample();
+                var result = TimeSpan.FromMilliseconds(timeMs >= 0 ? timeMs : 0);
                 _Logger.WriteGeneratingDelay(result);
                 return result;
             }

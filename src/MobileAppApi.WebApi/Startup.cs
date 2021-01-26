@@ -65,6 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddScoped<DecoyTimeGeneratorAttribute>();
             services.AddScoped<DecoyTimeAggregatorAttribute>();
             services.AddSingleton<IDecoyTimeCalculator, DecoyTimeCalculator>();
+            services.AddSingleton<IWelfordsAlgorithm, WelfordsAlgorithm>();
 
             services.AddSingleton<RegisterSecretLoggingExtensions>();
             services.AddSingleton<PostKeysLoggingExtensions>();
