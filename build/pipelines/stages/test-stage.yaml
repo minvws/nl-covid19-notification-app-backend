@@ -37,7 +37,7 @@ stages:
           inputs:
             command: 'build'
             projects: '**/*.csproj'
-            arguments: ' --configuration $(buildConfiguration)'
+            arguments: ' --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)\tests'
 
         # Run Unit Tests
         - task: DotNetCoreCLI@2

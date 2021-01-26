@@ -22,7 +22,7 @@ variables:
   solution: '**/*.sln'
   buildConfiguration: 'Release'
   runtime: 'win-x64'  
-  ProjectsToTest: 'src/**/*.Tests.csproj'
+  ProjectsToTest: '$(Build.ArtifactStagingDirectory)/tests/**/*.Tests.dll'
 
   # Publishing:
   # Artifact drop folder
