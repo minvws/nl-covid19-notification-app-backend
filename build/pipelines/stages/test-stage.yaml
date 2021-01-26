@@ -41,7 +41,7 @@ stages:
 
         # Run Unit Tests
         - task: DotNetCoreCLI@2
-          displayName: Run Non Sql releated tests
+          displayName: Run Non Sql tests
           inputs:
             command: 'test'
             projects: $(ProjectsToTest)
@@ -49,7 +49,7 @@ stages:
 
             # Run Unit Tests
         - task: DotNetCoreCLI@2
-          displayName: Run Sqlite releated tests
+          displayName: Run Sqlite tests
           inputs:
             command: 'test'
             projects: $(ProjectsToTest)
@@ -57,7 +57,7 @@ stages:
 
             # Run Unit Tests
         - task: DotNetCoreCLI@2
-          displayName: Run SqlServer releated tests
+          displayName: Run SqlServer tests
           inputs:
             command: 'test'
             projects: $(ProjectsToTest)
