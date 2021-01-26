@@ -14,9 +14,13 @@ trigger:
     include:
     - .
 
-
 pool:
   name: 'CIBG-BuildRelease-O'
+
+parameters:
+- name: RUN_SQLESERVER_TESTS
+  type: boolean
+  default: false
 
 variables:
   solution: '**/*.sln'
