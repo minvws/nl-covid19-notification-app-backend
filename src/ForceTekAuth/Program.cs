@@ -29,7 +29,7 @@ namespace ForceTekAuth
         {
             services.AddSingleton<IConfiguration>(configuration);
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow, false));
+            services.AddTransient(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow, false));
             services.AddTransient<ForceTekAuthCommand>();
         }
     }
