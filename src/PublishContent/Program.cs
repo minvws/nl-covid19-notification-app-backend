@@ -33,11 +33,9 @@ namespace PublishContent
             services.AddSingleton<IConfiguration>(configuration);
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
-            services.AddScoped(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content, false));
-            services.AddTransient<Func<ContentDbContext>>(x => x.GetRequiredService<ContentDbContext>);
+            services.AddTransient(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content, false));
 
             services.AddTransient<PublishContentCommand>();
-            //Do not need services.AddTransient<ContentDatabaseCreateCommand>();
 
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
 
