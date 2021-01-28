@@ -62,7 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             var signer = new CmsSignerEnhanced(
                 new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
                 //TODO add a better test chain.
-                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("Resources.StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
+                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
                 new StandardUtcDateTimeProvider()
             );
 
@@ -126,7 +126,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             var signer = new CmsSignerEnhanced(
                 new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
                                                                                                                                                                                      //TODO add a better test chain.
-                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("Resources.StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
+                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
                 new StandardUtcDateTimeProvider()
             );
 
@@ -196,7 +196,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             var signer = new CmsSignerEnhanced(
                 new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
                                                                                                                                                                                      //TODO add a better test chain.
-                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("Resources.StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
+                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
                 new StandardUtcDateTimeProvider()
             );
 

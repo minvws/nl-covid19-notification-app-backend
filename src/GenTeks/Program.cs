@@ -37,7 +37,7 @@ namespace GenTeks
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
             services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddSingleton(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
+            services.AddTransient(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
 
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<ILabConfirmationIdService, LabConfirmationIdService>();
