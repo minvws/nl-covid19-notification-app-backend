@@ -1,9 +1,13 @@
-﻿using System;
+﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using MathNet.Numerics.Distributions;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys
 {
-    public class WelfordsAlgorithm
+    public class WelfordsAlgorithm : IWelfordsAlgorithm
     {
         private int _Count;
         private double _SumSquareDiff;

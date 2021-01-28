@@ -75,7 +75,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
                     new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), //Not a secret.
                     certProviderLogger),
                 new EmbeddedResourcesCertificateChainProvider(
-                    new HardCodedCertificateLocationConfig("Resources.StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
+                    new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
                 dateTimeProvider);
 
             Func<IContentEntityFormatter> formatterForV3 = () =>

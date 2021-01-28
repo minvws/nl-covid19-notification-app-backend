@@ -40,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    _WorkflowDbProvider.CreateNewWithTx();
+                    services.AddScoped(sp => _WorkflowDbProvider.CreateNewWithTx());
                     services.AddTransient<DecoyTimeAggregatorAttribute>();
                 });
 
@@ -49,7 +49,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                     config.AddInMemoryCollection(new Dictionary<string, string>
                     {
                         ["Validation:TemporaryExposureKey:RollingPeriod:Min"] = "1",
-                        ["Validation:TemporaryExposureKey:RollingPeriod:Max"] = "256"
+                        ["Validation:TemporaryExposureKey:RollingPeriod:Max"] = "256",
+                        ["Workflow:ResponsePadding:ByteCount:Min"] = "8",
+                        ["Workflow:ResponsePadding:ByteCount:Max"] = "64",
                     });
                 });
             });
@@ -155,6 +157,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var items = await _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode); //All coerced by middleware to 200 now.
             Assert.Empty(items);
+        }
+
+        [Fact]
+        public async Task Postkeys_has_padding()
+        {
+            // Arrange
+            var client = _Factory.CreateClient();
+
+            // Act
+            var result = await client.PostAsync("v1/postkeys", null);
+
+            // Assert
+            Assert.True(result.Headers.Contains("padding"));
         }
     }
 }

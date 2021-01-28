@@ -3,12 +3,14 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NCrunch.Framework;
@@ -31,20 +33,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         protected WorkflowControllerPostSecretTests(IDbProvider<WorkflowDbContext> workflowDbProvider)
         {
             _WorkflowDbProvider = workflowDbProvider;
-            _Factory = WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
+            _Factory = WithWebHostBuilder(
+                builder =>
                 {
-                    services.AddScoped(sp => _WorkflowDbProvider.CreateNewWithTx());
-                    services.Replace(new ServiceDescriptor(typeof(IRandomNumberGenerator), _FakeNumbers));
-                    services.AddTransient<DecoyTimeAggregatorAttribute>();
+                    builder.ConfigureTestServices(services =>
+                    {
+                        services.AddScoped(sp => _WorkflowDbProvider.CreateNewWithTx());
+                        services.Replace(new ServiceDescriptor(typeof(IRandomNumberGenerator), _FakeNumbers));
+                        services.AddTransient<DecoyTimeAggregatorAttribute>();
+                    });
+
+                    builder.ConfigureAppConfiguration((ctx, config) =>
+                    {
+                        config.AddInMemoryCollection(new Dictionary<string, string>
+                        {
+                            ["Workflow:ResponsePadding:ByteCount:Min"] = "8",
+                            ["Workflow:ResponsePadding:ByteCount:Max"] = "64"
+                        });
+                    });
                 });
-            });
         }
 
         private class FakeNumberGen: IRandomNumberGenerator
         {
-            public int Value { get; set; }
+            public int Value { get; set; } = 10;
 
             public int Next(int min, int max) => Value;
 
@@ -134,5 +146,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             Assert.Equal(6, items.Count);
         }
 
+        [Fact]
+        public async Task Register_has_padding()
+        {
+            // Arrange
+            var client = _Factory.CreateClient();
+
+            // Act
+            var result = await client.PostAsync("v1/register", null);
+
+            // Assert
+            Assert.True(result.Headers.Contains("padding"));
+        }
     }
 }
