@@ -1,4 +1,8 @@
-import {TestBed} from '@angular/core/testing';
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+import { TestBed } from '@angular/core/testing';
 import {LabConfirmService} from './lab-confirm.service';
 import {AppConfigService} from './app-config.service';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
