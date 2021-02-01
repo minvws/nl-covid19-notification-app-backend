@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
         {
             _Logger.LogDebug("[{name}/{id}] Delaying for {delayMs} milliseconds",
                 Name, CreateDelay,
-                delayMs.Milliseconds);
+                delayMs.Milliseconds + delayMs.Seconds * 1000);
         }
     }
 }
