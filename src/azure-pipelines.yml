@@ -41,7 +41,7 @@ steps:
   displayName: 'Publish Database Artifact:'
   inputs:
     ArtifactName: 'drop'
-  #condition: not(eq(variables['Build.Reason'], 'PullRequest'))
+  condition: not(eq(variables['Build.Reason'], 'PullRequest'))
 
 - task: NuGetCommand@2
   inputs:
@@ -88,4 +88,4 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
     ArtifactName: 'drop'
     publishLocation: 'Container'
-  #condition: not(eq(variables['Build.Reason'], 'PullRequest'))
+  condition: not(eq(variables['Build.Reason'], 'PullRequest'))
