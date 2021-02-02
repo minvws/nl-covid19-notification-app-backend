@@ -47,8 +47,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 
             lock (_Lock)
             {
-                var result = _Algorithm.AddDataPoint(t.Milliseconds);
-                _Logger.WriteTimeRegistered(result.Count, t.Milliseconds, result.Mean, result.StandardDeviation); //TODO This would alter the actual total time?
+                var result = _Algorithm.AddDataPoint(t.TotalMilliseconds);
+                _Logger.WriteTimeRegistered(result.Count, t.TotalMilliseconds, result.Mean, result.StandardDeviation);
             }
         }
 
