@@ -47,9 +47,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 
             lock (_Lock)
             {
-                var totalMs = t.Milliseconds + t.Seconds * 1000;
-                var result = _Algorithm.AddDataPoint(totalMs);
-                _Logger.WriteTimeRegistered(result.Count, totalMs, result.Mean, result.StandardDeviation);
+                var result = _Algorithm.AddDataPoint(t.TotalMilliseconds);
+                _Logger.WriteTimeRegistered(result.Count, t.TotalMilliseconds, result.Mean, result.StandardDeviation);
             }
         }
 

@@ -43,8 +43,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
                 actionContext,
                 new List<IFilterMetadata>());
 
-            //ResultExecutionDelegate nullAction = async () => { return null; };
-
             var timer = new Stopwatch();
 
             //Act
@@ -53,6 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
             timer.Stop();
 
             //Assert
+            // 10% margin, as Task.Delay has some inaccuracies
             Assert.True(timer.ElapsedMilliseconds >= 0.90 * delayMs, $"Recorded time: {timer.ElapsedMilliseconds}ms.");
         }
     }

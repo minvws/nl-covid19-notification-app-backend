@@ -32,16 +32,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
 
         public void WriteTimeRegistered(int entryNr, double entryTime, double entryMean, double entryStDev)
         {
-            _Logger.LogDebug("[{name}/{id}] Entry no. {entryNr} registered. Time: {entryTime}. Mean: {entryMean:xx3}, Stdev: {entryStDev:xx3}]",
+            _Logger.LogDebug("[{name}/{id}] Entry no. {entryNr} registered. Time: {entryTime:F2}. Mean: {entryMean:F2}, Stdev: {entryStDev:F2}]",
                 Name, RegisterTime,
                 entryNr, entryTime, entryMean, entryStDev);
         }
 
         public void WriteGeneratingDelay(TimeSpan delayMs)
         {
-            _Logger.LogDebug("[{name}/{id}] Delaying for {delayMs} milliseconds",
+            _Logger.LogDebug("[{name}/{id}] Delaying for {delayMs:F2} milliseconds",
                 Name, CreateDelay,
-                delayMs.Milliseconds + delayMs.Seconds * 1000);
+                delayMs.TotalMilliseconds);
         }
     }
 }
