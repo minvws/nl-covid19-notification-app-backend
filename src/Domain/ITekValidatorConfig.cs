@@ -12,9 +12,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
         /// Re-instate validation (as opposed to just filtering) this setting when iOS fixes the bug.
         /// </summary>
         int MaxAgeDays { get; }
-        int KeyDataLength { get; }
-        int RollingPeriodMin { get; }
-        int RollingPeriodMax { get; }
 
         /// <summary>
         /// Anti-Spam = date of release of GA SDKs

@@ -74,7 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         {
             _BodyBytes = body;
 
-            if ((signature?.Length ?? 0) != _WorkflowConfig.PostKeysSignatureLength)
+            if ((signature?.Length ?? 0) != UniversalConstants.PostKeysSignatureByteCount)
             {
                 _Logger.WriteSignatureValidationFailed();
                 return;
@@ -92,7 +92,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             }
 
             var base64Parser = new Base64();
-            var base64ParserResult = base64Parser.TryParseAndValidate(_ArgsObject.BucketId, _WorkflowConfig.BucketIdLength);
+            var base64ParserResult = base64Parser.TryParseAndValidate(_ArgsObject.BucketId, UniversalConstants.BucketIdByteCount);
             if (!base64ParserResult.Valid)
             {
                 _Logger.WriteBucketIdParsingFailed(_ArgsObject.BucketId, base64ParserResult.Messages);

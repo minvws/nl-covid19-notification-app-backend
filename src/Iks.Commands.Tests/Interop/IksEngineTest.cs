@@ -123,7 +123,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
                 {
                     RollingStartNumber = _UtcDateTimeProviderMock.Object.Snapshot.Date.ToRollingStartNumber(),
                     RollingPeriod = UniversalConstants.RollingPeriodRange.Hi,
-                    KeyData = new byte[UniversalConstants.DailyKeyDataLength]
+                    KeyData = new byte[UniversalConstants.DailyKeyDataByteCount]
                 }
             };
 

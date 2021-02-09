@@ -38,8 +38,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
                 Value = new DailyKey
                 {
                     RollingStartNumber = BaseTime.Date.ToRollingStartNumber(),
-                    RollingPeriod = UniversalConstants.RollingPeriodMax,
-                    KeyData = new byte[UniversalConstants.DailyKeyDataLength]
+                    RollingPeriod = UniversalConstants.RollingPeriodRange.Hi,
+                    KeyData = new byte[UniversalConstants.DailyKeyDataByteCount]
                 }
             };
 

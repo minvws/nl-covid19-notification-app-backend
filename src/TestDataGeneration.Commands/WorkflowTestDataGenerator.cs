@@ -68,9 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
             var m1 = new Mock<IWorkflowConfig>(MockBehavior.Strict);
             m1.Setup(x => x.TimeToLiveMinutes).Returns(10000);
             m1.Setup(x => x.PermittedMobileDeviceClockErrorMinutes).Returns(30);
-            m1.Setup(x => x.BucketIdLength).Returns(30);
-            m1.Setup(x => x.ConfirmationKeyLength).Returns(30);
-
+            
             Func<TekReleaseWorkflowStateCreate> createWf = () =>
                 new TekReleaseWorkflowStateCreate(_WorkflowDbContextProvider.CreateNewWithTx(),
                     _UtcDateTimeProvider, _Rng,

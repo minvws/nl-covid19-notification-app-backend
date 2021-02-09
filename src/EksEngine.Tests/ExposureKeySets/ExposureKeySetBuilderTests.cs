@@ -137,7 +137,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var workflowValidatorConfig = new DefaultTekListValidationConfig();
 
             var result = new List<TemporaryExposureKeyArgs>(workflowCount * workflowValidatorConfig.TemporaryExposureKeyCountMax);
-            var keyBuffer = new byte[workflowKeyValidatorConfig.KeyDataLength];
+            var keyBuffer = new byte[UniversalConstants.DailyKeyDataByteCount];
 
             for (var i = 0; i < workflowCount; i++)
             {
@@ -150,7 +150,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                     keys.Add(new TemporaryExposureKeyArgs
                     {
                         KeyData = keyBuffer,
-                        RollingStartNumber = workflowKeyValidatorConfig.RollingPeriodMin + j,
+                        RollingStartNumber = UniversalConstants.RollingPeriodRange.Lo + j,
                         RollingPeriod = 11,
                         TransmissionRiskLevel = TransmissionRiskLevel.Medium
                     });
