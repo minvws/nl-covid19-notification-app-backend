@@ -63,8 +63,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                     {
                         ["Workflow:PostKeys:TemporaryExposureKeys:RollingStartNumber:Min"] = new DateTime(2019, 12, 31, 0, 0, 0, DateTimeKind.Utc).ToRollingStartNumber().ToString(),
                         ["Workflow:PostKeys:TemporaryExposureKeys:Count:Min"] = "0",
-                        ["Validation:TemporaryExposureKey:RollingPeriod:Min"] = "1",
-                        ["Validation:TemporaryExposureKey:RollingPeriod:Max"] = UniversalConstants.RollingPeriodRange.Hi.ToString()
                     });
                 });
             });

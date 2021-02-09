@@ -15,7 +15,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
         public string Path { get; }
 
         /// <summary>
-        /// TODO check if this is currently blank for the NL cert chain
+        /// NB this is currently blank for the current NL cert chain but may not be for test certs that contain a private key.
+        /// In this case of tests, the password is NOT considered a secret.
         /// </summary>
         public string Password { get; }
     }
