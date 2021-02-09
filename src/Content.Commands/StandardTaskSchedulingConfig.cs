@@ -11,17 +11,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public class StandardTaskSchedulingConfig : AppSettingsReader, ITaskSchedulingConfig
     {
-        public StandardTaskSchedulingConfig(IConfiguration config, string? prefix = "TaskScheduling") : base(config, prefix)
+
+        private static readonly ProductionDefaultValuesTaskSchedulingConfig _ProductionDefaultValues = new ProductionDefaultValuesTaskSchedulingConfig();
+
+        public StandardTaskSchedulingConfig(IConfiguration config, string prefix = "TaskScheduling") : base(config, prefix)
         {
         }
 
+        /// <summary>
+        /// Replace missing or unparsable setting value with the production default.
+        /// TODO consider if this hides a potential issue - alternative is to throw a MissingCOnfigValueEx.
+        /// </summary>
         public double DailyCleanupHoursAfterMidnight
         {
             get
             {
-                var raw = GetConfigValue("DailyCleanupStartTime", "05:00:00");
-                var result = DateTime.ParseExact(raw, "hh:mm:ss", CultureInfo.InvariantCulture);
-                return result.TimeOfDay.TotalHours;
+                try
+                {
+                    var raw = GetConfigValue("DailyCleanupStartTime", "Not a time.");
+                    var result = DateTime.ParseExact(raw, "hh:mm:ss", CultureInfo.InvariantCulture);
+                    return result.TimeOfDay.TotalHours;
+                }
+                catch (FormatException)
+                {
+                    //TODO log this?
+                    return _ProductionDefaultValues.DailyCleanupHoursAfterMidnight;
+                }
             }
         }
     }

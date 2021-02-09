@@ -59,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddTransient<ILabConfirmationIdFormatter, StandardLabConfirmationIdFormatter>();
             services.AddTransient<ITekValidPeriodFilter, TekValidPeriodFilter>();
             services.AddScoped<ResponsePaddingFilterAttribute>();
-            services.AddScoped<IResponsePaddingConfig, ResponsePaddingConfig>();
+            services.AddScoped<IResponsePaddingConfig, StandardResponsePaddingConfig>();
             services.AddScoped<IPaddingGenerator, CryptoRandomPaddingGenerator>();
             services.AddScoped<SuppressErrorAttribute>();
             services.AddScoped<DecoyTimeGeneratorAttribute>();

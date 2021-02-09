@@ -42,16 +42,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
                 Name, ResourceFound);
         }
 
-        public void WriteResourceFail(Exception exception)
+        public void WriteResourceFail()
         {
-            if (exception == null)
-            {
-                throw new ArgumentNullException(nameof(exception));
-            }
-
-            _Logger.LogError(exception, "[{name}/{id}] Failed to get manifest resource stream.",
-                Name, ResourceFail,
-                exception);
+            _Logger.LogError("[{name}/{id}] Failed to get manifest resource stream.",
+                Name, ResourceFail);
         }
     }
 

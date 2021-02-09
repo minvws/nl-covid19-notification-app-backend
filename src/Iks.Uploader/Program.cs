@@ -66,7 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
             
             // IKS Signing
             services.AddTransient<IIksSigner, EfgsCmsSigner>();
-            services.AddTransient<ICertificateLocationConfig, StandardCertificateLocationConfig>();
+            services.AddTransient<IEmbeddedResourceCertificateConfig, EmbeddedResourceCertificateConfig>();
             services.AddTransient<ICertificateChainProvider, EmbeddedResourcesCertificateChainProvider>();
             services.AddTransient<ICertificateProvider>(
                 x => new LocalMachineStoreCertificateProvider(

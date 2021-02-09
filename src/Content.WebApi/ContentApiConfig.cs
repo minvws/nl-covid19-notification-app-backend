@@ -9,10 +9,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
 {
     public class ContentApiConfig : AppSettingsReader
     {
-        public ContentApiConfig(IConfiguration config, string? prefix = "ContentApi") : base(config, prefix)
+        public ContentApiConfig(IConfiguration config, string prefix = "ContentApi") : base(config, prefix)
         {
         }
 
+        /// <summary>
+        /// TODO investigate use of this value and its defaults.
+        /// </summary>
         public string Url => GetConfigValue(nameof(Url), "https://localhost:5001");
     }
 }

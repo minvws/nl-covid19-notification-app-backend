@@ -123,13 +123,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             );
 
             var thumbmprintConfig = new Mock<IThumbprintConfig>(MockBehavior.Strict);
-            thumbmprintConfig.Setup(x => x.Valid).Returns(true);
-
             _Resign = new NlContentResignExistingV1ContentCommand(
-                new NlContentResignCommand(_ContentDbProvider.CreateNew, nlSigner.Object, new ResignerLoggingExtensions(_Lf.CreateLogger<ResignerLoggingExtensions>())),
-                thumbmprintConfig.Object,
-                new ResignerLoggingExtensions(_Lf.CreateLogger<ResignerLoggingExtensions>())
-            );
+                new NlContentResignCommand(_ContentDbProvider.CreateNew, nlSigner.Object, new ResignerLoggingExtensions(_Lf.CreateLogger<ResignerLoggingExtensions>())));
         }
 
         [Fact]

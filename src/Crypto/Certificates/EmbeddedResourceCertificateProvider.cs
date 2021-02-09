@@ -11,10 +11,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
     public class EmbeddedResourceCertificateProvider : ICertificateProvider
     {
-        private readonly ICertificateLocationConfig _Config;
+        private readonly IEmbeddedResourceCertificateConfig _Config;
         private readonly EmbeddedCertProviderLoggingExtensions _Logger;
 
-        public EmbeddedResourceCertificateProvider(ICertificateLocationConfig config, EmbeddedCertProviderLoggingExtensions logger)
+        public EmbeddedResourceCertificateProvider(IEmbeddedResourceCertificateConfig config, EmbeddedCertProviderLoggingExtensions logger)
         {
             _Config = config ?? throw new ArgumentNullException(nameof(config));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -24,31 +24,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
         {
             var a = typeof(EmbeddedResourceCertificateProvider).Assembly;
 
-            var resName = $"NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Resources.{_Config.Path}";
-
-            _Logger.WriteOpening(resName);
-
-            using var s = GetStream(a, resName);
+            //This matches the assembly base namespace and the folder name of the resource files.
+            using var s = ResourcesHook.GetManifestResourceStream(_Config.Path);
             if (s == null)
+            {
+                _Logger.WriteResourceFail();
                 throw new InvalidOperationException("Could not find resource.");
+            }
 
             _Logger.WriteResourceFound();
             var bytes = new byte[s.Length];
             s.Read(bytes, 0, bytes.Length);
             return new X509Certificate2(bytes, _Config.Password, X509KeyStorageFlags.Exportable);
-        }
-
-        private Stream GetStream(Assembly a, string resName)
-        {
-            try
-            {
-                return a.GetManifestResourceStream(resName);
-            }
-            catch (Exception e)
-            {
-                _Logger.WriteResourceFail(e);
-                throw;
-            }
         }
     }
 }

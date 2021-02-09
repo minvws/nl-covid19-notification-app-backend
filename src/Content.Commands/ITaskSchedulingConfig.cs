@@ -8,4 +8,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
     {
         public double DailyCleanupHoursAfterMidnight { get; }
     }
+
+    public class ProductionDefaultValuesTaskSchedulingConfig : ITaskSchedulingConfig
+    {
+        public double DailyCleanupHoursAfterMidnight => 5.0;
+    }
 }

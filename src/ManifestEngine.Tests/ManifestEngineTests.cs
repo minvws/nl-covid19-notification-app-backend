@@ -37,16 +37,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             _NlSigner = new Mock<IContentSigner>(MockBehavior.Loose);
             _NlSigner.Setup(x => x.GetSignature(new byte[0])).Returns(new byte[] { 2 });
             
-            var _ManifestJob = CreateManifestJob();
-
-            var thumbmprintConfig = new Mock<IThumbprintConfig>(MockBehavior.Strict);
-            thumbmprintConfig.Setup(x => x.Valid).Returns(true);
-
             _Resign = new NlContentResignExistingV1ContentCommand(
-                new NlContentResignCommand(_ContentDbProvider.CreateNew, _NlSigner.Object, new ResignerLoggingExtensions(_Lf.CreateLogger<ResignerLoggingExtensions>())),
-                thumbmprintConfig.Object,
-                new ResignerLoggingExtensions(_Lf.CreateLogger<ResignerLoggingExtensions>())
-            );
+                new NlContentResignCommand(_ContentDbProvider.CreateNew, _NlSigner.Object, new ResignerLoggingExtensions(_Lf.CreateLogger<ResignerLoggingExtensions>())));
         }
 
         private ManifestUpdateCommand CreateManifestJob()

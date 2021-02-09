@@ -6,7 +6,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
 {
     public interface IResponsePaddingConfig
     {
-        int MinimumLengthInBytes { get; }
-        int MaximumLengthInBytes { get; }
+        int ByteCountMinimum { get; }
+        int ByteCountMaximum { get; }
+    }
+
+    public class ProductionDefaultValuesResponsePaddingConfig : IResponsePaddingConfig
+    {
+        public int ByteCountMinimum => 200;
+        public int ByteCountMaximum => 300;
     }
 }

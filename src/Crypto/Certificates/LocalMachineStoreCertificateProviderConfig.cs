@@ -4,15 +4,17 @@
 
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
     public class LocalMachineStoreCertificateProviderConfig : AppSettingsReader, IThumbprintConfig
     {
+        private T ThrowWhenNotFound<T>(string name) => throw new MissingConfigurationValueException(name);
+
         public LocalMachineStoreCertificateProviderConfig(IConfiguration config, string? prefix = null) : base(config, prefix) { }
 
-        public string Thumbprint => GetConfigValue("Thumbprint", string.Empty);
-        public bool RootTrusted => GetConfigValue(nameof(RootTrusted), true);
-        public bool Valid => !string.IsNullOrWhiteSpace(Thumbprint);
+        public string Thumbprint => GetConfigValue(nameof(Thumbprint), ThrowWhenNotFound<string>(nameof(Thumbprint)));
+        public bool RootTrusted => GetConfigValue(nameof(RootTrusted), ThrowWhenNotFound<bool>(nameof(RootTrusted)));
     }
 }

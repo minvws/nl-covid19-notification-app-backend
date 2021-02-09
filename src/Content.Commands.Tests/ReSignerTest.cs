@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Moq;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
@@ -58,11 +59,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
             dbc.SaveChanges();
 
+            var cmsCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
+            cmsCertLoc.Setup(x => x.Path).Returns("TestRSA.p12");
+            cmsCertLoc.Setup(x => x.Password).Returns("Covid-19!"); //Not a secret.
+
+            var cmsCertChainLoc = new Mock<IEmbeddedResourceCertificateConfig>();
+            cmsCertChainLoc.Setup(x => x.Path).Returns("StaatDerNLChain-Expires2020-08-28.p7b");
+            cmsCertChainLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
+
             //resign some
             var signer = new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
-                //TODO add a better test chain.
-                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
+                new EmbeddedResourceCertificateProvider(cmsCertLoc.Object, certProviderLogger),
+                new EmbeddedResourcesCertificateChainProvider(cmsCertChainLoc.Object), 
                 new StandardUtcDateTimeProvider()
             );
 
@@ -122,11 +130,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
             Assert.Equal(3, dbc.Content.Count());
 
+            var cmsCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
+            cmsCertLoc.Setup(x => x.Path).Returns("TestRSA.p12");
+            cmsCertLoc.Setup(x => x.Password).Returns("Covid-19!"); //Not a secret.
+
+            var cmsCertChainLoc = new Mock<IEmbeddedResourceCertificateConfig>();
+            cmsCertChainLoc.Setup(x => x.Path).Returns("StaatDerNLChain-Expires2020-08-28.p7b");
+            cmsCertChainLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
+
             //resign some
             var signer = new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
-                                                                                                                                                                                     //TODO add a better test chain.
-                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
+                new EmbeddedResourceCertificateProvider(cmsCertLoc.Object, certProviderLogger),
+                new EmbeddedResourcesCertificateChainProvider(cmsCertChainLoc.Object),
                 new StandardUtcDateTimeProvider()
             );
 
@@ -192,11 +207,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
             Assert.Equal(3, dbc.Content.Count());
 
+            var cmsCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
+            cmsCertLoc.Setup(x => x.Path).Returns("TestRSA.p12");
+            cmsCertLoc.Setup(x => x.Password).Returns("Covid-19!"); //Not a secret.
+
+            var cmsCertChainLoc = new Mock<IEmbeddedResourceCertificateConfig>();
+            cmsCertChainLoc.Setup(x => x.Path).Returns("StaatDerNLChain-Expires2020-08-28.p7b");
+            cmsCertChainLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
+
             //resign some
             var signer = new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
-                                                                                                                                                                                     //TODO add a better test chain.
-                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
+                new EmbeddedResourceCertificateProvider(cmsCertLoc.Object, certProviderLogger),
+                new EmbeddedResourcesCertificateChainProvider(cmsCertChainLoc.Object),
                 new StandardUtcDateTimeProvider()
             );
 

@@ -69,19 +69,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var jsonSerialiser = new StandardJsonSerializer();
             var entityFormatterMock = new Mock<IContentEntityFormatter>();
             var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
-            
-            var signer = new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(
-                    new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), //Not a secret.
-                    certProviderLogger),
-                new EmbeddedResourcesCertificateChainProvider(
-                    new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
-                dateTimeProvider);
+
+            var cmsCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
+            cmsCertLoc.Setup(x => x.Path).Returns("TestRSA.p12");
+            cmsCertLoc.Setup(x => x.Password).Returns("Covid-19!"); //Not a secret.
+
+            var cmsCertChainLoc = new Mock<IEmbeddedResourceCertificateConfig>();
+            cmsCertChainLoc.Setup(x => x.Path).Returns("StaatDerNLChain-Expires2020-08-28.p7b");
+            cmsCertChainLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
+
+            //resign some
+            var cmsSigner = new CmsSignerEnhanced(
+                new EmbeddedResourceCertificateProvider(cmsCertLoc.Object, certProviderLogger),
+                new EmbeddedResourcesCertificateChainProvider(cmsCertChainLoc.Object),
+                new StandardUtcDateTimeProvider()
+            );
 
             Func<IContentEntityFormatter> formatterForV3 = () =>
                 new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(
-                        signer),
+                        cmsSigner),
                     new Sha256HexPublishingIdService(),
                     jsonSerialiser
                         );

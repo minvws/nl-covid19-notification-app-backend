@@ -11,9 +11,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 {
     public class EmbeddedResourcesCertificateChainProvider : ICertificateChainProvider
     {
-        private readonly ICertificateLocationConfig _PathProvider;
+        private readonly IEmbeddedResourceCertificateConfig _PathProvider;
 
-        public EmbeddedResourcesCertificateChainProvider(ICertificateLocationConfig pathProvider)
+        public EmbeddedResourcesCertificateChainProvider(IEmbeddedResourceCertificateConfig pathProvider)
         {
             _PathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
         }
@@ -22,10 +22,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         {
             var certList = new List<X509Certificate2>();
 
-            var s = ResourcesHook.GetManifestResourceStream(_PathProvider.Path);
+            using var s = ResourcesHook.GetManifestResourceStream(_PathProvider.Path);
 
             if (s == null)
-                throw new InvalidOperationException($"Certificate chain not found in resources - Path:{_PathProvider.Path}.");
+                throw new InvalidOperationException($"Certificate chain not found in resource.");
 
             var bytes = new byte[s.Length];
             s.Read(bytes, 0, bytes.Length);

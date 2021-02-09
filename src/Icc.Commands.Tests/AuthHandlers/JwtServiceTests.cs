@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
@@ -22,9 +23,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         {
             var lf = new TestLogger<JwtService>();
             _UtcDateTimeProvider = new StandardUtcDateTimeProvider();
+            var mock = new Mock<IccPortalConfig>();
+            //new HardCodedIccPortalConfig(null, "http://test.test", "test_secret123", _ClaimLifetimeHours, true),
             _JwtService =
-                new JwtService(
-                    new HardCodedIccPortalConfig(null, "http://test.test", "test_secret123", _ClaimLifetimeHours, true),
+                new JwtService(mock.Object,
                     _UtcDateTimeProvider, lf);
         }
 
