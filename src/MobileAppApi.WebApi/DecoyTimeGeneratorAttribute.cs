@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
@@ -11,7 +10,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyK
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 {
     // NOTE: do not apply this attribute directly, apply DecoyTimeGeneratorAttributeFactory
-    public class DecoyTimeGeneratorAttribute : ActionFilterAttribute
+    public class DecoyTimeGeneratorAttribute : IResourceFilter
     {
         private readonly IDecoyTimeCalculator _Calculator;
 
@@ -19,11 +18,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
         {
             _Calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
         }
-        
-        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+
+        public void OnResourceExecuted(ResourceExecutedContext context)
         {
-            await Task.Delay(_Calculator.GetDelay());
-            await next();
+            Task.Delay(_Calculator.GetDelay()).GetAwaiter().GetResult();
         }
+
+        public void OnResourceExecuting(ResourceExecutingContext context)
+        {
+        }
+
     }
 }
