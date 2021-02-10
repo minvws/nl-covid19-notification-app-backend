@@ -5,21 +5,9 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 {
-    public class ProductionValueDefaultsEksConfig : IEksConfig
-    {
-        public int TekCountMin => 150;
-        //TODO incorrect - we lowered this!
-        public int TekCountMax => 750000; //TODO ensure low where the file split is to be tested
-        //TODO check!
-        public int PageSize => 10000;
-        public bool CleanupDeletesData => throw new MissingConfigurationValueException(nameof(CleanupDeletesData));
-        public int LifetimeDays => 14;
-    }
-
     public class StandardEksConfig : AppSettingsReader, IEksConfig
     {
         private static readonly ProductionValueDefaultsEksConfig _ProductionValueDefaults = new ProductionValueDefaultsEksConfig();

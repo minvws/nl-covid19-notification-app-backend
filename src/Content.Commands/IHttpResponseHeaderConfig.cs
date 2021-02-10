@@ -9,10 +9,4 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         string ManifestCacheControl { get; }
         string ImmutableContentCacheControl { get; }
     }
-
-    public class ProductionDefaultValuesHttpResponseHeaderConfig : IHttpResponseHeaderConfig
-    {
-        public string ManifestCacheControl => "s-maxage=30";
-        public string ImmutableContentCacheControl => "immutable";
-    }
 }

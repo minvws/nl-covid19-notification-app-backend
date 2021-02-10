@@ -25,6 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 
         /// <summary>
         /// PageSize while reading TEKs from input table into memory when creating EKS.
+        /// NB. There is no value set for this in deployment pipeline.
         /// </summary>
         int PageSize { get; }
 
