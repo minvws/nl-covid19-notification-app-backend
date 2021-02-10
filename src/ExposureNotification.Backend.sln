@@ -178,6 +178,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Protobuf", "Iks.Protobu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PublishContent", "PublishContent\PublishContent.csproj", "{F74DB79B-6049-4E32-9475-58AE4567650E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.IccPortal", "App.IccPortal\App.IccPortal.csproj", "{9E9F12F5-5646-4EBA-9E24-CCC5A15B1B41}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -486,6 +488,10 @@ Global
 		{F74DB79B-6049-4E32-9475-58AE4567650E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F74DB79B-6049-4E32-9475-58AE4567650E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F74DB79B-6049-4E32-9475-58AE4567650E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E9F12F5-5646-4EBA-9E24-CCC5A15B1B41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E9F12F5-5646-4EBA-9E24-CCC5A15B1B41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E9F12F5-5646-4EBA-9E24-CCC5A15B1B41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E9F12F5-5646-4EBA-9E24-CCC5A15B1B41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -513,6 +519,7 @@ Global
 		{D0F534CC-D908-4AFA-A4D2-6B30E0297D8E} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
 		{0D13D399-0983-4986-A7E1-A219ED9093C9} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
 		{F74DB79B-6049-4E32-9475-58AE4567650E} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
+		{9E9F12F5-5646-4EBA-9E24-CCC5A15B1B41} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}

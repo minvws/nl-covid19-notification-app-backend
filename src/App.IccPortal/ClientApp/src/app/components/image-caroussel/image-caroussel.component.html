@@ -1,0 +1,34 @@
+<div class="flex overflow-hidden flex-row items-start image-carousel" [style]="additionalStyle">
+    <div (click)="popupActive = true"
+         class="cursor-zoom opacity-0 transition-ease-in duration-200 hover:opacity-50 bg-black w-full h-full absolute top-0 left-0"></div>
+    <div (click)="popupActive = true" class="image mr-4"
+         *ngFor="let image of images; let imageIndex = index" [class.small]="((image.small) ? image.small : false)" [class.with-device]="image.device">
+        <img src="assets/images/new/device_frame.svg" class="device_frame" *ngIf="image.device" alt="Toestel">
+        <img draggable="false" title="Vergroot screenshot"
+             [src]="image.image" [alt]="image.text"/>
+    </div>
+</div>
+
+<div class="image-carousel-popup popup fixed top-0 left-0 h-screen w-screen" *ngIf="popupActive">
+    <div class="backdrop absolute top-0 left-0 opacity-75 w-full h-full">
+
+    </div>
+    <div class="absolute z-50 leading-none" id="closeBtn">
+        <div class="bg-white cursor-pointer p-3 p-3 rounded text-xl leading-nothing hover:bg-gray-200"
+             (click)="popupActive = false">
+            <span class="icon icon-close leading-none"></span>
+        </div>
+    </div>
+    <div class="caroussel z-20 flex overflow-hidden flex-row items-center justify-center relative pl-20 h-full text-white">
+        <div class="image mr-10" id="popupImage" (click)="popupActive=false"
+             *ngFor="let image of bigImages(); let imageIndex = index" [class.with-device]="image.device">
+            <p class="description w-full text-center mb-4 px-4" [innerHTML]="image.text.replace('\n','')">
+            </p>
+            <div class="image-wrapper">
+                <img src="assets/images/new/device_frame.svg" class="device_frame" *ngIf="image.device" alt="Toestel">
+                <img [src]="image.image" [alt]="image.text">
+            </div>
+        </div>
+    </div>
+
+</div>
