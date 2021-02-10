@@ -4,19 +4,22 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyK
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 {
-    public class DecoyTimeAggregatorAttribute : ActionFilterAttribute
+    public class DecoyTimeAggregatorAttribute : IResourceFilter
     {
-        private readonly IDisposable _Handle;
+        private readonly IDisposable _TimeRegistrationHandle;
 
         public DecoyTimeAggregatorAttribute(IDecoyTimeCalculator calculator)
         {
-            _Handle = (calculator ?? throw new ArgumentNullException(nameof(calculator))).GetTimeRegistrationHandle();
+            _TimeRegistrationHandle = (calculator ?? throw new ArgumentNullException(nameof(calculator))).GetTimeRegistrationHandle();
         }
 
-        public override void OnResultExecuted(ResultExecutedContext context)
+        public void OnResourceExecuted(ResourceExecutedContext context)
         {
-            base.OnResultExecuted(context);
-            _Handle?.Dispose();
+            _TimeRegistrationHandle?.Dispose();
+        }
+
+        public void OnResourceExecuting(ResourceExecutingContext context)
+        {
         }
     }
 }

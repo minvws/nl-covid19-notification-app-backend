@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
         [InlineData(343)]
         [InlineData(2416)]
         [InlineData(10000)]
-        public async void DecoyTimeAttribute_ExecutionTakesAtleastNMilliseconds(int delayMs)
+        public void DecoyTimeAttribute_ExecutionTakesAtleastNMilliseconds(int delayMs)
         {
             //Arrange
             var mockTimeCalculator = new Mock<IDecoyTimeCalculator>();
@@ -39,22 +39,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
                 new ActionDescriptor(),
                 new ModelStateDictionary());
 
-            var actionExecutingContext = new ActionExecutingContext(
+            var resultExecutingContext = new ResourceExecutedContext(
                 actionContext,
-                new List<IFilterMetadata>(),
-                new Dictionary<string, object>(),
-                null);
-
-            ActionExecutionDelegate nullAction = async () => { return null; };
+                new List<IFilterMetadata>());
 
             var timer = new Stopwatch();
 
             //Act
             timer.Start();
-            await sut.OnActionExecutionAsync(actionExecutingContext, nullAction);
+            sut.OnResourceExecuted(resultExecutingContext);
             timer.Stop();
 
             //Assert
+            // 10% margin, as Task.Delay has some inaccuracies
             Assert.True(timer.ElapsedMilliseconds >= 0.90 * delayMs, $"Recorded time: {timer.ElapsedMilliseconds}ms.");
         }
     }
