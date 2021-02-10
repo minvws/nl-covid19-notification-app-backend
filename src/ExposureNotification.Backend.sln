@@ -160,11 +160,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.Commands", "Stats.Com
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.Commands.Tests", "Stats.Commands.Tests\Stats.Commands.Tests.csproj", "{6A16A550-9562-49AD-97A8-0E45DE68B96B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Commands.Tests", "MobileAppApi.Commands.Tests\MobileAppApi.Commands.Tests.csproj", "{5FC2EC4A-CC72-4D71-B1AE-B49562DD65BB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypto.Tests", "Crypto.Tests\Crypto.Tests.csproj", "{C791F5C4-B226-49D8-B6EA-90F368DCB31F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiagnosisKeys.Processors.Tests", "DiagnosisKeys.Processors.Tests\DiagnosisKeys.Processors.Tests.csproj", "{8A7EA8F2-D62B-4677-911A-F052BC5BABFD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Tests", "Domain.Tests\Domain.Tests.csproj", "{F798B6DE-4CA5-4C06-9AB6-D94DFC7DF819}"
 EndProject
@@ -454,18 +450,10 @@ Global
 		{6A16A550-9562-49AD-97A8-0E45DE68B96B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A16A550-9562-49AD-97A8-0E45DE68B96B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A16A550-9562-49AD-97A8-0E45DE68B96B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5FC2EC4A-CC72-4D71-B1AE-B49562DD65BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5FC2EC4A-CC72-4D71-B1AE-B49562DD65BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5FC2EC4A-CC72-4D71-B1AE-B49562DD65BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5FC2EC4A-CC72-4D71-B1AE-B49562DD65BB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C791F5C4-B226-49D8-B6EA-90F368DCB31F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C791F5C4-B226-49D8-B6EA-90F368DCB31F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C791F5C4-B226-49D8-B6EA-90F368DCB31F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C791F5C4-B226-49D8-B6EA-90F368DCB31F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8A7EA8F2-D62B-4677-911A-F052BC5BABFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8A7EA8F2-D62B-4677-911A-F052BC5BABFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8A7EA8F2-D62B-4677-911A-F052BC5BABFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8A7EA8F2-D62B-4677-911A-F052BC5BABFD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F798B6DE-4CA5-4C06-9AB6-D94DFC7DF819}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F798B6DE-4CA5-4C06-9AB6-D94DFC7DF819}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F798B6DE-4CA5-4C06-9AB6-D94DFC7DF819}.Release|Any CPU.ActiveCfg = Release|Any CPU
