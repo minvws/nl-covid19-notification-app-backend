@@ -1,0 +1,19 @@
+<div id="backArrow" (click)="backToStart()"
+     class="cursor-pointer left-0 top-0 pl-8 pt-6 fixed">
+    <div class="transition ease-in-out duration-200 flex items-center bg-white rounded px-3 hover:bg-gray-400 py-3 shadow-md">
+        <span class="icon icon-arrow-left"></span>
+    </div>
+</div>
+<app-validate-step4></app-validate-step4>
+<app-step stepTitle="Vraag de index de codes te delen" stepNumber="6">
+    <p class="mt-4 mb-6">
+        <b>Leg uit:</b> als het codes delen gelukt is, zie je een scherm met bovenaan <b>‘Bedankt, de GGD helpt je verder’</b>.
+    </p>
+    <div class="image-holder bg-gray-200 p-10 text-center w-full">
+        <img src="assets/images/new/thanks.svg" class="ml-auto mr-auto" alt="Screenshot van eindscherm na delen codes">
+    </div>
+</app-step>
+
+<button (click)="goToValidateFinal()" class="mt-2 mb-4 btn btn-primary">Verwerken</button>
+<br>
+<br>

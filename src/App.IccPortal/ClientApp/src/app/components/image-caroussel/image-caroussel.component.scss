@@ -1,0 +1,68 @@
+.image-carousel {
+  .image {
+    min-width: 200px;
+
+    &.small {
+      min-width: 144px;
+    }
+
+    position: relative;
+
+    &.with-device {
+      padding: 18px 6px 6px;
+    }
+
+    .device_frame {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }
+
+}
+
+.cursor-zoom {
+  cursor: zoom-in;
+}
+
+#closeBtn {
+  top: 2.5rem;
+  right: 1.75rem;
+}
+
+.controls {
+  top: 50%;
+  left: 0;
+}
+
+.image-carousel-popup {
+
+  .image {
+    position: relative;
+    max-width: 310px;
+    cursor: zoom-out;
+
+    &.with-device {
+      .image-wrapper {
+        padding: 9.3% 3.125% 3.125%;
+      }
+    }
+
+    .image-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .device_frame {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }
+}
+
+
+.backdrop {
+  z-index: -1;
+  background-color: #000000;
+}
