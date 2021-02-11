@@ -1,3 +1,5 @@
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config
 {
     public class DefaultProductionValuesIccPortalConfig : IIccPortalConfig

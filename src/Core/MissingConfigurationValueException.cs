@@ -4,7 +4,7 @@
 
 using System;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     [Serializable]
     public class MissingConfigurationValueException : Exception

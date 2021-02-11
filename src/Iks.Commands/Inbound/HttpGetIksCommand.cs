@@ -6,7 +6,6 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;

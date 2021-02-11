@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {

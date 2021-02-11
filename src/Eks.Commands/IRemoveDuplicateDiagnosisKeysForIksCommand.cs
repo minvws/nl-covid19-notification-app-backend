@@ -4,7 +4,7 @@
 
 using System.Threading.Tasks;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 {
     public interface IRemoveDuplicateDiagnosisKeysForIksCommand
     {

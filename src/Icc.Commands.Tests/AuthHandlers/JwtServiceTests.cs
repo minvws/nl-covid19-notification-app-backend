@@ -9,7 +9,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests.Icc.AuthHandlers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests.AuthHandlers
 {
     //ncrunch: no coverage start 
 

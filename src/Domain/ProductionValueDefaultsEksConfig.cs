@@ -1,4 +1,4 @@
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 {
