@@ -33,14 +33,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             || value == RiskCalculationParameters
             || value == ExposureKeySet
             || value == Manifest
+
             || value == AppConfigV2
             || value == RiskCalculationParametersV2
             || value == ExposureKeySetV2
             || value == ManifestV2
+
             || value == ResourceBundle
             || value == ResourceBundleV2
             || value == ManifestV3
             || value == ResourceBundleV3
+
+            || value == RiskCalculationParametersV3
+            || value == ManifestV4
         ;
     }
 }
