@@ -14,6 +14,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFrame
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
@@ -34,11 +35,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
         public void ResignManifest()
         {
             var lf = new LoggerFactory();
-            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
             var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
 
             var d = DateTime.Now;
-            var latestReleaseDate = d.AddDays(1);
 
             using var testContentStream = ResourcesHook.GetManifestResourceStream("Resources.ResignTestManifest.zip");
 
@@ -59,22 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
             dbc.SaveChanges();
 
-            var cmsCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
-            cmsCertLoc.Setup(x => x.Path).Returns("TestRSA.p12");
-            cmsCertLoc.Setup(x => x.Password).Returns("Covid-19!"); //Not a secret.
-
-            var cmsCertChainLoc = new Mock<IEmbeddedResourceCertificateConfig>();
-            cmsCertChainLoc.Setup(x => x.Path).Returns("StaatDerNLChain-Expires2020-08-28.p7b");
-            cmsCertChainLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
-
-            //resign some
-            var signer = new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(cmsCertLoc.Object, certProviderLogger),
-                new EmbeddedResourcesCertificateChainProvider(cmsCertChainLoc.Object), 
-                new StandardUtcDateTimeProvider()
-            );
-
-            var resigner = new NlContentResignCommand(_ContentDbProvider.CreateNew, signer, resignerLogger);
+            var resigner = new NlContentResignCommand(_ContentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
             resigner.ExecuteAsync(ContentTypes.Manifest, ContentTypes.ManifestV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
@@ -100,7 +84,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
         public void Re_sign_all_existing_earlier_content()
         {
             var lf = new LoggerFactory();
-            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
             var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
 
             //Add some db rows to Content
@@ -130,22 +113,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
             Assert.Equal(3, dbc.Content.Count());
 
-            var cmsCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
-            cmsCertLoc.Setup(x => x.Path).Returns("TestRSA.p12");
-            cmsCertLoc.Setup(x => x.Password).Returns("Covid-19!"); //Not a secret.
-
-            var cmsCertChainLoc = new Mock<IEmbeddedResourceCertificateConfig>();
-            cmsCertChainLoc.Setup(x => x.Path).Returns("StaatDerNLChain-Expires2020-08-28.p7b");
-            cmsCertChainLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
-
-            //resign some
-            var signer = new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(cmsCertLoc.Object, certProviderLogger),
-                new EmbeddedResourcesCertificateChainProvider(cmsCertChainLoc.Object),
-                new StandardUtcDateTimeProvider()
-            );
-
-            var resigner = new NlContentResignCommand(_ContentDbProvider.CreateNew, signer, resignerLogger);
+            var resigner = new NlContentResignCommand(_ContentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
             resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
@@ -207,22 +175,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
             Assert.Equal(3, dbc.Content.Count());
 
-            var cmsCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
-            cmsCertLoc.Setup(x => x.Path).Returns("TestRSA.p12");
-            cmsCertLoc.Setup(x => x.Password).Returns("Covid-19!"); //Not a secret.
-
-            var cmsCertChainLoc = new Mock<IEmbeddedResourceCertificateConfig>();
-            cmsCertChainLoc.Setup(x => x.Path).Returns("StaatDerNLChain-Expires2020-08-28.p7b");
-            cmsCertChainLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
-
-            //resign some
-            var signer = new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(cmsCertLoc.Object, certProviderLogger),
-                new EmbeddedResourcesCertificateChainProvider(cmsCertChainLoc.Object),
-                new StandardUtcDateTimeProvider()
-            );
-
-            var resigner = new NlContentResignCommand(_ContentDbProvider.CreateNew, signer, resignerLogger);
+            var resigner = new NlContentResignCommand(_ContentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
             resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers

@@ -15,6 +15,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFrame
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
@@ -68,27 +69,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var dateTimeProvider = new StandardUtcDateTimeProvider();
             var jsonSerialiser = new StandardJsonSerializer();
             var entityFormatterMock = new Mock<IContentEntityFormatter>();
-            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
-
-            var cmsCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
-            cmsCertLoc.Setup(x => x.Path).Returns("TestRSA.p12");
-            cmsCertLoc.Setup(x => x.Password).Returns("Covid-19!"); //Not a secret.
-
-            var cmsCertChainLoc = new Mock<IEmbeddedResourceCertificateConfig>();
-            cmsCertChainLoc.Setup(x => x.Path).Returns("StaatDerNLChain-Expires2020-08-28.p7b");
-            cmsCertChainLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
-
-            //resign some
-            var cmsSigner = new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(cmsCertLoc.Object, certProviderLogger),
-                new EmbeddedResourcesCertificateChainProvider(cmsCertChainLoc.Object),
-                new StandardUtcDateTimeProvider()
-            );
 
             Func<IContentEntityFormatter> formatterForV3 = () =>
                 new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(
-                        cmsSigner),
+                    TestSignerHelpers.CreateCmsSignerEnhanced(lf)),
                     new Sha256HexPublishingIdService(),
                     jsonSerialiser
                         );

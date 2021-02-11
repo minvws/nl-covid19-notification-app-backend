@@ -34,7 +34,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 }
                 catch (FormatException)
                 {
-                    //TODO log this?
                     return _ProductionDefaultValues.DailyCleanupHoursAfterMidnight;
                 }
             }
