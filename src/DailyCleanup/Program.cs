@@ -74,7 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             var c40 = serviceProvider.GetRequiredService<ManifestUpdateCommand>();
             run.Add(() => logger.WriteManifestEngineStarting());
-            run.Add(() => c40.ExecuteAsync().GetAwaiter().GetResult());
+            run.Add(() => c40.ExecuteAllAsync().GetAwaiter().GetResult());
 
             var c50 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             //run.Add(() =>  TODO );
@@ -237,7 +237,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<RemoveExpiredIksInCommand>();
             services.AddTransient<RemoveExpiredIksOutCommand>();
 
-            services.ManifestForV3Startup();
+            services.ManifestForV4Startup();
         }
     }
 

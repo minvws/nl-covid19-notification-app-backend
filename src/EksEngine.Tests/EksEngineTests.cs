@@ -114,6 +114,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             _ManifestJob = new ManifestUpdateCommand(
                 new ManifestBuilder(_ContentDbProvider.CreateNew(), eksConfig.Object, _Dtp),
                 new ManifestBuilderV3(_ContentDbProvider.CreateNew(), eksConfig.Object, _Dtp),
+                new ManifestBuilderV4(_ContentDbProvider.CreateNew(), eksConfig.Object, _Dtp),
                 _ContentDbProvider.CreateNew,
                 new ManifestUpdateCommandLoggingExtensions(_Lf.CreateLogger<ManifestUpdateCommandLoggingExtensions>()),
                 _Dtp,
@@ -141,7 +142,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 
             await _Snapshot.ExecuteAsync();
             await _EksJob.ExecuteAsync();
-            await _ManifestJob.ExecuteAsync();
+            await _ManifestJob.ExecuteAllAsync();
             await _Resign.ExecuteAsync();
 
             Assert.Equal(1, _ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV2));
@@ -182,7 +183,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 
             await _Snapshot.ExecuteAsync(); //Too soon to publish TEKs
             await _EksJob.ExecuteAsync();
-            await _ManifestJob.ExecuteAsync();
+            await _ManifestJob.ExecuteAllAsync();
             await _Resign.ExecuteAsync();
 
             Assert.Equal(1, _ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV2));

@@ -2,12 +2,13 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Linq;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-    public class ManifestContent
+    public class ManifestContent : IEquatable<ManifestContent>
     {
         public string[] ExposureKeySets { get; set; }
 
@@ -16,8 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         public string AppConfig { get; set; }
         public string ResourceBundle { get; set; }
 
-
-        protected bool Equals(ManifestContent other)
+        public bool Equals(ManifestContent other)
         {
             return ExposureKeySets.SequenceEqual(other.ExposureKeySets) 
                 && RiskCalculationParameters == other.RiskCalculationParameters 

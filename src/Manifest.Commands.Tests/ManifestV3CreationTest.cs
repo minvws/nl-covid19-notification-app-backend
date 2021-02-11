@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var sut = CompileManifestUpdateCommand();
 
             //Act
-            sut.ExecuteForV3().GetAwaiter().GetResult();
+            sut.ExecuteV3Async().GetAwaiter().GetResult();
 
             var database = _ContentDbProvider.CreateNew();
             var result = database.SafeGetLatestContentAsync(ContentTypes.ManifestV3, DateTime.Now).GetAwaiter().GetResult();
@@ -92,6 +92,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
                     eksConfigMock.Object,
                     dateTimeProvider),
                 new ManifestBuilderV3(
+                    _ContentDbProvider.CreateNew(),
+                    eksConfigMock.Object,
+                    dateTimeProvider),
+                new ManifestBuilderV4(
                     _ContentDbProvider.CreateNew(),
                     eksConfigMock.Object,
                     dateTimeProvider),
