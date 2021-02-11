@@ -1,0 +1,15 @@
+jobs:  
+  - job: Copy_HSM_Scripting
+    displayName: Publish Artifact HSM-Scripting files
+    steps:
+     - task: CmdLine@2
+       inputs:
+         script: 'xcopy ..\s\src\HSM-Scripting $(Build.ArtifactStagingDirectory)\$(HSMScripting.ArtifactSubDirectory)\HSM-Scripting /E /I'
+     #- task: CopyFiles@2
+     #  inputs:
+     #    contents: '$(Build.Repository.LocalPath)/src/HSM-Scripting/**'
+     #    targetFolder: $(Build.ArtifactStagingDirectory)/$(HSMScripting.ArtifactSubDirectory)
+     - task: PublishBuildArtifacts@1
+       inputs:
+         pathToPublish: $(Build.ArtifactStagingDirectory)/$(HSMScripting.ArtifactSubDirectory)
+         artifactName: $(Publish.ArtifactName)

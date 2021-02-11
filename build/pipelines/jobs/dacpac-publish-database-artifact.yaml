@@ -1,0 +1,24 @@
+jobs:  
+  - job: Build_DacPac
+    displayName: Publish Build Artifact DacPac
+    steps:
+      - task: MSBuild@1
+        displayName: 'Build solution **\*.sqlproj'
+        inputs:
+          vsVersion: 16.0
+          solution: '**\*.sqlproj'
+          msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactstagingdirectory)\Database" /P:PackageTempRootDir="" /p:AutoParameterizationWebConfigConnectionStrings=False'
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'
+          maximumCpuCount: true
+      - task: CopyFiles@2
+        displayName: 'Copy DacPac Files to: $(Build.ArtifactStagingDirectory)'
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)'
+          Contents: '**\*.dacpac'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/$(DacPac.ArtifactSubDirectory)'
+          flattenFolders: true
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Database Artifact:'
+        inputs:
+          ArtifactName: $(Publish.ArtifactName)

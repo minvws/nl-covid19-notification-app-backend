@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NCrunch.Framework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
@@ -35,7 +36,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         protected WorkflowControllerPostKeysTests(IDbProvider<WorkflowDbContext> workflowDbProvider)
         {
             _WorkflowDbProvider = workflowDbProvider;
-
             _Factory = WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
@@ -55,7 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                     });
                 });
             });
-
+            
             var dbContext = _WorkflowDbProvider.CreateNew();
             dbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {

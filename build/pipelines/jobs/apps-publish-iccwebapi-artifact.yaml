@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_Icc_WebApi
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.Icc.WebApi.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'Icc.WebApi'
+    - name: ProjectPath
+      value: 'src/Icc.WebApi/Icc.WebApi.csproj'
+    displayName: 'Publish Build Artifact Icc.WebApi'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

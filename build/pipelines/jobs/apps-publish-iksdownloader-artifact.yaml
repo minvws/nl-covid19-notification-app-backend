@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_Iks_Downloader
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.IksDownloader.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'Iks.Downloader'
+    - name: ProjectPath
+      value: 'src/Iks.Downloader/Iks.Downloader.csproj'
+    displayName: 'Publish Build Artifact Iks.Downloader'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'
