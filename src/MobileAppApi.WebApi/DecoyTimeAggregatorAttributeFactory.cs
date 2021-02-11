@@ -6,7 +6,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 {
     public class DecoyTimeAggregatorAttributeFactory : Attribute, IFilterFactory
     {
-        public bool IsReusable => true;
+        public bool IsReusable => false;
 
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {

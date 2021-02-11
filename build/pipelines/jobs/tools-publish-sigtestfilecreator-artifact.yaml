@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_SigTestFileCreator
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Tools.SigTestFileCreator.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'SigTestFileCreator'
+    - name: ProjectPath
+      value: 'src/SigTestFileCreator/SigTestFileCreator.csproj'
+    displayName: 'Publish Build Artifact SigTestFileCreator'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_GenTeks
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Tools.GenTeks.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'GenTeks'
+    - name: ProjectPath
+      value: 'src/GenTeks/GenTeks.csproj'
+    displayName: 'Publish Build Artifact GenTeks'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

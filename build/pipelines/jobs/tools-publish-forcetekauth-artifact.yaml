@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_ForceTekAuth
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Tools.ForceTekAuth.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'ForceTekAuth'
+    - name: ProjectPath
+      value: 'src/ForceTekAuth/ForceTekAuth.csproj'
+    displayName: 'Publish Build Artifact ForceTekAuth'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

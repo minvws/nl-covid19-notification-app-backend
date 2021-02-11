@@ -5,6 +5,7 @@
         <RootNamespace>NL.Rijksoverheid.ExposureNotification.Icc.WebApi</RootNamespace>
         <AssemblyName>IccBackend</AssemblyName>
         <UserSecretsId>0caed3b4-1e4a-402f-a697-c35c966064d0</UserSecretsId>
+        <ProjectGuid>{9264A5F7-F13E-474E-90EC-DA9DDE1FF5CE}</ProjectGuid> 
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;

@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_Eks_Parser
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Tools.Eks.Parser.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'Eks.Parser'
+    - name: ProjectPath
+      value: 'src/Eks.Parser/Eks.Parser.csproj'
+    displayName: 'Publish Build Artifact Eks.Parser'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

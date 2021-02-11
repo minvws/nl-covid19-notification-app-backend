@@ -5,14 +5,19 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader</RootNamespace>
     <AssemblyName>EfgsUploader</AssemblyName>
+    <ProjectGuid>{8F5361B1-EB29-4222-8424-CD12B8F8E8D6}</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="appsettings.release.json" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="appsettings.release.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

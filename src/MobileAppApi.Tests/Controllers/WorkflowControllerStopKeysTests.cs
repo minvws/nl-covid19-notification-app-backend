@@ -10,6 +10,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -17,6 +18,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyK
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
 {
@@ -36,6 +38,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                         services.AddTransient<DecoyTimeGeneratorAttribute>();
                         services.AddTransient<DecoyTimeAggregatorAttribute>();
                         services.AddTransient<ResponsePaddingFilterAttribute>();
+
+                        // Remove the app's ApplicationDbContext registration.
+                        var descriptor = services.SingleOrDefault(d => d.ServiceType.BaseType == typeof(DbContext));
+
+                        if (descriptor != null)
+                        {
+                            services.Remove(descriptor);
+                        }
+
+                        // Add ApplicationDbContext using an in-memory database for testing.
+                        services.AddDbContext<WorkflowDbContext>((options, context) =>
+                        {
+                            context.UseInMemoryDatabase("InMemoryDbForTesting");
+                        });
                     });
                 });
         }

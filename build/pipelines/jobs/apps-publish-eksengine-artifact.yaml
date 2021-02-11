@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_EksEngine
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.EksEngine.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'EksEngine'
+    - name: ProjectPath
+      value: 'src/EksEngine/EksEngine.csproj'
+    displayName: 'Publish Build Artifact EksEngine'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

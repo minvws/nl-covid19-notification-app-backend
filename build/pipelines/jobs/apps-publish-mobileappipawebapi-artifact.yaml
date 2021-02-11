@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_MobileAppApi_WebApi
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.MobileAppApi.WebApi.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'MobileAppApi.WebApi'
+    - name: ProjectPath
+      value: 'src/MobileAppApi.WebApi/MobileAppApi.WebApi.csproj'
+    displayName: 'Publish Build Artifact MobileAppApi.WebApi'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'
