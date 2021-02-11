@@ -1,5 +1,8 @@
 ﻿<ProjectConfiguration>
   <Settings>
     <DefaultTestTimeout>120000</DefaultTestTimeout>
+    <HiddenComponentWarnings>
+      <Value>LongTestTimesWithoutParallelExecution</Value>
+    </HiddenComponentWarnings>
   </Settings>
 </ProjectConfiguration>
