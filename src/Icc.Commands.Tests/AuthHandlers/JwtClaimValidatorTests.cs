@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Validators;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
@@ -12,7 +13,7 @@ using WireMock.ResponseBuilders;
 using WireMock.Server;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests.Icc.AuthHandlers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests.AuthHandlers
 {
     public class JwtClaimValidatorTests
     {
@@ -26,17 +27,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
             var logger = new TestLogger<JwtClaimValidator>();
             _DateTimeProvider = new StandardUtcDateTimeProvider();
             _Server = WireMockServer.Start();
+
+            var iccPortalConfigMock = new Mock<IIccPortalConfig>();
+            iccPortalConfigMock.Setup(x => x.ClaimLifetimeHours).Returns(_ClaimLifetimeHours);
+            iccPortalConfigMock.Setup(x => x.FrontendBaseUrl).Returns("http://test.test");
+            iccPortalConfigMock.Setup(x => x.JwtSecret).Returns("test_secret123");
+            iccPortalConfigMock.Setup(x => x.StrictRolePolicyEnabled).Returns(true);
+
             _JwtClaimValidator =
                 new JwtClaimValidator(TestTheIdentityHubServiceCreator.CreateInstance(_Server), logger,
                     _DateTimeProvider,
-                    new HardCodedIccPortalConfig(null, "http://test.test", "test_secret123", _ClaimLifetimeHours, true));
+                    iccPortalConfigMock.Object);
         }
 
         [Fact]
         public async Task ValidateShouldReturnTrueOnValidTIHJwt()
         {
-            var validToken =
-                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOiIxNTk5NzUzMTk5IiwiYWNjZXNzX3Rva2VuIjoidGVzdF9hY2Nlc3NfdG9rZW4iLCJpZCI6IjAifQ.osL8kyPx90gUapZzz6Iv-H8DPwgtJTMSKTJA1VtMirU";
+            var validToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOiIxNTk5NzUzMTk5IiwiYWNjZXNzX3Rva2VuIjoidGVzdF9hY2Nlc3NfdG9rZW4iLCJpZCI6IjAifQ.osL8kyPx90gUapZzz6Iv-H8DPwgtJTMSKTJA1VtMirU";
             var validExp = _DateTimeProvider.Now().AddHours(_ClaimLifetimeHours - .1).ToUnixTimeU64();
             var testClaims = new Dictionary<string, string>
             {

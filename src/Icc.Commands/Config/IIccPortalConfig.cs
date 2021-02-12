@@ -6,9 +6,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config
 {
     public interface IIccPortalConfig
     {
+        /// <summary>
+        /// Used in Icc.WebApi only.
+        /// </summary>
         string FrontendBaseUrl { get; }
+
+        /// <summary>
+        /// Used in Icc.Commands only.
+        /// </summary>
         string JwtSecret { get; }
+
+        /// <summary>
+        /// Used in Icc.Commands only.
+        /// </summary>
         double ClaimLifetimeHours { get; }
+        
+        /// <summary>
+        /// Used in Icc.WebApi only.
+        /// </summary>
         bool StrictRolePolicyEnabled { get; }
     }
 }

@@ -54,14 +54,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
             }
 
             // Nothing needs doing if we're above the minimum length
-            if (resultString.Length >= _Config.MinimumLengthInBytes)
+            if (resultString.Length >= _Config.ByteCountMinimum)
             {
-                _Logger.WriteNoPaddingNeeded(resultString.Length, _Config.MinimumLengthInBytes);
+                _Logger.WriteNoPaddingNeeded(resultString.Length, _Config.ByteCountMinimum);
                 return;
             }
 
             // Calculate length of padding to add
-            var paddingLength = _Rng.Next(_Config.MinimumLengthInBytes, _Config.MaximumLengthInBytes) - resultString.Length;
+            var paddingLength = _Rng.Next(_Config.ByteCountMinimum, _Config.ByteCountMaximum) - resultString.Length;
             _Logger.WriteLengthOfResponsePadding(paddingLength);
             
             // Get the padding bytes

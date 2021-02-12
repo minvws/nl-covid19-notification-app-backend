@@ -17,13 +17,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
         }
 
         private const string DefaultPrefix = "Workflow:PostKeys:TemporaryExposureKeys";
-
-        public int RollingPeriodMin => GetConfigValue("RollingPeriod:Min", _Defaults.RollingPeriodMin);
-        public int RollingPeriodMax => GetConfigValue("RollingPeriod:Max", _Defaults.RollingPeriodMax);
         public int RollingStartNumberMin => GetConfigValue("RollingStartNumber:Min", _Defaults.RollingStartNumberMin);
         public int PublishingDelayInMinutes => GetConfigValue("PublishingDelayMinutes", _Defaults.PublishingDelayInMinutes);
         public int AuthorisationWindowMinutes => GetConfigValue("AuthorisationWindowMinutes", _Defaults.AuthorisationWindowMinutes);
         public int MaxAgeDays => GetConfigValue(nameof(MaxAgeDays), _Defaults.MaxAgeDays);
-        public int KeyDataLength => GetConfigValue(nameof(KeyDataLength), _Defaults.KeyDataLength);
     }
 }

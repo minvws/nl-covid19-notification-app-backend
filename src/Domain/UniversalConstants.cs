@@ -12,12 +12,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
     /// </summary>
     public class UniversalConstants
     {
-        public const int DailyKeyDataLength = 16;
-        
-        [Obsolete("RollingPeriodRange.Hi")]
-        public const int RollingPeriodMax = 144;
+        public const int DailyKeyDataByteCount = 16;
 
         public static readonly Range<int> RollingPeriodRange = new Range<int>(1, 144);
 
+        public const int BucketIdByteCount = 32;
+        public const int ConfirmationKeyByteCount = 32;
+        public const int PostKeysSignatureByteCount = 32;
     }
 }

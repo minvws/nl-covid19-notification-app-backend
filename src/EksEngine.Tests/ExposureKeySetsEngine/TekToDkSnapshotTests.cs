@@ -78,7 +78,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new TekEntity { 
                     RollingStartNumber = t.AddDays(-x).ToUniversalTime().Date.ToRollingStartNumber(),
                     RollingPeriod = 2, //Corrected by a processor.
-                    KeyData = new byte[UniversalConstants.DailyKeyDataLength], 
+                    KeyData = new byte[UniversalConstants.DailyKeyDataByteCount], 
                     PublishAfter = t.AddHours(2) 
                 }
             ).ToArray();
@@ -153,7 +153,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var tekCount = wfCount * tekPerWfCount;
             Assert.Equal(tekCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Unpublished));
             Assert.Equal(0, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
-            Assert.True(_DkSourceDbProvider.CreateNew().DiagnosisKeys.All(x => x.DailyKey.RollingPeriod == UniversalConstants.RollingPeriodMax)); //Compatible with Apple API
+            Assert.True(_DkSourceDbProvider.CreateNew().DiagnosisKeys.All(x => x.DailyKey.RollingPeriod == UniversalConstants.RollingPeriodRange.Hi)); //Compatible with Apple API
 
             var result = await Create().ExecuteAsync();
             Assert.Equal(tekCount, result.TekReadCount);

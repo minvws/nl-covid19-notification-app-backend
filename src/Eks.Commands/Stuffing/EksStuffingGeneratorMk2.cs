@@ -44,8 +44,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
                 var dsos = _Rng.Next(_TrlCalculation.SignificantDayRange.Lo, _TrlCalculation.SignificantDayRange.Hi);
                 result[i] = new EksCreateJobInputEntity
                 {
-                    KeyData = _Rng.NextByteArray(UniversalConstants.DailyKeyDataLength),
-                    RollingPeriod = UniversalConstants.RollingPeriodMax,
+                    KeyData = _Rng.NextByteArray(UniversalConstants.DailyKeyDataByteCount),
+                    RollingPeriod = UniversalConstants.RollingPeriodRange.Hi,
                     RollingStartNumber = rsn,
                     DaysSinceSymptomsOnset = dsos,
                     TransmissionRiskLevel = _TrlCalculation.Calculate(dsos)

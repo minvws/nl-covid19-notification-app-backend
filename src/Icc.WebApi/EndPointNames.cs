@@ -34,9 +34,9 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
         {
             private const string Prefix = "/v1";
             public const string Manifest = Prefix + "/" + ManifestName;
-            public const string AppConfig = Prefix + "/" + AppConfigName;
+            public const string AppConfig = Prefix + "/" + AppConfigName; //TODO WHY IS THIS NO LONGER IN USE?
             public const string ExposureKeySet = Prefix + "/" + ExposureKeySetName;
-            public const string RiskCalculationParameters = Prefix + "/" + RiskCalculationParametersName;
+            public const string RiskCalculationParameters = Prefix + "/" + RiskCalculationParametersName; //TODO WHY IS THIS NO LONGER IN USE?
         }
     }
 }

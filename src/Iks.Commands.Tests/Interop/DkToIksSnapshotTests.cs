@@ -120,7 +120,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
                     {
                         RollingStartNumber = t.AddDays(-x % 14).ToUniversalTime().Date.ToRollingStartNumber(),
                         RollingPeriod = 144, //Already corrected in DKs
-                        KeyData = new byte[UniversalConstants.DailyKeyDataLength],
+                        KeyData = new byte[UniversalConstants.DailyKeyDataByteCount],
                     },
                     Local = new LocalTekInfo 
                     { 

@@ -55,8 +55,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                     Owner = owner,
                     PublishingState = PublishingState.Unpublished,
                     RollingStartNumber = DateTime.UtcNow.Date.ToRollingStartNumber(),
-                    RollingPeriod = _Rng.Next(1, UniversalConstants.RollingPeriodMax),
-                    KeyData = _Rng.NextByteArray(UniversalConstants.DailyKeyDataLength),
+                    RollingPeriod = _Rng.Next(1, UniversalConstants.RollingPeriodRange.Hi),
+                    KeyData = _Rng.NextByteArray(UniversalConstants.DailyKeyDataByteCount),
                     PublishAfter = DateTime.UtcNow,
                 };
                 owner.Teks.Add(k);

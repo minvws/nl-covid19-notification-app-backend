@@ -8,10 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
     {
         public int TimeToLiveMinutes { get; }
         public int PermittedMobileDeviceClockErrorMinutes { get; }
-        int PostKeysSignatureLength { get; }
-        int BucketIdLength { get; }
-        int ConfirmationKeyLength { get; }
-        
+
         /// <summary>
         /// TODO this one should be moved to a new config concerning the Daily Cleanup itself or the functionality removed entirely
         /// </summary>

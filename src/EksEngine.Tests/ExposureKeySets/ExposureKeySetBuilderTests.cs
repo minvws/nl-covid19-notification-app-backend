@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using Microsoft.Extensions.Logging;
+using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
@@ -43,20 +44,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var eksBuilderV1Logger = new EksBuilderV1LoggingExtensions(lf.CreateLogger<EksBuilderV1LoggingExtensions>());
             var dtp = new StandardUtcDateTimeProvider();
             
+            var cmsCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
+            cmsCertLoc.Setup(x => x.Path).Returns("TestRSA.p12");
+            cmsCertLoc.Setup(x => x.Password).Returns("Covid-19!"); //Not a secret.
+
+            var cmsCertChainLoc = new Mock<IEmbeddedResourceCertificateConfig>();
+            cmsCertChainLoc.Setup(x => x.Path).Returns("StaatDerNLChain-Expires2020-08-28.p7b");
+            cmsCertChainLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
+
+            //resign some
+            var cmsSigner = new CmsSignerEnhanced(
+                new EmbeddedResourceCertificateProvider(cmsCertLoc.Object, certProviderLogger),
+                new EmbeddedResourcesCertificateChainProvider(cmsCertChainLoc.Object),
+                new StandardUtcDateTimeProvider()
+            );
+
+            var gaCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
+            gaCertLoc.Setup(x => x.Path).Returns("TestECDSA.p12");
+            gaCertLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
+
             var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
                 new EcdSaSigner(
                     new EmbeddedResourceCertificateProvider(
-                        new HardCodedCertificateLocationConfig("TestECDSA.p12", ""),
+                        gaCertLoc.Object,
                         certProviderLogger)),
-                new CmsSignerEnhanced(
-                    new EmbeddedResourceCertificateProvider(
-                        new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"),
-                        certProviderLogger),
-                    new EmbeddedResourcesCertificateChainProvider(
-                        new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")),
-                    dtp
-                    ),
+                cmsSigner,
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
                 eksBuilderV1Logger
@@ -86,11 +99,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var dtp = new StandardUtcDateTimeProvider();
             var dummySigner = new DummyCmsSigner();
 
+            var gaCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
+            gaCertLoc.Setup(x => x.Path).Returns("TestECDSA.p12");
+            gaCertLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
+
             var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
                 new EcdSaSigner(
                     new EmbeddedResourceCertificateProvider(
-                        new HardCodedCertificateLocationConfig("TestECDSA.p12", ""),
+                        gaCertLoc.Object,
                         certProviderLogger)
                     ),
                 dummySigner,
@@ -120,7 +137,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var workflowValidatorConfig = new DefaultTekListValidationConfig();
 
             var result = new List<TemporaryExposureKeyArgs>(workflowCount * workflowValidatorConfig.TemporaryExposureKeyCountMax);
-            var keyBuffer = new byte[workflowKeyValidatorConfig.KeyDataLength];
+            var keyBuffer = new byte[UniversalConstants.DailyKeyDataByteCount];
 
             for (var i = 0; i < workflowCount; i++)
             {
@@ -133,7 +150,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                     keys.Add(new TemporaryExposureKeyArgs
                     {
                         KeyData = keyBuffer,
-                        RollingStartNumber = workflowKeyValidatorConfig.RollingPeriodMin + j,
+                        RollingStartNumber = UniversalConstants.RollingPeriodRange.Lo + j,
                         RollingPeriod = 11,
                         TransmissionRiskLevel = TransmissionRiskLevel.Medium
                     });

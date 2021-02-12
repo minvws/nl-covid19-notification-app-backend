@@ -6,12 +6,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config
 {
     public interface IIccIdentityHubConfig
     {
-        
         string BaseUrl { get; }
         string Tenant { get; }
         string ClientId { get; }
         string ClientSecret { get; }
-        
-       
+        string CallbackPath { get; }
     }
 }

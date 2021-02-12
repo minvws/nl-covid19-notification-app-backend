@@ -124,13 +124,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             );
 
             var thumbmprintConfig = new Mock<IThumbprintConfig>(MockBehavior.Strict);
-            thumbmprintConfig.Setup(x => x.Valid).Returns(true);
-
             _Resign = new NlContentResignExistingV1ContentCommand(
-                new NlContentResignCommand(_ContentDbProvider.CreateNew, nlSigner.Object, new ResignerLoggingExtensions(_Lf.CreateLogger<ResignerLoggingExtensions>())),
-                thumbmprintConfig.Object,
-                new ResignerLoggingExtensions(_Lf.CreateLogger<ResignerLoggingExtensions>())
-            );
+                new NlContentResignCommand(_ContentDbProvider.CreateNew, nlSigner.Object, new ResignerLoggingExtensions(_Lf.CreateLogger<ResignerLoggingExtensions>())));
         }
 
         [Fact]
@@ -162,8 +157,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             var workflowConfig = new Mock<IWorkflowConfig>(MockBehavior.Strict);
             workflowConfig.Setup(x => x.TimeToLiveMinutes).Returns(24*60*60); //Approx
             workflowConfig.Setup(x => x.PermittedMobileDeviceClockErrorMinutes).Returns(30);
-            workflowConfig.Setup(x => x.BucketIdLength).Returns(30);
-            workflowConfig.Setup(x => x.ConfirmationKeyLength).Returns(30);
 
             Func<TekReleaseWorkflowStateCreate> createWf = () =>
                 new TekReleaseWorkflowStateCreate(

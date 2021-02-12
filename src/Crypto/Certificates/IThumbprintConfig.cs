@@ -6,7 +6,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
     public interface IThumbprintConfig
     {
-        bool Valid { get; }
         string Thumbprint { get; }
         bool RootTrusted { get; }
     }

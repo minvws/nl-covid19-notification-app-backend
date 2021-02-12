@@ -119,13 +119,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             if (!(rollingStartMin <= value.RollingStartIntervalNumber && value.RollingStartIntervalNumber <= rollingStartToday))
                 return false;
 
-            if (!(_TekValidatorConfig.RollingPeriodMin <= value.RollingPeriod && value.RollingPeriod <= _TekValidatorConfig.RollingPeriodMax))
+            if (!(UniversalConstants.RollingPeriodRange.Lo <= value.RollingPeriod && value.RollingPeriod <= UniversalConstants.RollingPeriodRange.Hi))
                 return false;
 
             if (value.KeyData == null) 
                 return false;
 
-            if (value.KeyData.Length != _TekValidatorConfig.KeyDataLength)
+            if (value.KeyData.Length != UniversalConstants.DailyKeyDataByteCount)
                 return false;
 
             return true;

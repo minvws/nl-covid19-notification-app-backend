@@ -37,17 +37,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
             if (!(rollingStartMin <= value.RollingStartNumber && value.RollingStartNumber <= rollingStartToday))
                 result.Add($"RollingStartNumber out of range - {value.RollingStartNumber}.");
 
-            if (!(_Config.RollingPeriodMin <= value.RollingPeriod && value.RollingPeriod <= _Config.RollingPeriodMax))
+            if (!(UniversalConstants.RollingPeriodRange.Lo <= value.RollingPeriod && value.RollingPeriod <= UniversalConstants.RollingPeriodRange.Hi))
                 result.Add($"RollingPeriod out of range - {value.RollingPeriod}.");
 
             if (string.IsNullOrEmpty(value.KeyData))
                 result.Add("KeyData is empty.");
 
-            var buffer = new Span<byte>(new byte[_Config.KeyDataLength]);
+            var buffer = new Span<byte>(new byte[UniversalConstants.DailyKeyDataByteCount]);
             if (!Convert.TryFromBase64String(value.KeyData, buffer, out var count))
                 result.Add("KeyData is not valid base64.");
 
-            if (_Config.KeyDataLength != count)
+            if (UniversalConstants.DailyKeyDataByteCount != count)
                 result.Add($"KeyData length incorrect - {count}.");
 
             return result.ToArray();
