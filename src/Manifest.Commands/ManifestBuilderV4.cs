@@ -11,13 +11,13 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
-    public class ManifestBuilderV3
+    public class ManifestBuilderV4
     {
         private readonly ContentDbContext _ContentDbContext;
         private readonly IEksConfig _EksConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public ManifestBuilderV3(ContentDbContext contentDbContext, IEksConfig eksConfig, IUtcDateTimeProvider dateTimeProvider)
+        public ManifestBuilderV4(ContentDbContext contentDbContext, IEksConfig eksConfig, IUtcDateTimeProvider dateTimeProvider)
         {
             _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _EksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             return new ManifestContent
             {
                 ExposureKeySets = await _ContentDbContext.SafeGetActiveContentIdListAsync(ContentTypes.ExposureKeySet, from, snapshot),
-                RiskCalculationParameters = await _ContentDbContext.SafeGetLatestContentIdAsync(ContentTypes.RiskCalculationParametersV2, snapshot),
+                RiskCalculationParameters = await _ContentDbContext.SafeGetLatestContentIdAsync(ContentTypes.RiskCalculationParametersV3, snapshot),
                 AppConfig = await _ContentDbContext.SafeGetLatestContentIdAsync(ContentTypes.AppConfig, snapshot),
                 ResourceBundle = await _ContentDbContext.SafeGetLatestContentIdAsync(ContentTypes.ResourceBundleV3, snapshot)
             };

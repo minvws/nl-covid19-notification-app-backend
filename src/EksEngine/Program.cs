@@ -72,7 +72,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             run.Add(() => c30.ExecuteAsync().GetAwaiter().GetResult());
 
             var c40 = serviceProvider.GetRequiredService<ManifestUpdateCommand>();
-            run.Add(() => c40.ExecuteAsync().GetAwaiter().GetResult());
+            run.Add(() => c40.ExecuteAllAsync().GetAwaiter().GetResult());
 
             var c50 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             run.Add(() => c50.ExecuteAsync().GetAwaiter().GetResult());
@@ -189,7 +189,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<MarkDiagnosisKeysAsUsedByIks>();
             services.AddTransient<IksJobContentWriter>();
 
-            services.ManifestForV3Startup();
+            services.ManifestForV4Startup();
         }
     }
 }

@@ -53,6 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             return new ManifestUpdateCommand(
                 new ManifestBuilder(_ContentDbProvider.CreateNew(), eksConfig.Object, _Dtp),
                 new ManifestBuilderV3(_ContentDbProvider.CreateNew(), eksConfig.Object, _Dtp),
+                new ManifestBuilderV4(_ContentDbProvider.CreateNew(), eksConfig.Object, _Dtp),
                 _ContentDbProvider.CreateNew,
                 new ManifestUpdateCommandLoggingExtensions(_Lf.CreateLogger<ManifestUpdateCommandLoggingExtensions>()),
                 _Dtp,
@@ -65,7 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         [Fact]
         public async Task EmptySystem()
         {
-            await CreateManifestJob().ExecuteAsync();
+            await CreateManifestJob().ExecuteV1Async();
             await _Resign.ExecuteAsync();
 
             Assert.Equal(1, _ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV2));
@@ -76,9 +77,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         [Fact]
         public async Task RunTwice()
         {
-            await CreateManifestJob().ExecuteAsync();
+            await CreateManifestJob().ExecuteV1Async();
             await _Resign.ExecuteAsync();
-            await CreateManifestJob().ExecuteAsync();
+            await CreateManifestJob().ExecuteV1Async();
             //await _Resign.ExecuteAsync();
 
             Assert.Equal(1, _ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV2));

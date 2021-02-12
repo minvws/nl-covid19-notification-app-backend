@@ -15,15 +15,16 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
+    //TODO add ticket - split up into explicit commands for each version.
     public class ManifestUpdateCommand
     {
         private readonly ManifestBuilder _Builder;
         private readonly ManifestBuilderV3 _BuilderForV3;
+        private readonly ManifestBuilderV4 _BuilderForV4;
         private readonly Func<ContentDbContext> _ContentDbProvider;
         private readonly ManifestUpdateCommandLoggingExtensions _Logger;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IJsonSerializer _JsonSerializer;
-        private readonly IContentEntityFormatter _Formatter;
         private readonly Func<IContentEntityFormatter> _FormatterForV3;
 
         private readonly ManifestUpdateCommandResult _Result = new ManifestUpdateCommandResult();
@@ -32,6 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         public ManifestUpdateCommand(
             ManifestBuilder builder,
             ManifestBuilderV3 builderForV3,
+            ManifestBuilderV4 builderForV4,
             Func<ContentDbContext> contentDbProvider,
             ManifestUpdateCommandLoggingExtensions logger,
             IUtcDateTimeProvider dateTimeProvider,
@@ -42,24 +44,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         {
             _Builder = builder ?? throw new ArgumentNullException(nameof(builder));
             _BuilderForV3 = builderForV3 ?? throw new ArgumentNullException(nameof(builderForV3));
+            _BuilderForV4 = builderForV4 ?? throw new ArgumentNullException(nameof(builderForV4));
             _ContentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
-            _Formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
             _FormatterForV3 = formatterForV3 ?? throw new ArgumentNullException(nameof(formatterForV3));
         }
 
-        public async Task ExecuteAsync()
+        public async Task ExecuteV1Async() => await ExecuteForVxxx(async () => await _Builder.ExecuteAsync(), ContentTypes.Manifest);
+
+        //There is no V2.
+        
+        public async Task ExecuteV3Async() => await ExecuteForVxxx(async () => await _BuilderForV3.ExecuteAsync(), ContentTypes.ManifestV3);
+        public async Task ExecuteV4Async() => await ExecuteForVxxx(async () => await _BuilderForV4.ExecuteAsync(), ContentTypes.ManifestV4);
+
+        private async Task ExecuteForVxxx<T>(Func<Task<T>> build, string type) where T: IEquatable<T>
         {
-            if (_ContentDb != null)
-                throw new InvalidOperationException("Command already used.");
+            _ContentDb ??= _ContentDbProvider();
 
-            _ContentDb = _ContentDbProvider();
             await using var tx = _ContentDb.BeginTransaction();
-            var candidate = await _Builder.ExecuteAsync();
+            var candidate = await build();
 
-            if (!await WriteCandidateAsync(candidate, ContentTypes.Manifest))
+            if (!await ShouldWriteCandidateAsync(candidate, type))
             {
                 _Logger.WriteUpdateNotRequired();
                 return;
@@ -72,42 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             {
                 Created = snapshot,
                 Release = snapshot,
-                Type = ContentTypes.Manifest
-            };
-            await _Formatter.FillAsync(e, candidate);
-
-            _Result.Updated = true;
-
-            _ContentDb.Add(e);
-            _ContentDb.SaveAndCommit();
-
-            _Logger.WriteFinished();
-        }
-
-        public async Task ExecuteForV3()
-        {
-            if (_ContentDb == null)
-            {
-                _ContentDb = _ContentDbProvider();
-            }
-
-            await using var tx = _ContentDb.BeginTransaction();
-            var candidate = await _BuilderForV3.Execute();
-
-            if (!await WriteCandidateAsync(candidate, ContentTypes.ManifestV3))
-            {
-                _Logger.WriteUpdateNotRequired();
-                return;
-            }
-
-            _Logger.WriteStart();
-
-            var snapshot = _DateTimeProvider.Snapshot;
-            var e = new ContentEntity
-            {
-                Created = snapshot,
-                Release = snapshot,
-                Type = ContentTypes.ManifestV3
+                Type = type
             };
             await _FormatterForV3().FillAsync(e, candidate);
 
@@ -119,23 +91,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             _Logger.WriteFinished();
         }
 
-        private async Task<bool> WriteCandidateAsync(ManifestContent candidate, string contentType)
+        public async Task ExecuteAllAsync()
+        {
+            await ExecuteV1Async();
+            await ExecuteV3Async();
+            await ExecuteV4Async();
+        }
+
+        private async Task<bool> ShouldWriteCandidateAsync<T>(T candidate, string contentType) where T: IEquatable<T>
         {
             var existingContent = await _ContentDb.SafeGetLatestContentAsync(contentType, _DateTimeProvider.Snapshot);
             if (existingContent == null)
                 return true;
 
             _Result.Existing = true;
-            var existingManifest = ParseContent(existingContent.Content);
+            var existingManifest = ParseContent<T>(existingContent.Content);
             return !candidate.Equals(existingManifest);
         }
 
-        private ManifestContent ParseContent(byte[] formattedContent)
+        private T ParseContent<T>(byte[] formattedContent)
         {
             using var readStream = new MemoryStream(formattedContent);
             using var zip = new ZipArchive(readStream);
             var content = zip.ReadEntry(ZippedContentEntryNames.Content);
-            return _JsonSerializer.Deserialize<ManifestContent>(Encoding.UTF8.GetString(content));
+            return _JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(content));
         }
     }
 }

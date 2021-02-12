@@ -78,6 +78,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             if (arg.Equals("-r", StringComparison.InvariantCultureIgnoreCase))
                 return ContentTypes.RiskCalculationParameters;
 
+            if (arg.Equals("-r2", StringComparison.InvariantCultureIgnoreCase))
+                return ContentTypes.RiskCalculationParametersV3;
+
             if (arg.Equals("-b", StringComparison.InvariantCultureIgnoreCase))
                 return ContentTypes.ResourceBundle;
 
