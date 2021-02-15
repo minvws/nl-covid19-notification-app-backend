@@ -20,27 +20,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
     public abstract class RemoveExpiredManifestsTest : IDisposable
     {
         private readonly IDbProvider<ContentDbContext> _ContentDbProvider;
-        private readonly Mock<IManifestConfig> _ManifestConfigMock;
+        private Mock<IManifestConfig> _ManifestConfigMock;
 
         public RemoveExpiredManifestsTest(IDbProvider<ContentDbContext> contentDbProvider)
         {
             _ContentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
-            
-            _ManifestConfigMock = new Mock<IManifestConfig>();
         }
 
         [Theory]
-        [InlineData(ContentTypes.Manifest)]
-        [InlineData(ContentTypes.ManifestV2)]
-        [InlineData(ContentTypes.ManifestV3)]
-        [InlineData(ContentTypes.ManifestV4)]
-        public void RemoveExpiredManifests_ExecuteForManifestType(string manifestTypeName)
+        [InlineData(ContentTypes.Manifest, 1)]
+        [InlineData(ContentTypes.ManifestV2, 1)]
+        [InlineData(ContentTypes.ManifestV3, 1)]
+        [InlineData(ContentTypes.ManifestV4, 1)]
+        public void RemoveExpiredManifests_ExecuteForManifestType(string manifestTypeName, int keepAliveCount)
         {
             //Arrange
+            _ManifestConfigMock = new Mock<IManifestConfig>();
+            _ManifestConfigMock.Setup(x => x.KeepAliveCount).Returns(keepAliveCount);
+
             CreateManifestsForManifestType(manifestTypeName);
 
             //Act
-            switch(manifestTypeName)
+            switch (manifestTypeName)
             {
                 case ContentTypes.Manifest:
                     var sut = CompileRemoveExpiredManifestsCommand();
@@ -59,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
             //Assert
             Assert.NotNull(result);
-            Assert.True(result.Count() == 1, $"More than 1 {manifestTypeName} remains after deletion.");
+            Assert.True(result.Count() == keepAliveCount, $"More than {keepAliveCount} {manifestTypeName} remains after deletion.");
         }
 
         private RemoveExpiredManifestsCommand CompileRemoveExpiredManifestsCommand()
