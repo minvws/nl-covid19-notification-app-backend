@@ -1,3 +1,4 @@
+using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
@@ -9,7 +10,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
         
         //There is no value set for this in deployment pipeline.
         public int PageSize => 1000;
-        public bool CleanupDeletesData => throw new MissingConfigurationValueException(nameof(CleanupDeletesData));
+        
+        public bool CleanupDeletesData => false;
         public int LifetimeDays => 14;
     }
 }
