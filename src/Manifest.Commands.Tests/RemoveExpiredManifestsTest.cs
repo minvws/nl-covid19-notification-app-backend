@@ -51,6 +51,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
                     var sutV2 = CompileRemoveExpiredManifestsV2Command();
                     sutV2.ExecuteAsync().GetAwaiter().GetResult();
                     break;
+                case ContentTypes.ManifestV3:
+                    var sutV3 = CompileRemoveExpiredManifestsV3Command();
+                    sutV3.ExecuteAsync().GetAwaiter().GetResult();
+                    break;
                 default:
                     Assert.True(false, $"No {manifestTypeName} remove command exists.");
                     break;
@@ -79,6 +83,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var dateTimeProvider = new StandardUtcDateTimeProvider();
 
             var result = new RemoveExpiredManifestsV2Command(_ContentDbProvider.CreateNew, logger, _ManifestConfigMock.Object, dateTimeProvider);
+
+            return result;
+        }
+
+        private RemoveExpiredManifestsV3Command CompileRemoveExpiredManifestsV3Command()
+        {
+            var logger = new ExpiredManifestV3LoggingExtensions(new LoggerFactory().CreateLogger<ExpiredManifestV3LoggingExtensions>());
+            var dateTimeProvider = new StandardUtcDateTimeProvider();
+
+            var result = new RemoveExpiredManifestsV3Command(_ContentDbProvider.CreateNew, logger, _ManifestConfigMock.Object, dateTimeProvider);
 
             return result;
         }

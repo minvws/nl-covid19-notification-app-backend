@@ -39,5 +39,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public const int IksImportBatchJob = 4100;
         public const int ConsoleAppRunner = 4200; //not entirely sure yet
         public const int RemoveExpiredIks = 4300; //not entirely sure yet
+        public const int RemoveExpiredManifestV3 = 4400;
     }
 }
