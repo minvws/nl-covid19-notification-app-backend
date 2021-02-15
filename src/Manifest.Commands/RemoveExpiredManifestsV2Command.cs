@@ -49,10 +49,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                 _Result.Found = dbContext.Content.Count();
 
                 var zombies = dbContext.Content
-                    .Where(x => x.Type == ContentTypes.ManifestV2)
+                    .Where(x => x.Type == ContentTypes.ManifestV2 && x.Release < _DateTimeProvider.Snapshot)
                     .OrderByDescending(x => x.Release)
                     .Skip(_ManifestConfig.KeepAliveCount)
-                    .Select(x => new { x.PublishingId, x.Release })
                     .ToList();
 
                 _Result.Zombies = zombies.Count;
@@ -66,11 +65,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                     return _Result;
                 }
 
-                _Result.GivenMercy = dbContext.Database.ExecuteSqlInterpolated(
-                    $"WITH Zombies AS (SELECT Id FROM [Content] WHERE [Type] = {ContentTypes.ManifestV2} AND [Release] < {_DateTimeProvider.Snapshot} ORDER BY [Release] DESC OFFSET {_ManifestConfig.KeepAliveCount} ROWS) DELETE Zombies");
+                dbContext.RemoveRange(zombies);
+                _Result.GivenMercy = dbContext.SaveChanges();
 
-                _Result.GivenMercy += dbContext.Database.ExecuteSqlInterpolated(
-                    $"WITH Zombies AS (SELECT Id FROM [Content] WHERE [Type] = {ContentTypes.ManifestV2} AND [Release] > {_DateTimeProvider.Snapshot}) DELETE Zombies");
+                var futureZombies = dbContext.Content
+                    .Where(x => x.Type == ContentTypes.ManifestV2 && x.Release > _DateTimeProvider.Snapshot)
+                    .ToList();
+
+                dbContext.RemoveRange(futureZombies);
+                _Result.GivenMercy += dbContext.SaveChanges();
 
                 _Result.Remaining = dbContext.Content.Count();
 
