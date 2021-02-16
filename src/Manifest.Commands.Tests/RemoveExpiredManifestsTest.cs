@@ -60,11 +60,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
                     break;
             }
 
-            var result = GetAllManifestsForManifestType(manifestTypeName);
+            var content = GetAllContent();
+
+            var manifests = content.Where(x => x.Type == manifestTypeName);
+            var appConfig = content.Where(x => x.Type == ContentTypes.AppConfigV2);
 
             //Assert
-            Assert.NotNull(result);
-            Assert.True(result.Count() == 1, $"More than 1 {manifestTypeName} remains after deletion.");
+            Assert.NotNull(manifests);
+            Assert.True(manifests.Count() == 1, $"More than 1 {manifestTypeName} remains after deletion.");
+
+            Assert.NotNull(appConfig);
+            Assert.True(appConfig.Count() != 0, $"No AppConfigV2 remains after deletion.");
         }
 
         private RemoveExpiredManifestsCommand CompileRemoveExpiredManifestsCommand()
@@ -101,16 +107,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         {
             var database = _ContentDbProvider.CreateNew();
 
-            var content = "This is a Manifest";
+            var manifestContent = "This is a Manifest";
+            var appConfigContent = "This is an AppConfig";
 
             var today = DateTime.UtcNow;
             var yesterday = DateTime.UtcNow.AddDays(-1);
             var twoDaysAgo = DateTime.UtcNow.AddDays(-2);
+            var tomorrow = DateTime.UtcNow.AddDays(1);
 
             database.Content.AddRange(new[]
             {
                 new ContentEntity{
-                    Content = Encoding.ASCII.GetBytes(content),
+                    Content = Encoding.ASCII.GetBytes(appConfigContent),
+                    PublishingId = It.IsAny<string>(),
+                    ContentTypeName = It.IsAny<string>(),
+                    Type = ContentTypes.AppConfigV2,
+                    Created = twoDaysAgo,
+                    Release = twoDaysAgo
+
+                },
+                new ContentEntity{
+                    Content = Encoding.ASCII.GetBytes(manifestContent),
                     PublishingId = It.IsAny<string>(),
                     ContentTypeName = It.IsAny<string>(),
                     Type = manifestTypeName,
@@ -119,7 +136,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
                 },
                 new ContentEntity{
-                    Content = Encoding.ASCII.GetBytes(content),
+                    Content = Encoding.ASCII.GetBytes(manifestContent),
                     PublishingId = It.IsAny<string>(),
                     ContentTypeName = It.IsAny<string>(),
                     Type = manifestTypeName,
@@ -128,7 +145,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
                 },
                 new ContentEntity{
-                    Content = Encoding.ASCII.GetBytes(content),
+                    Content = Encoding.ASCII.GetBytes(manifestContent),
                     PublishingId = It.IsAny<string>(),
                     ContentTypeName = It.IsAny<string>(),
                     Type = manifestTypeName,
@@ -136,15 +153,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
                     Release = today
 
                 },
+                new ContentEntity{
+                    Content = Encoding.ASCII.GetBytes(manifestContent),
+                    PublishingId = It.IsAny<string>(),
+                    ContentTypeName = It.IsAny<string>(),
+                    Type = manifestTypeName,
+                    Created = tomorrow,
+                    Release = tomorrow
+
+                },
             });
 
             database.SaveChanges();
         }
 
-        private IEnumerable<ContentEntity> GetAllManifestsForManifestType(string manifestTypeName)
+        private IEnumerable<ContentEntity> GetAllContent()
         {
             var database = _ContentDbProvider.CreateNew();
-            return database.Set<ContentEntity>().Where(x => x.Type == manifestTypeName);
+            return database.Set<ContentEntity>();
         }
 
         public void Dispose()
