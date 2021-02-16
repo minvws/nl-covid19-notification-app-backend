@@ -36,11 +36,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                 keepAliveCount);
         }
 
-        public void WriteFinished(int zombieCount, int givenMercedesCount)
+        public void WriteFinished(int zombieCount, int givenMercyCount)
         {
             _Logger.LogInformation("[{name}/{id}] Finished removing expired ManifestV3s - ExpectedCount:{count} ActualCount:{givenMercy}.",
                 Name, Finished,
-                zombieCount, givenMercedesCount);
+                zombieCount, givenMercyCount);
         }
 
         public void WriteFinishedNothingRemoved()
