@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         [InlineData(ContentTypes.ManifestV2)]
         [InlineData(ContentTypes.ManifestV3)]
         [InlineData(ContentTypes.ManifestV4)]
-        public void RemoveExpiredManifests_ExecuteForManifestType(string manifestTypeName)
+        public void Remove_Expired_Manifest_Should_Leave_One(string manifestTypeName)
         {
             //Arrange
             _ManifestConfigMock = new Mock<IManifestConfig>();
@@ -41,6 +41,46 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             CreateManifestsForManifestType(manifestTypeName);
 
             //Act
+            RemoveExpiredManifestsExecutePerManifestType(manifestTypeName);
+
+            var content = GetAllContent();
+
+            var manifests = content.Where(x => x.Type == manifestTypeName);
+            var appConfig = content.Where(x => x.Type == ContentTypes.AppConfigV2);
+
+            //Assert
+            Assert.NotNull(manifests);
+            Assert.True(manifests.Count() == 1, $"More than 1 {manifestTypeName} remains after deletion.");
+
+            Assert.NotNull(appConfig);
+            Assert.True(appConfig.Count() != 0, $"No AppConfigV2 remains after deletion.");
+        }
+
+        [Theory]
+        [InlineData(ContentTypes.Manifest)]
+        [InlineData(ContentTypes.ManifestV2)]
+        [InlineData(ContentTypes.ManifestV3)]
+        [InlineData(ContentTypes.ManifestV4)]
+        public void Remove_Zero_Manifest_Should_Not_Crash(string manifestTypeName)
+        {
+            //Arrange
+            _ManifestConfigMock = new Mock<IManifestConfig>();
+            _ManifestConfigMock.Setup(x => x.KeepAliveCount).Returns(1);
+
+            //Act
+            RemoveExpiredManifestsExecutePerManifestType(manifestTypeName);
+
+            var content = GetAllContent();
+
+            var manifests = content.Where(x => x.Type == manifestTypeName);
+
+            //Assert
+            Assert.NotNull(manifests);
+            Assert.True(manifests.Count() == 0, $"More than 0 {manifestTypeName} remains after deletion.");
+        }
+
+        private void RemoveExpiredManifestsExecutePerManifestType(string manifestTypeName)
+        {
             switch (manifestTypeName)
             {
                 case ContentTypes.Manifest:
@@ -59,18 +99,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
                     Assert.True(false, $"No {manifestTypeName} remove command exists.");
                     break;
             }
-
-            var content = GetAllContent();
-
-            var manifests = content.Where(x => x.Type == manifestTypeName);
-            var appConfig = content.Where(x => x.Type == ContentTypes.AppConfigV2);
-
-            //Assert
-            Assert.NotNull(manifests);
-            Assert.True(manifests.Count() == 1, $"More than 1 {manifestTypeName} remains after deletion.");
-
-            Assert.NotNull(appConfig);
-            Assert.True(appConfig.Count() != 0, $"No AppConfigV2 remains after deletion.");
         }
 
         private RemoveExpiredManifestsCommand CompileRemoveExpiredManifestsCommand()
