@@ -36,7 +36,8 @@ steps:
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
     maximumCpuCount: true
-    task: SonarCloudAnalyze@1
+    
+- task: SonarCloudAnalyze@1
 
 - task: SonarCloudPublish@1
   inputs:
