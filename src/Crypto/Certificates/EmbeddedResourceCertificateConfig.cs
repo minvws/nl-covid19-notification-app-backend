@@ -9,13 +9,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
     public class EmbeddedResourceCertificateConfig : AppSettingsReader, IEmbeddedResourceCertificateConfig
     {
-        private string ThrowWhenMissing(string name) => throw new MissingConfigurationValueException(name);
-
         public EmbeddedResourceCertificateConfig(IConfiguration config, string prefix = null) : base(config, prefix)
         {
         }
 
-        public string Path => GetConfigValue(nameof(Path), ThrowWhenMissing(nameof(Path)));
-        public string Password => GetConfigValue(nameof(Password), ThrowWhenMissing(nameof(Password)));
+        public string Path => GetConfigValue<string>(nameof(Path));
+        public string Password => GetConfigValue<string>(nameof(Password));
     }
 }
