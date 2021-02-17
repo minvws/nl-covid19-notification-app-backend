@@ -9,11 +9,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
     public class LocalMachineStoreCertificateProviderConfig : AppSettingsReader, IThumbprintConfig
     {
-        private T ThrowWhenNotFound<T>(string name) => throw new MissingConfigurationValueException(name);
-
         public LocalMachineStoreCertificateProviderConfig(IConfiguration config, string? prefix = null) : base(config, prefix) { }
 
-        public string Thumbprint => GetConfigValue(nameof(Thumbprint), ThrowWhenNotFound<string>(nameof(Thumbprint)));
-        public bool RootTrusted => GetConfigValue(nameof(RootTrusted), ThrowWhenNotFound<bool>(nameof(RootTrusted)));
+        public string Thumbprint => GetConfigValue<string>(nameof(Thumbprint));
+        public bool RootTrusted => GetConfigValue<bool>(nameof(RootTrusted));
     }
 }
