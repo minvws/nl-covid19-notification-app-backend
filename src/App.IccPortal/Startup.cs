@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccPortal.Extensions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -54,6 +55,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccPortal
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+            var iccPortalConfig = new IccPortalConfig(_Configuration);
+            services.AddRestApiClient(iccPortalConfig);
 
             services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();

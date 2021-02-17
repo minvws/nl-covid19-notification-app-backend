@@ -27,7 +27,7 @@ export class LabConfirmService {
   }
 
   confirmLabId(labConfirmationIds: Array<string>, dateOfSymptomsOnset: string): Observable<any> {
-    const serviceUrl = this.appConfigService.getConfig().apiUrl + '/CaregiversPortalApi/v1/labconfirm';
+    const serviceUrl = location.origin + '/CaregiversPortalApi/v1/labconfirm';
     this.data = {
       'LabConfirmationID': labConfirmationIds.join(''),
       'DateOfSymptomsOnset': dateOfSymptomsOnset

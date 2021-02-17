@@ -1,5 +1,4 @@
 using System;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config
 {
@@ -7,6 +6,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config
     {
         //Mandatory in config file - do not use in AppSettingsReader implementation
         public string FrontendBaseUrl => throw new NotImplementedException();
+
+        //Mandatory in config file - do not use in AppSettingsReader implementation
+        public string BackendBaseUrl => throw new NotImplementedException();
 
         //Mandatory in config file - do not use in AppSettingsReader implementation
         public string JwtSecret => throw new NotImplementedException();
