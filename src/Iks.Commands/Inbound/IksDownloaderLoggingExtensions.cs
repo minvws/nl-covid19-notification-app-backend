@@ -9,7 +9,7 @@ using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksInbound
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 {
     public class IksDownloaderLoggingExtensions
     {

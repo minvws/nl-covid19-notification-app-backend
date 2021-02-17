@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -66,7 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
             
             // IKS Signing
             services.AddTransient<IIksSigner, EfgsCmsSigner>();
-            services.AddTransient<ICertificateLocationConfig, StandardCertificateLocationConfig>();
+            services.AddTransient<IEmbeddedResourceCertificateConfig, EmbeddedResourceCertificateConfig>();
             services.AddTransient<ICertificateChainProvider, EmbeddedResourcesCertificateChainProvider>();
             services.AddTransient<ICertificateProvider>(
                 x => new LocalMachineStoreCertificateProvider(

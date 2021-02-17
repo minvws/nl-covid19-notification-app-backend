@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Content.Commands\Content.Commands.csproj" />
+    <ProjectReference Include="..\Crypto.Tests\Crypto.Tests.csproj" />
     <ProjectReference Include="..\Crypto\Crypto.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\TestFramework\TestFramework.csproj" />

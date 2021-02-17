@@ -22,7 +22,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
                 _Prefix = prefix + ":";
         }
 
-        protected T GetConfigValue<T>(string path, T defaultValue = default)
-            => _Config.GetValue($"{_Prefix}{path}", defaultValue);
+        protected T GetConfigValue<T>(string path, T defaultValue)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentException(nameof(path));
+
+            return _Config.GetValue($"{_Prefix}{path}", defaultValue);
+        }
+
+        protected T GetConfigValue<T>(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentException(nameof(path));
+
+            var key = $"{_Prefix}{path}";
+
+            if (_Config[key] == null)
+                throw new MissingConfigurationValueException(key);
+
+            return _Config.GetValue<T>(key);
+        }
     }
 }

@@ -81,7 +81,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
         {
             var keyData = BitConverter.GetBytes(d * 100 + q);
             var t = new DateTime(2020, m, d, 0, 0, 0, DateTimeKind.Utc).Date.ToRollingStartNumber();
-            return new Tek {RollingStartNumber = t, KeyData = keyData, RollingPeriod = UniversalConstants.RollingPeriodMax};
+            return new Tek {RollingStartNumber = t, KeyData = keyData, RollingPeriod = UniversalConstants.RollingPeriodRange.Hi};
         }
 
         [Fact]

@@ -2,6 +2,8 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public static class ContentTypes
@@ -22,19 +24,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         public const string ManifestV3 = nameof(ManifestV3);
         public const string ResourceBundleV3 = nameof(ResourceBundleV3); //refers to the ResourceBundleV2-files in publishcontent-repo.
 
+        //New for GAENv2
+        public const string RiskCalculationParametersV3 = nameof(RiskCalculationParametersV3);
+        public const string ManifestV4 = nameof(ManifestV4);
+
         public static bool IsValid(string value) =>
             value == AppConfig
             || value == RiskCalculationParameters
             || value == ExposureKeySet
             || value == Manifest
+
             || value == AppConfigV2
             || value == RiskCalculationParametersV2
             || value == ExposureKeySetV2
             || value == ManifestV2
+
             || value == ResourceBundle
             || value == ResourceBundleV2
             || value == ManifestV3
             || value == ResourceBundleV3
+
+            || value == RiskCalculationParametersV3
+            || value == ManifestV4
         ;
     }
 }

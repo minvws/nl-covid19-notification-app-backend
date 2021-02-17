@@ -5,9 +5,11 @@
 using System;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
@@ -25,17 +27,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
         public void Build(int length)
         {
             var lf = new LoggerFactory();
-            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
-
-            var signer = new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), certProviderLogger), //Not a secret.
-                new EmbeddedResourcesCertificateChainProvider(new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
-                new StandardUtcDateTimeProvider()
-                );
             var content = Encoding.UTF8.GetBytes(CreateString(length));
-
-            var sig = signer.GetSignature(content);
-
+            var sig = TestSignerHelpers.CreateCmsSignerEnhanced(lf).GetSignature(content);
             Assert.True((sig?.Length ?? 0) != 0);
         }
 

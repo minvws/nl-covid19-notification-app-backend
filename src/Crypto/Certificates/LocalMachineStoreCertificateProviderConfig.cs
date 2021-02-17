@@ -11,8 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
     {
         public LocalMachineStoreCertificateProviderConfig(IConfiguration config, string? prefix = null) : base(config, prefix) { }
 
-        public string Thumbprint => GetConfigValue("Thumbprint", string.Empty);
-        public bool RootTrusted => GetConfigValue(nameof(RootTrusted), true);
-        public bool Valid => !string.IsNullOrWhiteSpace(Thumbprint);
+        public string Thumbprint => GetConfigValue<string>(nameof(Thumbprint));
+        public bool RootTrusted => GetConfigValue<bool>(nameof(RootTrusted));
     }
 }

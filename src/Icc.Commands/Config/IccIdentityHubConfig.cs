@@ -9,14 +9,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config
 {
     public class IccIdentityHubConfig : AppSettingsReader, IIccIdentityHubConfig
     {
-        public IccIdentityHubConfig(IConfiguration config, string? prefix = "IccPortal:IdentityHub") : base(config, prefix)
+        //NB All of these values must be specified in the config file.
+
+        public IccIdentityHubConfig(IConfiguration config, string prefix = "IccPortal:IdentityHub") : base(config, prefix)
         {
         }
 
-        public string BaseUrl => GetConfigValue(nameof(BaseUrl), string.Empty);
-        public string Tenant => GetConfigValue(nameof(Tenant), string.Empty);
-        public string ClientId => GetConfigValue(nameof(ClientId), string.Empty);
-        public string ClientSecret => GetConfigValue(nameof(ClientSecret), string.Empty);
-        public string CallbackPath => GetConfigValue(nameof(CallbackPath), string.Empty);
+        public string BaseUrl => GetConfigValue<string>(nameof(BaseUrl));
+        public string Tenant => GetConfigValue<string>(nameof(Tenant));
+        public string ClientId => GetConfigValue<string>(nameof(ClientId));
+        public string ClientSecret => GetConfigValue<string>(nameof(ClientSecret));
+        public string CallbackPath => GetConfigValue<string>(nameof(CallbackPath));
     }
 }

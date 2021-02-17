@@ -10,7 +10,7 @@ using WireMock.ResponseBuilders;
 using WireMock.Server;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests.Icc
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests
 {
     public class TheIdentityHubServiceTests
     {

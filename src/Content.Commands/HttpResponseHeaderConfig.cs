@@ -9,11 +9,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public class HttpResponseHeaderConfig : AppSettingsReader, IHttpResponseHeaderConfig
     {
-        public HttpResponseHeaderConfig(IConfiguration config, string? prefix = "Content") : base(config, prefix)
+        private static readonly ProductionDefaultValuesHttpResponseHeaderConfig _ProductionDefaultValues = new ProductionDefaultValuesHttpResponseHeaderConfig();
+
+        public HttpResponseHeaderConfig(IConfiguration config, string prefix = "Content") : base(config, prefix)
         {
         }
 
-        public string ManifestCacheControl => GetConfigValue(nameof(ManifestCacheControl), "s-maxage=30");
-        public string ImmutableContentCacheControl => GetConfigValue(nameof(ImmutableContentCacheControl), "immutable");
+        public string ManifestCacheControl => GetConfigValue(nameof(ManifestCacheControl), _ProductionDefaultValues.ManifestCacheControl);
+        public string ImmutableContentCacheControl => GetConfigValue(nameof(ImmutableContentCacheControl), _ProductionDefaultValues.ImmutableContentCacheControl);
     }
 }

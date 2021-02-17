@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
                 var result = _Configuration.GetConnectionString(_ConnStringName);
 
                 if (string.IsNullOrWhiteSpace(result))
-                    throw new InvalidOperationException($"Value not found for connection string - Name:{_ConnStringName}.");
+                    throw new MissingConfigurationValueException(_ConnStringName);
 
                 return result;
             }

@@ -54,4 +54,8 @@
     <PackageReference Include="TheIdentityHub.AspNetCore.Authentication" Version="3.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
 </Project>

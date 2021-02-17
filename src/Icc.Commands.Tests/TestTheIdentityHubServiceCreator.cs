@@ -10,7 +10,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
 using TheIdentityHub.AspNetCore.Authentication;
 using WireMock.Server;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests.Icc
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests
 {
     public static class TestTheIdentityHubServiceCreator
     {

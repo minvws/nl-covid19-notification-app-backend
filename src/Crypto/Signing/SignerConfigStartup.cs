@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                             x.GetRequiredService<IConfiguration>(), NlSettingPrefix),
                             x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()),
                         new EmbeddedResourcesCertificateChainProvider(
-                            new StandardCertificateLocationConfig(
+                            new EmbeddedResourceCertificateConfig(
                                 x.GetRequiredService<IConfiguration>(),
                                 ChainPrefix)),
                         x.GetRequiredService<IUtcDateTimeProvider>()
@@ -70,7 +70,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                         Nl2SettingPrefix),
                     extensions),
                     new EmbeddedResourcesCertificateChainProvider(
-                        new StandardCertificateLocationConfig(
+                        new EmbeddedResourceCertificateConfig(
                             config,
                             Nl2ChainPrefix)),
                     dateTimeProvider

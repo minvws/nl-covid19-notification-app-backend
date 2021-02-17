@@ -79,8 +79,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 
 
             item.LabConfirmationId = _LabConfirmationIdService.Next();
-            item.BucketId = _NumberGenerator.NextByteArray(_WorkflowConfig.BucketIdLength);
-            item.ConfirmationKey = _NumberGenerator.NextByteArray(_WorkflowConfig.ConfirmationKeyLength);
+            item.BucketId = _NumberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount);
+            item.ConfirmationKey = _NumberGenerator.NextByteArray(UniversalConstants.ConfirmationKeyByteCount);
 
             try
             {

@@ -16,7 +16,6 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
         /// <summary>
         /// Builds options for the CorsPolicyBuilder
         /// </summary>
-        /// <param name="environment"></param>
         /// <param name="iccPortalConfig"></param>
         public CorsOptions(IIccPortalConfig iccPortalConfig)
         {

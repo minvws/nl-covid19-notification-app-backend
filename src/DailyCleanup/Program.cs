@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -74,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             var c40 = serviceProvider.GetRequiredService<ManifestUpdateCommand>();
             run.Add(() => logger.WriteManifestEngineStarting());
-            run.Add(() => c40.ExecuteAsync().GetAwaiter().GetResult());
+            run.Add(() => c40.ExecuteAllAsync().GetAwaiter().GetResult());
 
             var c50 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             //run.Add(() =>  TODO );
@@ -110,6 +109,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             var c120 = serviceProvider.GetRequiredService<RemoveExpiredManifestsV2Command>();
             run.Add(() => logger.WriteManifestV2CleanupStarting());
             run.Add(() => c120.ExecuteAsync().GetAwaiter().GetResult());
+
+            var c121 = serviceProvider.GetRequiredService<RemoveExpiredManifestsV3Command>();
+            run.Add(() => logger.WriteManifestV3CleanupStarting());
+            run.Add(() => c121.ExecuteAsync().GetAwaiter().GetResult());
 
             var c125 = serviceProvider.GetRequiredService<RemovePublishedDiagnosticKeys>();
             run.Add(() => c125.Execute());
@@ -167,6 +170,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.ManifestEngine();
             services.AddTransient<RemoveExpiredManifestsCommand>();
             services.AddTransient<RemoveExpiredManifestsV2Command>();
+            services.AddTransient<RemoveExpiredManifestsV3Command>();
             services.AddTransient<RemoveExpiredEksCommand>();
             services.AddTransient<RemoveExpiredEksV2Command>();
             services.AddTransient<RemoveExpiredWorkflowsCommand>();
@@ -186,6 +190,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<ResignerLoggingExtensions>();
             services.AddSingleton<ExpiredEksV2LoggingExtensions>();
             services.AddSingleton<ExpiredManifestV2LoggingExtensions>();
+            services.AddSingleton<ExpiredManifestV3LoggingExtensions>();
             services.AddSingleton<EksEngineLoggingExtensions>();
             services.AddSingleton<SnapshotLoggingExtensions>();
             services.AddSingleton<EksJobContentWriterLoggingExtensions>();
@@ -237,7 +242,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<RemoveExpiredIksInCommand>();
             services.AddTransient<RemoveExpiredIksOutCommand>();
 
-            services.ManifestForV3Startup();
+            services.ManifestForV4Startup();
         }
     }
 

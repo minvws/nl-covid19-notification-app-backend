@@ -3,19 +3,18 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Diagnostics;
-using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using System.IO;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.ExposureKeySetsEngine
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySetsEngine
 {
     [Trait("db", "ss")]
     public class RemoveDuplicateDiagnosisKeysForIksCommandTests:IDisposable

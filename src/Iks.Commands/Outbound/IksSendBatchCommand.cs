@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Iks.Protobuf;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
 

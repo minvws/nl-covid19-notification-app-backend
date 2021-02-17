@@ -15,6 +15,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFrame
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
@@ -41,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var sut = CompileManifestUpdateCommand();
 
             //Act
-            sut.ExecuteForV3().GetAwaiter().GetResult();
+            sut.ExecuteV3Async().GetAwaiter().GetResult();
 
             var database = _ContentDbProvider.CreateNew();
             var result = database.SafeGetLatestContentAsync(ContentTypes.ManifestV3, DateTime.Now).GetAwaiter().GetResult();
@@ -68,20 +69,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var dateTimeProvider = new StandardUtcDateTimeProvider();
             var jsonSerialiser = new StandardJsonSerializer();
             var entityFormatterMock = new Mock<IContentEntityFormatter>();
-            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
-            
-            var signer = new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(
-                    new HardCodedCertificateLocationConfig("TestRSA.p12", "Covid-19!"), //Not a secret.
-                    certProviderLogger),
-                new EmbeddedResourcesCertificateChainProvider(
-                    new HardCodedCertificateLocationConfig("StaatDerNLChain-Expires2020-08-28.p7b", "")), //Not a secret.
-                dateTimeProvider);
 
             Func<IContentEntityFormatter> formatterForV3 = () =>
                 new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(
-                        signer),
+                    TestSignerHelpers.CreateCmsSignerEnhanced(lf)),
                     new Sha256HexPublishingIdService(),
                     jsonSerialiser
                         );
@@ -92,6 +84,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
                     eksConfigMock.Object,
                     dateTimeProvider),
                 new ManifestBuilderV3(
+                    _ContentDbProvider.CreateNew(),
+                    eksConfigMock.Object,
+                    dateTimeProvider),
+                new ManifestBuilderV4(
                     _ContentDbProvider.CreateNew(),
                     eksConfigMock.Object,
                     dateTimeProvider),

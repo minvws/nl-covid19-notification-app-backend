@@ -4,19 +4,22 @@
 
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using System.Runtime.Serialization;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config
 {
     public class IccPortalConfig : AppSettingsReader, IIccPortalConfig
     {
-        public IccPortalConfig(IConfiguration config, string? prefix = "IccPortal") : base(config, prefix)
+        private static readonly DefaultProductionValuesIccPortalConfig _DefaultProductionValues = new DefaultProductionValuesIccPortalConfig();
+
+        public IccPortalConfig(IConfiguration config, string prefix = "IccPortal") : base(config, prefix)
         {
         }
 
-        public string JwtSecret => GetConfigValue("Jwt:Secret", string.Empty);
-        public double ClaimLifetimeHours => GetConfigValue(nameof(ClaimLifetimeHours), 3.0);
+        public string JwtSecret => GetConfigValue<string>("Jwt:Secret");
+        public double ClaimLifetimeHours => GetConfigValue(nameof(ClaimLifetimeHours), _DefaultProductionValues.ClaimLifetimeHours);
         
-        public string FrontendBaseUrl => GetConfigValue(nameof(FrontendBaseUrl), "Missed! Here are some nasty non-uri characters \"<>#%.");
-        public bool StrictRolePolicyEnabled => GetConfigValue(nameof(StrictRolePolicyEnabled), true);
+        public string FrontendBaseUrl => GetConfigValue<string>(nameof(FrontendBaseUrl));
+        public bool StrictRolePolicyEnabled => GetConfigValue(nameof(StrictRolePolicyEnabled), _DefaultProductionValues.StrictRolePolicyEnabled);
     }
 }
