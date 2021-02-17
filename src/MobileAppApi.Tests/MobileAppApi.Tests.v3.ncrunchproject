@@ -4,5 +4,70 @@
     <HiddenComponentWarnings>
       <Value>AspNetTestHostCompatibility</Value>
     </HiddenComponentWarnings>
+    <IgnoredTests>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostSecretTestsSqlserver.PostSecretTest_EmptyDb</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostSecretTestsSqlserver.PostSecretTest_5RetriesAndBang</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostSecretTestsSqlserver.PostSecret_MissThe5Existing</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workflow.WorkflowCleanerTestsSqlserver.NoKill</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workflow.WorkflowCleanerTestsSqlserver.MoreRealistic</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workflow.WorkflowCleanerTestsSqlserver.Kill</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-duplicate-TEKs-KeyData.json", "0", "7", "11")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-ancient-TEKs.json", "1", "7", "1")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-good00.json", "0", "7", "2")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysTestsSqlserver.PostWorkflowTest_ScriptInjectionInSignature</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-duplicate-TEKs-RSN-and-RP.json", "0", "7", "11")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-duplicate-TEKs-RSN.json", "13", "8", "13")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workflow.WorkflowCleanerTestsSqlserver.Abort</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysTestsSqlserver.Postkeys_has_padding</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workflow.WorkflowCleanerTestsSqlserver.Cleaner</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysTestsSqlserver.PostWorkflowTest_NullSignature</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysTestsSqlserver.PostWorkflowTest_InvalidSignature</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-good01.json", "1", "7", "2")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostSecretTestsSqlserver.Register_has_padding</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysTestsSqlserver.PostWorkflowTest_EmptySignature</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers.WorkflowControllerPostKeysDiagnosticTestsSqlserver.PostWorkflowTest("Resources.payload-good14.json", "14", "7", "11")</TestName>
+      </NamedTestSelector>
+    </IgnoredTests>
   </Settings>
 </ProjectConfiguration>
