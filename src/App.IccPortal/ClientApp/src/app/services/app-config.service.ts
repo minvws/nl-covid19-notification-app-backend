@@ -25,6 +25,5 @@ export class AppConfigService implements IAppConfigService {
 
 export interface IAppConfig {
     appName: string;
-    apiUrl: string;
     authHost: string;
 }
