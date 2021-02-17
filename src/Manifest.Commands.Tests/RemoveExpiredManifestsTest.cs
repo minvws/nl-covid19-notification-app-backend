@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         [InlineData(ContentTypes.Manifest)]
         [InlineData(ContentTypes.ManifestV2)]
         [InlineData(ContentTypes.ManifestV3)]
-        [InlineData(ContentTypes.ManifestV4)]
+        //[InlineData(ContentTypes.ManifestV4)]
         public void Remove_Expired_Manifest_Should_Leave_One(string manifestTypeName)
         {
             //Arrange
@@ -60,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         [InlineData(ContentTypes.Manifest)]
         [InlineData(ContentTypes.ManifestV2)]
         [InlineData(ContentTypes.ManifestV3)]
-        [InlineData(ContentTypes.ManifestV4)]
+        //[InlineData(ContentTypes.ManifestV4)]
         public void Remove_Zero_Manifest_Should_Not_Crash(string manifestTypeName)
         {
             //Arrange
