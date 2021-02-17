@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
