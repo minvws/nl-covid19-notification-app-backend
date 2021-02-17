@@ -16,10 +16,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config
         {
         }
 
-        public string JwtSecret => GetConfigValue("Jwt:Secret", _DefaultProductionValues.JwtSecret);
+        public string JwtSecret => GetConfigValue<string>("Jwt:Secret");
         public double ClaimLifetimeHours => GetConfigValue(nameof(ClaimLifetimeHours), _DefaultProductionValues.ClaimLifetimeHours);
         
-        public string FrontendBaseUrl => GetConfigValue(nameof(FrontendBaseUrl), _DefaultProductionValues.FrontendBaseUrl);
+        public string FrontendBaseUrl => GetConfigValue<string>(nameof(FrontendBaseUrl));
         public bool StrictRolePolicyEnabled => GetConfigValue(nameof(StrictRolePolicyEnabled), _DefaultProductionValues.StrictRolePolicyEnabled);
     }
 }
