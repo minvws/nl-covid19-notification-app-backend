@@ -35,6 +35,7 @@ variables:
   # Artifact subfolders
   Apps.Content.WebApi.ArtifactSubDirectory: 'ContentApi'
   Apps.App.IccPortal.ArtifactSubDirectory: 'IccPortalApp'
+  Apps.Api.IccBackend.ArtifactSubDirectory: 'IccBackendApi'
   Apps.Icc.WebApi.ArtifactSubDirectory: 'IccBackend'
   Apps.MobileAppApi.WebApi.ArtifactSubDirectory: 'MobileAppApi'
   Apps.DailyCleanup.ArtifactSubDirectory: 'DailyCleanup'
@@ -71,9 +72,12 @@ stages:
   - template: /build/pipelines/jobs/apps-publish-contentwebapi-artifact.yaml
 
   # ICC Frontend Portal
-  #- template: /build/pipelines/jobs/apps-publish-appiccportal-artifact.yaml
+  - template: /build/pipelines/jobs/apps-publish-appiccportal-artifact.yaml
 
-  # IccBackend
+  # ICC Backend Api (new)
+  - template: /build/pipelines/jobs/apps-publish-iccbackend-artifact.yaml
+
+  # IccBackend (old)
   - template: /build/pipelines/jobs/apps-publish-iccwebapi-artifact.yaml
   
   # MobileAppApi
