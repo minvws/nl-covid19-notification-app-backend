@@ -6,9 +6,6 @@ namespace NL.Rijksoverheid.ExposureNotification.Api.IccBackend
 {
     public static class EndPointNames
     {
-        /// <summary>
-        /// Use the same ones for CaregiversPortalDataApi
-        /// </summary>
         public static class CaregiversPortalApi
         {
             private const string Prefix = "/CaregiversPortalApi/v1";

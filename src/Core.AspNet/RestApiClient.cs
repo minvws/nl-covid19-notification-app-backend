@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
 {
     /// <summary>
-    /// The generic API client using a Polly circuit breaker
+    /// The generic API client
     /// </summary>
     public class RestApiClient : IRestApiClient
     {
