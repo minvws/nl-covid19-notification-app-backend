@@ -33,22 +33,4 @@ describe('LabConfirmServiceService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
-
-
-    it('labConfirm returned Observable should match the right data', () => {
-        const mockLabConfirmationId = ['0', '0', '0', '0', '0', '0'];
-        const mockDateOfSymptomsOnset = new Date().toISOString();
-        const mockResponse = {
-            active: true,
-            pollToken: 'first_polltoken_123'
-        };
-
-        service.confirmLabId(mockLabConfirmationId, mockDateOfSymptomsOnset).subscribe(result => {
-            expect(result.active).toEqual(true);
-            expect(result.pollToken).toEqual('first_polltoken_123');
-        });
-
-        const req = httpTestingController.expectOne('http://coronamelder.test/CaregiversPortalApi/v1/labconfirm');
-        req.flush(mockResponse);
-    });
 });
