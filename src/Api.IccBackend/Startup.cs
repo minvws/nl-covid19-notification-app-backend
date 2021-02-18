@@ -4,7 +4,6 @@
 
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -12,7 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -58,11 +56,8 @@ namespace NL.Rijksoverheid.ExposureNotification.Api.IccBackend
                 options.TableName = "Cache";
             });
 
-            services.AddScoped(x => x.CreateDbContext(y => new DataProtectionKeysDbContext(y), DatabaseConnectionStringNames.DataProtectionKeys));
             services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
             
-            services.AddDataProtection().PersistKeysToDbContext<DataProtectionKeysDbContext>();
-
             services.AddTransient<AuthorisationArgsValidator>();
             services.AddScoped<HttpPostAuthoriseLabConfirmationIdCommand>();
             services.AddTransient<AuthorizeLabConfirmationIdCommand>();
