@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_App_IccBackend
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.Api.IccBackend.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'Api.IccBackend'
+    - name: ProjectPath
+      value: 'src\Api.IccBackend\Api.IccBackend.csproj'
+    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'
