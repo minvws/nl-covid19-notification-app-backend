@@ -13,8 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccPortal;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using Xunit;
 
 namespace App.IccPortal.Tests
@@ -71,11 +69,11 @@ namespace App.IccPortal.Tests
                 builder.ConfigureTestServices(services =>
                 {
                     var descriptor = services.SingleOrDefault(d => d.ServiceType.Name == nameof(RestApiClient));
-
                     services.Remove(descriptor);
 
                     services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
                     services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
+
                 });
             })
                 .CreateClient();
