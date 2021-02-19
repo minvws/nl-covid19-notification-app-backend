@@ -19,6 +19,15 @@ variables:
 steps:
 - task: NuGetToolInstaller@1
 
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'CIBG SonarCloud'
+    organization: 'cibg'
+    scannerMode: 'MSBuild'
+    projectKey: 'MSS.Backend'
+    projectName: 'CoronaMelder.Backend'
+  condition: and(always(), eq(variables['Build.Reason'], 'Schedule'))
+
 - task: MSBuild@1
   displayName: 'Build solution **\*.sqlproj'
   inputs:
@@ -28,6 +37,14 @@ steps:
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
     maximumCpuCount: true
+    
+- task: SonarCloudAnalyze@1
+  condition: and(always(), eq(variables['Build.Reason'], 'Schedule'))
+
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
+  condition: and(always(), eq(variables['Build.Reason'], 'Schedule'))
 
 - task: CopyFiles@2
   displayName: 'Copy DacPac Files to: $(Build.ArtifactStagingDirectory)'
