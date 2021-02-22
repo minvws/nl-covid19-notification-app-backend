@@ -7,6 +7,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
     public class AuthorisationResponse
     {
         public bool Valid { get; set; }
-        public string? PollToken { get; set; }
+        public string PollToken { get; set; }
     }
 }

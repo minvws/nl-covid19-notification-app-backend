@@ -20,6 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config
         public double ClaimLifetimeHours => GetConfigValue(nameof(ClaimLifetimeHours), _DefaultProductionValues.ClaimLifetimeHours);
         
         public string FrontendBaseUrl => GetConfigValue<string>(nameof(FrontendBaseUrl));
+        public string BackendBaseUrl => GetConfigValue<string>(nameof(BackendBaseUrl));
         public bool StrictRolePolicyEnabled => GetConfigValue(nameof(StrictRolePolicyEnabled), _DefaultProductionValues.StrictRolePolicyEnabled);
     }
 }

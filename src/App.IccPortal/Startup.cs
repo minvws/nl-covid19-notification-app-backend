@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccPortal.Extensions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -55,6 +56,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccPortal
                 configuration.RootPath = "ClientApp/dist";
             });
 
+            var iccPortalConfig = new IccPortalConfig(_Configuration);
+            services.AddRestApiClient(iccPortalConfig);
+
             services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
             services.AddTransient<IAuthCodeGenerator, AuthCodeGenerator>();
@@ -94,10 +98,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccPortal
                 options.TableName = "Cache";
             });
 
-            services.AddTransient(x => x.CreateDbContext(y => new DataProtectionKeysDbContext(y), DatabaseConnectionStringNames.DataProtectionKeys));
+            //services.AddTransient(x => x.CreateDbContext(y => new DataProtectionKeysDbContext(y), DatabaseConnectionStringNames.DataProtectionKeys));
             services.AddTransient(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
 
-            services.AddDataProtection().PersistKeysToDbContext<DataProtectionKeysDbContext>();
+            //services.AddDataProtection().PersistKeysToDbContext<DataProtectionKeysDbContext>();
 
             services.AddTransient<WriteNewPollTokenWriter>();
             services.AddTransient<IPollTokenService, PollTokenService>();

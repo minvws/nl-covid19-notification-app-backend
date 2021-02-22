@@ -12,6 +12,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config
         string FrontendBaseUrl { get; }
 
         /// <summary>
+        /// Used in Icc.WebApi only.
+        /// </summary>
+        string BackendBaseUrl { get; }
+
+        /// <summary>
         /// Used in Icc.Commands only.
         /// </summary>
         string JwtSecret { get; }

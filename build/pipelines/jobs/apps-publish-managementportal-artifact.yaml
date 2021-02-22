@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_App_ManagementPortal
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.ManagementPortal.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'App.ManagementPortal'
+    - name: ProjectPath
+      value: 'src\ManagementPortal\ManagementPortal.csproj'
+    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'
