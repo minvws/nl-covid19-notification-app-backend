@@ -182,6 +182,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.WebApp.Tests", "Icc.Web
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.v2.WebApi.Tests", "Icc.v2.WebApi.Tests\Icc.v2.WebApi.Tests.csproj", "{10D67DE2-5BE7-43C2-8782-4611F3D4A8A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagementPortal", "ManagementPortal\ManagementPortal.csproj", "{275CFD7A-CFED-4729-BCA3-4F22430AF288}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -497,7 +499,11 @@ Global
 		{10D67DE2-5BE7-43C2-8782-4611F3D4A8A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{10D67DE2-5BE7-43C2-8782-4611F3D4A8A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10D67DE2-5BE7-43C2-8782-4611F3D4A8A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{10D67DE2-5BE7-43C2-8782-4611F3D4A8A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10D67DE2-5BE7-43C2-8782-4611F3D4A8A6}.Release|Any CPU.Build.0 = Release|Any CPU		
+		{275CFD7A-CFED-4729-BCA3-4F22430AF288}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{275CFD7A-CFED-4729-BCA3-4F22430AF288}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{275CFD7A-CFED-4729-BCA3-4F22430AF288}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{275CFD7A-CFED-4729-BCA3-4F22430AF288}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -527,6 +533,7 @@ Global
 		{BD9F295D-A637-4352-A91C-912D5B9A1EFD} = {3F8DB099-3B7E-4314-87AC-637EE6346FAF}
 		{280A730C-1DA6-43B6-8001-244D2046E0D2} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
 		{B701DAD1-CD0E-4E25-B47F-53211653D1EA} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
+		{275CFD7A-CFED-4729-BCA3-4F22430AF288} = {CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}
