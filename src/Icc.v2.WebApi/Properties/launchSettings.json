@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "IccBackend": {
+    "Icc.v2.WebApi": {
       "commandName": "Project",
       "launchUrl": "swagger",
       "environmentVariables": {
