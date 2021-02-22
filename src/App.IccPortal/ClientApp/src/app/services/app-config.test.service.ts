@@ -11,7 +11,6 @@ export class AppConfigTestService extends AppConfigService {
     async loadAppConfig() {
         this.appConfig = <IAppConfig>{
             appName: 'CoronaMelder TestSuite',
-            apiUrl: 'http://coronamelder.test',
             authHost: 'coronamelder.test'
         };
     }

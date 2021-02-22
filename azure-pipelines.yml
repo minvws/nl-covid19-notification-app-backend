@@ -35,6 +35,7 @@ variables:
   # Artifact subfolders
   Apps.Content.WebApi.ArtifactSubDirectory: 'ContentApi'
   Apps.App.IccPortal.ArtifactSubDirectory: 'IccPortalApp'
+  Apps.Api.IccBackend.ArtifactSubDirectory: 'IccBackendApi'
   Apps.Icc.WebApi.ArtifactSubDirectory: 'IccBackend'
   Apps.MobileAppApi.WebApi.ArtifactSubDirectory: 'MobileAppApi'
   Apps.DailyCleanup.ArtifactSubDirectory: 'DailyCleanup'
@@ -49,6 +50,7 @@ variables:
   Tools.Eks.Parser.ArtifactSubDirectory: 'Eks.Parser'
   DacPac.ArtifactSubDirectory: 'Database'
   HSMScripting.ArtifactSubDirectory: 'HSM-Scripting'
+  Apps.ManagementPortal.ArtifactSubDirectory: 'ManagementPortal'
   
 stages:
 # Tests all unittest in 'ProjectsToTest'
@@ -71,9 +73,12 @@ stages:
   - template: /build/pipelines/jobs/apps-publish-contentwebapi-artifact.yaml
 
   # ICC Frontend Portal
-  #- template: /build/pipelines/jobs/apps-publish-appiccportal-artifact.yaml
+  - template: /build/pipelines/jobs/apps-publish-appiccportal-artifact.yaml
 
-  # IccBackend
+  # ICC Backend Api (new)
+  - template: /build/pipelines/jobs/apps-publish-iccbackend-artifact.yaml
+
+  # IccBackend (old)
   - template: /build/pipelines/jobs/apps-publish-iccwebapi-artifact.yaml
   
   # MobileAppApi
@@ -112,3 +117,6 @@ stages:
 
   # HSM-Scripting files
   - template: /build/pipelines/jobs/files-publish-hsm-scripting-artifact.yaml
+
+  # Managemnet Portal
+  - template: /build/pipelines/jobs/apps-publish-managementportal-artifact.yaml

@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<string?> ExecuteAsync(AuthorisationArgs args)
+        public async Task<string> ExecuteAsync(AuthorisationArgs args)
         {
             if (args == null)
                 throw new ArgumentNullException(nameof(args));

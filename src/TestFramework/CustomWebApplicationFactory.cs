@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework
             builder.ConfigureServices(services =>
             {
                 // Remove the app's ApplicationDbContext registration.
-                var descriptor = services.SingleOrDefault(d => d.ServiceType.BaseType ==  typeof(DbContext));
+                var descriptor = services.SingleOrDefault(d => d.ServiceType.Name == typeof(TContext).Name);
 
                 if (descriptor != null)
                 {

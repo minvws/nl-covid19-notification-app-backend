@@ -45,6 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
         /// <summary>
         /// Rotating auth token for Icc Portal refresh to see KeysLastUploaded time.
         /// </summary>
+        [Obsolete("PollToken will be obsolete for new version of the ICC backend API")]
         public string? PollToken { get; set; }
 
         public virtual ICollection<TekEntity> Teks { get; set; } = new List<TekEntity>();
