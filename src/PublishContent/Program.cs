@@ -48,7 +48,6 @@ namespace PublishContent
 
             services.AddSingleton<PublishContentLoggingExtensions>();
 
-            services.DummySignerStartup();
             services.PublishContentForV3Startup();
         }
     }
