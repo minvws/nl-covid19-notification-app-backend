@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccPortal.Extensions
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.Extensions
 {
     public static class RestApiClientExtensions
     {

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccPortal.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.Controllers
 {
     public class AccountController : Controller
     {

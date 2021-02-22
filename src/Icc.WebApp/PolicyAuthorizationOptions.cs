@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccPortal
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
 {
     public class PolicyAuthorizationOptions
     {

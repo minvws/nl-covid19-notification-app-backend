@@ -19,7 +19,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using Serilog;
 
-namespace NL.Rijksoverheid.ExposureNotification.Api.IccBackend
+namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
 {
     public class Startup
     {

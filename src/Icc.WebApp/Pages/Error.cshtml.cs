@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccPortal.Pages
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.Pages
 {
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class ErrorModel : PageModel

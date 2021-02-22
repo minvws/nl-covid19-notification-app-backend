@@ -10,8 +10,8 @@
 
     <!-- Set this to true if you enable server-side prerendering -->
     <BuildServerSideRenderer>false</BuildServerSideRenderer>
-    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccPortal</RootNamespace>
-    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.Portal</AssemblyName>
+    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp</RootNamespace>
+    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp</AssemblyName>
     <ProjectGuid>{B701DAD1-CD0E-4E25-B47F-53211653D1EA}</ProjectGuid>
   </PropertyGroup>
 

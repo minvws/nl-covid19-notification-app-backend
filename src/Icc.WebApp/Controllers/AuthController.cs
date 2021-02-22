@@ -12,7 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.H
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Models;
 using TheIdentityHub.AspNetCore.Authentication;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccPortal.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.Controllers
 {
     public class AuthController : Controller
     {

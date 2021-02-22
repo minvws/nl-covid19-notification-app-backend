@@ -2,8 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <RootNamespace>NL.Rijksoverheid.ExposureNotification.Api.IccBackend</RootNamespace>
-        <AssemblyName>Api.IccBackend</AssemblyName>
+        <RootNamespace>NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi</RootNamespace>
+        <AssemblyName>NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi</AssemblyName>
         <UserSecretsId>0caed3b4-1e4a-402f-a697-c35c966064d0</UserSecretsId>
     </PropertyGroup>
 

@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Api.IccBackend\Api.IccBackend.csproj" />
+    <ProjectReference Include="..\Icc.v2.WebApi\Icc.v2.WebApi.csproj" />
     <ProjectReference Include="..\TestFramework\TestFramework.csproj" />
   </ItemGroup>
 

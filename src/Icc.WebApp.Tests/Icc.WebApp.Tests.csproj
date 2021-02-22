@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\App.IccPortal\App.IccPortal.csproj" />
+    <ProjectReference Include="..\Icc.WebApp\Icc.WebApp.csproj" />
   </ItemGroup>
 
 </Project>

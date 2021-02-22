@@ -13,7 +13,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
 
-namespace NL.Rijksoverheid.ExposureNotification.Api.IccBackend.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Controllers
 {
     public class WorkflowController : Controller
     {

@@ -7,15 +7,13 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccPortal.Extensions;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.Extensions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -28,7 +26,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using TheIdentityHub.AspNetCore.Authentication;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccPortal
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
 {
     public class Startup
     {

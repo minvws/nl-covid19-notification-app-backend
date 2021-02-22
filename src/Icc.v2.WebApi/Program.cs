@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace NL.Rijksoverheid.ExposureNotification.Api.IccBackend
+namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
 {
     public class Program
     {
