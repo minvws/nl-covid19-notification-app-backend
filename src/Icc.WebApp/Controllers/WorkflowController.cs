@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
 
         [HttpPost]
         [Route(EndPointNames.CaregiversPortalApi.LabConfirmation)]
-        public async Task<AuthorisationResponse> PostAuthorise([FromBody] AuthorisationArgs args)
+        public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args)
         {
             if (_RestApiClient == null) throw new ArgumentNullException(nameof(_RestApiClient));
 
@@ -37,11 +37,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
 
             _Logger.WriteLabStart();
             var result = await _RestApiClient.PostAsync(args, $"{EndPointNames.CaregiversPortalApi.LabConfirmation}", token);
-            
-            return new AuthorisationResponse
-            {
-                Valid = result is OkObjectResult
-            };
+
+            return Ok();
         }
 
         [HttpGet]

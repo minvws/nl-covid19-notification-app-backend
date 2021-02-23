@@ -89,16 +89,13 @@ namespace App.IccPortal.Tests
 
             // Act
             var result = await client.PostAsync($"{EndPointNames.CaregiversPortalApi.LabConfirmation}", content, token);
-            var stringValue = await result.Content.ReadAsStringAsync();
-            var authorisationResponse = JsonSerializer.Deserialize<AuthorisationResponse>(stringValue, new JsonSerializerOptions{PropertyNameCaseInsensitive = true});
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            Assert.True(authorisationResponse.Valid);
         }
 
         [Fact]
-        public async Task PostAuthorise_ReturnsBadRequestResult_When_ConfirmationId_IsNotValid()
+        public async Task PostAuthorise_ReturnsOkResult_When_ConfirmationId_IsNotValid()
         {
             // Arrange
             var args = new AuthorisationArgs
@@ -132,12 +129,9 @@ namespace App.IccPortal.Tests
 
             // Act
             var result = await client.PostAsync($"{EndPointNames.CaregiversPortalApi.LabConfirmation}", content, token);
-            var stringValue = await result.Content.ReadAsStringAsync();
-            var authorisationResponse = JsonSerializer.Deserialize<AuthorisationResponse>(stringValue, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            Assert.False(authorisationResponse.Valid);
         }
     }
 }

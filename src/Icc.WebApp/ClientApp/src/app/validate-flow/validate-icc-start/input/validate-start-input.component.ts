@@ -272,20 +272,15 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
           this.loading--;
           this.error_code = 2;
           throw e;
-        })).subscribe((result) => {
+        })).subscribe(() => {
         this.loading--;
         this.LastConfirmedLCId = [...this.LabConfirmationId]; // 200 response
-
-        if (result.valid === true) {
+          
           this.router.navigate(['/validate/confirm'], {
             queryParams: {
-              p: result.pollToken,
               symptomsDate: this.symptomsDate.valueOf()
             }
           });
-        } else {
-          this.error_code = 2;
-        }
         if (this.error_code > 1) {
           for (let i = 0; i < 6; i++) {
             this.LabConfirmationIdValidState[i] = false;
