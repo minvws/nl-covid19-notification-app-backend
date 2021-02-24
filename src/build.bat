@@ -16,6 +16,8 @@ dotnet publish Icc.WebApi\Icc.WebApi.csproj --no-self-contained --runtime win-x6
 IF %ERRORLEVEL% NEQ 0 EXIT 1
 dotnet publish MobileAppApi.WebApi\MobileAppApi.WebApi.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\MobileAppApi --version-suffix %suffix%
 IF %ERRORLEVEL% NEQ 0 EXIT 1
+dotnet publish ManagementPortal\ManagementPortal.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\ManagementPortal --version-suffix %suffix%
+IF %ERRORLEVEL% NEQ 0 EXIT 1
 
 REM Publish command-line
 dotnet publish EksEngine\EksEngine.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\EksEngine --version-suffix %suffix%
