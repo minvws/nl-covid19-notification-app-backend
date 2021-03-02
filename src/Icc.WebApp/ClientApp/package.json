@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --verbose",
+    "start": "echo Starting... && ng serve",
     "build": "ng build",
     "build:ssr": "ng run App.IccPortal:server:dev",
     "test": "ng test",

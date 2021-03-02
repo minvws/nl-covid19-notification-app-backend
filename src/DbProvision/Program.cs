@@ -3,11 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
@@ -75,8 +72,8 @@ namespace DbProvision
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<ContentInsertDbCommand>();
+            services.AddTransient<IContentSigner, DummyCmsSigner>();
 
-            services.DummySignerStartup();
             services.PublishContentForV3Startup();
         }
     }
