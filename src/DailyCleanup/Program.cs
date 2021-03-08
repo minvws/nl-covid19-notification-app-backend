@@ -199,10 +199,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
             
             services.NlResignerStartup();
-
-            services.DummySignerStartup();
             services.GaSignerStartup();
-
             services.DailyStatsStartup();
 
             services.AddTransient<IksImportBatchJob>();

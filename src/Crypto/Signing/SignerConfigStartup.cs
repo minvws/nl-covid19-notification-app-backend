@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 
@@ -43,11 +44,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                             GaSettingPrefix),
                         x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
                     )));
-        }
-
-        public static void DummySignerStartup(this IServiceCollection services)
-        {
-            services.AddTransient<IContentSigner>(x => new DummyCmsSigner());
         }
 
         public static IContentSigner BuildEvSigner(

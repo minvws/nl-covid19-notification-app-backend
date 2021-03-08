@@ -1,0 +1,32 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS builder
+
+COPY . app/
+WORKDIR app/
+COPY docker/development/appsettings.json .
+
+RUN apt-get update -yq \
+    && apt-get install curl gnupg -yq \
+    && curl -sL https://deb.nodesource.com/setup_14.x | bash \
+    && apt-get install nodejs -yq
+
+RUN dotnet publish src/Icc.WebApp/Icc.WebApp.csproj --no-self-contained  --configuration Release -o publish/Icc.WebApp --version-suffix local
+
+RUN find ./publish -name appsettings.json -exec cp appsettings.json {} \;
+COPY src/Icc.WebApp/ClientApp/package*.json publish/Icc.WebApp/ClientApp/
+
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS final
+
+
+RUN apt-get update -yq \
+    && apt-get install curl gnupg -yq \
+    && curl -sL https://deb.nodesource.com/setup_14.x | bash \
+    && apt-get install nodejs -yq
+
+#WORKDIR Icc.WebApp/ClientApp/dist
+#RUN npm install
+#RUN npm install -g --silent @angular/cli@9.1.9
+
+WORKDIR /app
+COPY --from=builder app/publish/ .
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV ASPNETCORE_URLS="http://*:5000;https://*:5001"

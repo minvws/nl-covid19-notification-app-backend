@@ -1,29 +1,75 @@
-version: '3'
+version: '3.9'
 services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - "1433:1433"    
+    environment:
+      SA_PASSWORD: "mss-nl-covid-19-dev"
+      ACCEPT_EULA: "Y"
+  tools:
+    build:
+      context: ..
+      dockerfile: docker/development/Dockerfile.DbProvision
+    image: standalone-tools:latest
+    links:
+      - 'db:database'
+    depends_on:
+      - 'db'
   content_api:
     build:
       context: ..
-      dockerfile: docker/development/Dockerfile
-    image: standalone:latest
-    entrypoint: ['/bin/sh', '-c', 'cd ContentApi && ./NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi']
+      dockerfile: docker/development/Dockerfile.Dist
+    image: standalone-dist:latest
+    entrypoint: ['/bin/sh', '-c', 'cd Content.WebApi && ./ContentApi']
     ports:
       - '5004:5000'
     links:
       - 'db:database'
+    depends_on:
+      - 'tools'
   mobile_api:
     build:
       context: ..
-      dockerfile: docker/development/Dockerfile
-    image: standalone:latest
-    entrypoint: ['/bin/sh', '-c', 'cd MobileAppApi && ./NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi']
+      dockerfile: docker/development/Dockerfile.MobileApi
+    image: standalone-mobile.api:latest
+    entrypoint: ['/bin/sh', '-c', 'cd MobileAppApi.WebApi && ./MobileAppApi']
     ports:
       - '5005:5000'
     links:
       - 'db:database'
-  db:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    depends_on:
+      - 'tools'
+  icc-backend:
+    build:
+      context: ..
+      dockerfile: docker/development/Dockerfile.IccWebApi
+    image: standalone-icc.api:latest
+    entrypoint: ['/bin/sh', '-c', 'cd Icc.WebApi && ./IccBackend']
     ports:
-      - "1433:1433"
-    environment:
-      SA_PASSWORD: "mss-nl-covid-19-dev"
-      ACCEPT_EULA: "Y"
+      - '5006:5000'
+    links:
+      - 'db:database'
+    depends_on:
+      - 'tools'
+  icc-backend-v2:
+    build:
+      context: ..
+      dockerfile: docker/development/Dockerfile.IccWebApiV2
+    image: standalone-icc.api.v2:latest
+    entrypoint: ['/bin/sh', '-c', 'cd Icc.v2.WebApi && ./Icc.v2.WebApi']
+    ports:
+      - '5007:5000'
+    links:
+      - 'db:database'
+    depends_on:
+      - 'tools'
+  icc-webapp:
+    build:
+      context: ..
+      dockerfile: docker/development/Dockerfile.IccWebApp
+    image: standalone-icc.webapp:latest
+    entrypoint: ['/bin/sh', '-c', 'cd Icc.WebApp && ./Icc.WebApp']
+    ports:
+      - '5008:5000'
+ 
