@@ -7,6 +7,7 @@
     [BucketId]              VARBINARY (32) NOT NULL,
     [AuthorisedByCaregiver] DATETIME2 (7)  NULL,
     [DateOfSymptomsOnset]   DATETIME2 (7)  NULL,
+    [PollToken]             NVARCHAR (450) NULL,
     CONSTRAINT [PK_TekReleaseWorkflowState] PRIMARY KEY CLUSTERED  ([Id] ASC)
 );
 
@@ -14,9 +15,11 @@ GO
 CREATE NONCLUSTERED INDEX [IX_TekReleaseWorkflowState_ValidUntil]
     ON [dbo].[TekReleaseWorkflowState]([ValidUntil] ASC);
 
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [IX_TekReleaseWorkflowState_PollToken]
+    ON [dbo].[TekReleaseWorkflowState]([PollToken] ASC) WHERE ([PollToken] IS NOT NULL);
 
 GO
-
 CREATE UNIQUE NONCLUSTERED INDEX [IX_TekReleaseWorkflowState_LabConfirmationId]
     ON [dbo].[TekReleaseWorkflowState]([LabConfirmationId] ASC) WHERE ([LabConfirmationId] IS NOT NULL);
 
