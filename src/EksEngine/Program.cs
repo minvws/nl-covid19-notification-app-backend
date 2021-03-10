@@ -154,6 +154,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             //Signing
             services.NlResignerStartup();
+            services.DummySignerStartup();
             services.GaSignerStartup();
 
 
