@@ -46,6 +46,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                     )));
         }
 
+        public static void DummySignerStartup(this IServiceCollection services)
+        {
+            services.AddTransient<IContentSigner>(x => new DummyCmsSigner());
+        }
+
         public static IContentSigner BuildEvSigner(
             IConfiguration config,
             LocalMachineStoreCertificateProviderLoggingExtensions extensions,

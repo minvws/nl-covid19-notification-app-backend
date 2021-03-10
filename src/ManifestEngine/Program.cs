@@ -68,6 +68,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
 
             services.NlResignerStartup();
+            services.DummySignerStartup();
+
             services.ManifestForV4Startup();
         }
     }
