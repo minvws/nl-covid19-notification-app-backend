@@ -7,7 +7,8 @@
 	[RollingPeriod] [int] NOT NULL,
 	[TransmissionRiskLevel] [int] NOT NULL,
 	[DaysSinceSymptomsOnset] [int] NULL,
- CONSTRAINT [PK_EksCreateJobInput] PRIMARY KEY CLUSTERED 
+    [ReportType] [int] NULL, 
+    CONSTRAINT [PK_EksCreateJobInput] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -18,6 +19,9 @@ ALTER TABLE [dbo].[EksCreateJobInput] ADD  CONSTRAINT [DF_EksCreateJobInput_Tran
 GO
 
 ALTER TABLE [dbo].[EksCreateJobInput] ADD  CONSTRAINT [DF_EksCreateJobInput_DaysSinceSymptomsOnset]  DEFAULT ((0)) FOR [DaysSinceSymptomsOnset]
+GO
+
+ALTER TABLE [dbo].[EksCreateJobInput] ADD  CONSTRAINT [DF_EksCreateJobInput_ReportType]  DEFAULT ((1)) FOR [ReportType]
 GO
 
 CREATE NONCLUSTERED INDEX [IX_EksCreateJobInput_TransmissionRiskLevel]

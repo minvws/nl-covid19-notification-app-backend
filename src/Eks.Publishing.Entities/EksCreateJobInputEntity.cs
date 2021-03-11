@@ -27,6 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities
         public int RollingStartNumber { get; set; }
         public int RollingPeriod { get; set; }
         public TransmissionRiskLevel TransmissionRiskLevel { get; set; }
-        public int? DaysSinceSymptomsOnset { get; set; }
+        public int DaysSinceSymptomsOnset { get; set; }
+        public int ReportType { get; set; }
     }
 }
