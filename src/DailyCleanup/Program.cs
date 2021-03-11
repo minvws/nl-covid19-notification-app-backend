@@ -114,6 +114,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => logger.WriteManifestV3CleanupStarting());
             run.Add(() => c121.ExecuteAsync().GetAwaiter().GetResult());
 
+            var c122 = serviceProvider.GetRequiredService<RemoveExpiredManifestsV4Command>();
+            run.Add(() => logger.WriteManifestV4CleanupStarting());
+            run.Add(() => c122.ExecuteAsync().GetAwaiter().GetResult());
+
             var c125 = serviceProvider.GetRequiredService<RemovePublishedDiagnosticKeys>();
             run.Add(() => c125.Execute());
 

@@ -13,8 +13,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
-    
-    [Obsolete("Remove this class as soon as the Manifest Engine Mk2 is in place.")]
     public class RemoveExpiredManifestsV3Command
     {
         private readonly IUtcDateTimeProvider _DateTimeProvider;

@@ -13,15 +13,15 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
-    public class RemoveExpiredManifestsV2Command
+    public class RemoveExpiredManifestsV4Command
     {
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly Func<ContentDbContext> _DbContextProvider;
-        private readonly ExpiredManifestV2LoggingExtensions _Logger;
+        private readonly ExpiredManifestV4LoggingExtensions _Logger;
         private readonly IManifestConfig _ManifestConfig;
         private RemoveExpiredManifestsCommandResult? _Result;
 
-        public RemoveExpiredManifestsV2Command(Func<ContentDbContext> dbContextProvider, ExpiredManifestV2LoggingExtensions logger, IManifestConfig manifestConfig, IUtcDateTimeProvider dateTimeProvider)
+        public RemoveExpiredManifestsV4Command(Func<ContentDbContext> dbContextProvider, ExpiredManifestV4LoggingExtensions logger, IManifestConfig manifestConfig, IUtcDateTimeProvider dateTimeProvider)
         {
             _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                 _Result.Found = dbContext.Content.Count();
 
                 var zombies = dbContext.Content
-                    .Where(x => x.Type == ContentTypes.ManifestV2 && x.Release < _DateTimeProvider.Snapshot)
+                    .Where(x => x.Type == ContentTypes.ManifestV4 && x.Release < _DateTimeProvider.Snapshot)
                     .OrderByDescending(x => x.Release)
                     .Skip(_ManifestConfig.KeepAliveCount)
                     .ToList();
@@ -67,7 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                 _Result.GivenMercy = dbContext.SaveChanges();
 
                 var futureZombies = dbContext.Content
-                    .Where(x => x.Type == ContentTypes.ManifestV2 && x.Release > _DateTimeProvider.Snapshot)
+                    .Where(x => x.Type == ContentTypes.ManifestV4 && x.Release > _DateTimeProvider.Snapshot)
                     .ToList();
 
                 dbContext.RemoveRange(futureZombies);
