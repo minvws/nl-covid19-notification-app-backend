@@ -33,6 +33,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.EntityFramework;
 using System;
 using System.Collections.Generic;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 {
@@ -229,6 +231,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<ExcludeTrlNoneDiagnosticKeyProcessor>();
 
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
+            services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
+            services.AddTransient<IDsosInfectiousnessCalculator, DsosInfectiousnessCalculator>();
 
             services.AddTransient<IksEngine>();
 

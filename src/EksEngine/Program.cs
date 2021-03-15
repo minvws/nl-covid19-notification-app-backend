@@ -16,7 +16,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
@@ -151,6 +153,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             //Manifest Engine
             services.ManifestEngine();
+
+            services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
+            services.AddTransient<IDsosInfectiousnessCalculator, DsosInfectiousnessCalculator>();
 
             //Signing
             services.NlResignerStartup();
