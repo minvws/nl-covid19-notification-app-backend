@@ -43,6 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
                             TransmissionRiskLevel = x.TransmissionRiskLevel,
                             //TODO We have to fake THIS, not the TRL - build table of delta compared to RSN and create fake DateOfSymptomsOnset not TRL, then DERIVE TRL
                             DaysSinceSymptomsOnset = x.DaysSinceSymptomsOnset, 
+                            ReportType = x.ReportType
                         }
                     })
                 .ToArray();

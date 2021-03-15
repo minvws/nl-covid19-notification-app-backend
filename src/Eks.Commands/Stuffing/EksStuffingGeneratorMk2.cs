@@ -42,13 +42,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
             {
                 var rsn = _DateTimeProvider.Snapshot.Date.AddDays(-_Rng.Next(0, _EksConfig.LifetimeDays)).ToRollingStartNumber();
                 var dsos = _Rng.Next(_TrlCalculation.SignificantDayRange.Lo, _TrlCalculation.SignificantDayRange.Hi);
+                var reportType = 1;
                 result[i] = new EksCreateJobInputEntity
                 {
                     KeyData = _Rng.NextByteArray(UniversalConstants.DailyKeyDataByteCount),
                     RollingPeriod = UniversalConstants.RollingPeriodRange.Hi,
                     RollingStartNumber = rsn,
                     DaysSinceSymptomsOnset = dsos,
-                    TransmissionRiskLevel = _TrlCalculation.Calculate(dsos)
+                    TransmissionRiskLevel = _TrlCalculation.Calculate(dsos),
+                    ReportType = reportType
                 };
             }
 
