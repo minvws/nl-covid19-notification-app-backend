@@ -116,6 +116,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => logger.WriteManifestV3CleanupStarting());
             run.Add(() => c121.ExecuteAsync().GetAwaiter().GetResult());
 
+            var c122 = serviceProvider.GetRequiredService<RemoveExpiredManifestsV4Command>();
+            run.Add(() => logger.WriteManifestV4CleanupStarting());
+            run.Add(() => c122.ExecuteAsync().GetAwaiter().GetResult());
+
             var c125 = serviceProvider.GetRequiredService<RemovePublishedDiagnosticKeys>();
             run.Add(() => c125.Execute());
 
@@ -228,13 +232,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
             services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
-            services.AddTransient<IDsosInfectiousness>(
-                x => {
-                    var rr = x.GetService<IRiskCalculationParametersReader>();
-                    var days = rr.GetInfectiousDaysAsync().GetAwaiter().GetResult();
-                    return new DsosInfectiousness(days);
-                }
-            );
+            services.AddTransient<IDsosInfectiousnessCalculator, DsosInfectiousnessCalculator>();
 
             services.AddTransient<IksEngine>();
 

@@ -155,13 +155,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.ManifestEngine();
 
             services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
-            services.AddTransient<IDsosInfectiousness>(
-                x => {
-                    var rr = x.GetService<IRiskCalculationParametersReader>();
-                    var days = rr.GetInfectiousDaysAsync().GetAwaiter().GetResult();
-                    return new DsosInfectiousness(days);
-                }
-            );
+            services.AddTransient<IDsosInfectiousnessCalculator, DsosInfectiousnessCalculator>();
 
             //Signing
             services.NlResignerStartup();

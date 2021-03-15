@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         [InlineData(ContentTypes.Manifest)]
         [InlineData(ContentTypes.ManifestV2)]
         [InlineData(ContentTypes.ManifestV3)]
-        //[InlineData(ContentTypes.ManifestV4)]
+        [InlineData(ContentTypes.ManifestV4)]
         public void Remove_Expired_Manifest_Should_Leave_One(string manifestTypeName)
         {
             //Arrange
@@ -60,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         [InlineData(ContentTypes.Manifest)]
         [InlineData(ContentTypes.ManifestV2)]
         [InlineData(ContentTypes.ManifestV3)]
-        //[InlineData(ContentTypes.ManifestV4)]
+        [InlineData(ContentTypes.ManifestV4)]
         public void Remove_Zero_Manifest_Should_Not_Crash(string manifestTypeName)
         {
             //Arrange
@@ -95,6 +95,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
                     var sutV3 = CompileRemoveExpiredManifestsV3Command();
                     sutV3.ExecuteAsync().GetAwaiter().GetResult();
                     break;
+                case ContentTypes.ManifestV4:
+                    var sutV4 = CompileRemoveExpiredManifestsV4Command();
+                    sutV4.ExecuteAsync().GetAwaiter().GetResult();
+                    break;
                 default:
                     Assert.True(false, $"No {manifestTypeName} remove command exists.");
                     break;
@@ -127,6 +131,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var dateTimeProvider = new StandardUtcDateTimeProvider();
 
             var result = new RemoveExpiredManifestsV3Command(_ContentDbProvider.CreateNew, logger, _ManifestConfigMock.Object, dateTimeProvider);
+
+            return result;
+        }
+
+        private RemoveExpiredManifestsV4Command CompileRemoveExpiredManifestsV4Command()
+        {
+            var logger = new ExpiredManifestV4LoggingExtensions(new LoggerFactory().CreateLogger<ExpiredManifestV4LoggingExtensions>());
+            var dateTimeProvider = new StandardUtcDateTimeProvider();
+
+            var result = new RemoveExpiredManifestsV4Command(_ContentDbProvider.CreateNew, logger, _ManifestConfigMock.Object, dateTimeProvider);
 
             return result;
         }
