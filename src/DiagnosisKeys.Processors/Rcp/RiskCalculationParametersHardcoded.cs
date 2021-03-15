@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
     {
         public async Task<HashSet<int>> GetInfectiousDaysAsync()
         {
-            var rcp = new RiskCalulculationParametersSubset
+            var rcp = new RiskCalculationParametersSubset
             {
                 InfectiousnessByDsos = new[]
                 {

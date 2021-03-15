@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp
 {
-    public class RiskCalulculationParametersSubset
+    public class RiskCalculationParametersSubset
     {
 
         [JsonPropertyName("daysSinceOnsetToInfectiousness")]
