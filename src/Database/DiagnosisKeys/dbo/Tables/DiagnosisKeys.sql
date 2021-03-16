@@ -15,7 +15,8 @@
 	[Efgs_ReportType] [int] NULL,
 	[Efgs_CountryOfOrigin] [nvarchar](2) NULL,
 	[Created] [datetime2](7) NULL,
- CONSTRAINT [PK_DiagnosisKeys] PRIMARY KEY CLUSTERED 
+ [Local_ReportType] INT NULL, 
+    CONSTRAINT [PK_DiagnosisKeys] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
