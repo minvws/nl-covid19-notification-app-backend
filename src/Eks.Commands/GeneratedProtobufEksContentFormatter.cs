@@ -49,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 RollingPeriod = arg.RollingPeriod,
                 RollingStartIntervalNumber = arg.RollingStartNumber,
                 DaysSinceOnsetOfSymptoms = 0,
-                ReportType = TemporaryExposureKey.Types.ReportType.ConfirmedClinicalDiagnosis
+                ReportType = TemporaryExposureKey.Types.ReportType.ConfirmedTest
             };
 
         public byte[] GetBytes(ExposureKeySetSignaturesContentArgs arg)
