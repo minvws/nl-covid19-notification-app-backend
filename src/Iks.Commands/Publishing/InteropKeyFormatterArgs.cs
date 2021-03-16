@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
         public int DaysSinceSymtpomsOnset { get; set; }
         public string[] CountriesOfInterest { get; set; } = new string[0]; //TODO better values e.g. NL?
         public int TransmissionRiskLevel { get; set; }
-        public EfgsReportType ReportType { get; set; } = EfgsReportType.ConfirmedClinicalDiagnosis;
+        public EfgsReportType ReportType { get; set; } = EfgsReportType.ConfirmedTest;
         public string Origin { get; set; } = "NL";
     }
 }

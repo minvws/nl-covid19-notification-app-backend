@@ -52,7 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
                 {
                     DaysSinceSymptomsOnset = 4,
                     CountriesOfInterest = "",
-                    ReportType = ReportType.ConfirmedClinicalDiagnosis,
+                    ReportType = ReportType.ConfirmedTest,
                     //TransmissionRiskLevel = TransmissionRiskLevel.High,
                 };
             }

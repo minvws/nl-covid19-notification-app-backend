@@ -48,8 +48,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 TransmissionRiskLevel = (int)arg.TransmissionRiskLevel,
                 RollingPeriod = arg.RollingPeriod,
                 RollingStartIntervalNumber = arg.RollingStartNumber,
-                DaysSinceOnsetOfSymptoms = 0,
-                ReportType = TemporaryExposureKey.Types.ReportType.ConfirmedTest
+                DaysSinceOnsetOfSymptoms = arg.DaysSinceOnsetSymptoms,
+                ReportType = (TemporaryExposureKey.Types.ReportType) arg.ReportType
             };
 
         public byte[] GetBytes(ExposureKeySetSignaturesContentArgs arg)
