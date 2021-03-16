@@ -40,19 +40,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                 CountriesOfInterest = value.CountriesOfInterest.Split(","),
                 DaysSinceSymtpomsOnset = value.DaysSinceSymptomsOnset
             };
-
-        //TODO for import.
-        //public static EfgsReportTypeInternal ToEfgsReportTypeInternal(this EfgsReportType value)
-        //{
-        //    return value switch
-        //    {
-        //        EfgsReportType.ConfirmedClinicalDiagnosis => EfgsReportTypeInternal.ConfirmedClinicalDiagnosis,
-        //        EfgsReportType.ConfirmedTest => EfgsReportTypeInternal.ConfirmedTest,
-        //        EfgsReportType.Recursive => EfgsReportTypeInternal.Recursive,
-        //        EfgsReportType.Revoked => EfgsReportTypeInternal.Revoked,
-        //        EfgsReportType.SelfReport => EfgsReportTypeInternal.SelfReport,
-        //        _ => EfgsReportTypeInternal.Unknown
-        //    };
-        //}
     }
 }

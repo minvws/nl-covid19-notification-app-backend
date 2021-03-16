@@ -207,7 +207,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 RollingPeriod = c.RollingPeriod,
                 TransmissionRiskLevel = c.TransmissionRiskLevel,
                 KeyData = c.KeyData,
-                RollingStartNumber = c.RollingStartNumber
+                RollingStartNumber = c.RollingStartNumber,
+                DaysSinceOnsetSymptoms = c.DaysSinceSymptomsOnset,
+                ReportType = c.ReportType
             };
 
         private async Task WriteNewEksToOutputAsync()

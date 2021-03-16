@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
                     DailyKey = new DailyKey(new byte[0], 123, 321),
                     TransmissionRiskLevel = TransmissionRiskLevel.High,
                     CountriesOfInterest = "Elsewhere",
-                    ReportType = ReportType.ConfirmedClinicalDiagnosis,
+                    ReportType = ReportType.ConfirmedTest,
                     Used = true
                 }
             ).ToArray();

@@ -15,5 +15,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         [Obsolete("Not used for GAEN V2")]
         public TransmissionRiskLevel TransmissionRiskLevel { get; set; }
         public int DaysSinceOnsetSymptoms { get; set; }
+        public int ReportType { get; set; }
     }
 }

@@ -7,7 +7,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 
     /// <summary>
     /// EFGS value.
-    /// NL DKs are always ConfirmedClinicalDiagnosis.
+    /// NL DKs are always ConfirmedTest.
     /// Not an entity.
     /// </summary>
     public enum EfgsReportType
