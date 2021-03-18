@@ -78,7 +78,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                     new RegisterSecretLoggingExtensions(_LoggerFactory.CreateLogger<RegisterSecretLoggingExtensions>())
                 );
 
-            var gen = new GenerateTeksCommand(_Rng, _WorkflowDbContextProvider.CreateNew, createWf);
+            var gen = new GenerateTeksCommand(_Rng, _WorkflowDbContextProvider.CreateNewWithTx, createWf);
             await gen.ExecuteAsync(new GenerateTeksCommandArgs { WorkflowCount = workflowCount , TekCountPerWorkflow = tekPerWOrkflowCount });
 
             if (workflowCount != _WorkflowDbContextProvider.CreateNew().KeyReleaseWorkflowStates.Count()) throw new InvalidOperationException();

@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
@@ -48,6 +49,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
             using var dbc = _WorkflowDb();
             //Have to load referenced object into new context
             var owner = dbc.KeyReleaseWorkflowStates.Single(x => x.Id == workflowId);
+            owner.AuthorisedByCaregiver = DateTime.UtcNow;
+            owner.DateOfSymptomsOnset = DateTime.UtcNow.AddDays(-1);
+
             for (var i = 0; i < _Args.TekCountPerWorkflow; i++)
             {
                 var k = new TekEntity
@@ -62,7 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                 owner.Teks.Add(k);
                 dbc.TemporaryExposureKeys.Add(k);
             }
-            dbc.SaveChanges();
+            dbc.SaveAndCommit();
         }
     }
 }
