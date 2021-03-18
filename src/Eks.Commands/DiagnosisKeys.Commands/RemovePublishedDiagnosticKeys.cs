@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 {
     public class RemovePublishedDiagnosticKeys
     {
-        private RemovePublishedDiagnosticKeysResult _Result;
+        private RemovePublishedDiagnosisKeysResult _Result;
         private readonly Func<DkSourceDbContext> _DiagnosticKeyDbContextProvider;
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
 
@@ -23,12 +23,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             _UtcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
         }
 
-        public RemovePublishedDiagnosticKeysResult Execute()
+        public RemovePublishedDiagnosisKeysResult Execute()
         {
             if (_Result != null)
                 throw new InvalidOperationException("Object already used.");
 
-            _Result = new RemovePublishedDiagnosticKeysResult();
+            _Result = new RemovePublishedDiagnosisKeysResult();
 
             //TODO setting
             var cutoff = _UtcDateTimeProvider.Snapshot.AddDays(-14).Date.ToRollingStartNumber();
