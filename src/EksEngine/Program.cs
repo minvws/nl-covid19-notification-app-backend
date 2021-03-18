@@ -79,7 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var c50 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             run.Add(() => c50.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c55 = serviceProvider.GetRequiredService<RemovePublishedDiagnosticKeys>();
+            var c55 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
             run.Add(() => c55.Execute());
 
             var c60 = serviceProvider.GetService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
@@ -140,7 +140,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<ManifestBuilder>();
             services.AddTransient<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
-            services.AddTransient<RemovePublishedDiagnosticKeys>();
+            services.AddTransient<RemovePublishedDiagnosisKeys>();
 
             services.AddSingleton<EksBuilderV1LoggingExtensions>();
             services.AddSingleton<ResignerLoggingExtensions>();
