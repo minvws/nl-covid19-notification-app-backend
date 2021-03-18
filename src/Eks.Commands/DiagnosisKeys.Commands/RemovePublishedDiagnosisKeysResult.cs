@@ -4,7 +4,7 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands
 {
-    public class RemovePublishedDiagnosticKeysResult
+    public class RemovePublishedDiagnosisKeysResult
     {
         public long GivenMercy { get; set; }
 

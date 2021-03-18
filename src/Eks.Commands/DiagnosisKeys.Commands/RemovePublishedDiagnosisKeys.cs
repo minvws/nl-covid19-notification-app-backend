@@ -11,24 +11,24 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramewor
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands
 {
-    public class RemovePublishedDiagnosticKeys
+    public class RemovePublishedDiagnosisKeys
     {
-        private RemovePublishedDiagnosticKeysResult _Result;
+        private RemovePublishedDiagnosisKeysResult _Result;
         private readonly Func<DkSourceDbContext> _DiagnosticKeyDbContextProvider;
         private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
 
-        public RemovePublishedDiagnosticKeys(Func<DkSourceDbContext> diagnosticKeyDbContextProvider, IUtcDateTimeProvider utcDateTimeProvider)
+        public RemovePublishedDiagnosisKeys(Func<DkSourceDbContext> diagnosticKeyDbContextProvider, IUtcDateTimeProvider utcDateTimeProvider)
         {
             _DiagnosticKeyDbContextProvider = diagnosticKeyDbContextProvider ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContextProvider));
             _UtcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
         }
 
-        public RemovePublishedDiagnosticKeysResult Execute()
+        public RemovePublishedDiagnosisKeysResult Execute()
         {
             if (_Result != null)
                 throw new InvalidOperationException("Object already used.");
 
-            _Result = new RemovePublishedDiagnosticKeysResult();
+            _Result = new RemovePublishedDiagnosisKeysResult();
 
             //TODO setting
             var cutoff = _UtcDateTimeProvider.Snapshot.AddDays(-14).Date.ToRollingStartNumber();

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
@@ -34,6 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private readonly EksEngineLoggingExtensions _Logger;
         private readonly ISnapshotEksInput _Snapshotter;
         private readonly MarkDiagnosisKeysAsUsedLocally _MarkWorkFlowTeksAsUsed;
+        private readonly IDsosInfectiousness _DsosInfectiousness;
 
         private readonly IEksJobContentWriter _ContentWriter;
         private readonly IWriteStuffingToDiagnosisKeys _WriteStuffingToDiagnosisKeys;
@@ -49,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private readonly Stopwatch _BuildEksStopwatch = new Stopwatch();
         private readonly Func<EksPublishingJobDbContext> _PublishingDbContextFac;
 
-        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, Func<EksPublishingJobDbContext> publishingDbContextFac, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys, IWrappedEfExtensions sqlCommands)
+        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, Func<EksPublishingJobDbContext> publishingDbContextFac, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys, IWrappedEfExtensions sqlCommands, IDsosInfectiousness dsosInfectiousness)
         {
             _EksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
             _SetBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
@@ -64,6 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _WriteStuffingToDiagnosisKeys = writeStuffingToDiagnosisKeys ?? throw new ArgumentNullException(nameof(writeStuffingToDiagnosisKeys));
             _JobName = $"ExposureKeySetsJob_{_DateTimeProvider.Snapshot:u}".Replace(" ", "_").Replace(":", "_");
             _SqlCommands = sqlCommands ?? throw new ArgumentNullException(nameof(sqlCommands));
+            _DsosInfectiousness = dsosInfectiousness ?? throw new ArgumentNullException(nameof(dsosInfectiousness));
         }
 
         public async Task<EksEngineResult> ExecuteAsync()
@@ -264,17 +267,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _Logger.WriteStartReadPage(skip, take);
 
             using var dbc = _PublishingDbContextFac();
-            var result = dbc.EksInput
-                .Where(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None)
+            var unFilteredResult = dbc.EksInput
                 .OrderBy(x => x.KeyData)
                 .ThenBy(x => x.Id)
                 .Skip(skip)
                 .Take(take)
                 .ToArray();
 
-            _Logger.WriteFinishedReadPage(result.Length);
 
-            return result;
+            var filteredResult = unFilteredResult
+                .Where(x =>
+                _DsosInfectiousness.IsInfectious(x
+                    .DaysSinceSymptomsOnset)) 
+            .ToArray();
+
+            _Logger.WriteFinishedReadPage(filteredResult.Length);
+
+            return filteredResult;
         }
 
         private async Task CommitResultsAsync()
