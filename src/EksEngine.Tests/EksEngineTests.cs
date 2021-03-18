@@ -170,7 +170,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                     new RegisterSecretLoggingExtensions(_Lf.CreateLogger<RegisterSecretLoggingExtensions>())
                 );
 
-            await new GenerateTeksCommand(_Rng, _WorkflowDbProvider.CreateNew, createWf).ExecuteAsync(new GenerateTeksCommandArgs {TekCountPerWorkflow = 1, WorkflowCount = 1});
+            await new GenerateTeksCommand(_Rng, _WorkflowDbProvider.CreateNewWithTx, createWf).ExecuteAsync(new GenerateTeksCommandArgs {TekCountPerWorkflow = 1, WorkflowCount = 1});
 
             Assert.Equal(1, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count());
             Assert.Equal(0, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
