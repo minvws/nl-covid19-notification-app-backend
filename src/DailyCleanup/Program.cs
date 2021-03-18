@@ -233,6 +233,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
             services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
             services.AddTransient<IDsosInfectiousnessCalculator, DsosInfectiousnessCalculator>();
+            services.AddTransient<IDsosInfectiousness>(
+                x => {
+                    var rr = x.GetService<IRiskCalculationParametersReader>();
+                    var days = rr.GetInfectiousDaysAsync().GetAwaiter().GetResult();
+                    return new DsosInfectiousness(days);
+                }
+            );
 
             services.AddTransient<IksEngine>();
 
