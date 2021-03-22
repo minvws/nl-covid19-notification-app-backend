@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         private readonly ManifestUpdateCommandLoggingExtensions _Logger;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IJsonSerializer _JsonSerializer;
-        private readonly Func<IContentEntityFormatter> _FormatterForV3;
+        private readonly Func<IContentEntityFormatter> _Formatter;
 
         private readonly ManifestUpdateCommandResult _Result = new ManifestUpdateCommandResult();
         private ContentDbContext _ContentDb;
@@ -38,8 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             ManifestUpdateCommandLoggingExtensions logger,
             IUtcDateTimeProvider dateTimeProvider,
             IJsonSerializer jsonSerializer,
-            IContentEntityFormatter formatter,
-            Func<IContentEntityFormatter> formatterForV3
+            Func<IContentEntityFormatter> formatter
             )
         {
             _Builder = builder ?? throw new ArgumentNullException(nameof(builder));
@@ -49,17 +48,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
-            _FormatterForV3 = formatterForV3 ?? throw new ArgumentNullException(nameof(formatterForV3));
+            _Formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
         }
 
-        public async Task ExecuteV1Async() => await ExecuteForVxxx(async () => await _Builder.ExecuteAsync(), ContentTypes.Manifest);
+        public async Task ExecuteV1Async() => await Execute(async () => await _Builder.ExecuteAsync(), ContentTypes.Manifest);
 
         //There is no V2.
         
-        public async Task ExecuteV3Async() => await ExecuteForVxxx(async () => await _BuilderForV3.ExecuteAsync(), ContentTypes.ManifestV3);
-        public async Task ExecuteV4Async() => await ExecuteForVxxx(async () => await _BuilderForV4.ExecuteAsync(), ContentTypes.ManifestV4);
+        public async Task ExecuteV3Async() => await Execute(async () => await _BuilderForV3.ExecuteAsync(), ContentTypes.ManifestV3);
+        public async Task ExecuteV4Async() => await Execute(async () => await _BuilderForV4.ExecuteAsync(), ContentTypes.ManifestV4);
 
-        private async Task ExecuteForVxxx<T>(Func<Task<T>> build, string contentType) where T: IEquatable<T>
+        private async Task Execute<T>(Func<Task<T>> build, string contentType) where T: IEquatable<T>
         {
             _ContentDb ??= _ContentDbProvider();
 
@@ -81,7 +80,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                 Release = snapshot,
                 Type = contentType
             };
-            await _FormatterForV3().FillAsync(contentEntity, candidate);
+            await _Formatter().FillAsync(contentEntity, candidate);
 
             _Result.Updated = true;
 
