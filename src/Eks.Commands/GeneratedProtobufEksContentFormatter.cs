@@ -48,10 +48,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 TransmissionRiskLevel = (int)arg.TransmissionRiskLevel,
                 RollingPeriod = arg.RollingPeriod,
                 RollingStartIntervalNumber = arg.RollingStartNumber,
-                DaysSinceOnsetOfSymptoms = arg.DaysSinceOnsetSymptoms,
-                // TODO: replace hardcoded ReportType
-                ReportType = TemporaryExposureKey.Types.ReportType.ConfirmedTest // Temporary hardcoded setting of ConfirmedTest
-                //ReportType = (TemporaryExposureKey.Types.ReportType) arg.ReportType
+                DaysSinceOnsetOfSymptoms = 0, //always 0
+                ReportType = TemporaryExposureKey.Types.ReportType.ConfirmedTest //always ConfirmedTest
             };
 
         public byte[] GetBytes(ExposureKeySetSignaturesContentArgs arg)
