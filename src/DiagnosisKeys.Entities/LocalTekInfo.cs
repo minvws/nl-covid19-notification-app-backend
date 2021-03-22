@@ -19,6 +19,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities
         /// Set this from Days since symptoms onset, calculate TRL
         /// </summary>
         public int? DaysSinceSymptomsOnset { get; set; }
-        public int ReportType { get; set; }
+
+        /// <summary>
+        /// Report type defined for a TemporaryExposureKey;
+        /// defaults to CONFIRMED_TEST (1)
+        /// </summary>
+        public int ReportType { get; set; } = 1;
     }
 }
