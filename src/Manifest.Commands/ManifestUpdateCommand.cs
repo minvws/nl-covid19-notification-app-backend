@@ -27,7 +27,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         private readonly IJsonSerializer _JsonSerializer;
         private readonly Func<IContentEntityFormatter> _Formatter;
 
-        private readonly ManifestUpdateCommandResult _Result = new ManifestUpdateCommandResult();
         private ContentDbContext _ContentDb;
 
         public ManifestUpdateCommand(
@@ -82,8 +81,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             };
             await _Formatter().FillAsync(contentEntity, candidate);
 
-            _Result.Updated = true;
-
             _ContentDb.Add(contentEntity);
             
             _ContentDb.SaveAndCommit();
@@ -104,11 +101,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             
             if (existingContent == null)
             {
-                _Result.Existing = false;
                 return false;
             }
 
-            _Result.Existing = true;
             var existingManifest = ParseContent<T>(existingContent.Content);
 
             // If current manifest equals existing manifest, do nothing
