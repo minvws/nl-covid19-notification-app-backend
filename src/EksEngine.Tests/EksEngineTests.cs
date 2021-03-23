@@ -123,7 +123,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 new ManifestUpdateCommandLoggingExtensions(_Lf.CreateLogger<ManifestUpdateCommandLoggingExtensions>()),
                 _Dtp,
                 jsonSerializer,
-                new StandardContentEntityFormatter(new ZippedSignedContentFormatter(nlSigner.Object), new Sha256HexPublishingIdService(), jsonSerializer),
                 () => new StandardContentEntityFormatter(new ZippedSignedContentFormatter(nlSigner.Object), new Sha256HexPublishingIdService(), jsonSerializer)
             );
 

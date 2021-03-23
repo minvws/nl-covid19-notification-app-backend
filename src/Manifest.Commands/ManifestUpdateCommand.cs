@@ -25,9 +25,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         private readonly ManifestUpdateCommandLoggingExtensions _Logger;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IJsonSerializer _JsonSerializer;
-        private readonly Func<IContentEntityFormatter> _FormatterForV3;
+        private readonly Func<IContentEntityFormatter> _Formatter;
 
-        private readonly ManifestUpdateCommandResult _Result = new ManifestUpdateCommandResult();
         private ContentDbContext _ContentDb;
 
         public ManifestUpdateCommand(
@@ -38,8 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             ManifestUpdateCommandLoggingExtensions logger,
             IUtcDateTimeProvider dateTimeProvider,
             IJsonSerializer jsonSerializer,
-            IContentEntityFormatter formatter,
-            Func<IContentEntityFormatter> formatterForV3
+            Func<IContentEntityFormatter> formatter
             )
         {
             _Builder = builder ?? throw new ArgumentNullException(nameof(builder));
@@ -49,24 +47,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
-            _FormatterForV3 = formatterForV3 ?? throw new ArgumentNullException(nameof(formatterForV3));
+            _Formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
         }
 
-        public async Task ExecuteV1Async() => await ExecuteForVxxx(async () => await _Builder.ExecuteAsync(), ContentTypes.Manifest);
+        public async Task ExecuteV1Async() => await Execute(async () => await _Builder.ExecuteAsync(), ContentTypes.Manifest);
 
         //There is no V2.
         
-        public async Task ExecuteV3Async() => await ExecuteForVxxx(async () => await _BuilderForV3.ExecuteAsync(), ContentTypes.ManifestV3);
-        public async Task ExecuteV4Async() => await ExecuteForVxxx(async () => await _BuilderForV4.ExecuteAsync(), ContentTypes.ManifestV4);
+        public async Task ExecuteV3Async() => await Execute(async () => await _BuilderForV3.ExecuteAsync(), ContentTypes.ManifestV3);
+        public async Task ExecuteV4Async() => await Execute(async () => await _BuilderForV4.ExecuteAsync(), ContentTypes.ManifestV4);
 
-        private async Task ExecuteForVxxx<T>(Func<Task<T>> build, string type) where T: IEquatable<T>
+        private async Task Execute<T>(Func<Task<T>> build, string contentType) where T: IEquatable<T>
         {
             _ContentDb ??= _ContentDbProvider();
 
             await using var tx = _ContentDb.BeginTransaction();
             var candidate = await build();
 
-            if (!await ShouldWriteCandidateAsync(candidate, type))
+            if (await ShouldLeaveCurrentManifestAsync(candidate, contentType))
             {
                 _Logger.WriteUpdateNotRequired();
                 return;
@@ -75,17 +73,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             _Logger.WriteStart();
 
             var snapshot = _DateTimeProvider.Snapshot;
-            var e = new ContentEntity
+            var contentEntity = new ContentEntity
             {
                 Created = snapshot,
                 Release = snapshot,
-                Type = type
+                Type = contentType
             };
-            await _FormatterForV3().FillAsync(e, candidate);
+            await _Formatter().FillAsync(contentEntity, candidate);
 
-            _Result.Updated = true;
-
-            _ContentDb.Add(e);
+            _ContentDb.Add(contentEntity);
+            
             _ContentDb.SaveAndCommit();
 
             _Logger.WriteFinished();
@@ -98,15 +95,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             await ExecuteV4Async();
         }
 
-        private async Task<bool> ShouldWriteCandidateAsync<T>(T candidate, string contentType) where T: IEquatable<T>
+        private async Task<bool> ShouldLeaveCurrentManifestAsync<T>(T candidate, string contentType) where T: IEquatable<T>
         {
             var existingContent = await _ContentDb.SafeGetLatestContentAsync(contentType, _DateTimeProvider.Snapshot);
+            
             if (existingContent == null)
-                return true;
+            {
+                return false;
+            }
 
-            _Result.Existing = true;
             var existingManifest = ParseContent<T>(existingContent.Content);
-            return !candidate.Equals(existingManifest);
+
+            // If current manifest equals existing manifest, do nothing
+            if (candidate.Equals(existingManifest))
+            {
+                return true;
+            }
+
+            // If current manifest NOT equals existing manifest, the current manifest should be replaced thus remove it.
+            _ContentDb.Remove(existingContent);
+            return false;
         }
 
         private T ParseContent<T>(byte[] formattedContent)

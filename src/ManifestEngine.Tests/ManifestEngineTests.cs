@@ -58,7 +58,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
                 new ManifestUpdateCommandLoggingExtensions(_Lf.CreateLogger<ManifestUpdateCommandLoggingExtensions>()),
                 _Dtp,
                 jsonSerializer,
-                new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_NlSigner.Object), new Sha256HexPublishingIdService(), jsonSerializer),
                 () => new StandardContentEntityFormatter(new ZippedSignedContentFormatter(_NlSigner.Object), new Sha256HexPublishingIdService(), jsonSerializer)
             );
         }

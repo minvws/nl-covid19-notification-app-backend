@@ -95,7 +95,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
                 new ManifestUpdateCommandLoggingExtensions(lf.CreateLogger<ManifestUpdateCommandLoggingExtensions>()),
                 dateTimeProvider,
                 jsonSerialiser,
-                entityFormatterMock.Object,
                 formatterForV3
                 );
 
