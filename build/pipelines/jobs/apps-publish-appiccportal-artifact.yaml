@@ -5,7 +5,7 @@ jobs:
     - name: ArtifactSubfolder
       value: $(Apps.App.IccPortal.ArtifactSubDirectory)
     - name: ProjectBuildFolder
-      value: 'App.IccPortal'
+      value: 'Icc.WebApp'
     - name: ProjectPath
       value: 'src/Icc.WebApp/Icc.WebApp.csproj'
     displayName: 'Publish Build Artifact IccPortal Frontend'

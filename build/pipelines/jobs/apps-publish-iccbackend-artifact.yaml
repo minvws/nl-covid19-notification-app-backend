@@ -5,7 +5,7 @@ jobs:
     - name: ArtifactSubfolder
       value: $(Apps.Api.IccBackend.ArtifactSubDirectory)
     - name: ProjectBuildFolder
-      value: 'Api.IccBackend'
+      value: 'Icc.v2.WebApi'
     - name: ProjectPath
       value: 'src/Icc.v2.WebApi/Icc.v2.WebApi.csproj'
     displayName: 'Publish Build Artifact Icc Backend Api'
