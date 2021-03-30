@@ -7,7 +7,7 @@ jobs:
     - name: ProjectBuildFolder
       value: 'App.IccPortal'
     - name: ProjectPath
-      value: 'src/App.IccPortal/App.IccPortal.csproj'
+      value: 'src/Icc.WebApp/Icc.WebApp.csproj'
     displayName: 'Publish Build Artifact IccPortal Frontend'
     steps:
       - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'
