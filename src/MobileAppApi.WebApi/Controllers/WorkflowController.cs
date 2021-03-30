@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         [SuppressErrorFactory]
         [DecoyTimeAggregatorAttributeFactory]
         [HttpPost]
-        [Route(EndPointNames.MobileAppApi.ReleaseTeks)]
+        [Route("/v1/postkeys")]
         public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand2 command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
@@ -45,8 +45,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         [SuppressErrorFactory]
         [DecoyTimeAggregatorAttributeFactory]
         [HttpPost]
-        [Route(EndPointNames.MobileAppApi.Register)]
-        public async Task<IActionResult> PostSecret([FromServices]HttpPostRegisterSecret command)
+        [Route("/v1/register")]
+        public async Task<IActionResult> PostSecret([FromServices] HttpPostRegisterSecret command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             _LoggerRegisterSecret.WriteStartSecret();
@@ -57,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         [SuppressErrorFactory]
         [DecoyTimeGeneratorAttributeFactory]
         [HttpPost]
-        [Route(EndPointNames.MobileAppApi.RandomNoise)]
+        [Route("/v1/stopkeys")]
         public async Task<IActionResult> StopKeys()
         {
             _LoggerDecoyKeys.WriteStartDecoy();
