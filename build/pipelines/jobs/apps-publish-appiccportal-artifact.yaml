@@ -8,6 +8,6 @@ jobs:
       value: 'App.IccPortal'
     - name: ProjectPath
       value: 'src\App.IccPortal\App.IccPortal.csproj'
-    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
+    displayName: 'Publish Build Artifact IccPortal Frontend'
     steps:
       - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

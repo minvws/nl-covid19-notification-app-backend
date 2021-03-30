@@ -8,6 +8,6 @@ jobs:
       value: 'App.ManagementPortal'
     - name: ProjectPath
       value: 'src\ManagementPortal\ManagementPortal.csproj'
-    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
+    displayName: 'Publish Build Artifact ManagementPortal'
     steps:
       - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

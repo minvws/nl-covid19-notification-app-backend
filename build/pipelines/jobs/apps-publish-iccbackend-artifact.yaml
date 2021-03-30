@@ -8,6 +8,6 @@ jobs:
       value: 'Api.IccBackend'
     - name: ProjectPath
       value: 'src\Api.IccBackend\Api.IccBackend.csproj'
-    displayName: 'Publish Build Artifact $(ArtifactSubfolder)'
+    displayName: 'Publish Build Artifact Icc Backend Api'
     steps:
       - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'
