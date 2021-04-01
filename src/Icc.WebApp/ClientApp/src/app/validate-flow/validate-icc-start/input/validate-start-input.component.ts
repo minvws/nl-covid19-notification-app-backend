@@ -24,8 +24,8 @@ import { catchError } from 'rxjs/operators';
 })
 export class ValidateStartInputComponent implements OnInit, AfterViewInit {
 
-  public LabConfirmationId: Array<string> = ['', '', '', '', '', ''];
-  private LastConfirmedLCId: Array<string> = ['', '', '', '', '', ''];
+  public LabConfirmationId: Array<string> = ['', '', '', '', '', '', ''];
+  private LastConfirmedLCId: Array<string> = ['', '', '', '', '', '', ''];
   public LabConfirmationIdValidState: { [key: number]: boolean } = [];
   @ViewChild('first_char')
   first_char: ElementRef;
@@ -103,7 +103,7 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
   }
 
   public InfectionConfirmationIdValid() {
-    return (this.labConfirmationIdJoined().length === 6 && this.validateCharacters());
+    return (this.labConfirmationIdJoined().length >= 6 && this.validateCharacters());
   }
 
   public InfectionConfirmationIdToTaalString() {
@@ -183,7 +183,6 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
   icIdKeyPress($event: KeyboardEvent) {
     const target = $event.target as HTMLInputElement;
     let index = Array.prototype.indexOf.call(target.parentElement.children, target);
-    index = (index > 3) ? index - 1 : index;
 
     if ($event.code === 'ArrowRight') {
       this.focusOnNext(target);
