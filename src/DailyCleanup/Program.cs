@@ -177,6 +177,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<RemoveExpiredManifestsCommand>();
             services.AddTransient<RemoveExpiredManifestsV2Command>();
             services.AddTransient<RemoveExpiredManifestsV3Command>();
+            services.AddTransient<RemoveExpiredManifestsV4Command>();
             services.AddTransient<RemoveExpiredEksCommand>();
             services.AddTransient<RemoveExpiredEksV2Command>();
             services.AddTransient<RemoveExpiredWorkflowsCommand>();
@@ -197,6 +198,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<ExpiredEksV2LoggingExtensions>();
             services.AddSingleton<ExpiredManifestV2LoggingExtensions>();
             services.AddSingleton<ExpiredManifestV3LoggingExtensions>();
+            services.AddSingleton<ExpiredManifestV4LoggingExtensions>();
             services.AddSingleton<EksEngineLoggingExtensions>();
             services.AddSingleton<SnapshotLoggingExtensions>();
             services.AddSingleton<EksJobContentWriterLoggingExtensions>();
@@ -205,6 +207,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
             
             services.NlResignerStartup();
+            services.DummySignerStartup();
             services.GaSignerStartup();
             services.DailyStatsStartup();
 
