@@ -2,11 +2,14 @@
     [Id]                    BIGINT         IDENTITY (1, 1) NOT NULL,
     [Created]               DATETIME2 (7)  NOT NULL,
     [ValidUntil]            DATETIME2 (7)  NOT NULL,
-    [LabConfirmationId]     NVARCHAR (6)   NULL,
+    [LabConfirmationId]     NVARCHAR (6)   NULL, -- Obsolete after PuTek is taken in production
+    [GGDKey]                NVARCHAR (7)   NULL, -- Successor of [LabConfirmationId]
     [ConfirmationKey]       VARBINARY (32) NOT NULL,
     [BucketId]              VARBINARY (32) NOT NULL,
     [AuthorisedByCaregiver] DATETIME2 (7)  NULL,
     [DateOfSymptomsOnset]   DATETIME2 (7)  NULL,
+    [DateOfTest]            DATETIME2 (7)  NULL,
+    [SubjectHasSymptoms]    BIT NULL,
     [PollToken]             NVARCHAR (450) NULL,
     CONSTRAINT [PK_TekReleaseWorkflowState] PRIMARY KEY CLUSTERED  ([Id] ASC)
 );
@@ -22,6 +25,11 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_TekReleaseWorkflowState_PollToken]
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_TekReleaseWorkflowState_LabConfirmationId]
     ON [dbo].[TekReleaseWorkflowState]([LabConfirmationId] ASC) WHERE ([LabConfirmationId] IS NOT NULL);
+
+
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [IX_TekReleaseWorkflowState_GGDKey]
+    ON [dbo].[TekReleaseWorkflowState]([GGDKey] ASC) WHERE ([GGDKey] IS NOT NULL);
 
 
 GO

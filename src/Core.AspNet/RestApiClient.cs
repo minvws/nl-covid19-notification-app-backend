@@ -91,5 +91,38 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
+
+        /// <summary>
+        /// Post a model to a given endpoint.
+        /// </summary>
+        /// <typeparam name="T">The model type to po posted</typeparam>
+        /// <param name="model">The actual model</param>
+        /// <param name="requestUri">The uri to post to</param>
+        /// <param name="token">The generated cancellation token</param>
+        /// <returns></returns>
+        public async Task<IActionResult> PutAsync<T>(T model, string requestUri, CancellationToken token) where T : class
+        {
+            try
+            {
+                var message = JsonConvert.SerializeObject(model, Formatting.None);
+
+                HttpContent httpContent = new StringContent(message, Encoding.UTF8, "application/json");
+                var response = await _HttpClient.PutAsync(requestUri, httpContent, token);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return new OkObjectResult(response);
+                }
+                else
+                {
+                    return new BadRequestResult();
+                }
+            }
+            catch (Exception e)
+            {
+                _Logger.LogError($"Error in POST to: {_HttpClient.BaseAddress}/{requestUri}.", e.ToString());
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
     }
 }

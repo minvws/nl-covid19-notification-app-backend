@@ -8,37 +8,46 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Handlers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtAuthenticationHandler.SchemeName)]
     public class WorkflowController : Controller
     {
-        private readonly IRestApiClient _RestApiClient;
+        private readonly IRestApiClient _restApiClient;
         private readonly ILogger _Logger;
 
         public WorkflowController(IServiceProvider serviceProvider, ILogger<WorkflowController> logger)
         {
-            _RestApiClient = serviceProvider.GetService<IRestApiClient>();
+            _restApiClient = serviceProvider.GetService<IRestApiClient>();
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        [HttpPost]
-        [Route(EndPointNames.CaregiversPortalApi.LabConfirmation)]
-        public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args)
+        [HttpPut]
+        [Route(EndPointNames.CaregiversPortalApi.PubTek)]
+        public async Task<IActionResult> PutAuthorise([FromBody] PublishTekArgs args, [FromServices] ILuhnModNValidator luhnModNValidator)
         {
-            if (_RestApiClient == null) throw new ArgumentNullException(nameof(_RestApiClient));
+            if (_restApiClient == null) throw new ArgumentNullException(nameof(_restApiClient));
+            if(luhnModNValidator == null) throw new ArgumentNullException(nameof(luhnModNValidator));
 
+            if (!luhnModNValidator.Validate(args.GGDKey))
+            {
+                var response = new PublishTekResponse
+                {
+                    Valid = false
+                };
+                return new OkObjectResult(response);
+            }
+            
             var source = new CancellationTokenSource();
             var token = source.Token;
-
+            
             _Logger.WriteLabStart();
-            var result = await _RestApiClient.PostAsync(args, $"{EndPointNames.CaregiversPortalApi.LabConfirmation}", token);
-
-            return Ok();
+            return await _restApiClient.PutAsync(args, $"{EndPointNames.CaregiversPortalApi.PubTek}", token);
         }
 
         [HttpGet]

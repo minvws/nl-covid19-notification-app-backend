@@ -14,5 +14,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
         Uri BaseAddress { get; set; }
         Task<IActionResult> GetAsync(string requestUri, CancellationToken token);
         Task<IActionResult> PostAsync<T>(T model, string requestUri, CancellationToken token) where T : class;
+        Task<IActionResult> PutAsync<T>(T model, string requestUri, CancellationToken token) where T : class;
     }
 }

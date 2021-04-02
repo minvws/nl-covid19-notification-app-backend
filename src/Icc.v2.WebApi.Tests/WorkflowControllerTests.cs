@@ -2,40 +2,44 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
+using Newtonsoft.Json;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi;
 using Xunit;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace Api.IccBackend.Tests
+namespace Icc.v2.WebApi.Tests
 {
     public class WorkflowControllerTests
     {
-        private readonly CustomWebApplicationFactory<Startup, WorkflowDbContext> _Factory;
+        private readonly CustomWebApplicationFactory<Startup, WorkflowDbContext> _factory;
 
         public WorkflowControllerTests()
         {
-            _Factory = new CustomWebApplicationFactory<Startup, WorkflowDbContext>();
+            _factory = new CustomWebApplicationFactory<Startup, WorkflowDbContext>();
         }
-        
+
+        #region Lab ConfirmationId tests
         [Fact]
-        public async Task PostAuthorise_ReturnsOkResult_When_ConfirmationId_IsValid()
+        public async Task PutPubTek_ReturnsOkAndTrueResult_When_ConfirmationId_IsValid()
         {
             // Arrange
-            var args = new AuthorisationArgs
+            var args = new PublishTekArgs
             {
-                LabConfirmationId = "222222",
-                DateOfSymptomsOnset = DateTime.Today
+                GGDKey = "222222",
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true,
+                DateOfTest = null
             };
 
-            var client = _Factory.WithWebHostBuilder(builder =>
+            var client = _factory.WithWebHostBuilder(builder =>
                 {
                     builder.ConfigureTestServices(services =>
                     {
@@ -50,8 +54,9 @@ namespace Api.IccBackend.Tests
 
                             db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                             {
-                                LabConfirmationId = args.LabConfirmationId,
+                                GGDKey = args.GGDKey,
                                 DateOfSymptomsOnset = args.DateOfSymptomsOnset
+
                             });
                             db.SaveChanges();
                         }
@@ -62,30 +67,35 @@ namespace Api.IccBackend.Tests
 
             var source = new CancellationTokenSource();
             var token = source.Token;
-            
+
             var content = new StringContent(JsonSerializer.Serialize(args))
             {
-                Headers = {ContentType = new MediaTypeHeaderValue("application/json")}
+                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
             };
 
             // Act
-            var result = await client.PostAsync($"{EndPointNames.CaregiversPortalApi.LabConfirmation}", content, token);
+            var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
 
             // Assert
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
+
+            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
+            Assert.True(result.Valid);
         }
 
         [Fact]
-        public async Task PostAuthorise_ReturnsBadRequestResult_When_ConfirmationId_IsNotValid()
+        public async Task PutPubTek_ReturnsOkAndTrueResult_When_ConfirmationId_IsNotValid()
         {
             // Arrange
-            var args = new AuthorisationArgs
+            var args = new PublishTekArgs
             {
-                LabConfirmationId = "111111",
-                DateOfSymptomsOnset = DateTime.Today
+                GGDKey = "111111",
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true,
+                DateOfTest = null
             };
 
-            var client = _Factory.WithWebHostBuilder(builder =>
+            var client = _factory.WithWebHostBuilder(builder =>
                 {
                     builder.ConfigureTestServices(services =>
                     {
@@ -100,7 +110,7 @@ namespace Api.IccBackend.Tests
 
                             db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                             {
-                                LabConfirmationId = args.LabConfirmationId,
+                                GGDKey = args.GGDKey,
                                 DateOfSymptomsOnset = args.DateOfSymptomsOnset
                             });
                             db.SaveChanges();
@@ -119,10 +129,401 @@ namespace Api.IccBackend.Tests
             };
 
             // Act
-            var result = await client.PostAsync($"{EndPointNames.CaregiversPortalApi.LabConfirmation}", content, token);
+            var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
 
             // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
+
+            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
+            Assert.False(result.Valid);
+        }
+        #endregion
+
+
+        [Fact]
+        public async Task PutPubTek_ReturnsOkAndTrueResult_When_PubTEK_IsValid()
+        {
+            // Arrange
+            var args = new PublishTekArgs
+            {
+                GGDKey = "L8T6LJQ",
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true,
+                DateOfTest = null
+            };
+
+            var client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    var sp = services.BuildServiceProvider();
+
+                    using (var scope = sp.CreateScope())
+                    {
+                        var scopedServices = scope.ServiceProvider;
+                        var db = scopedServices.GetRequiredService<WorkflowDbContext>();
+
+                        db.Database.EnsureCreated();
+
+                        db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+                        {
+                            GGDKey = args.GGDKey,
+                            DateOfSymptomsOnset = args.DateOfSymptomsOnset
+
+                        });
+                        db.SaveChanges();
+                    }
+                });
+            })
+                .CreateClient();
+
+
+            var source = new CancellationTokenSource();
+            var token = source.Token;
+
+            var content = new StringContent(JsonSerializer.Serialize(args))
+            {
+                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
+            };
+
+            // Act
+            var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
+
+            // Assert
+            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
+
+            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
+            Assert.True(result.Valid);
+        }
+
+        [Fact]
+        public async Task PutPubTek_ReturnsOkAndFalseResult_When_PubTEK_HasInValidCharacter()
+        {
+            // Arrange
+            var args = new PublishTekArgs
+            {
+                GGDKey = "18T6LJQ",
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true,
+                DateOfTest = null
+            };
+
+            var client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    var sp = services.BuildServiceProvider();
+
+                    using (var scope = sp.CreateScope())
+                    {
+                        var scopedServices = scope.ServiceProvider;
+                        var db = scopedServices.GetRequiredService<WorkflowDbContext>();
+
+                        db.Database.EnsureCreated();
+
+                        db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+                        {
+                            GGDKey = args.GGDKey,
+                            DateOfSymptomsOnset = args.DateOfSymptomsOnset
+                        });
+                        db.SaveChanges();
+                    }
+                });
+            })
+                .CreateClient();
+
+
+            var source = new CancellationTokenSource();
+            var token = source.Token;
+
+            var content = new StringContent(JsonSerializer.Serialize(args))
+            {
+                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
+            };
+
+            // Act
+            var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
+
+            // Assert
+            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
+
+            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
+            Assert.False(result.Valid);
+        }
+
+        [Fact]
+        public async Task PutPubTek_ReturnsOkAndFalseResult_When_PubTEK_HasInValidCheckCode()
+        {
+            // Arrange
+            var args = new PublishTekArgs
+            {
+                GGDKey = "L8T6LJR",
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true,
+                DateOfTest = null
+            };
+
+            var client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    var sp = services.BuildServiceProvider();
+
+                    using (var scope = sp.CreateScope())
+                    {
+                        var scopedServices = scope.ServiceProvider;
+                        var db = scopedServices.GetRequiredService<WorkflowDbContext>();
+
+                        db.Database.EnsureCreated();
+
+                        db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+                        {
+                            GGDKey = args.GGDKey,
+                            DateOfSymptomsOnset = args.DateOfSymptomsOnset
+                        });
+                        db.SaveChanges();
+                    }
+                });
+            })
+                .CreateClient();
+
+
+            var source = new CancellationTokenSource();
+            var token = source.Token;
+
+            var content = new StringContent(JsonSerializer.Serialize(args))
+            {
+                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
+            };
+
+            // Act
+            var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
+
+            // Assert
+            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
+
+            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
+            Assert.False(result.Valid);
+        }
+
+        [Fact]
+        public async Task PutPubTek_ReturnsOkAndTrueResult_When_SubjectHasSymptoms_Is_False_And_DateOfTest_HasValue()
+        {
+            // Arrange
+            var args = new PublishTekArgs
+            {
+                GGDKey = "L8T6LJQ",
+                DateOfSymptomsOnset = null,
+                SubjectHasSymptoms = false,
+                DateOfTest = DateTime.Today
+            };
+
+            var client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    var sp = services.BuildServiceProvider();
+
+                    using (var scope = sp.CreateScope())
+                    {
+                        var scopedServices = scope.ServiceProvider;
+                        var db = scopedServices.GetRequiredService<WorkflowDbContext>();
+
+                        db.Database.EnsureCreated();
+
+                        db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+                        {
+                            GGDKey = args.GGDKey,
+                            DateOfSymptomsOnset = args.DateOfSymptomsOnset
+                        });
+                        db.SaveChanges();
+                    }
+                });
+            })
+                .CreateClient();
+
+
+            var source = new CancellationTokenSource();
+            var token = source.Token;
+
+            var content = new StringContent(JsonSerializer.Serialize(args))
+            {
+                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
+            };
+
+            // Act
+            var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
+
+            // Assert
+            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
+
+            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
+            Assert.True(result.Valid);
+        }
+
+        [Fact]
+        public async Task PutPubTek_ReturnsOkAndFalseResult_When_SubjectHasSymptoms_Is_False_And_DateOfTest_Is_Null()
+        {
+            // Arrange
+            var args = new PublishTekArgs
+            {
+                GGDKey = "L8T6LJQ",
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = false,
+                DateOfTest = null
+            };
+
+            var client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    var sp = services.BuildServiceProvider();
+
+                    using (var scope = sp.CreateScope())
+                    {
+                        var scopedServices = scope.ServiceProvider;
+                        var db = scopedServices.GetRequiredService<WorkflowDbContext>();
+
+                        db.Database.EnsureCreated();
+
+                        db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+                        {
+                            GGDKey = args.GGDKey,
+                            DateOfSymptomsOnset = args.DateOfSymptomsOnset
+                        });
+                        db.SaveChanges();
+                    }
+                });
+            })
+                .CreateClient();
+
+
+            var source = new CancellationTokenSource();
+            var token = source.Token;
+
+            var content = new StringContent(JsonSerializer.Serialize(args))
+            {
+                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
+            };
+
+            // Act
+            var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
+
+            // Assert
+            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
+
+            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
+            Assert.False(result.Valid);
+        }
+
+        [Fact]
+        public async Task PutPubTek_ReturnsOkAndTrueResult_When_SubjectHasSymptoms_Is_True_And_DateOfSymptomsOnset_HasValue()
+        {
+            // Arrange
+            var args = new PublishTekArgs
+            {
+                GGDKey = "L8T6LJQ",
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true,
+                DateOfTest = null
+            };
+
+            var client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    var sp = services.BuildServiceProvider();
+
+                    using (var scope = sp.CreateScope())
+                    {
+                        var scopedServices = scope.ServiceProvider;
+                        var db = scopedServices.GetRequiredService<WorkflowDbContext>();
+
+                        db.Database.EnsureCreated();
+
+                        db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+                        {
+                            GGDKey = args.GGDKey,
+                            DateOfSymptomsOnset = args.DateOfSymptomsOnset
+                        });
+                        db.SaveChanges();
+                    }
+                });
+            })
+                .CreateClient();
+
+
+            var source = new CancellationTokenSource();
+            var token = source.Token;
+
+            var content = new StringContent(JsonSerializer.Serialize(args))
+            {
+                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
+            };
+
+            // Act
+            var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
+
+            // Assert
+            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
+
+            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
+            Assert.True(result.Valid);
+        }
+
+        [Fact]
+        public async Task PutPubTek_ReturnsOkAndFalseResult_When_SubjectHasSymptoms_Is_True_And_DateOfSymptomsOnset_Is_Null()
+        {
+            // Arrange
+            var args = new PublishTekArgs
+            {
+                GGDKey = "L8T6LJQ",
+                DateOfSymptomsOnset = null,
+                SubjectHasSymptoms = true,
+                DateOfTest = DateTime.Today
+            };
+
+            var client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    var sp = services.BuildServiceProvider();
+
+                    using (var scope = sp.CreateScope())
+                    {
+                        var scopedServices = scope.ServiceProvider;
+                        var db = scopedServices.GetRequiredService<WorkflowDbContext>();
+
+                        db.Database.EnsureCreated();
+
+                        db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+                        {
+                            GGDKey = args.GGDKey,
+                            DateOfSymptomsOnset = args.DateOfSymptomsOnset
+                        });
+                        db.SaveChanges();
+                    }
+                });
+            })
+                .CreateClient();
+
+
+            var source = new CancellationTokenSource();
+            var token = source.Token;
+
+            var content = new StringContent(JsonSerializer.Serialize(args))
+            {
+                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
+            };
+
+            // Act
+            var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
+
+            // Assert
+            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
+
+            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
+            Assert.False(result.Valid);
         }
     }
 }

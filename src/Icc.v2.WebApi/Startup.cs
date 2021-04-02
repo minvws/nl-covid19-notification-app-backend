@@ -13,10 +13,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Services;
 using Serilog;
 
 namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
@@ -25,13 +26,13 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
     {
         private const string Title = "GGD Portal Backend";
 
-        private readonly bool _IsDev;
-        private readonly IConfiguration _Configuration;
+        private readonly bool _isDev;
+        private readonly IConfiguration _configuration;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _IsDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _isDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
         }
         public void ConfigureServices(IServiceCollection services)
         {
@@ -51,25 +52,27 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
 
             services.AddDistributedSqlServerCache(options =>
             {
-                options.ConnectionString = _Configuration.GetConnectionString(DatabaseConnectionStringNames.IccDistMemCache);
+                options.ConnectionString = _configuration.GetConnectionString(DatabaseConnectionStringNames.IccDistMemCache);
                 options.SchemaName = "dbo";
                 options.TableName = "Cache";
             });
 
             services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
-            
-            services.AddTransient<AuthorisationArgsValidator>();
-            services.AddScoped<HttpPostAuthoriseLabConfirmationIdCommand>();
-            services.AddTransient<AuthorizeLabConfirmationIdCommand>();
 
             services.AddSingleton<IIccPortalConfig, IccPortalConfig>();
 
+            services.AddTransient<IPublishTekService, PublishTekService>();
+            services.AddTransient<PublishTekArgsValidator>();
+            services.AddTransient<PublishTekCommand>();
+            services.AddTransient<ILuhnModNConfig, LuhnModNConfig>();
+            services.AddTransient<ILuhnModNValidator, LuhnModNValidator>();
+            services.AddTransient<ILuhnModNGenerator, LuhnModNGenerator>();
+            
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
             
-            services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
             services.AddCors();
 
-            if (_IsDev)
+            if (_isDev)
                 services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });
 
             services.Configure<CookiePolicyOptions>(options =>
@@ -82,7 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
         
         public void Configure(IApplicationBuilder app)
         {
-            if (_IsDev)
+            if (_isDev)
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();

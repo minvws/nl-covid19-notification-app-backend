@@ -40,5 +40,15 @@ namespace App.IccPortal.Tests
             }
             return new OkObjectResult("");
         }
+
+        public async Task<IActionResult> PutAsync<T>(T model, string requestUri, CancellationToken token) where T : class
+        {
+            var args = (AuthorisationArgs)Convert.ChangeType(model, typeof(AuthorisationArgs));
+            if (args.LabConfirmationId == "111111")
+            {
+                return new BadRequestResult();
+            }
+            return new OkObjectResult("");
+        }
     }
 }

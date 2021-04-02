@@ -10,6 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
         {
             private const string Prefix = "/CaregiversPortalApi/v1";
             public const string LabConfirmation = Prefix + "/labconfirm";
+            public const string PubTek = "/pubtek"; // Successor of LabConfirmation
         }
     }
 }
