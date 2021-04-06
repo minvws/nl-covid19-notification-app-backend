@@ -34,7 +34,7 @@ namespace Icc.WebApp.Tests
             // Arrange
             var args = new PublishTekArgs
             {
-                GGDKey = "222222",
+                GGDKey = "L8T6LJ",
                 DateOfSymptomsOnset = DateTime.Today
             };
 
@@ -54,6 +54,49 @@ namespace Icc.WebApp.Tests
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
+        }
+
+        [Fact]
+        public async Task PutPubTek_ReturnsFalseResult_When_5Digit_PubTEK_IsSend()
+        {
+            // Arrange
+            var args = new PublishTekArgs
+            {
+                GGDKey = "L8T6L",
+                DateOfSymptomsOnset = DateTime.Today
+            };
+
+            var client = _factory.WithWebHostBuilder(builder =>
+                {
+                    builder.ConfigureTestServices(services =>
+                    {
+                        var descriptor = services.SingleOrDefault(d => d.ServiceType.Name == nameof(RestApiClient));
+                        services.Remove(descriptor);
+
+                        services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
+                        services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
+
+                    });
+                })
+                .CreateClient();
+
+
+            var source = new CancellationTokenSource();
+            var token = source.Token;
+
+            var content = new StringContent(JsonSerializer.Serialize(args))
+            {
+                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
+            };
+
+            // Act
+            var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
+
+            // Assert
+            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
+
+            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
+            Assert.False(result.Valid);
         }
 
         [Fact]
@@ -100,7 +143,7 @@ namespace Icc.WebApp.Tests
         }
 
         [Fact]
-        public async Task PutPubTek_ReturnsOkResult_When_PubTEK_IsValid()
+        public async Task PutPubTek_ReturnsOkResult_When_7Digit_PubTEK_IsValid()
         {
             // Arrange
             var args = new PublishTekArgs

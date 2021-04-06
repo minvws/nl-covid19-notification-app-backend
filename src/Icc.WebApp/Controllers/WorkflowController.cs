@@ -18,7 +18,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
     [Authorize(AuthenticationSchemes = JwtAuthenticationHandler.SchemeName)]
     public class WorkflowController : Controller
     {
-        private const int OldGGDKeyLenght = 6;
+        private const int OldGGDKeyLength = 6;
+        private const int ValidGGDKeyLength = 7;
 
         private readonly IRestApiClient _restApiClient;
         private readonly ILuhnModNGenerator _lLuhnModNGenerator;
@@ -39,9 +40,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
         {
             if (_restApiClient == null) throw new ArgumentNullException(nameof(_restApiClient));
 
-            var isValid = FixOrValidatePubTEK(args);
-
-            if (!isValid)
+            // Fail fast -> If the code is not valid, return the response with false result. 
+            if (!FixOrValidatePubTEK(args))
             {
                 var response = new PublishTekResponse
                 {
@@ -53,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
             var source = new CancellationTokenSource();
             var token = source.Token;
             
-            _logger.WriteLabStart();
+            _logger.WritePubTekStart();
             return await _restApiClient.PutAsync(args, $"{EndPointNames.CaregiversPortalApi.PubTek}", token);
         }
         
@@ -65,13 +65,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
 
         private bool FixOrValidatePubTEK(PublishTekArgs args)
         {
-            if (args.GGDKey.Length == OldGGDKeyLenght)
+            // If a 6 digit code has been send no LuhnModN validation is possible at this point. Just add the check code and return valid.
+            if (args.GGDKey.Length == OldGGDKeyLength)
             {
                 args.GGDKey = _lLuhnModNGenerator.CalculateCheckCode(args.GGDKey);
                 return true;
             }
 
-            return _luhnModNValidator.Validate(args.GGDKey);
+            // Else the code should be 7 digits and validated.
+            return args.GGDKey.Length == ValidGGDKeyLength && _luhnModNValidator.Validate(args.GGDKey);
         }
     }
 }
+ 

@@ -74,6 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
             services.AddTransient<ILuhnModNConfig, LuhnModNConfig>();
             services.AddTransient<ILuhnModNValidator, LuhnModNValidator>();
+            services.AddTransient<ILuhnModNGenerator, LuhnModNGenerator>();
 
             services.AddTransient<IJwtService, JwtService>();
             

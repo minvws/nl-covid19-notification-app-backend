@@ -67,11 +67,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
                 errors.Add($"Date of symptoms onset out of range - {args.DateOfSymptomsOnset}.");
             }
 
-            // If subjectHasSymptoms is false, then dateOfTest must be completed. 
-            if (!args.SubjectHasSymptoms && !args.DateOfTest.HasValue)
-            {
-                errors.Add($"SubjectHasSymptoms is false, then dateOfTest must be completed.");
-            }
+            // TODO: If subjectHasSymptoms is false, then dateOfTest must be completed. 
+            //if (!args.SubjectHasSymptoms && !args.DateOfTest.HasValue)
+            //{
+            //    errors.Add($"SubjectHasSymptoms is false, then dateOfTest must be completed.");
+            //}
 
             return errors.ToArray();
         }
