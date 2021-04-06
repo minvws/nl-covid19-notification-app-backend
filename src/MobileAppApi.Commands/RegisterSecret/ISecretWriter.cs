@@ -10,5 +10,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
     public interface ISecretWriter
     {
         Task<TekReleaseWorkflowStateEntity> ExecuteAsync();
+        Task<TekReleaseWorkflowStateEntity> ExecuteV2Async();
     }
 }

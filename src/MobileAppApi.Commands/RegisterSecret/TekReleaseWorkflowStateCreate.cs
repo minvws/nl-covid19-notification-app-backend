@@ -21,6 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private readonly IUtcDateTimeProvider _DateTimeProvider;
         private readonly IRandomNumberGenerator _NumberGenerator;
         private readonly ILabConfirmationIdService _LabConfirmationIdService;
+        //private readonly ILuhnModNGenerator _LuhnModNGenerator;
         private readonly IWorkflowTime _WorkflowTime;
         private readonly IWorkflowConfig _WorkflowConfig;
         private readonly RegisterSecretLoggingExtensions _Logger;
@@ -41,12 +42,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 
         public async Task<TekReleaseWorkflowStateEntity> ExecuteAsync()
         {
-            var entity = new TekReleaseWorkflowStateEntity
+            var entity = await BuildEntityAsync();
+
+            _Logger.WriteWritingStart();
+
+            var success = WriteAttempt(entity, includeLuhnModNDigit: false);
+            while (!success)
             {
-                Created = _DateTimeProvider.Snapshot.Date,
-                ValidUntil = _WorkflowTime.Expiry(_DateTimeProvider.Snapshot)
-            };
-            await _WorkflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
+                _WorkflowDbContext.BeginTransaction();
+                entity = await BuildEntityAsync();
+                success = WriteAttempt(entity);
+            }
+
+            return entity;
+        }
+
+        public async Task<TekReleaseWorkflowStateEntity> ExecuteV2Async()
+        {
+            var entity = await BuildEntityAsync();
 
             _Logger.WriteWritingStart();
 
@@ -54,19 +67,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             while (!success)
             {
                 _WorkflowDbContext.BeginTransaction();
-                entity = new TekReleaseWorkflowStateEntity
-                {
-                    Created = _DateTimeProvider.Snapshot.Date,
-                    ValidUntil = _WorkflowTime.Expiry(_DateTimeProvider.Snapshot)
-                };
-                await _WorkflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
+                entity = await BuildEntityAsync();
                 success = WriteAttempt(entity);
             }
 
             return entity;
         }
 
-        private bool WriteAttempt(TekReleaseWorkflowStateEntity item)
+        private bool WriteAttempt(TekReleaseWorkflowStateEntity item, bool includeLuhnModNDigit = true)
         {
             if (++_AttemptCount > AttemptCountMax)
             {
@@ -75,10 +83,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             }
 
             if (_AttemptCount > 1)
+            {
                 _Logger.WriteDuplicatesFound(_AttemptCount);
+            }
 
+            if (includeLuhnModNDigit)
+            {
+                //item.GGDKey = _LuhnModNGenerator.Next();
+            }
+            else
+            {
+                item.LabConfirmationId = _LabConfirmationIdService.Next();
+            }
 
-            item.LabConfirmationId = _LabConfirmationIdService.Next();
             item.BucketId = _NumberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount);
             item.ConfirmationKey = _NumberGenerator.NextByteArray(UniversalConstants.ConfirmationKeyByteCount);
 
@@ -92,8 +109,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             {
                 _WorkflowDbContext.Database.CurrentTransaction.RollbackAsync();
                 _WorkflowDbContext.Remove(item);
+
                 if (CanRetry(ex))
+                {
                     return false;
+                }
 
                 throw;
             }
@@ -104,7 +124,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         //with unique index 'IX_TekReleaseWorkflowState_BucketId'.The duplicate key value is (blah blah).
         private bool CanRetry(DbUpdateException ex)
         {
-            if (!(ex.InnerException is SqlException sqlEx)) 
+            if (!(ex.InnerException is SqlException sqlEx))
                 return false;
 
             var errors = new SqlError[sqlEx.Errors.Count];
@@ -119,5 +139,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             );
 
         }
-   }
+
+        private async Task<TekReleaseWorkflowStateEntity> BuildEntityAsync()
+        {
+            var entity = new TekReleaseWorkflowStateEntity
+            {
+                Created = _DateTimeProvider.Snapshot.Date,
+                ValidUntil = _WorkflowTime.Expiry(_DateTimeProvider.Snapshot)
+            };
+
+            await _WorkflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
+
+            return entity;
+        }
+    }
 }

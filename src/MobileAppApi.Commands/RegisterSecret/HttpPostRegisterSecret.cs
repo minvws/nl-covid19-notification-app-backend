@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         public HttpPostRegisterSecret(
             ISecretWriter writer,
             RegisterSecretLoggingExtensions logger,
-            IWorkflowTime workflowTime, 
+            IWorkflowTime workflowTime,
             IUtcDateTimeProvider utcDateTimeProvider,
             ILabConfirmationIdFormatter labConfirmationIdFormatter
             )
@@ -45,6 +45,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
                     ConfirmationKey = Convert.ToBase64String(entity.ConfirmationKey),
                     BucketId = Convert.ToBase64String(entity.BucketId),
                     LabConfirmationId = _LabConfirmationIdFormatter.Format(entity.LabConfirmationId), //Architects choice to use UI format in response.
+                    Validity = _WorkflowTime.TimeToLiveSeconds(_UtcDateTimeProvider.Snapshot, entity.ValidUntil)
+                };
+
+                return new OkObjectResult(result);
+            }
+            catch (Exception ex)
+            {
+                _Logger.WriteFailed(ex);
+                return new OkObjectResult(new EnrollmentResponse { Validity = -1 });
+            }
+            finally
+            {
+                _Logger.WriteFinished();
+            }
+        }
+
+        public async Task<IActionResult> ExecuteV2Async()
+        {
+            try
+            {
+                var entity = await _Writer.ExecuteV2Async();
+
+                var result = new EnrollmentResponse
+                {
+                    ConfirmationKey = Convert.ToBase64String(entity.ConfirmationKey),
+                    BucketId = Convert.ToBase64String(entity.BucketId),
+                    GGDKey = string.Empty, //entity.GGDKey,
                     Validity = _WorkflowTime.TimeToLiveSeconds(_UtcDateTimeProvider.Snapshot, entity.ValidUntil)
                 };
 
