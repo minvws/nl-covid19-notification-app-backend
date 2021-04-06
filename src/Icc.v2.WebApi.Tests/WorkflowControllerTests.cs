@@ -361,60 +361,61 @@ namespace Icc.v2.WebApi.Tests
             Assert.True(result.Valid);
         }
 
-        [Fact]
-        public async Task PutPubTek_ReturnsOkAndFalseResult_When_SubjectHasSymptoms_Is_False_And_DateOfTest_Is_Null()
-        {
-            // Arrange
-            var args = new PublishTekArgs
-            {
-                GGDKey = "L8T6LJQ",
-                DateOfSymptomsOnset = DateTime.Today,
-                SubjectHasSymptoms = false,
-                DateOfTest = null
-            };
+        // TODO: implement in fase 2 of PubTEK
+        //[Fact]
+        //public async Task PutPubTek_ReturnsOkAndFalseResult_When_SubjectHasSymptoms_Is_False_And_DateOfTest_Is_Null()
+        //{
+        //    // Arrange
+        //    var args = new PublishTekArgs
+        //    {
+        //        GGDKey = "L8T6LJQ",
+        //        DateOfSymptomsOnset = DateTime.Today,
+        //        SubjectHasSymptoms = false,
+        //        DateOfTest = null
+        //    };
 
-            var client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                    var sp = services.BuildServiceProvider();
+        //    var client = _factory.WithWebHostBuilder(builder =>
+        //    {
+        //        builder.ConfigureTestServices(services =>
+        //        {
+        //            var sp = services.BuildServiceProvider();
 
-                    using (var scope = sp.CreateScope())
-                    {
-                        var scopedServices = scope.ServiceProvider;
-                        var db = scopedServices.GetRequiredService<WorkflowDbContext>();
+        //            using (var scope = sp.CreateScope())
+        //            {
+        //                var scopedServices = scope.ServiceProvider;
+        //                var db = scopedServices.GetRequiredService<WorkflowDbContext>();
 
-                        db.Database.EnsureCreated();
+        //                db.Database.EnsureCreated();
 
-                        db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
-                        {
-                            GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.DateOfSymptomsOnset
-                        });
-                        db.SaveChanges();
-                    }
-                });
-            })
-                .CreateClient();
+        //                db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+        //                {
+        //                    GGDKey = args.GGDKey,
+        //                    DateOfSymptomsOnset = args.DateOfSymptomsOnset
+        //                });
+        //                db.SaveChanges();
+        //            }
+        //        });
+        //    })
+        //        .CreateClient();
 
 
-            var source = new CancellationTokenSource();
-            var token = source.Token;
+        //    var source = new CancellationTokenSource();
+        //    var token = source.Token;
 
-            var content = new StringContent(JsonSerializer.Serialize(args))
-            {
-                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
-            };
+        //    var content = new StringContent(JsonSerializer.Serialize(args))
+        //    {
+        //        Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
+        //    };
 
-            // Act
-            var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
+        //    // Act
+        //    var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
 
-            // Assert
-            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
+        //    // Assert
+        //    var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
 
-            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
-            Assert.False(result.Valid);
-        }
+        //    Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
+        //    Assert.False(result.Valid);
+        //}
 
         [Fact]
         public async Task PutPubTek_ReturnsOkAndTrueResult_When_SubjectHasSymptoms_Is_True_And_DateOfSymptomsOnset_HasValue()

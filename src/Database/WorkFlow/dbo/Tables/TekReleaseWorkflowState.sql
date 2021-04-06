@@ -2,7 +2,7 @@
     [Id]                    BIGINT         IDENTITY (1, 1) NOT NULL,
     [Created]               DATETIME2 (7)  NOT NULL,
     [ValidUntil]            DATETIME2 (7)  NOT NULL,
-    [LabConfirmationId]     NVARCHAR (6)   NULL, -- Obsolete after PuTek is taken in production
+    [LabConfirmationId]     NVARCHAR (6)   NULL, -- Obsolete after PubTek is taken in production
     [GGDKey]                NVARCHAR (7)   NULL, -- Successor of [LabConfirmationId]
     [ConfirmationKey]       VARBINARY (32) NOT NULL,
     [BucketId]              VARBINARY (32) NOT NULL,
