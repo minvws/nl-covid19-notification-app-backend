@@ -18,23 +18,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
     [Authorize(AuthenticationSchemes = JwtAuthenticationHandler.SchemeName)]
     public class WorkflowController : Controller
     {
-        private readonly IRestApiClient _restApiClient;
-        private readonly ILogger _Logger;
+        private const int OldGGDKeyLenght = 6;
 
-        public WorkflowController(IServiceProvider serviceProvider, ILogger<WorkflowController> logger)
+        private readonly IRestApiClient _restApiClient;
+        private readonly ILuhnModNGenerator _lLuhnModNGenerator;
+        private readonly ILuhnModNValidator _luhnModNValidator;
+        private readonly ILogger _logger;
+
+        public WorkflowController(IServiceProvider serviceProvider, ILuhnModNGenerator luhnModNGenerator, ILuhnModNValidator luhnModNValidator, ILogger<WorkflowController> logger)
         {
             _restApiClient = serviceProvider.GetService<IRestApiClient>();
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _lLuhnModNGenerator = luhnModNGenerator ?? throw new ArgumentNullException(nameof(luhnModNGenerator));
+            _luhnModNValidator = luhnModNValidator ?? throw new ArgumentNullException(nameof(luhnModNValidator));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [HttpPut]
         [Route(EndPointNames.CaregiversPortalApi.PubTek)]
-        public async Task<IActionResult> PutAuthorise([FromBody] PublishTekArgs args, [FromServices] ILuhnModNValidator luhnModNValidator)
+        public async Task<IActionResult> PutPubTek([FromBody] PublishTekArgs args)
         {
             if (_restApiClient == null) throw new ArgumentNullException(nameof(_restApiClient));
-            if(luhnModNValidator == null) throw new ArgumentNullException(nameof(luhnModNValidator));
 
-            if (!luhnModNValidator.Validate(args.GGDKey))
+            var isValid = FixOrValidatePubTEK(args);
+
+            if (!isValid)
             {
                 var response = new PublishTekResponse
                 {
@@ -46,13 +53,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
             var source = new CancellationTokenSource();
             var token = source.Token;
             
-            _Logger.WriteLabStart();
+            _logger.WriteLabStart();
             return await _restApiClient.PutAsync(args, $"{EndPointNames.CaregiversPortalApi.PubTek}", token);
         }
-
+        
         [HttpGet]
         [AllowAnonymous]
         [Route("/AssemblyDump")]
         public IActionResult AssemblyDump([FromServices] IWebHostEnvironment env) => new DumpAssembliesToPlainText().Execute(env.IsDevelopment());
+
+
+        private bool FixOrValidatePubTEK(PublishTekArgs args)
+        {
+            if (args.GGDKey.Length == OldGGDKeyLenght)
+            {
+                args.GGDKey = _lLuhnModNGenerator.CalculateCheckCode(args.GGDKey);
+                return true;
+            }
+
+            return _luhnModNValidator.Validate(args.GGDKey);
+        }
     }
 }

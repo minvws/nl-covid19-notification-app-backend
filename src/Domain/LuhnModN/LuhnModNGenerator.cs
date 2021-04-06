@@ -16,6 +16,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN
             _config = config;
         }
 
+        public string CalculateCheckCode(string key)
+        {
+            return $"{key}{GenerateCheckCharacter(key.ToCharArray())}";
+        }
+
         public string Next(int length)
         {
             var r = new Random();

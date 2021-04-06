@@ -6,6 +6,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN
 {
     public interface ILuhnModNGenerator
     {
+        string CalculateCheckCode(string key);
         string Next(int length);
     }
 }

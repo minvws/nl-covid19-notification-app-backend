@@ -63,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
             services.AddTransient<IAuthCodeGenerator, AuthCodeGenerator>();
             services.AddSingleton<IAuthCodeService, AuthCodeService>();
 
-            services.AddScoped<HttpPostAuthoriseCommand>();
+            //services.AddScoped<HttpPostAuthoriseCommand>();
             services.AddScoped<HttpGetLogoutCommand>();
             services.AddScoped<HttpGetUserClaimCommand>();
             services.AddScoped<HttpPostAuthorizationTokenCommand>();
@@ -72,6 +72,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
 
             services.AddSingleton<IIccPortalConfig, IccPortalConfig>();
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
+            services.AddTransient<ILuhnModNConfig, LuhnModNConfig>();
             services.AddTransient<ILuhnModNValidator, LuhnModNValidator>();
 
             services.AddTransient<IJwtService, JwtService>();
