@@ -1,28 +1,33 @@
 <app-step stepNumber="3" stepTitle="Vul de GGD-sleutel van de index in" stepTitleClass="mb-10">
-    <div #step_element class="input-box grid grid-cols-8 mb-10">
-        <ng-container *ngFor="let key of [].constructor(6); let i = index">
-            <input #first_char (input)="evaluateInvalidState($event, i)"
-                   [class]="LabConfirmationIdValidState[i] === false ? 'invalid' : (LabConfirmationIdValidState[i] === true) ? 'valid' : ''"
-                   (focus)="focusInput($event)"
-                   (keyup)="icIdKeyPress($event)" [value]="i"
-                   type="text" [(ngModel)]="LabConfirmationId[i]" maxlength="1" min="0" max="9"/>
-            <div class="text-center text-3xl py-4" *ngIf="i == 2">-</div>
-        </ng-container>
-    </div>
+  <p class="mb-2">Een sleutel kan uit 6 of 7 karakters bestaan</p>
 
-    <div class="error-message text-red-600 mt-4 mb-10 flex flex-row flex-nowrap items-start"
-         *ngIf="error_code > -1 || demoMode">
-        <div class="mr-2"><span class="icon icon-exclamation-mark"></span></div>
-        <div>
-            <p *ngIf="demoMode">Democode, enkel bestemd voor trainingsdoeleinden.</p>
-            <p *ngIf="!demoMode && error_code == 2">Deze GGD-sleutel is onjuist. Controleer de GGD-sleutel
-                die je
-                hebt ingevoerd: <span [innerHTML]="InfectionConfirmationIdToTaalString()"></span></p>
-            <p *ngIf="!demoMode && error_code == 1">Deze GGD-sleutel is onjuist. Controleer of de GGD-sleutel
-                <b>alleen</b>
-                de volgende letters en nummers bevat:<br><b>{{this.allowedChars}}</b></p>
-        </div>
+  <div #step_element class="input-box grid grid-cols-8 mb-10">
+    <ng-container *ngFor="let key of [].constructor(7); let i = index">
+      <input #first_char (input)="evaluateInvalidState($event, i)"
+             [class]="LabConfirmationIdValidState[i] === false ? 'invalid' : (LabConfirmationIdValidState[i] === true) ? 'valid' : ''"
+             (focus)="focusInput($event)"
+             (keyup)="icIdKeyPress($event)" [value]="i"
+             type="text" [(ngModel)]="LabConfirmationId[i]" maxlength="1" min="0" max="9" [ngClass]="i === 6 ? 'darker' : ''" />
+    </ng-container>
+  </div>
+
+  <div class="error-message text-red-600 mt-4 mb-10 flex flex-row flex-nowrap items-start"
+       *ngIf="error_code > -1 || demoMode">
+    <div class="mr-2"><span class="icon icon-exclamation-mark"></span></div>
+    <div>
+      <p *ngIf="demoMode">Democode, enkel bestemd voor trainingsdoeleinden.</p>
+      <p *ngIf="!demoMode && error_code == 2">
+        Deze GGD-sleutel is onjuist. Controleer de GGD-sleutel
+        die je
+        hebt ingevoerd: <span [innerHTML]="InfectionConfirmationIdToTaalString()"></span>
+      </p>
+      <p *ngIf="!demoMode && error_code == 1">
+        Deze GGD-sleutel is onjuist. Controleer of de GGD-sleutel
+        <b>alleen</b>
+        de volgende letters en nummers bevat:<br><b>{{this.allowedChars}}</b>
+      </p>
     </div>
+  </div>
 </app-step>
 <app-step stepNumber="4" stepTitle="Heeft de index klachten die bij COVID-19 passen?" stepTitleClass="mb-10">
     <div class="select-box flex align-center flex-row flex-wrap">
@@ -59,6 +64,6 @@
 
 </app-step>
 <button class="btn btn-primary mb-40" (click)="confirmLabConfirmationId()"
-        [disabled]="(LabConfirmationId.join('').length !== 6 || symptomsDate === null) || loading > 0 || error_code === 1">
+        [disabled]="(LabConfirmationId.join('').length < 6 || LabConfirmationId[5] === '' || symptomsDate === null) || loading > 0 || error_code === 1">
     Volgende{{(loading > 0) ? "..." : ""}}
 </button>
