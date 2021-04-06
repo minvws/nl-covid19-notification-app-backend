@@ -1,4 +1,0 @@
-﻿[*.cs]
-
-# S101: Types should be named in PascalCase
-dotnet_diagnostic.S101.severity = none
