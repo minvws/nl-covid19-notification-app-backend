@@ -2,11 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +13,11 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
@@ -110,11 +110,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         }
 
         [Theory]
-        [InlineData("v1/register")]
-        [InlineData("v2/register")]
+        [InlineData("v1")]
+        [InlineData("v2")]
         [ExclusivelyUses("WorkflowControllerPostSecretTests")]
         public async Task PostSecretTest_5RetriesAndBang(string endpoint)
         {
+            var endpointToResultMap = new Dictionary<string, string>()
+            {
+                { "v1", "{\"labConfirmationId\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}" },
+                { "v2", "{\"ggdKey\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}"}
+            };
+
             using var dbContext = _WorkflowDbProvider.CreateNew();
             dbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
             dbContext.SaveChanges();
@@ -123,10 +129,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             _FakeNumbers.Value = 1;
 
             // Act
-            var result = await client.PostAsync(endpoint, null);
+            var result = await client.PostAsync($"{endpoint}/register", null);
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            Assert.Equal("{\"labConfirmationId\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}", await result.Content.ReadAsStringAsync());
+            Assert.Equal(endpointToResultMap[endpoint], await result.Content.ReadAsStringAsync());
         }
 
         [Theory]

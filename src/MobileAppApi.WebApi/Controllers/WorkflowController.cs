@@ -55,6 +55,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
 
         [ResponsePaddingFilterFactory]
         [SuppressErrorFactory]
+        [DecoyTimeAggregatorAttributeFactory]
+        [HttpPost]
+        [Route("/v2/register")]
+        public async Task<IActionResult> PostSecretV2([FromServices] HttpPostRegisterSecret command)
+        {
+            if (command == null) throw new ArgumentNullException(nameof(command));
+            _LoggerRegisterSecret.WriteStartSecret();
+            return await command.ExecuteV2Async();
+        }
+
+        [ResponsePaddingFilterFactory]
+        [SuppressErrorFactory]
         [DecoyTimeGeneratorAttributeFactory]
         [HttpPost]
         [Route("/v1/stopkeys")]
