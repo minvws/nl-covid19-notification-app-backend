@@ -22,15 +22,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
         public DateTime ValidUntil { get; set; }
 
         [MinLength(6), MaxLength(6)]
-        public string? LabConfirmationId { get; set; }
+        public string LabConfirmationId { get; set; }
+
+        [MinLength(7), MaxLength(7)]
+        public string GGDKey { get; set; }
         
         [MinLength(32), MaxLength(32)]
         public byte[] ConfirmationKey { get; set; }
 
         [MinLength(32), MaxLength(32)]
         public byte[] BucketId { get; set; }
-
-        //public bool CanPublish { get; set; } // == Has Keys + AuthorisedByCaregiver != null
 
         /// <summary>
         /// From Icc 
@@ -40,13 +41,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
         /// <summary>
         /// From Icc 
         /// </summary>
+        public bool SubjectHasSymptoms{ get; set; }
         public DateTime? DateOfSymptomsOnset { get; set; }
+        public DateTime? DateOfTest { get; set; }
 
         /// <summary>
         /// Rotating auth token for Icc Portal refresh to see KeysLastUploaded time.
         /// </summary>
         [Obsolete("PollToken will be obsolete for new version of the ICC backend API")]
-        public string? PollToken { get; set; }
+        public string PollToken { get; set; }
 
         public virtual ICollection<TekEntity> Teks { get; set; } = new List<TekEntity>();
     }

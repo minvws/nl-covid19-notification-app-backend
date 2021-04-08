@@ -11,8 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
         /// </summary>
         public static class CaregiversPortalApi
         {
-            private const string Prefix = "/CaregiversPortalApi/v1";
-            public const string LabConfirmation = Prefix + "/labconfirm";
+            public const string PubTek = "/pubtek"; // Successor of LabConfirmation
         }
     }
 }
