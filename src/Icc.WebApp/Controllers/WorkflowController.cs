@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
         }
 
         [HttpPut]
-        [Route(EndPointNames.CaregiversPortalApi.PubTek)]
+        [Route("/pubtek")]
         public async Task<IActionResult> PutPubTek([FromBody] PublishTekArgs args)
         {
             if (_restApiClient == null) throw new ArgumentNullException(nameof(_restApiClient));

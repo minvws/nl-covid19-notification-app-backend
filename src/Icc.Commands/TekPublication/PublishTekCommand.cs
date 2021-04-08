@@ -56,8 +56,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
                 _logger.WriteKeyReleaseWorkflowStateNotFound(args.GGDKey);
                 return false;
             }
-            
-
 
             wf.AuthorisedByCaregiver = _dateTimeProvider.Snapshot;
             wf.LabConfirmationId = null; //Clear from usable key range

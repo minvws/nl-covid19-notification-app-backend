@@ -31,14 +31,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN
 
             var factor = 1;
             var sum = 0;
+            var charSet = _config.CharacterSet;
+
             for (var index = value.Length - 1; index >= 0; --index)
             {
-                var codePoint = Array.IndexOf(_config.CharacterSet, value[index]);
+                var codePoint = Array.IndexOf(charSet, value[index]);
                 var addend = factor * codePoint;
                 factor = factor == 2 ? 1 : 2;
-                sum += addend / _config.CharacterSet.Length + addend % _config.CharacterSet.Length;
+                sum += addend / charSet.Length + addend % charSet.Length;
             }
-            return sum % _config.CharacterSet.Length == 0;
+            return sum % charSet.Length == 0;
         }
     }
 }

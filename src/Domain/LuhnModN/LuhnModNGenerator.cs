@@ -51,8 +51,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN
             var remainder = sum % n;
             var checkCodePoint = (n - remainder) % n;
 
-            // Trace.WriteLine($"PubTEK: {new string(input)} -> CheckCode {_config.CharacterSet[checkCodePoint]}");
-
             return _config.CharacterSet[checkCodePoint];
         }
     }

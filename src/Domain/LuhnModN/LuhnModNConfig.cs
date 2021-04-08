@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN
 
             if (valueLength < 2)
             {
-                throw new ArgumentException();
+                throw new ArgumentException($"{nameof(valueLength)} cannot be shorter than 2 positions");
             }
 
             CharacterSet = characterSet.ToCharArray();

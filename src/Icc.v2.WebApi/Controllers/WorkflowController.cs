@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Controllers
         /// <param name="publishTekService"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route(EndPointNames.CaregiversPortalApi.PubTek)]
+        [Route("/pubtek")]
         public async Task<ActionResult<PublishTekResponse>> PutPubTek([FromBody] PublishTekArgs args, [FromServices] IPublishTekService publishTekService)
         {
             if (publishTekService == null) throw new ArgumentNullException(nameof(publishTekService));
