@@ -41,6 +41,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
         private const int WritingNewPollToken = Base + 24;
         private const int DuplicatePollTokenFound = Base + 25;
         private const int PollTokenCommit = Base + 26;
+        
+        private const int PubTekStart = Base + 27;
+        private const int PublishTekCommit = Base + 28;
 
         public static void WriteHttpFail(this ILogger logger, Uri? uri, HttpStatusCode status, string response)
         {
@@ -261,5 +264,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
                 Name, PollTokenCommit);
         }
 
+        public static void WritePubTekStart(this ILogger logger)
+        {
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+
+            logger.LogInformation("[{name}/{id}] PUT PubTEK triggered.",
+                Name, PubTekStart);
+        }
+
+        public static void WriteWritingPublishTek(this ILogger logger)
+        {
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+
+            logger.LogDebug("[{name}/{id}] Writing.",
+                Name, PublishTekCommit);
+        }
     }
 }

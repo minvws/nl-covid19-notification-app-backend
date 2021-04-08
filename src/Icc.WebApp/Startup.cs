@@ -17,6 +17,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.Exte
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Code;
@@ -30,17 +31,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
 {
     public class Startup
     {
-        private readonly bool _IsDev;
-        private readonly bool _UseTestJwtClaims;
-        private readonly IConfiguration _Configuration;
-        private readonly IWebHostEnvironment _WebHostEnvironment;
+        private readonly bool _isDev;
+        private readonly bool _useTestJwtClaims;
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _WebHostEnvironment = env;
-            _IsDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
-            _UseTestJwtClaims = !env.IsProduction();
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _webHostEnvironment = env;
+            _isDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
+            _useTestJwtClaims = !env.IsProduction();
         }
 
 
@@ -54,7 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
                 configuration.RootPath = "ClientApp/dist";
             });
 
-            var iccPortalConfig = new IccPortalConfig(_Configuration);
+            var iccPortalConfig = new IccPortalConfig(_configuration);
             services.AddRestApiClient(iccPortalConfig);
 
             services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
@@ -62,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
             services.AddTransient<IAuthCodeGenerator, AuthCodeGenerator>();
             services.AddSingleton<IAuthCodeService, AuthCodeService>();
 
-            services.AddScoped<HttpPostAuthoriseCommand>();
+            //services.AddScoped<HttpPostAuthoriseCommand>();
             services.AddScoped<HttpGetLogoutCommand>();
             services.AddScoped<HttpGetUserClaimCommand>();
             services.AddScoped<HttpPostAuthorizationTokenCommand>();
@@ -71,15 +72,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
 
             services.AddSingleton<IIccPortalConfig, IccPortalConfig>();
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
-            services.AddTransient<AuthorisationArgsValidator>();
-            services.AddTransient<AuthorisationWriterCommand>();
+            services.AddTransient<ILuhnModNConfig, LuhnModNConfig>();
+            services.AddTransient<ILuhnModNValidator, LuhnModNValidator>();
+            services.AddTransient<ILuhnModNGenerator, LuhnModNGenerator>();
+
             services.AddTransient<IJwtService, JwtService>();
             
             services.AddSingleton<IAuthCodeService, AuthCodeService>();
             services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
             services.AddCors();
 
-            if (_UseTestJwtClaims)
+            if (_useTestJwtClaims)
             {
                 services.AddTransient<IJwtClaimValidator, TestJwtClaimValidator>();
                 services.AddSingleton<TestJwtGeneratorService>();
@@ -91,16 +94,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
 
             services.AddDistributedSqlServerCache(options =>
             {
-                options.ConnectionString = _Configuration.GetConnectionString(DatabaseConnectionStringNames.IccDistMemCache);
+                options.ConnectionString = _configuration.GetConnectionString(DatabaseConnectionStringNames.IccDistMemCache);
                 options.SchemaName = "dbo";
                 options.TableName = "Cache";
             });
 
-            //services.AddTransient(x => x.CreateDbContext(y => new DataProtectionKeysDbContext(y), DatabaseConnectionStringNames.DataProtectionKeys));
             services.AddTransient(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
-
-            //services.AddDataProtection().PersistKeysToDbContext<DataProtectionKeysDbContext>();
-
             services.AddTransient<WriteNewPollTokenWriter>();
             services.AddTransient<IPollTokenService, PollTokenService>();
 
@@ -161,7 +160,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
 
         private void StartupIdentityHub(IServiceCollection services)
         {
-            var iccIdentityHubConfig = new IccIdentityHubConfig(_Configuration);
+            var iccIdentityHubConfig = new IccIdentityHubConfig(_configuration);
 
             services.AddAuthentication(auth =>
                 {
@@ -180,9 +179,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
                 });
 
 
-            var iccPortalConfig = new IccPortalConfig(_Configuration);
+            var iccPortalConfig = new IccPortalConfig(_configuration);
 
-            var policyAuthorizationOptions = new PolicyAuthorizationOptions(_WebHostEnvironment, iccPortalConfig);
+            var policyAuthorizationOptions = new PolicyAuthorizationOptions(_webHostEnvironment, iccPortalConfig);
             services.AddAuthorization(policyAuthorizationOptions.Build);
 
             services.AddTransient<ITheIdentityHubService, TheIdentityHubService>();

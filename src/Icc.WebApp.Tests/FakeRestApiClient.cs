@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
 
 namespace App.IccPortal.Tests
 {
@@ -33,12 +34,22 @@ namespace App.IccPortal.Tests
 
         public async Task<IActionResult> PostAsync<T>(T model, string requestUri, CancellationToken token) where T : class
         {
-            var args = (AuthorisationArgs)Convert.ChangeType(model, typeof(AuthorisationArgs));
-            if (args.LabConfirmationId == "111111")
+            var args = (PublishTekArgs)Convert.ChangeType(model, typeof(PublishTekArgs));
+            if (args.GGDKey == "111111")
             {
                 return new BadRequestResult();
             }
-            return new OkObjectResult("");
+            return new OkObjectResult(new PublishTekResponse { Valid = true });
+        }
+
+        public async Task<IActionResult> PutAsync<T>(T model, string requestUri, CancellationToken token) where T : class
+        {
+            var args = (PublishTekArgs)Convert.ChangeType(model, typeof(PublishTekArgs));
+            if (args.GGDKey == "111111")
+            {
+                return new BadRequestResult();
+            }
+            return new OkObjectResult(new PublishTekResponse{ Valid = true });
         }
     }
 }
