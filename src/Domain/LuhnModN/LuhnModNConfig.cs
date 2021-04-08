@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN
         {
             if (characterSet.Distinct().Count() != characterSet.Length)
             {
-                throw new ArgumentException("Duplicates characters.", nameof(characterSet));
+                throw new ArgumentException("Duplicate characters.", nameof(characterSet));
             }
 
             if (valueLength < 2)
