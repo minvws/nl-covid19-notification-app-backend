@@ -2,6 +2,11 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -13,11 +18,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
@@ -90,7 +90,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             // Assert
             var items = await _WorkflowDbProvider.CreateNew().KeyReleaseWorkflowStates.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            Assert.Equal(1, items.Count);
+            Assert.Single(items);
         }
 
         private TekReleaseWorkflowStateEntity Create(int value)
