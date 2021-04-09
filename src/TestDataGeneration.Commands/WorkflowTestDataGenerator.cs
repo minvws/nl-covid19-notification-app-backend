@@ -29,9 +29,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
         private readonly IUtcDateTimeProvider _utcDateTimeProvider = new StandardUtcDateTimeProvider();
         private readonly StandardRandomNumberGenerator _rng = new StandardRandomNumberGenerator();
         private readonly IWrappedEfExtensions _efExtensions;
-        private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _countriesOut = new Mock<IOutboundFixedCountriesOfInterestSetting>();
-        private readonly ILuhnModNConfig _luhnModNConfig = new LuhnModNConfig();
-        private Mock<ILuhnModNGenerator> _luhnModNGeneratorMock;
 
         public WorkflowTestDataGenerator(IDbProvider<WorkflowDbContext> workflowDbContextProvider, IDbProvider<DkSourceDbContext> dkSourceDbContextProvider, IWrappedEfExtensions efExtensions)
         {
@@ -50,7 +47,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
 
         public async Task SnapshotToDks()
         {
-            _countriesOut.Setup(x => x.CountriesOfInterest).Returns(new[] { "DE" });
+            var countriesOutMock = new Mock<IOutboundFixedCountriesOfInterestSetting>();
+            countriesOutMock.Setup(x => x.CountriesOfInterest).Returns(new[] { "DE" });
+
             await new SnapshotWorkflowTeksToDksCommand(_loggerFactory.CreateLogger<SnapshotWorkflowTeksToDksCommand>(),
                 _utcDateTimeProvider,
                 new TransmissionRiskLevelCalculationMk2(),
@@ -60,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                 _efExtensions,
                 new IDiagnosticKeyProcessor[] {
                     new ExcludeTrlNoneDiagnosticKeyProcessor(),
-                    new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_countriesOut.Object),
+                    new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(countriesOutMock.Object),
                     new NlToEfgsDsosDiagnosticKeyProcessorMk1()
                 }
             ).ExecuteAsync();
@@ -68,11 +67,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
 
         public async Task GenerateWorkflowsAsync(int workflowCount = 25, int tekPerWorkflowCount = 4)
         {
-            var m1 = new Mock<IWorkflowConfig>(MockBehavior.Strict);
-            m1.Setup(x => x.TimeToLiveMinutes).Returns(10000);
-            m1.Setup(x => x.PermittedMobileDeviceClockErrorMinutes).Returns(30);
+            var workflowConfigMock = new Mock<IWorkflowConfig>(MockBehavior.Strict);
+            workflowConfigMock.Setup(x => x.TimeToLiveMinutes).Returns(10000);
+            workflowConfigMock.Setup(x => x.PermittedMobileDeviceClockErrorMinutes).Returns(30);
 
-            _luhnModNGeneratorMock = new Mock<ILuhnModNGenerator>();
+            var luhnModNGeneratorMock = new Mock<ILuhnModNGenerator>();
+            var luhnModNConfig = new LuhnModNConfig();
 
             Func<TekReleaseWorkflowStateCreate> createWf = () =>
                 new TekReleaseWorkflowStateCreate(
@@ -80,10 +80,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                     _utcDateTimeProvider,
                     _rng,
                     new LabConfirmationIdService(_rng),
-                    new TekReleaseWorkflowTime(m1.Object),
+                    new TekReleaseWorkflowTime(workflowConfigMock.Object),
                     new RegisterSecretLoggingExtensions(_loggerFactory.CreateLogger<RegisterSecretLoggingExtensions>()),
-                    _luhnModNConfig,
-                    _luhnModNGeneratorMock.Object
+                    luhnModNConfig,
+                    luhnModNGeneratorMock.Object
                 );
 
             var gen = new GenerateTeksCommand(_rng, _workflowDbContextProvider.CreateNewWithTx, createWf);
