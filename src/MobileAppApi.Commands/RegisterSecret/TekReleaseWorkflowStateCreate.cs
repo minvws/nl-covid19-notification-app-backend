@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
@@ -17,39 +18,48 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 {
     public class TekReleaseWorkflowStateCreate : ISecretWriter
     {
-        private readonly WorkflowDbContext _WorkflowDbContext;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly IRandomNumberGenerator _NumberGenerator;
-        private readonly ILabConfirmationIdService _LabConfirmationIdService;
-        //private readonly ILuhnModNGenerator _LuhnModNGenerator;
-        private readonly IWorkflowTime _WorkflowTime;
-        private readonly IWorkflowConfig _WorkflowConfig;
-        private readonly RegisterSecretLoggingExtensions _Logger;
+        private readonly WorkflowDbContext _workflowDbContext;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly IRandomNumberGenerator _numberGenerator;
+        private readonly ILabConfirmationIdService _labConfirmationIdService;
+        private readonly ILuhnModNGenerator _luhnModNGenerator;
+        private readonly ILuhnModNConfig _luhnModNConfig;
+        private readonly IWorkflowTime _workflowTime;
+        private readonly RegisterSecretLoggingExtensions _logger;
 
         private const int AttemptCountMax = 10;
         private int _AttemptCount;
 
-        public TekReleaseWorkflowStateCreate(WorkflowDbContext dbContextProvider, IUtcDateTimeProvider dateTimeProvider, IRandomNumberGenerator numberGenerator, ILabConfirmationIdService labConfirmationIdService, IWorkflowTime workflowTime, IWorkflowConfig workflowConfig, RegisterSecretLoggingExtensions logger)
+        public TekReleaseWorkflowStateCreate(
+            WorkflowDbContext dbContextProvider,
+            IUtcDateTimeProvider dateTimeProvider,
+            IRandomNumberGenerator numberGenerator,
+            ILabConfirmationIdService labConfirmationIdService,
+            IWorkflowTime workflowTime,
+            RegisterSecretLoggingExtensions logger,
+            ILuhnModNConfig luhnModNConfig,
+            ILuhnModNGenerator luhnModNGenerator)
         {
-            _WorkflowDbContext = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _NumberGenerator = numberGenerator ?? throw new ArgumentNullException(nameof(numberGenerator));
-            _LabConfirmationIdService = labConfirmationIdService ?? throw new ArgumentNullException(nameof(labConfirmationIdService));
-            _WorkflowTime = workflowTime ?? throw new ArgumentNullException(nameof(workflowTime));
-            _WorkflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _workflowDbContext = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _numberGenerator = numberGenerator ?? throw new ArgumentNullException(nameof(numberGenerator));
+            _labConfirmationIdService = labConfirmationIdService ?? throw new ArgumentNullException(nameof(labConfirmationIdService));
+            _workflowTime = workflowTime ?? throw new ArgumentNullException(nameof(workflowTime));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _luhnModNConfig = luhnModNConfig ?? throw new ArgumentNullException(nameof(luhnModNConfig));
+            _luhnModNGenerator = luhnModNGenerator ?? throw new ArgumentNullException(nameof(luhnModNGenerator));
         }
 
         public async Task<TekReleaseWorkflowStateEntity> ExecuteAsync()
         {
             var entity = await BuildEntityAsync();
 
-            _Logger.WriteWritingStart();
+            _logger.WriteWritingStart();
 
             var success = WriteAttempt(entity, includeLuhnModNDigit: false);
             while (!success)
             {
-                _WorkflowDbContext.BeginTransaction();
+                _workflowDbContext.BeginTransaction();
                 entity = await BuildEntityAsync();
                 success = WriteAttempt(entity);
             }
@@ -61,12 +71,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         {
             var entity = await BuildEntityAsync();
 
-            _Logger.WriteWritingStart();
+            _logger.WriteWritingStart();
 
             var success = WriteAttempt(entity);
             while (!success)
             {
-                _WorkflowDbContext.BeginTransaction();
+                _workflowDbContext.BeginTransaction();
                 entity = await BuildEntityAsync();
                 success = WriteAttempt(entity);
             }
@@ -78,37 +88,37 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         {
             if (++_AttemptCount > AttemptCountMax)
             {
-                _Logger.WriteMaximumCreateAttemptsReached();
+                _logger.WriteMaximumCreateAttemptsReached();
                 throw new InvalidOperationException("Maximum create attempts reached.");
             }
 
             if (_AttemptCount > 1)
             {
-                _Logger.WriteDuplicatesFound(_AttemptCount);
+                _logger.WriteDuplicatesFound(_AttemptCount);
             }
 
             if (includeLuhnModNDigit)
             {
-                //item.GGDKey = _LuhnModNGenerator.Next();
+                item.GGDKey = _luhnModNGenerator.Next(_luhnModNConfig.ValueLength);
             }
             else
             {
-                item.LabConfirmationId = _LabConfirmationIdService.Next();
+                item.LabConfirmationId = _labConfirmationIdService.Next();
             }
 
-            item.BucketId = _NumberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount);
-            item.ConfirmationKey = _NumberGenerator.NextByteArray(UniversalConstants.ConfirmationKeyByteCount);
+            item.BucketId = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount);
+            item.ConfirmationKey = _numberGenerator.NextByteArray(UniversalConstants.ConfirmationKeyByteCount);
 
             try
             {
-                _WorkflowDbContext.SaveAndCommit();
-                _Logger.WriteCommitted();
+                _workflowDbContext.SaveAndCommit();
+                _logger.WriteCommitted();
                 return true;
             }
             catch (DbUpdateException ex)
             {
-                _WorkflowDbContext.Database.CurrentTransaction.RollbackAsync();
-                _WorkflowDbContext.Remove(item);
+                _workflowDbContext.Database.CurrentTransaction.RollbackAsync();
+                _workflowDbContext.Remove(item);
 
                 if (CanRetry(ex))
                 {
@@ -144,11 +154,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         {
             var entity = new TekReleaseWorkflowStateEntity
             {
-                Created = _DateTimeProvider.Snapshot.Date,
-                ValidUntil = _WorkflowTime.Expiry(_DateTimeProvider.Snapshot)
+                Created = _dateTimeProvider.Snapshot.Date,
+                ValidUntil = _workflowTime.Expiry(_dateTimeProvider.Snapshot)
             };
 
-            await _WorkflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
+            await _workflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
 
             return entity;
         }

@@ -12,6 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret;
@@ -49,6 +50,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
             services.AddTransient<ISignatureValidator, SignatureValidator>();
             services.AddTransient<IWorkflowTime, TekReleaseWorkflowTime>();
+
+            services.AddTransient<ILuhnModNConfig, LuhnModNConfig>();
+            services.AddTransient<ILuhnModNGenerator, LuhnModNGenerator>();
+
             services.AddTransient<IPostTeksValidator, PostTeksArgsValidator>();
             services.AddTransient<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddTransient<ITekListWorkflowFilter, BackwardCompatibleV15TekListWorkflowFilter>();

@@ -69,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
                 {
                     ConfirmationKey = Convert.ToBase64String(entity.ConfirmationKey),
                     BucketId = Convert.ToBase64String(entity.BucketId),
-                    GGDKey = string.Empty, //entity.GGDKey,
+                    GGDKey = entity.GGDKey,
                     Validity = _workflowTime.TimeToLiveSeconds(_utcDateTimeProvider.Snapshot, entity.ValidUntil)
                 };
 
