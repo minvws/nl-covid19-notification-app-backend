@@ -52,15 +52,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
         private readonly ManifestUpdateCommand _manifestJob;
         private readonly NlContentResignExistingV1ContentCommand _resign;
         private readonly StandardRandomNumberGenerator _rng;
-        private readonly ILuhnModNConfig _luhnModNConfig = new LuhnModNConfig();
-        private readonly Mock<ILuhnModNGenerator> _luhnModNGeneratorMock;
 
-        public EksEngineTests(IDbProvider<WorkflowDbContext> workflowDbProvider, IDbProvider<DkSourceDbContext> dkSourceDbProvider, IDbProvider<EksPublishingJobDbContext> eksPublishingJobDbProvider, IDbProvider<ContentDbContext> contentDbProvider, IWrappedEfExtensions efExtensions, Mock<ILuhnModNGenerator> luhnModNGeneratorMock)
+        public EksEngineTests(IDbProvider<WorkflowDbContext> workflowDbProvider, IDbProvider<DkSourceDbContext> dkSourceDbProvider, IDbProvider<EksPublishingJobDbContext> eksPublishingJobDbProvider, IDbProvider<ContentDbContext> contentDbProvider, IWrappedEfExtensions efExtensions)
         {
             _lf = new LoggerFactory();
 
             _efExtensions = efExtensions;
-            _luhnModNGeneratorMock = luhnModNGeneratorMock;
             _workflowDbProvider = workflowDbProvider;
             _dkSourceDbProvider = dkSourceDbProvider;
             _eksPublishingJobDbProvider = eksPublishingJobDbProvider;
@@ -162,6 +159,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             workflowConfig.Setup(x => x.TimeToLiveMinutes).Returns(24 * 60 * 60); //Approx
             workflowConfig.Setup(x => x.PermittedMobileDeviceClockErrorMinutes).Returns(30);
 
+            var luhnModNConfig = new LuhnModNConfig();
+            var luhnModNGeneratorMock = new Mock<ILuhnModNGenerator>();
+
             Func<TekReleaseWorkflowStateCreate> createWf = () =>
                 new TekReleaseWorkflowStateCreate(
                     _workflowDbProvider.CreateNewWithTx(),
@@ -170,8 +170,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                     new LabConfirmationIdService(_rng),
                     new TekReleaseWorkflowTime(workflowConfig.Object),
                     new RegisterSecretLoggingExtensions(_lf.CreateLogger<RegisterSecretLoggingExtensions>()),
-                    _luhnModNConfig,
-                    _luhnModNGeneratorMock.Object
+                    luhnModNConfig,
+                    luhnModNGeneratorMock.Object
                 );
 
             await new GenerateTeksCommand(_rng, _workflowDbProvider.CreateNewWithTx, createWf).ExecuteAsync(new GenerateTeksCommandArgs { TekCountPerWorkflow = 1, WorkflowCount = 1 });
