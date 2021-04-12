@@ -81,9 +81,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                     _rng,
                     new LabConfirmationIdService(_rng),
                     new TekReleaseWorkflowTime(workflowConfigMock.Object),
-                    new RegisterSecretLoggingExtensions(_loggerFactory.CreateLogger<RegisterSecretLoggingExtensions>()),
-                    luhnModNConfig,
-                    luhnModNGeneratorMock.Object
+                    new RegisterSecretLoggingExtensions(_loggerFactory.CreateLogger<RegisterSecretLoggingExtensions>())
                 );
 
             var gen = new GenerateTeksCommand(_rng, _workflowDbContextProvider.CreateNewWithTx, createWf);

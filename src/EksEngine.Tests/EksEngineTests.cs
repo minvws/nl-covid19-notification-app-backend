@@ -169,9 +169,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                     _rng,
                     new LabConfirmationIdService(_rng),
                     new TekReleaseWorkflowTime(workflowConfig.Object),
-                    new RegisterSecretLoggingExtensions(_lf.CreateLogger<RegisterSecretLoggingExtensions>()),
-                    luhnModNConfig,
-                    luhnModNGeneratorMock.Object
+                    new RegisterSecretLoggingExtensions(_lf.CreateLogger<RegisterSecretLoggingExtensions>())
                 );
 
             await new GenerateTeksCommand(_rng, _workflowDbProvider.CreateNewWithTx, createWf).ExecuteAsync(new GenerateTeksCommandArgs { TekCountPerWorkflow = 1, WorkflowCount = 1 });

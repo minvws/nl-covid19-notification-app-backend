@@ -49,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         public async Task<IActionResult> PostSecret([FromServices] HttpPostRegisterSecret command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-            _LoggerRegisterSecret.WriteStartSecret();
+
             return await command.ExecuteAsync();
         }
 
@@ -58,11 +58,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         [DecoyTimeAggregatorAttributeFactory]
         [HttpPost]
         [Route("/v2/register")]
-        public async Task<IActionResult> PostSecretV2([FromServices] HttpPostRegisterSecret command)
+        public async Task<IActionResult> PostSecretV2([FromServices] HttpPostRegisterSecretV2 command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-            _LoggerRegisterSecret.WriteStartSecret();
-            return await command.ExecuteV2Async();
+
+            return await command.ExecuteAsync();
         }
 
         [ResponsePaddingFilterFactory]
