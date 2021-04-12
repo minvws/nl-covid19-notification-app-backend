@@ -18,13 +18,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
     [Route("[controller]")]
     public class WorkflowController : ControllerBase
     {
-        private readonly RegisterSecretLoggingExtensions _LoggerRegisterSecret;
         private readonly PostKeysLoggingExtensions _LoggerPostKeys;
         private readonly DecoyKeysLoggingExtensions _LoggerDecoyKeys;
 
-        public WorkflowController(RegisterSecretLoggingExtensions loggerRegisterSecret, PostKeysLoggingExtensions loggerPostKeys, DecoyKeysLoggingExtensions LoggerDecoyKeys)
+        public WorkflowController(PostKeysLoggingExtensions loggerPostKeys, DecoyKeysLoggingExtensions LoggerDecoyKeys)
         {
-            _LoggerRegisterSecret = loggerRegisterSecret ?? throw new ArgumentNullException(nameof(loggerRegisterSecret));
             _LoggerPostKeys = loggerPostKeys ?? throw new ArgumentNullException(nameof(loggerPostKeys));
             _LoggerDecoyKeys = LoggerDecoyKeys ?? throw new ArgumentNullException(nameof(LoggerDecoyKeys));
         }
