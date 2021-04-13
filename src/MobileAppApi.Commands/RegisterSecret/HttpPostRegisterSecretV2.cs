@@ -9,27 +9,24 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret
 {
-    public class HttpPostRegisterSecret
+    public class HttpPostRegisterSecretV2
     {
         private readonly ISecretWriter _writer;
-        private readonly RegisterSecretLoggingExtensions _logger;
+        private readonly RegisterSecretLoggingExtensionsV2 _logger;
         private readonly IWorkflowTime _workflowTime;
         private readonly IUtcDateTimeProvider _utcDateTimeProvider;
-        private readonly ILabConfirmationIdFormatter _labConfirmationIdFormatter;
 
-        public HttpPostRegisterSecret(
+        public HttpPostRegisterSecretV2(
             ISecretWriter writer,
-            RegisterSecretLoggingExtensions logger,
+            RegisterSecretLoggingExtensionsV2 logger,
             IWorkflowTime workflowTime,
-            IUtcDateTimeProvider utcDateTimeProvider,
-            ILabConfirmationIdFormatter labConfirmationIdFormatter
+            IUtcDateTimeProvider utcDateTimeProvider
             )
         {
             _writer = writer ?? throw new ArgumentNullException(nameof(writer));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _workflowTime = workflowTime ?? throw new ArgumentNullException(nameof(workflowTime));
             _utcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
-            _labConfirmationIdFormatter = labConfirmationIdFormatter ?? throw new ArgumentNullException(nameof(labConfirmationIdFormatter));
         }
 
         public async Task<IActionResult> ExecuteAsync()
@@ -40,11 +37,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             {
                 var entity = await _writer.ExecuteAsync();
 
-                var result = new EnrollmentResponse
+                var result = new EnrollmentResponseV2
                 {
                     ConfirmationKey = Convert.ToBase64String(entity.ConfirmationKey),
                     BucketId = Convert.ToBase64String(entity.BucketId),
-                    LabConfirmationId = _labConfirmationIdFormatter.Format(entity.LabConfirmationId), //Architects choice to use UI format in response.
+                    GGDKey = entity.GGDKey,
                     Validity = _workflowTime.TimeToLiveSeconds(_utcDateTimeProvider.Snapshot, entity.ValidUntil)
                 };
 
@@ -53,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             catch (Exception ex)
             {
                 _logger.WriteFailed(ex);
-                return new OkObjectResult(new EnrollmentResponse { Validity = -1 });
+                return new OkObjectResult(new EnrollmentResponseV2 { Validity = -1 });
             }
             finally
             {

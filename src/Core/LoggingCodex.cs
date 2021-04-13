@@ -41,5 +41,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public const int RemoveExpiredIks = 4300; //not entirely sure yet
         public const int RemoveExpiredManifestV3 = 4400;
         public const int RemoveExpiredManifestV4 = 4500;
+        public const int RegisterV2 = 4600;
     }
 }

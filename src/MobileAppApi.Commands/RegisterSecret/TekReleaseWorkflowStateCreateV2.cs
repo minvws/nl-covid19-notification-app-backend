@@ -16,32 +16,35 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entity
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret
 {
-    public class TekReleaseWorkflowStateCreate : ISecretWriter
+    public class TekReleaseWorkflowStateCreateV2 : ISecretWriter
     {
         private readonly WorkflowDbContext _workflowDbContext;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly IRandomNumberGenerator _numberGenerator;
-        private readonly ILabConfirmationIdService _labConfirmationIdService;
+        private readonly ILuhnModNGenerator _luhnModNGenerator;
+        private readonly ILuhnModNConfig _luhnModNConfig;
         private readonly IWorkflowTime _workflowTime;
-        private readonly RegisterSecretLoggingExtensions _logger;
+        private readonly RegisterSecretLoggingExtensionsV2 _logger;
 
         private const int AttemptCountMax = 10;
         private int _AttemptCount;
 
-        public TekReleaseWorkflowStateCreate(
+        public TekReleaseWorkflowStateCreateV2(
             WorkflowDbContext dbContextProvider,
             IUtcDateTimeProvider dateTimeProvider,
             IRandomNumberGenerator numberGenerator,
-            ILabConfirmationIdService labConfirmationIdService,
             IWorkflowTime workflowTime,
-            RegisterSecretLoggingExtensions logger)
+            RegisterSecretLoggingExtensionsV2 logger,
+            ILuhnModNConfig luhnModNConfig,
+            ILuhnModNGenerator luhnModNGenerator)
         {
             _workflowDbContext = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _numberGenerator = numberGenerator ?? throw new ArgumentNullException(nameof(numberGenerator));
-            _labConfirmationIdService = labConfirmationIdService ?? throw new ArgumentNullException(nameof(labConfirmationIdService));
             _workflowTime = workflowTime ?? throw new ArgumentNullException(nameof(workflowTime));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _luhnModNConfig = luhnModNConfig ?? throw new ArgumentNullException(nameof(luhnModNConfig));
+            _luhnModNGenerator = luhnModNGenerator ?? throw new ArgumentNullException(nameof(luhnModNGenerator));
         }
 
         public async Task<TekReleaseWorkflowStateEntity> ExecuteAsync()
@@ -74,7 +77,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
                 _logger.WriteDuplicatesFound(_AttemptCount);
             }
 
-            item.LabConfirmationId = _labConfirmationIdService.Next();
+            item.GGDKey = _luhnModNGenerator.Next(_luhnModNConfig.ValueLength);
             item.BucketId = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount);
             item.ConfirmationKey = _numberGenerator.NextByteArray(UniversalConstants.ConfirmationKeyByteCount);
 
@@ -112,7 +115,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             return errors.Any(x =>
                 x.Number == 2601
                 && x.Message.Contains("TekReleaseWorkflowState")
-                && (x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.LabConfirmationId))
+                && (x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.GGDKey))
                     || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.ConfirmationKey))
                     || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.BucketId)))
             );
