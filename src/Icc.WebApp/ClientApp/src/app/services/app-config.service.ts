@@ -25,5 +25,4 @@ export class AppConfigService implements IAppConfigService {
 
 export interface IAppConfig {
     appName: string;
-    authHost: string;
 }

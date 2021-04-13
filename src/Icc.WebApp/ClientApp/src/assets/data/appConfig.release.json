@@ -1,4 +1,3 @@
 {
-    "appName": "CoronaMelder",
-    "authHost": "#{Deploy.ICCBackend.Hostname.External_Hostname}#"
+    "appName": "CoronaMelder"
 }

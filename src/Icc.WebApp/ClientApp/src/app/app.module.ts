@@ -23,9 +23,8 @@ import {ValidateIccConfirmComponent} from './validate-flow/validate-icc-confirm/
 import {ValidateIccStartComponent} from './validate-flow/validate-icc-start/validate-icc-start.component';
 
 import {ValidateIccFinalComponent} from './validate-flow/validate-icc-final/validate-icc-final.component';
-import {AuthGuard, ErrorInterceptor} from './helpers';
+import {ErrorInterceptor} from './helpers';
 import {ImageCarousselComponent} from './components/image-caroussel/image-caroussel.component';
-import {AuthCallbackComponent} from './auth/auth-callback.component';
 
 import {APP_INITIALIZER} from '@angular/core';
 import {AppConfigService, IAppConfig} from './services/app-config.service';
@@ -61,11 +60,9 @@ const appInitializer = (appConfig: AppConfigService) => {
         FormsModule,
         RouterModule.forRoot([
             {path: '', component: HomeComponent},
-            {path: 'auth/callback', component: AuthCallbackComponent},
             {
                 path: 'validate',
                 component: ValidateIccComponent,
-                canActivate: [AuthGuard],
                 children: [
                     {
                         path: 'start',

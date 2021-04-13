@@ -6,7 +6,6 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using App.IccPortal.Tests;
-using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,34 +28,6 @@ namespace Icc.WebApp.Tests
         }
 
         [Fact]
-        public async Task PutPubTek_ReturnsUnauthorized_When_NotAuthorized()
-        {
-            // Arrange
-            var args = new PublishTekArgs
-            {
-                GGDKey = "L8T6LJ",
-                DateOfSymptomsOnset = DateTime.Today
-            };
-
-            var client = _factory.CreateClient();
-
-
-            var source = new CancellationTokenSource();
-            var token = source.Token;
-
-            var content = new StringContent(JsonSerializer.Serialize(args))
-            {
-                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
-            };
-
-            // Act
-            var result = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
-        }
-
-        [Fact]
         public async Task PutPubTek_ReturnsFalseResult_When_5Digit_PubTEK_IsSend()
         {
             // Arrange
@@ -74,7 +45,6 @@ namespace Icc.WebApp.Tests
                         services.Remove(descriptor);
 
                         services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
-                        services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
 
                     });
                 })
@@ -117,7 +87,6 @@ namespace Icc.WebApp.Tests
                         services.Remove(descriptor);
 
                         services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
-                        services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
 
                     });
                 })
@@ -160,7 +129,6 @@ namespace Icc.WebApp.Tests
                     services.Remove(descriptor);
 
                     services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
-                    services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
 
                 });
             })
@@ -204,7 +172,6 @@ namespace Icc.WebApp.Tests
                         services.Remove(descriptor);
 
                         services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
-                        services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
                     });
                 })
                 .CreateClient();
