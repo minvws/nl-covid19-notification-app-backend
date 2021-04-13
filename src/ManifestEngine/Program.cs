@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
         private static void Start(IServiceProvider services, string[] args)
         {
             var job = services.GetRequiredService<ManifestUpdateCommand>();
-            job.ExecuteV1Async().GetAwaiter().GetResult();
+            job.ExecuteV2Async().GetAwaiter().GetResult();
             job.ExecuteV3Async().GetAwaiter().GetResult();
             job.ExecuteV4Async().GetAwaiter().GetResult();
 

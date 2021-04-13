@@ -65,7 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         [Fact]
         public async Task EmptySystem()
         {
-            await CreateManifestJob().ExecuteV1Async();
+            await CreateManifestJob().ExecuteV2Async();
             await _Resign.ExecuteAsync();
 
             Assert.Equal(1, _ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV2));
@@ -76,9 +76,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         [Fact]
         public async Task RunTwice()
         {
-            await CreateManifestJob().ExecuteV1Async();
+            await CreateManifestJob().ExecuteV2Async();
             await _Resign.ExecuteAsync();
-            await CreateManifestJob().ExecuteV1Async();
+            await CreateManifestJob().ExecuteV2Async();
             //await _Resign.ExecuteAsync();
 
             Assert.Equal(1, _ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV2));
