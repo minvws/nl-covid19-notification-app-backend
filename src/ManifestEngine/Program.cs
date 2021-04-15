@@ -35,10 +35,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
         private static void Start(IServiceProvider services, string[] args)
         {
             var job = services.GetRequiredService<ManifestUpdateCommand>();
-            job.ExecuteV2Async().GetAwaiter().GetResult();
-            job.ExecuteV3Async().GetAwaiter().GetResult();
-            job.ExecuteV4Async().GetAwaiter().GetResult();
-
+            job.ExecuteAllAsync().GetAwaiter().GetResult();
+           
             var job2 = services.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             job2.ExecuteAsync().GetAwaiter().GetResult();
         }
@@ -59,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
-            services.AddTransient<ManifestBuilder>();
+            services.AddTransient<ManifestV2Builder>();
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
 
             services.AddSingleton<GetCdnContentLoggingExtensions>();

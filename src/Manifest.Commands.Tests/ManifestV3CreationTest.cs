@@ -79,15 +79,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
                         );
 
             var result = new ManifestUpdateCommand(
-                new ManifestBuilder(
+                new ManifestV2Builder(
                     _ContentDbProvider.CreateNew(),
                     eksConfigMock.Object,
                     dateTimeProvider),
-                new ManifestBuilderV3(
+                new ManifestV3Builder(
                     _ContentDbProvider.CreateNew(),
                     eksConfigMock.Object,
                     dateTimeProvider),
-                new ManifestBuilderV4(
+                new ManifestV4Builder(
                     _ContentDbProvider.CreateNew(),
                     eksConfigMock.Object,
                     dateTimeProvider),

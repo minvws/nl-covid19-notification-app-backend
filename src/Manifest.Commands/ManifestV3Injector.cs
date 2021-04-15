@@ -17,8 +17,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
     {
         public static void ManifestForV4Startup(this IServiceCollection services)
         {
-            services.AddTransient<ManifestBuilderV3>();
-            services.AddTransient<ManifestBuilderV4>();
+            services.AddTransient<ManifestV3Builder>();
+            services.AddTransient<ManifestV4Builder>();
 
             services.AddTransient<Func<IContentEntityFormatter>>(x =>
                 () => new StandardContentEntityFormatter(
