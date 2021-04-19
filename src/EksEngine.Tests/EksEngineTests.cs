@@ -114,7 +114,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 
             var jsonSerializer = new StandardJsonSerializer();
             _manifestJob = new ManifestUpdateCommand(
-                new Manifest.Commands.ManifestV2Builder(_contentDbProvider.CreateNew(), eksConfig.Object, _dtp),
+                new ManifestV2Builder(_contentDbProvider.CreateNew(), eksConfig.Object, _dtp),
                 new ManifestV3Builder(_contentDbProvider.CreateNew(), eksConfig.Object, _dtp),
                 new ManifestV4Builder(_contentDbProvider.CreateNew(), eksConfig.Object, _dtp),
                 _contentDbProvider.CreateNew,
