@@ -80,11 +80,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                     // If current manifest equals existing manifest, do nothing
                     _Logger.WriteUpdateNotRequired();
                     
-                    // Close transaction?
                     return;
                 }
 
-                // If current manifest not equals existing manifest, then replace current manifest.
+                // If current manifest does not equal existing manifest, then replace current manifest.
                 _ContentDb.Remove(currentManifestData);
             }
             
