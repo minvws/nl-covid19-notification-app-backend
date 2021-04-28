@@ -1,11 +1,47 @@
 stages:
 - stage: Test 
   jobs:
-    - job: RunTests
-      displayName: 'Run unittests'
-      workspace:
-        clean: all # what to clean up before the job runs - outputs | resources | all
-      steps:     
+  - job: RunMochaTests 
+    displayName: 'Run Lint and Mocha (Angular) unittests'
+    workspace:
+      clean: all # what to clean up before the job runs - outputs | resources | all
+    pool:
+     vmImage: 'ubuntu-latest'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '14.x'
+      displayName: 'Install Node.js'
+    - script: |
+        cd src/Icc.WebApp/ClientApp
+        npm install        
+        npm install -g @angular/cli
+        npm install -g mocha
+        npm install -g mocha-junit-reporter
+      displayName: 'Install npm Packages'
+
+    - script: |
+        cd src/Icc.WebApp/ClientApp
+        ng lint
+      displayName: 'Run Lint'
+
+    - script: |
+        cd src/Icc.WebApp/ClientApp
+        npm run test:ci
+      displayName: 'Run Tests'
+      
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/TESTS-*.xml'
+
+  - job: RunXUnitTests
+    displayName: 'Run XUnit unittests'
+    workspace:
+      clean: all # what to clean up before the job runs - outputs | resources | all
+    pool:
+      name: 'CIBG-BuildRelease-O'
+    steps:     
         # Install .Net Core 2.0 Version
         - task: UseDotNet@2
           displayName: 'Install .NET Core SDK 2.0'
@@ -77,3 +113,4 @@ stages:
         - task: SonarCloudPublish@1
           inputs:
             pollingTimeoutSec: '600'
+    
