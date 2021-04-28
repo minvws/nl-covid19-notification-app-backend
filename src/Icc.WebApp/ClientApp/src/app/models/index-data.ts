@@ -64,9 +64,6 @@ export class IndexData {
 
   // The selected (and thus displayed) date in the page after user has selected a date from the datepicker
   selectedDate: Date = null;
-  // The symptoms date is the selected date with offset calculated
-  symptomsDate: Date = null;
-
   startOfInfectiousPeriodDate: Date = null;
 
   addDays(date, days) {
@@ -79,23 +76,18 @@ export class IndexData {
     this.symptomatic = symptomatic;
   }
 
-  setSymptomsDate() {
+  getDisplayDate() {
     let date = this.selectedDate;
     if (date) {
       date = new Date(this.selectedDate.valueOf());
       date.setDate(date.getDate() - (this.symptomatic ? this.symptomaticIndexDateOffset : this.asymptomaticIndexDateOffset));
     }
 
-    this.symptomsDate = date;
-    return this.symptomsDate;
-  }
-
-  getSymptomsDate() {
-    return this.symptomsDate;
+    return date;
   }
 
   getFriendlySymptomsDate(format: string = 'EE. d MMM - ') {
-    return this.dateHelper.getFriendlyDate(this.setSymptomsDate(), format);
+    return this.dateHelper.getFriendlyDate(this.getDisplayDate(), format);
   }
 
   public InfectionConfirmationIdValid() {

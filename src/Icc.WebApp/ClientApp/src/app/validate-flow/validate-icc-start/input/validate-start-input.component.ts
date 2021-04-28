@@ -152,7 +152,7 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
     if (this.indexData.labConfirmationIdJoined() === '000000') {
       this.router.navigate(['/validate/confirm'], {
         queryParams: {
-          symptomsDate: this.indexData.getSymptomsDate().valueOf()
+          symptomsDate: this.indexData.getDisplayDate().valueOf()
         }
       });
     }
@@ -166,7 +166,7 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
 
       this.reportService.confirmLabId(
         this.indexData.LabConfirmationId,
-        this.indexData.getSymptomsDate().toISOString(),
+        this.indexData.selectedDate.toISOString(),
         this.indexData.symptomatic
       )
         .pipe(catchError((e) => {
@@ -180,7 +180,7 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
           if (result.valid === true) {
             this.router.navigate(['/validate/confirm'], {
               queryParams: {
-                symptomsDate: this.indexData.getSymptomsDate().valueOf()
+                symptomsDate: this.indexData.getDisplayDate().valueOf()
               }
             });
           } else {
