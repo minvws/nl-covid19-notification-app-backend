@@ -53,12 +53,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             {
                 return new[] { "PubTEK key validation for LuhnModN failed." };
             }
-            
-            // If subjectHasSymptoms is true, then dateOfSymptomsOnset must be completed
-            if (args.Symptomatic && !args.StartOfInfectiousPeriod.HasValue)
-            {
-                errors.Add($"SubjectHasSymptoms is true, then dateOfTest must be completed.");
-            }
 
             //Should be a date only without time.
             args.StartOfInfectiousPeriod = args.StartOfInfectiousPeriod?.Date;
