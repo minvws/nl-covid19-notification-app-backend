@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Data.SqlClient;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
@@ -48,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             var wf = await _workflowDb
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Teks)
-                .FirstOrDefaultAsync(x => x.GGDKey == args.GGDKey);
+                .FirstOrDefaultAsync(x => x.GGDKey == args.GGDKey || args.GGDKey.StartsWith(x.LabConfirmationId));
 
             // If no PubTEK value is found the process should be ended. The PubTEK key does not exist or is already processed/published.
             if (wf == null)
@@ -60,9 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             wf.AuthorisedByCaregiver = _dateTimeProvider.Snapshot;
             wf.LabConfirmationId = null; //Clear from usable key range
             wf.GGDKey = null; //Clear from usable key range
-            wf.SubjectHasSymptoms = args.SubjectHasSymptoms;
-            wf.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
-            wf.DateOfTest = args.DateOfTest;
+            wf.DateOfSymptomsOnset = args.StartOfInfectiousPeriod;
             
             var success = await PublishTek(wf);
 

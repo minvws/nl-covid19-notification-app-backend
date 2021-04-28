@@ -35,7 +35,7 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJ",
-                DateOfSymptomsOnset = DateTime.Today
+                StartOfInfectiousPeriod = DateTime.Today
             };
 
             var client = _factory.CreateClient();
@@ -63,7 +63,7 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6L",
-                DateOfSymptomsOnset = DateTime.Today
+                StartOfInfectiousPeriod = DateTime.Today
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
@@ -106,7 +106,7 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJ",
-                DateOfSymptomsOnset = DateTime.Today
+                StartOfInfectiousPeriod = DateTime.Today
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
@@ -149,7 +149,7 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                DateOfSymptomsOnset = DateTime.Today
+                StartOfInfectiousPeriod = DateTime.Today
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
@@ -192,7 +192,7 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJR",
-                DateOfSymptomsOnset = DateTime.Today
+                StartOfInfectiousPeriod = DateTime.Today
             };
 
             var client = _factory.WithWebHostBuilder(builder =>

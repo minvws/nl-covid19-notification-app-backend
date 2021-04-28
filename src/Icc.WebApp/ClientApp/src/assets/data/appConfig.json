@@ -1,3 +1,5 @@
 {
-    "appName": "CoronaMelder"
+  "appName": "CoronaMelder",
+  "aSymptomaticIndexDayOffset": "0",
+  "symptomaticIndexDayOffset": "2"
 }

@@ -36,8 +36,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\app\helpers\date.helper.spec.ts" />
+    <None Remove="ClientApp\src\app\helpers\date.helper.ts" />
+    <None Remove="ClientApp\src\app\models\index-data.ts" />
+    <None Remove="ClientApp\src\tsconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Core.AspNet\Core.AspNet.csproj" />
     <ProjectReference Include="..\Icc.Commands\Icc.Commands.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\helpers\date.helper.spec.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\helpers\date.helper.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\models\index-data.ts" />
+    <TypeScriptCompile Include="ClientApp\src\tsconfig.json" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

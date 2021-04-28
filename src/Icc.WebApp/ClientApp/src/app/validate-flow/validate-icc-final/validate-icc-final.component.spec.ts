@@ -48,6 +48,6 @@ describe('ValidateIccFinalComponent', () => {
 
     it('friendlySymptomsDate() should be in the expected format', () => {
         const result = component.friendlySymptomsDate();
-        expect(result).toBe('zaterdag 15 augustus');
+      expect(result).toBe('maandag 17 augustus');
     });
 });

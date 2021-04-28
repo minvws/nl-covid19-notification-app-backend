@@ -55,16 +55,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             }
             
             // If subjectHasSymptoms is true, then dateOfSymptomsOnset must be completed
-            if (args.SubjectHasSymptoms && !args.DateOfSymptomsOnset.HasValue)
+            if (args.Symptomatic && !args.StartOfInfectiousPeriod.HasValue)
             {
                 errors.Add($"SubjectHasSymptoms is true, then dateOfTest must be completed.");
             }
 
             //Should be a date only without time.
-            args.DateOfSymptomsOnset = args.DateOfSymptomsOnset?.Date;
-            if (!args.SubjectHasSymptoms && (_dateTimeProvider.Snapshot.Date.AddDays(-30) > args.DateOfSymptomsOnset?.Date || args.DateOfSymptomsOnset?.Date > _dateTimeProvider.Snapshot.Date))
+            args.StartOfInfectiousPeriod = args.StartOfInfectiousPeriod?.Date;
+            if (!args.Symptomatic && (_dateTimeProvider.Snapshot.Date.AddDays(-30) > args.StartOfInfectiousPeriod?.Date || args.StartOfInfectiousPeriod?.Date > _dateTimeProvider.Snapshot.Date))
             {
-                errors.Add($"Date of symptoms onset out of range - {args.DateOfSymptomsOnset}.");
+                errors.Add($"Date of symptoms onset out of range - {args.StartOfInfectiousPeriod}.");
             }
 
             // TODO: If subjectHasSymptoms is false, then dateOfTest must be completed. 

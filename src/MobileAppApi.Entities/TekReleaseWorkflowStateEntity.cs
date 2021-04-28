@@ -38,12 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
         /// </summary>
         public DateTime? AuthorisedByCaregiver { get; set; }
 
-        /// <summary>
-        /// From Icc 
-        /// </summary>
-        public bool SubjectHasSymptoms{ get; set; }
         public DateTime? DateOfSymptomsOnset { get; set; }
-        public DateTime? DateOfTest { get; set; }
 
         /// <summary>
         /// Rotating auth token for Icc Portal refresh to see KeysLastUploaded time.
