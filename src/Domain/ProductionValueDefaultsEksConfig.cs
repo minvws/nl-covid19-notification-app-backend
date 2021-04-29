@@ -12,6 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
         public int PageSize => 1000;
         
         public bool CleanupDeletesData => false;
+        public bool PublishEveryRun => true;
         public int LifetimeDays => 14;
     }
 }

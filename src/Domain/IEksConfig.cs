@@ -31,5 +31,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 
         [Obsolete("Cleanup should always delete data.")]
         bool CleanupDeletesData { get; }
+
+        /// <summary>
+        /// When enabled a keyset will be published every run EVEN if no unpublished keys are found. All keys will be stuffing.
+        /// </summary>
+        bool PublishEveryRun { get; }
     }
 }

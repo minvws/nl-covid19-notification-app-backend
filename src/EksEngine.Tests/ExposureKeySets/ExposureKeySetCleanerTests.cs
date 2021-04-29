@@ -38,6 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             public int TekCountMin => throw new NotImplementedException(); //ncrunch: no coverage
             public int PageSize => throw new NotImplementedException(); //ncrunch: no coverage
             public bool CleanupDeletesData { get; set; }
+            public bool PublishEveryRun => false;
         }
         private static void Add(ContentDbContext contentDbContext, int id)
         {

@@ -17,6 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
         public int TekCountMax => GetConfigValue("TekCount:Max", _ProductionValueDefaults.TekCountMax); //Low so the file split is tested
         public int PageSize => GetConfigValue(nameof(PageSize), _ProductionValueDefaults.PageSize);
         public bool CleanupDeletesData => GetConfigValue(nameof(CleanupDeletesData), _ProductionValueDefaults.CleanupDeletesData);
+        public bool PublishEveryRun => GetConfigValue(nameof(PublishEveryRun), _ProductionValueDefaults.PublishEveryRun);
         public int LifetimeDays => GetConfigValue(nameof(LifetimeDays), _ProductionValueDefaults.LifetimeDays);
     }
 }

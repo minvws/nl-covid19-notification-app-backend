@@ -53,22 +53,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
         {
             var run = new List<Action>();
 
-            //TODO read EFGS run.
-
-            var c10 = serviceProvider.GetRequiredService<SnapshotWorkflowTeksToDksCommand>();
-            run.Add(() => c10.ExecuteAsync().GetAwaiter().GetResult());
-
-            var eksEngineSettings = serviceProvider.GetRequiredService<IEksEngineConfig>();
-            if (eksEngineSettings.IksImportEnabled)
-            {
-                var c20 = serviceProvider.GetRequiredService<IksImportBatchJob>();
-                run.Add(() => c20.ExecuteAsync().GetAwaiter().GetResult());
-            }
-            else
-            {
-                var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
-                logger.LogInformation("IksImport is disabled; Iks files will not be processed.");
-            }
+            //
+            ////TODO read EFGS run.
+            //
+            // var c10 = serviceProvider.GetRequiredService<SnapshotWorkflowTeksToDksCommand>();
+            // run.Add(() => c10.ExecuteAsync().GetAwaiter().GetResult());
+            //
+            //var eksEngineSettings = serviceProvider.GetRequiredService<IEksEngineConfig>();
+            //if (eksEngineSettings.IksImportEnabled)
+            //{
+            //    var c20 = serviceProvider.GetRequiredService<IksImportBatchJob>();
+            //    run.Add(() => c20.ExecuteAsync().GetAwaiter().GetResult());
+            //}
+            //else
+            //{
+            //    var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+            //    logger.LogInformation("IksImport is disabled; Iks files will not be processed.");
+            //}
             
             var c30 = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
             run.Add(() => c30.ExecuteAsync().GetAwaiter().GetResult());
@@ -85,8 +86,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var c60 = serviceProvider.GetService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c35 = serviceProvider.GetRequiredService<IksEngine>();
-            run.Add(() => c35.ExecuteAsync().GetAwaiter().GetResult());
+            //var c35 = serviceProvider.GetRequiredService<IksEngine>();
+            //run.Add(() => c35.ExecuteAsync().GetAwaiter().GetResult());
 
             //TODO write EFGS run.
 
