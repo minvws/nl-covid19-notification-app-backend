@@ -62,12 +62,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             //TODO read EFGS run.
 
-            var c10 = serviceProvider.GetRequiredService<SnapshotWorkflowTeksToDksCommand>();
-            run.Add(() => logger.WriteSnaphotWorkflowTeksToDks());
-            run.Add(() => c10.ExecuteAsync().GetAwaiter().GetResult());
-
-            var c20 = serviceProvider.GetRequiredService<IksImportBatchJob>();
-            run.Add(() => c20.ExecuteAsync().GetAwaiter().GetResult());
+            //var c10 = serviceProvider.GetRequiredService<SnapshotWorkflowTeksToDksCommand>();
+            //run.Add(() => logger.WriteSnaphotWorkflowTeksToDks());
+            //run.Add(() => c10.ExecuteAsync().GetAwaiter().GetResult());
+            
+            //Disable: converts data in IksInDb to Dks. 
+            //var c20 = serviceProvider.GetRequiredService<IksImportBatchJob>();
+            //run.Add(() => c20.ExecuteAsync().GetAwaiter().GetResult());
 
             var c30 = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
             run.Add(() => logger.WriteEksEngineStarting());
@@ -80,10 +81,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             var c50 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             //run.Add(() =>  TODO );
             run.Add(() => c50.ExecuteAsync().GetAwaiter().GetResult());
-
-            var c35 = serviceProvider.GetRequiredService<IksEngine>();
-            //run.Add(() =>  TODO );
-            run.Add(() => c35.ExecuteAsync().GetAwaiter().GetResult());
+            //Disable: converts Dks and sends to IksOutDb.
+            //var c35 = serviceProvider.GetRequiredService<IksEngine>();
+            ////run.Add(() =>  TODO );
+            //run.Add(() => c35.ExecuteAsync().GetAwaiter().GetResult());
 
             //TODO write EFGS run.
 
@@ -91,22 +92,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => logger.WriteManiFestCleanupStarting());
             run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());
 
-            logger.WriteEksCleanupStarting();
-            var c70 = serviceProvider.GetRequiredService<RemoveExpiredEksCommand>();
-            run.Add(() => logger.WriteEksCleanupStarting());
-            run.Add(() => c70.Execute());
+            //logger.WriteEksCleanupStarting();
+            //var c70 = serviceProvider.GetRequiredService<RemoveExpiredEksCommand>();
+            //run.Add(() => logger.WriteEksCleanupStarting());
+            //run.Add(() => c70.Execute());
 
-            var c80 = serviceProvider.GetRequiredService<RemoveExpiredWorkflowsCommand>();
-            run.Add(() => logger.WriteWorkflowCleanupStarting());
-            run.Add(() => c80.Execute());
+            //var c80 = serviceProvider.GetRequiredService<RemoveExpiredWorkflowsCommand>();
+            //run.Add(() => logger.WriteWorkflowCleanupStarting());
+            //run.Add(() => c80.Execute());
 
             var c90 = serviceProvider.GetRequiredService<IStatisticsCommand>();
             run.Add(() => logger.WriteDailyStatsCalcStarting());
             run.Add(() => c90.Execute());
 
-            var c110 = serviceProvider.GetRequiredService<RemoveExpiredEksV2Command>();
-            run.Add(() => logger.WriteEksV2CleanupStarting());
-            run.Add(() => c110.Execute());
+            //var c110 = serviceProvider.GetRequiredService<RemoveExpiredEksV2Command>();
+            //run.Add(() => logger.WriteEksV2CleanupStarting());
+            //run.Add(() => c110.Execute());
 
             var c120 = serviceProvider.GetRequiredService<RemoveExpiredManifestsV2Command>();
             run.Add(() => logger.WriteManifestV2CleanupStarting());
@@ -120,16 +121,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => logger.WriteManifestV4CleanupStarting());
             run.Add(() => c122.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c125 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
-            run.Add(() => c125.Execute());
-
+            //var c125 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
+            //run.Add(() => c125.Execute());
+            //Safe to run: sproc only changes 'PublishedToEfgs'
             var c130 = serviceProvider.GetRequiredService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             run.Add(() => c130.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c140 = serviceProvider.GetRequiredService<RemoveExpiredIksInCommand>();
-            run.Add(() => c140.ExecuteAsync().GetAwaiter().GetResult());
+            //var c140 = serviceProvider.GetRequiredService<RemoveExpiredIksInCommand>();
+            //run.Add(() => c140.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c150 = serviceProvider.GetRequiredService<RemoveExpiredIksOutCommand>();
+            var c150 = serviceProvider.GetRequiredService<RemoveExpiredIksOutCommand>(); //Can be left running; wipes iksoutdb (for iksuploader), which should be empty
             run.Add(() => c150.ExecuteAsync().GetAwaiter().GetResult());
 
             var c100 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
