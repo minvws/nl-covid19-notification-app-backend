@@ -92,10 +92,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => logger.WriteManiFestCleanupStarting());
             run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());
 
-            //logger.WriteEksCleanupStarting();
-            //var c70 = serviceProvider.GetRequiredService<RemoveExpiredEksCommand>();
-            //run.Add(() => logger.WriteEksCleanupStarting());
-            //run.Add(() => c70.Execute());
+            logger.WriteEksCleanupStarting();
+            var c70 = serviceProvider.GetRequiredService<RemoveExpiredEksCommand>();
+            run.Add(() => logger.WriteEksCleanupStarting());
+            run.Add(() => c70.Execute());
 
             //var c80 = serviceProvider.GetRequiredService<RemoveExpiredWorkflowsCommand>();
             //run.Add(() => logger.WriteWorkflowCleanupStarting());
@@ -105,9 +105,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => logger.WriteDailyStatsCalcStarting());
             run.Add(() => c90.Execute());
 
-            //var c110 = serviceProvider.GetRequiredService<RemoveExpiredEksV2Command>();
-            //run.Add(() => logger.WriteEksV2CleanupStarting());
-            //run.Add(() => c110.Execute());
+            var c110 = serviceProvider.GetRequiredService<RemoveExpiredEksV2Command>();
+            run.Add(() => logger.WriteEksV2CleanupStarting());
+            run.Add(() => c110.Execute());
 
             var c120 = serviceProvider.GetRequiredService<RemoveExpiredManifestsV2Command>();
             run.Add(() => logger.WriteManifestV2CleanupStarting());
