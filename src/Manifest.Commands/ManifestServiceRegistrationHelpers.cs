@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
             services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
             services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient<ManifestBuilder>();
+            services.AddTransient<ManifestV2Builder>();
         }
     }
 }

@@ -10,12 +10,13 @@ using Xunit;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 {
     [Trait("db", "ss")]
-    [Collection(nameof(ManifestEngineTestsSqlite))]
-    [ExclusivelyUses(nameof(ManifestEngineTestsSqlite))]
-    public class ManifestEngineTestsSqlite : ManifestEngineTests
+    [Collection(nameof(ManifestUpdateCommandTestSqlServer))]
+    [ExclusivelyUses(nameof(ManifestUpdateCommandTestSqlServer))]
+    public class ManifestUpdateCommandTestSqlServer : ManifestUpdateCommandTest
     {
-        public ManifestEngineTestsSqlite()
-            : base(new SqliteInMemoryDbProvider<ContentDbContext>())
+        private const string Prefix = nameof(ManifestUpdateCommandTest) + "_";
+        public ManifestUpdateCommandTestSqlServer()
+            : base(new SqlServerDbProvider<ContentDbContext>(Prefix + "C"))
         { }
     }
 }
