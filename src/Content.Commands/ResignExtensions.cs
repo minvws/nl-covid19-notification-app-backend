@@ -19,17 +19,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
         public static void NlResignerStartup(this IServiceCollection services)
         {
-            services.AddTransient(
-                x => new NlContentResignExistingV1ContentCommand(x.GetRequiredService<NlContentResignCommand>()));
+            services.AddTransient(x =>
+                new NlContentResignExistingV1ContentCommand(x.GetRequiredService<NlContentResignCommand>()));
 
-            services.AddTransient(
-                x => new NlContentResignCommand(
-                        x.GetRequiredService<Func<ContentDbContext>>(),
-                        new CmsSignerEnhanced(
-                            new LocalMachineStoreCertificateProvider(new LocalMachineStoreCertificateProviderConfig(x.GetRequiredService<IConfiguration>(), NlSettingPrefix), x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()),
-                            new EmbeddedResourcesCertificateChainProvider(new EmbeddedResourceCertificateConfig(x.GetRequiredService<IConfiguration>(), ChainPrefix)),
-                            x.GetRequiredService<IUtcDateTimeProvider>()),
-                        x.GetRequiredService<ResignerLoggingExtensions>()));
+            services.AddTransient(x =>
+               new NlContentResignCommand(
+                    x.GetRequiredService<Func<ContentDbContext>>(),
+                    new CmsSignerEnhanced(
+                        new LocalMachineStoreCertificateProvider(
+                            new LocalMachineStoreCertificateProviderConfig(
+                                x.GetRequiredService<IConfiguration>(),
+                                NlSettingPrefix),
+                            x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()),
+                            
+                        new EmbeddedResourcesCertificateChainProvider(
+                            new EmbeddedResourceCertificateConfig(
+                                x.GetRequiredService<IConfiguration>(),
+                                ChainPrefix)),
+                        x.GetRequiredService<IUtcDateTimeProvider>()),
+
+                    x.GetRequiredService<ResignerLoggingExtensions>()));
 
         }
     }
