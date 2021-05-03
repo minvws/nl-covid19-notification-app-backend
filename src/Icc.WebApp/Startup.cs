@@ -137,7 +137,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
                     context.Request.Scheme = protoHeaderValue;
                 }
 
-                if (context.Request.Headers.TryGetValue("X-Forwarded-Host", out var hostHeaderValue))
+                if (context.Request.Headers.TryGetValue("X-FORWARDED-HOST", out var hostHeaderValue))
                 {
                     context.Request.Host = new HostString(hostHeaderValue);
                 }
