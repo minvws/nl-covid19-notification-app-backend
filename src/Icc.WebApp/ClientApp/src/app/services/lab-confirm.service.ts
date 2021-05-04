@@ -26,10 +26,10 @@ export class LabConfirmService {
     throw error;
   }
 
-  confirmLabId(labConfirmationIds: Array<string>, startOfInfectiousPeriod: string, symptomatic: boolean): Observable<any> {
+  confirmLabId(GGDKeys: Array<string>, startOfInfectiousPeriod: string, symptomatic: boolean): Observable<any> {
     const serviceUrl = location.origin + '/pubtek';
     this.data = {
-      'GGDKey': labConfirmationIds.join(''),
+      'GGDKey': GGDKeys.join(''),
       'StartOfInfectiousPeriod': startOfInfectiousPeriod,
       'Symptomatic': symptomatic
     };
