@@ -58,14 +58,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             args.SelectedDate = args.SelectedDate?.Date;
             if (!args.Symptomatic && (_dateTimeProvider.Snapshot.Date.AddDays(-30) > args.SelectedDate?.Date || args.SelectedDate?.Date > _dateTimeProvider.Snapshot.Date))
             {
-                errors.Add($"Date of symptoms onset out of range - {args.SelectedDate}.");
+                errors.Add($"Selected date out of range - {args.SelectedDate}.");
             }
-
-            // TODO: If subjectHasSymptoms is false, then dateOfTest must be completed. 
-            //if (!args.SubjectHasSymptoms && !args.DateOfTest.HasValue)
-            //{
-            //    errors.Add($"SubjectHasSymptoms is false, then dateOfTest must be completed.");
-            //}
 
             return errors.ToArray();
         }
