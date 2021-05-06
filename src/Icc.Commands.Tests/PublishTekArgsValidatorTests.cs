@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
             var args = new PublishTekArgs
             {
                 GGDKey = pubTek,
-                StartOfInfectiousPeriod = DateTime.Today,
+                SelectedDate = DateTime.Today,
                 Symptomatic = true
             };
 
@@ -57,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
             var args = new PublishTekArgs
             {
                 GGDKey = pubTek,
-                StartOfInfectiousPeriod = DateTime.Today,
+                SelectedDate = DateTime.Today,
                 Symptomatic = true
             };
 

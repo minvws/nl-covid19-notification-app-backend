@@ -35,7 +35,7 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJ",
-                StartOfInfectiousPeriod = DateTime.Today
+                SelectedDate = DateTime.Today
             };
 
             var client = _factory.CreateClient();
@@ -63,7 +63,7 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6L",
-                StartOfInfectiousPeriod = DateTime.Today
+                SelectedDate = DateTime.Today
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
@@ -106,7 +106,7 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJ",
-                StartOfInfectiousPeriod = DateTime.Today
+                SelectedDate = DateTime.Today
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
@@ -149,7 +149,7 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                StartOfInfectiousPeriod = DateTime.Today
+                SelectedDate = DateTime.Today
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
@@ -192,7 +192,7 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJR",
-                StartOfInfectiousPeriod = DateTime.Today
+                SelectedDate = DateTime.Today
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
@@ -217,7 +217,7 @@ namespace Icc.WebApp.Tests
             {
                 Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
             };
-            
+
             var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
 
             // Assert
