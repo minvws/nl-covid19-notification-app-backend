@@ -55,10 +55,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             }
 
             //Should be a date only without time.
-            args.StartOfInfectiousPeriod = args.StartOfInfectiousPeriod?.Date;
-            if (!args.Symptomatic && (_dateTimeProvider.Snapshot.Date.AddDays(-30) > args.StartOfInfectiousPeriod?.Date || args.StartOfInfectiousPeriod?.Date > _dateTimeProvider.Snapshot.Date))
+            args.SelectedDate = args.SelectedDate?.Date;
+            if (!args.Symptomatic && (_dateTimeProvider.Snapshot.Date.AddDays(-30) > args.SelectedDate?.Date || args.SelectedDate?.Date > _dateTimeProvider.Snapshot.Date))
             {
-                errors.Add($"Date of symptoms onset out of range - {args.StartOfInfectiousPeriod}.");
+                errors.Add($"Date of symptoms onset out of range - {args.SelectedDate}.");
             }
 
             // TODO: If subjectHasSymptoms is false, then dateOfTest must be completed. 

@@ -59,8 +59,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             wf.AuthorisedByCaregiver = _dateTimeProvider.Snapshot;
             wf.LabConfirmationId = null; //Clear from usable key range
             wf.GGDKey = null; //Clear from usable key range
-            wf.DateOfSymptomsOnset = args.StartOfInfectiousPeriod;
-            
+            wf.DateOfSymptomsOnset = args.SelectedDate; // The date is currently a DateOfSymptomsOnset or Date of Test. The system lacks having 2 date variants so the existing DateOfSymptomsOnset will hold either
+            wf.IsSymptomatic = args.Symptomatic;
+
             var success = await PublishTek(wf);
 
             if (success)

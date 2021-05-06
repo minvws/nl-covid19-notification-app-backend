@@ -21,8 +21,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
         /// </summary>
         public bool Symptomatic { get; set; }
         /// <summary>
-        /// The given StartOfInfectiousPeriod entered by the GGD user
+        /// The given StartOfInfectiousPeriod or Date of Test entered by the GGD user
         /// </summary>
-        public DateTime? StartOfInfectiousPeriod { get; set; }
+        public DateTime? SelectedDate { get; set; }
     }
 }

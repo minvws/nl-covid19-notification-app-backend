@@ -38,12 +38,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
         /// </summary>
         public DateTime? AuthorisedByCaregiver { get; set; }
 
+        /// <summary>
+        /// This is either the DateOfSymptomsOnset or Date of Test value.
+        /// </summary>
         public DateTime? DateOfSymptomsOnset { get; set; }
 
         /// <summary>
-        /// Rotating auth token for Icc Portal refresh to see KeysLastUploaded time.
+        /// True if Index has symptoms, otherwise false
         /// </summary>
-        [Obsolete("PollToken will be obsolete for new version of the ICC backend API")]
+        public bool? IsSymptomatic { get; set; }
+
+    /// <summary>
+    /// Rotating auth token for Icc Portal refresh to see KeysLastUploaded time.
+    /// </summary>
+    [Obsolete("PollToken will be obsolete for new version of the ICC backend API")]
         public string PollToken { get; set; }
 
         public virtual ICollection<TekEntity> Teks { get; set; } = new List<TekEntity>();
