@@ -99,6 +99,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 Created = now,
                 ValidUntil = now.AddDays(1),
                 DateOfSymptomsOnset = now.AddDays(-1).Date, //Yesterday
+                IsSymptomatic = true,
                 Teks = items
             };
         }

@@ -97,13 +97,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                             && x.Owner.DateOfSymptomsOnset != null
                             && x.PublishingState == PublishingState.Unpublished
                             && x.PublishAfter <= snapshot
+                            && x.Owner.IsSymptomatic.HasValue
                 )
                 .Skip(index)
                 .Take(pageSize)
                 .Select(x => new {
                     x.Id,
                     DailyKey = new DailyKey(x.KeyData, x.RollingStartNumber, UniversalConstants.RollingPeriodRange.Hi), //Constant cos iOS xxx requires all RP to be 144
-                    DateOfSymptomsOnset = x.Owner.DateOfSymptomsOnset.Value
+                    DateOfSymptomsOnset = x.Owner.DateOfSymptomsOnset.Value,
+                    Symptomatic = x.Owner.IsSymptomatic
                 }).ToList();
 
             var q2 = q1.Select(x =>
@@ -118,7 +120,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                         {
                             DaysSinceSymptomsOnset = dsos, //Added here as the new format has this as well as the EFGS format.
                             TransmissionRiskLevel = trl,
-                        },
+                            Symptomatic = x.Symptomatic
+                        }
                     };
                     return result;
                 }).ToList();

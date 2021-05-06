@@ -20,6 +20,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities
         /// </summary>
         public int? DaysSinceSymptomsOnset { get; set; }
 
+        public bool? Symptomatic { get; set; }
+
         /// <summary>
         /// Report type defined for a TemporaryExposureKey;
         /// defaults to CONFIRMED_TEST (1)
