@@ -4,66 +4,66 @@
   <div #step_element class="input-box grid grid-cols-8 mb-10">
     <ng-container *ngFor="let key of [].constructor(7); let i = index">
       <input #first_char (input)="evaluateInvalidState($event, i)"
-             [class]="LabConfirmationIdValidState[i] === false ? 'invalid' : (LabConfirmationIdValidState[i] === true) ? 'valid' : ''"
+             [class]="indexData.GGDKeyValidState[i] === false ? 'invalid' : (indexData.GGDKeyValidState[i] === true) ? 'valid' : ''"
              (focus)="focusInput($event)"
              (keyup)="icIdKeyPress($event)" [value]="i"
-             type="text" [(ngModel)]="LabConfirmationId[i]" maxlength="1" min="0" max="9" [ngClass]="i === 6 ? 'darker' : ''" />
+             type="text" [(ngModel)]="indexData.GGDKey[i]" maxlength="1" min="0" max="9" [ngClass]="i === 6 ? 'darker' : ''" />
     </ng-container>
   </div>
 
   <div class="error-message text-red-600 mt-4 mb-10 flex flex-row flex-nowrap items-start"
-       *ngIf="error_code > -1 || demoMode">
+       *ngIf="errorCode > -1 || demoMode">
     <div class="mr-2"><span class="icon icon-exclamation-mark"></span></div>
     <div>
       <p *ngIf="demoMode">Democode, enkel bestemd voor trainingsdoeleinden.</p>
-      <p *ngIf="!demoMode && error_code == 2">
+      <p *ngIf="!demoMode && errorCode == 2">
         Deze GGD-sleutel is onjuist. Controleer de GGD-sleutel
         die je
-        hebt ingevoerd: <span [innerHTML]="InfectionConfirmationIdToTaalString()"></span>
+        hebt ingevoerd: <span [innerHTML]="indexData.InfectionConfirmationIdToTaalString()"></span>
       </p>
-      <p *ngIf="!demoMode && error_code == 1">
+      <p *ngIf="!demoMode && errorCode == 1">
         Deze GGD-sleutel is onjuist. Controleer of de GGD-sleutel
         <b>alleen</b>
-        de volgende letters en nummers bevat:<br><b>{{this.allowedChars}}</b>
+        de volgende letters en nummers bevat:<br><b>{{indexData.allowedChars}}</b>
       </p>
     </div>
   </div>
 </app-step>
 <app-step stepNumber="4" stepTitle="Heeft de index klachten die bij COVID-19 passen?" stepTitleClass="mb-10">
-    <div class="select-box flex align-center flex-row flex-wrap">
-        <div [class.border-2]="showSymptoms" (click)="showSymptoms = true"
-             class="px-5 cursor-pointer border-primary border-solid text-center bg-gray-300 rounded-l rounded-bl py-3 d-inline-block"
-             style="min-width: 120px;">Ja
-        </div>
-        <div [class.border-2]="!showSymptoms" (click)="showSymptoms = false"
-             class="px-5 cursor-pointer border-primary border-solid text-center bg-gray-300 rounded-r rounded-br py-3 d-inline-block"
-             style="min-width: 120px;">Nee
-        </div>
+  <div class="select-box flex align-center flex-row flex-wrap">
+    <div [class.border-2]="this.indexData.symptomatic" (click)="hasSymptomsClicked(true)"
+         class="px-5 cursor-pointer border-primary border-solid text-center bg-gray-300 rounded-l rounded-bl py-3 d-inline-block"
+         style="min-width: 120px;">
+      Ja
     </div>
-    <br>
-    <div>
-        <p class="mb-2 font-bold" *ngIf="showSymptoms">Datum eerste ziektedag:</p>
-        <p class="mb-2 font-bold" *ngIf="!showSymptoms">Datum test:</p>
-        <div class="cursor-pointer friendly-date-block px-4 py-3 bg-gray-300 rounded inline-block hover:bg-gray-100"
-             [class.shadow-sm]="!openDayPicker" (click)="openDayPicker=!openDayPicker">
-            {{getFriendlySymptomsDate()}} <span class="text-gray-700">{{getDaysAgo()}}</span>
-        </div>
-        <p class="mt-2" *ngIf="symptomsDate">Eerste dag dat index besmettelijk was: <b>{{getFriendlySymptomsDate(
-          'EEEE d LLLL yyyy', 2)}}</b></p>
-        <div *ngIf="openDayPicker"
-             class="friendly-dates bg-white shadow-md flex flex-col justify-start rounded inline-block mt-1">
-            <div (click)="selectDate(dateDay)" *ngFor="let ii of dateArray; let dateDay = index"
-                 [class]="(this.symptomsDate && this.symptomsDate.valueOf() === this.getDayAgo(dateDay).valueOf()) ? 'bg-primary text-white': ''"
-                 class="date w-full cursor-pointer hover:bg-gray-100 text-left px-4 py-3 inline-block mr-auto">
-                {{this.datePipe.transform(getDayAgo(dateDay), 'EEE d MMM')}} <span class="text-gray-700">{{getDaysAgo(
-              getDayAgo(dateDay))}}</span>
-            </div>
-        </div>
+    <div [class.border-2]="!this.indexData.symptomatic" (click)="hasSymptomsClicked(false)"
+         class="px-5 cursor-pointer border-primary border-solid text-center bg-gray-300 rounded-r rounded-br py-3 d-inline-block"
+         style="min-width: 120px;">
+      Nee
     </div>
+  </div>
+  <br>
+  <div>
+    <p class="mb-2 font-bold" *ngIf=" this.indexData.symptomatic">Datum eerste ziektedag:</p>
+    <p class="mb-2 font-bold" *ngIf="! this.indexData.symptomatic">Datum test:</p>
+    <div class="cursor-pointer friendly-date-block px-4 py-3 bg-gray-300 rounded inline-block hover:bg-gray-100"
+         [class.shadow-sm]="!openDayPicker" (click)="openDayPicker=!openDayPicker">
+      {{dateHelper.getFriendlyDate(indexData.selectedDate)}} <span class="text-gray-700">{{dateHelper.getDaysAgo()}}</span>
+    </div>
+    <p class="mt-2" *ngIf="indexData.selectedDate">Eerste dag dat index besmettelijk was: <b>{{indexData.getFriendlySymptomsDate('EEEE d LLLL yyyy')}}</b></p>
+    <div *ngIf="openDayPicker"
+         class="friendly-dates bg-white shadow-md flex flex-col justify-start rounded inline-block mt-1">
+      <div (click)="selectDateClick(dateDay)" *ngFor="let ii of dateHelper.dateArray; let dateDay = index"
+           [class]="(this.indexData.selectedDate && this.indexData.selectedDate.valueOf() === this.dateHelper.getDayAgo(dateDay).valueOf()) ? 'bg-primary text-white': ''"
+           class="date w-full cursor-pointer hover:bg-gray-100 text-left px-4 py-3 inline-block mr-auto">
+        {{dateHelper.getFriendlyDate(dateHelper.getDayAgo(dateDay))}} <span class="text-gray-700">{{dateHelper.getDaysAgo(dateHelper.getDayAgo(dateDay, indexData.selectedDate))}}</span>
+      </div>
+    </div>
+  </div>
 
 
 </app-step>
-<button class="btn btn-primary mb-40" (click)="confirmLabConfirmationId()"
-        [disabled]="(LabConfirmationId.join('').length < 6 || LabConfirmationId[5] === '' || symptomsDate === null) || loading > 0 || error_code === 1">
-    Volgende{{(loading > 0) ? "..." : ""}}
+<button class="btn btn-primary mb-40" (click)="confirmGGDKey()"
+        [disabled]="(indexData.GGDKey.join('').length < 6 || indexData.GGDKey[5] === '' || this.indexData.selectedDate === null) || loading > 0 || errorCode === 1">
+  Volgende{{(loading > 0) ? "..." : ""}}
 </button>

@@ -7,15 +7,15 @@ import {
   Component,
   ElementRef,
   HostListener,
-  Inject,
-  LOCALE_ID,
   OnInit,
   ViewChild
 } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { DatePipe } from '@angular/common';
-import { LabConfirmService } from '../../../services/lab-confirm.service';
 import { catchError } from 'rxjs/operators';
+import { LabConfirmService } from '../../../services/lab-confirm.service';
+import { AppConfigService } from '../../../services/app-config.service';
+import { DateHelper } from '../../../helpers/date.helper';
+import { IndexData } from '../../../models/index-data';
 
 @Component({
   selector: 'app-validate-step2',
@@ -23,112 +23,45 @@ import { catchError } from 'rxjs/operators';
   styleUrls: ['./validate-start-input.component.scss']
 })
 export class ValidateStartInputComponent implements OnInit, AfterViewInit {
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private reportService: LabConfirmService,
+    private appConfigService: AppConfigService,
+    public dateHelper: DateHelper
+  ) {
+    const config = this.appConfigService.getConfig();
+    this.indexData = new IndexData(config.symptomaticIndexDayOffset, config.aSymptomaticIndexDayOffset, dateHelper);
+  }
 
-  public LabConfirmationId: Array<string> = ['', '', '', '', '', '', ''];
+  // The person having a test or having symptoms or both contacting the GGD
+  public indexData: IndexData;
+
   private LastConfirmedLCId: Array<string> = ['', '', '', '', '', '', ''];
-  public LabConfirmationIdValidState: { [key: number]: boolean } = [];
+
+  openDayPicker = false;
+  demoMode = false;
+  errorCode = -1;
+  loading = 0;
+
   @ViewChild('first_char')
   first_char: ElementRef;
 
   @ViewChild('step_element')
   step_element: ElementRef;
-  error_code = -1;
-  allowedChars = 'BCFGJLQRSTUVXYZ23456789';
-  loading = 0;
 
-  // datepart
-  showSymptoms = true;
-
-  private todayDate: Date = new Date();
-  symptomsDate: Date = null;
-  datePipe: DatePipe;
-  openDayPicker = false;
-  dateArray: Array<number> = [...Array(22)];
-
-  demoMode = false;
-
-  spelAlphabet: Object = {
-    'A': 'Anna',
-    'B': 'Bernard',
-    'C': 'Cornelis',
-    'D': 'Dirk',
-    'E': 'Eduard',
-    'F': 'Ferdinand',
-    'G': 'Gerard',
-    'H': 'Hendrik',
-    'I': 'Izak',
-    'J': 'Jan',
-    'K': 'Karel',
-    'L': 'Lodewijk',
-    'M': 'Maria',
-    'N': 'Nico',
-    'O': 'Otto',
-    'P': 'Pieter',
-    'Q': 'Quotiënt',
-    'R': 'Rudolf',
-    'S': 'Simon',
-    'T': 'Teunis',
-    'U': 'Utrecht',
-    'V': 'Victor',
-    'W': 'Willem',
-    'X': 'Xantippe',
-    'Y': 'Y-grec',
-    'Z': 'Zaandam'
-  };
-
-  constructor(
-    @Inject(LOCALE_ID) private locale: string,
-    private route: ActivatedRoute,
-    private router: Router,
-    private reportService: LabConfirmService) {
-    this.datePipe = new DatePipe(locale);
-    for (let i = 0; i < 6; i++) {
-      this.LabConfirmationIdValidState[i] = null;
-    }
+  ngOnInit(): void {
   }
-
   ngAfterViewInit() {
   }
 
   @HostListener('window:scroll', ['$event'])
   scrollHandler(event) {
     const y = (this.step_element.nativeElement.offsetTop - window.outerHeight + 220);
-    if (this.LabConfirmationId.join('').length < 1 && window.scrollY > y) {
+    if (this.indexData.GGDKey.join('').length < 1 && window.scrollY > y) {
       const firstCharInputElement: HTMLInputElement = this.first_char.nativeElement;
       firstCharInputElement.focus();
     }
-  }
-
-  ngOnInit(): void {
-  }
-
-  public InfectionConfirmationIdValid() {
-    return (this.labConfirmationIdJoined().length >= 6 && this.validateCharacters());
-  }
-
-  public InfectionConfirmationIdToTaalString() {
-    let output = '';
-    this.LabConfirmationId.forEach((c, index) => {
-      if (index === 3) {
-        output += ' – ';
-      }
-      if (this.spelAlphabet[c]) {
-        output += '<b>' + c + '</b>' + ' (' + this.spelAlphabet[c] + ')';
-      } else {
-        output += '<b>' + c + '</b>';
-      }
-      output += ' ';
-    });
-    return output;
-  }
-
-  labConfirmationIdJoined() {
-    return this.LabConfirmationId.join('').trim().toUpperCase();
-  }
-
-  validateCharacters(): boolean {
-    const matchArray: RegExpMatchArray = this.labConfirmationIdJoined().match('^[' + this.allowedChars + ']+$');
-    return matchArray && matchArray.length > 0;
   }
 
   focusInput($event: FocusEvent) {
@@ -140,26 +73,26 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
   }
 
   evaluateInvalidState($event: KeyboardEvent, index: number) {
-    if (this.error_code === 2) {
+    if (this.errorCode === 2) {
       for (let i = 0; i < 6; i++) {
         if (i !== index) {
-          this.LabConfirmationIdValidState[i] = null;
+          this.indexData.GGDKeyValidState[i] = null;
         }
       }
     }
-    const labCICharacter = this.LabConfirmationId[index];
+    const labCICharacter = this.indexData.GGDKey[index];
     if (labCICharacter.length > 0) {
-      const labCICharacterValidMatch = labCICharacter.toUpperCase().match('^[' + this.allowedChars + ']+$');
-      this.LabConfirmationIdValidState[index] = !(labCICharacterValidMatch == null || labCICharacterValidMatch.length < 1);
+      const labCICharacterValidMatch = labCICharacter.toUpperCase().match('^[' + this.indexData.allowedChars + ']+$');
+      this.indexData.GGDKeyValidState[index] = !(labCICharacterValidMatch == null || labCICharacterValidMatch.length < 1);
     } else {
-      this.LabConfirmationIdValidState[index] = true;
+      this.indexData.GGDKeyValidState[index] = true;
     }
 
-    this.demoMode = (this.labConfirmationIdJoined() === '000000');
+    this.demoMode = (this.indexData.GGDKeyJoined() === '000000');
     if (!this.demoMode) {
-      this.error_code = (Object.values(this.LabConfirmationIdValidState).filter(s => s === false).length > 0) ? 1 : -1;
+      this.errorCode = (Object.values(this.indexData.GGDKeyValidState).filter(s => s === false).length > 0) ? 1 : -1;
     } else {
-      this.error_code = -1;
+      this.errorCode = -1;
     }
   }
 
@@ -182,7 +115,7 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
 
   icIdKeyPress($event: KeyboardEvent) {
     const target = $event.target as HTMLInputElement;
-    let index = Array.prototype.indexOf.call(target.parentElement.children, target);
+    const index = Array.prototype.indexOf.call(target.parentElement.children, target);
 
     if ($event.code === 'ArrowRight') {
       this.focusOnNext(target);
@@ -203,100 +136,68 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
       }
     }
     // sync with model
-    this.LabConfirmationId[index] = target.value;
+    this.indexData.GGDKey[index] = target.value;
   }
 
-  getFriendlySymptomsDate(format: string = 'EE. d MMM - ', offset: number = 0) {
-    let date = this.symptomsDate;
-    if (date) {
-      date = new Date(this.symptomsDate.valueOf());
-      date.setDate(date.getDate() - offset);
-    }
-    return this.datePipe.transform(date, format);
+  hasSymptomsClicked(symptomatic: boolean) {
+    this.indexData.isSymptomatic(symptomatic);
   }
 
-  getDaysAgo(inputDate: Date = null): string {
-    inputDate = ((inputDate != null) ? inputDate : this.symptomsDate);
-    const daysAgo = (inputDate) ? Math.floor(((Date.now() - (inputDate).valueOf()) / 1000 / 60 / 60 / 24)) : 0;
-    return (daysAgo < 1) ? 'vandaag' : (daysAgo + ' ' + ((daysAgo > 1) ? 'dagen' : 'dag') + ' gel.');
-  }
-
-  getDayAgo(dayCount: number, inputDate: Date = null): Date {
-
-    if (inputDate == null) {
-      inputDate = this.todayDate;
-    }
-
-    const startOfDay = new Date(
-      Date.UTC(
-        inputDate.getUTCFullYear(),
-        inputDate.getUTCMonth(),
-        inputDate.getUTCDate(),
-        0,
-        0,
-        0,
-        0
-      )
-    );
-
-    if (dayCount > 0) {
-      return new Date(startOfDay.setDate(startOfDay.getDate() - dayCount));
-    }
-    return startOfDay;
-  }
-
-  selectDate(dateDay: number) {
-    this.symptomsDate = this.getDayAgo(dateDay);
+  selectDateClick(dateDay: number) {
+    this.indexData.selectedDate = this.dateHelper.getDayAgo(dateDay);
     this.openDayPicker = false;
   }
 
-  confirmLabConfirmationId() {
-    if (this.labConfirmationIdJoined() === '000000') {
+  confirmGGDKey() {
+    if (this.indexData.GGDKeyJoined() === '000000') {
       this.router.navigate(['/validate/confirm'], {
         queryParams: {
-          p: `demo_polltoken_test_000000`,
-          symptomsDate: this.symptomsDate.valueOf()
+          symptomsDate: this.indexData.getDisplayDate().valueOf()
         }
       });
     }
 
-    if (this.LabConfirmationId.join('') === this.LastConfirmedLCId.join('')) {
+    if (this.indexData.GGDKey.join('') === this.LastConfirmedLCId.join('')) {
       alert('Het is niet mogelijk om meerdere keren dezelfde GGD-sleutel te verwerken. Probeer het opnieuw met een unieke GGD-sleutel.');
       return;
     }
-    if (this.InfectionConfirmationIdValid()) {
+    if (this.indexData.InfectionConfirmationIdValid()) {
       this.loading++;
-      this.reportService.confirmLabId(this.LabConfirmationId, this.symptomsDate.toISOString())
+
+      this.reportService.confirmLabId(
+        this.indexData.GGDKey,
+        this.indexData.selectedDate.toISOString(),
+        this.indexData.symptomatic
+      )
         .pipe(catchError((e) => {
           this.loading--;
-          this.error_code = 2;
+          this.errorCode = 2;
           throw e;
         })).subscribe((result) => {
           this.loading--;
-          this.LastConfirmedLCId = [...this.LabConfirmationId]; // 200 response
+          this.LastConfirmedLCId = [...this.indexData.GGDKey]; // 200 response
 
           if (result.valid === true) {
             this.router.navigate(['/validate/confirm'], {
               queryParams: {
-                p: result.pollToken,
-                symptomsDate: this.symptomsDate.valueOf()
+                symptomsDate: this.indexData.getDisplayDate().valueOf()
               }
             });
           } else {
-            this.error_code = 2;
+            this.errorCode = 2;
           }
-        if (this.error_code > 1) {
-          for (let i = 0; i < this.LabConfirmationId.length; i++) {
-            this.LabConfirmationIdValidState[i] = false;
+          if (this.errorCode > 1) {
+            for (let i = 0; i < this.indexData.GGDKey.length; i++) {
+              this.indexData.GGDKeyValidState[i] = false;
 
-            if (i === 6 && this.LabConfirmationId[i] === '') {
-              this.LabConfirmationIdValidState[i] = null;
+              if (i === 6 && this.indexData.GGDKey[i] === '') {
+                this.indexData.GGDKeyValidState[i] = null;
+              }
             }
           }
-        }
-      });
+        });
     } else {
-      this.error_code = 1;
+      this.errorCode = 1;
     }
   }
 }

@@ -14,7 +14,7 @@ import {AuthenticationService} from '../services';
 })
 export class ValidateIccComponent implements OnInit {
 
-    public InfectionConfirmationId: Array<string> = ['', '', '', '', '', ''];
+    public InfectionConfirmationId: Array<string> = ['', '', '', '', '', '', ''];
     public InfectionConfirmationIdIsValid = false;
     public IndexIsSubmitted = false;
     public scrollDown = false;

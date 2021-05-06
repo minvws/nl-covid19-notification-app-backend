@@ -36,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("/pubtek")]
-        public async Task<ActionResult<PublishTekResponse>> PutPubTek([FromBody] PublishTekArgs args, [FromServices] IPublishTekService publishTekService)
+        public async Task<IActionResult> PutPubTek([FromBody] PublishTekArgs args, [FromServices] IPublishTekService publishTekService)
         {
             if (publishTekService == null) throw new ArgumentNullException(nameof(publishTekService));
 
@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Controllers
 
             // As per rfc7231#section-6.3.1 HTTP 200 OK will be returned to indicate that the request has succeeded.
             // Please note that HTTP 200 OK will be returned regardless of whether the key is considered valid or invalid. It may be understood as “request received and processed”.
-            return new OkObjectResult(result);
+            return Ok(result);
         }
 
         [HttpGet]

@@ -57,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
                 options.TableName = "Cache";
             });
 
-            services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
+            services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow, false ));
 
             services.AddSingleton<IIccPortalConfig, IccPortalConfig>();
 

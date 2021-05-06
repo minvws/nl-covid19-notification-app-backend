@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
@@ -36,27 +37,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
 
         [HttpPut]
         [Route("/pubtek")]
-        public async Task<IActionResult> PutPubTek([FromBody] PublishTekArgs args)
+        public async Task<PublishTekResponse> PutPubTek([FromBody] PublishTekArgs args)
         {
             if (_restApiClient == null) throw new ArgumentNullException(nameof(_restApiClient));
 
             // Fail fast -> If the code is not valid, return the response with false result. 
             if (!FixOrValidatePubTEK(args))
             {
-                var response = new PublishTekResponse
-                {
-                    Valid = false
-                };
-                return new OkObjectResult(response);
+                return new PublishTekResponse { Valid = false };
             }
-            
+
             var source = new CancellationTokenSource();
             var token = source.Token;
-            
+
             _logger.WritePubTekStart();
-            return await _restApiClient.PutAsync(args, $"{EndPointNames.CaregiversPortalApi.PubTek}", token);
+            var responseMessage = await _restApiClient.PutAsync(args, $"{EndPointNames.CaregiversPortalApi.PubTek}", token);
+            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
+            return result;
         }
-        
+
+
         [HttpGet]
         [AllowAnonymous]
         [Route("/AssemblyDump")]

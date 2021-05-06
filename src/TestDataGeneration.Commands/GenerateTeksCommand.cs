@@ -51,6 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
             var owner = dbc.KeyReleaseWorkflowStates.Single(x => x.Id == workflowId);
             owner.AuthorisedByCaregiver = DateTime.UtcNow;
             owner.DateOfSymptomsOnset = DateTime.UtcNow.AddDays(-1);
+            owner.IsSymptomatic = true;
 
             for (var i = 0; i < _Args.TekCountPerWorkflow; i++)
             {

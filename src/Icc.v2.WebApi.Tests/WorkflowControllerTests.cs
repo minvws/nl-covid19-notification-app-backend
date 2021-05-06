@@ -34,34 +34,33 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "222222",
-                DateOfSymptomsOnset = DateTime.Today,
-                SubjectHasSymptoms = true,
-                DateOfTest = null
+                SelectedDate = DateTime.Today,
+                Symptomatic = true
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
                 {
-                    builder.ConfigureTestServices(services =>
+                    var sp = services.BuildServiceProvider();
+
+                    using (var scope = sp.CreateScope())
                     {
-                        var sp = services.BuildServiceProvider();
+                        var scopedServices = scope.ServiceProvider;
+                        var db = scopedServices.GetRequiredService<WorkflowDbContext>();
 
-                        using (var scope = sp.CreateScope())
+                        db.Database.EnsureCreated();
+
+                        db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
-                            var scopedServices = scope.ServiceProvider;
-                            var db = scopedServices.GetRequiredService<WorkflowDbContext>();
+                            GGDKey = args.GGDKey,
+                            DateOfSymptomsOnset = args.SelectedDate
 
-                            db.Database.EnsureCreated();
-
-                            db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
-                            {
-                                GGDKey = args.GGDKey,
-                                DateOfSymptomsOnset = args.DateOfSymptomsOnset
-
-                            });
-                            db.SaveChanges();
-                        }
-                    });
-                })
+                        });
+                        db.SaveChanges();
+                    }
+                });
+            })
                 .CreateClient();
 
 
@@ -90,33 +89,32 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "111111",
-                DateOfSymptomsOnset = DateTime.Today,
-                SubjectHasSymptoms = true,
-                DateOfTest = null
+                SelectedDate = DateTime.Today,
+                Symptomatic = true
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
                 {
-                    builder.ConfigureTestServices(services =>
+                    var sp = services.BuildServiceProvider();
+
+                    using (var scope = sp.CreateScope())
                     {
-                        var sp = services.BuildServiceProvider();
+                        var scopedServices = scope.ServiceProvider;
+                        var db = scopedServices.GetRequiredService<WorkflowDbContext>();
 
-                        using (var scope = sp.CreateScope())
+                        db.Database.EnsureCreated();
+
+                        db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
-                            var scopedServices = scope.ServiceProvider;
-                            var db = scopedServices.GetRequiredService<WorkflowDbContext>();
-
-                            db.Database.EnsureCreated();
-
-                            db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
-                            {
-                                GGDKey = args.GGDKey,
-                                DateOfSymptomsOnset = args.DateOfSymptomsOnset
-                            });
-                            db.SaveChanges();
-                        }
-                    });
-                })
+                            GGDKey = args.GGDKey,
+                            DateOfSymptomsOnset = args.SelectedDate
+                        });
+                        db.SaveChanges();
+                    }
+                });
+            })
                 .CreateClient();
 
 
@@ -147,9 +145,8 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                DateOfSymptomsOnset = DateTime.Today,
-                SubjectHasSymptoms = true,
-                DateOfTest = null
+                SelectedDate = DateTime.Today,
+                Symptomatic = true
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
@@ -168,7 +165,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.DateOfSymptomsOnset
+                            DateOfSymptomsOnset = args.SelectedDate
 
                         });
                         db.SaveChanges();
@@ -203,9 +200,8 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "18T6LJQ",
-                DateOfSymptomsOnset = DateTime.Today,
-                SubjectHasSymptoms = true,
-                DateOfTest = null
+                SelectedDate = DateTime.Today,
+                Symptomatic = true
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
@@ -224,7 +220,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.DateOfSymptomsOnset
+                            DateOfSymptomsOnset = args.SelectedDate
                         });
                         db.SaveChanges();
                     }
@@ -258,9 +254,8 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJR",
-                DateOfSymptomsOnset = DateTime.Today,
-                SubjectHasSymptoms = true,
-                DateOfTest = null
+                SelectedDate = DateTime.Today,
+                Symptomatic = true
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
@@ -279,7 +274,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.DateOfSymptomsOnset
+                            DateOfSymptomsOnset = args.SelectedDate
                         });
                         db.SaveChanges();
                     }
@@ -313,9 +308,8 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                DateOfSymptomsOnset = null,
-                SubjectHasSymptoms = false,
-                DateOfTest = DateTime.Today
+                SelectedDate = null,
+                Symptomatic = false
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
@@ -334,7 +328,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.DateOfSymptomsOnset
+                            DateOfSymptomsOnset = args.SelectedDate
                         });
                         db.SaveChanges();
                     }
@@ -361,61 +355,6 @@ namespace Icc.v2.WebApi.Tests
             Assert.True(result.Valid);
         }
 
-        // TODO: implement in fase 2 of PubTEK
-        //[Fact]
-        //public async Task PutPubTek_ReturnsOkAndFalseResult_When_SubjectHasSymptoms_Is_False_And_DateOfTest_Is_Null()
-        //{
-        //    // Arrange
-        //    var args = new PublishTekArgs
-        //    {
-        //        GGDKey = "L8T6LJQ",
-        //        DateOfSymptomsOnset = DateTime.Today,
-        //        SubjectHasSymptoms = false,
-        //        DateOfTest = null
-        //    };
-
-        //    var client = _factory.WithWebHostBuilder(builder =>
-        //    {
-        //        builder.ConfigureTestServices(services =>
-        //        {
-        //            var sp = services.BuildServiceProvider();
-
-        //            using (var scope = sp.CreateScope())
-        //            {
-        //                var scopedServices = scope.ServiceProvider;
-        //                var db = scopedServices.GetRequiredService<WorkflowDbContext>();
-
-        //                db.Database.EnsureCreated();
-
-        //                db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
-        //                {
-        //                    GGDKey = args.GGDKey,
-        //                    DateOfSymptomsOnset = args.DateOfSymptomsOnset
-        //                });
-        //                db.SaveChanges();
-        //            }
-        //        });
-        //    })
-        //        .CreateClient();
-
-
-        //    var source = new CancellationTokenSource();
-        //    var token = source.Token;
-
-        //    var content = new StringContent(JsonSerializer.Serialize(args))
-        //    {
-        //        Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
-        //    };
-
-        //    // Act
-        //    var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
-
-        //    // Assert
-        //    var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
-
-        //    Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
-        //    Assert.False(result.Valid);
-        //}
 
         [Fact]
         public async Task PutPubTek_ReturnsOkAndTrueResult_When_SubjectHasSymptoms_Is_True_And_DateOfSymptomsOnset_HasValue()
@@ -424,9 +363,8 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                DateOfSymptomsOnset = DateTime.Today,
-                SubjectHasSymptoms = true,
-                DateOfTest = null
+                SelectedDate = DateTime.Today,
+                Symptomatic = true
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
@@ -445,7 +383,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.DateOfSymptomsOnset
+                            DateOfSymptomsOnset = args.SelectedDate
                         });
                         db.SaveChanges();
                     }
@@ -470,61 +408,6 @@ namespace Icc.v2.WebApi.Tests
 
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
             Assert.True(result.Valid);
-        }
-
-        [Fact]
-        public async Task PutPubTek_ReturnsOkAndFalseResult_When_SubjectHasSymptoms_Is_True_And_DateOfSymptomsOnset_Is_Null()
-        {
-            // Arrange
-            var args = new PublishTekArgs
-            {
-                GGDKey = "L8T6LJQ",
-                DateOfSymptomsOnset = null,
-                SubjectHasSymptoms = true,
-                DateOfTest = DateTime.Today
-            };
-
-            var client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                    var sp = services.BuildServiceProvider();
-
-                    using (var scope = sp.CreateScope())
-                    {
-                        var scopedServices = scope.ServiceProvider;
-                        var db = scopedServices.GetRequiredService<WorkflowDbContext>();
-
-                        db.Database.EnsureCreated();
-
-                        db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
-                        {
-                            GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.DateOfSymptomsOnset
-                        });
-                        db.SaveChanges();
-                    }
-                });
-            })
-                .CreateClient();
-
-
-            var source = new CancellationTokenSource();
-            var token = source.Token;
-
-            var content = new StringContent(JsonSerializer.Serialize(args))
-            {
-                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
-            };
-
-            // Act
-            var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
-
-            // Assert
-            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
-
-            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
-            Assert.False(result.Valid);
         }
     }
 }

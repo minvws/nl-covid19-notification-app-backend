@@ -53,25 +53,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             {
                 return new[] { "PubTEK key validation for LuhnModN failed." };
             }
-            
-            // If subjectHasSymptoms is true, then dateOfSymptomsOnset must be completed
-            if (args.SubjectHasSymptoms && !args.DateOfSymptomsOnset.HasValue)
-            {
-                errors.Add($"SubjectHasSymptoms is true, then dateOfTest must be completed.");
-            }
 
             //Should be a date only without time.
-            args.DateOfSymptomsOnset = args.DateOfSymptomsOnset?.Date;
-            if (!args.SubjectHasSymptoms && (_dateTimeProvider.Snapshot.Date.AddDays(-30) > args.DateOfSymptomsOnset?.Date || args.DateOfSymptomsOnset?.Date > _dateTimeProvider.Snapshot.Date))
+            args.SelectedDate = args.SelectedDate?.Date;
+            if (!args.Symptomatic && (_dateTimeProvider.Snapshot.Date.AddDays(-30) > args.SelectedDate?.Date || args.SelectedDate?.Date > _dateTimeProvider.Snapshot.Date))
             {
-                errors.Add($"Date of symptoms onset out of range - {args.DateOfSymptomsOnset}.");
+                errors.Add($"Selected date out of range - {args.SelectedDate}.");
             }
-
-            // TODO: If subjectHasSymptoms is false, then dateOfTest must be completed. 
-            //if (!args.SubjectHasSymptoms && !args.DateOfTest.HasValue)
-            //{
-            //    errors.Add($"SubjectHasSymptoms is false, then dateOfTest must be completed.");
-            //}
 
             return errors.ToArray();
         }
