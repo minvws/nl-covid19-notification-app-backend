@@ -8,8 +8,7 @@
     [BucketId]              VARBINARY (32) NOT NULL,
     [AuthorisedByCaregiver] DATETIME2 (7)  NULL,
     [DateOfSymptomsOnset]   DATETIME2 (7)  NULL,
-    [DateOfTest]            DATETIME2 (7)  NULL,
-    [SubjectHasSymptoms]    BIT NULL,
+    [IsSymptomatic]         INT            NULL,
     [PollToken]             NVARCHAR (450) NULL,
     CONSTRAINT [PK_TekReleaseWorkflowState] PRIMARY KEY CLUSTERED  ([Id] ASC)
 );

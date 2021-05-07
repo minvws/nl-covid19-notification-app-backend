@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
@@ -49,9 +50,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
             using var dbc = _WorkflowDb();
             //Have to load referenced object into new context
             var owner = dbc.KeyReleaseWorkflowStates.Single(x => x.Id == workflowId);
-            owner.AuthorisedByCaregiver = DateTime.UtcNow;
-            owner.DateOfSymptomsOnset = DateTime.UtcNow.AddDays(-1);
-            owner.IsSymptomatic = true;
+            //owner.AuthorisedByCaregiver = DateTime.UtcNow;
+            //owner.DateOfSymptomsOnset = DateTime.UtcNow.AddDays(-1);
+            //owner.IsSymptomatic = InfectiousPeriodType.Symptomatic;
 
             for (var i = 0; i < _Args.TekCountPerWorkflow; i++)
             {

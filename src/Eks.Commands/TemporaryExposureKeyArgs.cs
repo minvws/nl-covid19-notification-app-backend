@@ -4,6 +4,7 @@
 
 using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 {
@@ -15,6 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         [Obsolete("Not used for GAEN V2")]
         public TransmissionRiskLevel TransmissionRiskLevel { get; set; }
         public int DaysSinceOnsetSymptoms { get; set; }
+        public InfectiousPeriodType Symptomatic { get; set; }
         public int ReportType { get; set; }
     }
 }

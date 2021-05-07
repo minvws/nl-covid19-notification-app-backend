@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities
 {
@@ -46,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
         /// <summary>
         /// True if Index has symptoms, otherwise false
         /// </summary>
-        public bool? IsSymptomatic { get; set; }
+        public InfectiousPeriodType? IsSymptomatic { get; set; }
 
     /// <summary>
     /// Rotating auth token for Icc Portal refresh to see KeysLastUploaded time.

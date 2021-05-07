@@ -105,7 +105,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                     x.Id,
                     DailyKey = new DailyKey(x.KeyData, x.RollingStartNumber, UniversalConstants.RollingPeriodRange.Hi), //Constant cos iOS xxx requires all RP to be 144
                     DateOfSymptomsOnset = x.Owner.DateOfSymptomsOnset.Value,
-                    Symptomatic = x.Owner.IsSymptomatic
+                    Symptomatic = x.Owner.IsSymptomatic.Value
                 }).ToList();
 
             var q2 = q1.Select(x =>

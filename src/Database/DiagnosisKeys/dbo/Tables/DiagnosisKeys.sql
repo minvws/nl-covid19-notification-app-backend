@@ -7,7 +7,7 @@
 	[Origin] [int] NOT NULL,
 	[Local_TransmissionRiskLevel] [int] NULL,
 	[Local_DaysSinceSymptomsOnset] [int] NULL,
-	[Local_Symptomatic] [bit] NULL,
+	[Local_Symptomatic] [int] NULL,
 	[PublishedToEfgs] [bit] NOT NULL,
 	[Efgs_BatchTag] [nvarchar](max) NULL,
 	[Efgs_CountriesOfInterest] [nvarchar](max) NULL,
