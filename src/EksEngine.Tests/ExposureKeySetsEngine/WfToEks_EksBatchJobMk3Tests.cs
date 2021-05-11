@@ -17,6 +17,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramewor
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
@@ -101,6 +102,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 Created = now,
                 ValidUntil = now.AddDays(1),
                 DateOfSymptomsOnset = now.AddDays(-1).Date,
+                IsSymptomatic = InfectiousPeriodType.Symptomatic,
                 Teks = items
             };
         }
@@ -115,21 +117,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 _EksPublishingJobDbProvider.CreateNew,
                 new StandardUtcDateTimeProvider(),
                 new EksEngineLoggingExtensions(_Lf.CreateLogger<EksEngineLoggingExtensions>()),
-                new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(), new StandardRandomNumberGenerator(), _DateTimeProvider, _FakeEksConfig),
-                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new TestLogger<SnapshotLoggingExtensions>()), _DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew),
-                new MarkDiagnosisKeysAsUsedLocally(_DkSourceDbProvider.CreateNew, _FakeEksConfig, _EksPublishingJobDbProvider.CreateNew, _Lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
-                new EksJobContentWriter(_ContentDbProvider.CreateNew, _EksPublishingJobDbProvider.CreateNew, new Sha256HexPublishingIdService(), 
+                new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(),
+                    new StandardRandomNumberGenerator(), _DateTimeProvider, _FakeEksConfig),
+                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new TestLogger<SnapshotLoggingExtensions>()),
+                    _DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew),
+                new MarkDiagnosisKeysAsUsedLocally(_DkSourceDbProvider.CreateNew, _FakeEksConfig,
+                    _EksPublishingJobDbProvider.CreateNew, _Lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
+                new EksJobContentWriter(_ContentDbProvider.CreateNew, _EksPublishingJobDbProvider.CreateNew,
+                    new Sha256HexPublishingIdService(),
                     new EksJobContentWriterLoggingExtensions(_Lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
-                new WriteStuffingToDiagnosisKeys(_DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew(),
-                    new IDiagnosticKeyProcessor[] {
+                new WriteStuffingToDiagnosisKeys(_DkSourceDbProvider.CreateNew(),
+                    _EksPublishingJobDbProvider.CreateNew(),
+                    new IDiagnosticKeyProcessor[]
+                    {
                         new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_CountriesOut.Object),
-                        new NlToEfgsDsosDiagnosticKeyProcessorMk1()}
+                        new NlToEfgsDsosDiagnosticKeyProcessorMk1()
+                    }
 
 
-                    ),
+                ),
                 _EfExtensions,
-                new DsosInfectiousness(new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 })
-                );
+                new DsosInfectiousness(
+                    new HashSet<int>() {-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
+                ));
 
             return _Engine.ExecuteAsync().GetAwaiter().GetResult();
         }
@@ -192,14 +202,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileEksSumCount);
 
             Assert.Equal(_ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
-            //TODO Assert.Equal(_WorkflowFac.NewDbContextFunc().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published), result.InputCount);
             Assert.Equal(_DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
 
             result = RunEngine();
-
-            //Assert.True(result.Started > new DateTime(2020, 8, 1, 0, 0, 0, DateTimeKind.Utc));
+            
             Assert.Equal(0, result.InputCount);
             Assert.Equal(0, result.StuffingCount);
             Assert.Equal(0, result.OutputCount);
@@ -239,7 +247,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileEksSumCount);
 
             Assert.Equal(_ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
-            //TODO Assert.Equal(_WorkflowFac.NewDbContextFunc().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published), result.InputCount);
             Assert.Equal(_DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
@@ -290,7 +297,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileEksSumCount);
 
             Assert.Equal(_ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
-            //TODO Assert.Equal(_WorkflowFac.NewDbContextFunc().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published), result.InputCount);
             Assert.Equal(_DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount + result.StuffingCount);
 
             Assert.True(result.TotalSeconds > 0);
@@ -325,7 +331,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileEksSumCount);
 
             Assert.Equal(_ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
-            //TODO Assert.Equal(_WorkflowFac.NewDbContextFunc().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published), result.InputCount); //TODO still should be 'published' by the snapshot
             Assert.Equal(_DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount); 
 
             Assert.True(result.TotalSeconds > 0);
@@ -358,7 +363,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileEksSumCount);
 
             Assert.Equal(_ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
-            //TODO Assert.Equal(_WorkflowFac.NewDbContextFunc().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published), result.InputCount);
             Assert.Equal(_DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
@@ -393,7 +397,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileEksSumCount);
 
             Assert.Equal(_ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
-            //TODO Assert.Equal(_WorkflowFac.NewDbContextFunc().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published), result.InputCount);
             Assert.Equal(_DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);

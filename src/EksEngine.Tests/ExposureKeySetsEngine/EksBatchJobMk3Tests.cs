@@ -17,6 +17,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramewor
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
@@ -112,6 +113,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 Created = now,
                 ValidUntil = now.AddDays(1),
                 DateOfSymptomsOnset = now.AddDays(-1).Date,
+                IsSymptomatic = InfectiousPeriodType.Symptomatic,
                 Teks = items
             };
         }
@@ -247,7 +249,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileEksSumCount);
 
             Assert.Equal(_ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
-            //TODO Assert.Equal(_WorkflowFac.NewDbContextFunc().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published), result.InputCount);
             Assert.Equal(_DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
@@ -298,7 +299,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileEksSumCount);
 
             Assert.Equal(_ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
-            //TODO Assert.Equal(_WorkflowFac.NewDbContextFunc().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published), result.InputCount);
             Assert.Equal(_DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount + result.StuffingCount);
 
             Assert.True(result.TotalSeconds > 0);
@@ -333,7 +333,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileEksSumCount);
 
             Assert.Equal(_ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
-            //TODO Assert.Equal(_WorkflowFac.NewDbContextFunc().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published), result.InputCount); //TODO still should be 'published' by the snapshot
             Assert.Equal(_DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount); 
 
             Assert.True(result.TotalSeconds > 0);
@@ -366,7 +365,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileEksSumCount);
 
             Assert.Equal(_ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
-            //TODO Assert.Equal(_WorkflowFac.NewDbContextFunc().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published), result.InputCount);
             Assert.Equal(_DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
@@ -401,7 +399,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileEksSumCount);
 
             Assert.Equal(_ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
-            //TODO Assert.Equal(_WorkflowFac.NewDbContextFunc().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published), result.InputCount);
             Assert.Equal(_DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);

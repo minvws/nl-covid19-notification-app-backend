@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Data.SqlClient;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
@@ -60,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             wf.LabConfirmationId = null; //Clear from usable key range
             wf.GGDKey = null; //Clear from usable key range
             wf.DateOfSymptomsOnset = args.SelectedDate; // The date is currently a DateOfSymptomsOnset or Date of Test. The system lacks having 2 date variants so the existing DateOfSymptomsOnset will hold either
-            wf.IsSymptomatic = args.Symptomatic;
+            wf.IsSymptomatic = args.Symptomatic ? InfectiousPeriodType.Symptomatic : InfectiousPeriodType.Asymptomatic;
 
             var success = await PublishTek(wf);
 
@@ -69,7 +70,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
                 _logger.LogInformation($"GGDKey {wf.GGDKey} authorized.");
             }
 
-            return success;
+            return success; 
         }
 
         private async Task<bool> PublishTek(TekReleaseWorkflowStateEntity workflowStateEntity)
