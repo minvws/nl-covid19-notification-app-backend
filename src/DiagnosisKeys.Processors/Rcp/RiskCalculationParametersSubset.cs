@@ -9,5 +9,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp
 
         [JsonPropertyName("daysSinceOnsetToInfectiousness")]
         public InfectiousnessByDsosPair[] InfectiousnessByDsos { get; set; }
+        public InfectiousnessByDsosPair[] InfectiousnessByTest { get; set; }
     }
 }

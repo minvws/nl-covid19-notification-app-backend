@@ -44,7 +44,7 @@ namespace ForceTekAuth
             {
                 i.LabConfirmationId = null;
                 i.AuthorisedByCaregiver = _Dtp.Snapshot;
-                i.DateOfSymptomsOnset = _Dtp.Snapshot.Date.AddDays(-1);
+                i.StartDateOfTekInclusion = _Dtp.Snapshot.Date.AddDays(-1);
             }
 
             _WorkflowDb.BulkUpdate(notAuthed);

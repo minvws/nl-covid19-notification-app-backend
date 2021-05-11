@@ -69,24 +69,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                 var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
                 logger.LogInformation("IksImport is disabled; Iks files will not be processed.");
             }
-            
+
             var c30 = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
             run.Add(() => c30.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c40 = serviceProvider.GetRequiredService<ManifestUpdateCommand>();
-            run.Add(() => c40.ExecuteAllAsync().GetAwaiter().GetResult());
+            //var c40 = serviceProvider.GetRequiredService<ManifestUpdateCommand>();
+            //run.Add(() => c40.ExecuteAllAsync().GetAwaiter().GetResult());
 
-            var c50 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
-            run.Add(() => c50.ExecuteAsync().GetAwaiter().GetResult());
+            //var c50 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
+            //run.Add(() => c50.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c55 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
-            run.Add(() => c55.Execute());
+            //var c55 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
+            //run.Add(() => c55.Execute());
 
-            var c60 = serviceProvider.GetService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
-            run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());
+            //var c60 = serviceProvider.GetService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
+            //run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c35 = serviceProvider.GetRequiredService<IksEngine>();
-            run.Add(() => c35.ExecuteAsync().GetAwaiter().GetResult());
+            //var c35 = serviceProvider.GetRequiredService<IksEngine>();
+            //run.Add(() => c35.ExecuteAsync().GetAwaiter().GetResult());
 
             //TODO write EFGS run.
 
@@ -148,11 +148,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
             services.AddTransient<IDsosInfectiousnessCalculator, DsosInfectiousnessCalculator>();
-            services.AddTransient<IDsosInfectiousness>(
-                x => {
+            services.AddTransient<IInfectiousness>(
+                x =>
+                {
                     var rr = x.GetService<IRiskCalculationParametersReader>();
-                    var days = rr.GetInfectiousDaysAsync().GetAwaiter().GetResult();
-                    return new DsosInfectiousness(days);
+                    var days = rr.GetInfectiousDaysAsync();
+                    return new Infectiousness(days);
                 }
             );
 

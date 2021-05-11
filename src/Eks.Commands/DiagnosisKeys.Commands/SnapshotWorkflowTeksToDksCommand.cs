@@ -94,7 +94,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             var q1 = _WorkflowDbContext.TemporaryExposureKeys
                 .Where(x => x.Owner.AuthorisedByCaregiver != null
-                            && x.Owner.DateOfSymptomsOnset != null
+                            && x.Owner.StartDateOfTekInclusion != null
                             && x.PublishingState == PublishingState.Unpublished
                             && x.PublishAfter <= snapshot
                             && x.Owner.IsSymptomatic.HasValue
@@ -104,7 +104,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 .Select(x => new {
                     x.Id,
                     DailyKey = new DailyKey(x.KeyData, x.RollingStartNumber, UniversalConstants.RollingPeriodRange.Hi), //Constant cos iOS xxx requires all RP to be 144
-                    DateOfSymptomsOnset = x.Owner.DateOfSymptomsOnset.Value,
+                    DateOfSymptomsOnset = x.Owner.StartDateOfTekInclusion.Value,
                     Symptomatic = x.Owner.IsSymptomatic.Value
                 }).ToList();
 

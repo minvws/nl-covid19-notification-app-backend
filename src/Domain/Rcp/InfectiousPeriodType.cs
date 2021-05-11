@@ -2,7 +2,6 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp
 {
-    [Flags]
     public enum InfectiousPeriodType
     {
         Asymptomatic = 0,

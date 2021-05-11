@@ -96,7 +96,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 AuthorisedByCaregiver = now,
                 Created = now,
                 ValidUntil = now.AddDays(1),
-                DateOfSymptomsOnset = now.AddDays(-1).Date, //Yesterday
+                StartDateOfTekInclusion = now.AddDays(-1).Date, //Yesterday
                 IsSymptomatic = InfectiousPeriodType.Symptomatic,
                 Teks = items
             };

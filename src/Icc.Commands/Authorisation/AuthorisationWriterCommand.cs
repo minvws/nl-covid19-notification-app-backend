@@ -51,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 
             wf.AuthorisedByCaregiver = _DateTimeProvider.Snapshot;
             wf.LabConfirmationId = null; //Clear from usable key range
-            wf.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
+            wf.StartDateOfTekInclusion = args.DateOfSymptomsOnset;
 
             return _NewPollTokenWriter.Execute(wf);
         }

@@ -12,10 +12,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp
             _RiskCalculationParametersReader = calculationParametersReader ?? throw new ArgumentNullException(nameof(calculationParametersReader));
         }
 
-        public async Task<bool> IsInfectious(int dsos)
+        public async Task<bool> IsInfectious(InfectiousPeriodType infectiousPeriodType, int dsos)
         {
-            var days = await _RiskCalculationParametersReader.GetInfectiousDaysAsync();
-            return days.Contains(dsos);
+            var days = _RiskCalculationParametersReader.GetInfectiousDaysAsync();
+            return days[infectiousPeriodType].Contains(dsos);
         }
     }
 }

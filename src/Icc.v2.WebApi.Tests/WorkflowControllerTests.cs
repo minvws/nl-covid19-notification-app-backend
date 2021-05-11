@@ -54,7 +54,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.SelectedDate
+                            StartDateOfTekInclusion = args.SelectedDate
 
                         });
                         db.SaveChanges();
@@ -109,7 +109,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.SelectedDate
+                            StartDateOfTekInclusion = args.SelectedDate
                         });
                         db.SaveChanges();
                     }
@@ -165,7 +165,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.SelectedDate
+                            StartDateOfTekInclusion = args.SelectedDate
 
                         });
                         db.SaveChanges();
@@ -220,7 +220,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.SelectedDate
+                            StartDateOfTekInclusion = args.SelectedDate
                         });
                         db.SaveChanges();
                     }
@@ -274,7 +274,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.SelectedDate
+                            StartDateOfTekInclusion = args.SelectedDate
                         });
                         db.SaveChanges();
                     }
@@ -328,7 +328,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.SelectedDate
+                            StartDateOfTekInclusion = args.SelectedDate
                         });
                         db.SaveChanges();
                     }
@@ -383,7 +383,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.SelectedDate
+                            StartDateOfTekInclusion = args.SelectedDate
                         });
                         db.SaveChanges();
                     }

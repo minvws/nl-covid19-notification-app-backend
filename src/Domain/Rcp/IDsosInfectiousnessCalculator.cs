@@ -4,6 +4,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp
 {
     public interface IDsosInfectiousnessCalculator
     {
-        Task<bool> IsInfectious(int dsos);
+        Task<bool> IsInfectious(InfectiousPeriodType infectiousPeriodType, int dsos);
     }
 }

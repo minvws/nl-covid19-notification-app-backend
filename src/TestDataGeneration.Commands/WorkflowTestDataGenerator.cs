@@ -97,7 +97,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
             foreach (var i in wfdb.KeyReleaseWorkflowStates)
             {
                 i.AuthorisedByCaregiver = _utcDateTimeProvider.Snapshot;
-                i.DateOfSymptomsOnset = _utcDateTimeProvider.Snapshot.Date.AddDays(-2);
+                i.StartDateOfTekInclusion = _utcDateTimeProvider.Snapshot.Date.AddDays(-2);
             }
 
             foreach (var i in wfdb.TemporaryExposureKeys)
