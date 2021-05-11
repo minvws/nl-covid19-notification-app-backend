@@ -40,9 +40,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
         public DateTime? AuthorisedByCaregiver { get; set; }
 
         /// <summary>
-        /// This is either the StartDateOfTekInclusion or Date of Test value.
+        /// This is either the DateOfSymptomsOnset or Date of Test value.
         /// </summary>
-        [Column("StartDateOfTekInclusion")] // TODO: rename DB column to StartDateOfTekInclusion
+        [Column("DateOfSymptomsOnset")] // TODO: rename DB column to StartDateOfTekInclusion
         public DateTime? StartDateOfTekInclusion { get; set; }
 
         /// <summary>
