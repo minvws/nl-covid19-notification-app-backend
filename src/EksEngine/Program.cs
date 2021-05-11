@@ -147,7 +147,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
 
             services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
-            services.AddTransient<IDsosInfectiousnessCalculator, DsosInfectiousnessCalculator>();
             services.AddTransient<IInfectiousness>(
                 x =>
                 {
