@@ -38,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
 
         private string[] GetMethods()
         {
-            return new[] {"POST", "GET", "OPTIONS"};
+            return new[] {"POST", "PUT", "GET", "OPTIONS"};
         }
         
         private string[] GetOrigins()
