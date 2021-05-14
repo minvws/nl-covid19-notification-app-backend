@@ -5,6 +5,7 @@
 using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuffing
@@ -43,6 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
                 var rsn = _DateTimeProvider.Snapshot.Date.AddDays(-_Rng.Next(0, _EksConfig.LifetimeDays)).ToRollingStartNumber();
                 var dsos = _Rng.Next(_TrlCalculation.SignificantDayRange.Lo, _TrlCalculation.SignificantDayRange.Hi);
                 var reportType = 1;
+                var symptomatic = (InfectiousPeriodType)_Rng.Next(0, 1);
                 result[i] = new EksCreateJobInputEntity
                 {
                     KeyData = _Rng.NextByteArray(UniversalConstants.DailyKeyDataByteCount),
@@ -50,6 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
                     RollingStartNumber = rsn,
                     DaysSinceSymptomsOnset = dsos,
                     TransmissionRiskLevel = _TrlCalculation.Calculate(dsos),
+                    Symptomatic = dsos < 0 ? InfectiousPeriodType.Symptomatic : symptomatic, // If dsos < 0 then always symptomatic. Else add the random value
                     ReportType = reportType
                 };
             }

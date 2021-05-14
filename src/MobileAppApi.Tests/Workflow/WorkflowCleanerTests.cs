@@ -210,7 +210,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
                 LabConfirmationId = publishedCount.HasValue ? null : _WorkflowCount.ToString(),
                 PollToken = publishedCount.HasValue ? _WorkflowCount.ToString() : null,
                 AuthorisedByCaregiver = publishedCount.HasValue ? _Dtp.Snapshot : (DateTime?)null,
-                DateOfSymptomsOnset = publishedCount.HasValue ? _Dtp.Snapshot : (DateTime?)null,
+                StartDateOfTekInclusion = publishedCount.HasValue ? _Dtp.Snapshot : (DateTime?)null,
                 ValidUntil = v
             };
 

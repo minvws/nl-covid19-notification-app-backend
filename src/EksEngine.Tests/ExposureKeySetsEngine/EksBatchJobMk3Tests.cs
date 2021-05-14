@@ -112,7 +112,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 AuthorisedByCaregiver = now.AddHours(1),
                 Created = now,
                 ValidUntil = now.AddDays(1),
-                DateOfSymptomsOnset = now.AddDays(-1).Date,
+                StartDateOfTekInclusion = now.AddDays(-1).Date,
                 IsSymptomatic = InfectiousPeriodType.Symptomatic,
                 Teks = items
             };
@@ -138,8 +138,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                     }
                     ),
                 _EfExtensions,
-                new DsosInfectiousness(new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 })
-                );
+                new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
+                    {
+                        InfectiousPeriodType.Symptomatic,
+                        new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                    },
+                    {
+                        InfectiousPeriodType.Asymptomatic,
+                        new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                    }
+                }));
 
             return _Engine.ExecuteAsync().GetAwaiter().GetResult();
         }

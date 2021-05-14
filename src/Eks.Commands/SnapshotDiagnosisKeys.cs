@@ -79,7 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     RollingPeriod = x.DailyKey.RollingPeriod, 
                     TransmissionRiskLevel = x.Local.TransmissionRiskLevel.Value,
                     DaysSinceSymptomsOnset = x.Local.DaysSinceSymptomsOnset.Value,
-                    //Symptomatic = x.Local.Symptomatic,
+                    Symptomatic = x.Local.Symptomatic,
                     ReportType = x.Local.ReportType
                 }).ToArray();
     }

@@ -69,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                 var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
                 logger.LogInformation("IksImport is disabled; Iks files will not be processed.");
             }
-            
+
             var c30 = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
             run.Add(() => c30.ExecuteAsync().GetAwaiter().GetResult());
 
@@ -147,12 +147,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
 
             services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
-            services.AddTransient<IDsosInfectiousnessCalculator, DsosInfectiousnessCalculator>();
-            services.AddTransient<IDsosInfectiousness>(
-                x => {
+            services.AddTransient<IInfectiousness>(
+                x =>
+                {
                     var rr = x.GetService<IRiskCalculationParametersReader>();
-                    var days = rr.GetInfectiousDaysAsync().GetAwaiter().GetResult();
-                    return new DsosInfectiousness(days);
+                    var days = rr.GetInfectiousDaysAsync();
+                    return new Infectiousness(days);
                 }
             );
 

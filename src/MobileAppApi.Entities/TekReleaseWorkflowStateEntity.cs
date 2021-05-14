@@ -42,7 +42,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
         /// <summary>
         /// This is either the DateOfSymptomsOnset or Date of Test value.
         /// </summary>
-        public DateTime? DateOfSymptomsOnset { get; set; }
+        [Column("DateOfSymptomsOnset")] // TODO: rename DB column to StartDateOfTekInclusion
+        public DateTime? StartDateOfTekInclusion { get; set; }
 
         /// <summary>
         /// True if Index has symptoms, otherwise false

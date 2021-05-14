@@ -27,4 +27,4 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFra
             modelBuilder.Entity<EksCreateJobInputEntity>().HasIndex(x => x.TekId).IsUnique();
         }
     }
-}
+}   

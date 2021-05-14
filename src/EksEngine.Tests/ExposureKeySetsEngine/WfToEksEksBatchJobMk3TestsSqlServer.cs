@@ -13,9 +13,9 @@ using Xunit;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySetsEngine
 {
     [Trait("db", "ss")]
-    public class WfToEksEksBatchJobMk3TestsSqlServer : WfToEks_EksBatchJobMk3Tests
+    public class WfToEksEksBatchJobMk3TestsSqlServer : WfToEksEksBatchJobMk3Tests
     {
-        private const string DbNamePrefix = nameof(WfToEks_EksBatchJobMk3Tests) + "_";
+        private const string DbNamePrefix = nameof(WfToEksEksBatchJobMk3Tests) + "_";
 
         public WfToEksEksBatchJobMk3TestsSqlServer() : base(
             new SqlServerDbProvider<WorkflowDbContext>(DbNamePrefix + "W"),

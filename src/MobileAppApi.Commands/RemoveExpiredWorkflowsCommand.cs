@@ -30,20 +30,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
             _Config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
-
         private void ReadStats(WorkflowStats stats, WorkflowDbContext dbc)
         {
             stats.Count = dbc.KeyReleaseWorkflowStates.Count();
 
             stats.Expired = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _Dtp.Snapshot);
-            stats.Unauthorised = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _Dtp.Snapshot && x.LabConfirmationId != null && x.AuthorisedByCaregiver == null && x.DateOfSymptomsOnset == null);
-            stats.Authorised = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _Dtp.Snapshot && x.LabConfirmationId == null && x.AuthorisedByCaregiver != null && x.DateOfSymptomsOnset != null);
+            stats.Unauthorised = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _Dtp.Snapshot && x.LabConfirmationId != null && x.AuthorisedByCaregiver == null && x.StartDateOfTekInclusion == null);
+            stats.Authorised = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _Dtp.Snapshot && x.LabConfirmationId == null && x.AuthorisedByCaregiver != null && x.StartDateOfTekInclusion != null);
 
-            stats.AuthorisedAndFullyPublished = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _Dtp.Snapshot
-                                                                                        && x.AuthorisedByCaregiver != null
-                                                                                        && x.DateOfSymptomsOnset != null
-                                                                                        && x.LabConfirmationId == null
-                                                                                        && x.Teks.Count(y => y.PublishingState == PublishingState.Unpublished) == 0);
+            stats.AuthorisedAndFullyPublished = dbc.KeyReleaseWorkflowStates.Count(x =>
+                x.ValidUntil < _Dtp.Snapshot &&
+                x.AuthorisedByCaregiver != null &&
+                x.StartDateOfTekInclusion != null &&
+                x.LabConfirmationId == null &&
+                x.Teks.Count(y => y.PublishingState == PublishingState.Unpublished) == 0);
 
             stats.TekCount = dbc.TemporaryExposureKeys.Count();
             stats.TekPublished = dbc.TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published);

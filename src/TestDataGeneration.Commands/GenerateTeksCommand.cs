@@ -51,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
             //Have to load referenced object into new context
             var owner = dbc.KeyReleaseWorkflowStates.Single(x => x.Id == workflowId);
             owner.AuthorisedByCaregiver = DateTime.UtcNow;
-            owner.DateOfSymptomsOnset = DateTime.UtcNow.AddDays(-1);
+            owner.StartDateOfTekInclusion = DateTime.UtcNow.AddDays(-1);
             owner.IsSymptomatic = InfectiousPeriodType.Symptomatic;
 
             for (var i = 0; i < _Args.TekCountPerWorkflow; i++)
