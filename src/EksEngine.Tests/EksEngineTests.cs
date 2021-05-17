@@ -21,6 +21,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
@@ -109,14 +110,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                     new NlToEfgsDsosDiagnosticKeyProcessorMk1()}
                 ),
                 _efExtensions,
-                new DsosInfectiousness(new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 })
-            );
+                new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
+                    {
+                        InfectiousPeriodType.Symptomatic, 
+                        new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                    }
+                }));
 
             var jsonSerializer = new StandardJsonSerializer();
             _manifestJob = new ManifestUpdateCommand(
-                new ManifestBuilder(_contentDbProvider.CreateNew(), eksConfig.Object, _dtp),
-                new ManifestBuilderV3(_contentDbProvider.CreateNew(), eksConfig.Object, _dtp),
-                new ManifestBuilderV4(_contentDbProvider.CreateNew(), eksConfig.Object, _dtp),
+                new ManifestV2Builder(_contentDbProvider.CreateNew(), eksConfig.Object, _dtp),
+                new ManifestV3Builder(_contentDbProvider.CreateNew(), eksConfig.Object, _dtp),
+                new ManifestV4Builder(_contentDbProvider.CreateNew(), eksConfig.Object, _dtp),
                 _contentDbProvider.CreateNew,
                 new ManifestUpdateCommandLoggingExtensions(_lf.CreateLogger<ManifestUpdateCommandLoggingExtensions>()),
                 _dtp,
@@ -145,7 +150,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             Assert.Equal(0, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2));
             //Obsolete - replace with raw content
             Assert.Equal(0, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet));
-            Assert.Equal(1, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.Manifest));
+            Assert.Equal(0, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.Manifest));
 
             Assert.Equal(0, _workflowDbProvider.CreateNew().TemporaryExposureKeys.Count());
             Assert.Equal(0, _dkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
@@ -186,7 +191,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             Assert.Equal(0, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2));
             //Obsolete - replace with raw content
             Assert.Equal(0, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet));
-            Assert.Equal(1, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.Manifest));
+            Assert.Equal(0, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.Manifest));
         }
 
         public void Dispose()

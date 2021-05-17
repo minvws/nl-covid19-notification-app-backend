@@ -69,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                 var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
                 logger.LogInformation("IksImport is disabled; Iks files will not be processed.");
             }
-            
+
             var c30 = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
             run.Add(() => c30.ExecuteAsync().GetAwaiter().GetResult());
 
@@ -134,11 +134,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             //EKS Engine
             services.EksEngine();
 
-            services.AddTransient<ManifestUpdateCommand>();
-            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
-            services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
-            services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient<ManifestBuilder>();
             services.AddTransient<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             services.AddTransient<RemovePublishedDiagnosisKeys>();
 
@@ -151,16 +146,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddSingleton<ManifestUpdateCommandLoggingExtensions>();
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
 
-            //Manifest Engine
-            services.ManifestEngine();
-
             services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
-            services.AddTransient<IDsosInfectiousnessCalculator, DsosInfectiousnessCalculator>();
-            services.AddTransient<IDsosInfectiousness>(
-                x => {
+            services.AddTransient<IInfectiousness>(
+                x =>
+                {
                     var rr = x.GetService<IRiskCalculationParametersReader>();
-                    var days = rr.GetInfectiousDaysAsync().GetAwaiter().GetResult();
-                    return new DsosInfectiousness(days);
+                    var days = rr.GetInfectiousDaysAsync();
+                    return new Infectiousness(days);
                 }
             );
 
@@ -168,7 +160,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.NlResignerStartup();
             services.DummySignerStartup();
             services.GaSignerStartup();
-
 
             services.AddTransient<IksImportBatchJob>();
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
@@ -201,7 +192,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<MarkDiagnosisKeysAsUsedByIks>();
             services.AddTransient<IksJobContentWriter>();
 
-            services.ManifestForV4Startup();
+            //ManifestEngine
+            services.AddTransient<ManifestUpdateCommand>();
+            services.AddTransient<ManifestV2Builder>();
+            services.AddTransient<ManifestV3Builder>();
+            services.AddTransient<ManifestV4Builder>();
+            services.AddTransient<Func<IContentEntityFormatter>>(x => x.GetRequiredService<StandardContentEntityFormatter>);
+            services.AddTransient<StandardContentEntityFormatter>();
+            services.AddTransient<ZippedSignedContentFormatter>();
+            services.AddTransient(x =>
+                SignerConfigStartup.BuildEvSigner(
+                    x.GetRequiredService<IConfiguration>(),
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<IUtcDateTimeProvider>()));
+            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
         }
     }
 }

@@ -11,13 +11,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 {
     public class HttpPostRegisterSecretV2
     {
-        private readonly ISecretWriter _writer;
+        private readonly TekReleaseWorkflowStateCreateV2 _writer;
         private readonly RegisterSecretLoggingExtensionsV2 _logger;
         private readonly IWorkflowTime _workflowTime;
         private readonly IUtcDateTimeProvider _utcDateTimeProvider;
 
         public HttpPostRegisterSecretV2(
-            ISecretWriter writer,
+            TekReleaseWorkflowStateCreateV2 writer,
             RegisterSecretLoggingExtensionsV2 logger,
             IWorkflowTime workflowTime,
             IUtcDateTimeProvider utcDateTimeProvider

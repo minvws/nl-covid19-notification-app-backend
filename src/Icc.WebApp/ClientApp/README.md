@@ -1,5 +1,5 @@
 # COVID-19 Notification App - GGD Portal
-This repository contains the front-end portal for GGD workers to validate LabConfirmationId's ('GGD-Keys') from CoronaMelder users within the Workflow API backend.
+This repository contains the front-end portal for GGD workers to validate GGDKey's from CoronaMelder users within the Workflow API backend.
 
 ## Introduction
 

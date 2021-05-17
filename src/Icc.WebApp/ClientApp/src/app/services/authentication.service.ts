@@ -49,8 +49,8 @@ export class AuthenticationService {
         throw error;
     }
 
-    public buildUrl(endpoint: string) {
-      return document.getElementsByTagName('base')[0].href + endpoint;
+  public buildUrl(endpoint: string) {
+    return 'https://' + this.appConfigService.getConfig().authHost + (endpoint.startsWith('/') ? '' : '/') + endpoint;
     }
 
     public fetchCurrentUser(): Observable<any> {

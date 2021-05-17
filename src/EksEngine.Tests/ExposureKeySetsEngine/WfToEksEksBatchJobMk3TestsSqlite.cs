@@ -12,7 +12,7 @@ using Xunit;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySetsEngine
 {
     [Trait("db", "mem")]
-    public class WfToEksEksBatchJobMk3TestsSqlite : WfToEks_EksBatchJobMk3Tests
+    public class WfToEksEksBatchJobMk3TestsSqlite : WfToEksEksBatchJobMk3Tests
     {
         public WfToEksEksBatchJobMk3TestsSqlite() : base(
             new SqliteInMemoryDbProvider<WorkflowDbContext>(),

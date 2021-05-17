@@ -34,7 +34,7 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "222222",
-                StartOfInfectiousPeriod = DateTime.Today,
+                SelectedDate = DateTime.Today,
                 Symptomatic = true
             };
 
@@ -54,7 +54,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.StartOfInfectiousPeriod
+                            StartDateOfTekInclusion = args.SelectedDate
 
                         });
                         db.SaveChanges();
@@ -89,7 +89,7 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "111111",
-                StartOfInfectiousPeriod = DateTime.Today,
+                SelectedDate = DateTime.Today,
                 Symptomatic = true
             };
 
@@ -109,7 +109,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.StartOfInfectiousPeriod
+                            StartDateOfTekInclusion = args.SelectedDate
                         });
                         db.SaveChanges();
                     }
@@ -145,7 +145,7 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                StartOfInfectiousPeriod = DateTime.Today,
+                SelectedDate = DateTime.Today,
                 Symptomatic = true
             };
 
@@ -165,7 +165,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.StartOfInfectiousPeriod
+                            StartDateOfTekInclusion = args.SelectedDate
 
                         });
                         db.SaveChanges();
@@ -200,7 +200,7 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "18T6LJQ",
-                StartOfInfectiousPeriod = DateTime.Today,
+                SelectedDate = DateTime.Today,
                 Symptomatic = true
             };
 
@@ -220,7 +220,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.StartOfInfectiousPeriod
+                            StartDateOfTekInclusion = args.SelectedDate
                         });
                         db.SaveChanges();
                     }
@@ -254,7 +254,7 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJR",
-                StartOfInfectiousPeriod = DateTime.Today,
+                SelectedDate = DateTime.Today,
                 Symptomatic = true
             };
 
@@ -274,7 +274,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.StartOfInfectiousPeriod
+                            StartDateOfTekInclusion = args.SelectedDate
                         });
                         db.SaveChanges();
                     }
@@ -308,7 +308,7 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                StartOfInfectiousPeriod = null,
+                SelectedDate = null,
                 Symptomatic = false
             };
 
@@ -328,7 +328,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.StartOfInfectiousPeriod
+                            StartDateOfTekInclusion = args.SelectedDate
                         });
                         db.SaveChanges();
                     }
@@ -363,7 +363,7 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                StartOfInfectiousPeriod = DateTime.Today,
+                SelectedDate = DateTime.Today,
                 Symptomatic = true
             };
 
@@ -383,7 +383,7 @@ namespace Icc.v2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.StartOfInfectiousPeriod
+                            StartDateOfTekInclusion = args.SelectedDate
                         });
                         db.SaveChanges();
                     }
@@ -408,60 +408,6 @@ namespace Icc.v2.WebApi.Tests
 
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
             Assert.True(result.Valid);
-        }
-
-        [Fact]
-        public async Task PutPubTek_ReturnsOkAndFalseResult_When_SubjectHasSymptoms_Is_True_And_DateOfSymptomsOnset_Is_Null()
-        {
-            // Arrange
-            var args = new PublishTekArgs
-            {
-                GGDKey = "L8T6LJQ",
-                StartOfInfectiousPeriod = null,
-                Symptomatic = true
-            };
-
-            var client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                    var sp = services.BuildServiceProvider();
-
-                    using (var scope = sp.CreateScope())
-                    {
-                        var scopedServices = scope.ServiceProvider;
-                        var db = scopedServices.GetRequiredService<WorkflowDbContext>();
-
-                        db.Database.EnsureCreated();
-
-                        db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
-                        {
-                            GGDKey = args.GGDKey,
-                            DateOfSymptomsOnset = args.StartOfInfectiousPeriod
-                        });
-                        db.SaveChanges();
-                    }
-                });
-            })
-                .CreateClient();
-
-
-            var source = new CancellationTokenSource();
-            var token = source.Token;
-
-            var content = new StringContent(JsonSerializer.Serialize(args))
-            {
-                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
-            };
-
-            // Act
-            var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
-
-            // Assert
-            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
-
-            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
-            Assert.False(result.Valid);
         }
     }
 }

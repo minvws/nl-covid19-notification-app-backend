@@ -58,7 +58,7 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
   @HostListener('window:scroll', ['$event'])
   scrollHandler(event) {
     const y = (this.step_element.nativeElement.offsetTop - window.outerHeight + 220);
-    if (this.indexData.LabConfirmationId.join('').length < 1 && window.scrollY > y) {
+    if (this.indexData.GGDKey.join('').length < 1 && window.scrollY > y) {
       const firstCharInputElement: HTMLInputElement = this.first_char.nativeElement;
       firstCharInputElement.focus();
     }
@@ -76,21 +76,21 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
     if (this.errorCode === 2) {
       for (let i = 0; i < 6; i++) {
         if (i !== index) {
-          this.indexData.LabConfirmationIdValidState[i] = null;
+          this.indexData.GGDKeyValidState[i] = null;
         }
       }
     }
-    const labCICharacter = this.indexData.LabConfirmationId[index];
+    const labCICharacter = this.indexData.GGDKey[index];
     if (labCICharacter.length > 0) {
       const labCICharacterValidMatch = labCICharacter.toUpperCase().match('^[' + this.indexData.allowedChars + ']+$');
-      this.indexData.LabConfirmationIdValidState[index] = !(labCICharacterValidMatch == null || labCICharacterValidMatch.length < 1);
+      this.indexData.GGDKeyValidState[index] = !(labCICharacterValidMatch == null || labCICharacterValidMatch.length < 1);
     } else {
-      this.indexData.LabConfirmationIdValidState[index] = true;
+      this.indexData.GGDKeyValidState[index] = true;
     }
 
-    this.demoMode = (this.indexData.labConfirmationIdJoined() === '000000');
+    this.demoMode = (this.indexData.GGDKeyJoined() === '000000');
     if (!this.demoMode) {
-      this.errorCode = (Object.values(this.indexData.LabConfirmationIdValidState).filter(s => s === false).length > 0) ? 1 : -1;
+      this.errorCode = (Object.values(this.indexData.GGDKeyValidState).filter(s => s === false).length > 0) ? 1 : -1;
     } else {
       this.errorCode = -1;
     }
@@ -136,7 +136,7 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
       }
     }
     // sync with model
-    this.indexData.LabConfirmationId[index] = target.value;
+    this.indexData.GGDKey[index] = target.value;
   }
 
   hasSymptomsClicked(symptomatic: boolean) {
@@ -148,16 +148,16 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
     this.openDayPicker = false;
   }
 
-  confirmLabConfirmationId() {
-    if (this.indexData.labConfirmationIdJoined() === '000000') {
+  confirmGGDKey() {
+    if (this.indexData.GGDKeyJoined() === '000000') {
       this.router.navigate(['/validate/confirm'], {
         queryParams: {
-          symptomsDate: this.indexData.getSymptomsDate().valueOf()
+          symptomsDate: this.indexData.getDisplayDate().valueOf()
         }
       });
     }
 
-    if (this.indexData.LabConfirmationId.join('') === this.LastConfirmedLCId.join('')) {
+    if (this.indexData.GGDKey.join('') === this.LastConfirmedLCId.join('')) {
       alert('Het is niet mogelijk om meerdere keren dezelfde GGD-sleutel te verwerken. Probeer het opnieuw met een unieke GGD-sleutel.');
       return;
     }
@@ -165,8 +165,8 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
       this.loading++;
 
       this.reportService.confirmLabId(
-        this.indexData.LabConfirmationId,
-        this.indexData.getSymptomsDate().toISOString(),
+        this.indexData.GGDKey,
+        this.indexData.selectedDate.toISOString(),
         this.indexData.symptomatic
       )
         .pipe(catchError((e) => {
@@ -175,23 +175,23 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
           throw e;
         })).subscribe((result) => {
           this.loading--;
-          this.LastConfirmedLCId = [...this.indexData.LabConfirmationId]; // 200 response
+          this.LastConfirmedLCId = [...this.indexData.GGDKey]; // 200 response
 
           if (result.valid === true) {
             this.router.navigate(['/validate/confirm'], {
               queryParams: {
-                symptomsDate: this.indexData.getSymptomsDate().valueOf()
+                symptomsDate: this.indexData.getDisplayDate().valueOf()
               }
             });
           } else {
             this.errorCode = 2;
           }
           if (this.errorCode > 1) {
-            for (let i = 0; i < this.indexData.LabConfirmationId.length; i++) {
-              this.indexData.LabConfirmationIdValidState[i] = false;
+            for (let i = 0; i < this.indexData.GGDKey.length; i++) {
+              this.indexData.GGDKeyValidState[i] = false;
 
-              if (i === 6 && this.indexData.LabConfirmationId[i] === '') {
-                this.indexData.LabConfirmationIdValidState[i] = null;
+              if (i === 6 && this.indexData.GGDKey[i] === '') {
+                this.indexData.GGDKeyValidState[i] = null;
               }
             }
           }

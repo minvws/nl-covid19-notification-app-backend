@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities
 {
@@ -38,12 +39,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
         /// </summary>
         public DateTime? AuthorisedByCaregiver { get; set; }
 
-        public DateTime? DateOfSymptomsOnset { get; set; }
+        /// <summary>
+        /// This is either the DateOfSymptomsOnset or Date of Test value.
+        /// </summary>
+        [Column("DateOfSymptomsOnset")] // TODO: rename DB column to StartDateOfTekInclusion
+        public DateTime? StartDateOfTekInclusion { get; set; }
 
         /// <summary>
-        /// Rotating auth token for Icc Portal refresh to see KeysLastUploaded time.
+        /// True if Index has symptoms, otherwise false
         /// </summary>
-        [Obsolete("PollToken will be obsolete for new version of the ICC backend API")]
+        public InfectiousPeriodType? IsSymptomatic { get; set; }
+
+    /// <summary>
+    /// Rotating auth token for Icc Portal refresh to see KeysLastUploaded time.
+    /// </summary>
+    [Obsolete("PollToken will be obsolete for new version of the ICC backend API")]
         public string PollToken { get; set; }
 
         public virtual ICollection<TekEntity> Teks { get; set; } = new List<TekEntity>();

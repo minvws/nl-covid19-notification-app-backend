@@ -13,12 +13,12 @@ export class IndexData {
     this.dateHelper = dateHelper;
 
     for (let i = 0; i < 6; i++) {
-      this.LabConfirmationIdValidState[i] = null;
+      this.GGDKeyValidState[i] = null;
     }
   }
 
-  public LabConfirmationId: Array<string> = ['', '', '', '', '', '', ''];
-  public LabConfirmationIdValidState: { [key: number]: boolean } = [];
+  public GGDKey: Array<string> = ['', '', '', '', '', '', ''];
+  public GGDKeyValidState: { [key: number]: boolean } = [];
 
   dateHelper: DateHelper;
   datePipe: DatePipe;
@@ -64,9 +64,6 @@ export class IndexData {
 
   // The selected (and thus displayed) date in the page after user has selected a date from the datepicker
   selectedDate: Date = null;
-  // The symptoms date is the selected date with offset calculated
-  symptomsDate: Date = null;
-
   startOfInfectiousPeriodDate: Date = null;
 
   addDays(date, days) {
@@ -79,32 +76,27 @@ export class IndexData {
     this.symptomatic = symptomatic;
   }
 
-  setSymptomsDate() {
+  getDisplayDate() {
     let date = this.selectedDate;
     if (date) {
       date = new Date(this.selectedDate.valueOf());
       date.setDate(date.getDate() - (this.symptomatic ? this.symptomaticIndexDateOffset : this.asymptomaticIndexDateOffset));
     }
 
-    this.symptomsDate = date;
-    return this.symptomsDate;
-  }
-
-  getSymptomsDate() {
-    return this.symptomsDate;
+    return date;
   }
 
   getFriendlySymptomsDate(format: string = 'EE. d MMM - ') {
-    return this.dateHelper.getFriendlyDate(this.setSymptomsDate(), format);
+    return this.dateHelper.getFriendlyDate(this.getDisplayDate(), format);
   }
 
   public InfectionConfirmationIdValid() {
-    return (this.labConfirmationIdJoined().length >= 6 && this.validateCharacters());
+    return (this.GGDKeyJoined().length >= 6 && this.validateCharacters());
   }
 
   public InfectionConfirmationIdToTaalString() {
     let output = '';
-    this.LabConfirmationId.forEach((c, index) => {
+    this.GGDKey.forEach((c, index) => {
       if (index === 3) {
         output += ' – ';
       }
@@ -118,12 +110,12 @@ export class IndexData {
     return output;
   }
 
-  labConfirmationIdJoined() {
-    return this.LabConfirmationId.join('').trim().toUpperCase();
+  GGDKeyJoined() {
+    return this.GGDKey.join('').trim().toUpperCase();
   }
 
   validateCharacters(): boolean {
-    const matchArray: RegExpMatchArray = this.labConfirmationIdJoined().match('^[' + this.allowedChars + ']+$');
+    const matchArray: RegExpMatchArray = this.GGDKeyJoined().match('^[' + this.allowedChars + ']+$');
     return matchArray && matchArray.length > 0;
   }
 }

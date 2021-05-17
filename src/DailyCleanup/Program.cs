@@ -172,8 +172,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<IEksConfig, StandardEksConfig>();
 
             services.EksEngine();
-
-            services.ManifestEngine();
+            
             services.AddTransient<RemoveExpiredManifestsCommand>();
             services.AddTransient<RemoveExpiredManifestsV2Command>();
             services.AddTransient<RemoveExpiredManifestsV3Command>();
@@ -218,7 +217,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
                     x.GetRequiredService<DkSourceDbContext>(),
                     new IDiagnosticKeyProcessor[]
                     {
-                        x.GetRequiredService<OnlyIncludeCountryOfOriginKeyProcessor>(), //
+                        x.GetRequiredService<OnlyIncludeCountryOfOriginKeyProcessor>(),
                         x.GetRequiredService<DosDecodingDiagnosticKeyProcessor>(), //Adds result to metadata
                         x.GetRequiredService<NlTrlFromDecodedDosDiagnosticKeyProcessor>(),
                         x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
@@ -235,12 +234,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
             services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
-            services.AddTransient<IDsosInfectiousnessCalculator, DsosInfectiousnessCalculator>();
-            services.AddTransient<IDsosInfectiousness>(
+            services.AddTransient<IInfectiousness>(
                 x => {
                     var rr = x.GetService<IRiskCalculationParametersReader>();
-                    var days = rr.GetInfectiousDaysAsync().GetAwaiter().GetResult();
-                    return new DsosInfectiousness(days);
+                    var days = rr.GetInfectiousDaysAsync();
+                    return new Infectiousness(days);
                 }
             );
 
@@ -257,7 +255,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<RemoveExpiredIksInCommand>();
             services.AddTransient<RemoveExpiredIksOutCommand>();
 
-            services.ManifestForV4Startup();
+            // ManifestEngine
+            services.AddTransient<ManifestUpdateCommand>();
+            services.AddTransient<ManifestV2Builder>();
+            services.AddTransient<ManifestV3Builder>();
+            services.AddTransient<ManifestV4Builder>();
+            services.AddTransient<Func<IContentEntityFormatter>>(x => x.GetRequiredService<StandardContentEntityFormatter>);
+            services.AddTransient<StandardContentEntityFormatter>();
+            services.AddTransient<ZippedSignedContentFormatter>();
+            services.AddTransient(x =>
+                SignerConfigStartup.BuildEvSigner(
+                    x.GetRequiredService<IConfiguration>(),
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<IUtcDateTimeProvider>()));
+            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
         }
     }
 

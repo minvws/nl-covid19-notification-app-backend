@@ -60,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddTransient<ITekListWorkflowFilter, BackwardCompatibleV15TekListWorkflowFilter>();
             services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
             services.AddTransient<ISecretWriter, TekReleaseWorkflowStateCreate>();
-            services.AddTransient<ISecretWriter, TekReleaseWorkflowStateCreateV2>();
+            services.AddTransient<TekReleaseWorkflowStateCreateV2>();
             services.AddTransient<ITekWriter, TekWriter>();
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
             services.AddTransient<ILabConfirmationIdFormatter, StandardLabConfirmationIdFormatter>();

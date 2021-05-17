@@ -4,10 +4,10 @@
   <div #step_element class="input-box grid grid-cols-8 mb-10">
     <ng-container *ngFor="let key of [].constructor(7); let i = index">
       <input #first_char (input)="evaluateInvalidState($event, i)"
-             [class]="indexData.LabConfirmationIdValidState[i] === false ? 'invalid' : (indexData.LabConfirmationIdValidState[i] === true) ? 'valid' : ''"
+             [class]="indexData.GGDKeyValidState[i] === false ? 'invalid' : (indexData.GGDKeyValidState[i] === true) ? 'valid' : ''"
              (focus)="focusInput($event)"
              (keyup)="icIdKeyPress($event)" [value]="i"
-             type="text" [(ngModel)]="indexData.LabConfirmationId[i]" maxlength="1" min="0" max="9" [ngClass]="i === 6 ? 'darker' : ''" />
+             type="text" [(ngModel)]="indexData.GGDKey[i]" maxlength="1" min="0" max="9" [ngClass]="i === 6 ? 'darker' : ''" />
     </ng-container>
   </div>
 
@@ -63,7 +63,7 @@
 
 
 </app-step>
-<button class="btn btn-primary mb-40" (click)="confirmLabConfirmationId()"
-        [disabled]="(indexData.LabConfirmationId.join('').length < 6 || indexData.LabConfirmationId[5] === '' || this.indexData.selectedDate === null) || loading > 0 || errorCode === 1">
+<button class="btn btn-primary mb-40" (click)="confirmGGDKey()"
+        [disabled]="(indexData.GGDKey.join('').length < 6 || indexData.GGDKey[5] === '' || this.indexData.selectedDate === null) || loading > 0 || errorCode === 1">
   Volgende{{(loading > 0) ? "..." : ""}}
 </button>

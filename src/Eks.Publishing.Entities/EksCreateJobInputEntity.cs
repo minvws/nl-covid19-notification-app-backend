@@ -5,6 +5,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities
 {
@@ -28,6 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities
         public int RollingPeriod { get; set; }
         public TransmissionRiskLevel TransmissionRiskLevel { get; set; }
         public int DaysSinceSymptomsOnset { get; set; }
+        public InfectiousPeriodType Symptomatic { get; set; }
         public int ReportType { get; set; }
     }
 }

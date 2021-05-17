@@ -39,11 +39,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            const int pagesize = 10000;
+            const int pageSize = 10000;
             var index = 0;
 
-            using var tx = _DkSourceDbContext.BeginTransaction();
-            var page = Read(index, pagesize);
+            await using var tx = _DkSourceDbContext.BeginTransaction();
+            var page = Read(index, pageSize);
             
             while (page.Length > 0)
             {
@@ -51,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 await db.BulkInsertAsync2(page, new SubsetBulkArgs());
 
                 index += page.Length;
-                page = Read(index, pagesize);
+                page = Read(index, pageSize);
             }
 
             var result = new SnapshotEksInputResult
@@ -79,6 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     RollingPeriod = x.DailyKey.RollingPeriod, 
                     TransmissionRiskLevel = x.Local.TransmissionRiskLevel.Value,
                     DaysSinceSymptomsOnset = x.Local.DaysSinceSymptomsOnset.Value,
+                    Symptomatic = x.Local.Symptomatic,
                     ReportType = x.Local.ReportType
                 }).ToArray();
     }
