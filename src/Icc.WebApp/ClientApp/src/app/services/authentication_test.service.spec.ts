@@ -43,7 +43,7 @@ describe('AuthenticationServiceService', () => {
     });
 
     it('buildUrl should build correct url', () => {
-        const expected = 'http://localhost:9876/Auth/User';
+      const expected = 'https://coronamelder.test/Auth/User';
 
         const result = service.buildUrl('Auth/User');
 
