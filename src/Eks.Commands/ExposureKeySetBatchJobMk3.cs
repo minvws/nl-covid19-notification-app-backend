@@ -9,7 +9,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
@@ -35,7 +34,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private readonly EksEngineLoggingExtensions _logger;
         private readonly ISnapshotEksInput _snapshotter;
         private readonly MarkDiagnosisKeysAsUsedLocally _markWorkFlowTeksAsUsed;
-        private readonly IInfectiousness _infectiousness;
 
         private readonly IEksJobContentWriter _contentWriter;
         private readonly IWriteStuffingToDiagnosisKeys _writeStuffingToDiagnosisKeys;
@@ -51,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private readonly Stopwatch _buildEksStopwatch = new Stopwatch();
         private readonly Func<EksPublishingJobDbContext> _publishingDbContextFac;
 
-        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, Func<EksPublishingJobDbContext> publishingDbContextFac, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys, IWrappedEfExtensions sqlCommands, IInfectiousness infectiousness)
+        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, Func<EksPublishingJobDbContext> publishingDbContextFac, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys, IWrappedEfExtensions sqlCommands)
         {
             _eksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
             _setBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
@@ -66,7 +64,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _writeStuffingToDiagnosisKeys = writeStuffingToDiagnosisKeys ?? throw new ArgumentNullException(nameof(writeStuffingToDiagnosisKeys));
             _jobName = $"ExposureKeySetsJob_{_dateTimeProvider.Snapshot:u}".Replace(" ", "_").Replace(":", "_");
             _sqlCommands = sqlCommands ?? throw new ArgumentNullException(nameof(sqlCommands));
-            _infectiousness = infectiousness ?? throw new ArgumentNullException(nameof(infectiousness));
         }
 
         public async Task<EksEngineResult> ExecuteAsync()
@@ -278,14 +275,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 .ToArray();
 
 
-            var filteredResult = unFilteredResult
-                .Where(x =>
-                _infectiousness.IsInfectious(x.Symptomatic, x.DaysSinceSymptomsOnset))  
-            .ToArray();
+            //var filteredResult = unFilteredResult
+            //    .Where(x =>
+            //    _infectiousness.IsInfectious(x.Symptomatic, x.DaysSinceSymptomsOnset))  
+            //.ToArray();
 
-            _logger.WriteFinishedReadPage(filteredResult.Length);
+            _logger.WriteFinishedReadPage(unFilteredResult.Length);
 
-            return filteredResult;
+            return unFilteredResult;
         }
 
         private async Task CommitResultsAsync()
