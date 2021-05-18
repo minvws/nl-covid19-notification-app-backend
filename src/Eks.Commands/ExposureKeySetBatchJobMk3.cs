@@ -274,12 +274,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 .Take(take)
                 .ToArray();
 
-
-            //var filteredResult = unFilteredResult
-            //    .Where(x =>
-            //    _infectiousness.IsInfectious(x.Symptomatic, x.DaysSinceSymptomsOnset))  
-            //.ToArray();
-
             _logger.WriteFinishedReadPage(unFilteredResult.Length);
 
             return unFilteredResult;

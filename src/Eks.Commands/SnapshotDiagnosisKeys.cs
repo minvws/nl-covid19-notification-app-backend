@@ -90,8 +90,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
 
 
-            var filteredResult = unFilteredResult
-                .Where(x =>
+            var filteredResult = unFilteredResult.Where(x =>
                 _infectiousness.IsInfectious(x.Symptomatic, x.DaysSinceSymptomsOnset))
             .ToArray();
 
