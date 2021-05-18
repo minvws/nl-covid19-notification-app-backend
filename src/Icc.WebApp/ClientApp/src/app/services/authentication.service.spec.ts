@@ -53,7 +53,7 @@ describe('AuthenticationServiceService', () => {
 
         });
 
-        const req = httpTestingController.expectOne('http://localhost:9876/Auth/Token');
+      const req = httpTestingController.expectOne('https://coronamelder.test/Auth/Token');
         req.flush(mockResponse);
 
         expect(localStorage.getItem('auth')).toEqual(testJwtToken);
@@ -67,7 +67,7 @@ describe('AuthenticationServiceService', () => {
 
         service.callback('test_auth_code').subscribe();
 
-        const req = httpTestingController.expectOne('http://localhost:9876/Auth/Token');
+      const req = httpTestingController.expectOne('https://coronamelder.test/Auth/Token');
         req.flush(mockResponse);
 
         expect(service.currentUserValue.displayName).toEqual('Test User');
@@ -83,7 +83,7 @@ describe('AuthenticationServiceService', () => {
             token: testJwtToken
         };
         const expected = null;
-        const targetUrl = 'http://localhost:9876/Auth/Logout';
+      const targetUrl = 'https://coronamelder.test/Auth/Logout';
 
         // run callback to fill localStorage
 
@@ -91,7 +91,7 @@ describe('AuthenticationServiceService', () => {
 
         });
 
-        const req = httpTestingController.expectOne('http://localhost:9876/Auth/Token');
+      const req = httpTestingController.expectOne('https://coronamelder.test/Auth/Token');
         req.flush(mockResponse);
 
         // Act
