@@ -45,6 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
             });
 
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
+            services.AddHttpContextAccessor();
 
             services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             
