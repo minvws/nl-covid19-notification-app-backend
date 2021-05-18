@@ -70,7 +70,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 _workflowFac.CreateNew,
                 _dkSourceDbProvider.CreateNew, 
                 _efExtensions,
-                new IDiagnosticKeyProcessor[0]
+                new IDiagnosticKeyProcessor[0],
+                new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
+                    {
+                        InfectiousPeriodType.Symptomatic,
+                        new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                    },
+                    {
+                        InfectiousPeriodType.Asymptomatic,
+                        new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                    }
+                })
                 );
         }
 
@@ -120,17 +130,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(),
                     new StandardRandomNumberGenerator(), _dateTimeProvider, _fakeEksConfig),
                 new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new TestLogger<SnapshotLoggingExtensions>()),
-                    _dkSourceDbProvider.CreateNew(), _eksPublishingJobDbProvider.CreateNew,
-                    new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
-                    {
-                        InfectiousPeriodType.Symptomatic,
-                        new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
-                    },
-                    {
-                        InfectiousPeriodType.Asymptomatic,
-                        new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
-                    }
-                })),
+                    _dkSourceDbProvider.CreateNew(), _eksPublishingJobDbProvider.CreateNew),
                 new MarkDiagnosisKeysAsUsedLocally(_dkSourceDbProvider.CreateNew, _fakeEksConfig,
                     _eksPublishingJobDbProvider.CreateNew, _lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_contentDbProvider.CreateNew, _eksPublishingJobDbProvider.CreateNew,
@@ -143,8 +143,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                         new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_countriesOut.Object),
                         new NlToEfgsDsosDiagnosticKeyProcessorMk1()
                     }
-
-
                 ),
                 _efExtensions);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -8,6 +9,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
@@ -53,7 +55,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                     new ExcludeTrlNoneDiagnosticKeyProcessor(),
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_OutboundCountries.Object),
                     new NlToEfgsDsosDiagnosticKeyProcessorMk1()
-                }
+                },
+                new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
+                    {
+                        InfectiousPeriodType.Symptomatic,
+                        new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                    },
+                    {
+                        InfectiousPeriodType.Asymptomatic,
+                        new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                    }
+                })
             );
         }
 
@@ -114,13 +126,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         #endregion
 
-        [InlineData(0, 0, 120, 0, 0)] //Null case
-        [InlineData(1, 10, 119, 0, 0)] //Just before
-        [InlineData(1, 10, 120, 10, 4)] //Exactly - was 10 - 6 are now filtered out as they have TRL None
-        [InlineData(1, 10, 121, 10, 4)] //After- was 10 - 6 are now filtered out as they have TRL None
+        [InlineData(0, 0, 120, 0)] //Null case
+        [InlineData(1, 10, 119, 0)] //Just before
+        [InlineData(1, 10, 120, 4)] //Exactly - was 10 - 6 are now filtered out as they have TRL None
+        [InlineData(1, 10, 121, 4)] //After - was 10 - 6 are now filtered out as they have TRL None
         [Theory]
         [ExclusivelyUses(nameof(TekToDkSnapshotTests))]
-        public async Task PublishAfter(int wfCount, int tekPerWfCount, int addMins, int resultCount, int writtenCount)
+        public async Task PublishAfter(int wfCount, int tekPerWfCount, int addMins, int resultCount)
         {
 
             var t = new DateTime(2020, 11, 5, 12, 0, 0, DateTimeKind.Utc);
@@ -137,7 +149,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             Assert.Equal(resultCount, result.TekReadCount);
             Assert.Equal(tekCount - resultCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Unpublished));
-            Assert.Equal(writtenCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.Local.TransmissionRiskLevel != TransmissionRiskLevel.None));
+            Assert.Equal(resultCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.Local.TransmissionRiskLevel != TransmissionRiskLevel.None));
         }
 
         [InlineData(0, 0)] //Null case

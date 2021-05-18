@@ -7,10 +7,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
 
@@ -25,14 +23,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private readonly SnapshotLoggingExtensions _Logger;
         private readonly DkSourceDbContext _DkSourceDbContext;
         private readonly Func<EksPublishingJobDbContext> _PublishingDbContextFactory;
-        private readonly IInfectiousness _infectiousness;
 
-        public SnapshotDiagnosisKeys(SnapshotLoggingExtensions logger, DkSourceDbContext dkSourceDbContext, Func<EksPublishingJobDbContext> publishingDbContextFactory, IInfectiousness infectiousness)
+        public SnapshotDiagnosisKeys(SnapshotLoggingExtensions logger, DkSourceDbContext dkSourceDbContext, Func<EksPublishingJobDbContext> publishingDbContextFactory)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _DkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
             _PublishingDbContextFactory = publishingDbContextFactory ?? throw new ArgumentNullException(nameof(publishingDbContextFactory));
-            _infectiousness = infectiousness ?? throw new ArgumentNullException(nameof(infectiousness));
         }
 
         public async Task<SnapshotEksInputResult> ExecuteAsync(DateTime snapshotStart)
@@ -70,7 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private EksCreateJobInputEntity[] Read(int index, int pageSize)
         {
-            var unFilteredResult = _DkSourceDbContext.DiagnosisKeys
+            return _DkSourceDbContext.DiagnosisKeys
                 .Where(x => !x.PublishedLocally)
                 .OrderBy(x => x.Id)
                 .AsNoTracking()
@@ -87,14 +83,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     Symptomatic = x.Local.Symptomatic,
                     ReportType = x.Local.ReportType
                 }).ToArray();
-
-
-
-            var filteredResult = unFilteredResult.Where(x =>
-                _infectiousness.IsInfectious(x.Symptomatic, x.DaysSinceSymptomsOnset))
-            .ToArray();
-
-            return filteredResult;
         }
     }
 }
