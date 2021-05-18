@@ -84,9 +84,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 _workflowDbProvider.CreateNew,
                 _dkSourceDbProvider.CreateNew,
                 _efExtensions,
-                new IDiagnosticKeyProcessor[] {
-
-                });
+                new IDiagnosticKeyProcessor[] {},
+                new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
+                    {
+                        InfectiousPeriodType.Symptomatic,
+                        new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                    },
+                    {
+                        InfectiousPeriodType.Asymptomatic,
+                        new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                    }
+                }));
 
 
             var countriesOut = new Mock<IOutboundFixedCountriesOfInterestSetting>();
@@ -101,17 +109,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 _dtp,
                 new EksEngineLoggingExtensions(_lf.CreateLogger<EksEngineLoggingExtensions>()),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(), _rng, _dtp, eksConfig.Object),
-                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new TestLogger<SnapshotLoggingExtensions>()), _dkSourceDbProvider.CreateNew(), _eksPublishingJobDbProvider.CreateNew,
-                    new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
-                        {
-                            InfectiousPeriodType.Symptomatic,
-                            new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
-                        },
-                        {
-                            InfectiousPeriodType.Asymptomatic,
-                            new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
-                        }
-                    })),
+                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new TestLogger<SnapshotLoggingExtensions>()), _dkSourceDbProvider.CreateNew(), _eksPublishingJobDbProvider.CreateNew),
                 new MarkDiagnosisKeysAsUsedLocally(_dkSourceDbProvider.CreateNew, eksConfig.Object, _eksPublishingJobDbProvider.CreateNew, _lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_contentDbProvider.CreateNew, _eksPublishingJobDbProvider.CreateNew, new Sha256HexPublishingIdService(), new EksJobContentWriterLoggingExtensions(_lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
                 new WriteStuffingToDiagnosisKeys(_dkSourceDbProvider.CreateNew(), _eksPublishingJobDbProvider.CreateNew(),

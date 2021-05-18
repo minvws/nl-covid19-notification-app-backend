@@ -67,9 +67,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 _WorkflowFac.CreateNew,
                 _DkSourceDbProvider.CreateNew, 
                 _EfExtensions,
-                new IDiagnosticKeyProcessor[] { 
-                
-                }
+                new IDiagnosticKeyProcessor[] { },
+                new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
+                    {
+                        InfectiousPeriodType.Symptomatic,
+                        new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                    },
+                    {
+                        InfectiousPeriodType.Asymptomatic,
+                        new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                    }
+                })
                 );
 
             _OutboundCountriesMock = new Mock<IOutboundFixedCountriesOfInterestSetting>();
@@ -118,17 +126,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new StandardUtcDateTimeProvider(),
                 new EksEngineLoggingExtensions(_Lf.CreateLogger<EksEngineLoggingExtensions>()),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(), new StandardRandomNumberGenerator(), _DateTimeProvider, _FakeEksConfig),
-                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new TestLogger<SnapshotLoggingExtensions>()), _DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew,
-                    new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
-                        {
-                            InfectiousPeriodType.Symptomatic,
-                            new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
-                        },
-                        {
-                            InfectiousPeriodType.Asymptomatic,
-                            new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
-                        }
-                    })),
+                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new TestLogger<SnapshotLoggingExtensions>()), _DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew),
                 new MarkDiagnosisKeysAsUsedLocally(_DkSourceDbProvider.CreateNew, _FakeEksConfig, _EksPublishingJobDbProvider.CreateNew, _Lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_ContentDbProvider.CreateNew, _EksPublishingJobDbProvider.CreateNew, new Sha256HexPublishingIdService(), 
                     new EksJobContentWriterLoggingExtensions(_Lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),

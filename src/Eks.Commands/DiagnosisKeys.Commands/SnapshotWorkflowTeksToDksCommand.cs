@@ -13,6 +13,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
@@ -29,11 +30,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         private readonly Func<DkSourceDbContext> _DkSourceDbContextFactory;
         private readonly IWrappedEfExtensions _SqlCommands;
         private readonly IDiagnosticKeyProcessor[] _OrderedProcessorList;
+        private readonly IInfectiousness _infectiousness;
 
         private int _CommitIndex;
         private SnapshotWorkflowTeksToDksResult _Result;
 
-        public SnapshotWorkflowTeksToDksCommand(ILogger<SnapshotWorkflowTeksToDksCommand> logger, IUtcDateTimeProvider dateTimeProvider, ITransmissionRiskLevelCalculationMk2 transmissionRiskLevelCalculation, WorkflowDbContext workflowDbContext, Func<WorkflowDbContext> workflowDbContextFactory, Func<DkSourceDbContext> dkSourceDbContextFactory, IWrappedEfExtensions sqlCommands, IDiagnosticKeyProcessor[] orderedProcessorList)
+        public SnapshotWorkflowTeksToDksCommand(ILogger<SnapshotWorkflowTeksToDksCommand> logger, IUtcDateTimeProvider dateTimeProvider, ITransmissionRiskLevelCalculationMk2 transmissionRiskLevelCalculation, WorkflowDbContext workflowDbContext, Func<WorkflowDbContext> workflowDbContextFactory, Func<DkSourceDbContext> dkSourceDbContextFactory, IWrappedEfExtensions sqlCommands, IDiagnosticKeyProcessor[] orderedProcessorList, IInfectiousness infectiousness)
         {
             _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
@@ -43,6 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             _DkSourceDbContextFactory = dkSourceDbContextFactory ?? throw new ArgumentNullException(nameof(dkSourceDbContextFactory));
             _SqlCommands = sqlCommands ?? throw new ArgumentNullException(nameof(sqlCommands));
             _OrderedProcessorList = orderedProcessorList ?? throw new ArgumentNullException(nameof(orderedProcessorList));
+            _infectiousness = infectiousness ?? throw new ArgumentNullException(nameof(infectiousness));
         }
 
         public async Task<SnapshotWorkflowTeksToDksResult> ExecuteAsync()
@@ -92,7 +95,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         {
             var snapshot = _DateTimeProvider.Snapshot;
 
-            var q1 = _WorkflowDbContext.TemporaryExposureKeys
+            // Select TemporaryExposureKeys from Workflow table which are ready to be processed (TEK is: AuthorisedByCaregiver, StartDateOfTekInclusion and IsSymptomatic are set, Unpublished PublishAfter not in the future)
+            var selectTeksFromWorkflowQuery = _WorkflowDbContext.TemporaryExposureKeys
                 .Where(x => x.Owner.AuthorisedByCaregiver != null
                             && x.Owner.StartDateOfTekInclusion != null
                             && x.PublishingState == PublishingState.Unpublished
@@ -108,7 +112,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                     Symptomatic = x.Owner.IsSymptomatic.Value
                 }).ToList();
 
-            var q2 = q1.Select(x =>
+            // Map TEKS from selectTeksFromWorkflowQuery to a List of DiagnosisKeyInputEntities
+            var diagnosisKeyInputEntities = selectTeksFromWorkflowQuery.Select(x =>
                 {
                     var dsos = x.DailyKey.RollingStartNumber.DaysSinceSymptomOnset(x.DateOfSymptomsOnset);
                     var trl = _TransmissionRiskLevelCalculation.Calculate(dsos);
@@ -116,7 +121,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                     {
                         DailyKey = x.DailyKey,
                         TekId = x.Id,
-                        Local = new LocalTekInfo
+                        Local = new LocalTekInfo 
                         {
                             DaysSinceSymptomsOnset = dsos, //Added here as the new format has this as well as the EFGS format.
                             TransmissionRiskLevel = trl,
@@ -126,7 +131,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                     return result;
                 }).ToList();
 
-            return q2;
+            // Filter the List of DiagnosisKeyInputEntities by the RiskCalculationParameter filters
+            var filteredResult = diagnosisKeyInputEntities.Where(x =>
+                    _infectiousness.IsInfectious(x.Local.Symptomatic, x.Local.DaysSinceSymptomsOnset.Value))
+                .ToArray();
+
+            // Return the filtered list
+            return filteredResult;
         }
 
         private async Task CommitSnapshotAsync()
