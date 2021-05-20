@@ -221,6 +221,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
                         x.GetRequiredService<DosDecodingDiagnosticKeyProcessor>(), //Adds result to metadata
                         x.GetRequiredService<NlTrlFromDecodedDosDiagnosticKeyProcessor>(),
                         x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
+                        x.GetRequiredService<NlSymptomaticFromDecodedDosDiagnosticKeyProcessor>(),
                     },
                     x.GetRequiredService<ITekValidatorConfig>(),
                     x.GetRequiredService<IUtcDateTimeProvider>(),
@@ -231,6 +232,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<DosDecodingDiagnosticKeyProcessor>();
             services.AddTransient<NlTrlFromDecodedDosDiagnosticKeyProcessor>();
             services.AddTransient<ExcludeTrlNoneDiagnosticKeyProcessor>();
+            services.AddTransient<NlSymptomaticFromDecodedDosDiagnosticKeyProcessor>();
 
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
             services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
