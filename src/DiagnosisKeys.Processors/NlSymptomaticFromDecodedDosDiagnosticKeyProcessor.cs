@@ -11,7 +11,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
 
             if (!value.Metadata.TryGetValue(DosDecodingDiagnosticKeyProcessor.DecodedDsosMetadataKey, out var decodedDos))
             {
-                //TODO log not present... and fill up the log files...
                 return null;
             }
 
