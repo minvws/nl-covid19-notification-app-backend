@@ -4,6 +4,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities
 {
@@ -19,6 +20,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities
         /// Set this from Days since symptoms onset, calculate TRL
         /// </summary>
         public int? DaysSinceSymptomsOnset { get; set; }
+
+        public InfectiousPeriodType Symptomatic { get; set; }
 
         /// <summary>
         /// Report type defined for a TemporaryExposureKey;

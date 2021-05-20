@@ -30,7 +30,7 @@ export class ValidateIccFinalComponent implements OnInit {
         }
     }
 
-    public friendlySymptomsDate(offset: number = 2): string {
+    public friendlySymptomsDate(offset: number = 0): string {
         if (!this.symptomsDate) {
             return '';
         }

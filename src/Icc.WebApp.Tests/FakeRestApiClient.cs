@@ -1,44 +1,56 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
 
 namespace App.IccPortal.Tests
 {
     public class FakeRestApiClient : IRestApiClient
     {
-        private readonly HttpClient _HttpClient;
-        private readonly ILogger<FakeRestApiClient> _Logger;
+        private readonly HttpClient _httpClient;
+        private readonly ILogger<FakeRestApiClient> _logger;
 
         public FakeRestApiClient(HttpClient httpClient, ILogger<FakeRestApiClient> logger)
         {
-            _HttpClient = httpClient;
-            _Logger = logger;
+            _httpClient = httpClient;
+            _logger = logger;
         }
 
         public Uri BaseAddress
         {
-            get => _HttpClient.BaseAddress;
-            set => _HttpClient.BaseAddress = value;
+            get => _httpClient.BaseAddress;
+            set => _httpClient.BaseAddress = value;
         }
 
-        public async Task<IActionResult> GetAsync(string requestUri, CancellationToken token)
+        public async Task<HttpResponseMessage> GetAsync(string requestUri, CancellationToken token)
         {
-            return new OkResult();
+            return new HttpResponseMessage();
         }
 
-        public async Task<IActionResult> PostAsync<T>(T model, string requestUri, CancellationToken token) where T : class
+        public async Task<HttpResponseMessage> PostAsync<T>(T model, string requestUri, CancellationToken token) where T : class
         {
-            var args = (AuthorisationArgs)Convert.ChangeType(model, typeof(AuthorisationArgs));
-            if (args.LabConfirmationId == "111111")
+            var args = (PublishTekArgs)Convert.ChangeType(model, typeof(PublishTekArgs));
+            if (args.GGDKey == "111111")
             {
-                return new BadRequestResult();
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
-            return new OkObjectResult("");
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(JsonSerializer.Serialize(new PublishTekResponse { Valid = true })) };
+        }
+
+        public async Task<HttpResponseMessage> PutAsync<T>(T model, string requestUri, CancellationToken token) where T : class
+        {
+            var args = (PublishTekArgs)Convert.ChangeType(model, typeof(PublishTekArgs));
+            if (args.GGDKey == "111111")
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(JsonSerializer.Serialize(new PublishTekResponse { Valid = true })) };
         }
     }
 }

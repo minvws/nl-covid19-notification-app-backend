@@ -4,7 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
@@ -19,7 +18,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
         public async Task ExecuteAsync()
         {
-            await _Resigner.ExecuteAsync(ContentTypes.Manifest, ContentTypes.ManifestV2, ZippedContentEntryNames.Content);
             await _Resigner.ExecuteAsync(ContentTypes.ExposureKeySet, ContentTypes.ExposureKeySetV2, ZippedContentEntryNames.EksContent);
             await _Resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content);
             await _Resigner.ExecuteAsync(ContentTypes.RiskCalculationParameters, ContentTypes.RiskCalculationParametersV2, ZippedContentEntryNames.Content);

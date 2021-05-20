@@ -27,8 +27,6 @@ namespace ForceTekAuth
             using var tx = _WorkflowDb.BeginTransaction();
 
             ForceWorkflowAuth();
-            //ForceTekAuth();
-
             _WorkflowDb.SaveAndCommit();
         }
 
@@ -44,24 +42,10 @@ namespace ForceTekAuth
             {
                 i.LabConfirmationId = null;
                 i.AuthorisedByCaregiver = _Dtp.Snapshot;
-                i.DateOfSymptomsOnset = _Dtp.Snapshot.Date.AddDays(-1);
+                i.StartDateOfTekInclusion = _Dtp.Snapshot.Date.AddDays(-1);
             }
 
             _WorkflowDb.BulkUpdate(notAuthed);
         }
-
-        //private void ForceTekAuth()
-        //{
-        //    var teks = _WorkflowDb.TemporaryExposureKeys
-        //        .Include(x => x.Owner)
-        //        .Where(x => x.PublishingState == PublishingState.Unpublished) // && x.PublishAfter > _Dtp.Snapshot
-        //        .ToList();
-
-        //    foreach (var i in teks)
-        //    {
-        //        i.PublishAfter = _Dtp.Snapshot;
-        //        _WorkflowDb.TemporaryExposureKeys.Update(i);
-        //    }
-        //}
     }
 }

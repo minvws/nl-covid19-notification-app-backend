@@ -5,7 +5,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AF7302DA-EC4A-4A77-9092-98DEAB8B4D5C}"
 	ProjectSection(SolutionItems) = preProject
 		.dockerignore = .dockerignore
-		.editorconfig = .editorconfig
 		..\.gitignore = ..\.gitignore
 		appsettings.release.json = appsettings.release.json
 		azure-pipelines.yml = azure-pipelines.yml
@@ -14,7 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		copy-CIBG-configs.bat = copy-CIBG-configs.bat
 		deploy-example.bat = deploy-example.bat
 		Deprecated - package.bat = Deprecated - package.bat
-		ExposureNotification.Backend.sln.DotSettings = ExposureNotification.Backend.sln.DotSettings
 		Main Code Map.dgml = Main Code Map.dgml
 		package-CIBG.bat = package-CIBG.bat
 	EndProjectSection

@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities;
@@ -39,11 +38,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            const int pagesize = 10000;
+            const int pageSize = 10000;
             var index = 0;
 
-            using var tx = _DkSourceDbContext.BeginTransaction();
-            var page = Read(index, pagesize);
+            await using var tx = _DkSourceDbContext.BeginTransaction();
+            var page = Read(index, pageSize);
             
             while (page.Length > 0)
             {
@@ -51,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 await db.BulkInsertAsync2(page, new SubsetBulkArgs());
 
                 index += page.Length;
-                page = Read(index, pagesize);
+                page = Read(index, pageSize);
             }
 
             var result = new SnapshotEksInputResult
@@ -66,20 +65,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         }
 
         private EksCreateJobInputEntity[] Read(int index, int pageSize)
-            => _DkSourceDbContext.DiagnosisKeys
+        {
+            return _DkSourceDbContext.DiagnosisKeys
                 .Where(x => !x.PublishedLocally)
                 .OrderBy(x => x.Id)
                 .AsNoTracking()
                 .Skip(index)
                 .Take(pageSize)
-                .Select(x => new EksCreateJobInputEntity {
+                .Select(x => new EksCreateJobInputEntity
+                {
                     TekId = x.Id,
                     KeyData = x.DailyKey.KeyData,
                     RollingStartNumber = x.DailyKey.RollingStartNumber,
-                    RollingPeriod = x.DailyKey.RollingPeriod, 
+                    RollingPeriod = x.DailyKey.RollingPeriod,
                     TransmissionRiskLevel = x.Local.TransmissionRiskLevel.Value,
                     DaysSinceSymptomsOnset = x.Local.DaysSinceSymptomsOnset.Value,
+                    Symptomatic = x.Local.Symptomatic,
                     ReportType = x.Local.ReportType
                 }).ToArray();
+        }
     }
 }

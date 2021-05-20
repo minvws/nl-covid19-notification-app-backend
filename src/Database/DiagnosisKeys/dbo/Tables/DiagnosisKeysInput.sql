@@ -6,6 +6,7 @@
 	[DailyKey_RollingPeriod] [int] NULL,
 	[Local_TransmissionRiskLevel] [int] NULL,
 	[Local_DaysSinceSymptomsOnset] [int] NULL,
+	[Local_Symptomatic] [int] NULL,
  [Local_ReportType] INT NULL, 
     CONSTRAINT [PK_DiagnosisKeysInput] PRIMARY KEY CLUSTERED 
 (

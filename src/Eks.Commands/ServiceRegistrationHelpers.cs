@@ -9,7 +9,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1;
@@ -32,6 +34,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             services.AddTransient<EksBuilderV1>();
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
 
+            services.AddTransient<IInfectiousness>(
+                x =>
+                {
+                    var rr = x.GetService<IRiskCalculationParametersReader>();
+                    var days = rr.GetInfectiousDaysAsync();
+                    return new Infectiousness(days);
+                }
+            );
+
             services.AddTransient(x => new SnapshotWorkflowTeksToDksCommand(
                 x.GetRequiredService<ILoggerFactory>().CreateLogger<SnapshotWorkflowTeksToDksCommand>(),
                 x.GetRequiredService<IUtcDateTimeProvider>(),
@@ -45,7 +56,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
                     x.GetRequiredService<FixedCountriesOfInterestOutboundDiagnosticKeyProcessor>(),
                     x.GetRequiredService<NlToEfgsDsosDiagnosticKeyProcessorMk1>()
-                }
+                },
+                x.GetRequiredService<IInfectiousness>()
             ));
 
             services.AddTransient<ISnapshotEksInput, SnapshotDiagnosisKeys>();

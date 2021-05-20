@@ -54,7 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                 });
         }
 
-        private class FakeNumberGen: IRandomNumberGenerator
+        private class FakeNumberGen : IRandomNumberGenerator
         {
             public int Value { get; set; } = 10;
 
@@ -73,9 +73,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             base.Dispose();
         }
 
-        [Fact]
+        [Theory]
+        [InlineData("v1/register")]
+        [InlineData("v2/register")]
         [ExclusivelyUses("WorkflowControllerPostSecretTests")]
-        public async Task PostSecretTest_EmptyDb()
+        public async Task PostSecretTest_EmptyDb(string endpoint)
         {
             // Arrange
             var client = _Factory.CreateClient();
@@ -83,12 +85,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             _FakeNumbers.Value = 1;
 
             // Act
-            var result = await client.PostAsync("v1/register", null);
+            var result = await client.PostAsync(endpoint, null);
 
             // Assert
             var items = await _WorkflowDbProvider.CreateNew().KeyReleaseWorkflowStates.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            Assert.Equal(1, items.Count);
+            Assert.Single(items);
         }
 
         private TekReleaseWorkflowStateEntity Create(int value)
@@ -100,17 +102,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                 LabConfirmationId = "1"
             };
 
-            e1.ConfirmationKey[0] = (byte) value;
+            e1.ConfirmationKey[0] = (byte)value;
             e1.BucketId[0] = (byte)value;
             e1.LabConfirmationId = $"{value}{value}{value}{value}{value}{value}";
 
             return e1;
         }
 
-        [Fact]
+        [Theory]
+        [InlineData("v1")]
+        [InlineData("v2")]
         [ExclusivelyUses("WorkflowControllerPostSecretTests")]
-        public async Task PostSecretTest_5RetriesAndBang()
+        public async Task PostSecretTest_5RetriesAndBang(string endpoint)
         {
+            var endpointToResultMap = new Dictionary<string, string>()
+            {
+                { "v1", "{\"labConfirmationId\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}" },
+                { "v2", "{\"ggdKey\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}"}
+            };
+
             using var dbContext = _WorkflowDbProvider.CreateNew();
             dbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
             dbContext.SaveChanges();
@@ -119,26 +129,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             _FakeNumbers.Value = 1;
 
             // Act
-            var result = await client.PostAsync("v1/register", null);
+            var result = await client.PostAsync($"{endpoint}/register", null);
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            Assert.Equal("{\"labConfirmationId\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}", await result.Content.ReadAsStringAsync());
+            Assert.Equal(endpointToResultMap[endpoint], await result.Content.ReadAsStringAsync());
         }
 
-        [Fact]
+        [Theory]
+        [InlineData("v1/register")]
+        [InlineData("v2/register")]
         [ExclusivelyUses("WorkflowControllerPostSecretTests")]
-        public async Task PostSecret_MissThe5Existing()
+        public async Task PostSecret_MissThe5Existing(string endpoint)
         {
             using var dbContext = _WorkflowDbProvider.CreateNew();
             dbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
             dbContext.SaveChanges();
-            
+
             _FakeNumbers.Value = 6;
             // Arrange
             var client = _Factory.CreateClient();
 
             // Act
-            var result = await client.PostAsync("v1/register", null);
+            var result = await client.PostAsync(endpoint, null);
 
             // Assert
             var items = await dbContext.KeyReleaseWorkflowStates.ToListAsync();
@@ -146,14 +158,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             Assert.Equal(6, items.Count);
         }
 
-        [Fact]
-        public async Task Register_has_padding()
+        [Theory]
+        [InlineData("v1/register")]
+        [InlineData("v2/register")]
+        public async Task Register_has_padding(string endpoint)
         {
             // Arrange
             var client = _Factory.CreateClient();
 
             // Act
-            var result = await client.PostAsync("v1/register", null);
+            var result = await client.PostAsync(endpoint, null);
 
             // Assert
             Assert.True(result.Headers.Contains("padding"));

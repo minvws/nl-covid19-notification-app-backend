@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -11,13 +11,13 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
-    public class ManifestBuilderV3
+    public class ManifestV2Builder
     {
         private readonly ContentDbContext _ContentDbContext;
         private readonly IEksConfig _EksConfig;
         private readonly IUtcDateTimeProvider _DateTimeProvider;
 
-        public ManifestBuilderV3(ContentDbContext contentDbContext, IEksConfig eksConfig, IUtcDateTimeProvider dateTimeProvider)
+        public ManifestV2Builder(ContentDbContext contentDbContext, IEksConfig eksConfig, IUtcDateTimeProvider dateTimeProvider)
         {
             _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _EksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
@@ -29,11 +29,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             var snapshot = _DateTimeProvider.Snapshot;
             var from = snapshot - TimeSpan.FromDays(_EksConfig.LifetimeDays);
             return new ManifestContent
-            {
+            { 
                 ExposureKeySets = await _ContentDbContext.SafeGetActiveContentIdListAsync(ContentTypes.ExposureKeySet, from, snapshot),
-                RiskCalculationParameters = await _ContentDbContext.SafeGetLatestContentIdAsync(ContentTypes.RiskCalculationParametersV2, snapshot),
+                RiskCalculationParameters = await _ContentDbContext.SafeGetLatestContentIdAsync(ContentTypes.RiskCalculationParameters, snapshot),
                 AppConfig = await _ContentDbContext.SafeGetLatestContentIdAsync(ContentTypes.AppConfig, snapshot),
-                ResourceBundle = await _ContentDbContext.SafeGetLatestContentIdAsync(ContentTypes.ResourceBundleV3, snapshot)
+                ResourceBundle = await _ContentDbContext.SafeGetLatestContentIdAsync(ContentTypes.ResourceBundle, snapshot)
             };
         }
     }

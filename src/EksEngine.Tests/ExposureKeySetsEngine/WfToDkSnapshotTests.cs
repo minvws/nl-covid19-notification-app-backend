@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
@@ -49,7 +52,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 _WorkflowDbProvider.CreateNew,
                 _DkSourceDbProvider.CreateNew,
                 _EfExtensions,
-                new IDiagnosticKeyProcessor[0]
+                new IDiagnosticKeyProcessor[0],
+                new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
+                    {
+                        InfectiousPeriodType.Symptomatic,
+                        new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                    },
+                    {
+                        InfectiousPeriodType.Asymptomatic,
+                        new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                    }
+                })
             );
         }
 
@@ -84,18 +97,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         private TekReleaseWorkflowStateEntity GenWorkflow(int key, params TekEntity[] items)
         {
             var now = _DateTimeProvider.Object.Snapshot;
-
             var b = BitConverter.GetBytes(key);
 
             return new TekReleaseWorkflowStateEntity
             {
-
                 BucketId = b,
                 ConfirmationKey = b,
                 AuthorisedByCaregiver = now,
                 Created = now,
                 ValidUntil = now.AddDays(1),
-                DateOfSymptomsOnset = now.AddDays(-1).Date, //Yesterday
+                StartDateOfTekInclusion = now.AddDays(-1).Date, //Yesterday
+                IsSymptomatic = InfectiousPeriodType.Symptomatic,
                 Teks = items
             };
         }
@@ -111,8 +123,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         [InlineData(0, 0, 120, 0)] //Null case
         [InlineData(1, 10, 119, 0)] //Just before
-        [InlineData(1, 10, 120, 10)] //Exactly
-        [InlineData(1, 10, 121, 10)] //After
+        [InlineData(1, 10, 120, 4)] //Exactly - was 10 - 6 are now filtered out as they have TRL None
+        [InlineData(1, 10, 121, 4)] //After - was 10 - 6 are now filtered out as they have TRL None
         [Theory]
         [ExclusivelyUses(nameof(WfToDkSnapshotTests))]
         public async Task PublishAfter(int wfCount, int tekPerWfCount, int addMins, int resultCount)
@@ -135,12 +147,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(resultCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
         }
 
-        [InlineData(0, 0)] //Null case
-        [InlineData(1, 1)]
-        [InlineData(1, 10)]
+        [InlineData(0, 0, 0)] //Null case
+        [InlineData(1, 1, 1)]
+        [InlineData(1, 10, 4)] //Was 10 - 6 are now filtered out as they have TRL None
         [Theory]
         [ExclusivelyUses(nameof(WfToDkSnapshotTests))]
-        public async Task SecondRunShouldChangeNothing(int wfCount, int tekPerWfCount)
+        public async Task SecondRunShouldChangeNothing(int wfCount, int tekPerWfCount, int resultCount)
         {
             _DateTimeProvider.Setup(x => x.Snapshot).Returns(new DateTime(2020, 11, 5, 14, 00, 0, DateTimeKind.Utc));
             GenerateWorkflowTeks(wfCount, tekPerWfCount);
@@ -153,17 +165,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.True(_DkSourceDbProvider.CreateNew().DiagnosisKeys.All(x => x.DailyKey.RollingPeriod == UniversalConstants.RollingPeriodRange.Hi)); //Compatible with Apple API
 
             var result = await Create().ExecuteAsync();
-            Assert.Equal(tekCount, result.TekReadCount);
-            Assert.Equal(tekCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState != PublishingState.Unpublished));
-            Assert.Equal(tekCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
+            Assert.Equal(resultCount, result.TekReadCount);
+            Assert.Equal(resultCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState != PublishingState.Unpublished));
+            Assert.Equal(resultCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
 
             //Second run
             result = await Create().ExecuteAsync();
 
             //No changes
             Assert.Equal(0, result.TekReadCount);
-            Assert.Equal(tekCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState != PublishingState.Unpublished));
-            Assert.Equal(tekCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
+            Assert.Equal(resultCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState != PublishingState.Unpublished));
+            Assert.Equal(resultCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
         }
     }
 }

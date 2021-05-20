@@ -11,26 +11,36 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
     public static class LogValidation
     {
+        // Log validation error messages
         public static bool LogValidationMessages(this ILogger logger, string[] messages)
         {
             if (messages?.Any(string.IsNullOrWhiteSpace) ?? true)
+            {
                 throw new ArgumentException(nameof(messages));
+            }
 
             if (messages.Length == 0)
+            {
                 return false;
+            }
 
             logger.WriteLogValidationError(string.Join(Environment.NewLine, messages));
 
             return true;
         }
 
+        // Log filtering error messages
         public static void LogFilterMessages(this ILogger logger, string[] messages)
         {
             if (messages?.Any(string.IsNullOrWhiteSpace) ?? true)
+            {
                 throw new ArgumentException(nameof(messages));
+            }
 
             if (messages.Length == 0)
+            {
                 return;
+            }
 
             logger.WriteLogValidationInfo(string.Join(Environment.NewLine, messages));
         }
