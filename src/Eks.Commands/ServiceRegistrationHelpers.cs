@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             services.AddTransient<IEksStuffingGeneratorMk2, EksStuffingGeneratorMk2>();
             services.AddTransient<ITransmissionRiskLevelCalculationMk2, TransmissionRiskLevelCalculationMk2>();
             services.AddTransient<EksBuilderV1>();
-            services.AddTransient<IRandomNumberGenerator, FakeNumberGen>();
+            services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
 
             services.AddTransient<IInfectiousness>(
                 x =>
@@ -84,20 +84,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             services.AddTransient<IEksBuilder, EksBuilderV1>();
             services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
             services.AddTransient<ISnapshotEksInput, SnapshotDiagnosisKeys>();
-        }
-    }
-
-    public class FakeNumberGen : IRandomNumberGenerator
-    {
-        public int Value { get; set; } = 10;
-
-        public int Next(int min, int max) => Value;
-
-        public byte[] NextByteArray(int length)
-        {
-            var buffer = new byte[length];
-            buffer[0] = (byte)Value;
-            return buffer;
         }
     }
 }
