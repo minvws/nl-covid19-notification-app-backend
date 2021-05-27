@@ -46,14 +46,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             var filteredTekInputCount = 0;
 
             await using var tx = _DkSourceDbContext.BeginTransaction();
-            var page = Read(index, pageSize);
-            var pageCount = page.Length;
-
-            // Filter the List of EksCreateJobInputEntities by the RiskCalculationParameter filters
-            var filteredResult = page.Where(x =>
-                    _infectiousness.IsInfectious(x.Symptomatic, x.DaysSinceSymptomsOnset))
-                .ToArray();
-
+            var (filteredResult, pageCount) = ReadAndFilter(index, pageSize);
+            
             while (pageCount > 0)
             {
                 var db = _PublishingDbContextFactory();
@@ -64,12 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
                 index += pageCount;
                 filteredTekInputCount += filteredResult.Length;
-                page = Read(index, pageSize);
-                pageCount = page.Length;
-
-                filteredResult = page.Where(x =>
-                        _infectiousness.IsInfectious(x.Symptomatic, x.DaysSinceSymptomsOnset))
-                    .ToArray();
+                (filteredResult, pageCount) = ReadAndFilter(index, pageSize);
             }
 
             var result = new SnapshotEksInputResult
@@ -84,9 +73,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             return result;
         }
 
-        private EksCreateJobInputEntity[] Read(int index, int pageSize)
+        private (EksCreateJobInputEntity[], int pageCount) ReadAndFilter(int index, int pageSize)
         {
-            return _DkSourceDbContext.DiagnosisKeys
+            var result = _DkSourceDbContext.DiagnosisKeys
                 .Where(x => !x.PublishedLocally)
                 .OrderBy(x => x.Id)
                 .AsNoTracking()
@@ -103,6 +92,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     Symptomatic = x.Local.Symptomatic,
                     ReportType = x.Local.ReportType
                 }).ToArray();
+
+            // Filter the List of EksCreateJobInputEntities by the RiskCalculationParameter filters
+            var filteredResult = result.Where(x =>
+                    _infectiousness.IsInfectious(x.Symptomatic, x.DaysSinceSymptomsOnset))
+                .ToArray();
+
+            return (filteredResult, result.Length);
         }
     }
 }
