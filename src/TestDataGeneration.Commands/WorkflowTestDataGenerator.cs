@@ -64,17 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                     new ExcludeTrlNoneDiagnosticKeyProcessor(),
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(countriesOutMock.Object),
                     new NlToEfgsDsosDiagnosticKeyProcessorMk1()
-                },
-                new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
-                    {
-                        InfectiousPeriodType.Symptomatic,
-                        new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
-                    },
-                    {
-                        InfectiousPeriodType.Asymptomatic,
-                        new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
-                    }
-                })
+                }
             ).ExecuteAsync();
         }
 

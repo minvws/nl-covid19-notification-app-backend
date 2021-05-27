@@ -67,18 +67,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 _WorkflowFac.CreateNew,
                 _DkSourceDbProvider.CreateNew, 
                 _EfExtensions,
-                new IDiagnosticKeyProcessor[] { },
-                new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
-                    {
-                        InfectiousPeriodType.Symptomatic,
-                        new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
-                    },
-                    {
-                        InfectiousPeriodType.Asymptomatic,
-                        new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
-                    }
-                })
-                );
+                new IDiagnosticKeyProcessor[] {}
+            );
 
             _OutboundCountriesMock = new Mock<IOutboundFixedCountriesOfInterestSetting>();
             _OutboundCountriesMock.Setup(x => x.CountriesOfInterest).Returns(new []{"CY","BG"});
@@ -102,7 +92,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             return new TekEntity { RollingStartNumber = rsn, RollingPeriod = 2, KeyData = new byte[16], PublishAfter = DateTime.UtcNow.AddHours(-1)};
         }
 
-        private static TekReleaseWorkflowStateEntity Create(DateTime now, params TekEntity[] items)
+        private static TekReleaseWorkflowStateEntity Create(DateTime now, InfectiousPeriodType symptomatic, params TekEntity[] items)
         {
             return new TekReleaseWorkflowStateEntity
             {
@@ -112,7 +102,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 Created = now,
                 ValidUntil = now.AddDays(1),
                 StartDateOfTekInclusion = now.AddDays(-1).Date,
-                IsSymptomatic = InfectiousPeriodType.Symptomatic,
+                IsSymptomatic = symptomatic,
                 Teks = items
             };
         }
@@ -126,7 +116,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new StandardUtcDateTimeProvider(),
                 new EksEngineLoggingExtensions(_Lf.CreateLogger<EksEngineLoggingExtensions>()),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(), new StandardRandomNumberGenerator(), _DateTimeProvider, _FakeEksConfig),
-                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new TestLogger<SnapshotLoggingExtensions>()), _DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew),
+                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new TestLogger<SnapshotLoggingExtensions>()), _DkSourceDbProvider.CreateNew(), _EksPublishingJobDbProvider.CreateNew,
+                    new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
+                        {
+                            InfectiousPeriodType.Symptomatic,
+                            new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                        },
+                        {
+                            InfectiousPeriodType.Asymptomatic,
+                            new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+                        }
+                    })),
                 new MarkDiagnosisKeysAsUsedLocally(_DkSourceDbProvider.CreateNew, _FakeEksConfig, _EksPublishingJobDbProvider.CreateNew, _Lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_ContentDbProvider.CreateNew, _EksPublishingJobDbProvider.CreateNew, new Sha256HexPublishingIdService(), 
                     new EksJobContentWriterLoggingExtensions(_Lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
@@ -181,7 +181,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             //One TEK from the dawn of time.
             var wfs = new[]
             {
-                Create(_DateTimeProvider.Snapshot, CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
+                Create(_DateTimeProvider.Snapshot, InfectiousPeriodType.Symptomatic, CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
             };
 
             Write(wfs);
@@ -190,6 +190,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var firstInputCount = result.InputCount;
             Assert.True(result.Started > new DateTime(2020, 8, 1, 0, 0, 0, DateTimeKind.Utc));
             Assert.Equal(1, result.InputCount);
+            Assert.Equal(1, result.FilteredInputCount);
             Assert.Equal(4, result.StuffingCount);
             Assert.Equal(5, result.OutputCount);
             Assert.Equal(0, result.TransmissionRiskNoneCount);
@@ -227,6 +228,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var result = RunEngine();
             Assert.True(result.Started > new DateTime(2020, 8, 1, 0, 0, 0, DateTimeKind.Utc));
             Assert.Equal(0, result.InputCount);
+            Assert.Equal(0, result.FilteredInputCount);
             Assert.Equal(0, result.StuffingCount);
             Assert.Equal(0, result.OutputCount);
             Assert.Empty(result.EksInfo);
@@ -247,7 +249,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         {
             var wfs = new[]
             {
-                Create(_DateTimeProvider.Snapshot, CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
+                Create(_DateTimeProvider.Snapshot, InfectiousPeriodType.Symptomatic, CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
             };
 
             Write(wfs);
@@ -255,6 +257,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var result = RunEngine();
             Assert.True(result.Started > new DateTime(2020, 8, 1, 0, 0, 0, DateTimeKind.Utc));
             Assert.Equal(1, result.InputCount);
+            Assert.Equal(1, result.FilteredInputCount);
             Assert.Equal(4, result.StuffingCount);
             Assert.Equal(5, result.OutputCount);
             Assert.Equal(1, result.EksInfo.Length);
@@ -281,7 +284,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             var wfs = new[]
             {
-                Create(_DateTimeProvider.Snapshot, teks)
+                Create(_DateTimeProvider.Snapshot, InfectiousPeriodType.Symptomatic, teks)
             };
 
             Write(wfs);
@@ -289,6 +292,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var result = RunEngine();
             Assert.True(result.Started > new DateTime(2020, 8, 10, 0, 0, 0, DateTimeKind.Utc));
             Assert.Equal(5, result.InputCount);
+            Assert.Equal(5, result.FilteredInputCount);
             Assert.Equal(0, result.StuffingCount);
             Assert.Equal(5, result.OutputCount);
             Assert.Equal(1, result.EksInfo.Length);
@@ -306,6 +310,109 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         [Fact]
         [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
+        public void Tek5_Stuffed()
+        {
+
+            var teks = Enumerable.Range(1, 5)
+                .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
+                .ToArray();
+
+            var wfs = new[]
+            {
+                Create(_DateTimeProvider.Snapshot, InfectiousPeriodType.Asymptomatic, teks)
+            };
+
+            Write(wfs);
+
+            var result = RunEngine();
+            Assert.True(result.Started > new DateTime(2020, 8, 10, 0, 0, 0, DateTimeKind.Utc));
+            Assert.Equal(5, result.InputCount);
+            Assert.Equal(0, result.FilteredInputCount);
+            Assert.Equal(5, result.StuffingCount);
+            Assert.Equal(5, result.OutputCount);
+            Assert.Equal(1, result.EksInfo.Length);
+            Assert.Equal(5, result.EksInfo[0].TekCount);
+            Assert.Equal(0, result.TransmissionRiskNoneCount);
+
+            Assert.Equal(5, result.ReconcileOutputCount);
+            Assert.Equal(0, result.ReconcileEksSumCount);
+
+            Assert.Equal(_ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
+
+            Assert.True(result.TotalSeconds > 0);
+        }
+
+        [Fact]
+        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
+        public void Tek5_AsymptomaticNotStuffed()
+        {
+            var teks = Enumerable.Range(1, 5)
+                .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(0).ToRollingStartNumber()))
+                .ToArray();
+
+            var wfs = new[]
+            {
+                Create(_DateTimeProvider.Snapshot, InfectiousPeriodType.Asymptomatic, teks)
+            };
+
+            Write(wfs);
+
+            var result = RunEngine();
+            Assert.True(result.Started > new DateTime(2020, 8, 10, 0, 0, 0, DateTimeKind.Utc));
+            Assert.Equal(5, result.InputCount);
+            Assert.Equal(5, result.FilteredInputCount);
+            Assert.Equal(0, result.StuffingCount);
+            Assert.Equal(5, result.OutputCount);
+            Assert.Equal(1, result.EksInfo.Length);
+            Assert.Equal(5, result.EksInfo[0].TekCount);
+            Assert.Equal(0, result.TransmissionRiskNoneCount);
+
+            Assert.Equal(0, result.ReconcileOutputCount); //InputCount + StuffingCount - TransmissionRiskNoneCount - OutputCount;
+            Assert.Equal(0, result.ReconcileEksSumCount);
+
+            Assert.Equal(_ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
+
+            Assert.True(result.TotalSeconds > 0);
+        }
+
+        [Fact]
+        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
+        public void Tek5_Asymptomatic2Stuffed()
+        {
+            var teks = new List<TekEntity>();
+            teks.AddRange(Enumerable.Range(1, 3).Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-1).ToRollingStartNumber()))); // dsos = 0
+            teks.AddRange(Enumerable.Range(1, 2).Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))); // dsos = -1
+        
+            var wfs = new[]
+            {
+                Create(_DateTimeProvider.Snapshot, InfectiousPeriodType.Asymptomatic, teks.ToArray())
+            };
+
+            Write(wfs);
+
+            var result = RunEngine();
+            Assert.True(result.Started > new DateTime(2020, 8, 10, 0, 0, 0, DateTimeKind.Utc));
+            Assert.Equal(5, result.InputCount);
+            Assert.Equal(3, result.FilteredInputCount);
+            Assert.Equal(2, result.StuffingCount);
+            Assert.Equal(5, result.OutputCount);
+            Assert.Equal(1, result.EksInfo.Length);
+            Assert.Equal(5, result.EksInfo[0].TekCount);
+            Assert.Equal(0, result.TransmissionRiskNoneCount);
+
+            Assert.Equal(2, result.ReconcileOutputCount); //InputCount + StuffingCount - TransmissionRiskNoneCount - OutputCount;
+            Assert.Equal(0, result.ReconcileEksSumCount);
+
+            Assert.Equal(_ContentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
+
+            Assert.True(result.TotalSeconds > 0);
+        }
+
+        [Fact]
+        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
         public void Tek10_NotStuffed()
         {
             var teks = Enumerable.Range(1, 10)
@@ -314,13 +421,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             var wfs = new[]
             {
-                Create(_DateTimeProvider.Snapshot, teks)
+                Create(_DateTimeProvider.Snapshot, InfectiousPeriodType.Symptomatic, teks)
             };
 
             Write(wfs);
             var result = RunEngine();
             Assert.True(result.Started > new DateTime(2020, 8, 1, 0, 0, 0, DateTimeKind.Utc));
             Assert.Equal(10, result.InputCount);
+            Assert.Equal(10, result.FilteredInputCount);
             Assert.Equal(0, result.StuffingCount);
             Assert.Equal(10, result.OutputCount);
             Assert.Equal(1, result.EksInfo.Length);
@@ -346,7 +454,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             var wfs = new[]
             {
-                Create(_DateTimeProvider.Snapshot, teks)
+                Create(_DateTimeProvider.Snapshot, InfectiousPeriodType.Symptomatic, teks)
             };
 
             Write(wfs);
@@ -354,6 +462,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var result = RunEngine();
             Assert.True(result.Started > new DateTime(2020, 8, 1, 0, 0, 0, DateTimeKind.Utc));
             Assert.Equal(11, result.InputCount);
+            Assert.Equal(11, result.FilteredInputCount);
             Assert.Equal(0, result.StuffingCount);
             Assert.Equal(11, result.OutputCount);
             Assert.Equal(2, result.EksInfo.Length);
