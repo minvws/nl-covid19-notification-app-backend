@@ -8,5 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     {
         public double SnapshotSeconds { get; set; }
         public int TekInputCount { get; set; }
+        public int FilteredTekInputCount { get; set; }
     }
-}
+} 
