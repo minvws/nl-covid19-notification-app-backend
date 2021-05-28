@@ -13,7 +13,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
@@ -52,17 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 _WorkflowDbProvider.CreateNew,
                 _DkSourceDbProvider.CreateNew,
                 _EfExtensions,
-                new IDiagnosticKeyProcessor[0],
-                new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
-                    {
-                        InfectiousPeriodType.Symptomatic,
-                        new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
-                    },
-                    {
-                        InfectiousPeriodType.Asymptomatic,
-                        new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
-                    }
-                })
+                new IDiagnosticKeyProcessor[0]
             );
         }
 
@@ -123,8 +112,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         [InlineData(0, 0, 120, 0)] //Null case
         [InlineData(1, 10, 119, 0)] //Just before
-        [InlineData(1, 10, 120, 4)] //Exactly - was 10 - 6 are now filtered out as they have TRL None
-        [InlineData(1, 10, 121, 4)] //After - was 10 - 6 are now filtered out as they have TRL None
+        [InlineData(1, 10, 120, 10)] //Exactly
+        [InlineData(1, 10, 121, 10)] //After
         [Theory]
         [ExclusivelyUses(nameof(WfToDkSnapshotTests))]
         public async Task PublishAfter(int wfCount, int tekPerWfCount, int addMins, int resultCount)
@@ -149,7 +138,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         [InlineData(0, 0, 0)] //Null case
         [InlineData(1, 1, 1)]
-        [InlineData(1, 10, 4)] //Was 10 - 6 are now filtered out as they have TRL None
+        [InlineData(1, 10, 10)]
         [Theory]
         [ExclusivelyUses(nameof(WfToDkSnapshotTests))]
         public async Task SecondRunShouldChangeNothing(int wfCount, int tekPerWfCount, int resultCount)

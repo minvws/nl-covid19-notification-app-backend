@@ -56,9 +56,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
                     x.GetRequiredService<FixedCountriesOfInterestOutboundDiagnosticKeyProcessor>(),
                     x.GetRequiredService<NlToEfgsDsosDiagnosticKeyProcessorMk1>()
-                },
-                x.GetRequiredService<IInfectiousness>()
-            ));
+                }
+             ));
 
             services.AddTransient<ISnapshotEksInput, SnapshotDiagnosisKeys>();
             services.AddTransient<IEksJobContentWriter, EksJobContentWriter>();
