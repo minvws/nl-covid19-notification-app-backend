@@ -6,6 +6,8 @@
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader</RootNamespace>
     <AssemblyName>EfgsDownloader</AssemblyName>
     <ProjectGuid>{1875D845-E2D2-49AE-ACEB-AFC098E40466}</ProjectGuid>
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>
