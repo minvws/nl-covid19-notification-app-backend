@@ -48,7 +48,7 @@
     <p class="mb-2 font-bold" *ngIf="! this.indexData.symptomatic">Datum test:</p>
     <div class="cursor-pointer friendly-date-block px-4 py-3 bg-gray-300 rounded inline-block hover:bg-gray-100"
          [class.shadow-sm]="!openDayPicker" (click)="openDayPicker=!openDayPicker">
-      {{dateHelper.getFriendlyDate(indexData.selectedDate)}} <span class="text-gray-700">{{dateHelper.getDaysAgo()}}</span>
+      {{dateHelper.getFriendlyDate(indexData.selectedDate)}} <span class="text-gray-700">{{dateHelper.getDaysAgo(indexData.selectedDate)}}</span>
     </div>
     <p class="mt-2" *ngIf="indexData.selectedDate">Eerste dag dat index besmettelijk was: <b>{{indexData.getFriendlySymptomsDate('EEEE d LLLL yyyy')}}</b></p>
     <div *ngIf="openDayPicker"
@@ -56,7 +56,7 @@
       <div (click)="selectDateClick(dateDay)" *ngFor="let ii of dateHelper.dateArray; let dateDay = index"
            [class]="(this.indexData.selectedDate && this.indexData.selectedDate.valueOf() === this.dateHelper.getDayAgo(dateDay).valueOf()) ? 'bg-primary text-white': ''"
            class="date w-full cursor-pointer hover:bg-gray-100 text-left px-4 py-3 inline-block mr-auto">
-        {{dateHelper.getFriendlyDate(dateHelper.getDayAgo(dateDay))}} <span class="text-gray-700">{{dateHelper.getDaysAgo(dateHelper.getDayAgo(dateDay, indexData.selectedDate))}}</span>
+        {{dateHelper.getFriendlyDate(dateHelper.getDayAgo(dateDay))}} <span class="text-gray-700">{{dateHelper.getDaysAgo(dateHelper.getDayAgo(dateDay))}}</span>
       </div>
     </div>
   </div>
