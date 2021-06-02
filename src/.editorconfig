@@ -43,9 +43,12 @@ indent_size = 2
 max_line_length = off
 trim_trailing_whitespace = false
 
+#
+#
+# Dotnet and CS code style settings from here on:
+#
+#
 
-
-# Dotnet code style settings:
 [*.{cs,vb}]
 
 # IDE0055: Fix formatting
@@ -112,6 +115,7 @@ dotnet_naming_rule.instance_fields_should_be_camel_case.symbols = instance_field
 dotnet_naming_rule.instance_fields_should_be_camel_case.style = instance_field_style
 dotnet_naming_symbols.instance_fields.applicable_kinds = field
 dotnet_naming_style.instance_field_style.capitalization = camel_case
+dotnet_naming_style.instance_field_style.required_prefix = _
 
 # Locals and parameters are camelCase
 dotnet_naming_rule.locals_should_be_camel_case.severity = warning
