@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -12,10 +11,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
@@ -73,19 +70,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
             var workflowConfigMock = new Mock<IWorkflowConfig>(MockBehavior.Strict);
             workflowConfigMock.Setup(x => x.TimeToLiveMinutes).Returns(10000);
             workflowConfigMock.Setup(x => x.PermittedMobileDeviceClockErrorMinutes).Returns(30);
-
-            var luhnModNGeneratorMock = new Mock<ILuhnModNGenerator>();
+            
             var luhnModNConfig = new LuhnModNConfig();
+            var luhnModNGenerator = new LuhnModNGenerator(luhnModNConfig);
 
-            Func<TekReleaseWorkflowStateCreate> createWf = () =>
-                new TekReleaseWorkflowStateCreate(
+            Func<TekReleaseWorkflowStateCreateV2> createWf = () =>
+                new TekReleaseWorkflowStateCreateV2(
                     _workflowDbContextProvider.CreateNewWithTx(),
                     _utcDateTimeProvider,
                     _rng,
-                    new LabConfirmationIdService(_rng),
                     new TekReleaseWorkflowTime(workflowConfigMock.Object),
-                    new RegisterSecretLoggingExtensions(_loggerFactory.CreateLogger<RegisterSecretLoggingExtensions>())
-                );
+                    new RegisterSecretLoggingExtensionsV2(_loggerFactory.CreateLogger<RegisterSecretLoggingExtensionsV2>()),
+                        luhnModNConfig, 
+                        luhnModNGenerator
+                    );
 
             var gen = new GenerateTeksCommand(_rng, _workflowDbContextProvider.CreateNewWithTx, createWf);
             await gen.ExecuteAsync(new GenerateTeksCommandArgs { WorkflowCount = workflowCount, TekCountPerWorkflow = tekPerWorkflowCount });

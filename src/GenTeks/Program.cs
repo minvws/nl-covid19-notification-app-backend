@@ -9,6 +9,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Commands;
@@ -38,22 +39,24 @@ namespace GenTeks
         {
             services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddTransient(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
-
+            
             services.AddSingleton<IConfiguration>(configuration);
-            services.AddSingleton<ILabConfirmationIdService, LabConfirmationIdService>();
             services.AddSingleton<IRandomNumberGenerator, StandardRandomNumberGenerator>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
+
+            services.AddTransient<ILuhnModNConfig, LuhnModNConfig>();
+            services.AddTransient<ILuhnModNGenerator, LuhnModNGenerator>();
 
             services.AddTransient(x => new GenerateTeksCommand(
                 x.GetRequiredService<IRandomNumberGenerator>(),
                 x.GetRequiredService<WorkflowDbContext>, 
-                x.GetRequiredService<TekReleaseWorkflowStateCreate>
+                x.GetRequiredService<TekReleaseWorkflowStateCreateV2>
                 ));
-
-            services.AddTransient<TekReleaseWorkflowStateCreate>();
+            
+            services.AddTransient<TekReleaseWorkflowStateCreateV2>();
             services.AddTransient<IWorkflowTime, TekReleaseWorkflowTime>();
 
-            services.AddSingleton<RegisterSecretLoggingExtensions>();
+            services.AddSingleton<RegisterSecretLoggingExtensionsV2>();
         }
     }
 }

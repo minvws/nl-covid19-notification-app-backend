@@ -18,12 +18,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
     public class GenerateTeksCommand
     {
         private readonly IRandomNumberGenerator _Rng;
-        private readonly Func<TekReleaseWorkflowStateCreate> _RegisterWriter;
+        private readonly Func<TekReleaseWorkflowStateCreateV2> _RegisterWriter;
 
         private GenerateTeksCommandArgs _Args;
         private Func<WorkflowDbContext> _WorkflowDb;
 
-        public GenerateTeksCommand(IRandomNumberGenerator rng, Func<WorkflowDbContext> workflowDb, Func<TekReleaseWorkflowStateCreate> registerWriter)
+        public GenerateTeksCommand(IRandomNumberGenerator rng, Func<WorkflowDbContext> workflowDb, Func<TekReleaseWorkflowStateCreateV2> registerWriter)
         {
             _Rng = rng ?? throw new ArgumentNullException(nameof(rng));
             _WorkflowDb = workflowDb ?? throw new ArgumentNullException(nameof(workflowDb));
