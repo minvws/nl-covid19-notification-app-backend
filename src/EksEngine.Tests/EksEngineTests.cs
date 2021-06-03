@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -168,16 +167,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             workflowConfig.Setup(x => x.PermittedMobileDeviceClockErrorMinutes).Returns(30);
 
             var luhnModNConfig = new LuhnModNConfig();
-            var luhnModNGeneratorMock = new Mock<ILuhnModNGenerator>();
+            var luhnModNGenerator = new LuhnModNGenerator(luhnModNConfig);
 
-            Func<TekReleaseWorkflowStateCreate> createWf = () =>
-                new TekReleaseWorkflowStateCreate(
+            Func<TekReleaseWorkflowStateCreateV2> createWf = () =>
+                new TekReleaseWorkflowStateCreateV2(
                     _workflowDbProvider.CreateNewWithTx(),
                     _dtp,
                     _rng,
-                    new LabConfirmationIdService(_rng),
                     new TekReleaseWorkflowTime(workflowConfig.Object),
-                    new RegisterSecretLoggingExtensions(_lf.CreateLogger<RegisterSecretLoggingExtensions>())
+                    new RegisterSecretLoggingExtensionsV2(_lf.CreateLogger<RegisterSecretLoggingExtensionsV2>()),
+                    luhnModNConfig,
+                    luhnModNGenerator
                 );
 
             await new GenerateTeksCommand(_rng, _workflowDbProvider.CreateNewWithTx, createWf).ExecuteAsync(new GenerateTeksCommandArgs { TekCountPerWorkflow = 1, WorkflowCount = 1 });
