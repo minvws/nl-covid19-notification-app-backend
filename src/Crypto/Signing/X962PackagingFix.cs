@@ -73,14 +73,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
     {
         public byte[] Format(byte[] value)
         {
-            if (value == null) throw new ArgumentNullException(nameof(value));
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
 
             var r = new byte[32];
             var s = new byte[32];
             Array.Copy(value, r, 32);
             Array.Copy(value, 32, s, 0, 32);
-            r = r.ToANS1Integer();
-            s = s.ToANS1Integer();
+            r = r.ToAns1Integer();
+            s = s.ToAns1Integer();
 
             // Start of SEQUENCE
             var buffer = new byte[r.Length + s.Length + 2];

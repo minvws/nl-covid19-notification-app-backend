@@ -23,33 +23,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
     {
         #region Implementation
 
-        private readonly IDbProvider<DkSourceDbContext> _DkSourceDbProvider;
-        private readonly IDbProvider<IksPublishingJobDbContext> _IksPublishingDbProvider;
-        private readonly LoggerFactory _Lf = new LoggerFactory();
-        private readonly Mock<IUtcDateTimeProvider> _DateTimeProvider = new Mock<IUtcDateTimeProvider>();
-        private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _CountriesConfigMock = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
+        private readonly IDbProvider<DkSourceDbContext> _dkSourceDbProvider;
+        private readonly IDbProvider<IksPublishingJobDbContext> _iksPublishingDbProvider;
+        private readonly LoggerFactory _lf = new LoggerFactory();
+        private readonly Mock<IUtcDateTimeProvider> _dateTimeProvider = new Mock<IUtcDateTimeProvider>();
+        private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _countriesConfigMock = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
 
         protected DkToIksSnapshotTests(IDbProvider<DkSourceDbContext> dkSourceDbProvider, IDbProvider<IksPublishingJobDbContext> iksPublishingDbProvider)
         {
-            _DkSourceDbProvider = dkSourceDbProvider;
-            _IksPublishingDbProvider = iksPublishingDbProvider;
+            _dkSourceDbProvider = dkSourceDbProvider;
+            _iksPublishingDbProvider = iksPublishingDbProvider;
         }
 
         private IksInputSnapshotCommand Create()
         {
-            _CountriesConfigMock.Setup(x => x.CountriesOfInterest).Returns(new[] { "DE", "BG" });
+            _countriesConfigMock.Setup(x => x.CountriesOfInterest).Returns(new[] { "DE", "BG" });
 
 
-            return new IksInputSnapshotCommand(_Lf.CreateLogger<IksInputSnapshotCommand>(),
-                _DkSourceDbProvider.CreateNew(),
-                _IksPublishingDbProvider.CreateNew,
-                _CountriesConfigMock.Object
+            return new IksInputSnapshotCommand(_lf.CreateLogger<IksInputSnapshotCommand>(),
+                _dkSourceDbProvider.CreateNew(),
+                _iksPublishingDbProvider.CreateNew,
+                _countriesConfigMock.Object
             );
         }
 
         private void Write(DiagnosisKeyEntity[] items)
         {
-            var db = _DkSourceDbProvider.CreateNew();
+            var db = _dkSourceDbProvider.CreateNew();
             db.DiagnosisKeys.AddRange(items);
             db.SaveChanges();
         }
@@ -65,7 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 
             return items;
         }
-        
+
         private DiagnosisKeyEntity[] LocalDksForLocalPeople(DiagnosisKeyEntity[] items)
         {
             foreach (var i in items)
@@ -112,7 +112,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 
         private DiagnosisKeyEntity[] GenerateDks(int count)
         {
-            var t = _DateTimeProvider.Object.Snapshot;
+            var t = _dateTimeProvider.Object.Snapshot;
             return Enumerable.Range(0, count).Select(x =>
                 new DiagnosisKeyEntity
                 {
@@ -122,8 +122,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
                         RollingPeriod = 144, //Already corrected in DKs
                         KeyData = new byte[UniversalConstants.DailyKeyDataByteCount],
                     },
-                    Local = new LocalTekInfo 
-                    { 
+                    Local = new LocalTekInfo
+                    {
                         DaysSinceSymptomsOnset = -2
                     }
                 }).ToArray();
@@ -138,9 +138,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 
         public void Dispose()
         {
-            _IksPublishingDbProvider.Dispose();
-            _DkSourceDbProvider.Dispose();
-            _Lf.Dispose();
+            _iksPublishingDbProvider.Dispose();
+            _dkSourceDbProvider.Dispose();
+            _lf.Dispose();
         }
 
         #endregion
@@ -151,17 +151,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         [Theory]
         public async Task Run1(int baseCount)
         {
-            _DateTimeProvider.Setup(x => x.Snapshot).Returns(DateTime.UtcNow);
+            _dateTimeProvider.Setup(x => x.Snapshot).Returns(DateTime.UtcNow);
             Setup(baseCount);
 
-            Assert.Equal(baseCount * 5, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
-            Assert.Equal(0, _IksPublishingDbProvider.CreateNew().Input.Count());
+            Assert.Equal(baseCount * 5, _dkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
+            Assert.Equal(0, _iksPublishingDbProvider.CreateNew().Input.Count());
 
             var c = Create();
             var result = await c.ExecuteAsync();
 
             Assert.Equal(3 * baseCount, result.Count);
-            Assert.Equal(result.Count, _IksPublishingDbProvider.CreateNew().Input.Count());
+            Assert.Equal(result.Count, _iksPublishingDbProvider.CreateNew().Input.Count());
         }
     }
 }

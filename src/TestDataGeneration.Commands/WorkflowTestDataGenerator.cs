@@ -70,7 +70,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
             var workflowConfigMock = new Mock<IWorkflowConfig>(MockBehavior.Strict);
             workflowConfigMock.Setup(x => x.TimeToLiveMinutes).Returns(10000);
             workflowConfigMock.Setup(x => x.PermittedMobileDeviceClockErrorMinutes).Returns(30);
-            
+
             var luhnModNConfig = new LuhnModNConfig();
             var luhnModNGenerator = new LuhnModNGenerator(luhnModNConfig);
 
@@ -81,15 +81,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                     _rng,
                     new TekReleaseWorkflowTime(workflowConfigMock.Object),
                     new RegisterSecretLoggingExtensionsV2(_loggerFactory.CreateLogger<RegisterSecretLoggingExtensionsV2>()),
-                        luhnModNConfig, 
+                        luhnModNConfig,
                         luhnModNGenerator
                     );
 
             var gen = new GenerateTeksCommand(_rng, _workflowDbContextProvider.CreateNewWithTx, createWf);
             await gen.ExecuteAsync(new GenerateTeksCommandArgs { WorkflowCount = workflowCount, TekCountPerWorkflow = tekPerWorkflowCount });
 
-            if (workflowCount != _workflowDbContextProvider.CreateNew().KeyReleaseWorkflowStates.Count()) throw new InvalidOperationException();
-            if (workflowCount * tekPerWorkflowCount != _workflowDbContextProvider.CreateNew().TemporaryExposureKeys.Count()) throw new InvalidOperationException();
+            if (workflowCount != _workflowDbContextProvider.CreateNew().KeyReleaseWorkflowStates.Count())
+                throw new InvalidOperationException();
+            if (workflowCount * tekPerWorkflowCount != _workflowDbContextProvider.CreateNew().TemporaryExposureKeys.Count())
+                throw new InvalidOperationException();
         }
 
         public async Task AuthoriseAllWorkflowsAsync()

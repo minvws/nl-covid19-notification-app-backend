@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             };
         }
 
-        public static int ToEfgsInt32(this TransmissionRiskLevel value) => (int) value;
+        public static int ToEfgsInt32(this TransmissionRiskLevel value) => (int)value;
 
 
         /// <summary>

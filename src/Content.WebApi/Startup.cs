@@ -20,22 +20,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
 {
     public class Startup
     {
-        private readonly IWebHostEnvironment _Env;
+        private readonly IWebHostEnvironment _env;
         private const string Title = "Cdn Content Provider";
 
-        private readonly bool _IsDev;
-        private readonly IConfiguration _Configuration;
+        private readonly bool _isDev;
+        private readonly IConfiguration _configuration;
 
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
-            _Env = env ?? throw new ArgumentException(nameof(env));
-            _Configuration = configuration ?? throw new ArgumentException(nameof(configuration));
-            _IsDev = env.IsDevelopment();
+            _env = env ?? throw new ArgumentException(nameof(env));
+            _configuration = configuration ?? throw new ArgumentException(nameof(configuration));
+            _isDev = env.IsDevelopment();
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
@@ -60,20 +61,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
 
             services.AddSingleton<GetCdnContentLoggingExtensions>();
 
-            if (_IsDev)
+            if (_isDev)
                 services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            if (_IsDev)
+            if (_isDev)
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(o => { o.SwaggerEndpoint("v1/swagger.json", Title); });
                 app.UseDeveloperExceptionPage();
             }
 
-            var corsOptions = new CorsOptions(_Env, new ContentApiConfig(_Configuration));
+            var corsOptions = new CorsOptions(_env, new ContentApiConfig(_configuration));
             app.UseCors(corsOptions.Build);
 
             app.UseSerilogRequestLogging();

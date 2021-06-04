@@ -16,7 +16,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         [Fact]
         public void NewEksStuffingGeneratorTest()
         {
-            var rng = new StandardRandomNumberGenerator(); var eksConfigMock = new Mock<IEksConfig>(MockBehavior.Strict);
+            var rng = new StandardRandomNumberGenerator();
+            var eksConfigMock = new Mock<IEksConfig>(MockBehavior.Strict);
             eksConfigMock.Setup(x => x.LifetimeDays).Returns(14);
             var dtp = new StandardUtcDateTimeProvider();
 

@@ -14,7 +14,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
-            if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
+            if (serviceProvider == null)
+                throw new ArgumentNullException(nameof(serviceProvider));
 
             return serviceProvider.GetRequiredService<DecoyTimeGeneratorAttribute>();
         }

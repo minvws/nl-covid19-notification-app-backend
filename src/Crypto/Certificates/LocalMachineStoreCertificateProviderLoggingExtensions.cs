@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
     public class LocalMachineStoreCertificateProviderLoggingExtensions
     {
-        private string Name = "LocalMachineStoreCertificateProvider";
+        private readonly string _name = "LocalMachineStoreCertificateProvider";
         private const int Base = LoggingCodex.CertLmProvider;
 
         private const int Finding = Base + 1;
@@ -18,31 +18,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
         private const int NoPrivateKey = Base + 3;
         private const int CertReadError = Base + 4;
 
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
 
         public LocalMachineStoreCertificateProviderLoggingExtensions(ILogger<LocalMachineStoreCertificateProviderLoggingExtensions> logger)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void WriteFindingCert(string thumbprint, bool rootTrusted)
         {
-            _Logger.LogInformation("[{name}/{id}] Finding certificate - Thumbprint:{Thumbprint}, RootTrusted:{RootTrusted}.",
-                Name, Finding,
+            _logger.LogInformation("[{name}/{id}] Finding certificate - Thumbprint:{Thumbprint}, RootTrusted:{RootTrusted}.",
+                _name, Finding,
                 thumbprint, rootTrusted);
         }
 
         public void WriteCertNotFound(string thumbprint)
         {
-            _Logger.LogCritical("[{name}/{id}] Certificate not found: {Thumbprint}.",
-                Name, CertNotFound,
+            _logger.LogCritical("[{name}/{id}] Certificate not found: {Thumbprint}.",
+                _name, CertNotFound,
                 thumbprint);
         }
 
         public void WriteNoPrivateKey(string thumbprint)
         {
-            _Logger.LogCritical("[{name}/{id}] Certificate has no private key: {Thumbprint}.",
-                Name, NoPrivateKey,
+            _logger.LogCritical("[{name}/{id}] Certificate has no private key: {Thumbprint}.",
+                _name, NoPrivateKey,
                 thumbprint);
         }
 
@@ -53,8 +53,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
                 throw new ArgumentNullException(nameof(exception));
             }
 
-            _Logger.LogError(exception, "[{name}/{id}] Error reading certificate store.",
-                Name, CertReadError);
+            _logger.LogError(exception, "[{name}/{id}] Error reading certificate store.",
+                _name, CertReadError);
         }
     }
 }

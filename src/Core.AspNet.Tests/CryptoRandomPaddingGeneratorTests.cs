@@ -8,7 +8,7 @@ using Xunit;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet.Tests
 {
     public class CryptoRandomPaddingGeneratorTests
-    {   
+    {
         [Fact]
         public void Generate_returns_different_string_on_each_call()
         {

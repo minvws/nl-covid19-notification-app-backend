@@ -17,26 +17,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
 {
     public class JwtClaimValidatorTests
     {
-        private readonly JwtClaimValidator _JwtClaimValidator;
-        private readonly WireMockServer _Server;
-        private readonly double _ClaimLifetimeHours = 1.0;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly JwtClaimValidator _jwtClaimValidator;
+        private readonly WireMockServer _server;
+        private readonly double _claimLifetimeHours = 1.0;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
 
         public JwtClaimValidatorTests()
         {
             var logger = new TestLogger<JwtClaimValidator>();
-            _DateTimeProvider = new StandardUtcDateTimeProvider();
-            _Server = WireMockServer.Start();
+            _dateTimeProvider = new StandardUtcDateTimeProvider();
+            _server = WireMockServer.Start();
 
             var iccPortalConfigMock = new Mock<IIccPortalConfig>();
-            iccPortalConfigMock.Setup(x => x.ClaimLifetimeHours).Returns(_ClaimLifetimeHours);
+            iccPortalConfigMock.Setup(x => x.ClaimLifetimeHours).Returns(_claimLifetimeHours);
             iccPortalConfigMock.Setup(x => x.FrontendBaseUrl).Returns("http://test.test");
             iccPortalConfigMock.Setup(x => x.JwtSecret).Returns("test_secret123");
             iccPortalConfigMock.Setup(x => x.StrictRolePolicyEnabled).Returns(true);
 
-            _JwtClaimValidator =
-                new JwtClaimValidator(TestTheIdentityHubServiceCreator.CreateInstance(_Server), logger,
-                    _DateTimeProvider,
+            _jwtClaimValidator =
+                new JwtClaimValidator(TestTheIdentityHubServiceCreator.CreateInstance(_server), logger,
+                    _dateTimeProvider,
                     iccPortalConfigMock.Object);
         }
 
@@ -44,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         public async Task ValidateShouldReturnTrueOnValidTIHJwt()
         {
             var validToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOiIxNTk5NzUzMTk5IiwiYWNjZXNzX3Rva2VuIjoidGVzdF9hY2Nlc3NfdG9rZW4iLCJpZCI6IjAifQ.osL8kyPx90gUapZzz6Iv-H8DPwgtJTMSKTJA1VtMirU";
-            var validExp = _DateTimeProvider.Now().AddHours(_ClaimLifetimeHours - .1).ToUnixTimeU64();
+            var validExp = _dateTimeProvider.Now().AddHours(_claimLifetimeHours - .1).ToUnixTimeU64();
             var testClaims = new Dictionary<string, string>
             {
                 {"id", "0"},
@@ -52,8 +52,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
                 {"access_token", validToken}
             };
 
-            _Server.Reset();
-            _Server.Given(
+            _server.Reset();
+            _server.Given(
                     Request.Create()
                         .WithHeader("Authorization", "Bearer " + validToken)
                         .WithPath("/ggdghornl_test/oauth2/v1/verify").UsingGet()
@@ -65,16 +65,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.True(await _JwtClaimValidator.ValidateAsync(testClaims));
+            Assert.True(await _jwtClaimValidator.ValidateAsync(testClaims));
         }
 
-        
+
         [Fact]
         public async Task ValidateShouldReturnFalseOnInValidExpiryInJwtPayload()
         {
             var validToken =
                 "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOiIxNTk5NzUzMTk5IiwiYWNjZXNzX3Rva2VuIjoidGVzdF9hY2Nlc3NfdG9rZW4iLCJpZCI6IjAifQ.osL8kyPx90gUapZzz6Iv-H8DPwgtJTMSKTJA1VtMirU";
-            var inValidExp = _DateTimeProvider.Now().AddHours(_ClaimLifetimeHours + .1).ToUnixTimeU64();
+            var inValidExp = _dateTimeProvider.Now().AddHours(_claimLifetimeHours + .1).ToUnixTimeU64();
             var testClaims = new Dictionary<string, string>
             {
                 {"id", "0"},
@@ -82,8 +82,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
                 {"access_token", validToken}
             };
 
-            _Server.Reset();
-            _Server.Given(
+            _server.Reset();
+            _server.Given(
                     Request.Create()
                         .WithHeader("Authorization", "Bearer " + validToken)
                         .WithPath("/ggdghornl_test/oauth2/v1/verify").UsingGet()
@@ -95,15 +95,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.False(await _JwtClaimValidator.ValidateAsync(testClaims));
+            Assert.False(await _jwtClaimValidator.ValidateAsync(testClaims));
         }
-        
+
         [Fact]
         public async Task ValidateShouldReturnFalseOnInValidTIHJwt()
         {
             var validToken =
                 "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOiIxNTk5NzUzMTk5IiwiYWNjZXNzX3Rva2VuIjoidGVzdF9hY2Nlc3NfdG9rZW4iLCJpZCI6IjAifQ.osL8kyPx90gUapZzz6Iv-H8DPwgtJTMSKTJA1VtMirU";
-            var validExp = _DateTimeProvider.Now().AddHours(_ClaimLifetimeHours - .1).ToUnixTimeU64();
+            var validExp = _dateTimeProvider.Now().AddHours(_claimLifetimeHours - .1).ToUnixTimeU64();
             var testClaims = new Dictionary<string, string>
             {
                 {"id", "0"},
@@ -111,8 +111,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
                 {"access_token", validToken + "_im_now_invalid"}
             };
 
-            _Server.Reset();
-            _Server.Given(
+            _server.Reset();
+            _server.Given(
                     Request.Create()
                         .WithHeader("Authorization", "Bearer " + validToken)
                         .WithPath("/ggdghornl_test/oauth2/v1/verify").UsingGet()
@@ -124,7 +124,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.False(await _JwtClaimValidator.ValidateAsync(testClaims));
+            Assert.False(await _jwtClaimValidator.ValidateAsync(testClaims));
         }
     }
 }

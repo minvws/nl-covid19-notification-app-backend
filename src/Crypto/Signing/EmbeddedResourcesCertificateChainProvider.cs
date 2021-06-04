@@ -11,18 +11,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 {
     public class EmbeddedResourcesCertificateChainProvider : ICertificateChainProvider
     {
-        private readonly IEmbeddedResourceCertificateConfig _PathProvider;
+        private readonly IEmbeddedResourceCertificateConfig _pathProvider;
 
         public EmbeddedResourcesCertificateChainProvider(IEmbeddedResourceCertificateConfig pathProvider)
         {
-            _PathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
+            _pathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
         }
 
         public X509Certificate2[] GetCertificates()
         {
             var certList = new List<X509Certificate2>();
 
-            using var s = ResourcesHook.GetManifestResourceStream(_PathProvider.Path);
+            using var s = ResourcesHook.GetManifestResourceStream(_pathProvider.Path);
 
             if (s == null)
                 throw new InvalidOperationException($"Certificate chain not found in resource.");

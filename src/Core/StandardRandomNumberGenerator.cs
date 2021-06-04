@@ -9,11 +9,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public class StandardRandomNumberGenerator : IRandomNumberGenerator
     {
-        private readonly RNGCryptoServiceProvider _Random;
+        private readonly RNGCryptoServiceProvider _random;
 
         public StandardRandomNumberGenerator()
         {
-            _Random = new RNGCryptoServiceProvider();
+            _random = new RNGCryptoServiceProvider();
         }
 
         /// <summary>
@@ -32,9 +32,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
                 return min;
 
             var bytes = new byte[sizeof(int)]; // 4 bytes
-            _Random.GetNonZeroBytes(bytes);
+            _random.GetNonZeroBytes(bytes);
             var val = BitConverter.ToInt32(bytes);
-            
+
             // constrain our values to between our min and max
             // https://stackoverflow.com/a/3057867/86411
             var result = ((val - min) % (max - min + 1) + max - min + 1) % (max - min + 1) + min;
@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 
 
             var randomBytes = new byte[size];
-            _Random.GetBytes(randomBytes);
+            _random.GetBytes(randomBytes);
             return randomBytes;
         }
     }

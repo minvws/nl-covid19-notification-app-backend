@@ -1,4 +1,8 @@
-﻿using System;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,13 +12,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 {
     public class AuthorizeLabConfirmationIdCommand
     {
-        private readonly WorkflowDbContext _WorkflowDb;
-        private readonly ILogger _Logger;
+        private readonly WorkflowDbContext _workflowDb;
+        private readonly ILogger _logger;
 
         public AuthorizeLabConfirmationIdCommand(WorkflowDbContext workflowDb, ILogger<AuthorisationWriterCommand> logger)
         {
-            _WorkflowDb = workflowDb ?? throw new ArgumentNullException(nameof(workflowDb));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _workflowDb = workflowDb ?? throw new ArgumentNullException(nameof(workflowDb));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -27,18 +31,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
             if (args == null)
                 throw new ArgumentNullException(nameof(args));
 
-            var wf = await _WorkflowDb
+            var wf = await _workflowDb
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Teks)
                 .FirstOrDefaultAsync(x => x.LabConfirmationId == args.LabConfirmationId);
 
             if (wf == null)
             {
-                _Logger.WriteKeyReleaseWorkflowStateNotFound(args.LabConfirmationId);
+                _logger.WriteKeyReleaseWorkflowStateNotFound(args.LabConfirmationId);
                 return false;
             }
 
-            _Logger.LogInformation("LabConfirmationId {LabConfirmationId} authorized.", wf.LabConfirmationId);
+            _logger.LogInformation("LabConfirmationId {LabConfirmationId} authorized.", wf.LabConfirmationId);
 
             return true;
         }

@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
     {
         Task<string> GenerateAuthCodeAsync(ClaimsPrincipal claimsPrincipal);
 
-        Task<List<AuthClaim>?> GetClaimsByAuthCodeAsync(string authCode);
+        Task<List<AuthClaim>> GetClaimsByAuthCodeAsync(string authCode);
 
         Task RevokeAuthCodeAsync(string authCode);
     }

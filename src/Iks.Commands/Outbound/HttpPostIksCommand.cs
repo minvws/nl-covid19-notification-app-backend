@@ -13,23 +13,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
     public class HttpPostIksCommand
     {
-        private readonly IEfgsConfig _EfgsConfig;
-        private readonly IAuthenticationCertificateProvider _CertificateProvider;
-        private readonly IksUploaderLoggingExtensions _Logger;
+        private readonly IEfgsConfig _efgsConfig;
+        private readonly IAuthenticationCertificateProvider _certificateProvider;
+        private readonly IksUploaderLoggingExtensions _logger;
 
         public HttpPostIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IksUploaderLoggingExtensions logger)
         {
-            _EfgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
-            _CertificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
+            _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<HttpPostIksResult> ExecuteAsync(IksSendCommandArgs args)
         {
-            var uri = new Uri($"{_EfgsConfig.BaseUrl}/diagnosiskeys/upload");
+            var uri = new Uri($"{_efgsConfig.BaseUrl}/diagnosiskeys/upload");
 
             // Configure authentication certificate
-            using var clientCert = _CertificateProvider.GetCertificate();
+            using var clientCert = _certificateProvider.GetCertificate();
             using var clientHandler = new HttpClientHandler
             {
                 ClientCertificateOptions = ClientCertificateOption.Manual
@@ -46,15 +46,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             request.Headers.Add("BatchTag", args.BatchTag);
             request.Headers.Add("batchSignature", Convert.ToBase64String(args.Signature));
             request.Headers.Add("Accept", "application/json;version=1.0");
-            
-            if (_EfgsConfig.SendClientAuthenticationHeaders)
+
+            if (_efgsConfig.SendClientAuthenticationHeaders)
             {
                 request.Headers.Add("X-SSL-Client-SHA256", clientCert.ComputeSha256Hash());
                 request.Headers.Add("X-SSL-Client-DN", clientCert.Subject.Replace(" ", string.Empty));
             }
 
-            _Logger.WriteRequest(request);
-            _Logger.WriteRequestContent(args.Content);
+            _logger.WriteRequest(request);
+            _logger.WriteRequestContent(args.Content);
 
             using var client = new HttpClient(clientHandler);
             client.Timeout = TimeSpan.FromSeconds(5); //TODO config
@@ -73,11 +73,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             }
             catch (Exception e)
             {
-                _Logger.WriteEfgsError(e);
+                _logger.WriteEfgsError(e);
 
                 if (e.InnerException != null)
                 {
-                    _Logger.WriteEfgsInnerException(e.InnerException);
+                    _logger.WriteEfgsInnerException(e.InnerException);
                 }
 
                 return new HttpPostIksResult

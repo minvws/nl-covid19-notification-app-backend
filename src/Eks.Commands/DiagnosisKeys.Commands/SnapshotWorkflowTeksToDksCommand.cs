@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -21,79 +21,79 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 {
     public class SnapshotWorkflowTeksToDksCommand
     {
-        private readonly ILogger<SnapshotWorkflowTeksToDksCommand> _Logger;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly ITransmissionRiskLevelCalculationMk2 _TransmissionRiskLevelCalculation;
-        private readonly WorkflowDbContext _WorkflowDbContext;
-        private readonly Func<WorkflowDbContext> _WorkflowDbContextFactory;
-        private readonly Func<DkSourceDbContext> _DkSourceDbContextFactory;
-        private readonly IWrappedEfExtensions _SqlCommands;
-        private readonly IDiagnosticKeyProcessor[] _OrderedProcessorList;
+        private readonly ILogger<SnapshotWorkflowTeksToDksCommand> _logger;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly ITransmissionRiskLevelCalculationMk2 _transmissionRiskLevelCalculation;
+        private readonly WorkflowDbContext _workflowDbContext;
+        private readonly Func<WorkflowDbContext> _workflowDbContextFactory;
+        private readonly Func<DkSourceDbContext> _dkSourceDbContextFactory;
+        private readonly IWrappedEfExtensions _sqlCommands;
+        private readonly IDiagnosticKeyProcessor[] _orderedProcessorList;
 
-        private int _CommitIndex;
-        private SnapshotWorkflowTeksToDksResult _Result;
+        private int _commitIndex;
+        private SnapshotWorkflowTeksToDksResult _result;
 
         public SnapshotWorkflowTeksToDksCommand(ILogger<SnapshotWorkflowTeksToDksCommand> logger, IUtcDateTimeProvider dateTimeProvider, ITransmissionRiskLevelCalculationMk2 transmissionRiskLevelCalculation, WorkflowDbContext workflowDbContext, Func<WorkflowDbContext> workflowDbContextFactory, Func<DkSourceDbContext> dkSourceDbContextFactory, IWrappedEfExtensions sqlCommands, IDiagnosticKeyProcessor[] orderedProcessorList)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _TransmissionRiskLevelCalculation = transmissionRiskLevelCalculation ?? throw new ArgumentNullException(nameof(transmissionRiskLevelCalculation));
-            _WorkflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
-            _WorkflowDbContextFactory = workflowDbContextFactory ?? throw new ArgumentNullException(nameof(workflowDbContextFactory));
-            _DkSourceDbContextFactory = dkSourceDbContextFactory ?? throw new ArgumentNullException(nameof(dkSourceDbContextFactory));
-            _SqlCommands = sqlCommands ?? throw new ArgumentNullException(nameof(sqlCommands));
-            _OrderedProcessorList = orderedProcessorList ?? throw new ArgumentNullException(nameof(orderedProcessorList));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _transmissionRiskLevelCalculation = transmissionRiskLevelCalculation ?? throw new ArgumentNullException(nameof(transmissionRiskLevelCalculation));
+            _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
+            _workflowDbContextFactory = workflowDbContextFactory ?? throw new ArgumentNullException(nameof(workflowDbContextFactory));
+            _dkSourceDbContextFactory = dkSourceDbContextFactory ?? throw new ArgumentNullException(nameof(dkSourceDbContextFactory));
+            _sqlCommands = sqlCommands ?? throw new ArgumentNullException(nameof(sqlCommands));
+            _orderedProcessorList = orderedProcessorList ?? throw new ArgumentNullException(nameof(orderedProcessorList));
         }
 
         public async Task<SnapshotWorkflowTeksToDksResult> ExecuteAsync()
         {
-            if (_Result != null)
+            if (_result != null)
                 throw new InvalidOperationException();
 
-            _Result = new SnapshotWorkflowTeksToDksResult();
+            _result = new SnapshotWorkflowTeksToDksResult();
             await ClearJobTablesAsync();
             await SnapshotTeks();
             await CommitSnapshotAsync();
-            return _Result;
+            return _result;
         }
 
         private async Task ClearJobTablesAsync()
         {
-            var dbc = _DkSourceDbContextFactory();
-            await _SqlCommands.TruncateTableAsync(dbc, TableNames.DiagnosisKeysInput);
+            var dbc = _dkSourceDbContextFactory();
+            await _sqlCommands.TruncateTableAsync(dbc, TableNames.DiagnosisKeysInput);
         }
 
         private async Task SnapshotTeks()
         {
-            _Logger.LogDebug("Snapshot publishable TEKs.");
+            _logger.LogDebug("Snapshot publishable TEKs.");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            const int pagesize = 10000;
+            const int PageSize = 10000;
             var index = 0;
 
-            using var tx = _WorkflowDbContext.BeginTransaction();
-            var page = ReadFromWorkflow(index, pagesize);
+            await using var tx = _workflowDbContext.BeginTransaction();
+            var page = ReadFromWorkflow(index, PageSize);
 
             while (page.Count > 0)
             {
-                var db = _DkSourceDbContextFactory();
+                var db = _dkSourceDbContextFactory();
                 await db.BulkInsertAsync2(page.ToList(), new SubsetBulkArgs());
 
                 index += page.Count;
-                page = ReadFromWorkflow(index, pagesize);
+                page = ReadFromWorkflow(index, PageSize);
             }
 
-            _Result.TekReadCount = index;
+            _result.TekReadCount = index;
         }
 
         private IList<DiagnosisKeyInputEntity> ReadFromWorkflow(int index, int pageSize)
         {
-            var snapshot = _DateTimeProvider.Snapshot;
+            var snapshot = _dateTimeProvider.Snapshot;
 
             // Select TemporaryExposureKeys from Workflow table which are ready to be processed (TEK is: AuthorisedByCaregiver, StartDateOfTekInclusion and IsSymptomatic are set, Unpublished PublishAfter not in the future)
-            var selectTeksFromWorkflowQuery = _WorkflowDbContext.TemporaryExposureKeys
+            var selectTeksFromWorkflowQuery = _workflowDbContext.TemporaryExposureKeys
                 .Where(x => x.Owner.AuthorisedByCaregiver != null
                             && x.Owner.StartDateOfTekInclusion != null
                             && x.PublishingState == PublishingState.Unpublished
@@ -102,7 +102,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 )
                 .Skip(index)
                 .Take(pageSize)
-                .Select(x => new {
+                .Select(x => new
+                {
                     x.Id,
                     DailyKey = new DailyKey(x.KeyData, x.RollingStartNumber, UniversalConstants.RollingPeriodRange.Hi), //Constant cos iOS xxx requires all RP to be 144
                     DateOfSymptomsOnset = x.Owner.StartDateOfTekInclusion.Value,
@@ -113,12 +114,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             var diagnosisKeyInputEntities = selectTeksFromWorkflowQuery.Select(x =>
                 {
                     var dsos = x.DailyKey.RollingStartNumber.DaysSinceSymptomOnset(x.DateOfSymptomsOnset);
-                    var trl = _TransmissionRiskLevelCalculation.Calculate(dsos);
+                    var trl = _transmissionRiskLevelCalculation.Calculate(dsos);
                     var result = new DiagnosisKeyInputEntity
                     {
                         DailyKey = x.DailyKey,
                         TekId = x.Id,
-                        Local = new LocalTekInfo 
+                        Local = new LocalTekInfo
                         {
                             DaysSinceSymptomsOnset = dsos, //Added here as the new format has this as well as the EFGS format.
                             TransmissionRiskLevel = trl,
@@ -128,7 +129,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                     return result;
                 }).ToList();
 
-          
+
             return diagnosisKeyInputEntities;
         }
 
@@ -145,9 +146,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
         private async Task WriteToDksAsync(DiagnosisKeyInputEntity[] used)
         {
-            await using var db = _DkSourceDbContextFactory();
+            await using var db = _dkSourceDbContextFactory();
 
-            var q3 = used.Select(x => (DkProcessingItem?)new DkProcessingItem
+            var q3 = used.Select(x => (DkProcessingItem)new DkProcessingItem
             {
                 DiagnosisKey = new DiagnosisKeyEntity
                 {
@@ -161,23 +162,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 }
             }).ToArray();
 
-            var q4 = _OrderedProcessorList.Execute(q3);
+            var q4 = _orderedProcessorList.Execute(q3);
             var items = q4.Select(x => x.DiagnosisKey).ToList();
-            _Result.DkCount += items.Count;
+            _result.DkCount += items.Count;
 
             await db.BulkInsertAsync2(items, new SubsetBulkArgs());
         }
 
         private async Task MarkTeksAsPublishedAsync(long[] used)
         {
-            await using var wfDb = _WorkflowDbContextFactory();
+            await using var wfDb = _workflowDbContextFactory();
 
             var zap = wfDb.TemporaryExposureKeys
                 .Where(x => used.Contains(x.Id))
                 .ToList();
 
-            _CommitIndex += used.Length;
-            _Logger.LogInformation("Marking TEKs as Published - Count:{Count}, Running total:{RunningTotal}.", zap.Count, _CommitIndex);
+            _commitIndex += used.Length;
+            _logger.LogInformation("Marking TEKs as Published - Count:{Count}, Running total:{RunningTotal}.", zap.Count, _commitIndex);
 
             foreach (var i in zap)
             {
@@ -194,9 +195,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
         private DiagnosisKeyInputEntity[] ReadDkPage()
         {
-            var q = _DkSourceDbContextFactory().DiagnosisKeysInput
+            var q = _dkSourceDbContextFactory().DiagnosisKeysInput
                 .OrderBy(x => x.TekId)
-                .Skip(_CommitIndex)
+                .Skip(_commitIndex)
                 .Take(1000)
                 .ToArray();
 

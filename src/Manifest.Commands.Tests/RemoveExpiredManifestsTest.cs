@@ -19,12 +19,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 {
     public abstract class RemoveExpiredManifestsTest : IDisposable
     {
-        private readonly IDbProvider<ContentDbContext> _ContentDbProvider;
-        private Mock<IManifestConfig> _ManifestConfigMock;
+        private readonly IDbProvider<ContentDbContext> _contentDbProvider;
+        private Mock<IManifestConfig> _manifestConfigMock;
 
         public RemoveExpiredManifestsTest(IDbProvider<ContentDbContext> contentDbProvider)
         {
-            _ContentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
+            _contentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
         }
 
         [Theory]
@@ -34,8 +34,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         public void Remove_Expired_Manifest_Should_Leave_One(string manifestTypeName)
         {
             //Arrange
-            _ManifestConfigMock = new Mock<IManifestConfig>();
-            _ManifestConfigMock.Setup(x => x.KeepAliveCount).Returns(1);
+            _manifestConfigMock = new Mock<IManifestConfig>();
+            _manifestConfigMock.Setup(x => x.KeepAliveCount).Returns(1);
 
             CreateManifestsForManifestType(manifestTypeName);
 
@@ -62,8 +62,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         public void Remove_Zero_Manifest_Should_Not_Crash(string manifestTypeName)
         {
             //Arrange
-            _ManifestConfigMock = new Mock<IManifestConfig>();
-            _ManifestConfigMock.Setup(x => x.KeepAliveCount).Returns(1);
+            _manifestConfigMock = new Mock<IManifestConfig>();
+            _manifestConfigMock.Setup(x => x.KeepAliveCount).Returns(1);
 
             //Act
             RemoveExpiredManifestsExecutePerManifestType(manifestTypeName);
@@ -108,7 +108,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var logger = new ExpiredManifestLoggingExtensions(new LoggerFactory().CreateLogger<ExpiredManifestLoggingExtensions>());
             var dateTimeProvider = new StandardUtcDateTimeProvider();
 
-            var result = new RemoveExpiredManifestsCommand(_ContentDbProvider.CreateNew, logger, _ManifestConfigMock.Object, dateTimeProvider);
+            var result = new RemoveExpiredManifestsCommand(_contentDbProvider.CreateNew, logger, _manifestConfigMock.Object, dateTimeProvider);
 
             return result;
         }
@@ -118,7 +118,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var logger = new ExpiredManifestV2LoggingExtensions(new LoggerFactory().CreateLogger<ExpiredManifestV2LoggingExtensions>());
             var dateTimeProvider = new StandardUtcDateTimeProvider();
 
-            var result = new RemoveExpiredManifestsV2Command(_ContentDbProvider.CreateNew, logger, _ManifestConfigMock.Object, dateTimeProvider);
+            var result = new RemoveExpiredManifestsV2Command(_contentDbProvider.CreateNew, logger, _manifestConfigMock.Object, dateTimeProvider);
 
             return result;
         }
@@ -128,7 +128,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var logger = new ExpiredManifestV3LoggingExtensions(new LoggerFactory().CreateLogger<ExpiredManifestV3LoggingExtensions>());
             var dateTimeProvider = new StandardUtcDateTimeProvider();
 
-            var result = new RemoveExpiredManifestsV3Command(_ContentDbProvider.CreateNew, logger, _ManifestConfigMock.Object, dateTimeProvider);
+            var result = new RemoveExpiredManifestsV3Command(_contentDbProvider.CreateNew, logger, _manifestConfigMock.Object, dateTimeProvider);
 
             return result;
         }
@@ -138,14 +138,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var logger = new ExpiredManifestV4LoggingExtensions(new LoggerFactory().CreateLogger<ExpiredManifestV4LoggingExtensions>());
             var dateTimeProvider = new StandardUtcDateTimeProvider();
 
-            var result = new RemoveExpiredManifestsV4Command(_ContentDbProvider.CreateNew, logger, _ManifestConfigMock.Object, dateTimeProvider);
+            var result = new RemoveExpiredManifestsV4Command(_contentDbProvider.CreateNew, logger, _manifestConfigMock.Object, dateTimeProvider);
 
             return result;
         }
 
         private void CreateManifestsForManifestType(string manifestTypeName)
         {
-            var database = _ContentDbProvider.CreateNew();
+            var database = _contentDbProvider.CreateNew();
 
             var manifestContent = "This is a Manifest";
             var appConfigContent = "This is an AppConfig";
@@ -209,13 +209,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
         private IEnumerable<ContentEntity> GetAllContent()
         {
-            var database = _ContentDbProvider.CreateNew();
+            var database = _contentDbProvider.CreateNew();
             return database.Set<ContentEntity>();
         }
 
         public void Dispose()
         {
-            _ContentDbProvider.Dispose();
+            _contentDbProvider.Dispose();
         }
     }
 }

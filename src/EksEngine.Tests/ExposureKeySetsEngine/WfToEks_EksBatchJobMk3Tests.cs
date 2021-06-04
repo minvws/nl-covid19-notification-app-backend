@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -68,7 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowFac.CreateNew(),
                 _workflowFac.CreateNew,
-                _dkSourceDbProvider.CreateNew, 
+                _dkSourceDbProvider.CreateNew,
                 _efExtensions,
                 new IDiagnosticKeyProcessor[0]
             );
@@ -82,14 +82,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             db.SaveChanges();
 
             Assert.Equal(workflows.Length, db.KeyReleaseWorkflowStates.Count());
-            Assert.Equal(workflows.Sum(x => x.Teks.Count) , db.TemporaryExposureKeys.Count());
+            Assert.Equal(workflows.Sum(x => x.Teks.Count), db.TemporaryExposureKeys.Count());
 
             _snapshot.ExecuteAsync().GetAwaiter().GetResult();
         }
 
         private static TekEntity CreateTek(int rsn)
         {
-            return new TekEntity { RollingStartNumber = rsn, RollingPeriod = 2, KeyData = new byte[16], PublishAfter = DateTime.UtcNow.AddHours(-1)};
+            return new TekEntity { RollingStartNumber = rsn, RollingPeriod = 2, KeyData = new byte[16], PublishAfter = DateTime.UtcNow.AddHours(-1) };
         }
 
         private static TekReleaseWorkflowStateEntity Create(DateTime now, params TekEntity[] items)
@@ -212,7 +212,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.True(result.TotalSeconds > 0);
 
             result = RunEngine();
-            
+
             Assert.Equal(0, result.InputCount);
             Assert.Equal(0, result.StuffingCount);
             Assert.Equal(0, result.OutputCount);
@@ -227,7 +227,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             Assert.True(result.TotalSeconds > 0);
         }
-        
+
 
         [Fact]
         [ExclusivelyUses(nameof(WfToEksEksBatchJobMk3Tests))]
@@ -266,7 +266,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(1, result.InputCount);
             Assert.Equal(4, result.StuffingCount);
             Assert.Equal(5, result.OutputCount);
-            Assert.Equal(1, result.EksInfo.Length);
+            Assert.Single(result.EksInfo);
             Assert.Equal(5, result.EksInfo[0].TekCount);
             Assert.Equal(0, result.TransmissionRiskNoneCount);
 
@@ -300,7 +300,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(5, result.InputCount);
             Assert.Equal(0, result.StuffingCount);
             Assert.Equal(5, result.OutputCount);
-            Assert.Equal(1, result.EksInfo.Length);
+            Assert.Single(result.EksInfo);
             Assert.Equal(5, result.EksInfo[0].TekCount);
             Assert.Equal(0, result.TransmissionRiskNoneCount);
 
@@ -308,7 +308,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileEksSumCount);
 
             Assert.Equal(_contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
-            Assert.Equal(_dkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount); 
+            Assert.Equal(_dkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
         }
@@ -332,7 +332,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(10, result.InputCount);
             Assert.Equal(0, result.StuffingCount);
             Assert.Equal(10, result.OutputCount);
-            Assert.Equal(1, result.EksInfo.Length);
+            Assert.Single(result.EksInfo);
             Assert.Equal(10, result.EksInfo[0].TekCount);
             Assert.Equal(0, result.TransmissionRiskNoneCount);
 

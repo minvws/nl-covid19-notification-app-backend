@@ -16,10 +16,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
     [Collection(nameof(EksEngineTestsSqlServer))]
     public class EksEngineTestsSqlServer : EksEngineTests
     {
-        private const string Prefix = nameof(EksEngineTests)+"_";
+        private const string Prefix = nameof(EksEngineTests) + "_";
         public EksEngineTestsSqlServer()
             : base(
-                new SqlServerDbProvider<WorkflowDbContext>(Prefix+"W"),
+                new SqlServerDbProvider<WorkflowDbContext>(Prefix + "W"),
                 new SqlServerDbProvider<DkSourceDbContext>(Prefix + "DK"),
                 new SqlServerDbProvider<EksPublishingJobDbContext>(Prefix + "EP"),
                 new SqlServerDbProvider<ContentDbContext>(Prefix + "C"),

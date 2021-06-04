@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -21,36 +21,36 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     /// </summary>
     public class SnapshotDiagnosisKeys : ISnapshotEksInput
     {
-        private readonly SnapshotLoggingExtensions _Logger;
-        private readonly DkSourceDbContext _DkSourceDbContext;
-        private readonly Func<EksPublishingJobDbContext> _PublishingDbContextFactory;
+        private readonly SnapshotLoggingExtensions _logger;
+        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly Func<EksPublishingJobDbContext> _publishingDbContextFactory;
         private readonly IInfectiousness _infectiousness;
 
         public SnapshotDiagnosisKeys(SnapshotLoggingExtensions logger, DkSourceDbContext dkSourceDbContext, Func<EksPublishingJobDbContext> publishingDbContextFactory, IInfectiousness infectiousness)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _DkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
-            _PublishingDbContextFactory = publishingDbContextFactory ?? throw new ArgumentNullException(nameof(publishingDbContextFactory));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
+            _publishingDbContextFactory = publishingDbContextFactory ?? throw new ArgumentNullException(nameof(publishingDbContextFactory));
             _infectiousness = infectiousness ?? throw new ArgumentNullException(nameof(infectiousness));
         }
 
         public async Task<SnapshotEksInputResult> ExecuteAsync(DateTime snapshotStart)
         {
-            _Logger.WriteStart();
+            _logger.WriteStart();
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            const int pageSize = 10000;
+            const int PageSize = 10000;
             var index = 0;
             var filteredTekInputCount = 0;
 
-            await using var tx = _DkSourceDbContext.BeginTransaction();
-            var (filteredResult, pageCount) = ReadAndFilter(index, pageSize);
-            
+            await using var tx = _dkSourceDbContext.BeginTransaction();
+            var (filteredResult, pageCount) = ReadAndFilter(index, PageSize);
+
             while (pageCount > 0)
             {
-                var db = _PublishingDbContextFactory();
+                var db = _publishingDbContextFactory();
                 if (filteredResult.Length > 0)
                 {
                     await db.BulkInsertAsync2(filteredResult, new SubsetBulkArgs());
@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
                 index += pageCount;
                 filteredTekInputCount += filteredResult.Length;
-                (filteredResult, pageCount) = ReadAndFilter(index, pageSize);
+                (filteredResult, pageCount) = ReadAndFilter(index, PageSize);
             }
 
             var result = new SnapshotEksInputResult
@@ -68,14 +68,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 FilteredTekInputCount = filteredTekInputCount
             };
 
-            _Logger.WriteTeksToPublish(index);
+            _logger.WriteTeksToPublish(index);
 
             return result;
         }
 
         private (EksCreateJobInputEntity[], int pageCount) ReadAndFilter(int index, int pageSize)
         {
-            var result = _DkSourceDbContext.DiagnosisKeys
+            var result = _dkSourceDbContext.DiagnosisKeys
                 .Where(x => !x.PublishedLocally)
                 .OrderBy(x => x.Id)
                 .AsNoTracking()

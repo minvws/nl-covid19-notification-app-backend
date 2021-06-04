@@ -14,17 +14,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 {
     public class DiagnosisKeyTestDataGenerator
     {
-        private readonly IDbProvider<DkSourceDbContext> _DkSourceDbProvider;
+        private readonly IDbProvider<DkSourceDbContext> _dkSourceDbProvider;
         public DateTime BaseDate { get; set; } = DateTime.UtcNow.Date;
 
         public DiagnosisKeyTestDataGenerator(IDbProvider<DkSourceDbContext> dkSourceDbProvider)
         {
-            _DkSourceDbProvider = dkSourceDbProvider;
+            _dkSourceDbProvider = dkSourceDbProvider;
         }
 
         public long[] Write(DiagnosisKeyEntity[] items)
         {
-            var db = _DkSourceDbProvider.CreateNew();
+            var db = _dkSourceDbProvider.CreateNew();
             db.DiagnosisKeys.AddRange(items);
             db.SaveChanges();
             return items.Select(x => x.Id).ToArray();

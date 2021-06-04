@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -6,14 +10,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public class Iso3166RegionCodeValidator
     {
-        private static readonly HashSet<string> _ValidValues;
-        private static readonly string[] _NotSupportedDirectlyInDotNet = { "CY" };
+        private static readonly HashSet<string> validValues;
+        private static readonly string[] notSupportedDirectlyInDotNet = { "CY" };
 
         static Iso3166RegionCodeValidator()
         {
-            _ValidValues = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
+            validValues = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
                 .Select(x => new RegionInfo(x.LCID).TwoLetterISORegionName.ToUpper())
-                .Concat(_NotSupportedDirectlyInDotNet)
+                .Concat(notSupportedDirectlyInDotNet)
                 .Distinct()
                 .ToHashSet();
         }
@@ -31,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
             if (parsed.Length != 2)
                 return false;
 
-            return _ValidValues.Contains(parsed);
+            return validValues.Contains(parsed);
         }
     }
 }

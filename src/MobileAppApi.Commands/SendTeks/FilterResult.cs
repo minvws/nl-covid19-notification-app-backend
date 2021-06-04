@@ -6,7 +6,7 @@ using System;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.SendTeks
 {
-    public class FilterResult<T> where T:class
+    public class FilterResult<T> where T : class
     {
         public FilterResult(T[] valid, string[] messages)
         {

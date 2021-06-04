@@ -8,7 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
     {
         public static class CaregiversPortalApi
         {
-           public const string PubTek = "/pubtek"; // Successor of LabConfirmation
+            public const string PubTek = "/pubtek"; // Successor of LabConfirmation
         }
     }
 }

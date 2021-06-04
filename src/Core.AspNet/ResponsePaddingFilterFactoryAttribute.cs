@@ -12,7 +12,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
     {
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
-            if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
+            if (serviceProvider == null)
+                throw new ArgumentNullException(nameof(serviceProvider));
 
             return serviceProvider.GetRequiredService<ResponsePaddingFilterAttribute>();
         }

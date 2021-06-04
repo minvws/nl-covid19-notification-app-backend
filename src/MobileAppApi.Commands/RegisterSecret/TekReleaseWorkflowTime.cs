@@ -9,11 +9,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 {
     public class TekReleaseWorkflowTime : IWorkflowTime
     {
-        private readonly IWorkflowConfig _WorkflowConfig;
+        private readonly IWorkflowConfig _workflowConfig;
 
         public TekReleaseWorkflowTime(IWorkflowConfig workflowConfig)
         {
-            _WorkflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));
+            _workflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));
         }
 
         public DateTime Expiry(DateTime utcNow)
@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             if (utcNow.Kind != DateTimeKind.Utc)
                 throw new ArgumentException("Must be UTC.");
 
-            var result = utcNow.ToLocalTime().Date + TimeSpan.FromMinutes(_WorkflowConfig.TimeToLiveMinutes + _WorkflowConfig.PermittedMobileDeviceClockErrorMinutes);
+            var result = utcNow.ToLocalTime().Date + TimeSpan.FromMinutes(_workflowConfig.TimeToLiveMinutes + _workflowConfig.PermittedMobileDeviceClockErrorMinutes);
             return result.ToUniversalTime();
         }
 
@@ -39,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             if (utcNow > utcExpiry)
                 throw new ArgumentException("utcNow > utcExpiry.");
 
-            return Convert.ToInt64(Math.Floor((utcExpiry - utcNow).TotalSeconds - _WorkflowConfig.PermittedMobileDeviceClockErrorMinutes));
+            return Convert.ToInt64(Math.Floor((utcExpiry - utcNow).TotalSeconds - _workflowConfig.PermittedMobileDeviceClockErrorMinutes));
         }
     }
 }

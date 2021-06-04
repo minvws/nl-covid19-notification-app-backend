@@ -15,11 +15,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         /// </summary>
         public static byte[] StripLeadingZeros(this byte[] buffer)
         {
-            if (buffer == null) 
+            if (buffer == null)
                 throw new ArgumentException(nameof(buffer)); //ncrunch: no coverage
 
             var i = 0;
-            for (; i < buffer.Length && buffer[i] == 0; i++) ;
+            for (; i < buffer.Length && buffer[i] == 0; i++)
+                ;
 
             if (i == 0)
                 return buffer;
@@ -32,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             return result;
         }
 
-        public static byte[] ToANS1Integer(this byte[] buffer)
+        public static byte[] ToAns1Integer(this byte[] buffer)
         {
             if (buffer == null || buffer.Length > 32)
                 throw new ArgumentException(nameof(buffer)); //ncrunch: no coverage
@@ -46,12 +47,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             if (clean[0] >= 0x80)
                 l++;
 
-            var result = new byte[l+2];
+            var result = new byte[l + 2];
 
             // Header
             result[0] = 0x02;
-            result[1] = (byte) l;
-            
+            result[1] = (byte)l;
+
             // Extra 0x0 if first byte >= 0x800
             if (clean[0] >= 0x80)
                 result[2] = 0;

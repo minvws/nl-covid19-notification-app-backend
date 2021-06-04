@@ -16,30 +16,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
 {
     public class RemoveExpiredWorkflowsCommand
     {
-        private readonly Func<WorkflowDbContext> _DbContextProvider;
-        private readonly ExpiredWorkflowLoggingExtensions _Logger;
-        private readonly IUtcDateTimeProvider _Dtp;
-        private RemoveExpiredWorkflowsResult _Result;
-        private readonly IWorkflowConfig _Config;
+        private readonly Func<WorkflowDbContext> _dbContextProvider;
+        private readonly ExpiredWorkflowLoggingExtensions _logger;
+        private readonly IUtcDateTimeProvider _dtp;
+        private RemoveExpiredWorkflowsResult _result;
+        private readonly IWorkflowConfig _config;
 
         public RemoveExpiredWorkflowsCommand(Func<WorkflowDbContext> dbContext, ExpiredWorkflowLoggingExtensions logger, IUtcDateTimeProvider dtp, IWorkflowConfig config)
         {
-            _DbContextProvider = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _Dtp = dtp ?? throw new ArgumentNullException(nameof(dtp));
-            _Config = config ?? throw new ArgumentNullException(nameof(config));
+            _dbContextProvider = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _dtp = dtp ?? throw new ArgumentNullException(nameof(dtp));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         private void ReadStats(WorkflowStats stats, WorkflowDbContext dbc)
         {
             stats.Count = dbc.KeyReleaseWorkflowStates.Count();
 
-            stats.Expired = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _Dtp.Snapshot);
-            stats.Unauthorised = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _Dtp.Snapshot && (x.LabConfirmationId != null || x.GGDKey != null) && x.AuthorisedByCaregiver == null && x.StartDateOfTekInclusion == null);
-            stats.Authorised = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _Dtp.Snapshot && x.LabConfirmationId == null && x.GGDKey == null && x.AuthorisedByCaregiver != null && x.StartDateOfTekInclusion != null);
+            stats.Expired = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _dtp.Snapshot);
+            stats.Unauthorised = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _dtp.Snapshot && (x.LabConfirmationId != null || x.GGDKey != null) && x.AuthorisedByCaregiver == null && x.StartDateOfTekInclusion == null);
+            stats.Authorised = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _dtp.Snapshot && x.LabConfirmationId == null && x.GGDKey == null && x.AuthorisedByCaregiver != null && x.StartDateOfTekInclusion != null);
 
             stats.AuthorisedAndFullyPublished = dbc.KeyReleaseWorkflowStates.Count(x =>
-                x.ValidUntil < _Dtp.Snapshot &&
+                x.ValidUntil < _dtp.Snapshot &&
                 x.AuthorisedByCaregiver != null &&
                 x.StartDateOfTekInclusion != null &&
                 x.LabConfirmationId == null && x.GGDKey == null &&
@@ -67,7 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
             sb.AppendLine($"   Published:{stats.TekPublished}");
             sb.AppendLine($"   Unpublished:{stats.TekUnpublished}");
 
-            _Logger.WriteReport(sb.ToString());
+            _logger.WriteReport(sb.ToString());
         }
 
 
@@ -77,45 +77,45 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
         /// </summary>
         public RemoveExpiredWorkflowsResult Execute()
         {
-            if (_Result != null)
+            if (_result != null)
                 throw new InvalidOperationException("Object already used.");
 
 
-            _Result = new RemoveExpiredWorkflowsResult();
-            _Result.DeletionsOn = _Config.CleanupDeletesData;
+            _result = new RemoveExpiredWorkflowsResult();
+            _result.DeletionsOn = _config.CleanupDeletesData;
 
-            _Logger.WriteStart();
+            _logger.WriteStart();
 
-            using (var dbc = _DbContextProvider())
+            using (var dbc = _dbContextProvider())
             {
                 using (var tx = dbc.BeginTransaction())
                 {
-                    ReadStats(_Result.Before, dbc);
-                    LogReport(_Result.Before, "Workflow stats before cleanup:");
+                    ReadStats(_result.Before, dbc);
+                    LogReport(_result.Before, "Workflow stats before cleanup:");
 
-                    if (!_Result.DeletionsOn)
+                    if (!_result.DeletionsOn)
                     {
-                        _Logger.WriteFinishedNothingRemoved();
-                        return _Result;
+                        _logger.WriteFinishedNothingRemoved();
+                        return _result;
                     }
 
-                    if (_Result.Before.Authorised != _Result.Before.AuthorisedAndFullyPublished)
+                    if (_result.Before.Authorised != _result.Before.AuthorisedAndFullyPublished)
                     {
-                        _Logger.WriteUnpublishedTekFound();
+                        _logger.WriteUnpublishedTekFound();
                         throw new InvalidOperationException("Authorised unpublished TEKs exist. Aborting workflow cleanup.");
                     }
 
-                    _Result.GivenMercy = dbc.Database.ExecuteSqlInterpolated($"DELETE FROM TekReleaseWorkflowState WHERE [ValidUntil] < {_Dtp.Snapshot}");
-                    _Logger.WriteRemovedAmount(_Result.GivenMercy);
+                    _result.GivenMercy = dbc.Database.ExecuteSqlInterpolated($"DELETE FROM TekReleaseWorkflowState WHERE [ValidUntil] < {_dtp.Snapshot}");
+                    _logger.WriteRemovedAmount(_result.GivenMercy);
                     tx.Commit();
                 }
 
                 using (dbc.BeginTransaction())
-                    ReadStats(_Result.After, dbc);
+                    ReadStats(_result.After, dbc);
 
-                LogReport(_Result.Before, "Workflow stats after cleanup:");
-                _Logger.WriteFinished();
-                return _Result;
+                LogReport(_result.Before, "Workflow stats after cleanup:");
+                _logger.WriteFinished();
+                return _result;
             }
         }
     }

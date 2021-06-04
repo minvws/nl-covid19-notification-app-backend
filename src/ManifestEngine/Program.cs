@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
                 new ConsoleAppRunner().Execute(args, Configure, Start);
                 return 0;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return -1;
             }
@@ -59,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddTransient<StandardContentEntityFormatter>();
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
             services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient(x => 
+            services.AddTransient(x =>
                 SignerConfigStartup.BuildEvSigner(
                     x.GetRequiredService<IConfiguration>(),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),

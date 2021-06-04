@@ -29,9 +29,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         {
             var epoch = (long)value * RollingPeriodFactor;
 
-            return  DateTimeOffset.FromUnixTimeSeconds(epoch).UtcDateTime;
+            return DateTimeOffset.FromUnixTimeSeconds(epoch).UtcDateTime;
         }
-        
+
         public static ulong ToUnixTimeU64(this DateTime value)
         {
             return Convert.ToUInt64(value.ToUnixTime());

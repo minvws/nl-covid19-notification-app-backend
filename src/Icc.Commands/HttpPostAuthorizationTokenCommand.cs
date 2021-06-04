@@ -15,32 +15,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 {
     public class HttpPostAuthorizationTokenCommand
     {
-        private readonly ILogger<HttpPostAuthorizationTokenCommand> _Logger;
-        private readonly IJwtService _JwtService;
-        private readonly IAuthCodeService _AuthCodeService;
+        private readonly ILogger<HttpPostAuthorizationTokenCommand> _logger;
+        private readonly IJwtService _jwtService;
+        private readonly IAuthCodeService _authCodeService;
 
         public HttpPostAuthorizationTokenCommand(ILogger<HttpPostAuthorizationTokenCommand> logger,
             IJwtService jwtService, IAuthCodeService authCodeService)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
-            _AuthCodeService = authCodeService ?? throw new ArgumentNullException(nameof(authCodeService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
+            _authCodeService = authCodeService ?? throw new ArgumentNullException(nameof(authCodeService));
         }
 
         public async Task<IActionResult> ExecuteAsync(HttpContext httpContext, TokenAuthorisationArgs args)
         {
-            if(args == null) throw new ArgumentNullException(nameof(args));
+            if (args == null)
+                throw new ArgumentNullException(nameof(args));
 
-            var claims = await _AuthCodeService.GetClaimsByAuthCodeAsync(args.Code);
-            if(claims == null)
+            var claims = await _authCodeService.GetClaimsByAuthCodeAsync(args.Code);
+            if (claims == null)
             {
                 return new UnauthorizedResult();
             }
 
             //TODO: add sliding expiry time to distributed cache
-            await _AuthCodeService.RevokeAuthCodeAsync(args.Code);
-            
-            var jwtToken = _JwtService.Generate(claims);
+            await _authCodeService.RevokeAuthCodeAsync(args.Code);
+
+            var jwtToken = _jwtService.Generate(claims);
             return new OkObjectResult(new
             {
                 Token = jwtToken

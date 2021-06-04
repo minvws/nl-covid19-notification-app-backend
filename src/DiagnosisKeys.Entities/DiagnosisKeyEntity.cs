@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities
         public DailyKey DailyKey { get; set; } = new DailyKey();
         public TekOrigin Origin { get; set; }
         public LocalTekInfo Local { get; set; } = new LocalTekInfo();
-        
+
         /// <summary>
         /// Immediately set to true for DKs imported from EFGS
         /// </summary>

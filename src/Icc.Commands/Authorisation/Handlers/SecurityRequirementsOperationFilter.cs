@@ -22,14 +22,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
                 .Distinct()
                 .ToList();
 
-            if (!requiredScopes.Any()) return;
+            if (!requiredScopes.Any())
+                return;
 
-            operation.Responses.Add("401", new OpenApiResponse {Description = "Unauthorized"});
-            operation.Responses.Add("403", new OpenApiResponse {Description = "Forbidden"});
+            operation.Responses.Add("401", new OpenApiResponse { Description = "Unauthorized" });
+            operation.Responses.Add("403", new OpenApiResponse { Description = "Forbidden" });
 
             var iccAuthenticationScheme = new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "Icc"}
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Icc" }
             };
 
             operation.Security = new List<OpenApiSecurityRequirement>

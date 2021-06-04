@@ -11,28 +11,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
 {
     public class TemporaryExposureKeyValidator : ITemporaryExposureKeyValidator
     {
-        private readonly ITekValidatorConfig _Config;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly ITekValidatorConfig _config;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
 
         public TemporaryExposureKeyValidator(ITekValidatorConfig config, IUtcDateTimeProvider dateTimeProvider)
         {
-            _Config = config;
-            _DateTimeProvider = dateTimeProvider;
+            _config = config;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public string[] Valid(PostTeksItemArgs value)
         {
             if (value == null)
-                return new [] {"Value is null."};
+                return new[] { "Value is null." };
 
             var result = new List<string>();
 
             //The following check has to be removed until the iOS bug that returns TEKs regardless of age is fixed.
             //var earliestAcceptedDateFromDevices = _DateTimeProvider.Snapshot.Date - TimeSpan.FromDays(_Config.MaxAgeDays);
             //var rollingStartMin = Math.Max(_Config.RollingStartNumberMin, earliestAcceptedDateFromDevices.ToRollingStartNumber());
-            
-            var rollingStartMin = _Config.RollingStartNumberMin;
-            var rollingStartToday = _DateTimeProvider.Snapshot.Date.ToRollingStartNumber();
+
+            var rollingStartMin = _config.RollingStartNumberMin;
+            var rollingStartToday = _dateTimeProvider.Snapshot.Date.ToRollingStartNumber();
 
             if (!(rollingStartMin <= value.RollingStartNumber && value.RollingStartNumber <= rollingStartToday))
                 result.Add($"RollingStartNumber out of range - {value.RollingStartNumber}.");

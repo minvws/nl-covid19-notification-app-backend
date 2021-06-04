@@ -10,22 +10,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
 {
     public class TotalTekCountStatsQueryCommand : IStatsQueryCommand
     {
-        private readonly WorkflowDbContext _DbContext;
+        private readonly WorkflowDbContext _dbContext;
 
         public TotalTekCountStatsQueryCommand(WorkflowDbContext dbContext)
         {
-            _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
         public const string Name = "TekCount";
 
         public StatisticArgs Execute()
         {
-            
+
             return new StatisticArgs
             {
                 Name = Name,
-                Value = _DbContext.TemporaryExposureKeys.Count()
+                Value = _dbContext.TemporaryExposureKeys.Count()
             };
         }
     }

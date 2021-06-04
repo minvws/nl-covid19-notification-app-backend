@@ -4,7 +4,7 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 {
-    
+
     /// <summary>
     /// Identical to Efgs type
     /// </summary>

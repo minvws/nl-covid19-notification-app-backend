@@ -51,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Tests
         [InlineData(0, 0)]
         [InlineData(1, 0)]
         [InlineData(2, 0)]
-        
+
         //TRL M
         [InlineData(3, 3)] //3 
         [InlineData(4, 3)] //3
@@ -64,6 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Tests
         [InlineData(9, 8)]
         [InlineData(10, 8)]
         [InlineData(11, 8)]
+        [Theory]
         public void InputForEfgsDsos(int day, int expected)
         {
             var calculation = new DosViaTrlDayRangeMidPointCalculation();

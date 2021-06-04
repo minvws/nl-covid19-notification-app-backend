@@ -32,8 +32,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Tests
             {
                 var next = r.Next(0, 1);
                 Assert.True(next == 0 || next == 1);
-                if (next == 0) zeros++;
-                if (next == 1) ones++;
+                if (next == 0)
+                    zeros++;
+                if (next == 1)
+                    ones++;
             }
 
             Assert.True(zeros > 0);

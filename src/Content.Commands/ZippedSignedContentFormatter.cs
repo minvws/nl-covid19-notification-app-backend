@@ -10,18 +10,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public class ZippedSignedContentFormatter
     {
-        private readonly IContentSigner _ContentSigner;
+        private readonly IContentSigner _contentSigner;
 
         public ZippedSignedContentFormatter(IContentSigner contentSigner)
         {
-            _ContentSigner = contentSigner ?? throw new ArgumentNullException(nameof(contentSigner));
+            _contentSigner = contentSigner ?? throw new ArgumentNullException(nameof(contentSigner));
         }
 
         public async Task<byte[]> SignedContentPacketAsync(byte[] content)
         {
-            if (content == null) throw new ArgumentNullException(nameof(content));
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
 
-            var signature = _ContentSigner.GetSignature(content);
+            var signature = _contentSigner.GetSignature(content);
             return await new ZippedContentBuilder().BuildStandardAsync(content, signature);
         }
     }

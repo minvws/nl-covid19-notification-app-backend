@@ -13,11 +13,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public static IConfigurationRoot Build()
         {
             var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            
-            if (string.IsNullOrWhiteSpace(environmentName)) 
+
+            if (string.IsNullOrWhiteSpace(environmentName))
                 environmentName = "Development";
 
-            return  new ConfigurationBuilder()
+            return new ConfigurationBuilder()
                 .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
                 .AddJsonFile("appsettings.json", false)
                 .AddJsonFile($"appsettings.{environmentName}.json", true, true)

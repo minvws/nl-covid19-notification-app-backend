@@ -16,40 +16,42 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 {
     public class AuthCodeService : IAuthCodeService
     {
-        private readonly IDistributedCache _Cache;
-        private readonly IAuthCodeGenerator _AuthCodeGenerator;
+        private readonly IDistributedCache _cache;
+        private readonly IAuthCodeGenerator _authCodeGenerator;
 
         public AuthCodeService(IDistributedCache cache,
             IAuthCodeGenerator authCodeGenerator)
         {
-            _Cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            _AuthCodeGenerator = authCodeGenerator ?? throw new ArgumentNullException(nameof(authCodeGenerator));
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            _authCodeGenerator = authCodeGenerator ?? throw new ArgumentNullException(nameof(authCodeGenerator));
         }
 
         public async Task<string> GenerateAuthCodeAsync(ClaimsPrincipal claimsPrincipal)
         {
-            if (claimsPrincipal == null) throw new ArgumentNullException(nameof(claimsPrincipal));
+            if (claimsPrincipal == null)
+                throw new ArgumentNullException(nameof(claimsPrincipal));
 
-            var authCode = _AuthCodeGenerator.Next();
-            
+            var authCode = _authCodeGenerator.Next();
+
             var claimsObject = claimsPrincipal.Claims.Select(claim => new AuthClaim(claim.Type, claim.Value)).ToList();
 
             var principalJson = JsonConvert.SerializeObject(claimsObject);
             var encodedClaimsPrincipal = Encoding.UTF8.GetBytes(principalJson);
 
             //TODO: add sliding expiration
-            await _Cache.SetAsync(authCode, encodedClaimsPrincipal);
+            await _cache.SetAsync(authCode, encodedClaimsPrincipal);
 
             return authCode;
         }
 
-        public async Task<List<AuthClaim>?> GetClaimsByAuthCodeAsync(string authCode)
+        public async Task<List<AuthClaim>> GetClaimsByAuthCodeAsync(string authCode)
         {
-            if (string.IsNullOrWhiteSpace(authCode)) throw new ArgumentException(nameof(authCode));
+            if (string.IsNullOrWhiteSpace(authCode))
+                throw new ArgumentException(nameof(authCode));
 
-            List<AuthClaim>? result = null;
+            List<AuthClaim> result = null;
 
-            var encodedAuthClaimList = await _Cache.GetAsync(authCode);
+            var encodedAuthClaimList = await _cache.GetAsync(authCode);
 
             if (encodedAuthClaimList != null)
             {
@@ -62,9 +64,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 
         public async Task RevokeAuthCodeAsync(string authCode)
         {
-            if (string.IsNullOrWhiteSpace(authCode)) throw new ArgumentException(nameof(authCode));
+            if (string.IsNullOrWhiteSpace(authCode))
+                throw new ArgumentException(nameof(authCode));
 
-            await _Cache.RemoveAsync(authCode);
+            await _cache.RemoveAsync(authCode);
         }
     }
 }

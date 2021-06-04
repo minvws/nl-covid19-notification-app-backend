@@ -11,27 +11,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 {
     public class AuthorisationArgsValidator
     {
-        private readonly ILabConfirmationIdService _LabConfirmationIdService;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly ILabConfirmationIdService _labConfirmationIdService;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
 
         public AuthorisationArgsValidator(ILabConfirmationIdService labConfirmationIdService, IUtcDateTimeProvider dateTimeProvider)
         {
-            _LabConfirmationIdService = labConfirmationIdService ?? throw new ArgumentNullException(nameof(labConfirmationIdService));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _labConfirmationIdService = labConfirmationIdService ?? throw new ArgumentNullException(nameof(labConfirmationIdService));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
 
         public string[] Validate(AuthorisationArgs args)
         {
             if (args == null)
-                return new [] {"Args is null."};
+                return new[] { "Args is null." };
 
             //Should be a date.
             args.DateOfSymptomsOnset = args.DateOfSymptomsOnset.Date;
 
             var errors = new List<string>();
-            errors.AddRange(_LabConfirmationIdService.Validate(args.LabConfirmationId));
+            errors.AddRange(_labConfirmationIdService.Validate(args.LabConfirmationId));
 
-            if (_DateTimeProvider.Snapshot.Date.AddDays(-30) > args.DateOfSymptomsOnset.Date || args.DateOfSymptomsOnset.Date > _DateTimeProvider.Snapshot.Date)
+            if (_dateTimeProvider.Snapshot.Date.AddDays(-30) > args.DateOfSymptomsOnset.Date || args.DateOfSymptomsOnset.Date > _dateTimeProvider.Snapshot.Date)
                 errors.Add($"Date of symptoms onset out of range - {args.DateOfSymptomsOnset}.");
 
             return errors.ToArray();

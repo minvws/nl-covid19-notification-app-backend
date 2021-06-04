@@ -11,23 +11,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
 {
     public class TekWriter : ITekWriter
     {
-        private readonly WorkflowDbContext _DbContextProvider;
+        private readonly WorkflowDbContext _dbContextProvider;
 
         public TekWriter(WorkflowDbContext dbContextProvider)
         {
-            _DbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
+            _dbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
         }
 
         public async Task ExecuteAsync(TekWriteArgs args)
         {
-            if (args == null) throw new ArgumentNullException(nameof(args));
+            if (args == null)
+                throw new ArgumentNullException(nameof(args));
 
             var entities = args.NewItems.Select(Mapper.MapToEntity).ToArray();
-            
+
             foreach (var e in entities)
                 e.Owner = args.WorkflowStateEntityEntity;
 
-            await _DbContextProvider.TemporaryExposureKeys.AddRangeAsync(entities);
+            await _dbContextProvider.TemporaryExposureKeys.AddRangeAsync(entities);
         }
     }
 }

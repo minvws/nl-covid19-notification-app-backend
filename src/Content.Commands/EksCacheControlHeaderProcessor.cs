@@ -10,19 +10,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public class EksCacheControlHeaderProcessor
     {
-        private readonly EksMaxageCalculator _EksTtlCalculator;
+        private readonly EksMaxageCalculator _eksTtlCalculator;
 
         public EksCacheControlHeaderProcessor(EksMaxageCalculator eksTtlCalculator)
         {
-            _EksTtlCalculator = eksTtlCalculator ?? throw new ArgumentNullException(nameof(eksTtlCalculator));
+            _eksTtlCalculator = eksTtlCalculator ?? throw new ArgumentNullException(nameof(eksTtlCalculator));
         }
 
         public void Execute(HttpContext httpContext, ContentEntity content)
         {
-            if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
-            if (content == null) throw new ArgumentNullException(nameof(content));
+            if (httpContext == null)
+                throw new ArgumentNullException(nameof(httpContext));
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
 
-            var ttl = _EksTtlCalculator.Execute(content.Created);
+            var ttl = _eksTtlCalculator.Execute(content.Created);
             httpContext.Response.Headers.Add("cache-control", $"public, immutable, max-age={ ttl }, s-maxage={ ttl }");
         }
     }

@@ -13,7 +13,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
     {
         public string Create(byte[] contents)
         {
-            if (contents == null) throw new ArgumentNullException(nameof(contents));
+            if (contents == null)
+                throw new ArgumentNullException(nameof(contents));
 
             using var hasher = SHA256.Create();
             var id = hasher.ComputeHash(contents);
@@ -33,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
             if (string.IsNullOrWhiteSpace(id))
                 return false;
 
-            if(id.Length != sha256Length * 2)
+            if (id.Length != sha256Length * 2)
                 return false;
 
             for (var i = 0; i < id.Length; i += 2)

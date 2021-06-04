@@ -1,4 +1,8 @@
-﻿using System;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using System.Collections.Generic;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 
@@ -6,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
 {
     public class Infectiousness : IInfectiousness
     {
-        private readonly Dictionary<InfectiousPeriodType, HashSet<int>> _Values;
+        private readonly Dictionary<InfectiousPeriodType, HashSet<int>> _values;
 
         /// <summary>
         /// Constructor adding the the RCP values for a symptomic or asymptomic infectious period type
@@ -14,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
         /// <param name="values"></param>
         public Infectiousness(Dictionary<InfectiousPeriodType, HashSet<int>> values)
         {
-            _Values = values ?? throw new ArgumentNullException(nameof(values));
+            _values = values ?? throw new ArgumentNullException(nameof(values));
         }
 
         /// <summary>
@@ -25,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
         /// <returns>True if infectiousness is possible, otherwise false</returns>
         public bool IsInfectious(InfectiousPeriodType infectiousPeriodType, int dsos)
         {
-            return _Values[infectiousPeriodType].Contains(dsos);
+            return _values[infectiousPeriodType].Contains(dsos);
         }
     }
 }

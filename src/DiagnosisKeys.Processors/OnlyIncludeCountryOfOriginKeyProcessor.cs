@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -13,16 +13,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
     /// </summary>
     public class OnlyIncludeCountryOfOriginKeyProcessor : IDiagnosticKeyProcessor
     {
-        private readonly string[] _AcceptedCountries;
+        private readonly string[] _acceptedCountries;
         public OnlyIncludeCountryOfOriginKeyProcessor(IAcceptableCountriesSetting settings)
         {
-            if (settings == null) throw new ArgumentNullException(nameof(settings));
-            _AcceptedCountries = settings.AcceptableCountries;
+            if (settings == null)
+                throw new ArgumentNullException(nameof(settings));
+            _acceptedCountries = settings.AcceptableCountries;
         }
 
-        public DkProcessingItem? Execute(DkProcessingItem? value)
+        public DkProcessingItem Execute(DkProcessingItem value)
         {
-            return _AcceptedCountries.Contains(value.DiagnosisKey.Efgs.CountryOfOrigin) ? value : null;
+            return _acceptedCountries.Contains(value.DiagnosisKey.Efgs.CountryOfOrigin) ? value : null;
         }
     }
 }

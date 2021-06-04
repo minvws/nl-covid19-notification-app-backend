@@ -14,21 +14,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
 
         private const int CallFailed = LoggingCodex.SuppressError;
 
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
 
         public SuppressErrorLoggingExtensions(ILogger<SuppressErrorLoggingExtensions> logger)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void WriteCallFailed(ActionDescriptor actionDescriptor)
         {
             if (actionDescriptor == null)
-            { 
+            {
                 throw new ArgumentNullException(nameof(actionDescriptor));
             }
 
-            _Logger.LogDebug("[{name}/{id}] Call to {ActionDescriptor} failed, overriding response code to return 200.",
+            _logger.LogDebug("[{name}/{id}] Call to {ActionDescriptor} failed, overriding response code to return 200.",
                 Name, CallFailed,
                 actionDescriptor);
         }

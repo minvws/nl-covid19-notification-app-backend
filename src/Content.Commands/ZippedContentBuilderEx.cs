@@ -14,19 +14,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             {
                 new ZippedContentBuilderArgs { Value = content, EntryName = ZippedContentEntryNames.EksContent},
                 new ZippedContentBuilderArgs { Value = gaenSig, EntryName = ZippedContentEntryNames.EksGaenSig},
-                new ZippedContentBuilderArgs { Value = nlSig, EntryName = ZippedContentEntryNames.NLSignature},
+                new ZippedContentBuilderArgs { Value = nlSig, EntryName = ZippedContentEntryNames.NlSignature},
             };
 
             return await thiz.BuildAsync(args);
         }
 
-        
+
         public static async Task<byte[]> BuildStandardAsync(this ZippedContentBuilder thiz, byte[] content, byte[] nlSig)
         {
             var args = new[]
             {
                 new ZippedContentBuilderArgs { Value = content, EntryName = ZippedContentEntryNames.Content},
-                new ZippedContentBuilderArgs { Value = nlSig, EntryName = ZippedContentEntryNames.NLSignature},
+                new ZippedContentBuilderArgs { Value = nlSig, EntryName = ZippedContentEntryNames.NlSignature},
             };
 
             return await thiz.BuildAsync(args);

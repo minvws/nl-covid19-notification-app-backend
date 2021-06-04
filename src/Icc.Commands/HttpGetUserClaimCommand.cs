@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
             if (string.IsNullOrWhiteSpace(claimValue))
                 return new UnauthorizedResult();
-            
+
             return new OkObjectResult(new ClaimInfoResponse { User = new ClaimInfo { Id = claimValue } });
         }
     }

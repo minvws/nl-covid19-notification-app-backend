@@ -15,19 +15,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
     {
         private const string PayloadElement = "payload";
 
-        private readonly IJwtService _JwtService;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        
+        private readonly IJwtService _jwtService;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+
         public PollTokenService(IJwtService jwtService, IUtcDateTimeProvider dateTimeProvider)
         {
-            _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
 
         public string Next()
         {
-            return _JwtService.Generate(
-                _DateTimeProvider.Now().AddSeconds(30).ToUnixTimeU64(),
+            return _jwtService.Generate(
+                _dateTimeProvider.Now().AddSeconds(30).ToUnixTimeU64(),
                 new Dictionary<string, object>
                 {
                     [PayloadElement] = Guid.NewGuid().ToString()
@@ -36,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 
         public bool ValidateToken(string value)
         {
-            return _JwtService.TryDecode(value, out _);
+            return _jwtService.TryDecode(value, out _);
         }
     }
 }

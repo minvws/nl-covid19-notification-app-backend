@@ -88,7 +88,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             await ClearJobTablesAsync();
 
             var snapshotResult = await _snapshotter.ExecuteAsync(_eksEngineResult.Started);
-            
+
             _eksEngineResult.InputCount = snapshotResult.TekInputCount;
             _eksEngineResult.FilteredInputCount = snapshotResult.FilteredTekInputCount;
             _eksEngineResult.SnapshotSeconds = snapshotResult.SnapshotSeconds;
@@ -134,10 +134,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 _logger.WriteNoStuffingNoTeks();
                 return;
             }
-            
+
             await using var dbc = _publishingDbContextFac();
             var tekCount = dbc.EksInput.Count(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None);
-            
+
             var stuffingCount = tekCount < _eksConfig.TekCountMin ? _eksConfig.TekCountMin - tekCount : 0;
             if (stuffingCount == 0)
             {
@@ -205,8 +205,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         }
 
         private static TemporaryExposureKeyArgs Map(EksCreateJobInputEntity c)
-            => new TemporaryExposureKeyArgs 
-            { 
+            => new TemporaryExposureKeyArgs
+            {
                 RollingPeriod = c.RollingPeriod,
                 TransmissionRiskLevel = c.TransmissionRiskLevel,
                 KeyData = c.KeyData,
@@ -223,18 +223,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             var args = _output.Select(Map).ToArray();
 
             var content = await _setBuilder.BuildAsync(args);
-            
+
             var e = new EksCreateJobOutputEntity
             {
                 Region = DefaultValues.Region,
                 Release = _eksEngineResult.Started,
                 CreatingJobQualifier = ++_eksCount,
-                Content = content, 
+                Content = content,
             };
 
             _logger.WriteWritingCurrentEks(e.CreatingJobQualifier);
 
-            
+
             await using (var dbc = _publishingDbContextFac())
             {
                 await using var tx = dbc.BeginTransaction();
@@ -252,7 +252,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             {
                 var bargs = new SubsetBulkArgs
                 {
-                    PropertiesToInclude = new[] {nameof(EksCreateJobInputEntity.Used)}
+                    PropertiesToInclude = new[] { nameof(EksCreateJobInputEntity.Used) }
                 };
                 await dbc2.BulkUpdateAsync2(_output, bargs); //TX
             }
@@ -289,12 +289,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _logger.WriteCommitMarkTeks();
             var result = await _markWorkFlowTeksAsUsed.ExecuteAsync();
             _logger.WriteTotalMarked(result.Marked);
-            
+
 
             //Write stuffing to DKs
             await _writeStuffingToDiagnosisKeys.ExecuteAsync();
 
             await ClearJobTablesAsync();
         }
-   }
+    }
 }

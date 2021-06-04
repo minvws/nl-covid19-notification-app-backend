@@ -10,14 +10,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 {
     public class AuthCodeGenerator : IAuthCodeGenerator
     {
-        private readonly IRandomNumberGenerator _Rng;
+        private readonly IRandomNumberGenerator _rng;
 
         private const int DefaultLength = 32;
         private const string PermittedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
         public AuthCodeGenerator(IRandomNumberGenerator rng)
         {
-            _Rng = rng ?? throw new ArgumentNullException(nameof(rng));
+            _rng = rng ?? throw new ArgumentNullException(nameof(rng));
         }
 
         public string Next(int length)
@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
             var token = new StringBuilder(length);
             for (var i = 0; i < length; i++)
             {
-                var index = _Rng.Next(0, PermittedCharacters.Length - 1);
+                var index = _rng.Next(0, PermittedCharacters.Length - 1);
                 token.Append(PermittedCharacters[index]);
             }
             return token.ToString();

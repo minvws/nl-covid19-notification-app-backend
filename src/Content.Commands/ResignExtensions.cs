@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                                 x.GetRequiredService<IConfiguration>(),
                                 NlSettingPrefix),
                             x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()),
-                            
+
                         new EmbeddedResourcesCertificateChainProvider(
                             new EmbeddedResourceCertificateConfig(
                                 x.GetRequiredService<IConfiguration>(),

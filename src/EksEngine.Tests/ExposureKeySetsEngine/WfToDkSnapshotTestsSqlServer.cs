@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     {
         private const string Prefix = nameof(WfToDkSnapshotTests) + "_";
         public WfToDkSnapshotTestsSqlServer() : base(
-            new SqlServerDbProvider<WorkflowDbContext>(Prefix+"W"),
+            new SqlServerDbProvider<WorkflowDbContext>(Prefix + "W"),
             new SqlServerDbProvider<DkSourceDbContext>(Prefix + "D"),
             new SqlServerWrappedEfExtensions()
         )

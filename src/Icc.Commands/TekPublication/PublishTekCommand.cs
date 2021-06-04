@@ -43,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             {
                 throw new ArgumentNullException(nameof(args));
             }
-            
+
             // Retrieve the matching PubTEK value with all TEK's from the database
             var wf = await _workflowDb
                 .KeyReleaseWorkflowStates
@@ -70,7 +70,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
                 _logger.LogInformation($"GGDKey {wf.GGDKey} authorized.");
             }
 
-            return success; 
+            return success;
         }
 
         private async Task<bool> PublishTek(TekReleaseWorkflowStateEntity workflowStateEntity)
@@ -96,7 +96,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             {
                 _logger.WriteDuplicatePollTokenFound(_attemptCount);
             }
-            
+
             try
             {
                 await _workflowDb.SaveChangesAsync();

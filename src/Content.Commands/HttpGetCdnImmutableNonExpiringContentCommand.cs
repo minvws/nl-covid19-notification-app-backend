@@ -10,20 +10,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public class HttpGetCdnImmutableNonExpiringContentCommand
     {
-        private readonly HttpGetCdnContentCommand _GetCommand;
-        private readonly IHttpResponseHeaderConfig _HttpResponseHeaderConfig;
+        private readonly HttpGetCdnContentCommand _getCommand;
+        private readonly IHttpResponseHeaderConfig _httpResponseHeaderConfig;
 
         public HttpGetCdnImmutableNonExpiringContentCommand(HttpGetCdnContentCommand getCommand, IHttpResponseHeaderConfig httpResponseHeaderConfig)
         {
-            _GetCommand = getCommand ?? throw new ArgumentNullException(nameof(getCommand));
-            _HttpResponseHeaderConfig = httpResponseHeaderConfig ?? throw new ArgumentNullException(nameof(httpResponseHeaderConfig));
+            _getCommand = getCommand ?? throw new ArgumentNullException(nameof(getCommand));
+            _httpResponseHeaderConfig = httpResponseHeaderConfig ?? throw new ArgumentNullException(nameof(httpResponseHeaderConfig));
         }
 
         public async Task ExecuteAsync(HttpContext httpContext, string type, string id)
         {
-            var e = await _GetCommand.ExecuteAsync(httpContext, type, id);
-            if (e == null) return;
-            httpContext.Response.Headers.Add("cache-control", _HttpResponseHeaderConfig.ImmutableContentCacheControl);
+            var e = await _getCommand.ExecuteAsync(httpContext, type, id);
+            if (e == null)
+                return;
+            httpContext.Response.Headers.Add("cache-control", _httpResponseHeaderConfig.ImmutableContentCacheControl);
             await httpContext.Response.Body.WriteAsync(e.Content);
         }
     }

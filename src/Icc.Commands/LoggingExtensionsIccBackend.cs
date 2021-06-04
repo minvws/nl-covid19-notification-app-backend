@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -41,22 +41,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
         private const int WritingNewPollToken = Base + 24;
         private const int DuplicatePollTokenFound = Base + 25;
         private const int PollTokenCommit = Base + 26;
-        
+
         private const int PubTekStart = Base + 27;
         private const int PublishTekCommit = Base + 28;
 
-        public static void WriteHttpFail(this ILogger logger, Uri? uri, HttpStatusCode status, string response)
+        public static void WriteHttpFail(this ILogger logger, Uri uri, HttpStatusCode status, string response)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogWarning("[{name}/{id}] {RequestUri}: Failed HTTP: {ResponseStatusCode} - {ResponseString}.",
                 Name, HttpFail,
                 uri, status, response);
         }
 
-        public static void WriteEmptyResponseString(this ILogger logger, Uri? uri, HttpStatusCode status, string response)
+        public static void WriteEmptyResponseString(this ILogger logger, Uri uri, HttpStatusCode status, string response)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogWarning("[{name}/{id}] {RequestUri}: Failed ResponseString is empty: {ResponseStatusCode} - {ResponseString}.",
                 Name, EmptyResponseString,
@@ -65,7 +67,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteTokenVerifyResult(this ILogger logger, string response)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogInformation("[{name}/{id}] Positive token verify result {ResponseString}.",
                 Name, TokenVerifyResult,
@@ -74,7 +77,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteTokenRevokeSuccess(this ILogger logger)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogInformation("[{name}/{id}] Access Token successfully revoked.",
                 Name, TokenRevokeSuccess);
@@ -82,7 +86,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteTokenNotRevoked(this ILogger logger, string status)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogWarning("[{name}/{id}] Access Token not revoked, statuscode {ResponseStatusCode}.",
                 Name, TokenNotRevoked,
@@ -91,7 +96,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteInsufficientRole(this ILogger logger)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogInformation("[{name}/{id}] AccessDenied for login, insufficient role.",
                 Name, InsufficientRole);
@@ -99,7 +105,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteTestJwtConstructed(this ILogger logger)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogInformation("[{name}/{id}] TestJwtGeneratorService Singleton constructed, generating test JWT now....",
                 Name, TestJwtConstructed);
@@ -107,7 +114,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteGeneratedToken(this ILogger logger, string token)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogInformation("[{name}/{id}] {Token}.",
                 Name, GeneratedToken,
@@ -116,7 +124,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteMissingAuthHeader(this ILogger logger)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogInformation("[{name}/{id}] Missing authorization header.",
                 Name, MissingAuthHeader);
@@ -124,7 +133,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteInvalidAuthHeader(this ILogger logger)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogInformation("[{name}/{id}] Invalid authorization header.",
                 Name, InvalidAuthHeader);
@@ -132,7 +142,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteTokenExpTooLong(this ILogger logger, string lifetimeHours)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogInformation("[{name}/{id}] Token invalid, has longer exp. than configured {claimLifetimeHours} hrs.",
                 Name, TokenExpTooLong,
@@ -141,7 +152,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteTestJwtUsed(this ILogger logger)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogWarning("[{name}/{id}] Test JWT Used for authorization!.",
                 Name, TestJwtUsed);
@@ -149,7 +161,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteInvalidTokenFormat(this ILogger logger, FormatException exception)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogWarning(exception, "[{name}/{id}] Invalid jwt token, FormatException.",
                 Name, InvalidTokenFormat);
@@ -157,7 +170,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteInvalidTokenParts(this ILogger logger, InvalidTokenPartsException exception)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogWarning(exception, "[{name}/{id}] Invalid jwt token, InvalidTokenPartsException.",
                 Name, InvalidTokenParts);
@@ -165,7 +179,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteTokenExpired(this ILogger logger, TokenExpiredException exception)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogWarning(exception, "[{name}/{id}] Invalid jwt token, TokenExpiredException",
                 Name, TokenExpired);
@@ -173,7 +188,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteTokenSigInvalid(this ILogger logger, SignatureVerificationException exception)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogWarning(exception, "[{name}/{id}] Invalid jwt token, SignatureVerificationException.",
                 Name, TokenSigInvalid);
@@ -181,7 +197,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteTokenOtherError(this ILogger logger, Exception exception)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogError(exception, "[{name}/{id}] Invalid jwt token, Other error.",
                 Name, TokenOtherError);
@@ -189,7 +206,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteRedirecting(this ILogger logger, string currentHost)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogInformation("[{name}/{id}] Executing Auth.Redirect on Host {CurrentHost}.",
                 Name, Redirecting,
@@ -198,7 +216,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteAuthStart(this ILogger logger)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogInformation("[{name}/{id}] POST Auth/Token triggered.",
                 Name, AuthStart);
@@ -206,7 +225,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteLabStart(this ILogger logger)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogInformation("[{name}/{id}] POST lab confirmation triggered.",
                 Name, LabStart);
@@ -214,7 +234,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteLogValidationError(this ILogger logger, string messages)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogError("[{name}/{id}] {Messages}.",
                 Name, LogValidationError,
@@ -223,7 +244,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteLogValidationInfo(this ILogger logger, string messages)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogInformation("[{name}/{id}] {Messages}.",
                 Name, LogValidationInfo,
@@ -232,7 +254,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteKeyReleaseWorkflowStateNotFound(this ILogger logger, string labId)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogError("[{name}/{id}] KeyReleaseWorkflowState not found - LabConfirmationId:{LabConfirmationId}.",
                 Name, KeyReleaseWorkflowStateNotFound,
@@ -241,7 +264,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteWritingNewPollToken(this ILogger logger)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogDebug("[{name}/{id}] Writing.",
                 Name, WritingNewPollToken);
@@ -249,7 +273,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteDuplicatePollTokenFound(this ILogger logger, int attemptCount)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogWarning("[{name}/{id}] Duplicate PollToken found - attempt:{AttemptCount}.",
                 Name, DuplicatePollTokenFound,
@@ -258,7 +283,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WritePollTokenCommit(this ILogger logger)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogDebug("[{name}/{id}] Committed.",
                 Name, PollTokenCommit);
@@ -266,7 +292,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WritePubTekStart(this ILogger logger)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogInformation("[{name}/{id}] PUT PubTEK triggered.",
                 Name, PubTekStart);
@@ -274,7 +301,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public static void WriteWritingPublishTek(this ILogger logger)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
 
             logger.LogDebug("[{name}/{id}] Writing.",
                 Name, PublishTekCommit);

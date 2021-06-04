@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
     {
         private const string Prefix = nameof(DkToIksSnapshotTests) + "_";
         public DkToIksSnapshotTestsSqlServer() : base(
-            new SqlServerDbProvider<DkSourceDbContext>(Prefix + "D"), 
+            new SqlServerDbProvider<DkSourceDbContext>(Prefix + "D"),
             new SqlServerDbProvider<IksPublishingJobDbContext>("I")
         )
         { }

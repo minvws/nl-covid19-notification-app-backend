@@ -15,7 +15,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         /// <returns></returns>
         public string[] Validate(Tek[] values)
         {
-            if (values == null) throw new ArgumentNullException(nameof(values));
+            if (values == null)
+                throw new ArgumentNullException(nameof(values));
 
             if (values.Length < 2)
                 return new string[0];

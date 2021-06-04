@@ -11,28 +11,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
 {
     public class PostTeksArgsValidator : IPostTeksValidator
     {
-        private readonly ITekListValidationConfig _Config;
-        private readonly ITemporaryExposureKeyValidator _TemporaryExposureKeyValidator;
+        private readonly ITekListValidationConfig _config;
+        private readonly ITemporaryExposureKeyValidator _temporaryExposureKeyValidator;
 
         public PostTeksArgsValidator(ITekListValidationConfig config, ITemporaryExposureKeyValidator temporaryExposureKeyValidator)
         {
-            _Config = config ?? throw new ArgumentNullException(nameof(config));
-            _TemporaryExposureKeyValidator = temporaryExposureKeyValidator ?? throw new ArgumentNullException(nameof(temporaryExposureKeyValidator));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _temporaryExposureKeyValidator = temporaryExposureKeyValidator ?? throw new ArgumentNullException(nameof(temporaryExposureKeyValidator));
         }
 
         public string[] Validate(PostTeksArgs args)
         {
             if (args == null)
-                return new[] {"Null value."};
+                return new[] { "Null value." };
 
-            if (_Config.TemporaryExposureKeyCountMin > args.Keys.Length || args.Keys.Length > _Config.TemporaryExposureKeyCountMax)
-                return new[] {$"Invalid number of keys - {args.Keys.Length}."};
+            if (_config.TemporaryExposureKeyCountMin > args.Keys.Length || args.Keys.Length > _config.TemporaryExposureKeyCountMax)
+                return new[] { $"Invalid number of keys - {args.Keys.Length}." };
 
             var keyErrors = new List<string>();
 
             for (var i = 0; i < args.Keys.Length; i++)
             {
-                keyErrors.AddRange(_TemporaryExposureKeyValidator.Valid(args.Keys[i]).Select(x => $"Key[{i}] - {x}"));
+                keyErrors.AddRange(_temporaryExposureKeyValidator.Valid(args.Keys[i]).Select(x => $"Key[{i}] - {x}"));
             }
 
             return keyErrors.ToArray();

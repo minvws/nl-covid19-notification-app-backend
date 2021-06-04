@@ -19,7 +19,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             var config = new StandardEfDbConfig(serviceProvider.GetRequiredService<IConfiguration>(), connName);
             var builder = new SqlServerDbContextOptionsBuilder(config, serviceProvider.GetRequiredService<ILoggerFactory>());
             var result = ctor(builder.Build());
-            if (beginTrans) result.BeginTransaction();
+            if (beginTrans)
+                result.BeginTransaction();
             return result;
         }
     }

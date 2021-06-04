@@ -10,4 +10,4 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         public int TekInputCount { get; set; }
         public int FilteredTekInputCount { get; set; }
     }
-} 
+}

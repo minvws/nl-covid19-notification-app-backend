@@ -11,34 +11,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 {
     public class TestJwtClaimValidator : IJwtClaimValidator
     {
-        private readonly ITheIdentityHubService _TheIdentityHubService;
-        private readonly ILogger<TestJwtClaimValidator> _Logger;
-        const string _TestAccessToken = "test_access_token";
+        private readonly ITheIdentityHubService _theIdentityHubService;
+        private readonly ILogger<TestJwtClaimValidator> _logger;
+        const string TestAccessToken = "test_access_token";
 
         public TestJwtClaimValidator(ITheIdentityHubService theIdentityHubService,
-            ILogger<TestJwtClaimValidator> logger, IJwtService? jwtService)
+            ILogger<TestJwtClaimValidator> logger)
         {
-            _TheIdentityHubService =
+            _theIdentityHubService =
                 theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<bool> ValidateAsync(IDictionary<string, string> decodedClaims)
         {
-            if (decodedClaims == null) throw new ArgumentNullException(nameof(decodedClaims));
+            if (decodedClaims == null)
+                throw new ArgumentNullException(nameof(decodedClaims));
 
             if (!decodedClaims.ContainsKey("access_token"))
             {
                 return false;
             }
 
-            if (decodedClaims["access_token"] == _TestAccessToken)
+            if (decodedClaims["access_token"] == TestAccessToken)
             {
-                _Logger.WriteTestJwtUsed();
+                _logger.WriteTestJwtUsed();
                 return true;
             }
 
-            return await _TheIdentityHubService.VerifyTokenAsync(decodedClaims["access_token"]);
+            return await _theIdentityHubService.VerifyTokenAsync(decodedClaims["access_token"]);
         }
     }
 }

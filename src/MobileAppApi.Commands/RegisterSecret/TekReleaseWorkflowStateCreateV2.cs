@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private readonly RegisterSecretLoggingExtensionsV2 _logger;
 
         private const int AttemptCountMax = 10;
-        private int _AttemptCount;
+        private int _attemptCount;
 
         public TekReleaseWorkflowStateCreateV2(
             WorkflowDbContext dbContextProvider,
@@ -66,15 +66,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 
         private bool TryGenerateRemainingFieldsAndWriteToDb(TekReleaseWorkflowStateEntity item)
         {
-            if (++_AttemptCount > AttemptCountMax)
+            if (++_attemptCount > AttemptCountMax)
             {
                 _logger.WriteMaximumCreateAttemptsReached();
                 throw new InvalidOperationException("Maximum create attempts reached.");
             }
 
-            if (_AttemptCount > 1)
+            if (_attemptCount > 1)
             {
-                _logger.WriteDuplicatesFound(_AttemptCount);
+                _logger.WriteDuplicatesFound(_attemptCount);
             }
 
             item.GGDKey = _luhnModNGenerator.Next(_luhnModNConfig.ValueLength);

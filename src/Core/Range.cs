@@ -35,13 +35,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(null, obj))
+                return false;
             return obj is Range<T> range && Equals(range);
         }
 
         public override int GetHashCode()
         {
-            unchecked { return (Lo.GetHashCode() * 397) ^ Hi.GetHashCode(); }
+            unchecked
+            { return (Lo.GetHashCode() * 397) ^ Hi.GetHashCode(); }
         }
 
         public static bool operator ==(Range<T> left, Range<T> right)

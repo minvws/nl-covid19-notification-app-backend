@@ -1,4 +1,8 @@
-﻿using System;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -39,7 +43,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
         [Route("/pubtek")]
         public async Task<PublishTekResponse> PutPubTek([FromBody] PublishTekArgs args)
         {
-            if (_restApiClient == null) throw new ArgumentNullException(nameof(_restApiClient));
+            if (_restApiClient == null)
+                throw new ArgumentNullException(nameof(_restApiClient));
 
             // Fail fast -> If the code is not valid, return the response with false result. 
             if (!FixOrValidatePubTEK(args))
@@ -77,4 +82,3 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
         }
     }
 }
- 

@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet.Tests
 
             // Assert
             var result = builder.GetOrigin();
-            
+
             // Act
             Assert.IsType<string>(result);
         }
@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet.Tests
             // Assert
             var testUri = new Uri(testFrontendBaseUrl);
             var origin = builder.GetOrigin();
-            
+
             var result = origin.EndsWith(testUri.Host) || origin.EndsWith(testUri.Port.ToString());
 
             // Act

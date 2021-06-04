@@ -10,13 +10,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
 {
     public class StandardTekListValidationConfig : AppSettingsReader, ITekListValidationConfig
     {
-        private readonly ITekListValidationConfig _Defaults = new DefaultTekListValidationConfig();
+        private readonly ITekListValidationConfig _defaults = new DefaultTekListValidationConfig();
 
         public StandardTekListValidationConfig(IConfiguration config, string prefix = "Workflow:PostKeys:TemporaryExposureKeys") : base(config, prefix)
         {
         }
-        
-        public int TemporaryExposureKeyCountMin => GetConfigValue("Count:Min", _Defaults.TemporaryExposureKeyCountMin);
-        public int TemporaryExposureKeyCountMax => GetConfigValue("Count:Max", _Defaults.TemporaryExposureKeyCountMax);
+
+        public int TemporaryExposureKeyCountMin => GetConfigValue("Count:Min", _defaults.TemporaryExposureKeyCountMin);
+        public int TemporaryExposureKeyCountMax => GetConfigValue("Count:Max", _defaults.TemporaryExposureKeyCountMax);
     }
 }

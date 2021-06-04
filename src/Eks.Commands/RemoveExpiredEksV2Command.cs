@@ -15,62 +15,62 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 {
     public class RemoveExpiredEksV2Command
     {
-        private readonly ContentDbContext _DbContext;
-        private readonly IEksConfig _Config;
-        private readonly IUtcDateTimeProvider _Dtp;
-        private readonly ExpiredEksV2LoggingExtensions _Logger;
+        private readonly ContentDbContext _dbContext;
+        private readonly IEksConfig _config;
+        private readonly IUtcDateTimeProvider _dtp;
+        private readonly ExpiredEksV2LoggingExtensions _logger;
 
         public RemoveExpiredEksV2Command(ContentDbContext dbContext, IEksConfig config, IUtcDateTimeProvider dtp, ExpiredEksV2LoggingExtensions logger)
         {
-            _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _Config = config ?? throw new ArgumentNullException(nameof(config));
-            _Dtp = dtp ?? throw new ArgumentNullException(nameof(dtp));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _dtp = dtp ?? throw new ArgumentNullException(nameof(dtp));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public RemoveExpiredEksCommandResult Execute()
         {
             var result = new RemoveExpiredEksCommandResult();
 
-            _Logger.WriteStart();
+            _logger.WriteStart();
 
-            var cutoff = (_Dtp.Snapshot - TimeSpan.FromDays(_Config.LifetimeDays)).Date;
+            var cutoff = (_dtp.Snapshot - TimeSpan.FromDays(_config.LifetimeDays)).Date;
 
-            using (var tx = _DbContext.BeginTransaction())
+            using (var tx = _dbContext.BeginTransaction())
             {
-                result.Found = _DbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2);
-                _Logger.WriteCurrentEksFound(result.Found);
+                result.Found = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2);
+                _logger.WriteCurrentEksFound(result.Found);
 
-                var zombies = _DbContext.Content
+                var zombies = _dbContext.Content
                     .Where(x => x.Type == ContentTypes.ExposureKeySetV2 && x.Release < cutoff)
                     .Select(x => new { x.PublishingId, x.Release })
                     .ToList();
 
                 result.Zombies = zombies.Count;
 
-                _Logger.WriteTotalEksFound(cutoff, result.Zombies);
+                _logger.WriteTotalEksFound(cutoff, result.Zombies);
                 foreach (var i in zombies)
-                    _Logger.WriteEntryFound(i.PublishingId, i.Release);
+                    _logger.WriteEntryFound(i.PublishingId, i.Release);
 
-                if (!_Config.CleanupDeletesData)
+                if (!_config.CleanupDeletesData)
                 {
-                    _Logger.WriteFinishedNothingRemoved();
+                    _logger.WriteFinishedNothingRemoved();
                     result.Remaining = result.Found;
                     return result;
                 }
 
-                result.GivenMercy = _DbContext.Database.ExecuteSqlInterpolated($"DELETE FROM [Content] WHERE [Type] = {ContentTypes.ExposureKeySetV2} AND [Release] < {cutoff}");
+                result.GivenMercy = _dbContext.Database.ExecuteSqlInterpolated($"DELETE FROM [Content] WHERE [Type] = {ContentTypes.ExposureKeySetV2} AND [Release] < {cutoff}");
                 tx.Commit();
                 //Implicit tx
-                result.Remaining = _DbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2);
+                result.Remaining = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2);
             }
 
-            _Logger.WriteRemovedAmount(result.GivenMercy, result.Remaining);
+            _logger.WriteRemovedAmount(result.GivenMercy, result.Remaining);
 
             if (result.Reconciliation != 0)
-                _Logger.WriteReconciliationFailed(result.Reconciliation);
+                _logger.WriteReconciliationFailed(result.Reconciliation);
 
-            _Logger.WriteFinished();
+            _logger.WriteFinished();
             return result;
         }
     }

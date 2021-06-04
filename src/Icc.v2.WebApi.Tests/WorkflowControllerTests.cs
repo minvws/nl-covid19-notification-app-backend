@@ -1,3 +1,7 @@
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
 using System;
 using System.Net;
 using System.Net.Http;
@@ -15,7 +19,7 @@ using NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi;
 using Xunit;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace Icc.v2.WebApi.Tests
+namespace Icc.V2.WebApi.Tests
 {
     public class WorkflowControllerTests
     {

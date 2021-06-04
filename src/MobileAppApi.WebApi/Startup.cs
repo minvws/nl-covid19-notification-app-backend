@@ -26,11 +26,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
     {
         private const string Title = "Mobile App API";
 
-        private readonly bool _IsDev;
+        private readonly bool _isDev;
 
         public Startup(IWebHostEnvironment env)
         {
-            _IsDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
+            _isDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -81,13 +81,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<ResponsePaddingLoggingExtensions>();
             services.AddSingleton<SuppressErrorLoggingExtensions>();
 
-            if (_IsDev)
+            if (_isDev)
                 services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            if (_IsDev)
+            if (_isDev)
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
