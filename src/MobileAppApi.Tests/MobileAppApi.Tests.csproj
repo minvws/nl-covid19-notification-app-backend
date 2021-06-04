@@ -5,6 +5,8 @@
       <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests</AssemblyName>
       <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests</RootNamespace>
       <IsPackable>false</IsPackable>
+	  <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
     </PropertyGroup>
 
     <ItemGroup>

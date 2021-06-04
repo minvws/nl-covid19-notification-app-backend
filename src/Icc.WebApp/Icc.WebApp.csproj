@@ -15,6 +15,8 @@
     <ProjectGuid>{B701DAD1-CD0E-4E25-B47F-53211653D1EA}</ProjectGuid>
     <UserSecretsId>40a98d16-dbd2-463e-81a8-ff473085eeb0</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>

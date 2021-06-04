@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
         <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto</RootNamespace>
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
 
   </PropertyGroup>
 

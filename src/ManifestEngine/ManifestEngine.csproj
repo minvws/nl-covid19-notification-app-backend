@@ -5,6 +5,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine</RootNamespace>
     <ProjectGuid>{12423599-13FB-4BFF-8057-CF11032A01C3}</ProjectGuid>
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>
