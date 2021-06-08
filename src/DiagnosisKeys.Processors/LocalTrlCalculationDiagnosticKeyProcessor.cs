@@ -11,9 +11,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
         public DkProcessingItem Execute(DkProcessingItem value)
         {
             if (value == null)
+            {
                 return value;
+            }
+
             if (value.DiagnosisKey.Local.DaysSinceSymptomsOnset == null)
+            {
                 return value;
+            }
 
             value.DiagnosisKey.Local.TransmissionRiskLevel = new TransmissionRiskLevelCalculationMk2().Calculate(value.DiagnosisKey.Local.DaysSinceSymptomsOnset.Value);
 

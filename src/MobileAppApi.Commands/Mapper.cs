@@ -23,7 +23,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
         public static Tek MapToTek(this TekEntity value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             return new Tek
             {

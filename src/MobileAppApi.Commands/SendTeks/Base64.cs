@@ -14,14 +14,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         public ValidationResult<byte[]> TryParseAndValidate(string value, int expectedLength)
         {
             if (string.IsNullOrWhiteSpace(value))
+            {
                 return new ValidationResult<byte[]>(new[] { "Value is null." });
+            }
 
             var buffer = new byte[expectedLength];
             if (!Convert.TryFromBase64String(value, new Span<byte>(buffer), out var bytesWritten))
+            {
                 return new ValidationResult<byte[]>(new[] { $"Value is not valid base64 or result length exceeded {expectedLength}." });
+            }
 
             if (bytesWritten != expectedLength)
+            {
                 return new ValidationResult<byte[]>(new[] { "Resulting byte array length not expected." });
+            }
 
             return new ValidationResult<byte[]>(buffer);
         }

@@ -175,13 +175,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf
                 return true;
             }
             if (!Equals(SignatureInfo, other.SignatureInfo))
+            {
                 return false;
+            }
+
             if (BatchNum != other.BatchNum)
+            {
                 return false;
+            }
+
             if (BatchSize != other.BatchSize)
+            {
                 return false;
+            }
+
             if (Signature != other.Signature)
+            {
                 return false;
+            }
+
             return Equals(_unknownFields, other._unknownFields);
         }
 
@@ -190,13 +202,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf
         {
             var hash = 1;
             if (_signatureInfo != null)
+            {
                 hash ^= SignatureInfo.GetHashCode();
+            }
+
             if (HasBatchNum)
+            {
                 hash ^= BatchNum.GetHashCode();
+            }
+
             if (HasBatchSize)
+            {
                 hash ^= BatchSize.GetHashCode();
+            }
+
             if (HasSignature)
+            {
                 hash ^= Signature.GetHashCode();
+            }
+
             if (_unknownFields != null)
             {
                 hash ^= _unknownFields.GetHashCode();

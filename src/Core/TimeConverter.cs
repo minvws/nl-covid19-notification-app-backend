@@ -16,7 +16,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public static int ToRollingStartNumber(this DateTime value)
         {
             if (value.Kind != DateTimeKind.Utc || value.Date != value)
+            {
                 throw new ArgumentException("Not UTC or not a date.");
+            }
 
             return value.ToUnixTime() / RollingPeriodFactor;
         }

@@ -74,7 +74,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         public byte[] Format(byte[] value)
         {
             if (value == null)
+            {
                 throw new ArgumentNullException(nameof(value));
+            }
 
             var r = new byte[32];
             var s = new byte[32];

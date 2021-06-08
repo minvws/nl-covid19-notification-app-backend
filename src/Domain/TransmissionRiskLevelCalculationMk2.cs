@@ -16,15 +16,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
         {
             //Keys before date of onset
             if (daysSinceOnsetSymptoms <= -3)
+            {
                 return TransmissionRiskLevel.None;
+            }
+
             if (daysSinceOnsetSymptoms <= significantDayRange.Lo)
+            {
                 return TransmissionRiskLevel.Medium;
+            }
+
             if (daysSinceOnsetSymptoms <= 2)
+            {
                 return TransmissionRiskLevel.High;
+            }
+
             if (daysSinceOnsetSymptoms <= 4)
+            {
                 return TransmissionRiskLevel.Medium;
+            }
+
             if (daysSinceOnsetSymptoms <= significantDayRange.Hi)
+            {
                 return TransmissionRiskLevel.Low;
+            }
+
             return TransmissionRiskLevel.None;
             //Keys after date of onset
         }

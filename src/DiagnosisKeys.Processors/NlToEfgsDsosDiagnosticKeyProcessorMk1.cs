@@ -17,7 +17,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
         public DkProcessingItem Execute(DkProcessingItem value)
         {
             if (!value.DiagnosisKey.Local.TransmissionRiskLevel.HasValue || !value.DiagnosisKey.Local.DaysSinceSymptomsOnset.HasValue)
+            {
                 throw new InvalidOperationException($"{nameof(NlToEfgsDsosDiagnosticKeyProcessorMk1)} requires TRL and DaysSinceSymptomsOnset.");
+            }
 
             var baseValue = new DosViaTrlDayRangeMidPointCalculation().Calculate(value.DiagnosisKey.Local.DaysSinceSymptomsOnset.Value);
             value.DiagnosisKey.Efgs.DaysSinceSymptomsOnset = new DsosEncodingService().EncodeSymptomaticOnsetDateUnknown(baseValue);

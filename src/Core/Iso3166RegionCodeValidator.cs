@@ -25,15 +25,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public bool IsValid(string code)
         {
             if (string.IsNullOrWhiteSpace(code))
+            {
                 return false;
+            }
 
             var parsed = code.Trim().ToUpper();
 
             if (code != parsed)
+            {
                 return false;
+            }
 
             if (parsed.Length != 2)
+            {
                 return false;
+            }
 
             return validValues.Contains(parsed);
         }

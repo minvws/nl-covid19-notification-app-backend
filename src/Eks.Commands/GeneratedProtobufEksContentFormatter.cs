@@ -21,7 +21,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         public byte[] GetBytes(ExposureKeySetContentArgs content)
         {
             if (content == null)
+            {
                 throw new ArgumentNullException(nameof(content));
+            }
 
             var result = new TemporaryExposureKeyExport
             {
@@ -56,7 +58,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         public byte[] GetBytes(ExposureKeySetSignaturesContentArgs arg)
         {
             if (arg == null)
+            {
                 throw new ArgumentNullException(nameof(arg));
+            }
+
             var result = new TEKSignatureList
             {
                 Signatures = { arg.Items.Select(Map).ToArray() }
@@ -79,7 +84,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private static SignatureInfo Map(SignatureInfoArgs arg)
         {
             if (arg == null)
+            {
                 throw new ArgumentNullException(nameof(arg)); //Cos its checking contents of a collection.
+            }
+
             return new SignatureInfo
             {
                 SignatureAlgorithm = arg.SignatureAlgorithm,

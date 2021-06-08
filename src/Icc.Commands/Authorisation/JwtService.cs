@@ -40,7 +40,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         public string Generate(ulong exp, Dictionary<string, object> claims)
         {
             if (claims == null)
+            {
                 throw new ArgumentNullException(nameof(claims));
+            }
             // any further validation of claims?
 
             var builder = CreateBuilder();
@@ -57,7 +59,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         public string Generate(IList<AuthClaim> claimsPrincipal)
         {
             if (claimsPrincipal == null)
+            {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
+            }
 
             var builder = CreateBuilder();
             builder.AddClaim("exp",
@@ -79,7 +83,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
             payload = new Dictionary<string, string>();
 
             if (string.IsNullOrWhiteSpace(token))
+            {
                 return false;
+            }
 
             try
             {

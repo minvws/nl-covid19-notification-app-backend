@@ -37,7 +37,9 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             if (services == null)
+            {
                 throw new ArgumentNullException(nameof(services));
+            }
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -75,7 +77,9 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
             services.AddCors();
 
             if (_isDev)
+            {
                 services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });
+            }
 
             services.Configure<CookiePolicyOptions>(options =>
             {

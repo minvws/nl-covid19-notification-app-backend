@@ -27,9 +27,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         public FilterResult<Tek> Execute(Tek[] values)
         {
             if (values == null)
+            {
                 throw new ArgumentNullException(nameof(values));
+            }
+
             if (values.Any(x => x == null))
+            {
                 throw new ArgumentException(nameof(values));
+            }
 
             var lowerInclusiveDate = _dateTimeProvider.Snapshot.Date - TimeSpan.FromDays(_config.MaxAgeDays);
             var lowerLimit = lowerInclusiveDate.ToRollingStartNumber();

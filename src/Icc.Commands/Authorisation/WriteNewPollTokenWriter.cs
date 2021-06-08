@@ -34,7 +34,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 
             var success = WriteAttempt(wf);
             while (!success)
+            {
                 success = WriteAttempt(wf);
+            }
 
             return wf.PollToken;
         }
@@ -42,10 +44,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         private bool WriteAttempt(TekReleaseWorkflowStateEntity wf)
         {
             if (++_attemptCount > AttemptCountMax)
+            {
                 throw new InvalidOperationException("Maximum attempts reached.");
+            }
 
             if (_attemptCount > 1)
+            {
                 _logger.WriteDuplicatePollTokenFound(_attemptCount);
+            }
 
             wf.PollToken = _pollTokenService.Next();
 
@@ -58,7 +64,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
             catch (DbUpdateException ex)
             {
                 if (CanRetry(ex))
+                {
                     return false;
+                }
 
                 throw;
             }
@@ -70,7 +78,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         private bool CanRetry(DbUpdateException ex)
         {
             if (!(ex.InnerException is SqlException sqlEx))
+            {
                 return false;
+            }
 
             var errors = new SqlError[sqlEx.Errors.Count];
             sqlEx.Errors.CopyTo(errors, 0);

@@ -33,7 +33,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
         public async Task<IActionResult> Token([FromBody] TokenAuthorisationArgs args, [FromServices] HttpPostAuthorizationTokenCommand command)
         {
             if (command == null)
+            {
                 throw new ArgumentNullException(nameof(command));
+            }
 
             _logger.WriteAuthStart();
             return await command.ExecuteAsync(HttpContext, args);

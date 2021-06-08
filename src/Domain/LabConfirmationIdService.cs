@@ -35,13 +35,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
         public string[] Validate(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
+            {
                 return new[] { "Value is null or empty." };
+            }
 
             if (value.Length != Length)
+            {
                 return new[] { "Value has incorrect length." };
+            }
 
             if (value.Any(x => !PermittedCharacters.Contains(x)))
+            {
                 return new[] { "Value contains invalid character." };
+            }
 
             return new string[0];
         }

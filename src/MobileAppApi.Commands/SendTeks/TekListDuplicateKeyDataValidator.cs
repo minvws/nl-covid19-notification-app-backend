@@ -14,7 +14,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             var comparer = new ByteArrayEqualityComparer();
             var distinctCount = values.Select(x => x.KeyData).Distinct(comparer).Count();
             if (values.Length != distinctCount)
+            {
                 return new[] { $"KeyData duplicate found - Count:{values.Length - distinctCount}." };
+            }
 
             return new string[0];
         }

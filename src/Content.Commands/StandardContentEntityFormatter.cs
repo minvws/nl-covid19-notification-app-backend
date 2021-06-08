@@ -28,9 +28,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         public async Task<TContentEntity> FillAsync<TContentEntity, TContent>(TContentEntity e, TContent c) where TContentEntity : ContentEntity
         {
             if (e == null)
+            {
                 throw new ArgumentNullException(nameof(e));
+            }
+
             if (c == null)
+            {
                 throw new ArgumentNullException(nameof(c));
+            }
 
             var contentJson = _jsonSerializer.Serialize(c);
             var contentBytes = Encoding.UTF8.GetBytes(contentJson);

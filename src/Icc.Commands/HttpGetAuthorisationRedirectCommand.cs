@@ -37,7 +37,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
         public async Task<IActionResult> ExecuteAsync(HttpContext httpContext)
         {
             if (httpContext == null)
+            {
                 throw new ArgumentNullException(nameof(httpContext));
+            }
 
             _logger.WriteRedirecting(httpContext.Request.Host.ToString());
 

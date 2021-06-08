@@ -114,7 +114,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                 .Select(x => new { x, Date = x.RollingStartNumber.FromRollingStartNumber() });
 
             foreach (var i in tekDates)
+            {
                 Trace.WriteLine($"RSN:{i.x.RollingStartNumber} Date:{i.Date:yyyy-MM-dd}.");
+            }
 
             var signature = HttpUtility.UrlEncode(HmacSigner.Sign(new byte[32], data));
             var content = new ByteArrayContent(data);

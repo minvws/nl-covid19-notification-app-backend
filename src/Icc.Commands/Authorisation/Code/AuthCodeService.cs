@@ -29,7 +29,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         public async Task<string> GenerateAuthCodeAsync(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null)
+            {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
+            }
 
             var authCode = _authCodeGenerator.Next();
 
@@ -47,7 +49,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         public async Task<List<AuthClaim>> GetClaimsByAuthCodeAsync(string authCode)
         {
             if (string.IsNullOrWhiteSpace(authCode))
+            {
                 throw new ArgumentException(nameof(authCode));
+            }
 
             List<AuthClaim> result = null;
 
@@ -65,7 +69,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         public async Task RevokeAuthCodeAsync(string authCode)
         {
             if (string.IsNullOrWhiteSpace(authCode))
+            {
                 throw new ArgumentException(nameof(authCode));
+            }
 
             await _cache.RemoveAsync(authCode);
         }

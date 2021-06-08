@@ -33,7 +33,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         public async Task<bool> VerifyTokenAsync(string accessToken)
         {
             if (accessToken == null)
+            {
                 throw new ArgumentNullException(nameof(accessToken));
+            }
+
             var requestUri = new Uri(_options.TheIdentityHubUrl, _options.VerifyTokenEndpoint);
             var response = await _options.Backchannel.SendAsync(
                 new HttpRequestMessage(HttpMethod.Get, requestUri)
@@ -49,7 +52,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
                 }).ConfigureAwait(false);
 
             if (response == null)
+            {
                 return false;
+            }
+
             var responseString = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {
@@ -78,7 +84,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         public async Task<bool> RevokeAccessTokenAsync(string accessToken)
         {
             if (accessToken == null)
+            {
                 throw new ArgumentNullException(nameof(accessToken));
+            }
+
             var requestUri = new Uri(_options.TheIdentityHubUrl, _options.Tenant + "/oauth2/v1/revoke");
 
             var payload = new List<KeyValuePair<string, string>>();

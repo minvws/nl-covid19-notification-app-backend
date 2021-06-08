@@ -35,7 +35,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
         public int Calculate(int actualDaysSinceOnsetSymptoms)
         {
             if (mapping.TryGetValue(actualDaysSinceOnsetSymptoms, out var result))
+            {
                 return result;
+            }
 
             throw new ArgumentOutOfRangeException(nameof(actualDaysSinceOnsetSymptoms), "Trl calculation and removal of TRL.None items must precede this calculation.");
         }

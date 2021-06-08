@@ -13,9 +13,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
         public async Task TruncateTableAsync(DbContext db, string tableName)
         {
             if (db == null)
+            {
                 throw new ArgumentNullException(nameof(db));
+            }
+
             if (string.IsNullOrWhiteSpace(tableName))
+            {
                 throw new ArgumentException(nameof(tableName));
+            }
+
             await db.Database.ExecuteSqlRawAsync($"TRUNCATE TABLE [dbo].[{tableName}];");
         }
     }

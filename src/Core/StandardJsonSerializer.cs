@@ -24,7 +24,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public TContent Deserialize<TContent>(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
+            {
                 throw new ArgumentException(nameof(input)); //Standardising.
+            }
 
             return JsonSerializer.Deserialize<TContent>(input, _serializerOptions);
         }

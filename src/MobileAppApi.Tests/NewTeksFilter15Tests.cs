@@ -40,7 +40,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
             set
             {
                 if (value <= _t)
+                {
                     throw new ArgumentOutOfRangeException();
+                }
+
                 _t = value;
             }
         }
@@ -72,10 +75,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
         private void Write(TekReleaseWorkflowStateEntity workflow, Tek[] arts)
         {
             if (!_workflows.Contains(workflow))
+            {
                 _workflows.Add(workflow);
+            }
 
             foreach (var i in arts.Select(Mapper.MapToEntity))
+            {
                 workflow.Teks.Add(i);
+            }
         }
 
         Tek GenerateTek(int m, int d, int q)

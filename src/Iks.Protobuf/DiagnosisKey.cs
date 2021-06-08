@@ -193,21 +193,45 @@ namespace Iks.Protobuf
                 return true;
             }
             if (KeyData != other.KeyData)
+            {
                 return false;
+            }
+
             if (RollingStartIntervalNumber != other.RollingStartIntervalNumber)
+            {
                 return false;
+            }
+
             if (RollingPeriod != other.RollingPeriod)
+            {
                 return false;
+            }
+
             if (TransmissionRiskLevel != other.TransmissionRiskLevel)
+            {
                 return false;
+            }
+
             if (!_visitedCountries.Equals(other._visitedCountries))
+            {
                 return false;
+            }
+
             if (Origin != other.Origin)
+            {
                 return false;
+            }
+
             if (ReportType != other.ReportType)
+            {
                 return false;
+            }
+
             if (DaysSinceOnsetOfSymptoms != other.DaysSinceOnsetOfSymptoms)
+            {
                 return false;
+            }
+
             return Equals(_unknownFields, other._unknownFields);
         }
 
@@ -216,20 +240,41 @@ namespace Iks.Protobuf
         {
             var hash = 1;
             if (KeyData.Length != 0)
+            {
                 hash ^= KeyData.GetHashCode();
+            }
+
             if (RollingStartIntervalNumber != 0)
+            {
                 hash ^= RollingStartIntervalNumber.GetHashCode();
+            }
+
             if (RollingPeriod != 0)
+            {
                 hash ^= RollingPeriod.GetHashCode();
+            }
+
             if (TransmissionRiskLevel != 0)
+            {
                 hash ^= TransmissionRiskLevel.GetHashCode();
+            }
+
             hash ^= _visitedCountries.GetHashCode();
             if (Origin.Length != 0)
+            {
                 hash ^= Origin.GetHashCode();
+            }
+
             if (ReportType != global::Iks.Protobuf.EfgsReportType.Unknown)
+            {
                 hash ^= ReportType.GetHashCode();
+            }
+
             if (DaysSinceOnsetOfSymptoms != 0)
+            {
                 hash ^= DaysSinceOnsetOfSymptoms.GetHashCode();
+            }
+
             if (_unknownFields != null)
             {
                 hash ^= _unknownFields.GetHashCode();

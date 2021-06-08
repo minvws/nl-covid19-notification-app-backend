@@ -48,7 +48,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         public async Task<SnapshotWorkflowTeksToDksResult> ExecuteAsync()
         {
             if (_result != null)
+            {
                 throw new InvalidOperationException();
+            }
 
             _result = new SnapshotWorkflowTeksToDksResult();
             await ClearJobTablesAsync();

@@ -138,7 +138,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => logger.WriteFinished());
 
             foreach (var i in run)
+            {
                 i();
+            }
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)

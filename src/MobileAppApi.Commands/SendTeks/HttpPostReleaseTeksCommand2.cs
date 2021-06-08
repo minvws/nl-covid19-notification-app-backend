@@ -168,7 +168,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             _logger.WriteDbWriteCommitted();
 
             if (filterResults.Items.Length != 0)
+            {
                 _logger.WriteTekCountAdded(filterResults.Items.Length);
+            }
         }
     }
 }

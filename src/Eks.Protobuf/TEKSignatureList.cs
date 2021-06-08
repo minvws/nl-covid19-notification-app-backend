@@ -77,7 +77,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf
                 return true;
             }
             if (!_signatures.Equals(other._signatures))
+            {
                 return false;
+            }
+
             return Equals(_unknownFields, other._unknownFields);
         }
 

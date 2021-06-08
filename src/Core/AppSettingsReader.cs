@@ -17,15 +17,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
             _config = config ?? throw new ArgumentNullException(nameof(config));
 
             if (string.IsNullOrWhiteSpace(prefix) || prefix != prefix.Trim())
+            {
                 _prefix = string.Empty;
+            }
             else
+            {
                 _prefix = prefix + ":";
+            }
         }
 
         protected T GetConfigValue<T>(string path, T defaultValue)
         {
             if (string.IsNullOrWhiteSpace(path))
+            {
                 throw new ArgumentException(nameof(path));
+            }
 
             return _config.GetValue($"{_prefix}{path}", defaultValue);
         }
@@ -33,12 +39,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         protected T GetConfigValue<T>(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
+            {
                 throw new ArgumentException(nameof(path));
+            }
 
             var key = $"{_prefix}{path}";
 
             if (_config[key] == null)
+            {
                 throw new MissingConfigurationValueException(key);
+            }
 
             return _config.GetValue<T>(key);
         }

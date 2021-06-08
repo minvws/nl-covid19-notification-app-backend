@@ -82,7 +82,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<SuppressErrorLoggingExtensions>();
 
             if (_isDev)
+            {
                 services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });
+            }
         }
 
         public void Configure(IApplicationBuilder app)

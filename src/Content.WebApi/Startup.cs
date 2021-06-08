@@ -36,7 +36,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             if (services == null)
+            {
                 throw new ArgumentNullException(nameof(services));
+            }
+
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
@@ -62,7 +65,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
             services.AddSingleton<GetCdnContentLoggingExtensions>();
 
             if (_isDev)
+            {
                 services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });
+            }
         }
 
         public void Configure(IApplicationBuilder app)

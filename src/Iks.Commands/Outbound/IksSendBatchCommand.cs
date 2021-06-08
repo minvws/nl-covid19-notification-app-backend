@@ -53,7 +53,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             }
 
             foreach (var t in _todo)
+            {
                 await ProcessOne(t);
+            }
 
             return new IksSendBatchResult
             {

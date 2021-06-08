@@ -26,7 +26,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         public async Task<bool> ValidateAsync(IDictionary<string, string> decodedClaims)
         {
             if (decodedClaims == null)
+            {
                 throw new ArgumentNullException(nameof(decodedClaims));
+            }
 
             if (!decodedClaims.ContainsKey("access_token"))
             {

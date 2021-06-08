@@ -15,7 +15,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         {
             using var entryStream = zip.GetEntry(entryName)?.Open();
             if (entryStream == null)
+            {
                 throw new InvalidOperationException("Entry not found.");
+            }
+
             using var result = new MemoryStream();
             entryStream?.CopyTo(result);
             return result.ToArray();

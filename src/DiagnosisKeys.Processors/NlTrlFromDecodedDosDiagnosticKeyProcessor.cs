@@ -23,7 +23,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
         public DkProcessingItem Execute(DkProcessingItem value)
         {
             if (value == null)
+            {
                 return value;
+            }
 
             if (!value.Metadata.TryGetValue(DosDecodingDiagnosticKeyProcessor.DecodedDsosMetadataKey, out var decodedDos))
             {
@@ -45,10 +47,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
                 var symptomaticValue = value.AsSymptomatic();
 
                 if (symptomaticValue.SymptomsOnsetDatePrecision == SymptomsOnsetDatePrecision.Exact)
+                {
                     return _trlCalculation.Calculate(symptomaticValue.DaysSinceOnsetOfSymptoms);
+                }
 
                 if (symptomaticValue.SymptomsOnsetDatePrecision == SymptomsOnsetDatePrecision.Range)
+                {
                     return GetTrl(symptomaticValue.DaysSinceLastSymptoms);
+                }
             }
 
             //Default
@@ -64,7 +70,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
             }
 
             if (result.All(x => x == TransmissionRiskLevel.None))
+            {
                 return TransmissionRiskLevel.None;
+            }
 
             return result.Max();
         }

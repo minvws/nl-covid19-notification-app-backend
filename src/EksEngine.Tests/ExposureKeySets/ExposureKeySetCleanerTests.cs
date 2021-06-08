@@ -131,7 +131,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var contentDbContext = _contentDbProvider.CreateNew();
 
             for (var i = 0; i < 20; i++)
+            {
                 Add(contentDbContext, i);
+            }
 
             contentDbContext.SaveChanges();
 

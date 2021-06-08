@@ -26,7 +26,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         public RemovePublishedDiagnosisKeysResult Execute()
         {
             if (_result != null)
+            {
                 throw new InvalidOperationException("Object already used.");
+            }
 
             _result = new RemovePublishedDiagnosisKeysResult();
 

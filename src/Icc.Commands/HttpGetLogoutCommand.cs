@@ -29,13 +29,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
         public async Task<IActionResult> ExecuteAsync(HttpContext httpContext)
         {
             if (httpContext == null)
+            {
                 throw new ArgumentNullException(nameof(httpContext));
+            }
 
             var accessToken = httpContext.User?.Claims
                 .FirstOrDefault((c => c.Type == TheIdentityHubClaimTypes.AccessToken))
                 ?.Value;
             if (accessToken != null)
+            {
                 await _theIdentityHubService.RevokeAccessTokenAsync(accessToken);
+            }
 
             httpContext.Response.Cookies.Delete(".AspNetCore.Cookies");
             await httpContext.SignOutAsync();

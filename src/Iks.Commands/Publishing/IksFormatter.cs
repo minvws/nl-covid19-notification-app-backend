@@ -18,9 +18,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
         public byte[] Format(InteropKeyFormatterArgs[] args)
         {
             if (args == null)
+            {
                 throw new ArgumentNullException(nameof(args));
+            }
+
             if (args.Any(x => x == null))
+            {
                 throw new ArgumentException("At least one element is null.", nameof(args));
+            }
 
             var result = new DiagnosisKeyBatch();
             result.Keys.AddRange(args.Select(Map));

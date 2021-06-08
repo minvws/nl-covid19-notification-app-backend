@@ -36,7 +36,9 @@ namespace DbProvision
             services.GetRequiredService<DatabaseProvisioner>().ExecuteAsync(args).GetAwaiter().GetResult();
 
             if (args.Length < 2)
+            {
                 return; // No ContentPublisher arguments given
+            }
 
             for (var i = 0; i < args.Length; i++)
             {

@@ -80,7 +80,10 @@ namespace Iks.Protobuf
                 return true;
             }
             if (!_keys.Equals(other._keys))
+            {
                 return false;
+            }
+
             return Equals(_unknownFields, other._unknownFields);
         }
 

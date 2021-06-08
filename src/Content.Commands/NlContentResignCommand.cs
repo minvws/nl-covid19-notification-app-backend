@@ -61,7 +61,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             _logger.WriteReport(todo);
 
             foreach (var i in todo)
+            {
                 await ReSignAsync(i);
+            }
 
             _logger.WriteFinished();
         }

@@ -36,7 +36,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         public async Task<ContentEntity> ExecuteAsync(HttpContext httpContext, string type, string id)
         {
             if (httpContext == null)
+            {
                 throw new ArgumentNullException(nameof(httpContext));
+            }
 
             if (!ContentTypes.IsValid(type))
             {

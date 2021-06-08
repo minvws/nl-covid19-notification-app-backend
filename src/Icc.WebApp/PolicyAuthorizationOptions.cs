@@ -51,7 +51,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
         public void Build(AuthorizationOptions options)
         {
             if (options == null)
+            {
                 throw new ArgumentNullException(nameof(options));
+            }
 
             if (_iccPortalConfig.StrictRolePolicyEnabled)
             {

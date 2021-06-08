@@ -27,7 +27,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         public byte[] GetSignature(byte[] content)
         {
             if (content == null)
+            {
                 throw new ArgumentNullException(nameof(content));
+            }
 
             //using var hasher = SHA256.Create();
             //var hash = hasher.ComputeHash(content);
@@ -35,7 +37,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             var cert = _provider.GetCertificate();
 
             if (cert == null)
+            {
                 throw new InvalidOperationException("Certificate not found");
+            }
 
             //Should be 70 or so but not fixed length
             //Adds X.962 packaging?
