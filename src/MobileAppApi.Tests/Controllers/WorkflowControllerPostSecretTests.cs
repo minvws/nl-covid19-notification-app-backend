@@ -26,20 +26,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
     [ExclusivelyUses(nameof(WorkflowControllerPostSecretTests))]
     public abstract class WorkflowControllerPostSecretTests : WebApplicationFactory<Startup>, IDisposable
     {
-        private readonly WebApplicationFactory<Startup> _Factory;
-        private readonly FakeNumberGen _FakeNumbers = new FakeNumberGen();
-        private readonly IDbProvider<WorkflowDbContext> _WorkflowDbProvider;
+        private readonly WebApplicationFactory<Startup> _factory;
+        private readonly FakeNumberGen _fakeNumbers = new FakeNumberGen();
+        private readonly IDbProvider<WorkflowDbContext> _workflowDbProvider;
 
         protected WorkflowControllerPostSecretTests(IDbProvider<WorkflowDbContext> workflowDbProvider)
         {
-            _WorkflowDbProvider = workflowDbProvider;
-            _Factory = WithWebHostBuilder(
+            _workflowDbProvider = workflowDbProvider;
+            _factory = WithWebHostBuilder(
                 builder =>
                 {
                     builder.ConfigureTestServices(services =>
                     {
-                        services.AddScoped(sp => _WorkflowDbProvider.CreateNewWithTx());
-                        services.Replace(new ServiceDescriptor(typeof(IRandomNumberGenerator), _FakeNumbers));
+                        services.AddScoped(sp => _workflowDbProvider.CreateNewWithTx());
+                        services.Replace(new ServiceDescriptor(typeof(IRandomNumberGenerator), _fakeNumbers));
                         services.AddTransient<DecoyTimeAggregatorAttribute>();
                     });
 
@@ -80,15 +80,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         public async Task PostSecretTest_EmptyDb(string endpoint)
         {
             // Arrange
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
 
-            _FakeNumbers.Value = 1;
+            _fakeNumbers.Value = 1;
 
             // Act
             var result = await client.PostAsync(endpoint, null);
 
             // Assert
-            var items = await _WorkflowDbProvider.CreateNew().KeyReleaseWorkflowStates.ToListAsync();
+            var items = await _workflowDbProvider.CreateNew().KeyReleaseWorkflowStates.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Single(items);
         }
@@ -121,12 +121,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                 { "v2", "{\"ggdKey\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}"}
             };
 
-            using var dbContext = _WorkflowDbProvider.CreateNew();
+            using var dbContext = _workflowDbProvider.CreateNew();
             dbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
             dbContext.SaveChanges();
             // Arrange
-            var client = _Factory.CreateClient();
-            _FakeNumbers.Value = 1;
+            var client = _factory.CreateClient();
+            _fakeNumbers.Value = 1;
 
             // Act
             var result = await client.PostAsync($"{endpoint}/register", null);
@@ -141,13 +141,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         [ExclusivelyUses("WorkflowControllerPostSecretTests")]
         public async Task PostSecret_MissThe5Existing(string endpoint)
         {
-            using var dbContext = _WorkflowDbProvider.CreateNew();
+            using var dbContext = _workflowDbProvider.CreateNew();
             dbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
             dbContext.SaveChanges();
 
-            _FakeNumbers.Value = 6;
+            _fakeNumbers.Value = 6;
             // Arrange
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
 
             // Act
             var result = await client.PostAsync(endpoint, null);
@@ -164,7 +164,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         public async Task Register_has_padding(string endpoint)
         {
             // Arrange
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
 
             // Act
             var result = await client.PostAsync(endpoint, null);

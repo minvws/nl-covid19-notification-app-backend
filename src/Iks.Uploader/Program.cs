@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
                 new ConsoleAppRunner().Execute(args, Configure, Start);
                 return 0;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return -1;
             }
@@ -62,7 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
             services.AddSingleton<IksUploaderLoggingExtensions>();
-            
+
             // IKS Signing
             services.AddTransient<IIksSigner, EfgsCmsSigner>();
             services.AddTransient<IEmbeddedResourceCertificateConfig, EmbeddedResourceCertificateConfig>();
@@ -73,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
                         x.GetRequiredService<IConfiguration>(), "Certificates:EfgsSigning"),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
                 ));
-            
+
             // Authentication (with certs)
             services
                 .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)

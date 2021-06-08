@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     {
         private const string Prefix = nameof(TekToDkSnapshotTests) + "_";
         public TekToDkSnapshotTestsSqlServer() : base(
-            new SqlServerDbProvider<WorkflowDbContext>(Prefix+"W"),
+            new SqlServerDbProvider<WorkflowDbContext>(Prefix + "W"),
             new SqlServerDbProvider<DkSourceDbContext>(Prefix + "D"),
             new SqlServerWrappedEfExtensions()
         )

@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 
         public DateTime Now() => DateTime.UtcNow;
 
-        
+
         /// <summary>
         /// Time of start of transaction scope
         /// </summary>

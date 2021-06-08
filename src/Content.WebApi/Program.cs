@@ -17,7 +17,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseSerilog((context, config) => {
+                .UseSerilog((context, config) =>
+                {
                     config.ReadFrom.Configuration(context.Configuration);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

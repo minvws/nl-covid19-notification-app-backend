@@ -8,17 +8,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
 {
     public class OriginBuilder
     {
-        private readonly Uri _BaseUrl;
-        
+        private readonly Uri _baseUrl;
+
         public OriginBuilder(string baseUrl)
         {
-            _BaseUrl = new Uri(baseUrl);
+            _baseUrl = new Uri(baseUrl);
         }
 
         public string GetOrigin()
         {
-            var portAppendix = ((_BaseUrl.Port != 80 && _BaseUrl.Port != 443) ? ":" + _BaseUrl.Port : "");
-            return $"{_BaseUrl.Scheme}://{_BaseUrl.Host}{portAppendix}";
+            var portAppendix = ((_baseUrl.Port != 80 && _baseUrl.Port != 443) ? ":" + _baseUrl.Port : "");
+            return $"{_baseUrl.Scheme}://{_baseUrl.Host}{portAppendix}";
         }
     }
 }

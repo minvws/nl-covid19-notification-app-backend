@@ -14,9 +14,9 @@ namespace SigTestFileCreator
 {
     public sealed class SigTesterService
     {
-        private readonly IEksBuilder _EksZipBuilder;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly SigTestFileCreatorLoggingExtensions _Logger;
+        private readonly IEksBuilder _eksZipBuilder;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly SigTestFileCreatorLoggingExtensions _logger;
 
         private byte[] _fileContents;
         private string _fileInputLocation;
@@ -28,17 +28,17 @@ namespace SigTestFileCreator
             SigTestFileCreatorLoggingExtensions logger
             )
         {
-            _EksZipBuilder = eksZipBuilder ?? throw new ArgumentNullException(nameof(eksZipBuilder));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            
+            _eksZipBuilder = eksZipBuilder ?? throw new ArgumentNullException(nameof(eksZipBuilder));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
             _fileInputLocation = @"H:\test.txt";
             _eksFileOutputLocation = @"H:\testresult-eks.zip";
         }
 
         public async Task ExecuteAsync(string[] args)
         {
-            _Logger.WriteStart(_DateTimeProvider.Snapshot);
+            _logger.WriteStart(_dateTimeProvider.Snapshot);
 
             if (args.Length > 1)
             {
@@ -46,23 +46,25 @@ namespace SigTestFileCreator
             }
             else if (args.Length == 1)
             {
-                var CleanedInput = args[0].Trim();
-                var FilePathWithoutExtension = CleanedInput.Substring(0, CleanedInput.LastIndexOf('.'));
+                var cleanedInput = args[0].Trim();
+                var filePathWithoutExtension = cleanedInput.Substring(0, cleanedInput.LastIndexOf('.'));
 
-                _fileInputLocation = CleanedInput;
-                _eksFileOutputLocation = FilePathWithoutExtension + "-eks" + ".Zip";
+                _fileInputLocation = cleanedInput;
+                _eksFileOutputLocation = filePathWithoutExtension + "-eks" + ".Zip";
             }
 
             if (Environment.UserInteractive && !WindowsIdentityQueries.CurrentUserIsAdministrator())
-                _Logger.WriteNoElevatedPrivs();
+            {
+                _logger.WriteNoElevatedPrivs();
+            }
 
             LoadFile(_fileInputLocation);
             var eksZipOutput = await BuildEksOutputAsync();
-            
-            _Logger.WriteSavingResultfile();
+
+            _logger.WriteSavingResultfile();
             ExportOutput(_eksFileOutputLocation, eksZipOutput);
 
-            _Logger.WriteFinished(_eksFileOutputLocation);
+            _logger.WriteFinished(_eksFileOutputLocation);
         }
 
         private void LoadFile(string filename)
@@ -91,7 +93,7 @@ namespace SigTestFileCreator
 
         private async Task<byte[]> BuildEksOutputAsync()
         {
-            _Logger.WriteBuildingResultFile();
+            _logger.WriteBuildingResultFile();
 
             var args = new TemporaryExposureKeyArgs[]
             {
@@ -102,8 +104,8 @@ namespace SigTestFileCreator
                     RollingStartNumber = default(int)
                 }
             };
-            
-            return await _EksZipBuilder.BuildAsync(args);
+
+            return await _eksZipBuilder.BuildAsync(args);
         }
     }
 }

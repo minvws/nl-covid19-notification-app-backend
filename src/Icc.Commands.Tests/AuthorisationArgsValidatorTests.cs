@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
             // Assemble
             var dtp = new StandardUtcDateTimeProvider();
             var validator = new AuthorisationArgsValidator(new LabConfirmationIdService(new StandardRandomNumberGenerator()), dtp);
-            var args = new AuthorisationArgs {LabConfirmationId = labConfirmationId, DateOfSymptomsOnset = dtp.Snapshot};
+            var args = new AuthorisationArgs { LabConfirmationId = labConfirmationId, DateOfSymptomsOnset = dtp.Snapshot };
 
             // Act
             var result = validator.Validate(args);

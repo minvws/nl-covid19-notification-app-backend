@@ -8,11 +8,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
     public class BatchTagProvider : IBatchTagProvider
     {
-        private readonly Sha256HexPublishingIdService _Imp = new Sha256HexPublishingIdService();
+        private readonly Sha256HexPublishingIdService _imp = new Sha256HexPublishingIdService();
 
         public string Create(byte[] content)
         {
-            return _Imp.Create(content);
+            return _imp.Create(content);
         }
     }
 }

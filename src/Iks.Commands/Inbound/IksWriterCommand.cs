@@ -12,13 +12,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 {
     public class IksWriterCommand : IIksWriterCommand
     {
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly IksInDbContext _DbContext;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly IksInDbContext _dbContext;
 
         public IksWriterCommand(IUtcDateTimeProvider dateTimeProvider, IksInDbContext dbContext)
         {
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
         public async Task Execute(IksWriteArgs args)
@@ -27,12 +27,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             {
                 BatchTag = args.BatchTag,
                 Content = args.Content,
-                Created = _DateTimeProvider.Snapshot
+                Created = _dateTimeProvider.Snapshot
                 //Received = ? Not sure we need this cos its just a log.
             };
 
-            await _DbContext.Received.AddAsync(e);
-            await _DbContext.SaveChangesAsync();
+            await _dbContext.Received.AddAsync(e);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

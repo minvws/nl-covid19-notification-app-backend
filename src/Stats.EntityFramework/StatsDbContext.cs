@@ -19,7 +19,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.EntityFramework
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
+            if (modelBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(modelBuilder));
+            }
 
             modelBuilder.Entity<StatisticsEntryEntity>().HasIndex(u => u.Created);
             modelBuilder.Entity<StatisticsEntryEntity>().HasIndex(u => u.Name);

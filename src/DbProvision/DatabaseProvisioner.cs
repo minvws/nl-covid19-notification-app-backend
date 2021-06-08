@@ -19,17 +19,17 @@ namespace DbProvision
 {
     public class DatabaseProvisioner
     {
-        private readonly DbProvisionLoggingExtensions _Logger;
+        private readonly DbProvisionLoggingExtensions _logger;
 
-        private readonly WorkflowDbContext _WorkflowDbContext;
-        private readonly ContentDbContext _ContentDbContext;
-        private readonly EksPublishingJobDbContext _EksPublishingJobDbContext;
-        private readonly DataProtectionKeysDbContext _DataProtectionKeysDbContext;
-        private readonly StatsDbContext _StatsDbContext;
-        private readonly DkSourceDbContext _DkSourceDbContext;
-        private readonly IksInDbContext _IksInDbContext;
-        private readonly IksOutDbContext _IksOutDbContext;
-        private readonly IksPublishingJobDbContext _IksPublishingJobDbContext ;
+        private readonly WorkflowDbContext _workflowDbContext;
+        private readonly ContentDbContext _contentDbContext;
+        private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
+        private readonly DataProtectionKeysDbContext _dataProtectionKeysDbContext;
+        private readonly StatsDbContext _statsDbContext;
+        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly IksInDbContext _iksInDbContext;
+        private readonly IksOutDbContext _iksOutDbContext;
+        private readonly IksPublishingJobDbContext _iksPublishingJobDbContext;
 
         public DatabaseProvisioner(DbProvisionLoggingExtensions logger,
             WorkflowDbContext workflowDbContext,
@@ -42,16 +42,16 @@ namespace DbProvision
             IksOutDbContext iksOutDbContext,
             IksPublishingJobDbContext iksPublishingJobDbContext)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _WorkflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
-            _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
-            _EksPublishingJobDbContext = eksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContext));
-            _DataProtectionKeysDbContext = dataProtectionKeysDbContext ?? throw new ArgumentNullException(nameof(dataProtectionKeysDbContext));
-            _StatsDbContext = statsDbContext ?? throw new ArgumentNullException(nameof(statsDbContext));
-            _DkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
-            _IksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
-            _IksOutDbContext = iksOutDbContext ?? throw new ArgumentNullException(nameof(iksOutDbContext));
-            _IksPublishingJobDbContext = iksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(iksPublishingJobDbContext));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
+            _contentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
+            _eksPublishingJobDbContext = eksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContext));
+            _dataProtectionKeysDbContext = dataProtectionKeysDbContext ?? throw new ArgumentNullException(nameof(dataProtectionKeysDbContext));
+            _statsDbContext = statsDbContext ?? throw new ArgumentNullException(nameof(statsDbContext));
+            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
+            _iksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
+            _iksOutDbContext = iksOutDbContext ?? throw new ArgumentNullException(nameof(iksOutDbContext));
+            _iksPublishingJobDbContext = iksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(iksPublishingJobDbContext));
 
         }
 
@@ -59,117 +59,117 @@ namespace DbProvision
         {
             var nuke = !args.Contains("nonuke");
 
-            _Logger.WriteStart();
+            _logger.WriteStart();
 
-            _Logger.WriteWorkFlowDb();
+            _logger.WriteWorkFlowDb();
             await ProvisionWorkflow(nuke);
 
-            _Logger.WriteContentDb();
+            _logger.WriteContentDb();
             await ProvisionContent(nuke);
 
-            _Logger.WriteJobDb();
+            _logger.WriteJobDb();
             await ProvisionEksPublishingJob(nuke);
 
-            _Logger.WriteDataProtectionKeysDb();
+            _logger.WriteDataProtectionKeysDb();
             await ProvisionDataProtectionKeys(nuke);
 
-            _Logger.WriteStatsDb();
+            _logger.WriteStatsDb();
             await ProvisionStats(nuke);
 
-            _Logger.WriteDkSourceDb();
+            _logger.WriteDkSourceDb();
             await ProvisionDkSource(nuke);
 
-            _Logger.WriteIksInDb();
+            _logger.WriteIksInDb();
             await ProvisionIksIn(nuke);
 
-            _Logger.WriteIksOutDb();
+            _logger.WriteIksOutDb();
             await ProvisionIksOut(nuke);
 
-            _Logger.WriteIksPublishingJobDb();
+            _logger.WriteIksPublishingJobDb();
             await ProvisionIksPublishingJob(nuke);
 
-            _Logger.WriteFinished();
+            _logger.WriteFinished();
         }
 
         private async Task ProvisionWorkflow(bool nuke)
         {
             if (nuke)
             {
-                await _WorkflowDbContext.Database.EnsureDeletedAsync();
+                await _workflowDbContext.Database.EnsureDeletedAsync();
             }
-            await _WorkflowDbContext.Database.EnsureCreatedAsync();
+            await _workflowDbContext.Database.EnsureCreatedAsync();
         }
 
         private async Task ProvisionContent(bool nuke)
         {
             if (nuke)
             {
-                await _ContentDbContext.Database.EnsureDeletedAsync();
+                await _contentDbContext.Database.EnsureDeletedAsync();
             }
-            await _ContentDbContext.Database.EnsureCreatedAsync();
+            await _contentDbContext.Database.EnsureCreatedAsync();
         }
 
         private async Task ProvisionEksPublishingJob(bool nuke)
         {
             if (nuke)
             {
-                await _EksPublishingJobDbContext.Database.EnsureDeletedAsync();
+                await _eksPublishingJobDbContext.Database.EnsureDeletedAsync();
             }
-            await _EksPublishingJobDbContext.Database.EnsureCreatedAsync();
+            await _eksPublishingJobDbContext.Database.EnsureCreatedAsync();
         }
 
         private async Task ProvisionDataProtectionKeys(bool nuke)
         {
             if (nuke)
             {
-                await _DataProtectionKeysDbContext.Database.EnsureDeletedAsync();
+                await _dataProtectionKeysDbContext.Database.EnsureDeletedAsync();
             }
-            await _DataProtectionKeysDbContext.Database.EnsureCreatedAsync();
+            await _dataProtectionKeysDbContext.Database.EnsureCreatedAsync();
         }
 
         private async Task ProvisionStats(bool nuke)
         {
             if (nuke)
             {
-                await _StatsDbContext.Database.EnsureDeletedAsync();
+                await _statsDbContext.Database.EnsureDeletedAsync();
             }
-            await _StatsDbContext.Database.EnsureCreatedAsync();
+            await _statsDbContext.Database.EnsureCreatedAsync();
         }
 
         private async Task ProvisionDkSource(bool nuke)
         {
             if (nuke)
             {
-                await _DkSourceDbContext.Database.EnsureDeletedAsync();
+                await _dkSourceDbContext.Database.EnsureDeletedAsync();
             }
-            await _DkSourceDbContext.Database.EnsureCreatedAsync();
+            await _dkSourceDbContext.Database.EnsureCreatedAsync();
         }
 
         private async Task ProvisionIksIn(bool nuke)
         {
             if (nuke)
             {
-                await _IksInDbContext.Database.EnsureDeletedAsync();
+                await _iksInDbContext.Database.EnsureDeletedAsync();
             }
-            await _IksInDbContext.Database.EnsureCreatedAsync();
+            await _iksInDbContext.Database.EnsureCreatedAsync();
         }
 
         private async Task ProvisionIksOut(bool nuke)
         {
             if (nuke)
             {
-                await _IksOutDbContext.Database.EnsureDeletedAsync();
+                await _iksOutDbContext.Database.EnsureDeletedAsync();
             }
-            await _IksOutDbContext.Database.EnsureCreatedAsync();
+            await _iksOutDbContext.Database.EnsureCreatedAsync();
         }
 
         private async Task ProvisionIksPublishingJob(bool nuke)
         {
             if (nuke)
             {
-                await _IksPublishingJobDbContext.Database.EnsureDeletedAsync();
+                await _iksPublishingJobDbContext.Database.EnsureDeletedAsync();
             }
-            await _IksPublishingJobDbContext.Database.EnsureCreatedAsync();
+            await _iksPublishingJobDbContext.Database.EnsureCreatedAsync();
         }
     }
 }

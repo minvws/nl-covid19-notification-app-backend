@@ -23,16 +23,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private const int MaximumCreateAttemptsReached = Base + 4;
         private const int Failed = Base + 5;
 
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
 
         public RegisterSecretLoggingExtensionsV2(ILogger<RegisterSecretLoggingExtensionsV2> logger)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void WriteStartSecret()
         {
-            _Logger.LogInformation("[{name}/{id}] POST register triggered.",
+            _logger.LogInformation("[{name}/{id}] POST register triggered.",
                 Name, Start);
         }
 
@@ -43,38 +43,38 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
                 throw new ArgumentNullException(nameof(exception));
             }
 
-            _Logger.LogCritical(exception, "[{name}/{id}] Failed to create an enrollment response.",
+            _logger.LogCritical(exception, "[{name}/{id}] Failed to create an enrollment response.",
                 Name, Failed);
         }
 
         public void WriteWritingStart()
         {
-            _Logger.LogDebug("[{name}/{id}] Writing.",
+            _logger.LogDebug("[{name}/{id}] Writing.",
                 Name, Writing);
         }
 
         public void WriteDuplicatesFound(int attemptCount)
         {
-            _Logger.LogWarning("[{name}/{id}] Duplicates found while creating workflow - Attempt:{AttemptCount}",
+            _logger.LogWarning("[{name}/{id}] Duplicates found while creating workflow - Attempt:{AttemptCount}",
                 Name, DuplicatesFound,
                 attemptCount);
         }
 
         public void WriteMaximumCreateAttemptsReached()
         {
-            _Logger.LogCritical("[{name}/{id}] Maximum attempts made at creating workflow.",
+            _logger.LogCritical("[{name}/{id}] Maximum attempts made at creating workflow.",
                 Name, MaximumCreateAttemptsReached);
         }
 
         public void WriteCommitted()
         {
-            _Logger.LogDebug("[{name}/{id}] Committed.",
+            _logger.LogDebug("[{name}/{id}] Committed.",
                 Name, Committed);
         }
 
         public void WriteFinished()
         {
-            _Logger.LogDebug("[{name}/{id}] Finished.",
+            _logger.LogDebug("[{name}/{id}] Finished.",
                 Name, Finished);
         }
     }

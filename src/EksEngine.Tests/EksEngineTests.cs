@@ -83,7 +83,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 _workflowDbProvider.CreateNew,
                 _dkSourceDbProvider.CreateNew,
                 _efExtensions,
-                new IDiagnosticKeyProcessor[] {}
+                new IDiagnosticKeyProcessor[] { }
             );
 
             var countriesOut = new Mock<IOutboundFixedCountriesOfInterestSetting>();

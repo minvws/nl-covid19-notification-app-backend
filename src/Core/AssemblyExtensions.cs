@@ -9,7 +9,7 @@ using System.Reflection;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public static class AssemblyExtensions
-    { 
+    {
         public static T GetCustomAttribute<T>(this Assembly assembly) where T : Attribute
             => (T)assembly.GetCustomAttributes(typeof(T), false).FirstOrDefault();
 
@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 
         public static string[] Dump(this Assembly assembly)
         {
-            return new []
+            return new[]
             {
                 $"Title: { assembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? Default}",
                 //$"Version: { assembly.GetCustomAttribute<AssemblyVersionAttribute>()?.Version ?? Default}",

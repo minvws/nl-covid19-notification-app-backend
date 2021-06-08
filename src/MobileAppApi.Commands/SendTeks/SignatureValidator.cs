@@ -12,9 +12,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
     {
         public bool Valid(byte[] signature, byte[] confirmationKey, byte[] data)
         {
-            if (signature == null) throw new ArgumentNullException(nameof(signature));
-            if (confirmationKey == null) throw new ArgumentNullException(nameof(confirmationKey));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (signature == null)
+            {
+                throw new ArgumentNullException(nameof(signature));
+            }
+
+            if (confirmationKey == null)
+            {
+                throw new ArgumentNullException(nameof(confirmationKey));
+            }
+
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
 
             using var hmac = new HMACSHA256(confirmationKey);
             var hash = hmac.ComputeHash(data);

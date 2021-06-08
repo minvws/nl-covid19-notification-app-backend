@@ -36,7 +36,10 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
         }
         public void ConfigureServices(IServiceCollection services)
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -48,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
             services.AddHttpContextAccessor();
 
             services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            
+
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
 
             services.AddDistributedSqlServerCache(options =>
@@ -58,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
                 options.TableName = "Cache";
             });
 
-            services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow, false ));
+            services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow, false));
 
             services.AddSingleton<IIccPortalConfig, IccPortalConfig>();
 
@@ -68,13 +71,15 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
             services.AddTransient<ILuhnModNConfig, LuhnModNConfig>();
             services.AddTransient<ILuhnModNValidator, LuhnModNValidator>();
             services.AddTransient<ILuhnModNGenerator, LuhnModNGenerator>();
-            
+
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
-            
+
             services.AddCors();
 
             if (_isDev)
+            {
                 services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });
+            }
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -83,7 +88,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
         }
-        
+
         public void Configure(IApplicationBuilder app)
         {
             if (_isDev)

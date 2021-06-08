@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +17,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
     // TODO: this class (together with HttpPostIksCommand) will be refactored soon!
     public class IksSendBatchCommand
     {
-        private readonly Func<HttpPostIksCommand> _IksSendCommandFactory;
-        private readonly Func<IksOutDbContext> _IksOutboundDbContextFactory;
-        private List<int> _Todo;
-        private IIksSigner _Signer;
-        private IBatchTagProvider _BatchTagProvider;
-        private readonly List<IksSendResult> _Results = new List<IksSendResult>();
-        private HttpPostIksResult _LastResult;
-        private IksUploaderLoggingExtensions _Logger;
+        private readonly Func<HttpPostIksCommand> _iksSendCommandFactory;
+        private readonly Func<IksOutDbContext> _iksOutboundDbContextFactory;
+        private List<int> _todo;
+        private readonly IIksSigner _signer;
+        private readonly IBatchTagProvider _batchTagProvider;
+        private readonly List<IksSendResult> _results = new List<IksSendResult>();
+        private HttpPostIksResult _lastResult;
+        private readonly IksUploaderLoggingExtensions _logger;
 
         public IksSendBatchCommand(
             Func<IksOutDbContext> iksOutboundDbContextFactory,
@@ -29,18 +33,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             IBatchTagProvider batchTagProvider,
             IksUploaderLoggingExtensions logger)
         {
-            _IksSendCommandFactory = iksSendCommandFactory ?? throw new ArgumentNullException(nameof(iksSendCommandFactory));
-            _IksOutboundDbContextFactory = iksOutboundDbContextFactory ?? throw new ArgumentNullException(nameof(iksOutboundDbContextFactory));
-            _Signer = signer ?? throw new ArgumentNullException(nameof(signer));
-            _BatchTagProvider = batchTagProvider ?? throw new ArgumentNullException(nameof(batchTagProvider));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _iksSendCommandFactory = iksSendCommandFactory ?? throw new ArgumentNullException(nameof(iksSendCommandFactory));
+            _iksOutboundDbContextFactory = iksOutboundDbContextFactory ?? throw new ArgumentNullException(nameof(iksOutboundDbContextFactory));
+            _signer = signer ?? throw new ArgumentNullException(nameof(signer));
+            _batchTagProvider = batchTagProvider ?? throw new ArgumentNullException(nameof(batchTagProvider));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<IksSendBatchResult> ExecuteAsync()
         {
-            using (var dbc = _IksOutboundDbContextFactory())
+            using (var dbc = _iksOutboundDbContextFactory())
             {
-                _Todo = dbc.Iks
+                _todo = dbc.Iks
                     .Where(x => !x.Sent && !x.Error)
                     .OrderBy(x => x.Created)
                     .ThenBy(x => x.Qualifier)
@@ -48,19 +52,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                     .ToList();
             }
 
-            foreach (var t in _Todo) await ProcessOne(t);
+            foreach (var t in _todo)
+            {
+                await ProcessOne(t);
+            }
 
-            return new IksSendBatchResult 
-            { 
-                Found = _Todo.Count,
-                Sent = _Results.ToArray()
+            return new IksSendBatchResult
+            {
+                Found = _todo.Count,
+                Sent = _results.ToArray()
             };
         }
 
         private byte[] SignDks(IksOutEntity item)
         {
             // Unpack
-            var parser = new Google.Protobuf.MessageParser<DiagnosisKeyBatch>(()=> new DiagnosisKeyBatch());
+            var parser = new Google.Protobuf.MessageParser<DiagnosisKeyBatch>(() => new DiagnosisKeyBatch());
             var batch = parser.ParseFrom(item.Content);
 
             if (batch == null)
@@ -70,17 +77,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             var efgsSerializer = new EfgsDiagnosisKeyBatchSerializer();
 
-            return _Signer.GetSignature(efgsSerializer.Serialize(batch));
+            return _signer.GetSignature(efgsSerializer.Serialize(batch));
         }
 
         private async Task ProcessOne(int i)
         {
-            using var dbc = _IksOutboundDbContextFactory();
+            using var dbc = _iksOutboundDbContextFactory();
             var item = await dbc.Iks.SingleAsync(x => x.Id == i);
-            
+
             var args = new IksSendCommandArgs
             {
-                BatchTag = _BatchTagProvider.Create(item.Content),
+                BatchTag = _batchTagProvider.Create(item.Content),
                 Content = item.Content,
                 Signature = SignDks(item),
             };
@@ -89,14 +96,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             var result = new IksSendResult
             {
-                Exception = _LastResult.Exception,
-                StatusCode = _LastResult?.HttpResponseCode
+                Exception = _lastResult.Exception,
+                StatusCode = _lastResult?.HttpResponseCode
             };
 
-            _Results.Add(result);
-            
+            _results.Add(result);
+
             // Note: EFGS returns Created or OK on creation
-            item.Sent = _LastResult?.HttpResponseCode == HttpStatusCode.Created;
+            item.Sent = _lastResult?.HttpResponseCode == HttpStatusCode.Created;
             item.Error = !item.Sent;
 
             // TODO: Implement a state machine for batches; this is useful around error cases.
@@ -116,10 +123,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private async Task SendOne(IksSendCommandArgs args)
         {
             // NOTE: no retry here
-            var sender = _IksSendCommandFactory();
+            var sender = _iksSendCommandFactory();
             var result = await sender.ExecuteAsync(args);
 
-            _LastResult = result;
+            _lastResult = result;
 
             // TODO: handle the return types
             if (result != null)
@@ -128,28 +135,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 {
                     case HttpStatusCode.OK:
                     case HttpStatusCode.Created:
-                        _Logger.WriteResponseSuccess();
+                        _logger.WriteResponseSuccess();
                         return;
                     case HttpStatusCode.MultiStatus:
-                        _Logger.WriteResponseWithWarnings(result.Content);
+                        _logger.WriteResponseWithWarnings(result.Content);
                         return;
                     case HttpStatusCode.BadRequest:
-                        _Logger.WriteResponseBadRequest();
+                        _logger.WriteResponseBadRequest();
                         break;
                     case HttpStatusCode.Forbidden:
-                        _Logger.WriteResponseForbidden();
+                        _logger.WriteResponseForbidden();
                         break;
                     case HttpStatusCode.NotAcceptable:
-                        _Logger.WriteResponseNotAcceptable();
+                        _logger.WriteResponseNotAcceptable();
                         break;
                     case HttpStatusCode.RequestEntityTooLarge:
-                        _Logger.WriteResponseRequestTooLarge();
+                        _logger.WriteResponseRequestTooLarge();
                         break;
                     case HttpStatusCode.InternalServerError:
-                        _Logger.WriteResponseInternalServerError();
+                        _logger.WriteResponseInternalServerError();
                         break;
                     default:
-                        _Logger.WriteResponseUnknownError(result.HttpResponseCode);
+                        _logger.WriteResponseUnknownError(result.HttpResponseCode);
                         break;
                 }
             }

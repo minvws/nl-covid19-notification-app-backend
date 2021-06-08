@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
     /// </summary>
     public class EfgsDiagnosisKeyBatchSerializer
     {
-        private List<byte> _Data;
+        private List<byte> _data;
 
         public byte[] Serialize(DiagnosisKeyBatch batch)
         {
@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             foreach (var key in batch.Keys)
             {
-                _Data = new List<byte>();
+                _data = new List<byte>();
 
                 Add(key.KeyData);
                 AddSeparator();
@@ -46,13 +46,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 Add(key.DaysSinceOnsetOfSymptoms);
                 AddSeparator();
 
-                batchArray.Add(_Data);
+                batchArray.Add(_data);
             }
 
             // Sort by the base64 representation of the entire row serialized to EFGS format
             var s = batchArray.OrderBy(_ => Convert.ToBase64String(_.ToArray()), StringComparer.Ordinal);
             var resultArray = new List<byte>();
-            foreach (var x in s) resultArray.AddRange(x);
+            foreach (var x in s)
+            {
+                resultArray.AddRange(x);
+            }
 
             return resultArray.ToArray();
         }
@@ -71,7 +74,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         {
             var bytes = BitConverter.GetBytes(data);
             if (BitConverter.IsLittleEndian)
+            {
                 Array.Reverse(bytes);
+            }
+
             AddBase64(bytes);
         }
 
@@ -79,10 +85,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         {
             var bytes = BitConverter.GetBytes(data);
             if (BitConverter.IsLittleEndian)
+            {
                 Array.Reverse(bytes);
+            }
+
             AddBase64(bytes);
         }
-        
+
         private void Add(ByteString data)
         {
             AddBase64(data.ToByteArray());
@@ -90,15 +99,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
         private void AddSeparator()
         {
-            _Data.AddRange(Encoding.ASCII.GetBytes("."));
+            _data.AddRange(Encoding.ASCII.GetBytes("."));
         }
-        
+
         private void AddBase64(byte[] data)
         {
             var base64String = Convert.ToBase64String(data);
             var bytes = Encoding.ASCII.GetBytes(base64String);
 
-            _Data.AddRange(bytes);
+            _data.AddRange(bytes);
         }
     }
 }

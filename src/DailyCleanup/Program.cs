@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -19,7 +19,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramewo
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing;
@@ -139,7 +138,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => logger.WriteFinished());
 
             foreach (var i in run)
+            {
                 i();
+            }
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
@@ -172,7 +173,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<IEksConfig, StandardEksConfig>();
 
             services.EksEngine();
-            
+
             services.AddTransient<RemoveExpiredManifestsCommand>();
             services.AddTransient<RemoveExpiredManifestsV2Command>();
             services.AddTransient<RemoveExpiredManifestsV3Command>();
@@ -204,7 +205,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<MarkWorkFlowTeksAsUsedLoggingExtensions>();
             services.AddSingleton<ManifestUpdateCommandLoggingExtensions>();
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
-            
+
             services.NlResignerStartup();
             services.DummySignerStartup();
             services.GaSignerStartup();
@@ -237,7 +238,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
             services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
             services.AddTransient<IInfectiousness>(
-                x => {
+                x =>
+                {
                     var rr = x.GetService<IRiskCalculationParametersReader>();
                     var days = rr.GetInfectiousDaysAsync();
                     return new Infectiousness(days);

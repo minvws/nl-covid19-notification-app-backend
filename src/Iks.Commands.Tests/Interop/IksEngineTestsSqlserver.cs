@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         private const string Prefix = nameof(IksEngineTest) + "_";
 
         public IksEngineTestsSqlserver() : base(
-            new SqlServerDbProvider<WorkflowDbContext>(Prefix+"W"),
+            new SqlServerDbProvider<WorkflowDbContext>(Prefix + "W"),
             new SqlServerDbProvider<IksInDbContext>(Prefix + "II"),
             new SqlServerDbProvider<DkSourceDbContext>(Prefix + "D"),
             new SqlServerDbProvider<IksPublishingJobDbContext>(Prefix + "P"),

@@ -24,17 +24,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
 {
     public class WorkflowControllerStopKeysTests : WebApplicationFactory<Startup>, IDisposable
     {
-        private readonly WebApplicationFactory<Startup> _Factory;
-        private readonly Mock<IDecoyTimeCalculator> _MockTimeCalculator = new Mock<IDecoyTimeCalculator>();
+        private readonly WebApplicationFactory<Startup> _factory;
+        private readonly Mock<IDecoyTimeCalculator> _mockTimeCalculator = new Mock<IDecoyTimeCalculator>();
 
         public WorkflowControllerStopKeysTests()
         {
-            _Factory = WithWebHostBuilder(
+            _factory = WithWebHostBuilder(
                 builder =>
                 {
-                    builder.ConfigureTestServices(services => {
+                    builder.ConfigureTestServices(services =>
+                    {
 
-                        services.Replace(new ServiceDescriptor(typeof(IDecoyTimeCalculator), _MockTimeCalculator.Object));
+                        services.Replace(new ServiceDescriptor(typeof(IDecoyTimeCalculator), _mockTimeCalculator.Object));
                         services.AddTransient<DecoyTimeGeneratorAttribute>();
                         services.AddTransient<DecoyTimeAggregatorAttribute>();
                         services.AddTransient<ResponsePaddingFilterAttribute>();
@@ -60,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         public async Task PostStopKeysTest()
         {
             // Arrange
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
 
             // Act
             var result = await client.PostAsync("v1/stopkeys", null);
@@ -78,10 +79,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         {
             // Arrange
             var sw = new Stopwatch();
-            _MockTimeCalculator.Setup(x => x.GetDelay())
+            _mockTimeCalculator.Setup(x => x.GetDelay())
                 .Returns(TimeSpan.FromMilliseconds(delayMs));
 
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
 
             // Act
             sw.Start();
@@ -102,7 +103,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         public async Task PaddingTest(long min, long max)
         {
             // Arrange
-            var client = _Factory.WithWebHostBuilder(builder =>
+            var client = _factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureAppConfiguration((ctx, config) =>
                 {
@@ -129,7 +130,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         public async Task Stopkeys_has_padding()
         {
             // Arrange
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
 
             // Act
             var result = await client.PostAsync("v1/stopkeys", null);

@@ -53,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
         {
             var buffer = new byte[] { 0, 0, 0, 0, 0, 0, 1, 0, 1, 2, 0 };
             var actual = buffer.StripLeadingZeros();
-            Assert.Equal(new byte[] {                   1, 0, 1, 2, 0 }, actual);
+            Assert.Equal(new byte[] { 1, 0, 1, 2, 0 }, actual);
         }
 
         [Fact]

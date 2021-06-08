@@ -91,7 +91,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             //TODO write EFGS run.
 
             foreach (var i in run)
+            {
                 i();
+            }
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)

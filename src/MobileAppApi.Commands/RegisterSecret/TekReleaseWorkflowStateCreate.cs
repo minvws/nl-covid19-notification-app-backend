@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
@@ -26,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private readonly RegisterSecretLoggingExtensions _logger;
 
         private const int AttemptCountMax = 10;
-        private int _AttemptCount;
+        private int _attemptCount;
 
         public TekReleaseWorkflowStateCreate(
             WorkflowDbContext dbContextProvider,
@@ -63,15 +62,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 
         private bool TryGenerateRemainingFieldsAndWriteToDb(TekReleaseWorkflowStateEntity item)
         {
-            if (++_AttemptCount > AttemptCountMax)
+            if (++_attemptCount > AttemptCountMax)
             {
                 _logger.WriteMaximumCreateAttemptsReached();
                 throw new InvalidOperationException("Maximum create attempts reached.");
             }
 
-            if (_AttemptCount > 1)
+            if (_attemptCount > 1)
             {
-                _logger.WriteDuplicatesFound(_AttemptCount);
+                _logger.WriteDuplicatesFound(_attemptCount);
             }
 
             item.LabConfirmationId = _labConfirmationIdService.Next();
@@ -104,7 +103,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private bool CanRetry(DbUpdateException ex)
         {
             if (!(ex.InnerException is SqlException sqlEx))
+            {
                 return false;
+            }
 
             var errors = new SqlError[sqlEx.Errors.Count];
             sqlEx.Errors.CopyTo(errors, 0);

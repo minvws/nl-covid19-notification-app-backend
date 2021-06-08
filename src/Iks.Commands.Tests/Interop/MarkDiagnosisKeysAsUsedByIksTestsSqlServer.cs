@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         private const string Prefix = nameof(MarkDiagnosisKeysAsUsedByIksTests) + "_";
         public MarkDiagnosisKeysAsUsedByIksTestsSqlServer() : base(
             new SqlServerDbProvider<DkSourceDbContext>(Prefix + "D"),
-            new SqlServerDbProvider<IksPublishingJobDbContext>(Prefix+"IPJ")
+            new SqlServerDbProvider<IksPublishingJobDbContext>(Prefix + "IPJ")
         )
         { }
     }

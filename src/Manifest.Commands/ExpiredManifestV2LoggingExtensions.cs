@@ -22,57 +22,57 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         private const int DeletionReconciliationFailed = Base + 4;
         private const int FinishedNothingRemoved = Base + 98;
 
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
 
         public ExpiredManifestV2LoggingExtensions(ILogger<ExpiredManifestV2LoggingExtensions> logger)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void WriteStart(int keepAliveCount)
         {
-            _Logger.LogInformation("[{name}/{id}] Begin removing expired ManifestV2s - Keep Alive Count:{count}.",
+            _logger.LogInformation("[{name}/{id}] Begin removing expired ManifestV2s - Keep Alive Count:{count}.",
                 Name, Start,
                 keepAliveCount);
         }
 
         public void WriteFinished(int zombieCount, int givenMercedesCount)
         {
-            _Logger.LogInformation("[{name}/{id}] Finished removing expired ManifestV2s - ExpectedCount:{count} ActualCount:{givenMercy}.",
+            _logger.LogInformation("[{name}/{id}] Finished removing expired ManifestV2s - ExpectedCount:{count} ActualCount:{givenMercy}.",
                 Name, Finished,
                 zombieCount, givenMercedesCount);
         }
 
         public void WriteFinishedNothingRemoved()
         {
-            _Logger.LogInformation("[{name}/{id}] Finished removing expired ManifestV2s - Nothing to remove.",
+            _logger.LogInformation("[{name}/{id}] Finished removing expired ManifestV2s - Nothing to remove.",
                 Name, FinishedNothingRemoved);
         }
 
         public void WriteRemovingManifests(int zombieCount)
         {
-            _Logger.LogInformation("[{name}/{id}] Removing expired ManifestV2s - Count:{count}.",
+            _logger.LogInformation("[{name}/{id}] Removing expired ManifestV2s - Count:{count}.",
                 Name, RemovingManifests,
                 zombieCount);
         }
 
         public void WriteRemovingEntry(string publishingId, DateTime releaseDate)
         {
-            _Logger.LogInformation("[{name}/{id}] Removing expired ManifestV2 - PublishingId:{PublishingId} Release:{Release}.",
+            _logger.LogInformation("[{name}/{id}] Removing expired ManifestV2 - PublishingId:{PublishingId} Release:{Release}.",
                 Name, RemovingEntry,
                 publishingId, releaseDate);
         }
 
         public void WriteReconciliationFailed(int reconciliationCount)
         {
-            _Logger.LogError("[{name}/{id}] Reconciliation failed removing expired ManifestV2s - Found-GivenMercy-Remaining={reconciliation}.",
+            _logger.LogError("[{name}/{id}] Reconciliation failed removing expired ManifestV2s - Found-GivenMercy-Remaining={reconciliation}.",
                 Name, ReconciliationFailed,
                 reconciliationCount);
         }
 
         public void WriteDeletionReconciliationFailed(int deleteReconciliationCount)
         {
-            _Logger.LogError("[{name}/{id}] Reconciliation failed removing expired ManifestV2s - Zombies-GivenMercy={deadReconciliation}.",
+            _logger.LogError("[{name}/{id}] Reconciliation failed removing expired ManifestV2s - Zombies-GivenMercy={deadReconciliation}.",
                 Name, DeletionReconciliationFailed,
                 deleteReconciliationCount);
         }

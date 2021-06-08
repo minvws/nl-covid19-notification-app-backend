@@ -18,7 +18,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFrame
         public DbSet<IksOutEntity> Iks { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
+            if (modelBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(modelBuilder));
+            }
+
             //TODO indexes cos filters...
         }
     }

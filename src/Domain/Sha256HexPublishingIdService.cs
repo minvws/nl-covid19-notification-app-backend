@@ -13,14 +13,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
     {
         public string Create(byte[] contents)
         {
-            if (contents == null) throw new ArgumentNullException(nameof(contents));
+            if (contents == null)
+            {
+                throw new ArgumentNullException(nameof(contents));
+            }
 
             using var hasher = SHA256.Create();
             var id = hasher.ComputeHash(contents);
 
             var result = new StringBuilder(id.Length * 2);
             foreach (var i in id)
+            {
                 result.AppendFormat("{0:x2}", i);
+            }
 
             return result.ToString();
         }
@@ -31,15 +36,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
             const int sha256Length = 32;
 
             if (string.IsNullOrWhiteSpace(id))
+            {
                 return false;
+            }
 
-            if(id.Length != sha256Length * 2)
+            if (id.Length != sha256Length * 2)
+            {
                 return false;
+            }
 
             for (var i = 0; i < id.Length; i += 2)
             {
                 if (!int.TryParse(id.Substring(i, 2), NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out _))
+                {
                     return false;
+                }
             }
 
             return true;

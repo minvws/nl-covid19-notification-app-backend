@@ -17,12 +17,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public class NlContentResignCommand
     {
-        private readonly Func<ContentDbContext> _ContentDbContext;
-        private readonly IContentSigner _ContentSigner;
-        private readonly ResignerLoggingExtensions _Logger;
+        private readonly Func<ContentDbContext> _contentDbContext;
+        private readonly IContentSigner _contentSigner;
+        private readonly ResignerLoggingExtensions _logger;
 
-        private string _ContentEntryName;
-        private string _ToType;
+        private string _contentEntryName;
+        private string _toType;
 
         /// <summary>
         /// Comparer ensures content is equivalent so that items are not re-signed more than once
@@ -39,9 +39,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
         public NlContentResignCommand(Func<ContentDbContext> contentDbContext, IContentSigner contentSigner, ResignerLoggingExtensions logger)
         {
-            _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
-            _ContentSigner = contentSigner ?? throw new ArgumentNullException(nameof(contentSigner));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _contentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
+            _contentSigner = contentSigner ?? throw new ArgumentNullException(nameof(contentSigner));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -49,26 +49,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         /// </summary>
         public async Task ExecuteAsync(string fromType, string toType, string contentEntryName)
         {
-            _ToType = toType;
-            _ContentEntryName = contentEntryName;
+            _toType = toType;
+            _contentEntryName = contentEntryName;
 
-            var db = _ContentDbContext();
+            var db = _contentDbContext();
 
             var fromItems = db.Content.Where(x => x.Type == fromType).ToArray();
             var toItems = db.Content.Where(x => x.Type == toType).ToArray();
-            var todo = fromItems.Except(toItems,  new ContentEntityComparer()).ToArray();
+            var todo = fromItems.Except(toItems, new ContentEntityComparer()).ToArray();
 
-            _Logger.WriteReport(todo);
+            _logger.WriteReport(todo);
 
             foreach (var i in todo)
+            {
                 await ReSignAsync(i);
+            }
 
-            _Logger.WriteFinished();
+            _logger.WriteFinished();
         }
 
         private async Task ReSignAsync(ContentEntity item)
         {
-            await using var db = _ContentDbContext();
+            await using var db = _contentDbContext();
             await using var tx = db.BeginTransaction();
 
             var content = await ReplaceSignatureAsync(item.Content);
@@ -78,7 +80,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 Release = item.Release,
                 ContentTypeName = item.ContentTypeName,
                 Content = content,
-                Type = _ToType,
+                Type = _toType,
                 PublishingId = item.PublishingId
             };
             await db.Content.AddAsync(e);
@@ -91,9 +93,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             m.Write(archiveBytes, 0, archiveBytes.Length);
             using (var archive = new ZipArchive(m, ZipArchiveMode.Update, true))
             {
-                var content = archive.ReadEntry(_ContentEntryName);
-                var sig = _ContentSigner.GetSignature(content);
-                await archive.ReplaceEntryAsync(ZippedContentEntryNames.NLSignature, sig);
+                var content = archive.ReadEntry(_contentEntryName);
+                var sig = _contentSigner.GetSignature(content);
+                await archive.ReplaceEntryAsync(ZippedContentEntryNames.NlSignature, sig);
             }
             return m.ToArray();
         }

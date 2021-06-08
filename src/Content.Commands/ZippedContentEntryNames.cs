@@ -7,7 +7,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
     public static class ZippedContentEntryNames
     {
         public const string Content = "content.bin";
-        public const string NLSignature = "content.sig";
+        public const string NlSignature = "content.sig";
         public const string EksContent = "export.bin";
         public const string EksGaenSig = "export.sig";
     }

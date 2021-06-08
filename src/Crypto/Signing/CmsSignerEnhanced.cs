@@ -12,29 +12,34 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 {
     public class CmsSignerEnhanced : IContentSigner
     {
-        private readonly ICertificateProvider _CertificateProvider;
-        private readonly ICertificateChainProvider _CertificateChainProvider;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly ICertificateProvider _certificateProvider;
+        private readonly ICertificateChainProvider _certificateChainProvider;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
 
         public CmsSignerEnhanced(ICertificateProvider certificateProvider, ICertificateChainProvider certificateChainProvider, IUtcDateTimeProvider dateTimeProvider)
         {
-            _CertificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
-            _CertificateChainProvider = certificateChainProvider ?? throw new ArgumentNullException(nameof(certificateChainProvider));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
+            _certificateChainProvider = certificateChainProvider ?? throw new ArgumentNullException(nameof(certificateChainProvider));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
 
         public string SignatureOid => "2.16.840.1.101.3.4.2.1";
 
         public byte[] GetSignature(byte[] content)
         {
-            if (content == null) throw new ArgumentNullException(nameof(content));
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
 
-            var certificate = _CertificateProvider.GetCertificate();
+            var certificate = _certificateProvider.GetCertificate();
 
             if (!certificate.HasPrivateKey)
+            {
                 throw new InvalidOperationException($"Certificate does not have a private key - Subject:{certificate.Subject} Thumbprint:{certificate.Thumbprint}.");
+            }
 
-            var certificateChain = _CertificateChainProvider.GetCertificates();
+            var certificateChain = _certificateChainProvider.GetCertificates();
 
             var contentInfo = new ContentInfo(content);
             var signedCms = new SignedCms(contentInfo, true);
@@ -42,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             signedCms.Certificates.AddRange(certificateChain);
 
             var signer = new CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, certificate);
-            var signingTime = new Pkcs9SigningTime(_DateTimeProvider.Now());
+            var signingTime = new Pkcs9SigningTime(_dateTimeProvider.Now());
             signer.SignedAttributes.Add(new CryptographicAttributeObject(signingTime.Oid, new AsnEncodedDataCollection(signingTime)));
 
             try

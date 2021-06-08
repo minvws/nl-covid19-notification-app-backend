@@ -13,16 +13,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 {
     public class IksDkSnapshotTestDataGenerator
     {
-        private readonly IDbProvider<IksPublishingJobDbContext> _IksPublishingDbProvider;
+        private readonly IDbProvider<IksPublishingJobDbContext> _iksPublishingDbProvider;
 
         public IksDkSnapshotTestDataGenerator(IDbProvider<IksPublishingJobDbContext> iksPublishingDbProvider)
         {
-            _IksPublishingDbProvider = iksPublishingDbProvider ?? throw new ArgumentNullException(nameof(iksPublishingDbProvider));
+            _iksPublishingDbProvider = iksPublishingDbProvider ?? throw new ArgumentNullException(nameof(iksPublishingDbProvider));
         }
 
         public void Write(IksCreateJobInputEntity[] items)
         {
-            var db = _IksPublishingDbProvider.CreateNew();
+            var db = _iksPublishingDbProvider.CreateNew();
             db.Input.AddRange(items);
             db.SaveChanges();
         }

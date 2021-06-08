@@ -9,19 +9,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public class NlContentResignExistingV1ContentCommand
     {
-        private readonly NlContentResignCommand _Resigner;
+        private readonly NlContentResignCommand _resigner;
 
         public NlContentResignExistingV1ContentCommand(NlContentResignCommand resigner)
         {
-            _Resigner = resigner ?? throw new ArgumentNullException(nameof(resigner));
+            _resigner = resigner ?? throw new ArgumentNullException(nameof(resigner));
         }
 
         public async Task ExecuteAsync()
         {
-            await _Resigner.ExecuteAsync(ContentTypes.ExposureKeySet, ContentTypes.ExposureKeySetV2, ZippedContentEntryNames.EksContent);
-            await _Resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content);
-            await _Resigner.ExecuteAsync(ContentTypes.RiskCalculationParameters, ContentTypes.RiskCalculationParametersV2, ZippedContentEntryNames.Content);
-            await _Resigner.ExecuteAsync(ContentTypes.ResourceBundle, ContentTypes.ResourceBundleV2, ZippedContentEntryNames.Content);
+            await _resigner.ExecuteAsync(ContentTypes.ExposureKeySet, ContentTypes.ExposureKeySetV2, ZippedContentEntryNames.EksContent);
+            await _resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content);
+            await _resigner.ExecuteAsync(ContentTypes.RiskCalculationParameters, ContentTypes.RiskCalculationParametersV2, ZippedContentEntryNames.Content);
+            await _resigner.ExecuteAsync(ContentTypes.ResourceBundle, ContentTypes.ResourceBundleV2, ZippedContentEntryNames.Content);
         }
     }
 }

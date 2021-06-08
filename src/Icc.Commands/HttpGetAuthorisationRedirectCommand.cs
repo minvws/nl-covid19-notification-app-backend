@@ -15,41 +15,44 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 {
     public class HttpGetAuthorisationRedirectCommand
     {
-        private readonly IIccPortalConfig _Configuration;
-        private readonly ILogger<HttpGetAuthorisationRedirectCommand> _Logger;
-        private readonly IAuthCodeService _AuthCodeService;
-        private readonly IJwtService _JwtService;
-        private readonly ITheIdentityHubService _TheIdentityHubService;
-        private readonly HttpGetLogoutCommand _LogoutCommand;
+        private readonly IIccPortalConfig _configuration;
+        private readonly ILogger<HttpGetAuthorisationRedirectCommand> _logger;
+        private readonly IAuthCodeService _authCodeService;
+        private readonly IJwtService _jwtService;
+        private readonly ITheIdentityHubService _theIdentityHubService;
+        private readonly HttpGetLogoutCommand _logoutCommand;
 
         public HttpGetAuthorisationRedirectCommand(IIccPortalConfig configuration,
             ILogger<HttpGetAuthorisationRedirectCommand> logger, IAuthCodeService authCodeService,
             IJwtService jwtService, ITheIdentityHubService theIdentityHubService, HttpGetLogoutCommand logoutCommand)
         {
-            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _AuthCodeService = authCodeService ?? throw new ArgumentNullException(nameof(authCodeService));
-            _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
-            _TheIdentityHubService = theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
-            _LogoutCommand = logoutCommand ?? throw new ArgumentNullException(nameof(logoutCommand));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _authCodeService = authCodeService ?? throw new ArgumentNullException(nameof(authCodeService));
+            _jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
+            _theIdentityHubService = theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
+            _logoutCommand = logoutCommand ?? throw new ArgumentNullException(nameof(logoutCommand));
         }
 
         public async Task<IActionResult> ExecuteAsync(HttpContext httpContext)
         {
-            if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
+            if (httpContext == null)
+            {
+                throw new ArgumentNullException(nameof(httpContext));
+            }
 
-            _Logger.WriteRedirecting(httpContext.Request.Host.ToString());
+            _logger.WriteRedirecting(httpContext.Request.Host.ToString());
 
             // check httpContext claims on AccessToken validity
-            if (!await _TheIdentityHubService.VerifyClaimTokenAsync(httpContext.User.Claims))
+            if (!await _theIdentityHubService.VerifyClaimTokenAsync(httpContext.User.Claims))
             {
-                await _LogoutCommand.ExecuteAsync(httpContext);
+                await _logoutCommand.ExecuteAsync(httpContext);
                 return new RedirectResult(httpContext.Request.Path); // redirect to {prefix}/Auth/Redirect to trigger login
             }
 
-            var authorizationCode = await _AuthCodeService.GenerateAuthCodeAsync(httpContext.User);
+            var authorizationCode = await _authCodeService.GenerateAuthCodeAsync(httpContext.User);
 
-            return new RedirectResult(_Configuration.FrontendBaseUrl + "/auth/callback?code=" + authorizationCode);
+            return new RedirectResult(_configuration.FrontendBaseUrl + "/auth/callback?code=" + authorizationCode);
         }
     }
 }

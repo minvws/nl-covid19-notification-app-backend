@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
                 new ConsoleAppRunner().Execute(args, Configure, Start);
                 return 0;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return -1;
             }
@@ -55,9 +55,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
             services.AddTransient(x => x.CreateDbContext(y => new IksInDbContext(y), DatabaseConnectionStringNames.IksIn, false));
 
             services.AddSingleton<IEfgsConfig, EfgsConfig>();
-            services.AddTransient<IIHttpGetIksCommand, HttpGetIksCommand>();
+            services.AddTransient<IiHttpGetIksCommand, HttpGetIksCommand>();
             services.AddTransient<IIksWriterCommand, IksWriterCommand>();
-            services.AddTransient<Func<IIHttpGetIksCommand>>(x => x.GetService<IIHttpGetIksCommand>);
+            services.AddTransient<Func<IiHttpGetIksCommand>>(x => x.GetService<IiHttpGetIksCommand>);
             services.AddTransient<Func<IIksWriterCommand>>(x => x.GetService<IIksWriterCommand>);
             services.AddTransient<IksPollingBatchJob>();
 
@@ -66,7 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
                 .AddCertificate();
 
             services.AddSingleton<IThumbprintConfig, LocalMachineStoreCertificateProviderConfig>();
-            
+
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
             services.AddSingleton<IksDownloaderLoggingExtensions>();
 

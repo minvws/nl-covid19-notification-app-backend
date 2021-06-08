@@ -11,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
     public static class X509Certificate2Extensions
     {
         public static string ComputeSha256Hash(this X509Certificate2 cert)
-        {   
+        {
             using var hasher = SHA256.Create();
             var hash = hasher.ComputeHash(cert.RawData);
             return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();

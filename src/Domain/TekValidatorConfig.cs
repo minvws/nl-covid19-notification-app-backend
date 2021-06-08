@@ -10,16 +10,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
     public class TekValidatorConfig : AppSettingsReader, ITekValidatorConfig
     {
 
-        private static readonly DefaultTekValidatorConfig _Defaults = new DefaultTekValidatorConfig();
+        private static readonly DefaultTekValidatorConfig defaults = new DefaultTekValidatorConfig();
 
         public TekValidatorConfig(IConfiguration config, string prefix = DefaultPrefix) : base(config, prefix)
         {
         }
 
         private const string DefaultPrefix = "Workflow:PostKeys:TemporaryExposureKeys";
-        public int RollingStartNumberMin => GetConfigValue("RollingStartNumber:Min", _Defaults.RollingStartNumberMin);
-        public int PublishingDelayInMinutes => GetConfigValue("PublishingDelayMinutes", _Defaults.PublishingDelayInMinutes);
-        public int AuthorisationWindowMinutes => GetConfigValue("AuthorisationWindowMinutes", _Defaults.AuthorisationWindowMinutes);
-        public int MaxAgeDays => GetConfigValue(nameof(MaxAgeDays), _Defaults.MaxAgeDays);
+        public int RollingStartNumberMin => GetConfigValue("RollingStartNumber:Min", defaults.RollingStartNumberMin);
+        public int PublishingDelayInMinutes => GetConfigValue("PublishingDelayMinutes", defaults.PublishingDelayInMinutes);
+        public int AuthorisationWindowMinutes => GetConfigValue("AuthorisationWindowMinutes", defaults.AuthorisationWindowMinutes);
+        public int MaxAgeDays => GetConfigValue(nameof(MaxAgeDays), defaults.MaxAgeDays);
     }
 }

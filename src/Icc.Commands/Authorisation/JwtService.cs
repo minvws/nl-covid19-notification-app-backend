@@ -18,28 +18,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 {
     public class JwtService : IJwtService
     {
-        private readonly IIccPortalConfig _IccPortalConfig;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly ILogger _Logger;
+        private readonly IIccPortalConfig _iccPortalConfig;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly ILogger _logger;
 
         public JwtService(IIccPortalConfig iccPortalConfig, IUtcDateTimeProvider dateTimeProvider, ILogger<JwtService> logger)
         {
-            _IccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _iccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         private JwtBuilder CreateBuilder()
         {
             return new JwtBuilder()
                 .WithAlgorithm(new HMACSHA256Algorithm())
-                .WithSecret(_IccPortalConfig.JwtSecret)
+                .WithSecret(_iccPortalConfig.JwtSecret)
                 .MustVerifySignature();
         }
 
         public string Generate(ulong exp, Dictionary<string, object> claims)
         {
-            if (claims == null) throw new ArgumentNullException(nameof(claims));
+            if (claims == null)
+            {
+                throw new ArgumentNullException(nameof(claims));
+            }
             // any further validation of claims?
 
             var builder = CreateBuilder();
@@ -56,11 +59,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         public string Generate(IList<AuthClaim> claimsPrincipal)
         {
             if (claimsPrincipal == null)
+            {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
+            }
 
             var builder = CreateBuilder();
             builder.AddClaim("exp",
-                _DateTimeProvider.Snapshot.AddHours(_IccPortalConfig.ClaimLifetimeHours).ToUnixTimeU64());
+                _dateTimeProvider.Snapshot.AddHours(_iccPortalConfig.ClaimLifetimeHours).ToUnixTimeU64());
             builder.AddClaim("id", GetClaimValue(claimsPrincipal, ClaimTypes.NameIdentifier));
             builder.AddClaim("access_token",
                 GetClaimValue(claimsPrincipal, TheIdentityHubClaimTypes.AccessToken));
@@ -69,7 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
             return builder.Encode();
         }
 
-        private string? GetClaimValue(IList<AuthClaim> claimList, string claimType) =>
+        private string GetClaimValue(IList<AuthClaim> claimList, string claimType) =>
             claimList.FirstOrDefault(c => c.Type.Equals(claimType))?.Value;
 
 
@@ -78,7 +83,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
             payload = new Dictionary<string, string>();
 
             if (string.IsNullOrWhiteSpace(token))
+            {
                 return false;
+            }
 
             try
             {
@@ -89,23 +96,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
             }
             catch (FormatException exception)
             {
-                _Logger.WriteInvalidTokenFormat(exception);
+                _logger.WriteInvalidTokenFormat(exception);
             }
             catch (InvalidTokenPartsException exception)
             {
-                _Logger.WriteInvalidTokenParts(exception);
+                _logger.WriteInvalidTokenParts(exception);
             }
             catch (TokenExpiredException exception)
             {
-                _Logger.WriteTokenExpired(exception);
+                _logger.WriteTokenExpired(exception);
             }
             catch (SignatureVerificationException exception)
             {
-                _Logger.WriteTokenSigInvalid(exception);
+                _logger.WriteTokenSigInvalid(exception);
             }
             catch (Exception exception)
             {
-                _Logger.WriteTokenOtherError(exception);
+                _logger.WriteTokenOtherError(exception);
             }
 
             return false;

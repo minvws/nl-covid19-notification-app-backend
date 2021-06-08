@@ -26,5 +26,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             using var zip = new ZipArchive(zipStream);
             return zip.ReadEntry(ZippedContentEntryNames.EksContent);
         }
-   }
+    }
 }

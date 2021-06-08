@@ -52,161 +52,161 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private const int CommitMarkTeks = Base + 20;
         private const int TotalMarked = Base + 21;
 
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
 
         public EksEngineLoggingExtensions(ILogger<EksEngineLoggingExtensions> logger)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void WriteStart(string jobName)
         {
-            _Logger.LogInformation("[{name}/{id}] Started - JobName:{JobName}.",
+            _logger.LogInformation("[{name}/{id}] Started - JobName:{JobName}.",
                 Name, Start,
                 jobName);
         }
 
         public void WriteFinished(string jobName)
         {
-            _Logger.LogInformation("[{name}/{id}] {JobName} complete.",
+            _logger.LogInformation("[{name}/{id}] {JobName} complete.",
                 Name, Finished,
                 jobName);
         }
 
         public void WriteNoElevatedPrivs(string jobName)
         {
-            _Logger.LogWarning("[{name}/{id}] {JobName} started WITHOUT elevated privileges - errors may occur when signing content.",
+            _logger.LogWarning("[{name}/{id}] {JobName} started WITHOUT elevated privileges - errors may occur when signing content.",
                 Name, NoElevatedPrivs,
                 jobName);
         }
 
         public void WriteReconciliationMatchUsable(int reconciliationCount)
         {
-            _Logger.LogInformation("[{name}/{id}] Reconciliation - Teks in EKSs matches usable input and stuffing - Delta:{ReconcileOutputCount}.",
+            _logger.LogInformation("[{name}/{id}] Reconciliation - Teks in EKSs matches usable input and stuffing - Delta:{ReconcileOutputCount}.",
                 Name, ReconciliationTeksMatchInputAndStuffing,
                 reconciliationCount);
         }
 
         public void WriteReconciliationMatchCount(int reconciliationCount)
         {
-            _Logger.LogInformation("[{name}/{id}] Reconciliation - Teks in EKSs matches output count - Delta:{ReconcileEksSumCount}.",
+            _logger.LogInformation("[{name}/{id}] Reconciliation - Teks in EKSs matches output count - Delta:{ReconcileEksSumCount}.",
                 Name, ReconcilliationTeksMatchOutputCount,
                 reconciliationCount);
         }
 
         public void WriteCleartables()
         {
-            _Logger.LogDebug("[{name}/{id}] Clear job tables.",
+            _logger.LogDebug("[{name}/{id}] Clear job tables.",
                 Name, ClearJobTables);
         }
 
         public void WriteNoStuffingNoTeks()
         {
-            _Logger.LogInformation("[{name}/{id}] No stuffing required - No publishable TEKs.",
+            _logger.LogInformation("[{name}/{id}] No stuffing required - No publishable TEKs.",
                 Name, NoStuffingNoTeks);
         }
 
         public void WriteNoStuffingMinimumOk()
         {
-            _Logger.LogInformation("[{name}/{id}] No stuffing required - Minimum TEK count OK.",
+            _logger.LogInformation("[{name}/{id}] No stuffing required - Minimum TEK count OK.",
                 Name, NoStuffingMinimumOk);
         }
 
         public void WriteStuffingRequired(int length)
         {
-            _Logger.LogInformation("[{name}/{id}] Stuffing required - Count:{Count}.",
+            _logger.LogInformation("[{name}/{id}] Stuffing required - Count:{Count}.",
                 Name, StuffingRequired,
                 length);
         }
 
         public void WriteStuffingAdded()
         {
-            _Logger.LogInformation("[{name}/{id}] Stuffing added.",
+            _logger.LogInformation("[{name}/{id}] Stuffing added.",
                 Name, StuffingAdded);
         }
 
         public void WriteBuildEkses()
         {
-            _Logger.LogDebug("[{name}/{id}] Build EKSs.",
+            _logger.LogDebug("[{name}/{id}] Build EKSs.",
                 Name, BuildEkses);
         }
 
         public void WriteReadTeks(int pageLength)
         {
-            _Logger.LogDebug("[{name}/{id}] Read TEKs - Count:{Count}.",
+            _logger.LogDebug("[{name}/{id}] Read TEKs - Count:{Count}.",
                 Name, ReadTeks,
                 pageLength);
         }
 
         public void WritePageFillsToCapacity(int capacity)
         {
-            _Logger.LogDebug("[{name}/{id}] This page fills the EKS to capacity - Capacity:{Capacity}.",
+            _logger.LogDebug("[{name}/{id}] This page fills the EKS to capacity - Capacity:{Capacity}.",
                 Name, PageFillsToCapacity,
                 capacity);
         }
 
         public void WriteRemainingTeks(int count)
         {
-            _Logger.LogDebug("[{name}/{id}] Write remaining TEKs - Count:{Count}.",
+            _logger.LogDebug("[{name}/{id}] Write remaining TEKs - Count:{Count}.",
                 Name, WriteRemainingTekCount,
                 count);
         }
 
         public void WriteAddTeksToOutput(int count, int total)
         {
-            _Logger.LogDebug("[{name}/{id}] dd TEKs to output - Count:{Count}, Total:{OutputCount}.",
+            _logger.LogDebug("[{name}/{id}] dd TEKs to output - Count:{Count}, Total:{OutputCount}.",
                 Name, AddTeksToOutput,
                 count, total);
         }
 
         public void WriteBuildEntry()
         {
-            _Logger.LogDebug("[{name}/{id}] Build EKS.",
+            _logger.LogDebug("[{name}/{id}] Build EKS.",
                 Name, BuildEntry);
         }
 
         public void WriteWritingCurrentEks(int qualifier)
         {
-            _Logger.LogInformation("[{name}/{id}] Write EKS - Id:{CreatingJobQualifier}.",
+            _logger.LogInformation("[{name}/{id}] Write EKS - Id:{CreatingJobQualifier}.",
                 Name, WritingCurrentEks,
                 qualifier);
         }
 
         public void WriteMarkTekAsUsed()
         {
-            _Logger.LogInformation("[{name}/{id}] Mark TEKs as used.",
+            _logger.LogInformation("[{name}/{id}] Mark TEKs as used.",
                 Name, MarkTekAsUsed);
         }
 
         public void WriteStartReadPage(int skipcount, int takecount)
         {
-            _Logger.LogDebug("[{name}/{id}] Read page - Skip {Skip}, Take {Take}.",
+            _logger.LogDebug("[{name}/{id}] Read page - Skip {Skip}, Take {Take}.",
                 Name, StartReadPage,
                 skipcount, takecount);
         }
 
         public void WriteFinishedReadPage(int length)
         {
-            _Logger.LogDebug("[{name}/{id}] Read page - Count:{Count}.",
+            _logger.LogDebug("[{name}/{id}] Read page - Count:{Count}.",
                 Name, FinishReadPage,
                 length);
         }
 
         public void WriteCommitPublish()
         {
-            _Logger.LogInformation("[{name}/{id}] Commit results - publish EKSs.",
+            _logger.LogInformation("[{name}/{id}] Commit results - publish EKSs.",
                 Name, CommitPublish);
         }
 
         public void WriteCommitMarkTeks()
         {
-            _Logger.LogInformation("[{name}/{id}] Commit results - Mark TEKs as Published.",
+            _logger.LogInformation("[{name}/{id}] Commit results - Mark TEKs as Published.",
                 Name, CommitMarkTeks);
         }
 
         public void WriteTotalMarked(int totalMarked)
         {
-            _Logger.LogInformation("[{name}/{id}] Marked as published - Total:{TotalMarked}.",
+            _logger.LogInformation("[{name}/{id}] Marked as published - Total:{TotalMarked}.",
                 Name, TotalMarked,
                 totalMarked);
         }

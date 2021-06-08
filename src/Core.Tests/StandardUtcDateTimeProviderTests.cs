@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Tests
             var v0 = dtp.Snapshot;
             Thread.Sleep(500);
             var v1 = dtp.Snapshot;
-            Assert.Equal(v0,v1);
+            Assert.Equal(v0, v1);
         }
     }
 }

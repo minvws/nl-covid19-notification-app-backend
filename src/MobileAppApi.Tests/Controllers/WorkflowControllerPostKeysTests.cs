@@ -16,7 +16,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NCrunch.Framework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
@@ -28,19 +27,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
     [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
     public abstract class WorkflowControllerPostKeysTests : WebApplicationFactory<Startup>, IDisposable
     {
-        private readonly byte[] _Key = Convert.FromBase64String(@"PwMcyc8EXF//Qkye1Vl2S6oCOo9HFS7E7vw7y9GOzJk=");
-        private readonly WebApplicationFactory<Startup> _Factory;
-        private readonly byte[] _BucketId = Convert.FromBase64String(@"idlVmyDGeAXTyaNN06Uejy6tLgkgWtj32sLRJm/OuP8=");
-        private readonly IDbProvider<WorkflowDbContext> _WorkflowDbProvider;
+        private readonly byte[] _key = Convert.FromBase64String(@"PwMcyc8EXF//Qkye1Vl2S6oCOo9HFS7E7vw7y9GOzJk=");
+        private readonly WebApplicationFactory<Startup> _factory;
+        private readonly byte[] _bucketId = Convert.FromBase64String(@"idlVmyDGeAXTyaNN06Uejy6tLgkgWtj32sLRJm/OuP8=");
+        private readonly IDbProvider<WorkflowDbContext> _workflowDbProvider;
 
         protected WorkflowControllerPostKeysTests(IDbProvider<WorkflowDbContext> workflowDbProvider)
         {
-            _WorkflowDbProvider = workflowDbProvider;
-            _Factory = WithWebHostBuilder(builder =>
+            _workflowDbProvider = workflowDbProvider;
+            _factory = WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddScoped(sp => _WorkflowDbProvider.CreateNewWithTx());
+                    services.AddScoped(sp => _workflowDbProvider.CreateNewWithTx());
                     services.AddTransient<DecoyTimeAggregatorAttribute>();
                 });
 
@@ -55,14 +54,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                     });
                 });
             });
-            
-            var dbContext = _WorkflowDbProvider.CreateNew();
+
+            var dbContext = _workflowDbProvider.CreateNew();
             dbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
-                BucketId = _BucketId,
+                BucketId = _bucketId,
                 ValidUntil = DateTime.UtcNow.AddHours(1),
                 Created = DateTime.UtcNow,
-                ConfirmationKey = _Key,
+                ConfirmationKey = _key,
             });
             dbContext.SaveChanges();
         }
@@ -70,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         void IDisposable.Dispose()
         {
             base.Dispose();
-            _WorkflowDbProvider.Dispose();
+            _workflowDbProvider.Dispose();
         }
 
         [Fact]
@@ -78,7 +77,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         public async Task PostWorkflowTest_InvalidSignature()
         {
             // Arrange
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
             await using var inputStream =
                 Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Resources.payload.json");
             var data = inputStream.ToArray();
@@ -90,7 +89,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var result = await client.PostAsync($"v1/postkeys?sig={signature}", content);
 
             // Assert
-            var items = await _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
+            var items = await _workflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Empty(items);
         }
@@ -100,7 +99,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         public async Task PostWorkflowTest_ScriptInjectionInSignature()
         {
             // Arrange
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
             await using var inputStream =
                 Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Resources.payload.json");
             var data = inputStream.ToArray();
@@ -112,7 +111,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var result = await client.PostAsync($"v1/postkeys?sig={signature}", content);
 
             // Assert
-            var items = await _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
+            var items = await _workflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Empty(items);
         }
@@ -122,7 +121,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         public async Task PostWorkflowTest_NullSignature()
         {
             // Arrange
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
             await using var inputStream =
                 Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Resources.payload.json");
             var data = inputStream.ToArray();
@@ -133,7 +132,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var result = await client.PostAsync("v1/postkeys", content);
 
             // Assert
-            var items = await _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
+            var items = await _workflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Empty(items);
         }
@@ -143,7 +142,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         public async Task PostWorkflowTest_EmptySignature()
         {
             // Arrange
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
             await using var inputStream =
                 Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Resources.payload.json");
             var data = inputStream.ToArray();
@@ -154,7 +153,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var result = await client.PostAsync($"v1/postkeys?sig={string.Empty}", content);
 
             // Assert
-            var items = await _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
+            var items = await _workflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode); //All coerced by middleware to 200 now.
             Assert.Empty(items);
         }
@@ -163,7 +162,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         public async Task Postkeys_has_padding()
         {
             // Arrange
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
 
             // Act
             var result = await client.PostAsync("v1/postkeys", null);

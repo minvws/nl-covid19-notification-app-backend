@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
     public class AuthorisationArgs
     {
         public string LabConfirmationId { get; set; }
-        
+
         public DateTime DateOfSymptomsOnset { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
         /// Manifest Builder
         /// </summary>
         int LifetimeDays { get; }
-        
+
         /// <summary>
         /// Max size.
         /// </summary>

@@ -14,27 +14,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
     /// </summary>
     public class EcdSaSigner : IGaContentSigner
     {
-        private readonly ICertificateProvider _Provider;
+        private readonly ICertificateProvider _provider;
         private const string SignatureAlgorithmDescription = "1.2.840.10045.4.3.2";
 
         public EcdSaSigner(ICertificateProvider provider)
         {
-            _Provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
 
         public string SignatureOid => SignatureAlgorithmDescription;
 
         public byte[] GetSignature(byte[] content)
         {
-            if (content == null) throw new ArgumentNullException(nameof(content));
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
 
             //using var hasher = SHA256.Create();
             //var hash = hasher.ComputeHash(content);
 
-            var cert = _Provider.GetCertificate();
+            var cert = _provider.GetCertificate();
 
             if (cert == null)
+            {
                 throw new InvalidOperationException("Certificate not found");
+            }
 
             //Should be 70 or so but not fixed length
             //Adds X.962 packaging?

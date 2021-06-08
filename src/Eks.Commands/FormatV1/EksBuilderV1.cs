@@ -15,12 +15,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
     {
         private const string Header = "EK Export v1    ";
 
-        private readonly IGaContentSigner _GaenContentSigner;
-        private readonly IContentSigner _NlContentSigner;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly IEksContentFormatter _EksContentFormatter;
-        private readonly IEksHeaderInfoConfig _Config;
-        private readonly EksBuilderV1LoggingExtensions _Logger;
+        private readonly IGaContentSigner _gaenContentSigner;
+        private readonly IContentSigner _nlContentSigner;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly IEksContentFormatter _eksContentFormatter;
+        private readonly IEksHeaderInfoConfig _config;
+        private readonly EksBuilderV1LoggingExtensions _logger;
 
         public EksBuilderV1(
             IEksHeaderInfoConfig headerInfoConfig,
@@ -31,18 +31,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
             EksBuilderV1LoggingExtensions logger
             )
         {
-            _GaenContentSigner = gaenContentSigner ?? throw new ArgumentNullException(nameof(gaenContentSigner));
-            _NlContentSigner = nlContentSigner ?? throw new ArgumentNullException(nameof(nlContentSigner));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _EksContentFormatter = eksContentFormatter ?? throw new ArgumentNullException(nameof(eksContentFormatter));
-            _Config = headerInfoConfig ?? throw new ArgumentNullException(nameof(headerInfoConfig));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _gaenContentSigner = gaenContentSigner ?? throw new ArgumentNullException(nameof(gaenContentSigner));
+            _nlContentSigner = nlContentSigner ?? throw new ArgumentNullException(nameof(nlContentSigner));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _eksContentFormatter = eksContentFormatter ?? throw new ArgumentNullException(nameof(eksContentFormatter));
+            _config = headerInfoConfig ?? throw new ArgumentNullException(nameof(headerInfoConfig));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<byte[]> BuildAsync(TemporaryExposureKeyArgs[] keys)
         {
-            if (keys == null) throw new ArgumentNullException(nameof(keys));
-            if (keys.Any(x => x == null)) throw new ArgumentException("At least one key in null.", nameof(keys));
+            if (keys == null)
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
+
+            if (keys.Any(x => x == null))
+            {
+                throw new ArgumentException("At least one key in null.", nameof(keys));
+            }
 
             var securityInfo = GetGaenSignatureInfo();
 
@@ -52,18 +59,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
                 Region = "NL",
                 BatchNum = 1,
                 BatchSize = 1,
-                SignatureInfos = new[] {securityInfo},
-                StartTimestamp = _DateTimeProvider.Snapshot.AddDays(-1).ToUnixTimeU64(),
-                EndTimestamp = _DateTimeProvider.Snapshot.ToUnixTimeU64(),
+                SignatureInfos = new[] { securityInfo },
+                StartTimestamp = _dateTimeProvider.Snapshot.AddDays(-1).ToUnixTimeU64(),
+                EndTimestamp = _dateTimeProvider.Snapshot.ToUnixTimeU64(),
                 Keys = keys
             };
 
-            var contentBytes = _EksContentFormatter.GetBytes(content);
-            var nlSig = _NlContentSigner.GetSignature(contentBytes);
-            var gaenSig = _GaenContentSigner.GetSignature(contentBytes);
+            var contentBytes = _eksContentFormatter.GetBytes(content);
+            var nlSig = _nlContentSigner.GetSignature(contentBytes);
+            var gaenSig = _gaenContentSigner.GetSignature(contentBytes);
 
-            _Logger.WriteNlSig(nlSig);
-            _Logger.WriteGaenSig(gaenSig);
+            _logger.WriteNlSig(nlSig);
+            _logger.WriteGaenSig(gaenSig);
 
             var signatures = new ExposureKeySetSignaturesContentArgs
             {
@@ -79,17 +86,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
                 }
             };
 
-            var gaenSigFile = _EksContentFormatter.GetBytes(signatures);
+            var gaenSigFile = _eksContentFormatter.GetBytes(signatures);
             return await new ZippedContentBuilder().BuildEksAsync(contentBytes, gaenSigFile, nlSig);
         }
 
         private SignatureInfoArgs GetGaenSignatureInfo()
             => new SignatureInfoArgs
             {
-                SignatureAlgorithm = _GaenContentSigner.SignatureOid,
-                VerificationKeyId = _Config.VerificationKeyId,
-                VerificationKeyVersion = _Config.VerificationKeyVersion,
-                AppBundleId = _Config.AppBundleId
+                SignatureAlgorithm = _gaenContentSigner.SignatureOid,
+                VerificationKeyId = _config.VerificationKeyId,
+                VerificationKeyVersion = _config.VerificationKeyVersion,
+                AppBundleId = _config.AppBundleId
             };
     }
 }

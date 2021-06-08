@@ -10,11 +10,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
 {
     public class TotalWorkflowCountStatsQueryCommand : IStatsQueryCommand
     {
-        private readonly WorkflowDbContext _DbContext;
+        private readonly WorkflowDbContext _dbContext;
 
         public TotalWorkflowCountStatsQueryCommand(WorkflowDbContext dbContext)
         {
-            _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
         public const string Name = "WorkflowCount";
         public StatisticArgs Execute()
@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
             return new StatisticArgs
             {
                 Name = Name,
-                Value = _DbContext.KeyReleaseWorkflowStates.Count()
+                Value = _dbContext.KeyReleaseWorkflowStates.Count()
             };
         }
     }

@@ -8,34 +8,34 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Tests
 {
     public class ByteArrayEqualityComparerTests
     {
-        private readonly byte[] x = { 1, 2, 3 };
-        private readonly byte[] y = { 1, 2, 3 };
-        private readonly byte[] z = { 4, 5, 6 };
+        private readonly byte[] _x = { 1, 2, 3 };
+        private readonly byte[] _y = { 1, 2, 3 };
+        private readonly byte[] _z = { 4, 5, 6 };
 
-        private readonly ByteArrayEqualityComparer comparer = new ByteArrayEqualityComparer();
+        private readonly ByteArrayEqualityComparer _comparer = new ByteArrayEqualityComparer();
 
         [Fact]
         public void Equal_Content_Should_Be_Equal()
         {
-            Assert.True(comparer.Equals(x, y));
+            Assert.True(_comparer.Equals(_x, _y));
         }
 
         [Fact]
         public void Equal_Content_Should_Have_Same_HashCode()
         {
-            Assert.Equal(comparer.GetHashCode(x), comparer.GetHashCode(y));
+            Assert.Equal(_comparer.GetHashCode(_x), _comparer.GetHashCode(_y));
         }
 
         [Fact]
         public void Different_Content_Should_Be_Unequal()
         {
-            Assert.False(comparer.Equals(y, z));   
+            Assert.False(_comparer.Equals(_y, _z));
         }
 
         [Fact]
         public void Different_Content_Should_Have_Different_HashCode()
         {
-            Assert.NotEqual(comparer.GetHashCode(y), comparer.GetHashCode(z));
+            Assert.NotEqual(_comparer.GetHashCode(_y), _comparer.GetHashCode(_z));
         }
     }
 }

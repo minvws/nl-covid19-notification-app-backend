@@ -21,47 +21,47 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
         private const int UnpublishedTekFound = Base + 97;
         private const int FinishedNothingRemoved = Base + 98;
 
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
 
         public ExpiredWorkflowLoggingExtensions(ILogger<ExpiredWorkflowLoggingExtensions> logger)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void WriteStart()
         {
-            _Logger.LogInformation("[{name}/{id}] Begin Workflow cleanup.",
+            _logger.LogInformation("[{name}/{id}] Begin Workflow cleanup.",
                 Name, Start);
         }
 
         public void WriteFinished()
         {
-            _Logger.LogInformation("[{name}/{id}] Workflow cleanup complete.",
+            _logger.LogInformation("[{name}/{id}] Workflow cleanup complete.",
                 Name, Finished);
         }
 
         public void WriteFinishedNothingRemoved()
         {
-            _Logger.LogInformation("[{name}/{id}] No Workflows deleted - Deletions switched off.",
+            _logger.LogInformation("[{name}/{id}] No Workflows deleted - Deletions switched off.",
                 Name, FinishedNothingRemoved);
         }
 
         public void WriteReport(string report)
         {
-            _Logger.LogInformation("[{name}/{id}] {report}.",
+            _logger.LogInformation("[{name}/{id}] {report}.",
                 Name, Report,
                 report);
         }
 
         public void WriteUnpublishedTekFound()
         {
-            _Logger.LogCritical("[{name}/{id}] Authorised unpublished TEKs exist. Aborting workflow cleanup.",
+            _logger.LogCritical("[{name}/{id}] Authorised unpublished TEKs exist. Aborting workflow cleanup.",
                 Name, UnpublishedTekFound);
         }
 
         public void WriteRemovedAmount(int givenMercyCount)
         {
-            _Logger.LogInformation("[{name}/{id}] Workflows deleted - Unauthorised:{unauthorised}",
+            _logger.LogInformation("[{name}/{id}] Workflows deleted - Unauthorised:{unauthorised}",
                 Name, RemovedAmount,
                 givenMercyCount);
         }

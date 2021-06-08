@@ -12,33 +12,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
 {
     public class CorrectingGaenSigFormat
     {
-//
-// Test generated with:
-//
-// set -e
-// repeat 30 {
-//    # Generate pub/keypare
-//    openssl ecparam -name secp256k1 -genkey -noout -out ec.key
-//    openssl ec -in ec.key -pubout -out ec.pub
-//
-//    # Generate payload to sign
-//    openssl rand 1300 > payload
-//
-//    # Sign payload & check
-//    #
-//    openssl dgst -sha256 -sign ec.key payload > signature.bin
-//    openssl dgst -sha256 -verify ec.pub -signature signature.bin payload
-//
-//    # Extract the two 32 byte integers; and output these concatenated
-//    # much like .NET its cert.GetECDsaPrivateKey().SignData() does.
-//
-//    openssl asn1parse -inform DER -in signature.bin |\
-//        grep INTEGER |\
-//        sed -e 's/.*://' |\
-//        xxd -r -p - | base64 > signature.r64
-//
-//    echo \[DataRow\(\"`base64 signature.r64`\",\"`base64 signature.bin`\"\)\]
-// }
+        //
+        // Test generated with:
+        //
+        // set -e
+        // repeat 30 {
+        //    # Generate pub/keypare
+        //    openssl ecparam -name secp256k1 -genkey -noout -out ec.key
+        //    openssl ec -in ec.key -pubout -out ec.pub
+        //
+        //    # Generate payload to sign
+        //    openssl rand 1300 > payload
+        //
+        //    # Sign payload & check
+        //    #
+        //    openssl dgst -sha256 -sign ec.key payload > signature.bin
+        //    openssl dgst -sha256 -verify ec.pub -signature signature.bin payload
+        //
+        //    # Extract the two 32 byte integers; and output these concatenated
+        //    # much like .NET its cert.GetECDsaPrivateKey().SignData() does.
+        //
+        //    openssl asn1parse -inform DER -in signature.bin |\
+        //        grep INTEGER |\
+        //        sed -e 's/.*://' |\
+        //        xxd -r -p - | base64 > signature.r64
+        //
+        //    echo \[DataRow\(\"`base64 signature.r64`\",\"`base64 signature.bin`\"\)\]
+        // }
         [Theory]
         [InlineData("NtnqKDHatsWQYS1TKjxD+73qQ5BWz2zAEWqzpFs8BCyQ+LtoaMxfxtsM0o/HVUMsce2YTNSQM39Dmf6+1h8UJA==", "MEUCIDbZ6igx2rbFkGEtUyo8Q/u96kOQVs9swBFqs6RbPAQsAiEAkPi7aGjMX8bbDNKPx1VDLHHtmEzUkDN/Q5n+vtYfFCQ=")]
         [InlineData("9CqMHwPaGnEOOW28vuaw9btDgwe7chpWmMMUJJFSGykTGJT9yk86fDPuFivi2S27FdOYiAwSIxvx1ZxLaly+Tw==", "MEUCIQD0KowfA9oacQ45bby+5rD1u0ODB7tyGlaYwxQkkVIbKQIgExiU/cpPOnwz7hYr4tktuxXTmIgMEiMb8dWcS2pcvk8=")]
@@ -328,7 +328,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
         {
             var result = new StringBuilder(id.Length * 2);
             foreach (var i in id)
+            {
                 result.AppendFormat("{0:x2}", i);
+            }
 
             return result.ToString();
         }

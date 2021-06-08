@@ -43,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
             var eksBuilderV1Logger = new EksBuilderV1LoggingExtensions(lf.CreateLogger<EksBuilderV1LoggingExtensions>());
             var dtp = new StandardUtcDateTimeProvider();
-            
+
             var cmsCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
             cmsCertLoc.Setup(x => x.Path).Returns("TestRSA.p12");
             cmsCertLoc.Setup(x => x.Password).Returns("Covid-19!"); //Not a secret.
@@ -78,7 +78,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             //Act
             var result = sut.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
             Trace.WriteLine($"{keyCount} keys = {result.Length} bytes.");
-            
+
             //Assert
             Assert.True(result.Length > 0);
 
@@ -92,7 +92,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         public void EksBuilderV1WithDummy_NLSigHasDummyText()
         {
             //Arrange
-            var KeyCount = 500;
+            var keyCount = 500;
             var lf = new LoggerFactory();
             var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
             var eksBuilderV1Logger = new EksBuilderV1LoggingExtensions(lf.CreateLogger<EksBuilderV1LoggingExtensions>());
@@ -117,16 +117,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 );
 
             //Act
-            var result = sut.BuildAsync(GetRandomKeys(KeyCount, 123)).GetAwaiter().GetResult();
+            var result = sut.BuildAsync(GetRandomKeys(keyCount, 123)).GetAwaiter().GetResult();
 
             //Assert
             using var zipFileInMemory = new MemoryStream();
             zipFileInMemory.Write(result, 0, result.Length);
             using (var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false))
             {
-                var NlSignature = zipFileContent.ReadEntry(ZippedContentEntryNames.NLSignature);
-                Assert.NotNull(NlSignature);
-                Assert.Equal(NlSignature, dummySigner.DummyContent);
+                var nlSignature = zipFileContent.ReadEntry(ZippedContentEntryNames.NlSignature);
+                Assert.NotNull(nlSignature);
+                Assert.Equal(nlSignature, dummySigner.DummyContent);
             }
         }
 

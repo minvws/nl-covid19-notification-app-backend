@@ -17,8 +17,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
         /// <returns></returns>
         public byte[] Format(InteropKeyFormatterArgs[] args)
         {
-            if (args == null) throw new ArgumentNullException(nameof(args));
-            if (args.Any(x => x == null)) throw new ArgumentException("At least one element is null.", nameof(args));
+            if (args == null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
+            if (args.Any(x => x == null))
+            {
+                throw new ArgumentException("At least one element is null.", nameof(args));
+            }
 
             var result = new DiagnosisKeyBatch();
             result.Keys.AddRange(args.Select(Map));
@@ -30,11 +37,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             var result = new DiagnosisKey
             {
                 KeyData = ByteString.CopyFrom(arg.Value.KeyData),
-                DaysSinceOnsetOfSymptoms =  arg.DaysSinceSymtpomsOnset,  //TODO move to RSN (int) (Math.Floor((_DateTimeProvider.Snapshot - arg.DateOfSyptomsOnset).TotalDays)), 
-                RollingPeriod = (uint) arg.Value.RollingPeriod,
-                RollingStartIntervalNumber = (uint) arg.Value.RollingStartNumber,
+                DaysSinceOnsetOfSymptoms = arg.DaysSinceSymtpomsOnset,  //TODO move to RSN (int) (Math.Floor((_DateTimeProvider.Snapshot - arg.DateOfSyptomsOnset).TotalDays)), 
+                RollingPeriod = (uint)arg.Value.RollingPeriod,
+                RollingStartIntervalNumber = (uint)arg.Value.RollingStartNumber,
                 TransmissionRiskLevel = arg.TransmissionRiskLevel,
-                Origin = arg.Origin, 
+                Origin = arg.Origin,
                 ReportType = arg.ReportType,
             };
             result.VisitedCountries.AddRange(arg.CountriesOfInterest); //arg.CountriesOfInterest.Except("NL")?

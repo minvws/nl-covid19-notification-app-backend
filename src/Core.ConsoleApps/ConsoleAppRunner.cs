@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps
 {
     public sealed class ConsoleAppRunner
     {
-        private ServiceProvider _ServiceProvider;
+        private ServiceProvider _serviceProvider;
 
         public void Execute(string[] args, Action<IServiceCollection, IConfigurationRoot> configure, Action<IServiceProvider, string[]> start)
         {
@@ -33,15 +33,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps
                 Log.Debug("Created the logger");
 
                 configure(serviceCollection, configuration);
-                _ServiceProvider = serviceCollection.BuildServiceProvider();
+                _serviceProvider = serviceCollection.BuildServiceProvider();
 
                 Log.Debug("About to start the console app");
 
-                start(_ServiceProvider, args);
+                start(_serviceProvider, args);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _ServiceProvider.GetRequiredService<ILogger<ConsoleAppRunner>>()
+                _serviceProvider.GetRequiredService<ILogger<ConsoleAppRunner>>()
                     .LogCritical(ex.ToString());
             }
             finally

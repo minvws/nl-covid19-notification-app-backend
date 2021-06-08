@@ -14,16 +14,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private const int Base = LoggingCodex.EksJobContentWriter;
         private const int Published = Base + 1;
 
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
 
         public EksJobContentWriterLoggingExtensions(ILogger<EksJobContentWriterLoggingExtensions> logger)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void WritePublished(int count)
         {
-            _Logger.LogInformation("[{name}/{id}] Published EKSs - Count:{Count}.",
+            _logger.LogInformation("[{name}/{id}] Published EKSs - Count:{Count}.",
                 Name, Published,
                 count);
         }

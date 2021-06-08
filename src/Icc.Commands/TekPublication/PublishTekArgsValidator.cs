@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
     {
         private readonly ILuhnModNValidator _luhnModNValidator;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
-        
+
         public PublishTekArgsValidator(ILuhnModNValidator luhnModNValidator, IUtcDateTimeProvider dateTimeProvider)
         {
             _luhnModNValidator = luhnModNValidator ?? throw new ArgumentNullException(nameof(luhnModNValidator));
@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
         {
             if (args == null)
             {
-                return new[] {"Args is null."};
+                return new[] { "Args is null." };
             }
 
             var errors = new List<string>();
@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             // The PubTEK key cannot be empty
             if (string.IsNullOrWhiteSpace(args.GGDKey))
             {
-                return new[] {"PubTEK key is null or empty."};
+                return new[] { "PubTEK key is null or empty." };
             }
 
             // The PubTEK key should be 6 or 7 characters in length
@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             {
                 return new[] { "PubTEK key has incorrect length." };
             }
-            
+
             // The PubTEK key should only have character from the given set
             if (args.GGDKey.Any(x => !_luhnModNValidator.Config.CharacterSet.Contains(x)))
             {

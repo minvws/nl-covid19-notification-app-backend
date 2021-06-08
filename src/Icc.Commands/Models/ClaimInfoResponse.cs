@@ -6,6 +6,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Models
 {
     public class ClaimInfoResponse
     {
-        public ClaimInfo User { get; set; } 
+        public ClaimInfo User { get; set; }
     }
 }

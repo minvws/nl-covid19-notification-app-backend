@@ -13,32 +13,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 {
     public class JwtClaimValidator : IJwtClaimValidator
     {
-        private readonly ITheIdentityHubService _TheIdentityHubService;
-        private readonly ILogger<JwtClaimValidator> _Logger;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly IIccPortalConfig _IccPortalConfig;
+        private readonly ITheIdentityHubService _theIdentityHubService;
+        private readonly ILogger<JwtClaimValidator> _logger;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly IIccPortalConfig _iccPortalConfig;
 
         public JwtClaimValidator(ITheIdentityHubService theIdentityHubService, ILogger<JwtClaimValidator> logger,
             IUtcDateTimeProvider dateTimeProvider, IIccPortalConfig iccPortalConfig)
         {
-            _TheIdentityHubService =
+            _theIdentityHubService =
                 theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _IccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _iccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
         }
 
         public async Task<bool> ValidateAsync(IDictionary<string, string> decodedClaims)
         {
-            if (decodedClaims == null) throw new ArgumentNullException(nameof(decodedClaims));
+            if (decodedClaims == null)
+            {
+                throw new ArgumentNullException(nameof(decodedClaims));
+            }
 
             if (!decodedClaims.ContainsKey("exp") || !decodedClaims.ContainsKey("access_token"))
             {
                 return false;
             }
             // check exp max. 3 hrs
-            
-            var maxExpiry = _DateTimeProvider.Snapshot.AddHours(_IccPortalConfig.ClaimLifetimeHours).ToUnixTimeU64();
+
+            var maxExpiry = _dateTimeProvider.Snapshot.AddHours(_iccPortalConfig.ClaimLifetimeHours).ToUnixTimeU64();
 
             if (!ulong.TryParse(decodedClaims["exp"], out var tokenExpiry))
             {
@@ -47,11 +50,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 
             if (tokenExpiry > maxExpiry)
             {
-                _Logger.WriteTokenExpTooLong(_IccPortalConfig.ClaimLifetimeHours.ToString());
+                _logger.WriteTokenExpTooLong(_iccPortalConfig.ClaimLifetimeHours.ToString());
                 return false;
             }
-            
-            return await _TheIdentityHubService.VerifyTokenAsync(decodedClaims["access_token"]);
+
+            return await _theIdentityHubService.VerifyTokenAsync(decodedClaims["access_token"]);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config
         /// Used in Icc.Commands only.
         /// </summary>
         double ClaimLifetimeHours { get; }
-        
+
         /// <summary>
         /// Used in Icc.WebApi only.
         /// </summary>

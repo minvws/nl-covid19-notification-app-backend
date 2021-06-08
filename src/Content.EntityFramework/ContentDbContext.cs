@@ -19,7 +19,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityF
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
+            if (modelBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(modelBuilder));
+            }
 
             modelBuilder.Entity<ContentEntity>().HasIndex(u => u.PublishingId);
             modelBuilder.Entity<ContentEntity>().HasIndex(u => u.Type);

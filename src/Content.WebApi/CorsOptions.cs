@@ -12,13 +12,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
 {
     public class CorsOptions : ICorsOptions
     {
-        private readonly IWebHostEnvironment _Environment;
-        private readonly ContentApiConfig _Config;
+        private readonly IWebHostEnvironment _environment;
+        private readonly ContentApiConfig _config;
 
         public CorsOptions(IWebHostEnvironment environment, ContentApiConfig config)
         {
-            _Environment = environment ?? throw new ArgumentNullException(nameof(environment));
-            _Config = config ?? throw new ArgumentNullException(nameof(config));
+            _environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public void Build(CorsPolicyBuilder options)
@@ -29,16 +29,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
         private string[] GetEnvOrigins()
         {
             // Swaggering via these urls
-            if (_Environment.IsDevelopment())
+            if (_environment.IsDevelopment())
             {
-                var originBuilder = new OriginBuilder(_Config.Url);
+                var originBuilder = new OriginBuilder(_config.Url);
                 return new[]
                 {
                     originBuilder.GetOrigin()
                 };
             }
 
-            return new[] {""}; // Denies Swagger on acceptatie and productie 
+            return new[] { "" }; // Denies Swagger on acceptatie and productie 
         }
     }
 }

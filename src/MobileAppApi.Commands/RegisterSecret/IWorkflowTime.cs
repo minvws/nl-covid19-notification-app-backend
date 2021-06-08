@@ -8,7 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 {
     public interface IWorkflowTime
     {
-        
+
 
         DateTime Expiry(DateTime utcNow);
         long TimeToLiveSeconds(DateTime utcNow, DateTime utcExpiry);

@@ -15,8 +15,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             await using var result = new MemoryStream();
             using (var archive = new ZipArchive(result, ZipArchiveMode.Create, true))
             {
-                foreach(var i in args)
+                foreach (var i in args)
+                {
                     await archive.WriteEntryAsync(i.EntryName, i.Value);
+                }
             }
 
             return result.ToArray();

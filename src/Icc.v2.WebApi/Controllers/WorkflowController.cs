@@ -38,7 +38,10 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Controllers
         [Route("/pubtek")]
         public async Task<IActionResult> PutPubTek([FromBody] PublishTekArgs args, [FromServices] IPublishTekService publishTekService)
         {
-            if (publishTekService == null) throw new ArgumentNullException(nameof(publishTekService));
+            if (publishTekService == null)
+            {
+                throw new ArgumentNullException(nameof(publishTekService));
+            }
 
             _logger.WritePubTekStart();
 
