@@ -39,7 +39,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         public async Task ExecuteAsync(string[] args)
         {
             if (args.Length < 2)
+            {
                 throw new ArgumentException("Not enough args.");
+            }
 
             var contentArgs = new ContentArgs
             {
@@ -49,7 +51,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             };
 
             if (!_validator.IsValid(contentArgs))
+            {
                 throw new InvalidOperationException("Content not valid.");
+            }
 
             _logger.WriteStartWriting(contentArgs.ContentType);
 
@@ -73,19 +77,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         private string ParseContentType(string arg)
         {
             if (arg.Equals("-a", StringComparison.InvariantCultureIgnoreCase))
+            {
                 return ContentTypes.AppConfig;
+            }
 
             if (arg.Equals("-r", StringComparison.InvariantCultureIgnoreCase))
+            {
                 return ContentTypes.RiskCalculationParameters;
+            }
 
             if (arg.Equals("-r2", StringComparison.InvariantCultureIgnoreCase))
+            {
                 return ContentTypes.RiskCalculationParametersV3;
+            }
 
             if (arg.Equals("-b", StringComparison.InvariantCultureIgnoreCase))
+            {
                 return ContentTypes.ResourceBundle;
+            }
 
             if (arg.Equals("-b2", StringComparison.InvariantCultureIgnoreCase))
+            {
                 return ContentTypes.ResourceBundleV3;
+            }
 
             throw new InvalidOperationException("Cannot parse Content Type.");
         }

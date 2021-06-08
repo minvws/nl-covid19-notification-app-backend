@@ -16,10 +16,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         public string[] Validate(Tek[] values)
         {
             if (values == null)
+            {
                 throw new ArgumentNullException(nameof(values));
+            }
 
             if (values.Length < 2)
+            {
                 return new string[0];
+            }
 
             return new TekListDuplicateKeyDataValidator().Validate(values);
         }

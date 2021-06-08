@@ -17,7 +17,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
         public SqlServerDbContextOptionsBuilder(IEfDbConfig efDbConfig, ILoggerFactory loggerFactory)
         {
             if (efDbConfig == null)
+            {
                 throw new ArgumentNullException(nameof(efDbConfig));
+            }
+
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
 
             _connectionStringBuilder = new SqlConnectionStringBuilder(efDbConfig.ConnectionString)

@@ -23,10 +23,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         public string[] Validate(PostTeksArgs args)
         {
             if (args == null)
+            {
                 return new[] { "Null value." };
+            }
 
             if (_config.TemporaryExposureKeyCountMin > args.Keys.Length || args.Keys.Length > _config.TemporaryExposureKeyCountMax)
+            {
                 return new[] { $"Invalid number of keys - {args.Keys.Length}." };
+            }
 
             var keyErrors = new List<string>();
 

@@ -54,7 +54,9 @@ namespace SigTestFileCreator
             }
 
             if (Environment.UserInteractive && !WindowsIdentityQueries.CurrentUserIsAdministrator())
+            {
                 _logger.WriteNoElevatedPrivs();
+            }
 
             LoadFile(_fileInputLocation);
             var eksZipOutput = await BuildEksOutputAsync();

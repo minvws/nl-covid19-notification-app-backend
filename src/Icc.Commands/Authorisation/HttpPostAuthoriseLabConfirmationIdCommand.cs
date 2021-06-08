@@ -24,7 +24,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         public async Task<AuthorisationResponse> ExecuteAsync(AuthorisationArgs args)
         {
             if (_logger.LogValidationMessages(_authorisationArgsValidator.Validate(args)))
+            {
                 return null;
+            }
 
             var success = await _authorisationWriter.ExecuteAsync(args);
 

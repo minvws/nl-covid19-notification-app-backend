@@ -12,7 +12,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
         public DkProcessingItem Execute(DkProcessingItem value)
         {
             if (value == null)
+            {
                 return value;
+            }
 
             if (!value.Metadata.TryGetValue(DosDecodingDiagnosticKeyProcessor.DecodedDsosMetadataKey, out var decodedDos))
             {

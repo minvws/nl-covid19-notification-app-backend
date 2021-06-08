@@ -20,7 +20,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         public static async Task<ContentEntity> SafeGetContentAsync(this DbContext dbContextProvider, string type, string id, DateTime now)
         {
             if (dbContextProvider == null)
+            {
                 throw new ArgumentNullException(nameof(dbContextProvider));
+            }
+
             return await dbContextProvider.Set<ContentEntity>()
                 .Where(x => x.PublishingId == id && x.Type == type && x.Release < now)
                 .OrderByDescending(x => x.Release)
@@ -34,7 +37,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         public static async Task<ContentEntity> SafeGetLatestContentAsync(this DbContext dbContextProvider, string type, DateTime now)
         {
             if (dbContextProvider == null)
+            {
                 throw new ArgumentNullException(nameof(dbContextProvider));
+            }
+
             return await dbContextProvider.Set<ContentEntity>()
                 .Where(x => x.Release < now && x.Type == type)
                 .OrderByDescending(x => x.Release)
@@ -48,7 +54,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         public static async Task<string> SafeGetLatestContentIdAsync(this DbContext dbContextProvider, string type, DateTime now)
         {
             if (dbContextProvider == null)
+            {
                 throw new ArgumentNullException(nameof(dbContextProvider));
+            }
+
             return await dbContextProvider.Set<ContentEntity>()
                 .Where(x => x.Release < now && x.Type == type)
                 .OrderByDescending(x => x.Release)

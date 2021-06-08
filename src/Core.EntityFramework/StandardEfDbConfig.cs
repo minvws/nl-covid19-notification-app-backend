@@ -16,7 +16,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             if (string.IsNullOrWhiteSpace(connStringName))
+            {
                 throw new ArgumentException(nameof(connStringName));
+            }
+
             _connStringName = connStringName;
         }
 
@@ -27,7 +30,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
                 var result = _configuration.GetConnectionString(_connStringName);
 
                 if (string.IsNullOrWhiteSpace(result))
+                {
                     throw new MissingConfigurationValueException(_connStringName);
+                }
 
                 return result;
             }

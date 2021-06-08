@@ -25,7 +25,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         public async Task<IActionResult> ExecuteAsync(AuthorisationArgs args)
         {
             if (_logger.LogValidationMessages(_authorisationArgsValidator.Validate(args)))
+            {
                 return new BadRequestResult();
+            }
 
             var newPollToken = await _authorisationWriter.ExecuteAsync(args);
 

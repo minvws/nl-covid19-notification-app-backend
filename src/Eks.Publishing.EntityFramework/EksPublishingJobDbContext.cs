@@ -21,7 +21,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFra
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null)
+            {
                 throw new ArgumentNullException(nameof(modelBuilder));
+            }
 
             modelBuilder.Entity<EksCreateJobInputEntity>().HasIndex(x => x.TransmissionRiskLevel);
             modelBuilder.Entity<EksCreateJobInputEntity>().HasIndex(x => x.KeyData);

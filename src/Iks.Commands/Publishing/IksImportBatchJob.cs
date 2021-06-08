@@ -43,7 +43,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                 await processor.Execute(item);
 
                 if (!item.Error)
+                {
                     item.Accepted = _dateTimeProvider.Snapshot;
+                }
 
                 _iksInDbContext.Update(item);
                 _iksInDbContext.SaveChanges();

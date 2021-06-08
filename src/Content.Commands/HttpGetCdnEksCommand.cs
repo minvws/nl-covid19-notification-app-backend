@@ -23,7 +23,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         {
             var e = await _getCommand.ExecuteAsync(httpContext, type, id);
             if (e == null)
+            {
                 return;
+            }
+
             _cacheControlHeaderProcessor.Execute(httpContext, e);
             await httpContext.Response.Body.WriteAsync(e.Content);
         }

@@ -21,12 +21,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         public async Task ExecuteAsync(TekWriteArgs args)
         {
             if (args == null)
+            {
                 throw new ArgumentNullException(nameof(args));
+            }
 
             var entities = args.NewItems.Select(Mapper.MapToEntity).ToArray();
 
             foreach (var e in entities)
+            {
                 e.Owner = args.WorkflowStateEntityEntity;
+            }
 
             await _dbContextProvider.TemporaryExposureKeys.AddRangeAsync(entities);
         }

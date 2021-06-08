@@ -13,7 +13,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public Range(T lo, T hi)
         {
             if (lo.CompareTo(hi) > 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(hi), "lo > hi");
+            }
 
             Lo = lo;
             Hi = hi;
@@ -36,7 +38,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
+            {
                 return false;
+            }
+
             return obj is Range<T> range && Equals(range);
         }
 
@@ -90,9 +95,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         {
             ////Check.Require(lo.CompareTo(hi) <= 0);
             if (value.CompareTo(Lo) < 0)
+            {
                 return Lo;
+            }
+
             if (value.CompareTo(Hi) > 0)
+            {
                 return Hi;
+            }
 
             return value;
         }

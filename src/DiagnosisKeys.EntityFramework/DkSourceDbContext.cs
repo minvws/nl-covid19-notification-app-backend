@@ -21,7 +21,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFram
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null)
+            {
                 throw new ArgumentNullException(nameof(modelBuilder));
+            }
 
             modelBuilder.Entity<DiagnosisKeyEntity>().OwnsOne(p => p.Local);
             modelBuilder.Entity<DiagnosisKeyEntity>().OwnsOne(p => p.Efgs);

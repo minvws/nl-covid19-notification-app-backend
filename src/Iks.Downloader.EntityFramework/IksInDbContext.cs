@@ -21,7 +21,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFra
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null)
+            {
                 throw new ArgumentNullException(nameof(modelBuilder));
+            }
 
             base.OnModelCreating(modelBuilder);
 

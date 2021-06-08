@@ -31,7 +31,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         public async Task ExecuteAsync(ContentArgs args)
         {
             if (args == null)
+            {
                 throw new ArgumentNullException(nameof(args));
+            }
 
             var contentBytes = Encoding.UTF8.GetBytes(args.Json);
 

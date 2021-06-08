@@ -13,7 +13,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
         public DkProcessingItem Execute(DkProcessingItem value)
         {
             if (value == null)
+            {
                 return value;
+            }
 
             if (!new DsosEncodingService().TryDecode(value.DiagnosisKey.Efgs.DaysSinceSymptomsOnset.Value, out var result))
             {

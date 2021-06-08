@@ -20,9 +20,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         public void Execute(HttpContext httpContext, ContentEntity content)
         {
             if (httpContext == null)
+            {
                 throw new ArgumentNullException(nameof(httpContext));
+            }
+
             if (content == null)
+            {
                 throw new ArgumentNullException(nameof(content));
+            }
 
             var ttl = _eksTtlCalculator.Execute(content.Created);
             httpContext.Response.Headers.Add("cache-control", $"public, immutable, max-age={ ttl }, s-maxage={ ttl }");

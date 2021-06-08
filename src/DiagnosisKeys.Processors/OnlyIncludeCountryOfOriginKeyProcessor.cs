@@ -17,7 +17,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
         public OnlyIncludeCountryOfOriginKeyProcessor(IAcceptableCountriesSetting settings)
         {
             if (settings == null)
+            {
                 throw new ArgumentNullException(nameof(settings));
+            }
+
             _acceptedCountries = settings.AcceptableCountries;
         }
 

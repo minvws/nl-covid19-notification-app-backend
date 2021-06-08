@@ -32,10 +32,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
             base.OnResultExecuting(context);
 
             if (!(context.Result is IStatusCodeActionResult statusCodeResult))
+            {
                 return;
+            }
 
             if (!statusCodeResult.StatusCode.HasValue || statusCodeResult.StatusCode.Value == 200)
+            {
                 return;
+            }
 
             _logger.WriteCallFailed(context.ActionDescriptor);
             context.Result = new OkResult();

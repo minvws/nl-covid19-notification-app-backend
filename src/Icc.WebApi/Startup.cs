@@ -57,7 +57,9 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             if (services == null)
+            {
                 throw new ArgumentNullException(nameof(services));
+            }
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -125,7 +127,9 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
             services.AddCors();
 
             if (_isDev)
+            {
                 services.AddSwaggerGen(StartupSwagger);
+            }
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -214,7 +218,9 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
             app.UseForwardedHeaders();
 
             if (app == null)
+            {
                 throw new ArgumentNullException(nameof(app));
+            }
 
             var iccPortalConfig = new IccPortalConfig(_configuration);
 

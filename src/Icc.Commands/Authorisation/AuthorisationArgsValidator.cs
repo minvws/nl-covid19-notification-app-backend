@@ -23,7 +23,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         public string[] Validate(AuthorisationArgs args)
         {
             if (args == null)
+            {
                 return new[] { "Args is null." };
+            }
 
             //Should be a date.
             args.DateOfSymptomsOnset = args.DateOfSymptomsOnset.Date;
@@ -32,7 +34,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
             errors.AddRange(_labConfirmationIdService.Validate(args.LabConfirmationId));
 
             if (_dateTimeProvider.Snapshot.Date.AddDays(-30) > args.DateOfSymptomsOnset.Date || args.DateOfSymptomsOnset.Date > _dateTimeProvider.Snapshot.Date)
+            {
                 errors.Add($"Date of symptoms onset out of range - {args.DateOfSymptomsOnset}.");
+            }
 
             return errors.ToArray();
         }

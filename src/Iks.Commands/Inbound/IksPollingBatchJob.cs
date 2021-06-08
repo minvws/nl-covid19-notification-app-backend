@@ -148,7 +148,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             var result = _iksInDbContext.InJob.SingleOrDefault();
 
             if (result != null)
+            {
                 return result;
+            }
 
             result = new IksInJobEntity();
             _iksInDbContext.InJob.Add(result);

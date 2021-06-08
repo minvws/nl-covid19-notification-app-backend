@@ -41,7 +41,9 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi.Controllers
         public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args, [FromServices] HttpPostAuthoriseCommand command)
         {
             if (command == null)
+            {
                 throw new ArgumentNullException(nameof(command));
+            }
 
             _logger.WriteLabStart();
             return await command.ExecuteAsync(args);
@@ -58,7 +60,9 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi.Controllers
         public async Task<PublishTekResponse> PutPubTek([FromBody] PublishTekArgs args, [FromServices] IPublishTekService publishTekService)
         {
             if (publishTekService == null)
+            {
                 throw new ArgumentNullException(nameof(publishTekService));
+            }
 
             if (!FixOrValidatePubTEK(args))
             {

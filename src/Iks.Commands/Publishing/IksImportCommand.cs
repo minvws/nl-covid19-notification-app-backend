@@ -109,25 +109,37 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
         private bool Valid(DiagnosisKey value)
         {
             if (value == null)
+            {
                 return false;
+            }
 
             if (!_countryValidator.IsValid(value.Origin))
+            {
                 return false;
+            }
 
             var rollingStartMin = _tekValidatorConfig.RollingStartNumberMin;
             var rollingStartToday = _dateTimeProvider.Snapshot.Date.ToRollingStartNumber();
 
             if (!(rollingStartMin <= value.RollingStartIntervalNumber && value.RollingStartIntervalNumber <= rollingStartToday))
+            {
                 return false;
+            }
 
             if (!(UniversalConstants.RollingPeriodRange.Lo <= value.RollingPeriod && value.RollingPeriod <= UniversalConstants.RollingPeriodRange.Hi))
+            {
                 return false;
+            }
 
             if (value.KeyData == null)
+            {
                 return false;
+            }
 
             if (value.KeyData.Length != UniversalConstants.DailyKeyDataByteCount)
+            {
                 return false;
+            }
 
             return true;
         }

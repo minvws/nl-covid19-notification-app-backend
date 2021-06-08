@@ -328,7 +328,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
         {
             var result = new StringBuilder(id.Length * 2);
             foreach (var i in id)
+            {
                 result.AppendFormat("{0:x2}", i);
+            }
 
             return result.ToString();
         }

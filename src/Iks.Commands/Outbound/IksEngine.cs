@@ -65,7 +65,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         public async Task<IksEngineResult> ExecuteAsync()
         {
             if (_fired)
+            {
                 throw new InvalidOperationException("One use only.");
+            }
 
             _fired = true;
 
@@ -75,7 +77,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             _logger.LogInformation("Started - JobName:{JobName}", _jobName);
 
             if (Environment.UserInteractive && !WindowsIdentityQueries.CurrentUserIsAdministrator())
+            {
                 _logger.LogWarning("{JobName} started WITHOUT elevated privileges - errors may occur when signing content.", _jobName);
+            }
 
             _engineResult.Started = _dateTimeProvider.Snapshot; //Align with the logged job name.
 
@@ -184,7 +188,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             _logger.LogInformation("Mark TEKs as used.");
 
             foreach (var i in _output)
+            {
                 i.Used = true;
+            }
 
             //Could be 750k in this hit
             await using (var dbc2 = _publishingDbContextFac())

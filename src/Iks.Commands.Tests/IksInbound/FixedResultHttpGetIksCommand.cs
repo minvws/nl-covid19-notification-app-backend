@@ -37,7 +37,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
         {
             _responses = responses;
             foreach (var key in responses.Keys)
+            {
                 _callIndexes[key] = 0;
+            }
         }
 
         public void AddItem(HttpGetIksSuccessResult item, DateTime date)
@@ -53,7 +55,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var dateResponses = _responses[dateString];
 
             if (dateResponses.Count > 0)
+            {
                 dateResponses.Last().NextBatchTag = item.BatchTag;
+            }
 
             dateResponses.Add(item);
         }

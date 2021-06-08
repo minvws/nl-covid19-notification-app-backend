@@ -36,7 +36,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
         public EksCreateJobInputEntity[] Execute(int count)
         {
             if (count < 1)
+            {
                 throw new ArgumentOutOfRangeException(nameof(count), "Count > 0.");
+            }
 
             var result = new EksCreateJobInputEntity[count];
             for (var i = 0; i < count; i++)

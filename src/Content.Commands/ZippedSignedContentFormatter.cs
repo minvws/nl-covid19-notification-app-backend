@@ -20,7 +20,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         public async Task<byte[]> SignedContentPacketAsync(byte[] content)
         {
             if (content == null)
+            {
                 throw new ArgumentNullException(nameof(content));
+            }
 
             var signature = _contentSigner.GetSignature(content);
             return await new ZippedContentBuilder().BuildStandardAsync(content, signature);

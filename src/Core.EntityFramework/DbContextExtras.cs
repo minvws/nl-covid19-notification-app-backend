@@ -18,22 +18,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
         public static void EnsureNoChangesOrTransaction<T>(this T context) where T : DbContext
         {
             if (context == null)
+            {
                 throw new ArgumentNullException(nameof(context));
+            }
 
             if (context.ChangeTracker.HasChanges())
+            {
                 throw new InvalidOperationException("Db context has unsaved changes.");
+            }
 
             if (context.Database.CurrentTransaction != null)
+            {
                 context.Database.RollbackTransaction();
+            }
         }
 
         public static IDbContextTransaction BeginTransaction(this DbContext context)
         {
             if (context == null)
+            {
                 throw new ArgumentNullException(nameof(context));
+            }
 
             if (context.Database.CurrentTransaction != null)
+            {
                 throw new InvalidOperationException("Database has existing transaction.");
+            }
 
             return context.Database.BeginTransaction();
         }
@@ -41,16 +51,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
         public static void SaveAndCommit(this DbContext context)
         {
             if (context == null)
+            {
                 throw new ArgumentNullException(nameof(context));
+            }
 
             if (context.Database.CurrentTransaction == null)
+            {
                 throw new InvalidOperationException("No current transaction.");
+            }
 
             context.SaveChanges();
             context.Database.CurrentTransaction.Commit();
 
             if (context.Database.CurrentTransaction != null)
+            {
                 throw new InvalidOperationException("Committed context still has transaction.");
+            }
         }
     }
 }

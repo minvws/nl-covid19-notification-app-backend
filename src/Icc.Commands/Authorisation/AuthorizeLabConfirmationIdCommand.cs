@@ -29,7 +29,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         public async Task<bool> ExecuteAsync(AuthorisationArgs args)
         {
             if (args == null)
+            {
                 throw new ArgumentNullException(nameof(args));
+            }
 
             var wf = await _workflowDb
                 .KeyReleaseWorkflowStates

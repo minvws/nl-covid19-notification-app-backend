@@ -50,7 +50,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
                 _logger.WriteTotalEksFound(cutoff, result.Zombies);
                 foreach (var i in zombies)
+                {
                     _logger.WriteEntryFound(i.PublishingId, i.Release);
+                }
 
                 if (!_config.CleanupDeletesData)
                 {
@@ -68,7 +70,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _logger.WriteRemovedAmount(result.GivenMercy, result.Remaining);
 
             if (result.Reconciliation != 0)
+            {
                 _logger.WriteReconciliationFailed(result.Reconciliation);
+            }
 
             _logger.WriteFinished();
             return result;

@@ -222,15 +222,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf
                 return true;
             }
             if (AppBundleId != other.AppBundleId)
+            {
                 return false;
+            }
+
             if (AndroidPackage != other.AndroidPackage)
+            {
                 return false;
+            }
+
             if (VerificationKeyVersion != other.VerificationKeyVersion)
+            {
                 return false;
+            }
+
             if (VerificationKeyId != other.VerificationKeyId)
+            {
                 return false;
+            }
+
             if (SignatureAlgorithm != other.SignatureAlgorithm)
+            {
                 return false;
+            }
+
             return Equals(_unknownFields, other._unknownFields);
         }
 
@@ -239,15 +254,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf
         {
             var hash = 1;
             if (HasAppBundleId)
+            {
                 hash ^= AppBundleId.GetHashCode();
+            }
+
             if (HasAndroidPackage)
+            {
                 hash ^= AndroidPackage.GetHashCode();
+            }
+
             if (HasVerificationKeyVersion)
+            {
                 hash ^= VerificationKeyVersion.GetHashCode();
+            }
+
             if (HasVerificationKeyId)
+            {
                 hash ^= VerificationKeyId.GetHashCode();
+            }
+
             if (HasSignatureAlgorithm)
+            {
                 hash ^= SignatureAlgorithm.GetHashCode();
+            }
+
             if (_unknownFields != null)
             {
                 hash ^= _unknownFields.GetHashCode();

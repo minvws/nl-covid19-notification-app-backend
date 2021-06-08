@@ -78,7 +78,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
         public RemoveExpiredWorkflowsResult Execute()
         {
             if (_result != null)
+            {
                 throw new InvalidOperationException("Object already used.");
+            }
 
 
             _result = new RemoveExpiredWorkflowsResult();
@@ -111,7 +113,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
                 }
 
                 using (dbc.BeginTransaction())
+                {
                     ReadStats(_result.After, dbc);
+                }
 
                 LogReport(_result.Before, "Workflow stats after cleanup:");
                 _logger.WriteFinished();

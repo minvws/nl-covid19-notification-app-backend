@@ -15,7 +15,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
             var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
             if (string.IsNullOrWhiteSpace(environmentName))
+            {
                 environmentName = "Development";
+            }
 
             return new ConfigurationBuilder()
                 .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)

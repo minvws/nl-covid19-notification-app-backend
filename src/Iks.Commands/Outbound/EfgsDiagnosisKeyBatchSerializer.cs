@@ -53,7 +53,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             var s = batchArray.OrderBy(_ => Convert.ToBase64String(_.ToArray()), StringComparer.Ordinal);
             var resultArray = new List<byte>();
             foreach (var x in s)
+            {
                 resultArray.AddRange(x);
+            }
 
             return resultArray.ToArray();
         }
@@ -72,7 +74,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         {
             var bytes = BitConverter.GetBytes(data);
             if (BitConverter.IsLittleEndian)
+            {
                 Array.Reverse(bytes);
+            }
+
             AddBase64(bytes);
         }
 
@@ -80,7 +85,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         {
             var bytes = BitConverter.GetBytes(data);
             if (BitConverter.IsLittleEndian)
+            {
                 Array.Reverse(bytes);
+            }
+
             AddBase64(bytes);
         }
 

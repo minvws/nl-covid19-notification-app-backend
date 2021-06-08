@@ -51,7 +51,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 var request = new HttpRequestMessage { RequestUri = uri };
                 request.Headers.Add("Accept", ApplicationProtobuf);
                 if (!string.IsNullOrWhiteSpace(batchTag))
+                {
                     request.Headers.Add("batchTag", batchTag);
+                }
+
                 if (_efgsConfig.SendClientAuthenticationHeaders)
                 {
                     request.Headers.Add("X-SSL-Client-SHA256", clientCert.ComputeSha256Hash());

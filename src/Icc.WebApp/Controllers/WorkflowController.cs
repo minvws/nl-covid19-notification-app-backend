@@ -44,7 +44,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
         public async Task<PublishTekResponse> PutPubTek([FromBody] PublishTekArgs args)
         {
             if (_restApiClient == null)
+            {
                 throw new ArgumentNullException(nameof(_restApiClient));
+            }
 
             // Fail fast -> If the code is not valid, return the response with false result. 
             if (!FixOrValidatePubTEK(args))

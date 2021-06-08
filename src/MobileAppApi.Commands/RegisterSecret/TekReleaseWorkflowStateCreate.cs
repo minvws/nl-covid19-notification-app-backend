@@ -103,7 +103,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private bool CanRetry(DbUpdateException ex)
         {
             if (!(ex.InnerException is SqlException sqlEx))
+            {
                 return false;
+            }
 
             var errors = new SqlError[sqlEx.Errors.Count];
             sqlEx.Errors.CopyTo(errors, 0);

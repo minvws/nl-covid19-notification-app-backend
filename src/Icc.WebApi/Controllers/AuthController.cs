@@ -35,7 +35,9 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi.Controllers
             [FromServices] HttpPostAuthorizationTokenCommand command)
         {
             if (command == null)
+            {
                 throw new ArgumentNullException(nameof(command));
+            }
 
             _logger.WriteAuthStart();
             return await command.ExecuteAsync(HttpContext, args);

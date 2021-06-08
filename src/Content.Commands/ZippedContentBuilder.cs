@@ -16,7 +16,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             using (var archive = new ZipArchive(result, ZipArchiveMode.Create, true))
             {
                 foreach (var i in args)
+                {
                     await archive.WriteEntryAsync(i.EntryName, i.Value);
+                }
             }
 
             return result.ToArray();

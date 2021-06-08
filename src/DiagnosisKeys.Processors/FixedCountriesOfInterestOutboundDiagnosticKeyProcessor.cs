@@ -14,14 +14,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
         public FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(IOutboundFixedCountriesOfInterestSetting settings)
         {
             if (settings == null)
+            {
                 throw new ArgumentNullException(nameof(settings));
+            }
+
             _value = settings.CountriesOfInterest;
         }
 
         public DkProcessingItem Execute(DkProcessingItem value)
         {
             if (value.DiagnosisKey.Origin != TekOrigin.Local)
+            {
                 throw new InvalidOperationException("This is a local processor for local DKs. You wouldn't like it here...");
+            }
 
             value.DiagnosisKey.Efgs.CountriesOfInterest = string.Join(",", _value);
             return value;

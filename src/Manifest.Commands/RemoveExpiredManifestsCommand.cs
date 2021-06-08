@@ -34,7 +34,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         public async Task<RemoveExpiredManifestsCommandResult> ExecuteAsync()
         {
             if (_result != null)
+            {
                 throw new InvalidOperationException("Object already used.");
+            }
 
             _result = new RemoveExpiredManifestsCommandResult();
 
@@ -54,7 +56,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                 _result.Zombies = zombies.Count;
                 _logger.WriteRemovingManifests(zombies.Count);
                 foreach (var i in zombies)
+                {
                     _logger.WriteRemovingEntry(i.PublishingId, i.Release);
+                }
 
                 if (zombies.Count == 0)
                 {
@@ -80,10 +84,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             _logger.WriteFinished(_result.Zombies, _result.GivenMercy);
 
             if (_result.Reconciliation != 0)
+            {
                 _logger.WriteReconcilliationFailed(_result.Reconciliation);
+            }
 
             if (_result.DeletionReconciliation != 0)
+            {
                 _logger.WriteDeletionReconciliationFailed(_result.DeletionReconciliation);
+            }
 
             return _result;
         }

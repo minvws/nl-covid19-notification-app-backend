@@ -261,17 +261,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf
                 return true;
             }
             if (KeyData != other.KeyData)
+            {
                 return false;
+            }
+
             if (TransmissionRiskLevel != other.TransmissionRiskLevel)
+            {
                 return false;
+            }
+
             if (RollingStartIntervalNumber != other.RollingStartIntervalNumber)
+            {
                 return false;
+            }
+
             if (RollingPeriod != other.RollingPeriod)
+            {
                 return false;
+            }
+
             if (ReportType != other.ReportType)
+            {
                 return false;
+            }
+
             if (DaysSinceOnsetOfSymptoms != other.DaysSinceOnsetOfSymptoms)
+            {
                 return false;
+            }
+
             return Equals(_unknownFields, other._unknownFields);
         }
 
@@ -280,17 +298,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf
         {
             var hash = 1;
             if (HasKeyData)
+            {
                 hash ^= KeyData.GetHashCode();
+            }
+
             if (HasTransmissionRiskLevel)
+            {
                 hash ^= TransmissionRiskLevel.GetHashCode();
+            }
+
             if (HasRollingStartIntervalNumber)
+            {
                 hash ^= RollingStartIntervalNumber.GetHashCode();
+            }
+
             if (HasRollingPeriod)
+            {
                 hash ^= RollingPeriod.GetHashCode();
+            }
+
             if (HasReportType)
+            {
                 hash ^= ReportType.GetHashCode();
+            }
+
             if (HasDaysSinceOnsetOfSymptoms)
+            {
                 hash ^= DaysSinceOnsetOfSymptoms.GetHashCode();
+            }
+
             if (_unknownFields != null)
             {
                 hash ^= _unknownFields.GetHashCode();

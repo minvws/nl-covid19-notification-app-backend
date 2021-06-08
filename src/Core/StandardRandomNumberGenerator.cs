@@ -26,10 +26,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public int Next(int min, int max)
         {
             if (min > max)
+            {
                 throw new ArgumentOutOfRangeException(nameof(min), "min cannot be greater than max");
+            }
 
             if (min == max)
+            {
                 return min;
+            }
 
             var bytes = new byte[sizeof(int)]; // 4 bytes
             _random.GetNonZeroBytes(bytes);
@@ -44,7 +48,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public byte[] NextByteArray(int size)
         {
             if (size < 1)
+            {
                 throw new ArgumentOutOfRangeException(nameof(size));
+            }
 
 
             var randomBytes = new byte[size];

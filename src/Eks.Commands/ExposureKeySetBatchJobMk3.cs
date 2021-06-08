@@ -69,7 +69,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         public async Task<EksEngineResult> ExecuteAsync()
         {
             if (_fired)
+            {
                 throw new InvalidOperationException("One use only.");
+            }
 
             _fired = true;
 
@@ -245,7 +247,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _logger.WriteMarkTekAsUsed();
 
             foreach (var i in _output)
+            {
                 i.Used = true;
+            }
 
             //Could be 750k in this hit
             await using (var dbc2 = _publishingDbContextFac())

@@ -25,7 +25,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             using var s = ResourcesHook.GetManifestResourceStream(_pathProvider.Path);
 
             if (s == null)
+            {
                 throw new InvalidOperationException($"Certificate chain not found in resource.");
+            }
 
             var bytes = new byte[s.Length];
             s.Read(bytes, 0, bytes.Length);
@@ -35,7 +37,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             foreach (var c in result)
             {
                 if (c.IssuerName.Name != c.SubjectName.Name)
+                {
                     certList.Add(c);
+                }
             }
 
             return certList.ToArray();

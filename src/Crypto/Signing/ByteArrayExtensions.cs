@@ -16,17 +16,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         public static byte[] StripLeadingZeros(this byte[] buffer)
         {
             if (buffer == null)
+            {
                 throw new ArgumentException(nameof(buffer)); //ncrunch: no coverage
+            }
 
             var i = 0;
             for (; i < buffer.Length && buffer[i] == 0; i++)
+            {
                 ;
+            }
 
             if (i == 0)
+            {
                 return buffer;
+            }
 
             if (i == buffer.Length)
+            {
                 return new byte[1];
+            }
 
             var result = new byte[buffer.Length - i];
             Array.Copy(buffer, i, result, 0, buffer.Length - i);
@@ -36,7 +44,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         public static byte[] ToAns1Integer(this byte[] buffer)
         {
             if (buffer == null || buffer.Length > 32)
+            {
                 throw new ArgumentException(nameof(buffer)); //ncrunch: no coverage
+            }
 
             var clean = buffer.StripLeadingZeros();
 
@@ -45,7 +55,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 
             // Extra 0x00 prefix if the first number is >= 0x80
             if (clean[0] >= 0x80)
+            {
                 l++;
+            }
 
             var result = new byte[l + 2];
 
@@ -55,7 +67,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 
             // Extra 0x0 if first byte >= 0x800
             if (clean[0] >= 0x80)
+            {
                 result[2] = 0;
+            }
 
             // So now we have 0x02 (integer type), length and the clean string
             Array.Copy(clean, 0, result, clean[0] >= 0x80 ? 3 : 2, clean.Length);
