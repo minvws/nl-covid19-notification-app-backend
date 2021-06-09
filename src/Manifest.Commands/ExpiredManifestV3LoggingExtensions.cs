@@ -8,7 +8,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
-    public class ExpiredManifestV3LoggingExtensions
+    public class ExpiredManifestV3LoggingExtensions : IExpiredManifestLogging
     {
         private const string Name = "RemoveExpiredManifestV3";
         private const int Base = LoggingCodex.RemoveExpiredManifestV3;

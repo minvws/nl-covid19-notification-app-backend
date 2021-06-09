@@ -174,6 +174,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             services.EksEngine();
 
+            services.AddTransient<RemoveExpiredManifestsReceiver>();
             services.AddTransient<RemoveExpiredManifestsCommand>();
             services.AddTransient<RemoveExpiredManifestsV2Command>();
             services.AddTransient<RemoveExpiredManifestsV3Command>();

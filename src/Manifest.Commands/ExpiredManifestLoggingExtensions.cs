@@ -8,7 +8,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
-    public class ExpiredManifestLoggingExtensions
+    public class ExpiredManifestLoggingExtensions : IExpiredManifestLogging
     {
         private const string Name = "RemoveExpiredManifest";
         private const int Base = LoggingCodex.RemoveExpiredManifest;
@@ -63,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                 publishingId, releaseDate);
         }
 
-        public void WriteReconcilliationFailed(int reconciliationCount)
+        public void WriteReconciliationFailed(int reconciliationCount)
         {
             _logger.LogError("[{name}/{id}] Reconciliation failed removing expired Manifests - Found-GivenMercy-Remaining={reconciliation}.",
                 Name, ReconciliationFailed,
