@@ -10,11 +10,11 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramewor
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 {
-    public class RemoveDuplicateDiagnosisKeysForIksWithSpCommand : IRemoveDuplicateDiagnosisKeysCommand
+    public class RemoveLocalDuplicateDiagnosisKeysCommand : IRemoveDuplicateDiagnosisKeysCommand
     {
         private readonly Func<DkSourceDbContext> _dkSourceDbProvider;
 
-        public RemoveDuplicateDiagnosisKeysForIksWithSpCommand(Func<DkSourceDbContext> dkSourceDbProvider)
+        public RemoveLocalDuplicateDiagnosisKeysCommand(Func<DkSourceDbContext> dkSourceDbProvider)
         {
             _dkSourceDbProvider = dkSourceDbProvider ?? throw new ArgumentNullException(nameof(dkSourceDbProvider));
 
@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         {
             await using var context = _dkSourceDbProvider.Invoke();
             await using var transaction = context.BeginTransaction();
-            context.Database.ExecuteSqlRaw("EXEC dbo.RemoveDuplicateDiagnosisKeysForIks");
+            context.Database.ExecuteSqlRaw("EXEC dbo.RemoveLocalDuplicateDiagnosisKeys");
             await transaction.CommitAsync();
         }
     }
