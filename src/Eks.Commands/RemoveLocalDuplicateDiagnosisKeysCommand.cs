@@ -17,7 +17,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         public RemoveLocalDuplicateDiagnosisKeysCommand(Func<DkSourceDbContext> dkSourceDbProvider)
         {
             _dkSourceDbProvider = dkSourceDbProvider ?? throw new ArgumentNullException(nameof(dkSourceDbProvider));
-
         }
 
         public async Task ExecuteAsync()

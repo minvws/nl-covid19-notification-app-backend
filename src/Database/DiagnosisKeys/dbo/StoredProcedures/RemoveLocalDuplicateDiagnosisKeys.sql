@@ -40,7 +40,7 @@ BEGIN
 		END
 
 		--
-		-- Mark all except the row with the highest TRL if non are published
+		-- Mark all except the row with the highest TRL if none are published
 		IF EXISTS(
 			SELECT 1
 			FROM [dbo].[DiagnosisKeys]
