@@ -208,7 +208,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             services.NlResignerStartup();
             services.DummySignerStartup();
-            services.GaSignerStartup();
             services.DailyStatsStartup();
 
             services.AddTransient<IksImportBatchJob>();
@@ -272,6 +271,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
                     x.GetRequiredService<IConfiguration>(),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
                     x.GetRequiredService<IUtcDateTimeProvider>()));
+            services.AddTransient(x =>
+                SignerConfigStartup.BuildGaSigner(
+                    x.GetRequiredService<IConfiguration>(),
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
         }
     }

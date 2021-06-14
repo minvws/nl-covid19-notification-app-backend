@@ -161,7 +161,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             //Signing
             services.NlResignerStartup();
             services.DummySignerStartup();
-            services.GaSignerStartup();
 
             services.AddTransient<IksImportBatchJob>();
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
@@ -209,6 +208,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                     x.GetRequiredService<IConfiguration>(),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
                     x.GetRequiredService<IUtcDateTimeProvider>()));
+            services.AddTransient(x =>
+                SignerConfigStartup.BuildGaSigner(
+                    x.GetRequiredService<IConfiguration>(),
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
         }
     }
