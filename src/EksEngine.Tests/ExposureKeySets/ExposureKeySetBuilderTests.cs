@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -8,15 +8,14 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using Microsoft.Extensions.Logging;
-using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1;
 using Xunit;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySets
 {
@@ -40,40 +39,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         {
             //Arrange
             var lf = new LoggerFactory();
-            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
             var eksBuilderV1Logger = new EksBuilderV1LoggingExtensions(lf.CreateLogger<EksBuilderV1LoggingExtensions>());
             var dtp = new StandardUtcDateTimeProvider();
 
-            var cmsCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
-            cmsCertLoc.Setup(x => x.Path).Returns("TestRSA.p12");
-            cmsCertLoc.Setup(x => x.Password).Returns("Covid-19!"); //Not a secret.
-
-            var cmsCertChainLoc = new Mock<IEmbeddedResourceCertificateConfig>();
-            cmsCertChainLoc.Setup(x => x.Path).Returns("StaatDerNLChain-Expires2020-08-28.p7b");
-            cmsCertChainLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
-
-            //resign some
-            var cmsSigner = new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(cmsCertLoc.Object, certProviderLogger),
-                new EmbeddedResourcesCertificateChainProvider(cmsCertChainLoc.Object),
-                new StandardUtcDateTimeProvider()
-            );
-
-            var gaCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
-            gaCertLoc.Setup(x => x.Path).Returns("TestECDSA.p12");
-            gaCertLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
-
             var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
-                new EcdSaSigner(
-                    new EmbeddedResourceCertificateProvider(
-                        gaCertLoc.Object,
-                        certProviderLogger)),
-                cmsSigner,
+                TestSignerHelpers.CreateEcdsaSigner(lf),
+                TestSignerHelpers.CreateCmsSignerEnhanced(lf),
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
-                eksBuilderV1Logger
-                );
+                eksBuilderV1Logger);
 
             //Act
             var result = sut.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
@@ -94,27 +69,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             //Arrange
             var keyCount = 500;
             var lf = new LoggerFactory();
-            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
             var eksBuilderV1Logger = new EksBuilderV1LoggingExtensions(lf.CreateLogger<EksBuilderV1LoggingExtensions>());
             var dtp = new StandardUtcDateTimeProvider();
             var dummySigner = new DummyCmsSigner();
 
-            var gaCertLoc = new Mock<IEmbeddedResourceCertificateConfig>();
-            gaCertLoc.Setup(x => x.Path).Returns("TestECDSA.p12");
-            gaCertLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
-
             var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
-                new EcdSaSigner(
-                    new EmbeddedResourceCertificateProvider(
-                        gaCertLoc.Object,
-                        certProviderLogger)
-                    ),
+                TestSignerHelpers.CreateEcdsaSigner(lf),
                 dummySigner,
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
-                eksBuilderV1Logger
-                );
+                eksBuilderV1Logger);
 
             //Act
             var result = sut.BuildAsync(GetRandomKeys(keyCount, 123)).GetAwaiter().GetResult();
@@ -122,6 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             //Assert
             using var zipFileInMemory = new MemoryStream();
             zipFileInMemory.Write(result, 0, result.Length);
+
             using (var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false))
             {
                 var nlSignature = zipFileContent.ReadEntry(ZippedContentEntryNames.NlSignature);
@@ -133,7 +99,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         private TemporaryExposureKeyArgs[] GetRandomKeys(int workflowCount, int seed)
         {
             var random = new Random(seed);
-            var workflowKeyValidatorConfig = new DefaultTekValidatorConfig();
             var workflowValidatorConfig = new DefaultTekListValidationConfig();
 
             var result = new List<TemporaryExposureKeyArgs>(workflowCount * workflowValidatorConfig.TemporaryExposureKeyCountMax);
@@ -156,7 +121,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                     });
                 }
                 result.AddRange(keys);
-
             }
 
             return result.ToArray();
