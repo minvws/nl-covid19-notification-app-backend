@@ -93,7 +93,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private (EksCreateJobInputEntity[], EksCreateJobInputEntity[]) ReadAndFilter(int index, int pageSize)
         {
             var page = _dkSourceDbContext.DiagnosisKeys
-                .Where(x => !x.PublishedLocally)
+                .Where(x => !x.PublishedLocally && (!x.ReadyForCleanup.HasValue || !x.ReadyForCleanup.Value))
                 .OrderBy(x => x.Id)
                 .AsNoTracking()
                 .Skip(index)
