@@ -79,7 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private void MarkFilteredEntitiesForCleanup(EksCreateJobInputEntity[] allEntities, EksCreateJobInputEntity[] filteredResult)
         {
-            var leftoverDKIds = allEntities.Where(x => !filteredResult.Select(entity => entity.TekId).Contains(x.TekId)).Select(x => x.TekId).ToArray();
+            var leftoverDKIds = allEntities.Except(filteredResult).Select(x => x.TekId).ToArray();
             if(leftoverDKIds.Any())
             {
                 var dksToMarkForCleanup = _dkSourceDbContext.DiagnosisKeys.Where(x => leftoverDKIds.Contains(x.Id)).ToList();
