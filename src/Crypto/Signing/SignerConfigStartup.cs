@@ -11,39 +11,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 {
     public static class SignerConfigStartup
     {
-        private const string NlSettingPrefix = "Certificates:NL";
         private const string GaSettingPrefix = "Certificates:GA";
-        private const string ChainPrefix = NlSettingPrefix + ":Chain";
         private const string Nl2SettingPrefix = "Certificates:NL2";
         private const string Nl2ChainPrefix = Nl2SettingPrefix + ":Chain";
-
-        public static void NlSignerStartup(this IServiceCollection services)
-        {
-            services.AddTransient<IContentSigner>(x =>
-                new CmsSignerEnhanced(
-                    new LocalMachineStoreCertificateProvider(
-                        new LocalMachineStoreCertificateProviderConfig(
-                            x.GetRequiredService<IConfiguration>(), NlSettingPrefix),
-                            x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()),
-                        new EmbeddedResourcesCertificateChainProvider(
-                            new EmbeddedResourceCertificateConfig(
-                                x.GetRequiredService<IConfiguration>(),
-                                ChainPrefix)),
-                        x.GetRequiredService<IUtcDateTimeProvider>()
-                    ));
-        }
-
-        public static void GaSignerStartup(this IServiceCollection services)
-        {
-            services.AddTransient<IGaContentSigner>(x =>
-                new EcdSaSigner(
-                    new LocalMachineStoreCertificateProvider(
-                        new LocalMachineStoreCertificateProviderConfig(
-                            x.GetRequiredService<IConfiguration>(),
-                            GaSettingPrefix),
-                        x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
-                    )));
-        }
 
         public static void DummySignerStartup(this IServiceCollection services)
         {
@@ -65,8 +35,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                         new EmbeddedResourceCertificateConfig(
                             config,
                             Nl2ChainPrefix)),
-                    dateTimeProvider
-                );
+                    dateTimeProvider);
         }
+
+        public static IGaContentSigner BuildGaSigner(
+            IConfiguration config,
+            LocalMachineStoreCertificateProviderLoggingExtensions extensions)
+        {
+            return new EcdSaSigner(
+                new LocalMachineStoreCertificateProvider(
+                    new LocalMachineStoreCertificateProviderConfig(
+                        config,
+                        GaSettingPrefix),
+                    extensions));
+        }
+
     }
 }
