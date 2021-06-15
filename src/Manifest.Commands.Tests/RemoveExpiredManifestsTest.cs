@@ -49,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
             //Act
             var sut = CompileRemoveExpiredManifestsCommand();
-            sut.ExecuteAsync().GetAwaiter().GetResult();
+            sut.Execute();
 
             var content = GetAllContent();
 
@@ -78,7 +78,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
             //Act
             var sut = CompileRemoveExpiredManifestsCommand();
-            sut.ExecuteAsync().GetAwaiter().GetResult();
+            sut.Execute();
 
             var content = GetAllContent();
 
@@ -109,7 +109,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
             //Act
             var sut = CompileRemoveExpiredManifestsCommand();
-            sut.ExecuteAsync().GetAwaiter().GetResult();
+            sut.Execute();
 
             var content = GetAllContent();
 
@@ -122,13 +122,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
         private RemoveExpiredManifestsCommand CompileRemoveExpiredManifestsCommand()
         {
-            var logger = new Mock<ILogger<RemoveExpiredManifestsReceiver>>();
+            var loggerMock = new Mock<ILogger<RemoveExpiredManifestsReceiver>>();
             var dateTimeProvider = new StandardUtcDateTimeProvider();
+            var receiver = new RemoveExpiredManifestsReceiver(_contentDbProvider.CreateNew, _manifestConfigMock.Object, dateTimeProvider, loggerMock.Object);
 
-            //var result = new RemoveExpiredManifestsCommand();
-            //return result;
-
-            throw new NotImplementedException();
+            var result = new RemoveExpiredManifestsCommand(receiver);
+            return result;
         }
 
         private void CreateManifestsForManifestType(string manifestTypeName)
