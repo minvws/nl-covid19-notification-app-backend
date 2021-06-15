@@ -23,7 +23,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities
         /// <summary>
         /// Immediately set to true for DKs imported from EFGS
         /// </summary>
-        public bool PublishedToEfgs { get; set; } //TODO this is unused until EFGS is 
-        public EfgsTekInfo Efgs { get; set; } = new EfgsTekInfo(); //TODO this is unused until EFGS is 
+        public bool PublishedToEfgs { get; set; }
+        public EfgsTekInfo Efgs { get; set; } = new EfgsTekInfo();
+
+        /// <summary>
+        /// If true, the record can be deleted, otherwise leave the record as is
+        /// </summary>
+        public bool ReadyForCleanup { get; set; }
     }
 }
