@@ -110,6 +110,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             var c125 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
             run.Add(() => c125.Execute());
 
+            var c126 = serviceProvider.GetRequiredService<RemoveDiagnosisKeysReadyForCleanup>();
+            run.Add(() => c126.ExecuteAsync().GetAwaiter().GetResult());
+
             var c130 = serviceProvider.GetRequiredService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             run.Add(() => c130.ExecuteAsync().GetAwaiter().GetResult());
 
@@ -170,6 +173,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<RemoveExpiredWorkflowsCommand>();
             services.AddTransient<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             services.AddTransient<RemovePublishedDiagnosisKeys>();
+            services.AddTransient<RemoveDiagnosisKeysReadyForCleanup>();
 
             services.AddSingleton<IManifestConfig, ManifestConfig>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
@@ -206,8 +210,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
                         x.GetRequiredService<OnlyIncludeCountryOfOriginKeyProcessor>(),
                         x.GetRequiredService<DosDecodingDiagnosticKeyProcessor>(), //Adds result to metadata
                         x.GetRequiredService<NlTrlFromDecodedDosDiagnosticKeyProcessor>(),
-                        x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
-                        x.GetRequiredService<NlSymptomaticFromDecodedDosDiagnosticKeyProcessor>(),
+                        x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>()
                     },
                     x.GetRequiredService<ITekValidatorConfig>(),
                     x.GetRequiredService<IUtcDateTimeProvider>(),
@@ -218,7 +221,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<DosDecodingDiagnosticKeyProcessor>();
             services.AddTransient<NlTrlFromDecodedDosDiagnosticKeyProcessor>();
             services.AddTransient<ExcludeTrlNoneDiagnosticKeyProcessor>();
-            services.AddTransient<NlSymptomaticFromDecodedDosDiagnosticKeyProcessor>();
 
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
             services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
