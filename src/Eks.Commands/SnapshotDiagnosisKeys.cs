@@ -46,22 +46,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             var filteredTekInputCount = 0;
 
             await using var tx = _dkSourceDbContext.BeginTransaction();
-            var (filteredResult, pageCount) = ReadAndFilter(index, PageSize);
+            var (allEntities, filteredResult) = ReadAndFilter(index, PageSize);
 
-            while (pageCount > 0)
+            while (allEntities.Length > 0)
             {
+                MarkFilteredEntitiesForCleanup(allEntities, filteredResult);
+
                 var db = _publishingDbContextFactory();
                 if (filteredResult.Length > 0)
                 {
                     await db.BulkInsertAsync2(filteredResult, new SubsetBulkArgs());
                 }
 
-                index += pageCount;
+                index += allEntities.Length;
                 filteredTekInputCount += filteredResult.Length;
-                (filteredResult, pageCount) = ReadAndFilter(index, PageSize);
+                (allEntities, filteredResult) = ReadAndFilter(index, PageSize);
             }
 
-            var result = new SnapshotEksInputResult
+            _dkSourceDbContext.SaveAndCommit();
+
+            var snapshotEksInputResult = new SnapshotEksInputResult
             {
                 SnapshotSeconds = stopwatch.Elapsed.TotalSeconds,
                 TekInputCount = index,
@@ -70,10 +74,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
             _logger.WriteTeksToPublish(index);
 
-            return result;
+            return snapshotEksInputResult;
         }
 
-        private (EksCreateJobInputEntity[], int pageCount) ReadAndFilter(int index, int pageSize)
+        private void MarkFilteredEntitiesForCleanup(EksCreateJobInputEntity[] allEntities, EksCreateJobInputEntity[] filteredResult)
+        {
+            var leftoverDKIds = allEntities.Where(x => !filteredResult.Select(entity => entity.TekId).Contains(x.TekId)).Select(x => x.TekId).ToArray();
+            if(leftoverDKIds.Any())
+            {
+                var dksToMarkForCleanup = _dkSourceDbContext.DiagnosisKeys.Where(x => leftoverDKIds.Contains(x.Id)).ToList();
+                foreach (var diagnosisKeyEntity in dksToMarkForCleanup)
+                {
+                    diagnosisKeyEntity.ReadyForCleanup = true;
+                }
+            }
+        }
+
+        private (EksCreateJobInputEntity[], EksCreateJobInputEntity[]) ReadAndFilter(int index, int pageSize)
         {
             var result = _dkSourceDbContext.DiagnosisKeys
                 .Where(x => !x.PublishedLocally)
@@ -98,7 +115,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     _infectiousness.IsInfectious(x.Symptomatic, x.DaysSinceSymptomsOnset))
                 .ToArray();
 
-            return (filteredResult, result.Length);
+            return (result, filteredResult);
         }
     }
 }

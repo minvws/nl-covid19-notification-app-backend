@@ -30,6 +30,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities
         /// <summary>
         /// If true, the record can be deleted, otherwise leave the record as is
         /// </summary>
-        public bool ReadyForCleanup { get; set; }
+        public bool? ReadyForCleanup { get; set; }
     }
 }
