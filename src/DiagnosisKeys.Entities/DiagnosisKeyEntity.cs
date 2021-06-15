@@ -10,6 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities
     public class DiagnosisKeyEntity
     {
         /// <summary>
+        /// Set to true if published to content
         /// </summary>
         public bool PublishedLocally { get; set; }
 
