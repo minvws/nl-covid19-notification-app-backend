@@ -22,13 +22,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         private readonly IDbProvider<ContentDbContext> _contentDbProvider;
         private Mock<IManifestConfig> _manifestConfigMock;
 
-        private List<string> _manifestTypes = new List<string>
-                {
-                    ContentTypes.Manifest,
-                    ContentTypes.ManifestV2,
-                    ContentTypes.ManifestV3,
-                    ContentTypes.ManifestV4
-                };
+        private readonly List<string> _manifestTypes = new List<string>
+        {
+            ContentTypes.Manifest,
+            ContentTypes.ManifestV2,
+            ContentTypes.ManifestV3,
+            ContentTypes.ManifestV4
+        };
 
         public RemoveExpiredManifestsTest(IDbProvider<ContentDbContext> contentDbProvider)
         {
