@@ -46,11 +46,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             var filteredTekInputCount = 0;
 
             await using var tx = _dkSourceDbContext.BeginTransaction();
-            var (allEntities, filteredResult) = ReadAndFilter(index, PageSize);
+            var (page, filteredResult) = ReadAndFilter(index, PageSize);
 
-            while (allEntities.Length > 0)
+            while (page.Length > 0)
             {
-                MarkFilteredEntitiesForCleanup(allEntities, filteredResult);
+                MarkFilteredEntitiesForCleanup(page, filteredResult);
 
                 var db = _publishingDbContextFactory();
                 if (filteredResult.Length > 0)
@@ -58,9 +58,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     await db.BulkInsertAsync2(filteredResult, new SubsetBulkArgs());
                 }
 
-                index += allEntities.Length;
+                index += page.Length;
                 filteredTekInputCount += filteredResult.Length;
-                (allEntities, filteredResult) = ReadAndFilter(index, PageSize);
+                (page, filteredResult) = ReadAndFilter(index, PageSize);
             }
 
             _dkSourceDbContext.SaveAndCommit();
@@ -92,7 +92,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private (EksCreateJobInputEntity[], EksCreateJobInputEntity[]) ReadAndFilter(int index, int pageSize)
         {
-            var result = _dkSourceDbContext.DiagnosisKeys
+            var page = _dkSourceDbContext.DiagnosisKeys
                 .Where(x => !x.PublishedLocally)
                 .OrderBy(x => x.Id)
                 .AsNoTracking()
@@ -111,11 +111,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 }).ToArray();
 
             // Filter the List of EksCreateJobInputEntities by the RiskCalculationParameter filters
-            var filteredResult = result.Where(x =>
+            var filteredResult = page.Where(x =>
                     _infectiousness.IsInfectious(x.Symptomatic, x.DaysSinceSymptomsOnset))
                 .ToArray();
 
-            return (result, filteredResult);
+            return (page, filteredResult);
         }
     }
 }
