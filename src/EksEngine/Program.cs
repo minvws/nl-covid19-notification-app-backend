@@ -88,6 +88,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var c60 = serviceProvider.GetService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());
 
+            var c61 = serviceProvider.GetService<RemoveLocalDuplicateDiagnosisKeysCommand>();
+            run.Add(() => c61.ExecuteAsync().GetAwaiter().GetResult());
+
             var c35 = serviceProvider.GetRequiredService<IksEngine>();
             run.Add(() => c35.ExecuteAsync().GetAwaiter().GetResult());
 

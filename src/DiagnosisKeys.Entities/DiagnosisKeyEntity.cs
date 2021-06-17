@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
@@ -31,5 +32,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities
         /// If true, the record can be deleted, otherwise leave the record as is
         /// </summary>
         public bool? ReadyForCleanup { get; set; }
+        public DateTime Created { get; set; }
     }
 }
