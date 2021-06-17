@@ -88,7 +88,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             var c60 = serviceProvider.GetRequiredService<RemoveExpiredManifestsCommand>();
             run.Add(() => logger.WriteManiFestCleanupStarting());
-            run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());
+            run.Add(() => c60.Execute());
 
             logger.WriteEksCleanupStarting();
             var c70 = serviceProvider.GetRequiredService<RemoveExpiredEksCommand>();
@@ -107,20 +107,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => logger.WriteEksV2CleanupStarting());
             run.Add(() => c110.Execute());
 
-            var c120 = serviceProvider.GetRequiredService<RemoveExpiredManifestsV2Command>();
-            run.Add(() => logger.WriteManifestV2CleanupStarting());
-            run.Add(() => c120.ExecuteAsync().GetAwaiter().GetResult());
-
-            var c121 = serviceProvider.GetRequiredService<RemoveExpiredManifestsV3Command>();
-            run.Add(() => logger.WriteManifestV3CleanupStarting());
-            run.Add(() => c121.ExecuteAsync().GetAwaiter().GetResult());
-
-            var c122 = serviceProvider.GetRequiredService<RemoveExpiredManifestsV4Command>();
-            run.Add(() => logger.WriteManifestV4CleanupStarting());
-            run.Add(() => c122.ExecuteAsync().GetAwaiter().GetResult());
-
             var c125 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
             run.Add(() => c125.Execute());
+
+            var c126 = serviceProvider.GetRequiredService<RemoveDiagnosisKeysReadyForCleanup>();
+            run.Add(() => c126.ExecuteAsync().GetAwaiter().GetResult());
 
             var c130 = serviceProvider.GetRequiredService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             run.Add(() => c130.ExecuteAsync().GetAwaiter().GetResult());
@@ -174,15 +165,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             services.EksEngine();
 
+            services.AddTransient<RemoveExpiredManifestsReceiver>();
             services.AddTransient<RemoveExpiredManifestsCommand>();
-            services.AddTransient<RemoveExpiredManifestsV2Command>();
-            services.AddTransient<RemoveExpiredManifestsV3Command>();
-            services.AddTransient<RemoveExpiredManifestsV4Command>();
+
             services.AddTransient<RemoveExpiredEksCommand>();
             services.AddTransient<RemoveExpiredEksV2Command>();
             services.AddTransient<RemoveExpiredWorkflowsCommand>();
             services.AddTransient<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             services.AddTransient<RemovePublishedDiagnosisKeys>();
+            services.AddTransient<RemoveDiagnosisKeysReadyForCleanup>();
 
             services.AddSingleton<IManifestConfig, ManifestConfig>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
@@ -191,14 +182,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             services.AddSingleton<EksBuilderV1LoggingExtensions>();
             services.AddSingleton<DailyCleanupLoggingExtensions>();
-            services.AddSingleton<ExpiredManifestLoggingExtensions>();
+
             services.AddSingleton<ExpiredEksLoggingExtensions>();
             services.AddSingleton<ExpiredWorkflowLoggingExtensions>();
             services.AddSingleton<ResignerLoggingExtensions>();
             services.AddSingleton<ExpiredEksV2LoggingExtensions>();
-            services.AddSingleton<ExpiredManifestV2LoggingExtensions>();
-            services.AddSingleton<ExpiredManifestV3LoggingExtensions>();
-            services.AddSingleton<ExpiredManifestV4LoggingExtensions>();
+
             services.AddSingleton<EksEngineLoggingExtensions>();
             services.AddSingleton<SnapshotLoggingExtensions>();
             services.AddSingleton<EksJobContentWriterLoggingExtensions>();
@@ -220,8 +209,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
                         x.GetRequiredService<OnlyIncludeCountryOfOriginKeyProcessor>(),
                         x.GetRequiredService<DosDecodingDiagnosticKeyProcessor>(), //Adds result to metadata
                         x.GetRequiredService<NlTrlFromDecodedDosDiagnosticKeyProcessor>(),
-                        x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
-                        x.GetRequiredService<NlSymptomaticFromDecodedDosDiagnosticKeyProcessor>(),
+                        x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>()
                     },
                     x.GetRequiredService<ITekValidatorConfig>(),
                     x.GetRequiredService<IUtcDateTimeProvider>(),
@@ -232,7 +220,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<DosDecodingDiagnosticKeyProcessor>();
             services.AddTransient<NlTrlFromDecodedDosDiagnosticKeyProcessor>();
             services.AddTransient<ExcludeTrlNoneDiagnosticKeyProcessor>();
-            services.AddTransient<NlSymptomaticFromDecodedDosDiagnosticKeyProcessor>();
 
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
             services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
