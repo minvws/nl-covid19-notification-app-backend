@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public static class ResignExtensions
     {
-        private const string NlSettingPrefix = "Certificates:NL2";
+        private const string NlSettingPrefix = "Certificates:NL";
         private const string ChainPrefix = NlSettingPrefix + ":Chain";
 
         public static void NlResignerStartup(this IServiceCollection services)

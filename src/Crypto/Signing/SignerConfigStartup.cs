@@ -12,8 +12,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
     public static class SignerConfigStartup
     {
         private const string GaSettingPrefix = "Certificates:GA";
-        private const string Nl2SettingPrefix = "Certificates:NL2";
-        private const string Nl2ChainPrefix = Nl2SettingPrefix + ":Chain";
+        private const string NlSettingPrefix = "Certificates:NL";
+        private const string NlChainPrefix = NlSettingPrefix + ":Chain";
 
         public static void DummySignerStartup(this IServiceCollection services)
         {
@@ -29,12 +29,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 new LocalMachineStoreCertificateProvider(
                     new LocalMachineStoreCertificateProviderConfig(
                         config,
-                        Nl2SettingPrefix),
+                        NlSettingPrefix),
                     extensions),
                     new EmbeddedResourcesCertificateChainProvider(
                         new EmbeddedResourceCertificateConfig(
                             config,
-                            Nl2ChainPrefix)),
+                            NlChainPrefix)),
                     dateTimeProvider);
         }
 
