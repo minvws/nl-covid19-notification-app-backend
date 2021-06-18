@@ -189,10 +189,6 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
           if (this.errorCode > 1) {
             for (let i = 0; i < this.indexData.GGDKey.length; i++) {
               this.indexData.GGDKeyValidState[i] = false;
-
-              if (i === 6 && this.indexData.GGDKey[i] === '') {
-                this.indexData.GGDKeyValidState[i] = null;
-              }
             }
           }
         });
