@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
     public class IksPollingBatchJob
     {
         private readonly IUtcDateTimeProvider _dateTimeProvider;
-        private readonly Func<IiHttpGetIksCommand> _receiverFactory;
+        private readonly Func<IHttpGetIksCommand> _receiverFactory;
         private readonly Func<IIksWriterCommand> _writerFactory;
         private readonly IksInDbContext _iksInDbContext;
         private readonly IEfgsConfig _efgsConfig;
@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
         public IksPollingBatchJob(
             IUtcDateTimeProvider dateTimeProvider,
-            Func<IiHttpGetIksCommand> receiverFactory,
+            Func<IHttpGetIksCommand> receiverFactory,
             Func<IIksWriterCommand> writerFactory,
             IksInDbContext iksInDbContext,
             IEfgsConfig efgsConfig,
@@ -39,107 +39,86 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
         public async Task ExecuteAsync()
         {
-            var downloadCount = 0;
             var jobInfo = GetJobInfo();
-            var batchDate = jobInfo.LastRun;
-            var previousBatch = jobInfo.LastBatchTag;
-            var batch = jobInfo.LastBatchTag;
+            var today = _dateTimeProvider.Snapshot.Date;
 
-            // All of the values on first run are empty, all we need to do is set the date to the first date and we can start
-            if (jobInfo.LastRun == DateTime.MinValue)
+            // Fetch all available batches starting from the last received batch we have.
+            // There is actually no need to proivde a date if you send a batchTag, but let's do it anyway.
+            await FetchAvailableBatchesAsync(jobInfo.LastBatchTag, today);
+
+            // Find the last succesfully received batchTag
+            var lastBatchTag = _iksInDbContext.Received
+                .Where(x => x.Error != true)
+                .OrderByDescending(x => x.Created)
+                .Select(x => x.BatchTag)
+                .Single();  // If there are no entries without errors, crash for your life!
+
+            // Update IksInJob
+            jobInfo.LastBatchTag = lastBatchTag;
+            jobInfo.LastRun = today;
+
+            // Persist updated jobinfo to database.
+            await _iksInDbContext.SaveChangesAsync();
+        }
+
+        private async Task FetchAvailableBatchesAsync(string currentBatchTag, DateTime date, int count = 0)
+        {
+            if (count == _efgsConfig.MaxBatchesPerRun)
             {
-                batchDate = _dateTimeProvider.Snapshot.Date.AddDays(_efgsConfig.DaysToDownload * -1);
+                // Maximum number of batches reached, stop.
+                return;
             }
 
-            // TODO: save JobInfo for each loop and refresh it for each loop. Remove the other variables.
-            while (true)
+            // Request the currentBatch, and any possible nextBatchTag values for subsequent processing
+            var result = await _receiverFactory().ExecuteAsync(currentBatchTag, date);
+
+            if (result == null)
             {
-                downloadCount++;
-
-                if (downloadCount == _efgsConfig.MaxBatchesPerRun)
-                {
-                    _logger.WriteBatchMaximumReached(_efgsConfig.MaxBatchesPerRun);
-                    break;
-                }
-
-                var result = await _receiverFactory().ExecuteAsync(batch, batchDate);
-
-                // Handle no found / gone
-                if (result == null)
-                {
-                    // Move to the next day if possible
-                    if (batchDate < _dateTimeProvider.Snapshot.Date)
-                    {
-                        batchDate = batchDate.AddDays(1);
-                        batch = string.Empty;
-
-                        continue;
-                    }
-
-                    break;
-                }
-
-                _logger.WriteNextBatchReceived(result.BatchTag, result.NextBatchTag);
-
-                // Process a previous batch
-                if (result.BatchTag == previousBatch || _iksInDbContext.Received.Any(_ => _.BatchTag == batch))
-                {
-                    _logger.WriteBatchAlreadyProcessed(result.BatchTag);
-
-                    // New batch so process it next time
-                    if (!string.IsNullOrWhiteSpace(result.NextBatchTag))
-                    {
-                        _logger.WriteBatchProcessedInNextLoop(result.NextBatchTag);
-
-                        batch = result.NextBatchTag;
-                    }
-                }
-                else
-                {
-                    // Process a new batch
-                    var writer = _writerFactory();
-
-                    await writer.Execute(new IksWriteArgs
-                    {
-                        BatchTag = result.BatchTag,
-                        Content = result.Content
-                    });
-
-                    // Update the job info as a batch has been downloaded
-                    jobInfo.LastRun = batchDate;
-                    jobInfo.LastBatchTag = result.BatchTag;
-
-                    previousBatch = result.BatchTag;
-
-                    // Move to the next batch if we have one
-                    if (!string.IsNullOrWhiteSpace(result.NextBatchTag))
-                    {
-                        batch = result.NextBatchTag;
-                    }
-                }
-
-                // No next batch, move to the next date or stop
-                if (string.IsNullOrWhiteSpace(result.NextBatchTag))
-                {
-                    // Move to the next day if possible
-                    if (batchDate < _dateTimeProvider.Snapshot.Date)
-                    {
-                        batchDate = batchDate.AddDays(1);
-                        batch = string.Empty;
-
-                        _logger.WriteMovingToNextDay();
-
-                        continue;
-                    }
-
-                    _logger.WriteNoNextBatch();
-                    break;
-                }
-
-                _logger.WriteNextBatchFound(result.NextBatchTag);
+                // No love from EFGS, stop this run and try again next time.
+                return;
             }
 
-            // TODO the downloaded batches must also be done in one transaction
+            // If we have already previously received the currentBatchTag, log it
+            // and move on to the nextBatchTag, or stop.
+            if (_iksInDbContext.Received.Any(x => x.BatchTag == result.BatchTag))
+            {
+                _logger.WriteBatchAlreadyProcessed(result.BatchTag);
+
+                if (result.NextBatchTag == null)
+                {
+                    // No next batch available, we are done here.
+                    return;
+                }
+
+                // Fetch the next batch, and increase our "download count"
+                await FetchAvailableBatchesAsync(currentBatchTag: result.NextBatchTag, date: date, count: count++);
+            }
+
+            // If we haven't already received the currentBatchTag, process it
+            await WriteSingleBatchAsync(currentBatchTag, result.Content);
+
+            // Check if we have a next batch available for us
+            if (result.NextBatchTag != null)
+            {
+                // Fetch the next batch
+                await FetchAvailableBatchesAsync(currentBatchTag: result.NextBatchTag, date: date, count: count++);
+            }
+
+            // No next batch available, we are done here.
+            return;
+        }
+
+        private async Task WriteSingleBatchAsync(string batchTag, byte[] content)
+        {
+            var writer = _writerFactory();
+
+            await writer.Execute(new IksWriteArgs
+            {
+                BatchTag = batchTag,
+                Content = content
+            });
+
+            // Persist batch to database.
             await _iksInDbContext.SaveChangesAsync();
         }
 

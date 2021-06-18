@@ -12,7 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 {
-    public class HttpGetIksCommand : IiHttpGetIksCommand
+    public class HttpGetIksCommand : IHttpGetIksCommand
     {
 
         const string ApplicationProtobuf = "application/protobuf; version=1.0";

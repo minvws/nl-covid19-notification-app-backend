@@ -55,9 +55,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
             services.AddTransient(x => x.CreateDbContext(y => new IksInDbContext(y), DatabaseConnectionStringNames.IksIn, false));
 
             services.AddSingleton<IEfgsConfig, EfgsConfig>();
-            services.AddTransient<IiHttpGetIksCommand, HttpGetIksCommand>();
+            services.AddTransient<IHttpGetIksCommand, HttpGetIksCommand>();
             services.AddTransient<IIksWriterCommand, IksWriterCommand>();
-            services.AddTransient<Func<IiHttpGetIksCommand>>(x => x.GetService<IiHttpGetIksCommand>);
+            services.AddTransient<Func<IHttpGetIksCommand>>(x => x.GetService<IHttpGetIksCommand>);
             services.AddTransient<Func<IIksWriterCommand>>(x => x.GetService<IIksWriterCommand>);
             services.AddTransient<IksPollingBatchJob>();
 

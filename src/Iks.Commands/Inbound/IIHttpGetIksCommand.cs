@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 {
-    public interface IiHttpGetIksCommand
+    public interface IHttpGetIksCommand
     {
         Task<HttpGetIksSuccessResult> ExecuteAsync(string batchTag, DateTime date);
     }
