@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
     /// IHttpGetIksCommand which returns the provided results in order.
     /// Use for tests.
     /// </summary>
-    internal class FixedResultHttpGetIksCommand : IiHttpGetIksCommand
+    internal class FixedResultHttpGetIksCommand : IHttpGetIksCommand
     {
         private const string DateFormatString = "yyyyMMdd";
         private readonly Dictionary<string, List<HttpGetIksSuccessResult>> _responses;
