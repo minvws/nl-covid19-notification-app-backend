@@ -40,72 +40,54 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         public async Task ExecuteAsync()
         {
             var jobInfo = GetJobInfo();
-            var today = _dateTimeProvider.Snapshot.Date;
+            var downloadCount = 0;
+            var lastWrittenBatchTag = jobInfo.LastBatchTag;
 
-            // Fetch all available batches starting from the last received batch we have.
-            // There is actually no need to proivde a date if you send a batchTag, but let's do it anyway.
-            await FetchAvailableBatchesAsync(jobInfo.LastBatchTag, today);
+            // The first batch of the given date will be returned by EFGS; we may already have it.
+            var date = jobInfo.LastRun == DateTime.MinValue ? _dateTimeProvider.Snapshot.Date : jobInfo.LastRun;
+            var result = await _receiverFactory().ExecuteAsync(date);
 
-            // Find the last succesfully received batchTag
-            var lastBatchTag = _iksInDbContext.Received
-                .Where(x => x.Error != true)
-                .OrderByDescending(x => x.Created)
-                .Select(x => x.BatchTag)
-                .Single();  // If there are no entries without errors, crash for your life!
+            while (result != null && downloadCount < _efgsConfig.MaxBatchesPerRun)
+            {
+                // If we haven't already received the current batchTag, process it
+                if (!_iksInDbContext.Received.Any(x => x.BatchTag == result.BatchTag))
+                {
+                    try
+                    {
+                        await WriteSingleBatchAsync(result.BatchTag, result.Content);
+                        lastWrittenBatchTag = result.BatchTag;
+                    }
+                    catch (Exception)
+                    {
+                        //TODO: catch specific exception and handle them properly.
+                    }
+
+                }
+
+                // Move on to the next batch, or stop.
+                if (!string.IsNullOrEmpty(result.NextBatchTag))
+                {
+                    // The date is ignored by EFGS when a specific batchTag is requested,
+                    // but it is required so let's send it anyway.
+                    result = await _receiverFactory().ExecuteAsync(date, result.NextBatchTag);
+                    downloadCount++;
+                }
+                else
+                {
+                    // No next batch available, we're done: end the loop.
+                    result = null;
+                }
+            }
 
             // Update IksInJob
-            jobInfo.LastBatchTag = lastBatchTag;
-            jobInfo.LastRun = today;
+            var lastBatchTagDate = lastWrittenBatchTag.Split("-").FirstOrDefault();
+            var lastRun = !string.IsNullOrEmpty(lastBatchTagDate) ? DateTime.ParseExact(lastBatchTagDate, "yyyyMMdd", null) : _dateTimeProvider.Snapshot.Date;
+
+            jobInfo.LastBatchTag = lastWrittenBatchTag;
+            jobInfo.LastRun = lastRun;
 
             // Persist updated jobinfo to database.
             await _iksInDbContext.SaveChangesAsync();
-        }
-
-        private async Task FetchAvailableBatchesAsync(string currentBatchTag, DateTime date, int count = 0)
-        {
-            if (count == _efgsConfig.MaxBatchesPerRun)
-            {
-                // Maximum number of batches reached, stop.
-                return;
-            }
-
-            // Request the currentBatch, and any possible nextBatchTag values for subsequent processing
-            var result = await _receiverFactory().ExecuteAsync(currentBatchTag, date);
-
-            if (result == null)
-            {
-                // No love from EFGS, stop this run and try again next time.
-                return;
-            }
-
-            // If we have already previously received the currentBatchTag, log it
-            // and move on to the nextBatchTag, or stop.
-            if (_iksInDbContext.Received.Any(x => x.BatchTag == result.BatchTag))
-            {
-                _logger.WriteBatchAlreadyProcessed(result.BatchTag);
-
-                if (result.NextBatchTag == null)
-                {
-                    // No next batch available, we are done here.
-                    return;
-                }
-
-                // Fetch the next batch, and increase our "download count"
-                await FetchAvailableBatchesAsync(currentBatchTag: result.NextBatchTag, date: date, count: count++);
-            }
-
-            // If we haven't already received the currentBatchTag, process it
-            await WriteSingleBatchAsync(currentBatchTag, result.Content);
-
-            // Check if we have a next batch available for us
-            if (result.NextBatchTag != null)
-            {
-                // Fetch the next batch
-                await FetchAvailableBatchesAsync(currentBatchTag: result.NextBatchTag, date: date, count: count++);
-            }
-
-            // No next batch available, we are done here.
-            return;
         }
 
         private async Task WriteSingleBatchAsync(string batchTag, byte[] content)
