@@ -67,7 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             AddItem(item, DateTime.Now);
         }
 
-        public Task<HttpGetIksSuccessResult> ExecuteAsync(string batchTag, DateTime date)
+        public Task<HttpGetIksSuccessResult> ExecuteAsync(DateTime date, string batchTag = null)
         {
             HttpGetIksSuccessResult result = null;
             var dateString = date.ToString(DateFormatString);
