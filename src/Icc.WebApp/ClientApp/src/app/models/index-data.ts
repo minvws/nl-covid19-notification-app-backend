@@ -12,7 +12,7 @@ export class IndexData {
     this.asymptomaticIndexDateOffset = asymptomaticIndexDayOffset;
     this.dateHelper = dateHelper;
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 7; i++) {
       this.GGDKeyValidState[i] = null;
     }
   }
@@ -91,13 +91,13 @@ export class IndexData {
   }
 
   public InfectionConfirmationIdValid() {
-    return (this.GGDKeyJoined().length >= 6 && this.validateCharacters());
+    return (this.GGDKeyJoined().length === 7 && this.validateCharacters());
   }
 
   public InfectionConfirmationIdToTaalString() {
     let output = '';
     this.GGDKey.forEach((c, index) => {
-      if (index === 3) {
+      if (index === 3 || index === 5) {
         output += ' – ';
       }
       if (this.spelAlphabet[c]) {
