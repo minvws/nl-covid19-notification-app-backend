@@ -1,0 +1,18 @@
+﻿<ProjectConfiguration>
+  <Settings>
+    <IgnoredTests>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stats.StatsTestsSqlserver.WithData</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Tests.Stats.StatsTestsSqlserver.NothingToSeeHere</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Stats.StatsTestsSqlserver.NothingToSeeHere</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Stats.StatsTestsSqlserver.WithData</TestName>
+      </NamedTestSelector>
+    </IgnoredTests>
+  </Settings>
+</ProjectConfiguration>

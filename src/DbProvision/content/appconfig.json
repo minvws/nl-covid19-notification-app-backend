@@ -1,0 +1,12 @@
+{
+  "androidMinimumVersion": 78961,
+  "appointmentPhoneNumber": "0800-03122020",
+  "decoyProbability": 1,
+  "iOSAppStoreURL": "https://apps.apple.com/nl/app/id1517652429",
+  "iOSMinimumVersion": "1.1.1",
+  "iOSMinimumVersionMessage": "",
+  "manifestFrequency": 2,
+  "repeatedUploadDelay": 14400,
+  "requestMaximumSize": 17000,
+  "requestMinimumSize": 1800
+}

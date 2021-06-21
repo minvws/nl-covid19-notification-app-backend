@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_PublishContent
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Tools.PublishContent.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'PublishContent'
+    - name: ProjectPath
+      value: 'src/PublishContent/PublishContent.csproj'
+    displayName: 'Publish Build Artifact PublishContent'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

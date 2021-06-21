@@ -36,6 +36,9 @@ GRANT UPDATE ON [dbo].[DiagnosisKeysInput] TO [Dbr_Service_EksEngine];
 GRANT DELETE ON [dbo].[DiagnosisKeysInput] TO [Dbr_Service_EksEngine];
 GRANT ALTER ON [dbo].[DiagnosisKeysInput] TO [Dbr_Service_EksEngine];
 
+GRANT EXECUTE ON [dbo].[RemoveDuplicateDiagnosisKeysForIks] TO [Dbr_Service_EksEngine];
+GRANT EXECUTE ON [dbo].[RemoveLocalDuplicateDiagnosisKeys] TO [Dbr_Service_EksEngine];
+
 --[Dbr_Service_CleanupJob] 
 GRANT INSERT ON [dbo].[DiagnosisKeys] TO [Dbr_Service_CleanupJob];
 GRANT SELECT ON [dbo].[DiagnosisKeys] TO [Dbr_Service_CleanupJob];
@@ -47,6 +50,9 @@ GRANT SELECT ON [dbo].[DiagnosisKeysInput] TO [Dbr_Service_CleanupJob];
 GRANT UPDATE ON [dbo].[DiagnosisKeysInput] TO [Dbr_Service_CleanupJob];
 GRANT DELETE ON [dbo].[DiagnosisKeysInput] TO [Dbr_Service_CleanupJob];
 GRANT ALTER ON [dbo].[DiagnosisKeysInput] TO [Dbr_Service_CleanupJob];
+
+GRANT EXECUTE ON [dbo].[RemoveDuplicateDiagnosisKeysForIks] TO [Dbr_Service_CleanupJob];
+GRANT EXECUTE ON [dbo].[RemoveLocalDuplicateDiagnosisKeys] TO [Dbr_Service_CleanupJob];
 
 --end
 

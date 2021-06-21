@@ -8,11 +8,8 @@ REM double check later
 echo f|xcopy ..\s\src\EksEngine\appsettings.release.json Artifacts\EksEngine\appsettings.json /Y
 echo f|xcopy ..\s\src\ManifestEngine\appsettings.release.json Artifacts\ManifestEngine\appsettings.json /Y
 echo f|xcopy ..\s\src\DailyCleanup\appsettings.release.json Artifacts\DailyCleanup\appsettings.json /Y
-echo f|xcopy ..\s\src\EfgsDownloader\appsettings.release.json Artifacts\EfgsDownloader\appsettings.json /Y
-echo f|xcopy ..\s\src\EfgsUploader\appsettings.release.json Artifacts\EfgsUploader\appsettings.json /Y
+echo f|xcopy ..\s\src\Iks.Downloader\appsettings.release.json Artifacts\EfgsDownloader\appsettings.json /Y
+echo f|xcopy ..\s\src\Iks.Uploader\appsettings.release.json Artifacts\EfgsUploader\appsettings.json /Y
 
-echo f|xcopy ..\s\src\DbProvision\appsettings.release.json Artifacts\DbProvision\appsettings.json /Y
 echo f|xcopy ..\s\src\PublishContent\appsettings.release.json Artifacts\PublishContent\appsettings.json /Y
-echo f|xcopy ..\s\src\GenTeks\appsettings.release.json Artifacts\GenTeks\appsettings.json /Y
-echo f|xcopy ..\s\src\ForceTekAuth\appsettings.release.json Artifacts\ForceTekAuth\appsettings.json /Y
 echo f|xcopy ..\s\src\SigTestFileCreator\appsettings.release.json Artifacts\SigTestFileCreator\appsettings.json /Y

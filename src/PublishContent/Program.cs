@@ -1,19 +1,17 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Signers;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace PublishContent
 {
@@ -35,10 +33,10 @@ namespace PublishContent
             services.AddSingleton<IConfiguration>(configuration);
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
-            services.AddScoped(x => DbContextStartup.Content(x, false));
+            services.AddScoped(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content, false));
+            services.AddTransient<Func<ContentDbContext>>(x => x.GetRequiredService<ContentDbContext>);
 
             services.AddTransient<PublishContentCommand>();
-            services.AddTransient<ContentDatabaseCreateCommand>();
 
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
 
@@ -50,7 +48,6 @@ namespace PublishContent
 
             services.AddSingleton<PublishContentLoggingExtensions>();
 
-            services.DummySignerStartup();
             services.PublishContentForV3Startup();
         }
     }

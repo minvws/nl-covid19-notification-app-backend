@@ -3,49 +3,60 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NCrunch.Framework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Entities;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
-namespace MobileAppApi.Tests.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
 {
     [Collection(nameof(WorkflowControllerPostSecretTests))]
     [ExclusivelyUses(nameof(WorkflowControllerPostSecretTests))]
     public abstract class WorkflowControllerPostSecretTests : WebApplicationFactory<Startup>, IDisposable
     {
-        private readonly WebApplicationFactory<Startup> _Factory;
-        private readonly FakeNumberGen _FakeNumbers = new FakeNumberGen();
-        private readonly IDbProvider<WorkflowDbContext> _WorkflowDbProvider;
+        private readonly WebApplicationFactory<Startup> _factory;
+        private readonly FakeNumberGen _fakeNumbers = new FakeNumberGen();
+        private readonly IDbProvider<WorkflowDbContext> _workflowDbProvider;
 
         protected WorkflowControllerPostSecretTests(IDbProvider<WorkflowDbContext> workflowDbProvider)
         {
-            _WorkflowDbProvider = workflowDbProvider;
-            _Factory = WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
+            _workflowDbProvider = workflowDbProvider;
+            _factory = WithWebHostBuilder(
+                builder =>
                 {
-                    services.AddScoped(sp => _WorkflowDbProvider.CreateNewWithTx());
-                    services.Replace(new ServiceDescriptor(typeof(IRandomNumberGenerator), _FakeNumbers));
+                    builder.ConfigureTestServices(services =>
+                    {
+                        services.AddScoped(sp => _workflowDbProvider.CreateNewWithTx());
+                        services.Replace(new ServiceDescriptor(typeof(IRandomNumberGenerator), _fakeNumbers));
+                        services.AddTransient<DecoyTimeAggregatorAttribute>();
+                    });
+
+                    builder.ConfigureAppConfiguration((ctx, config) =>
+                    {
+                        config.AddInMemoryCollection(new Dictionary<string, string>
+                        {
+                            ["Workflow:ResponsePadding:ByteCount:Min"] = "8",
+                            ["Workflow:ResponsePadding:ByteCount:Max"] = "64"
+                        });
+                    });
                 });
-            });
         }
 
-        private class FakeNumberGen: IRandomNumberGenerator
+        private class FakeNumberGen : IRandomNumberGenerator
         {
-            public int Value { get; set; }
+            public int Value { get; set; } = 10;
 
             public int Next(int min, int max) => Value;
 
@@ -62,22 +73,24 @@ namespace MobileAppApi.Tests.Controllers
             base.Dispose();
         }
 
-        [Fact]
+        [Theory]
+        [InlineData("v1/register")]
+        [InlineData("v2/register")]
         [ExclusivelyUses("WorkflowControllerPostSecretTests")]
-        public async Task PostSecretTest_EmptyDb()
+        public async Task PostSecretTest_EmptyDb(string endpoint)
         {
             // Arrange
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
 
-            _FakeNumbers.Value = 1;
+            _fakeNumbers.Value = 1;
 
             // Act
-            var result = await client.PostAsync("v1/register", null);
+            var result = await client.PostAsync(endpoint, null);
 
             // Assert
-            var items = await _WorkflowDbProvider.CreateNew().KeyReleaseWorkflowStates.ToListAsync();
+            var items = await _workflowDbProvider.CreateNew().KeyReleaseWorkflowStates.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            Assert.Equal(1, items.Count);
+            Assert.Single(items);
         }
 
         private TekReleaseWorkflowStateEntity Create(int value)
@@ -89,45 +102,55 @@ namespace MobileAppApi.Tests.Controllers
                 LabConfirmationId = "1"
             };
 
-            e1.ConfirmationKey[0] = (byte) value;
+            e1.ConfirmationKey[0] = (byte)value;
             e1.BucketId[0] = (byte)value;
             e1.LabConfirmationId = $"{value}{value}{value}{value}{value}{value}";
 
             return e1;
         }
 
-        [Fact]
+        [Theory]
+        [InlineData("v1")]
+        [InlineData("v2")]
         [ExclusivelyUses("WorkflowControllerPostSecretTests")]
-        public async Task PostSecretTest_5RetriesAndBang()
+        public async Task PostSecretTest_5RetriesAndBang(string endpoint)
         {
-            using var dbContext = _WorkflowDbProvider.CreateNew();
+            var endpointToResultMap = new Dictionary<string, string>()
+            {
+                { "v1", "{\"labConfirmationId\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}" },
+                { "v2", "{\"ggdKey\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}"}
+            };
+
+            using var dbContext = _workflowDbProvider.CreateNew();
             dbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
             dbContext.SaveChanges();
             // Arrange
-            var client = _Factory.CreateClient();
-            _FakeNumbers.Value = 1;
+            var client = _factory.CreateClient();
+            _fakeNumbers.Value = 1;
 
             // Act
-            var result = await client.PostAsync("v1/register", null);
+            var result = await client.PostAsync($"{endpoint}/register", null);
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            Assert.Equal("{\"labConfirmationId\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}", await result.Content.ReadAsStringAsync());
+            Assert.Equal(endpointToResultMap[endpoint], await result.Content.ReadAsStringAsync());
         }
 
-        [Fact]
+        [Theory]
+        [InlineData("v1/register")]
+        [InlineData("v2/register")]
         [ExclusivelyUses("WorkflowControllerPostSecretTests")]
-        public async Task PostSecret_MissThe5Existing()
+        public async Task PostSecret_MissThe5Existing(string endpoint)
         {
-            using var dbContext = _WorkflowDbProvider.CreateNew();
+            using var dbContext = _workflowDbProvider.CreateNew();
             dbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
             dbContext.SaveChanges();
-            
-            _FakeNumbers.Value = 6;
+
+            _fakeNumbers.Value = 6;
             // Arrange
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
 
             // Act
-            var result = await client.PostAsync("v1/register", null);
+            var result = await client.PostAsync(endpoint, null);
 
             // Assert
             var items = await dbContext.KeyReleaseWorkflowStates.ToListAsync();
@@ -135,5 +158,19 @@ namespace MobileAppApi.Tests.Controllers
             Assert.Equal(6, items.Count);
         }
 
+        [Theory]
+        [InlineData("v1/register")]
+        [InlineData("v2/register")]
+        public async Task Register_has_padding(string endpoint)
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+
+            // Act
+            var result = await client.PostAsync(endpoint, null);
+
+            // Assert
+            Assert.True(result.Headers.Contains("padding"));
+        }
     }
 }

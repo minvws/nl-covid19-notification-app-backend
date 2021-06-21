@@ -3,16 +3,16 @@
     <DefaultTestTimeout>120000</DefaultTestTimeout>
     <IgnoredTests>
       <NamedTestSelector>
-        <TestName>ManifestEngine.Tests.ManifestEngineTestsSqlite.EmptySystem</TestName>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests.ManifestEngineTestsSqlServer.RunTwice</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>ManifestEngine.Tests.ManifestEngineTestsSqlite.RunTwice</TestName>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests.ManifestEngineTestsSqlServer.EmptySystem</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>ManifestEngine.Tests.ManifestEngineTestsSqlServer.EmptySystem</TestName>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests.ManifestEngineTestsSqlite.RunTwice</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>ManifestEngine.Tests.ManifestEngineTestsSqlServer.RunTwice</TestName>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests.ManifestEngineTestsSqlite.EmptySystem</TestName>
       </NamedTestSelector>
     </IgnoredTests>
   </Settings>

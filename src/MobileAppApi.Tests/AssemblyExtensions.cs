@@ -5,13 +5,14 @@
 using System.IO;
 using System.Reflection;
 
-namespace MobileAppApi.Tests
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
 {
     public static class AssemblyExtensions
     {
         public static Stream GetEmbeddedResourceStream(this Assembly assembly, string path)
         {
-            var resourcePath = $"MobileAppApi.Tests.{path}";
+            var ns = typeof(AssemblyExtensions).Namespace;
+            var resourcePath = $"{ns}.{path}";
             return assembly.GetManifestResourceStream(resourcePath);
         }
     }

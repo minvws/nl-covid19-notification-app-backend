@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_App_IccPortal
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.App.IccPortal.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'Icc.WebApp'
+    - name: ProjectPath
+      value: 'src/Icc.WebApp/Icc.WebApp.csproj'
+    displayName: 'Publish Build Artifact IccPortal Frontend'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

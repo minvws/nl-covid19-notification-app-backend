@@ -1,0 +1,116 @@
+stages:
+- stage: Test 
+  jobs:
+  - job: RunMochaTests 
+    displayName: 'Run Lint and Mocha (Angular) unittests'
+    workspace:
+      clean: all # what to clean up before the job runs - outputs | resources | all
+    pool:
+     vmImage: 'ubuntu-latest'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '14.x'
+      displayName: 'Install Node.js'
+    - script: |
+        cd src/Icc.WebApp/ClientApp
+        npm install        
+        npm install -g @angular/cli
+        npm install -g mocha
+        npm install -g mocha-junit-reporter
+      displayName: 'Install npm Packages'
+
+    - script: |
+        cd src/Icc.WebApp/ClientApp
+        ng lint
+      displayName: 'Run Lint'
+
+    - script: |
+        cd src/Icc.WebApp/ClientApp
+        npm run test:ci
+      displayName: 'Run Tests'
+      
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/TESTS-*.xml'
+
+  - job: RunXUnitTests
+    displayName: 'Run XUnit unittests'
+    workspace:
+      clean: all # what to clean up before the job runs - outputs | resources | all
+    pool:
+      name: 'CIBG-BuildRelease-O'
+    steps:     
+        # Install .Net Core 2.0 Version
+        - task: UseDotNet@2
+          displayName: 'Install .NET Core SDK 2.0'
+          inputs:
+            version: 2.0.x
+
+        # Prepare analysis on SonarCloud
+        - task: SonarCloudPrepare@1
+          displayName: 'Prepare analysis on SonarCloud'
+          inputs:
+            SonarCloud: 'CIBG SonarCloud'        # Name of the Service Connection in devops for SonarCloud
+            organization: 'cibg' 
+            scannerMode: 'MSBuild'
+            projectKey: 'MSS.Backend'
+            projectName: 'CoronaMelder.Backend'
+        
+        # Install .Net Core 3.1 LTS Version
+        - task: UseDotNet@2
+          displayName: 'Install .NET Core SDK'
+          inputs:
+            version: 3.1.x
+        # Restore 
+        - task: NuGetToolInstaller@1
+          displayName: 'Install NuGet Tool'
+
+        # Build 
+        - task: DotNetCoreCLI@2
+          displayName: Run dotnet build $(buildConfiguration)
+          inputs:
+            command: 'build'
+            projects: '**/*.csproj'
+            arguments: ' --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)\tests'
+
+        # Run Unit Tests
+        - task: DotNetCoreCLI@2
+          displayName: Run Non Sql tests
+          inputs:
+            command: 'test'
+            projects: $(ProjectsToTest)
+            arguments: '--filter db!=ss&db!=mem --logger trx --no-build'
+
+            # Run Unit Tests
+        - task: DotNetCoreCLI@2
+          displayName: Run Sqlite tests
+          inputs:
+            command: 'test'
+            projects: $(ProjectsToTest)
+            arguments: '--filter db=mem --logger trx --no-build'
+        
+        - ${{ if eq(parameters.RUN_SQLSERVER_TESTS, true) }}:
+              # Run Unit Tests
+          - task: DotNetCoreCLI@2
+            displayName: Run SqlServer tests
+            inputs:
+              command: 'test'
+              projects: $(ProjectsToTest)
+              arguments: '--filter db=ss --logger trx --no-build'
+
+        # Install .Net Core 2.0 Version
+        - task: UseDotNet@2
+          displayName: 'Install .NET Core SDK 2.0'
+          inputs:
+            version: 2.0.x
+        # Run Sonar Code Analysis
+        - task: SonarCloudAnalyze@1
+          displayName: 'Run Sonar Code Analysis'
+
+        # Publish Sonar Analysis op sonarcloud.io
+        - task: SonarCloudPublish@1
+          inputs:
+            pollingTimeoutSec: '600'
+    

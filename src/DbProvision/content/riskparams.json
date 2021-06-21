@@ -1,0 +1,1 @@
+{"minimumRiskScore":2,"attenuationScores":[0,1,2,2,2,2,2,2],"daysSinceLastExposureScores":[1,1,1,1,1,1,1,1],"durationScores":[0,0,0,1,2,2,2,2],"transmissionRiskScores":[0,1,1,1,0,0,0,0],"durationAtAttenuationThresholds":[63,73]}

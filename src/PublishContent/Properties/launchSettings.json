@@ -1,7 +1,8 @@
 {
   "profiles": {
     "PublishContent": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "-b appsettings.json"
     }
   }
 }

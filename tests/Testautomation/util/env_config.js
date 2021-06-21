@@ -23,6 +23,7 @@ const endpoints = {
     APPCONFIG: "appconfig",
     EXPOSUREKEYSET: "exposurekeyset",
     RISKPARAMETERS: "riskcalculationparameters",
+    RESOURCEBUNDLE: "resourcebundle",
   },
   APP:{
     POSTKEYS: "postkeys",
@@ -38,16 +39,19 @@ const endpoints = {
 
 const base_url = {
   CDN:{
+    DEV: "http://localhost:5004",
     TST: "https://test.coronamelder-dist.nl",
     ACC: "https://acceptatie.coronamelder-dist.nl",
     PROD: "https://productie.coronamelder-dist.nl",
   },
   APP:{
+    DEV: "http://localhost:5005",
     TST: "https://test.coronamelder-api.nl",
     ACC: "https://acceptatie.coronamelder-api.nl",
     PROD: "https://coronamelder-api.nl",
   },
   ICC:{
+    DEV: "http://localhost:5006",
     TST: "https://test.coronamelder-portal.nl/iccauth/CaregiversPortalApi",
     ACC: "https://acceptatie.coronamelder-portal.nl/iccauth/CaregiversPortalApi",
     PROD: "https://coronamelder-portal.nl/iccauth/CaregiversPortalApi",
@@ -55,22 +59,24 @@ const base_url = {
 };
 
 const environment = {
-  PROD: {
-    MANIFEST: base_url.CDN.PROD + "/" + version + "/" + endpoints.CDN.MANIFEST,
-    APPCONFIG: base_url.CDN.PROD + "/" + version + "/" + endpoints.CDN.APPCONFIG,
-    EXPOSUREKEYSET: base_url.CDN.PROD + "/" + version + "/" + endpoints.CDN.EXPOSUREKEYSET,
-    RISKPARAMETERS: base_url.CDN.PROD + "/" + version + "/" + endpoints.CDN.RISKPARAMETERS,
-    POSTKEYS: base_url.APP.PROD + "/" + version + "/" + endpoints.APP.POSTKEYS,
-    STOPKEYS: base_url.APP.PROD + "/" + version + "/" + endpoints.APP.STOPKEYS,
-    REGISTER: base_url.APP.PROD + "/" + version + "/" + endpoints.APP.REGISTER,
-    LABCONFIRM: base_url.ICC.PROD + "/" + version + "/" + endpoints.ICC.LABCONFIRM,
-    LABVERIFY: base_url.ICC.PROD + "/" + version + "/" + endpoints.ICC.LABVERIFY,
+  DEV: {
+    MANIFEST: base_url.CDN.DEV + "/" + version + "/" + endpoints.CDN.MANIFEST,
+    APPCONFIG: base_url.CDN.DEV + "/" + version + "/" + endpoints.CDN.APPCONFIG,
+    EXPOSUREKEYSET: base_url.CDN.DEV + "/" + version + "/" + endpoints.CDN.EXPOSUREKEYSET,
+    RISKPARAMETERS: base_url.CDN.DEV + "/" + version + "/" + endpoints.CDN.RISKPARAMETERS,
+    RESOURCEBUNDLE: base_url.CDN.DEV + "/" + version + "/" + endpoints.CDN.RESOURCEBUNDLE,
+    POSTKEYS: base_url.APP.DEV + "/" + version + "/" + endpoints.APP.POSTKEYS,
+    STOPKEYS: base_url.APP.DEV + "/" + version + "/" + endpoints.APP.STOPKEYS,
+    REGISTER: base_url.APP.DEV + "/" + version + "/" + endpoints.APP.REGISTER,
+    LABCONFIRM: base_url.ICC.DEV + "/" + version + "/" + endpoints.ICC.LABCONFIRM,
+    LABVERIFY: base_url.ICC.DEV + "/" + version + "/" + endpoints.ICC.LABVERIFY,
   },
   TST: {
     MANIFEST: base_url.CDN.TST + "/" + version + "/" + endpoints.CDN.MANIFEST,
     APPCONFIG: base_url.CDN.TST + "/" + version + "/" + endpoints.CDN.APPCONFIG,
     EXPOSUREKEYSET: base_url.CDN.TST + "/" + version + "/" + endpoints.CDN.EXPOSUREKEYSET,
     RISKPARAMETERS: base_url.CDN.TST + "/" + version + "/" + endpoints.CDN.RISKPARAMETERS,
+    RESOURCEBUNDLE: base_url.CDN.TST + "/" + version + "/" + endpoints.CDN.RESOURCEBUNDLE,
     POSTKEYS: base_url.APP.TST + "/" + version + "/" + endpoints.APP.POSTKEYS,
     STOPKEYS: base_url.APP.TST + "/" + version + "/" + endpoints.APP.STOPKEYS,
     REGISTER: base_url.APP.TST + "/" + version + "/" + endpoints.APP.REGISTER,
@@ -82,12 +88,25 @@ const environment = {
     APPCONFIG: base_url.CDN.ACC + "/" + version + "/" + endpoints.CDN.APPCONFIG,
     EXPOSUREKEYSET: base_url.CDN.ACC + "/" + version + "/" + endpoints.CDN.EXPOSUREKEYSET,
     RISKPARAMETERS: base_url.CDN.ACC + "/" + version + "/" + endpoints.CDN.RISKPARAMETERS,
+    RESOURCEBUNDLE: base_url.CDN.ACC + "/" + version + "/" + endpoints.CDN.RESOURCEBUNDLE,
     POSTKEYS: base_url.APP.ACC + "/" + version + "/" + endpoints.APP.POSTKEYS,
     STOPKEYS: base_url.APP.ACC + "/" + version + "/" + endpoints.APP.STOPKEYS,
     REGISTER: base_url.APP.ACC + "/" + version + "/" + endpoints.APP.REGISTER,
     LABCONFIRM: base_url.ICC.ACC + "/" + version + "/" + endpoints.ICC.LABCONFIRM,
     LABVERIFY: base_url.ICC.ACC + "/" + version + "/" + endpoints.ICC.LABVERIFY,
   },
+  PROD: {
+    MANIFEST: base_url.CDN.PROD + "/" + version + "/" + endpoints.CDN.MANIFEST,
+    APPCONFIG: base_url.CDN.PROD + "/" + version + "/" + endpoints.CDN.APPCONFIG,
+    EXPOSUREKEYSET: base_url.CDN.PROD + "/" + version + "/" + endpoints.CDN.EXPOSUREKEYSET,
+    RISKPARAMETERS: base_url.CDN.PROD + "/" + version + "/" + endpoints.CDN.RISKPARAMETERS,
+    RESOURCEBUNDLE: base_url.CDN.PROD + "/" + version + "/" + endpoints.CDN.RESOURCEBUNDLE,
+    POSTKEYS: base_url.APP.PROD + "/" + version + "/" + endpoints.APP.POSTKEYS,
+    STOPKEYS: base_url.APP.PROD + "/" + version + "/" + endpoints.APP.STOPKEYS,
+    REGISTER: base_url.APP.PROD + "/" + version + "/" + endpoints.APP.REGISTER,
+    LABCONFIRM: base_url.ICC.PROD + "/" + version + "/" + endpoints.ICC.LABCONFIRM,
+    LABVERIFY: base_url.ICC.PROD + "/" + version + "/" + endpoints.ICC.LABVERIFY,
+  }
 };
 
 // Set environment

@@ -1,21 +1,25 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DevOps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Mapping;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow.RegisterSecret;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.EntityFramework;
 
 namespace DbProvision
 {
@@ -29,37 +33,51 @@ namespace DbProvision
 
         private static void Start(IServiceProvider services, string[] args)
         {
-            services.GetRequiredService<ProvisionDatabasesCommand>().ExecuteAsync(args).GetAwaiter().GetResult();
+            services.GetRequiredService<DatabaseProvisioner>().ExecuteAsync(args).GetAwaiter().GetResult();
+
+            if (args.Length < 2)
+            {
+                return; // No ContentPublisher arguments given
+            }
+
+            for (var i = 0; i < args.Length; i++)
+            {
+                if (args[i].StartsWith('-'))
+                {
+                    var subArgs = new[] { args[i], args[++i] }; // Get contenttype argument with value 
+
+                    services.GetRequiredService<ContentPublisher>().ExecuteAsync(subArgs).GetAwaiter().GetResult();
+                }
+
+            }
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
             services.AddSingleton<IConfiguration>(configuration);
-            services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddScoped(x => DbContextStartup.Workflow(x, false));
-            services.AddScoped(x => DbContextStartup.Content(x, false));
-            services.AddScoped(x => DbContextStartup.EksPublishing(x, false));
-
-            services.AddTransient<WorkflowDatabaseCreateCommand>();
-            services.AddTransient<PublishingJobDatabaseCreateCommand>();
-            services.AddTransient<ContentDatabaseCreateCommand>();
-
-            services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
-            services.AddSingleton<ITekValidatorConfig, TekValidatorConfig>();
-            services.AddSingleton<IEksConfig, StandardEksConfig>();
-
-            services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
-            services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
-            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
-            services.AddTransient<ProvisionDatabasesCommand>();
-            services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
-            services.AddTransient<ContentValidator>();
-            services.AddTransient<ContentInsertDbCommand>();
-            services.AddTransient<ZippedSignedContentFormatter>();
-
             services.AddSingleton<DbProvisionLoggingExtensions>();
+            services.AddSingleton<PublishContentLoggingExtensions>();
 
-            services.DummySignerStartup();
+            services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow, false));
+            services.AddScoped(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content, false));
+            services.AddScoped(x => x.CreateDbContext(y => new EksPublishingJobDbContext(y), DatabaseConnectionStringNames.EksPublishing, false));
+            services.AddScoped(x => x.CreateDbContext(y => new DataProtectionKeysDbContext(y), DatabaseConnectionStringNames.DataProtectionKeys, false));
+            services.AddScoped(x => x.CreateDbContext(y => new StatsDbContext(y), DatabaseConnectionStringNames.Stats, false));
+            services.AddScoped(x => x.CreateDbContext(y => new DkSourceDbContext(y), DatabaseConnectionStringNames.DkSource, false));
+            services.AddScoped(x => x.CreateDbContext(y => new IksInDbContext(y), DatabaseConnectionStringNames.IksIn, false));
+            services.AddScoped(x => x.CreateDbContext(y => new IksOutDbContext(y), DatabaseConnectionStringNames.IksOut, false));
+            services.AddScoped(x => x.CreateDbContext(y => new IksPublishingJobDbContext(y), DatabaseConnectionStringNames.IksPublishing, false));
+
+            services.AddTransient<DatabaseProvisioner>();
+            services.AddTransient<ContentPublisher>();
+            services.AddTransient<ContentValidator>();
+            services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
+            services.AddTransient<ZippedSignedContentFormatter>();
+            services.AddTransient<ContentInsertDbCommand>();
+            services.AddTransient<IContentSigner, DummyCmsSigner>();
+
+            services.PublishContentForV3Startup();
         }
     }
 }

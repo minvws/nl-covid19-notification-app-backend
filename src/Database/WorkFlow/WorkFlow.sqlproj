@@ -24,7 +24,7 @@
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
     <TargetDatabaseSet>True</TargetDatabaseSet>
     <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
-    <AnsiNulls>False</AnsiNulls>
+    <AnsiNulls>True</AnsiNulls>
     <QuotedIdentifier>False</QuotedIdentifier>
     <QueryStoreCaptureMode>All</QueryStoreCaptureMode>
     <QueryStoreDesiredState>Off</QueryStoreDesiredState>
@@ -65,8 +65,8 @@
     <SupplementalLoggingOn>False</SupplementalLoggingOn>
     <CompatibilityMode>130</CompatibilityMode>
     <AnsiNullDefault>False</AnsiNullDefault>
-    <AnsiPadding>False</AnsiPadding>
-    <AnsiWarnings>False</AnsiWarnings>
+    <AnsiPadding>True</AnsiPadding>
+    <AnsiWarnings>True</AnsiWarnings>
     <ArithAbort>False</ArithAbort>
     <ConcatNullYieldsNull>False</ConcatNullYieldsNull>
     <NumericRoundAbort>False</NumericRoundAbort>

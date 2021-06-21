@@ -1,0 +1,10 @@
+<div class="bg-gray-200 mb-2 rounded expansion-panel">
+    <div (click)="toggleExpand()" class="header p-4 cursor-pointer flex align-middle justify-between">
+        <h6 class="leading-none text-base">{{panelTitle}}</h6>
+        <span class="icon opacity-50" [ngClass]="(expanded) ? 'icon-expand' : 'icon-collapse'"></span>
+    </div>
+    <hr>
+    <div *ngIf="expanded" class="content p-4">
+        <ng-content></ng-content>
+    </div>
+</div>

@@ -1,0 +1,14 @@
+jobs:  
+  - job: Build_DailyCleanup
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.DailyCleanup.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'DailyCleanup'
+    - name: ProjectPath
+      value: 'src/DailyCleanup/DailyCleanup.csproj'
+
+    displayName: 'Publish Build Artifact DailyCleanup'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

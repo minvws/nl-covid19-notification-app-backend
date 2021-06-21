@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_ManifestEngine
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.ManifestEngine.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'ManifestEngine'
+    - name: ProjectPath
+      value: 'src/ManifestEngine/ManifestEngine.csproj'
+    displayName: 'Publish Build Artifact ManifestEngine'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

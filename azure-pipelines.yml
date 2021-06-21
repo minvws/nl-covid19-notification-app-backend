@@ -1,0 +1,122 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  # batch = true so not every commit triggers the build
+  batch: 'true'
+  branches:
+    include:
+    - 'master'
+  paths:
+    # include all paths as trigger for changes
+    include:
+    - .
+
+pool:
+  name: 'CIBG-BuildRelease-O'
+
+parameters:
+- name: RUN_SQLSERVER_TESTS
+  type: boolean
+  default: false
+
+variables:
+  solution: '**/*.sln'
+  buildConfiguration: 'Release'
+  runtime: 'win-x64'  
+  ProjectsToTest: '$(Build.ArtifactStagingDirectory)/tests/**/*.Tests.dll'
+
+  # Publishing:
+  # Artifact drop folder
+  Publish.ArtifactName: 'drop'
+
+  # Artifact subfolders
+  Apps.Content.WebApi.ArtifactSubDirectory: 'ContentApi'
+  Apps.App.IccPortal.ArtifactSubDirectory: 'IccPortalApp'
+  Apps.Api.IccBackend.ArtifactSubDirectory: 'IccBackendApi'
+  Apps.Icc.WebApi.ArtifactSubDirectory: 'IccBackend'
+  Apps.MobileAppApi.WebApi.ArtifactSubDirectory: 'MobileAppApi'
+  Apps.DailyCleanup.ArtifactSubDirectory: 'DailyCleanup'
+  Apps.EksEngine.ArtifactSubDirectory: 'EksEngine'
+  Apps.IksDownloader.ArtifactSubDirectory: 'EfgsDownloader'
+  Apps.IksUploader.ArtifactSubDirectory: 'EfgsUploader'
+  Apps.ManifestEngine.ArtifactSubDirectory: 'ManifestEngine'
+  Tools.PublishContent.ArtifactSubDirectory: 'PublishContent'
+  Tools.GenTeks.ArtifactSubDirectory: 'GenTeks'
+  Tools.ForceTekAuth.ArtifactSubDirectory: 'ForceTekAuth'
+  Tools.SigTestFileCreator.ArtifactSubDirectory: 'SigTestFileCreator'
+  Tools.Eks.Parser.ArtifactSubDirectory: 'Eks.Parser'
+  DacPac.ArtifactSubDirectory: 'Database'
+  HSMScripting.ArtifactSubDirectory: 'HSM-Scripting'
+  Apps.ManagementPortal.ArtifactSubDirectory: 'ManagementPortal'
+  
+stages:
+# Tests all unittest in 'ProjectsToTest'
+- template: /build/pipelines/stages/test-stage.yaml
+
+# Publish build and push content.webapi stage
+- stage: Build
+  dependsOn: Test
+  displayName: 'Publish builds'
+  jobs:  
+  - job: Install_SDK_31x
+    steps:
+      # Install .Net Core 3.1 LTS Version
+      - task: UseDotNet@2
+        displayName: 'Install .NET Core SDK'
+        inputs:
+          version: 3.1.x
+  # ---- Apps:
+  # ContentApi
+  - template: /build/pipelines/jobs/apps-publish-contentwebapi-artifact.yaml
+
+  # ICC Frontend Portal
+  - template: /build/pipelines/jobs/apps-publish-appiccportal-artifact.yaml
+
+  # ICC Backend Api (new)
+  - template: /build/pipelines/jobs/apps-publish-iccbackend-artifact.yaml
+
+  # IccBackend (old)
+  - template: /build/pipelines/jobs/apps-publish-iccwebapi-artifact.yaml
+  
+  # MobileAppApi
+  - template: /build/pipelines/jobs/apps-publish-mobileappipawebapi-artifact.yaml
+
+  - template: /build/pipelines/jobs/apps-publish-dailycleanup-artifact.yaml
+
+  # EksEngine
+  - template: /build/pipelines/jobs/apps-publish-eksengine-artifact.yaml
+  
+  # EfgsDownloader
+  - template: /build/pipelines/jobs/apps-publish-iksdownloader-artifact.yaml
+
+  # EfgsUploader
+  - template: /build/pipelines/jobs/apps-publish-iksuploader-artifact.yaml
+
+  # ManifestEngine
+  - template: /build/pipelines/jobs/apps-publish-manifestengine-artifact.yaml
+  
+  # ---- Tools:
+  # Eks.Parser
+  #- template: /build/pipelines/jobs/tools-publish-eksparcer-artifact.yaml
+
+  # ForceTekAuth
+  #- template: /build/pipelines/jobs/tools-publish-forcetekauth-artifact.yaml
+
+  # GenTeks
+  #- template: /build/pipelines/jobs/tools-publish-genteks-artifact.yaml
+  - template: /build/pipelines/jobs/tools-publish-publishcontent-artifact.yaml
+
+  # SigTestFileCreator
+  - template: /build/pipelines/jobs/tools-publish-sigtestfilecreator-artifact.yaml
+  
+  # Database Dacpac files 
+  - template: /build/pipelines/jobs/dacpac-publish-database-artifact.yaml
+
+  # HSM-Scripting files
+  - template: /build/pipelines/jobs/files-publish-hsm-scripting-artifact.yaml
+
+  # Managemnet Portal
+  - template: /build/pipelines/jobs/apps-publish-managementportal-artifact.yaml

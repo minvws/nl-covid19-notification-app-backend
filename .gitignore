@@ -157,7 +157,8 @@ _NCrunch_*
 _NCrunch_\**
 SOLUTION.v3.ncrunchsolution.user
 nCrunchTemp_*
-
+*.ncrunchproject
+*.ncrunchsolution
 
 # MightyMoose
 *.mm.*

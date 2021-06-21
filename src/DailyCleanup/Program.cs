@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -7,25 +7,33 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Content;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.DkProcessors;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.EfDatabase.Contexts;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.FormatV1;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ExposureKeySetsEngine.Interop;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.IksOutbound.Publishing;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Manifest;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ProtocolSettings;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.ServiceRegHelpers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Services.Signing.Providers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Statistics;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Components.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 {
@@ -66,7 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             var c40 = serviceProvider.GetRequiredService<ManifestUpdateCommand>();
             run.Add(() => logger.WriteManifestEngineStarting());
-            run.Add(() => c40.ExecuteAsync().GetAwaiter().GetResult());
+            run.Add(() => c40.ExecuteAllAsync().GetAwaiter().GetResult());
 
             var c50 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             //run.Add(() =>  TODO );
@@ -80,7 +88,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             var c60 = serviceProvider.GetRequiredService<RemoveExpiredManifestsCommand>();
             run.Add(() => logger.WriteManiFestCleanupStarting());
-            run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());
+            run.Add(() => c60.Execute());
 
             logger.WriteEksCleanupStarting();
             var c70 = serviceProvider.GetRequiredService<RemoveExpiredEksCommand>();
@@ -99,13 +107,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => logger.WriteEksV2CleanupStarting());
             run.Add(() => c110.Execute());
 
-            var c120 = serviceProvider.GetRequiredService<RemoveExpiredManifestsV2Command>();
-            run.Add(() => logger.WriteManifestV2CleanupStarting());
-            run.Add(() => c120.ExecuteAsync().GetAwaiter().GetResult());
+            var c125 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
+            run.Add(() => c125.Execute());
 
-            var c130 = serviceProvider.GetRequiredService<RemovePublishedDiagnosticKeys>();
-            //run.Add(() => TODO);
-            run.Add(() => c130.Execute());
+            var c126 = serviceProvider.GetRequiredService<RemoveDiagnosisKeysReadyForCleanup>();
+            run.Add(() => c126.ExecuteAsync().GetAwaiter().GetResult());
+
+            var c130 = serviceProvider.GetRequiredService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
+            run.Add(() => c130.ExecuteAsync().GetAwaiter().GetResult());
+
+            var c131 = serviceProvider.GetService<RemoveLocalDuplicateDiagnosisKeysCommand>();
+            run.Add(() => c131.ExecuteAsync().GetAwaiter().GetResult());
+
+            var c140 = serviceProvider.GetRequiredService<RemoveExpiredIksInCommand>();
+            run.Add(() => c140.ExecuteAsync().GetAwaiter().GetResult());
+
+            var c150 = serviceProvider.GetRequiredService<RemoveExpiredIksOutCommand>();
+            run.Add(() => c150.ExecuteAsync().GetAwaiter().GetResult());
 
             var c100 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             run.Add(() => logger.WriteResignerStarting());
@@ -114,19 +132,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => logger.WriteFinished());
 
             foreach (var i in run)
+            {
                 i();
+            }
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddTransient(x => DbContextStartup.Workflow(x, false));
-            services.AddTransient(x => DbContextStartup.Content(x, false));
-            services.AddTransient(x => DbContextStartup.EksPublishing(x, false));
-            services.AddTransient(x => DbContextStartup.Stats(x, false));
-            services.AddTransient(x => DbContextStartup.DkSource(x, false));
-            services.AddTransient(x => DbContextStartup.IksIn(x, false));
-            services.AddTransient(x => DbContextStartup.IksPublishing(x, false));
-            services.AddTransient(x => DbContextStartup.IksOut(x, false));
+            services.AddTransient(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow, false));
+            services.AddTransient(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content, false));
+            services.AddTransient(x => x.CreateDbContext(y => new EksPublishingJobDbContext(y), DatabaseConnectionStringNames.EksPublishing, false));
+            services.AddTransient(x => x.CreateDbContext(y => new StatsDbContext(y), DatabaseConnectionStringNames.Stats, false));
+            services.AddTransient(x => x.CreateDbContext(y => new DkSourceDbContext(y), DatabaseConnectionStringNames.DkSource, false));
+            services.AddTransient(x => x.CreateDbContext(y => new IksInDbContext(y), DatabaseConnectionStringNames.IksIn, false));
+            services.AddTransient(x => x.CreateDbContext(y => new IksPublishingJobDbContext(y), DatabaseConnectionStringNames.IksPublishing, false));
+            services.AddTransient(x => x.CreateDbContext(y => new IksOutDbContext(y), DatabaseConnectionStringNames.IksOut, false));
 
             services.AddTransient<Func<WorkflowDbContext>>(x => x.GetService<WorkflowDbContext>);
             services.AddTransient<Func<ContentDbContext>>(x => x.GetService<ContentDbContext>);
@@ -148,15 +168,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             services.EksEngine();
 
-            services.ManifestEngine();
-
+            services.AddTransient<RemoveExpiredManifestsReceiver>();
             services.AddTransient<RemoveExpiredManifestsCommand>();
-            services.AddTransient<RemoveExpiredManifestsV2Command>();
+
             services.AddTransient<RemoveExpiredEksCommand>();
             services.AddTransient<RemoveExpiredEksV2Command>();
             services.AddTransient<RemoveExpiredWorkflowsCommand>();
-            services.AddTransient<RemovePublishedDiagnosticKeys>();
-            
+            services.AddTransient<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
+            services.AddTransient<RemovePublishedDiagnosisKeys>();
+            services.AddTransient<RemoveDiagnosisKeysReadyForCleanup>();
+
             services.AddSingleton<IManifestConfig, ManifestConfig>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
             services.AddSingleton<IAcceptableCountriesSetting, EfgsInteropConfig>();
@@ -164,12 +185,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             services.AddSingleton<EksBuilderV1LoggingExtensions>();
             services.AddSingleton<DailyCleanupLoggingExtensions>();
-            services.AddSingleton<ExpiredManifestLoggingExtensions>();
+
             services.AddSingleton<ExpiredEksLoggingExtensions>();
             services.AddSingleton<ExpiredWorkflowLoggingExtensions>();
             services.AddSingleton<ResignerLoggingExtensions>();
             services.AddSingleton<ExpiredEksV2LoggingExtensions>();
-            services.AddSingleton<ExpiredManifestV2LoggingExtensions>();
+
             services.AddSingleton<EksEngineLoggingExtensions>();
             services.AddSingleton<SnapshotLoggingExtensions>();
             services.AddSingleton<EksJobContentWriterLoggingExtensions>();
@@ -178,10 +199,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
 
             services.NlResignerStartup();
-
             services.DummySignerStartup();
-            services.GaSignerStartup();
-
             services.DailyStatsStartup();
 
             services.AddTransient<IksImportBatchJob>();
@@ -191,10 +209,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
                     x.GetRequiredService<DkSourceDbContext>(),
                     new IDiagnosticKeyProcessor[]
                     {
-                        x.GetRequiredService<OnlyIncludeCountryOfOriginKeyProcessor>(), //
+                        x.GetRequiredService<OnlyIncludeCountryOfOriginKeyProcessor>(),
                         x.GetRequiredService<DosDecodingDiagnosticKeyProcessor>(), //Adds result to metadata
                         x.GetRequiredService<NlTrlFromDecodedDosDiagnosticKeyProcessor>(),
-                        x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
+                        x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>()
                     },
                     x.GetRequiredService<ITekValidatorConfig>(),
                     x.GetRequiredService<IUtcDateTimeProvider>(),
@@ -207,6 +225,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<ExcludeTrlNoneDiagnosticKeyProcessor>();
 
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
+            services.AddTransient<IRiskCalculationParametersReader, RiskCalculationParametersHardcoded>();
+            services.AddTransient<IInfectiousness>(
+                x =>
+                {
+                    var rr = x.GetService<IRiskCalculationParametersReader>();
+                    var days = rr.GetInfectiousDaysAsync();
+                    return new Infectiousness(days);
+                }
+            );
 
             services.AddTransient<IksEngine>();
 
@@ -216,7 +243,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<MarkDiagnosisKeysAsUsedByIks>();
             services.AddTransient<IksJobContentWriter>();
 
-            services.ManifestForV3Startup();
+            services.AddSingleton<IIksCleaningConfig, IksCleaningConfig>();
+            services.AddSingleton<RemoveExpiredIksLoggingExtensions>();
+            services.AddTransient<RemoveExpiredIksInCommand>();
+            services.AddTransient<RemoveExpiredIksOutCommand>();
+
+            // ManifestEngine
+            services.AddTransient<ManifestUpdateCommand>();
+            services.AddTransient<ManifestV2Builder>();
+            services.AddTransient<ManifestV3Builder>();
+            services.AddTransient<ManifestV4Builder>();
+            services.AddTransient<Func<IContentEntityFormatter>>(x => x.GetRequiredService<StandardContentEntityFormatter>);
+            services.AddTransient<StandardContentEntityFormatter>();
+            services.AddTransient<ZippedSignedContentFormatter>();
+            services.AddTransient(x =>
+                SignerConfigStartup.BuildEvSigner(
+                    x.GetRequiredService<IConfiguration>(),
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<IUtcDateTimeProvider>()));
+            services.AddTransient(x =>
+                SignerConfigStartup.BuildGaSigner(
+                    x.GetRequiredService<IConfiguration>(),
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));
+            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
         }
     }
 

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -10,31 +10,58 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Moq;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using Xunit;
 
-namespace MobileAppApi.Tests.Controllers
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
 {
     public class WorkflowControllerStopKeysTests : WebApplicationFactory<Startup>, IDisposable
     {
-        private WebApplicationFactory<Startup> _Factory;
+        private readonly WebApplicationFactory<Startup> _factory;
+        private readonly Mock<IDecoyTimeCalculator> _mockTimeCalculator = new Mock<IDecoyTimeCalculator>();
 
         public WorkflowControllerStopKeysTests()
         {
-            _Factory = WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
+            _factory = WithWebHostBuilder(
+                builder =>
                 {
+                    builder.ConfigureTestServices(services =>
+                    {
+
+                        services.Replace(new ServiceDescriptor(typeof(IDecoyTimeCalculator), _mockTimeCalculator.Object));
+                        services.AddTransient<DecoyTimeGeneratorAttribute>();
+                        services.AddTransient<DecoyTimeAggregatorAttribute>();
+                        services.AddTransient<ResponsePaddingFilterAttribute>();
+
+                        // Remove the app's ApplicationDbContext registration.
+                        var descriptor = services.SingleOrDefault(d => d.ServiceType.BaseType == typeof(DbContext));
+
+                        if (descriptor != null)
+                        {
+                            services.Remove(descriptor);
+                        }
+
+                        // Add ApplicationDbContext using an in-memory database for testing.
+                        services.AddDbContext<WorkflowDbContext>((options, context) =>
+                        {
+                            context.UseInMemoryDatabase("InMemoryDbForTesting");
+                        });
+                    });
                 });
-            });
         }
 
         [Fact]
         public async Task PostStopKeysTest()
         {
             // Arrange
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
 
             // Act
             var result = await client.PostAsync("v1/stopkeys", null);
@@ -43,33 +70,19 @@ namespace MobileAppApi.Tests.Controllers
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
 
-        // Ticket raised to move/refactor, this tests the delay feature not if it's enabled for an endpoint
-        /// <summary>
-        /// Tests whether or not the response is delayed by at least the minimum time.
-        /// </summary>
-        /// <param name="min">Minimum wait time</param>
-        /// <param name="max">Maximum wait time</param>
         [Theory]
-        [InlineData(100L, 200L)]
-        [InlineData(200L, 300L)]
-        [InlineData(300L, 400L)]
-        [InlineData(50L, 100L)]
-        [InlineData(10L, 50L)]
-        public async Task DelayTest(long min, long max)
+        [InlineData(42)]
+        [InlineData(343)]
+        [InlineData(2416)]
+        [InlineData(10000)]
+        public async Task DelayTest(int delayMs)
         {
             // Arrange
             var sw = new Stopwatch();
-            var client = _Factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureAppConfiguration((ctx, config) =>
-                {
-                    config.AddInMemoryCollection(new Dictionary<string, string>
-                    {
-                        ["Workflow:Decoys:DelayInMilliseconds:Min"] = $"{min}",
-                        ["Workflow:Decoys:DelayInMilliseconds:Max"] = $"{max}"
-                    });
-                });
-            }).CreateClient();
+            _mockTimeCalculator.Setup(x => x.GetDelay())
+                .Returns(TimeSpan.FromMilliseconds(delayMs));
+
+            var client = _factory.CreateClient();
 
             // Act
             sw.Start();
@@ -78,7 +91,7 @@ namespace MobileAppApi.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            Assert.True(sw.ElapsedMilliseconds > min);
+            Assert.True(sw.ElapsedMilliseconds >= delayMs);
         }
 
         // Ticket raised to move/refactor, this tests the delay feature not if it's enabled for an endpoint
@@ -90,7 +103,7 @@ namespace MobileAppApi.Tests.Controllers
         public async Task PaddingTest(long min, long max)
         {
             // Arrange
-            var client = _Factory.WithWebHostBuilder(builder =>
+            var client = _factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureAppConfiguration((ctx, config) =>
                 {
@@ -98,8 +111,6 @@ namespace MobileAppApi.Tests.Controllers
                     {
                         ["Workflow:ResponsePadding:ByteCount:Min"] = $"{min}",
                         ["Workflow:ResponsePadding:ByteCount:Max"] = $"{max}",
-                        ["Workflow:Decoys:DelayInMilliseconds:Min"] = $"0",
-                        ["Workflow:Decoys:DelayInMilliseconds:Max"] = $"8"
                     });
                 });
             }).CreateClient();
@@ -119,36 +130,10 @@ namespace MobileAppApi.Tests.Controllers
         public async Task Stopkeys_has_padding()
         {
             // Arrange
-            var client = _Factory.CreateClient();
+            var client = _factory.CreateClient();
 
             // Act
             var result = await client.PostAsync("v1/stopkeys", null);
-
-            // Assert
-            Assert.True(result.Headers.Contains("padding"));
-        }
-
-        [Fact]
-        public async Task Register_has_padding()
-        {
-            // Arrange
-            var client = _Factory.CreateClient();
-
-            // Act
-            var result = await client.PostAsync("v1/register", null);
-
-            // Assert
-            Assert.True(result.Headers.Contains("padding"));
-        }
-
-        [Fact]
-        public async Task Postkeys_has_padding()
-        {
-            // Arrange
-            var client = _Factory.CreateClient();
-
-            // Act
-            var result = await client.PostAsync("v1/postkeys", null);
 
             // Assert
             Assert.True(result.Headers.Contains("padding"));

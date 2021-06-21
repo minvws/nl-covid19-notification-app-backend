@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+        <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto</AssemblyName>
+    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto</RootNamespace>
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\BdCertChain.p7b" />
+    <None Remove="Resources\efgs\efgs-cb-client.jks" />
+    <None Remove="Resources\efgs\efgs-ta.jks" />
+    <None Remove="Resources\efgs\efgs-trustanchor\trustanchor.key" />
+    <None Remove="Resources\efgs\efgs-trustanchor\trustanchor.pem" />
+    <None Remove="Resources\efgs\insert-signing.sql" />
+    <None Remove="Resources\efgs\insert-tls.sql" />
+    <None Remove="Resources\efgs\nl-auth\nbtls-nl-cert.crt" />
+    <None Remove="Resources\efgs\nl-auth\nbtls-nl-cert.csr" />
+    <None Remove="Resources\efgs\nl-auth\nbtls-nl-priv.key" />
+    <None Remove="Resources\efgs\nl-signing\nbbs-nl-cert.crt" />
+    <None Remove="Resources\efgs\nl-signing\nbbs-nl-cert.csr" />
+    <None Remove="Resources\efgs\nl-signing\nbbs-nl-priv.key" />
+    <None Remove="Resources\StaatDerNLChain-EV-Expires-2022-12-05.p7b" />
+    <None Remove="Resources\StaatDerNLChain-Expires2020-08-28.p7b" />
+    <None Remove="Resources\TestECDSA.p12" />
+    <None Remove="Resources\TestRSA.p12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\BdCertChain.p7b" />
+    <EmbeddedResource Include="Resources\efgs\efgs-cb-client.jks" />
+    <EmbeddedResource Include="Resources\efgs\efgs-ta.jks" />
+    <EmbeddedResource Include="Resources\efgs\efgs-trustanchor\trustanchor.key" />
+    <EmbeddedResource Include="Resources\efgs\efgs-trustanchor\trustanchor.pem" />
+    <EmbeddedResource Include="Resources\efgs\insert-signing.sql" />
+    <EmbeddedResource Include="Resources\efgs\insert-tls.sql" />
+    <EmbeddedResource Include="Resources\efgs\nl-auth\nbtls-nl-cert.crt" />
+    <EmbeddedResource Include="Resources\efgs\nl-auth\nbtls-nl-cert.csr" />
+    <EmbeddedResource Include="Resources\efgs\nl-auth\nbtls-nl-priv.key" />
+    <EmbeddedResource Include="Resources\efgs\nl-signing\nbbs-nl-cert.crt" />
+    <EmbeddedResource Include="Resources\efgs\nl-signing\nbbs-nl-cert.csr" />
+    <EmbeddedResource Include="Resources\efgs\nl-signing\nbbs-nl-priv.key" />
+    <EmbeddedResource Include="Resources\StaatDerNLChain-EV-Expires-2022-12-05.p7b" />
+    <EmbeddedResource Include="Resources\TestECDSA.p12" />
+    <EmbeddedResource Include="Resources\TestRSA.p12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.11" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.11" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+</Project>

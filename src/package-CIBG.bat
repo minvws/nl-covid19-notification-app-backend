@@ -15,8 +15,8 @@ REM 7z a -tzip packages\Batch\Website.BatchJobsApi.zip publish\BatchJobsApi"
 REM 7z a -tzip packages\App\Website.ContentApi.zip publish\ContentApi"
 REM 7z a -tzip packages\App\Website.IccBackend.zip publish\IccBackend"
 REM 7z a -tzip packages\App\Website.MobileAppApi.zip publish\MobileAppApi"
+REM xcopy ..\s\src\publish\BatchJobsApi Artifacts\BatchJobsApi /E /I
 
-xcopy ..\s\src\publish\BatchJobsApi Artifacts\BatchJobsApi /E /I
 xcopy ..\s\src\publish\ContentApi Artifacts\ContentApi /E /I
 xcopy ..\s\src\publish\IccBackend Artifacts\IccBackend /E /I
 xcopy ..\s\src\publish\MobileAppApi Artifacts\MobileAppApi /E /I
@@ -35,12 +35,8 @@ xcopy ..\s\src\publish\EfgsUploader Artifacts\EfgsUploader /E /I
 REM Database
 REM 7z a -tzip packages\SQL\SQL.DbProvision.zip publish\Tools\DbProvision"
 
-xcopy ..\s\src\publish\Tools\DbProvision Artifacts\DbProvision /E /I
 xcopy ..\s\src\publish\Tools\PublishContent Artifacts\PublishContent /E /I
-xcopy ..\s\src\publish\Tools\GenTeks Artifacts\GenTeks /E /I
-xcopy ..\s\src\publish\Tools\ForceTekAuth Artifacts\ForceTekAuth /E /I
 xcopy ..\s\src\publish\Tools\SigTestFileCreator Artifacts\SigTestFileCreator /E /I
-xcopy ..\s\src\publish\Tools\EksParser Artifacts\EksParser /E /I
 
 xcopy ..\s\src\HSM-Scripting Artifacts\HSM-Scripting /E /I
 

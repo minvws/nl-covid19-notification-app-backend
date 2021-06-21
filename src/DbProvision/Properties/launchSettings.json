@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "DbProvision": {
+      "commandName": "Project",
+      "commandLineArgs": "-a content/appconfig.json -r content/riskparams.json -b content/resourcebundle.json -b2 content/resourcebundlev3.json"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "commandLineArgs": "-a content/appconfig.json -r content/riskparams.json -b content/resourcebundle.json -b2 content/resourcebundlev3.json"
+    }
+  }
+}

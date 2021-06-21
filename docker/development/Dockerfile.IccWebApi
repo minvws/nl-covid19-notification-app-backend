@@ -1,0 +1,17 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS builder
+
+COPY . app/
+WORKDIR app/
+COPY docker/development/appsettings.json .
+
+# get rid of xcopy commands in project files
+RUN find . -name \*.csproj -exec sed -i '/<Exec Command="xcopy.*>/d' {} \;
+RUN dotnet publish src/Icc.WebApi/Icc.WebApi.csproj --no-self-contained  --configuration Release -o publish/Icc.WebApi --version-suffix local
+
+RUN find ./publish -name appsettings.json -exec cp appsettings.json {} \;
+
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine
+WORKDIR /app
+COPY --from=builder app/publish/ .
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV ASPNETCORE_URLS="http://*:5000;https://*:5001"

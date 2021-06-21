@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_Iks_Uploader
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.IksUploader.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'Iks.Uploader'
+    - name: ProjectPath
+      value: 'src/Iks.Uploader/Iks.Uploader.csproj'
+    displayName: 'Publish Build Artifact Iks.Uploader'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

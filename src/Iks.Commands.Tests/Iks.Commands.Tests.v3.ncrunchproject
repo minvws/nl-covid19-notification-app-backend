@@ -1,0 +1,36 @@
+﻿<ProjectConfiguration>
+  <Settings>
+    <IgnoredTests>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop.MarkDiagnosisKeysAsUsedByIksTestsSqlServer.RealisticBothSourcesOfDks("0")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop.MarkDiagnosisKeysAsUsedByIksTestsSqlServer.RealisticBothSourcesOfDks("100")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop.MarkDiagnosisKeysAsUsedByIksTestsSqlServer.Simple("0")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop.DkToIksSnapshotTestsSqlServer.Run1("0")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop.DkToIksSnapshotTestsSqlServer.Run1("100")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop.IksEngineTestsSqlserver.Empty</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop.IksEngineTestsSqlserver.Execute("2")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop.IksEngineTestsSqlserver.ExecuteFromWorkflows</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop.MarkDiagnosisKeysAsUsedByIksTestsSqlServer.Simple("100")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop.IksEngineTestsSqlserver.ExecuteFromWorkflowsTwice</TestName>
+      </NamedTestSelector>
+    </IgnoredTests>
+  </Settings>
+</ProjectConfiguration>

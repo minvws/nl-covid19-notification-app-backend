@@ -28,10 +28,12 @@ GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 --[Dbr_Service_EksEngine]
 GRANT INSERT ON [dbo].[Content] TO [Dbr_Service_EksEngine];
 GRANT SELECT ON [dbo].[Content] TO [Dbr_Service_EksEngine];
+GRANT DELETE ON [dbo].[Content] TO [Dbr_Service_EksEngine];
 
 --[Dbr_Service_ManifestEngine] 
 GRANT INSERT ON [dbo].[Content] TO [Dbr_Service_ManifestEngine];
 GRANT SELECT ON [dbo].[Content] TO [Dbr_Service_ManifestEngine];
+GRANT DELETE ON [dbo].[Content] TO [Dbr_Service_ManifestEngine];
 
 --[Dbr_Service_ContentAPI] 
 GRANT SELECT ON [dbo].[Content] TO [Dbr_Service_ContentAPI];
