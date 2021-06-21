@@ -143,6 +143,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.EksEngine();
 
             services.AddTransient<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
+            services.AddTransient<RemoveLocalDuplicateDiagnosisKeysCommand>();
             services.AddTransient<RemovePublishedDiagnosisKeys>();
             services.AddTransient<RemoveDiagnosisKeysReadyForCleanup>();
 
