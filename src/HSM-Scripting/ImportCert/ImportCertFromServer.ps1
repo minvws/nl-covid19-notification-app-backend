@@ -19,9 +19,8 @@ else
 
 function SetErrorToStop
 {
-	$ErrorAtStart = $ErrorActionPreference
-	$ErrorActionPreference = "Stop"
-	write-host "Error-behaviour is set from $ErrorAtStart to $ErrorActionPreference."
+	$script:ErrorActionPreference = "Stop"
+	write-host "Error-behaviour of script is set to $script:ErrorActionPreference."
 }
 
 function CheckNotIse
@@ -105,6 +104,7 @@ function RunWithErrorCheck ([string]$command)
 
 
 write-host "Importer for certificates from other server"
+write-host "Location and date: $env:computername. $(Get-Date -Format `"dd MMM, HH:mm:ss`")."
 CheckNotIse
 
 write-warning "`nPlease check the following:`
@@ -116,6 +116,8 @@ write-warning "`nPlease check the following:`
 If not: abort this script with Ctrl+C."
 Pause
 
+SetErrorToStop
+
 write-host "`nCheck if HSM is accessible"
 Pause
 
@@ -125,6 +127,8 @@ write-host "`nImporting certificate"
 Pause
 
 $CertName = read-host "`nPlease enter the filename of the certificate with extension"
+$Host.UI.RawUI.FlushInputBuffer() #clears any annoying newlines that were accidentally copied in
+
 RunWithErrorCheck "certutil -addstore -f `"my`" $CertName"
 Pause
 
