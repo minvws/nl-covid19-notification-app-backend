@@ -9,27 +9,31 @@ using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
 {
-    public class SqlServerDbContextOptionsBuilder 
+    public class SqlServerDbContextOptionsBuilder
     {
-        private readonly ILoggerFactory _LoggerFactory;
-        private readonly SqlConnectionStringBuilder _ConnectionStringBuilder;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly SqlConnectionStringBuilder _connectionStringBuilder;
 
         public SqlServerDbContextOptionsBuilder(IEfDbConfig efDbConfig, ILoggerFactory loggerFactory)
         {
-            if (efDbConfig == null) throw new ArgumentNullException(nameof(efDbConfig));
-            _LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-
-            _ConnectionStringBuilder = new SqlConnectionStringBuilder(efDbConfig.ConnectionString) 
+            if (efDbConfig == null)
             {
-                    MultipleActiveResultSets = true
+                throw new ArgumentNullException(nameof(efDbConfig));
+            }
+
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+
+            _connectionStringBuilder = new SqlConnectionStringBuilder(efDbConfig.ConnectionString)
+            {
+                MultipleActiveResultSets = true
             };
         }
 
         public DbContextOptions Build()
         {
             var builder = new DbContextOptionsBuilder();
-            builder.UseLoggerFactory(_LoggerFactory);
-            builder.UseSqlServer(_ConnectionStringBuilder.ConnectionString);
+            builder.UseLoggerFactory(_loggerFactory);
+            builder.UseSqlServer(_connectionStringBuilder.ConnectionString);
             return builder.Options;
         }
     }

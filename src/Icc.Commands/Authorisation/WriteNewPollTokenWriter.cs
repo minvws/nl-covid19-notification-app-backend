@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -15,50 +15,58 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 {
     public class WriteNewPollTokenWriter
     {
-        private readonly WorkflowDbContext _WorkflowDb;
-        private readonly IPollTokenService _PollTokenService;
-        private readonly ILogger _Logger;
-        private int _AttemptCount;
+        private readonly WorkflowDbContext _workflowDb;
+        private readonly IPollTokenService _pollTokenService;
+        private readonly ILogger _logger;
+        private int _attemptCount;
         private const int AttemptCountMax = 5;
 
         public WriteNewPollTokenWriter(WorkflowDbContext workflowDb, IPollTokenService pollTokenService, ILogger<WriteNewPollTokenWriter> logger)
         {
-            _WorkflowDb = workflowDb ?? throw new ArgumentNullException(nameof(workflowDb));
-            _PollTokenService = pollTokenService ?? throw new ArgumentNullException(nameof(pollTokenService));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _workflowDb = workflowDb ?? throw new ArgumentNullException(nameof(workflowDb));
+            _pollTokenService = pollTokenService ?? throw new ArgumentNullException(nameof(pollTokenService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public string Execute(TekReleaseWorkflowStateEntity wf)
         {
-            _Logger.WriteWritingNewPollToken();
+            _logger.WriteWritingNewPollToken();
 
             var success = WriteAttempt(wf);
             while (!success)
+            {
                 success = WriteAttempt(wf);
+            }
 
             return wf.PollToken;
         }
 
         private bool WriteAttempt(TekReleaseWorkflowStateEntity wf)
         {
-            if (++_AttemptCount > AttemptCountMax)
+            if (++_attemptCount > AttemptCountMax)
+            {
                 throw new InvalidOperationException("Maximum attempts reached.");
+            }
 
-            if (_AttemptCount > 1)
-                _Logger.WriteDuplicatePollTokenFound(_AttemptCount);
+            if (_attemptCount > 1)
+            {
+                _logger.WriteDuplicatePollTokenFound(_attemptCount);
+            }
 
-            wf.PollToken = _PollTokenService.Next();
+            wf.PollToken = _pollTokenService.Next();
 
             try
             {
-                _WorkflowDb.SaveAndCommit();
-                _Logger.WritePollTokenCommit();
+                _workflowDb.SaveAndCommit();
+                _logger.WritePollTokenCommit();
                 return true;
             }
             catch (DbUpdateException ex)
             {
                 if (CanRetry(ex))
+                {
                     return false;
+                }
 
                 throw;
             }
@@ -69,8 +77,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         //with unique index 'IX_TekReleaseWorkflowState_BucketId'.The duplicate key value is (blah blah).
         private bool CanRetry(DbUpdateException ex)
         {
-            if (!(ex.InnerException is SqlException sqlEx)) 
+            if (!(ex.InnerException is SqlException sqlEx))
+            {
                 return false;
+            }
 
             var errors = new SqlError[sqlEx.Errors.Count];
             sqlEx.Errors.CopyTo(errors, 0);

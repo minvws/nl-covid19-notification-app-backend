@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -11,23 +11,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 {
     public class HttpPostAuthoriseCommand
     {
-        private readonly AuthorisationWriterCommand _AuthorisationWriter;
-        private readonly AuthorisationArgsValidator _AuthorisationArgsValidator;
-        private readonly ILogger _Logger;
+        private readonly AuthorisationWriterCommand _authorisationWriter;
+        private readonly AuthorisationArgsValidator _authorisationArgsValidator;
+        private readonly ILogger _logger;
 
-        public HttpPostAuthoriseCommand(AuthorisationWriterCommand authorisationWriter,AuthorisationArgsValidator authorisationArgsValidator, ILogger<HttpPostAuthoriseCommand> logger)
+        public HttpPostAuthoriseCommand(AuthorisationWriterCommand authorisationWriter, AuthorisationArgsValidator authorisationArgsValidator, ILogger<HttpPostAuthoriseCommand> logger)
         {
-            _AuthorisationWriter = authorisationWriter ?? throw new ArgumentNullException(nameof(authorisationWriter));
-            _AuthorisationArgsValidator = authorisationArgsValidator ?? throw new ArgumentNullException(nameof(authorisationArgsValidator));
-            _Logger = logger;
+            _authorisationWriter = authorisationWriter ?? throw new ArgumentNullException(nameof(authorisationWriter));
+            _authorisationArgsValidator = authorisationArgsValidator ?? throw new ArgumentNullException(nameof(authorisationArgsValidator));
+            _logger = logger;
         }
 
         public async Task<IActionResult> ExecuteAsync(AuthorisationArgs args)
         {
-            if(_Logger.LogValidationMessages( _AuthorisationArgsValidator.Validate(args)))
+            if (_logger.LogValidationMessages(_authorisationArgsValidator.Validate(args)))
+            {
                 return new BadRequestResult();
+            }
 
-            var newPollToken = await _AuthorisationWriter.ExecuteAsync(args);
+            var newPollToken = await _authorisationWriter.ExecuteAsync(args);
 
             var response = new AuthorisationResponse
             {

@@ -1,4 +1,8 @@
-﻿using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.DsosEncoding
 {
@@ -27,9 +31,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.DsosEncoding
             var daysSinceLastDayOfInterval = value - intervalDuration * RangeFactor;
             return new Range<int>(daysSinceLastDayOfInterval - (intervalDuration - 1), daysSinceLastDayOfInterval);
         }
-        
+
         //From the JS
-        public bool TryDecode(int value, out DsosDecodeResult? result)
+        public bool TryDecode(int value, out DsosDecodeResult result)
         {
             result = null;
 
@@ -49,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.DsosEncoding
                 //if (!ValidRange.Contains(daysSinceLastDayOfInterval))
                 //    return false;
 
-                var r =  new Range<int>(daysSinceLastDayOfInterval - (intervalDuration - 1), daysSinceLastDayOfInterval);
+                var r = new Range<int>(daysSinceLastDayOfInterval - (intervalDuration - 1), daysSinceLastDayOfInterval);
 
                 result = DsosDecodeResult.CreateSymptomatic(r);
                 return true;

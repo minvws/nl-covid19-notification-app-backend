@@ -16,6 +16,7 @@
 	[Efgs_ReportType] [int] NULL,
 	[Efgs_CountryOfOrigin] [nvarchar](2) NULL,
 	[Created] [datetime2](7) NULL,
+	[ReadyForCleanup] [bit] NULL,
  [Local_ReportType] INT NULL, 
     CONSTRAINT [PK_DiagnosisKeys] PRIMARY KEY CLUSTERED 
 (

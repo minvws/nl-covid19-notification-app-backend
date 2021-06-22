@@ -74,7 +74,7 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
 
   evaluateInvalidState($event: KeyboardEvent, index: number) {
     if (this.errorCode === 2) {
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 7; i++) {
         if (i !== index) {
           this.indexData.GGDKeyValidState[i] = null;
         }
@@ -88,7 +88,7 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
       this.indexData.GGDKeyValidState[index] = true;
     }
 
-    this.demoMode = (this.indexData.GGDKeyJoined() === '000000');
+    this.demoMode = (this.indexData.GGDKeyJoined() === '0000000');
     if (!this.demoMode) {
       this.errorCode = (Object.values(this.indexData.GGDKeyValidState).filter(s => s === false).length > 0) ? 1 : -1;
     } else {
@@ -115,7 +115,7 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
 
   icIdKeyPress($event: KeyboardEvent) {
     const target = $event.target as HTMLInputElement;
-    const index = Array.prototype.indexOf.call(target.parentElement.children, target);
+      const index = Array.prototype.indexOf.call(target.parentElement.querySelectorAll('input'), target);
 
     if ($event.code === 'ArrowRight') {
       this.focusOnNext(target);
@@ -149,7 +149,7 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
   }
 
   confirmGGDKey() {
-    if (this.indexData.GGDKeyJoined() === '000000') {
+    if (this.indexData.GGDKeyJoined() === '0000000') {
       this.router.navigate(['/validate/confirm'], {
         queryParams: {
           symptomsDate: this.indexData.getDisplayDate().valueOf()
@@ -189,10 +189,6 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
           if (this.errorCode > 1) {
             for (let i = 0; i < this.indexData.GGDKey.length; i++) {
               this.indexData.GGDKeyValidState[i] = false;
-
-              if (i === 6 && this.indexData.GGDKey[i] === '') {
-                this.indexData.GGDKeyValidState[i] = null;
-              }
             }
           }
         });

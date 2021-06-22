@@ -1,24 +1,27 @@
-﻿using Microsoft.Extensions.Logging;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
+using System.Linq;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
-using System;
-using System.Linq;
-using Microsoft.Extensions.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksInbound
 {
     public class RemoveExpiredIksInCommandTests
     {
-        private readonly IDbProvider<IksInDbContext> _IksInDbProvider;
+        private readonly IDbProvider<IksInDbContext> _iksInDbProvider;
 
         public RemoveExpiredIksInCommandTests()
         {
-            _IksInDbProvider = new SqliteInMemoryDbProvider<IksInDbContext>();
+            _iksInDbProvider = new SqliteInMemoryDbProvider<IksInDbContext>();
         }
 
         [Fact]
@@ -31,16 +34,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var configurationMock = new Mock<IIksCleaningConfig>();
             configurationMock.Setup(p => p.LifetimeDays).Returns(14);
             var logger = new Mock<ILogger<RemoveExpiredIksLoggingExtensions>>();
-            var contextFunc = _IksInDbProvider.CreateNew;
+            var contextFunc = _iksInDbProvider.CreateNew;
             var context = contextFunc();
-            
+
             // Assemble - add data up to "now"
             var firstDate = DateTime.Parse("2020-12-01T20:00:00Z");
             for (var day = 0; day < 26; day++)
             {
                 context.Received.Add(new IksInEntity
                 {
-                    Id = day+1,
+                    Id = day + 1,
                     Created = firstDate.AddDays(day),
                 });
             }
@@ -55,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 dateTimeProvider.Object,
                 configurationMock.Object
             );
-            command.ExecuteAsync();
+            command.ExecuteAsync().GetAwaiter().GetResult();
 
             // Assert
             Assert.Empty(context.Received.Where(x => x.Created < DateTime.Parse("2020-12-12T00:00:00Z")));

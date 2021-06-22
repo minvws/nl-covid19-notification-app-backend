@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -11,12 +11,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework
 {
     public class SqliteInMemoryDbProvider<TDbContext> : IDbProvider<TDbContext> where TDbContext : DbContext
     {
-        private readonly SqliteConnection _Connection = new SqliteConnection("Data Source=:memory:");
+        private readonly SqliteConnection _connection = new SqliteConnection("Data Source=:memory:");
 
         public SqliteInMemoryDbProvider()
         {
             var ctor = typeof(TDbContext).GetConstructor(new[] { typeof(DbContextOptions) });
-            CreateNew = () => (TDbContext)ctor.Invoke(new object[] { new DbContextOptionsBuilder().UseSqlite(_Connection).Options });
+            CreateNew = () => (TDbContext)ctor.Invoke(new object[] { new DbContextOptionsBuilder().UseSqlite(_connection).Options });
             CreateNewWithTx = //Cannot new tx?
                 () =>
                 {
@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework
                 };
 
             var dbc = CreateNew();
-            _Connection.Open(); //Database created.
+            _connection.Open(); //Database created.
             dbc.Database.EnsureCreated();
         }
 
@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework
 
         public void Dispose()
         {
-            _Connection?.Dispose();
+            _connection?.Dispose();
         }
     }
 }

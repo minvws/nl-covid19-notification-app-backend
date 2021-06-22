@@ -90,9 +90,8 @@ function Pause ($Message = "Press any key to continue...`n") {
 
 function SetErrorToStop
 {
-	$ErrorAtStart = $ErrorActionPreference
-	$ErrorActionPreference = "Stop"
-	write-host "Error-behaviour is set from $ErrorAtStart to $ErrorActionPreference."
+	$script:ErrorActionPreference = "Stop"
+	write-host "Error-behaviour of script is set to $script:ErrorActionPreference."
 }
 
 function CheckNotIse
@@ -152,6 +151,7 @@ function SetCertFileNames ()
 	$script:folderName = "Results-$script:date"
 	
 	$script:baseName = "$script:folderName\" + $(read-host "Enter the preferred name for the certificate files")
+	$Host.UI.RawUI.FlushInputBuffer() #clears any annoying newlines that were accidentally copied in
 	
 	$script:clientName = "$script:baseName-Client"
 	$script:clientSigned = "$script:clientName-signed"
@@ -166,6 +166,7 @@ function SetCertFileNames ()
 
 
 write-host "Certificate creation-script for interop certificates with Utimaco HSM"
+write-host "Location and date: $env:computername. $(Get-Date -Format `"dd MMM, HH:mm:ss`")."
 CheckNotIse
 CheckNotWin7
 

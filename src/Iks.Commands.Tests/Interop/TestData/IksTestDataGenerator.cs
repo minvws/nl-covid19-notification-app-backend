@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -16,13 +16,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 {
     public class IksTestDataGenerator
     {
-        private readonly IDbProvider<IksInDbContext> _IksInDbContextProvider;
+        private readonly IDbProvider<IksInDbContext> _iksInDbContextProvider;
 
         public DateTime BaseTime { get; set; } = DateTime.UtcNow.Date;
-    
+
         public IksTestDataGenerator(IDbProvider<IksInDbContext> iksInDbContextProvider)
         {
-            _IksInDbContextProvider = iksInDbContextProvider ?? throw new ArgumentNullException(nameof(iksInDbContextProvider));
+            _iksInDbContextProvider = iksInDbContextProvider ?? throw new ArgumentNullException(nameof(iksInDbContextProvider));
         }
 
         public int CreateIks(int iksCount)
@@ -52,7 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
                     //Accepted = 
                 }).ToArray();
 
-            var iksInDb = _IksInDbContextProvider.CreateNew();
+            var iksInDb = _iksInDbContextProvider.CreateNew();
             iksInDb.Received.AddRange(input);
             iksInDb.SaveChanges();
 

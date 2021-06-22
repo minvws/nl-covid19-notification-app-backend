@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -13,26 +13,26 @@ namespace ForceTekAuth
 {
     internal class ForceTekAuthCommand
     {
-        private readonly WorkflowDbContext _WorkflowDb;
-        private readonly IUtcDateTimeProvider _Dtp;
+        private readonly WorkflowDbContext _workflowDb;
+        private readonly IUtcDateTimeProvider _dtp;
 
         public ForceTekAuthCommand(WorkflowDbContext workflowDb, IUtcDateTimeProvider dtp)
         {
-            _WorkflowDb = workflowDb ?? throw new ArgumentNullException(nameof(workflowDb));
-            _Dtp = dtp ?? throw new ArgumentNullException(nameof(dtp));
+            _workflowDb = workflowDb ?? throw new ArgumentNullException(nameof(workflowDb));
+            _dtp = dtp ?? throw new ArgumentNullException(nameof(dtp));
         }
 
         public void Execute(string[] _)
         {
-            using var tx = _WorkflowDb.BeginTransaction();
+            using var tx = _workflowDb.BeginTransaction();
 
             ForceWorkflowAuth();
-            _WorkflowDb.SaveAndCommit();
+            _workflowDb.SaveAndCommit();
         }
 
         private void ForceWorkflowAuth()
         {
-            var notAuthed = _WorkflowDb.KeyReleaseWorkflowStates
+            var notAuthed = _workflowDb.KeyReleaseWorkflowStates
                 .Where(x => x.AuthorisedByCaregiver == null)
                 .ToList();
 
@@ -41,11 +41,11 @@ namespace ForceTekAuth
             foreach (var i in notAuthed)
             {
                 i.LabConfirmationId = null;
-                i.AuthorisedByCaregiver = _Dtp.Snapshot;
-                i.StartDateOfTekInclusion = _Dtp.Snapshot.Date.AddDays(-1);
+                i.AuthorisedByCaregiver = _dtp.Snapshot;
+                i.StartDateOfTekInclusion = _dtp.Snapshot.Date.AddDays(-1);
             }
 
-            _WorkflowDb.BulkUpdate(notAuthed);
+            _workflowDb.BulkUpdate(notAuthed);
         }
     }
 }

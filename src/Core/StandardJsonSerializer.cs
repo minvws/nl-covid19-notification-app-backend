@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -9,24 +9,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public class StandardJsonSerializer : IJsonSerializer
     {
-        private readonly JsonSerializerOptions _SerializerOptions;
+        private readonly JsonSerializerOptions _serializerOptions;
 
         public StandardJsonSerializer()
         {
-            _SerializerOptions = new JsonSerializerOptions {PropertyNamingPolicy = JsonNamingPolicy.CamelCase};
+            _serializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         }
 
         public string Serialize<TContent>(TContent input)
         {
-            return JsonSerializer.Serialize(input, _SerializerOptions);
+            return JsonSerializer.Serialize(input, _serializerOptions);
         }
 
         public TContent Deserialize<TContent>(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
+            {
                 throw new ArgumentException(nameof(input)); //Standardising.
+            }
 
-            return JsonSerializer.Deserialize<TContent>(input, _SerializerOptions);
+            return JsonSerializer.Deserialize<TContent>(input, _serializerOptions);
         }
     }
 }

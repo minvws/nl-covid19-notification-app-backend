@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -7,13 +7,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Moq;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
@@ -23,11 +20,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
     public abstract class ReSignerTest : IDisposable
     {
 
-        private readonly IDbProvider<ContentDbContext> _ContentDbProvider;
+        private readonly IDbProvider<ContentDbContext> _contentDbProvider;
 
         protected ReSignerTest(IDbProvider<ContentDbContext> contentDbProvider)
         {
-            _ContentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
+            _contentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
         }
 
         [Fact]
@@ -47,8 +44,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
             var m1 = new ContentEntity { Content = zipContent, PublishingId = "1", ContentTypeName = "Meh", Type = ContentTypes.Manifest, Created = d, Release = d };
 
-            var dbc = _ContentDbProvider.CreateNew();
-            dbc.Content.AddRange(new [] {
+            var dbc = _contentDbProvider.CreateNew();
+            dbc.Content.AddRange(new[] {
                 m1,
                 new ContentEntity { Content = new byte[0], PublishingId = "2", ContentTypeName = "Meh", Type = ContentTypes.AppConfig, Created = d, Release = d },
                 new ContentEntity { Content = new byte[0], PublishingId = "3", ContentTypeName = "Meh", Type = ContentTypes.AppConfigV2, Created = d, Release = d },
@@ -58,7 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
             dbc.SaveChanges();
 
-            var resigner = new NlContentResignCommand(_ContentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
+            var resigner = new NlContentResignCommand(_contentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
             resigner.ExecuteAsync(ContentTypes.Manifest, ContentTypes.ManifestV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
@@ -76,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             using var zip2 = new ZipArchive(ms2);
 
             Assert.True(Enumerable.SequenceEqual(zip1.ReadEntry(ZippedContentEntryNames.Content), zip2.ReadEntry(ZippedContentEntryNames.Content)));
-            Assert.NotEqual(zip1.GetEntry(ZippedContentEntryNames.NLSignature), zip2.GetEntry(ZippedContentEntryNames.NLSignature));
+            Assert.NotEqual(zip1.GetEntry(ZippedContentEntryNames.NlSignature), zip2.GetEntry(ZippedContentEntryNames.NlSignature));
         }
 
         [Fact]
@@ -87,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
 
             //Add some db rows to Content
-            var dbc = _ContentDbProvider.CreateNew();
+            var dbc = _contentDbProvider.CreateNew();
 
             var d = DateTime.Now;
             var laterDate = d.AddDays(1);
@@ -113,7 +110,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
             Assert.Equal(3, dbc.Content.Count());
 
-            var resigner = new NlContentResignCommand(_ContentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
+            var resigner = new NlContentResignCommand(_contentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
             resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
@@ -132,7 +129,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
                 using var z = new ZipArchive(s);
 
                 Assert.True(Enumerable.SequenceEqual(originalZipArchive.ReadEntry(ZippedContentEntryNames.Content), z.ReadEntry(ZippedContentEntryNames.Content)));
-                Assert.NotEqual(originalZipArchive.GetEntry(ZippedContentEntryNames.NLSignature), z.GetEntry(ZippedContentEntryNames.NLSignature));
+                Assert.NotEqual(originalZipArchive.GetEntry(ZippedContentEntryNames.NlSignature), z.GetEntry(ZippedContentEntryNames.NlSignature));
             }
 
             //Repeating should have no effect
@@ -149,7 +146,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
 
             //Add some db rows to Content
-            var dbc = _ContentDbProvider.CreateNew();
+            var dbc = _contentDbProvider.CreateNew();
 
             var d = DateTime.Now;
             var laterDate = d.AddDays(1);
@@ -175,7 +172,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
             Assert.Equal(3, dbc.Content.Count());
 
-            var resigner = new NlContentResignCommand(_ContentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
+            var resigner = new NlContentResignCommand(_contentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
             resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
@@ -195,7 +192,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
                 using var z = new ZipArchive(s);
 
                 Assert.True(Enumerable.SequenceEqual(originalZipArchive.ReadEntry(ZippedContentEntryNames.Content), z.ReadEntry(ZippedContentEntryNames.Content)));
-                Assert.NotEqual(originalZipArchive.GetEntry(ZippedContentEntryNames.NLSignature), z.GetEntry(ZippedContentEntryNames.NLSignature));
+                Assert.NotEqual(originalZipArchive.GetEntry(ZippedContentEntryNames.NlSignature), z.GetEntry(ZippedContentEntryNames.NlSignature));
             }
 
             //Repeating should have no effect
@@ -205,7 +202,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
         public void Dispose()
         {
-            _ContentDbProvider.Dispose();
+            _contentDbProvider.Dispose();
         }
     }
 }

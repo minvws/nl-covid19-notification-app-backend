@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -14,14 +14,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
     /// </summary>
     public class SuppressErrorAttribute : ActionFilterAttribute
     {
-        private readonly SuppressErrorLoggingExtensions _Logger;
+        private readonly SuppressErrorLoggingExtensions _logger;
 
         /// <summary>
         /// Default constructor
         /// </summary>
         public SuppressErrorAttribute(SuppressErrorLoggingExtensions logger)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -30,12 +30,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
         public override void OnResultExecuting(ResultExecutingContext context)
         {
             base.OnResultExecuting(context);
-            
-            if (!(context.Result is IStatusCodeActionResult statusCodeResult)) return;
 
-            if (!statusCodeResult.StatusCode.HasValue || statusCodeResult.StatusCode.Value == 200) return;
+            if (!(context.Result is IStatusCodeActionResult statusCodeResult))
+            {
+                return;
+            }
 
-            _Logger.WriteCallFailed(context.ActionDescriptor);
+            if (!statusCodeResult.StatusCode.HasValue || statusCodeResult.StatusCode.Value == 200)
+            {
+                return;
+            }
+
+            _logger.WriteCallFailed(context.ActionDescriptor);
             context.Result = new OkResult();
         }
     }

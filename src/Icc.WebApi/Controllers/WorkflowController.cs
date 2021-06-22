@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -25,13 +25,13 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi.Controllers
         private const int OldGGDKeyLength = 6;
         private const int ValidGGDKeyLength = 7;
 
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
         private readonly ILuhnModNGenerator _lLuhnModNGenerator;
         private readonly ILuhnModNValidator _luhnModNValidator;
 
         public WorkflowController(ILogger<WorkflowController> logger, ILuhnModNGenerator luhnModNGenerator, ILuhnModNValidator luhnModNValidator)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _lLuhnModNGenerator = luhnModNGenerator ?? throw new ArgumentNullException(nameof(luhnModNGenerator));
             _luhnModNValidator = luhnModNValidator ?? throw new ArgumentNullException(nameof(luhnModNValidator));
         }
@@ -40,9 +40,12 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi.Controllers
         [Route(EndPointNames.CaregiversPortalApi.LabConfirmation)]
         public async Task<IActionResult> PostAuthorise([FromBody] AuthorisationArgs args, [FromServices] HttpPostAuthoriseCommand command)
         {
-            if (command == null) throw new ArgumentNullException(nameof(command));
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
 
-            _Logger.WriteLabStart();
+            _logger.WriteLabStart();
             return await command.ExecuteAsync(args);
         }
 
@@ -56,14 +59,17 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi.Controllers
         [Route("/pubtek")]
         public async Task<PublishTekResponse> PutPubTek([FromBody] PublishTekArgs args, [FromServices] IPublishTekService publishTekService)
         {
-            if (publishTekService == null) throw new ArgumentNullException(nameof(publishTekService));
+            if (publishTekService == null)
+            {
+                throw new ArgumentNullException(nameof(publishTekService));
+            }
 
             if (!FixOrValidatePubTEK(args))
             {
                 return new PublishTekResponse { Valid = false };
             }
 
-            _Logger.WritePubTekStart();
+            _logger.WritePubTekStart();
 
             var result = await publishTekService.ExecuteAsync(args);
 

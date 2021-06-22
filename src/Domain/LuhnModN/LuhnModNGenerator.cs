@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN
         {
             var r = new Random();
             var buffer = new char[_config.ValueLength];
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
                 buffer[i] = _config.CharacterSet[r.Next(_config.CharacterSet.Length)];
             }

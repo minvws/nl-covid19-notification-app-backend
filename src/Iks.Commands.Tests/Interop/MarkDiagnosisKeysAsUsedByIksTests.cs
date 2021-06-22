@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -23,33 +23,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
     {
         #region Implementation
 
-        private readonly IDbProvider<DkSourceDbContext> _DkSourceDbProvider;
-        private readonly IDbProvider<IksPublishingJobDbContext> _IksPublishingDbProvider;
-        private readonly LoggerFactory _Lf = new LoggerFactory();
-        private readonly Mock<IUtcDateTimeProvider> _UtcDateTimeProviderMock = new Mock<IUtcDateTimeProvider>();
-        private readonly Mock<IIksConfig> _IksConfigMock = new Mock<IIksConfig>();
+        private readonly IDbProvider<DkSourceDbContext> _dkSourceDbProvider;
+        private readonly IDbProvider<IksPublishingJobDbContext> _iksPublishingDbProvider;
+        private readonly LoggerFactory _lf = new LoggerFactory();
+        private readonly Mock<IUtcDateTimeProvider> _utcDateTimeProviderMock = new Mock<IUtcDateTimeProvider>();
+        private readonly Mock<IIksConfig> _iksConfigMock = new Mock<IIksConfig>();
 
         protected MarkDiagnosisKeysAsUsedByIksTests(IDbProvider<DkSourceDbContext> dkSourceDbProvider, IDbProvider<IksPublishingJobDbContext> iksPublishingDbProvider)
         {
-            _DkSourceDbProvider = dkSourceDbProvider;
-            _IksPublishingDbProvider = iksPublishingDbProvider;
+            _dkSourceDbProvider = dkSourceDbProvider;
+            _iksPublishingDbProvider = iksPublishingDbProvider;
         }
 
         private MarkDiagnosisKeysAsUsedByIks Create()
         {
             return new MarkDiagnosisKeysAsUsedByIks(
-                _DkSourceDbProvider.CreateNew,
-                _IksConfigMock.Object,
-                _IksPublishingDbProvider.CreateNew,
-                _Lf.CreateLogger<MarkDiagnosisKeysAsUsedByIks>()
+                _dkSourceDbProvider.CreateNew,
+                _iksConfigMock.Object,
+                _iksPublishingDbProvider.CreateNew,
+                _lf.CreateLogger<MarkDiagnosisKeysAsUsedByIks>()
             );
         }
 
         public void Dispose()
         {
-            _DkSourceDbProvider.Dispose();
-            _IksPublishingDbProvider.Dispose();
-            _Lf.Dispose();
+            _dkSourceDbProvider.Dispose();
+            _iksPublishingDbProvider.Dispose();
+            _lf.Dispose();
         }
 
         #endregion
@@ -63,24 +63,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         [ExclusivelyUses(nameof(MarkDiagnosisKeysAsUsedByIksTests))]
         public async Task Simple(int baseCount)
         {
-            _UtcDateTimeProviderMock.Setup(x => x.Snapshot).Returns(DateTime.UtcNow);
-            _IksConfigMock.Setup(x => x.PageSize).Returns(10);
+            _utcDateTimeProviderMock.Setup(x => x.Snapshot).Returns(DateTime.UtcNow);
+            _iksConfigMock.Setup(x => x.PageSize).Returns(10);
 
-            var gen = new DiagnosisKeyTestDataGenerator(_DkSourceDbProvider);
+            var gen = new DiagnosisKeyTestDataGenerator(_dkSourceDbProvider);
             var items = gen.Write(gen.LocalDksForLocalPeople(gen.GenerateDks(baseCount)));
 
-            var gen2 = new IksDkSnapshotTestDataGenerator(_IksPublishingDbProvider);
+            var gen2 = new IksDkSnapshotTestDataGenerator(_iksPublishingDbProvider);
             gen2.Write(gen2.GenerateInput(items));
 
-            Assert.Equal(baseCount, _IksPublishingDbProvider.CreateNew().Input.Count());
-            Assert.Equal(baseCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
-            Assert.Equal(0, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedToEfgs));
+            Assert.Equal(baseCount, _iksPublishingDbProvider.CreateNew().Input.Count());
+            Assert.Equal(baseCount, _dkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
+            Assert.Equal(0, _dkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedToEfgs));
 
             var result = await Create().ExecuteAsync();
 
             Assert.Equal(baseCount, result.Count);
-            Assert.Equal(baseCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedToEfgs));
-            Assert.Equal(baseCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
+            Assert.Equal(baseCount, _dkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedToEfgs));
+            Assert.Equal(baseCount, _dkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
         }
 
         //Not pub'd x 1
@@ -92,28 +92,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         [ExclusivelyUses(nameof(MarkDiagnosisKeysAsUsedByIksTests))]
         public async Task RealisticBothSourcesOfDks(int baseCount)
         {
-            _UtcDateTimeProviderMock.Setup(x => x.Snapshot).Returns(DateTime.UtcNow);
-            _IksConfigMock.Setup(x => x.PageSize).Returns(10);
+            _utcDateTimeProviderMock.Setup(x => x.Snapshot).Returns(DateTime.UtcNow);
+            _iksConfigMock.Setup(x => x.PageSize).Returns(10);
 
-            var gen = new DiagnosisKeyTestDataGenerator(_DkSourceDbProvider);
+            var gen = new DiagnosisKeyTestDataGenerator(_dkSourceDbProvider);
             var items = gen.Write(gen.LocalDksForLocalPeople(gen.GenerateDks(baseCount)));
             gen.Write(gen.AlreadyPublished(gen.GenerateDks(baseCount)));
             gen.Write(gen.NotLocal(gen.GenerateDks(baseCount)));
 
-            var gen2 = new IksDkSnapshotTestDataGenerator(_IksPublishingDbProvider);
+            var gen2 = new IksDkSnapshotTestDataGenerator(_iksPublishingDbProvider);
             gen2.Write(gen2.GenerateInput(items));
 
-            Assert.Equal(baseCount, _IksPublishingDbProvider.CreateNew().Input.Count());
-            Assert.Equal(baseCount * 3, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
-            Assert.Equal(baseCount * 2, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedToEfgs));
+            Assert.Equal(baseCount, _iksPublishingDbProvider.CreateNew().Input.Count());
+            Assert.Equal(baseCount * 3, _dkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
+            Assert.Equal(baseCount * 2, _dkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedToEfgs));
 
             var c = Create();
             var result = await c.ExecuteAsync();
 
             Assert.Equal(baseCount, result.Count); //Affected
-            Assert.Equal(baseCount, _IksPublishingDbProvider.CreateNew().Input.Count()); //Unchanged
-            Assert.Equal(baseCount * 3, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count()); //Unchanged
-            Assert.Equal(baseCount * 3, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedToEfgs)); //
+            Assert.Equal(baseCount, _iksPublishingDbProvider.CreateNew().Input.Count()); //Unchanged
+            Assert.Equal(baseCount * 3, _dkSourceDbProvider.CreateNew().DiagnosisKeys.Count()); //Unchanged
+            Assert.Equal(baseCount * 3, _dkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.PublishedToEfgs)); //
         }
     }
 }

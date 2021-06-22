@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
     {
         private const string Prefix = nameof(DkToIksSnapshotTests) + "_";
         public DkToIksSnapshotTestsSqlServer() : base(
-            new SqlServerDbProvider<DkSourceDbContext>(Prefix + "D"), 
+            new SqlServerDbProvider<DkSourceDbContext>(Prefix + "D"),
             new SqlServerDbProvider<IksPublishingJobDbContext>("I")
         )
         { }

@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

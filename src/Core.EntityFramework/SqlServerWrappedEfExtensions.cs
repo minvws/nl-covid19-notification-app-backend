@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -12,8 +12,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
     {
         public async Task TruncateTableAsync(DbContext db, string tableName)
         {
-            if (db == null) throw new ArgumentNullException(nameof(db));
-            if (string.IsNullOrWhiteSpace(tableName)) throw new ArgumentException(nameof(tableName));
+            if (db == null)
+            {
+                throw new ArgumentNullException(nameof(db));
+            }
+
+            if (string.IsNullOrWhiteSpace(tableName))
+            {
+                throw new ArgumentException(nameof(tableName));
+            }
+
             await db.Database.ExecuteSqlRawAsync($"TRUNCATE TABLE [dbo].[{tableName}];");
         }
     }

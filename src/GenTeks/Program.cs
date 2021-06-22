@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -39,7 +39,7 @@ namespace GenTeks
         {
             services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddTransient(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
-            
+
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IRandomNumberGenerator, StandardRandomNumberGenerator>();
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
@@ -49,10 +49,10 @@ namespace GenTeks
 
             services.AddTransient(x => new GenerateTeksCommand(
                 x.GetRequiredService<IRandomNumberGenerator>(),
-                x.GetRequiredService<WorkflowDbContext>, 
+                x.GetRequiredService<WorkflowDbContext>,
                 x.GetRequiredService<TekReleaseWorkflowStateCreateV2>
                 ));
-            
+
             services.AddTransient<TekReleaseWorkflowStateCreateV2>();
             services.AddTransient<IWorkflowTime, TekReleaseWorkflowTime>();
 

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -13,7 +13,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework
     {
         public SqlServerDbProvider(string databaseName)
         {
-            if (string.IsNullOrWhiteSpace(databaseName)) throw new ArgumentException(nameof(databaseName));
+            if (string.IsNullOrWhiteSpace(databaseName))
+            {
+                throw new ArgumentException(nameof(databaseName));
+            }
 
             var csb = new SqlConnectionStringBuilder($"Data Source=.;Initial Catalog={databaseName};Integrated Security=True")
             {

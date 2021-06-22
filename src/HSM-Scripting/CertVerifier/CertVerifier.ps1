@@ -39,9 +39,8 @@ else
 
 function SetErrorToStop
 {
-	$ErrorAtStart = $ErrorActionPreference
-	$ErrorActionPreference = "Stop"
-	write-host "Error-behaviour is set from $ErrorAtStart to $ErrorActionPreference."
+	$script:ErrorActionPreference = "Stop"
+	write-host "Error-behaviour of script is set to $script:ErrorActionPreference."
 }
 
 function CheckNotIse
@@ -168,6 +167,7 @@ function TestHsmConnection
 
 
 write-host "Certificate-Verifier"
+write-host "Location and date: $env:computername. $(Get-Date -Format `"dd MMM, HH:mm:ss`")."
 CheckNotWin7
 CheckNotIse
 

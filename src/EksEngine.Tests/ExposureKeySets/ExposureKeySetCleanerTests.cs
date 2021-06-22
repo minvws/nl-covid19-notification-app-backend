@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -18,11 +18,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 {
     public abstract class ExposureKeySetCleanerTests : IDisposable
     {
-        private readonly IDbProvider<ContentDbContext> _ContentDbProvider;
+        private readonly IDbProvider<ContentDbContext> _contentDbProvider;
 
         protected ExposureKeySetCleanerTests(IDbProvider<ContentDbContext> contentDbProvider)
         {
-            _ContentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
+            _contentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
         }
 
         private class FakeDtp : IUtcDateTimeProvider
@@ -59,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
 
-            var command = new RemoveExpiredEksCommand(_ContentDbProvider.CreateNew(), new FakeEksConfig(), new StandardUtcDateTimeProvider(), expEksLogger);
+            var command = new RemoveExpiredEksCommand(_contentDbProvider.CreateNew(), new FakeEksConfig(), new StandardUtcDateTimeProvider(), expEksLogger);
 
             var result = command.Execute();
 
@@ -77,7 +77,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
 
-            var contentDbContext = _ContentDbProvider.CreateNew();
+            var contentDbContext = _contentDbProvider.CreateNew();
 
             Add(contentDbContext, 15);
             contentDbContext.SaveChanges();
@@ -102,7 +102,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
 
-            var contentDbContext = _ContentDbProvider.CreateNew();
+            var contentDbContext = _contentDbProvider.CreateNew();
 
             Add(contentDbContext, 15);
             contentDbContext.SaveChanges();
@@ -128,10 +128,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
 
-            var contentDbContext = _ContentDbProvider.CreateNew();
+            var contentDbContext = _contentDbProvider.CreateNew();
 
             for (var i = 0; i < 20; i++)
+            {
                 Add(contentDbContext, i);
+            }
 
             contentDbContext.SaveChanges();
 
@@ -150,7 +152,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         public void Dispose()
         {
-            _ContentDbProvider.Dispose();
+            _contentDbProvider.Dispose();
         }
     }
 }

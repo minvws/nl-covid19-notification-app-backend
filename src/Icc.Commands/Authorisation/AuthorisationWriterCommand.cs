@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -13,17 +13,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 {
     public class AuthorisationWriterCommand
     {
-        private readonly WorkflowDbContext _WorkflowDb;
-        private readonly ILogger _Logger;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly WriteNewPollTokenWriter _NewPollTokenWriter;
+        private readonly WorkflowDbContext _workflowDb;
+        private readonly ILogger _logger;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly WriteNewPollTokenWriter _newPollTokenWriter;
 
         public AuthorisationWriterCommand(WorkflowDbContext workflowDb, ILogger<AuthorisationWriterCommand> logger, IUtcDateTimeProvider dateTimeProvider, WriteNewPollTokenWriter newPollTokenWriter)
         {
-            _WorkflowDb = workflowDb ?? throw new ArgumentNullException(nameof(workflowDb));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _NewPollTokenWriter = newPollTokenWriter ?? throw new ArgumentNullException(nameof(newPollTokenWriter));
+            _workflowDb = workflowDb ?? throw new ArgumentNullException(nameof(workflowDb));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _newPollTokenWriter = newPollTokenWriter ?? throw new ArgumentNullException(nameof(newPollTokenWriter));
         }
 
         /// <summary>
@@ -34,26 +34,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
         public async Task<string> ExecuteAsync(AuthorisationArgs args)
         {
             if (args == null)
+            {
                 throw new ArgumentNullException(nameof(args));
+            }
 
-            var wf = await _WorkflowDb
+            var wf = await _workflowDb
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Teks)
                 .FirstOrDefaultAsync(x => x.LabConfirmationId == args.LabConfirmationId);
 
             if (wf == null)
             {
-                _Logger.WriteKeyReleaseWorkflowStateNotFound(args.LabConfirmationId);
+                _logger.WriteKeyReleaseWorkflowStateNotFound(args.LabConfirmationId);
                 return null;
             }
 
-            _Logger.LogInformation("LabConfirmationId {LabConfirmationId} authorized.", wf.LabConfirmationId);
+            _logger.LogInformation("LabConfirmationId {LabConfirmationId} authorized.", wf.LabConfirmationId);
 
-            wf.AuthorisedByCaregiver = _DateTimeProvider.Snapshot;
+            wf.AuthorisedByCaregiver = _dateTimeProvider.Snapshot;
             wf.LabConfirmationId = null; //Clear from usable key range
             wf.StartDateOfTekInclusion = args.DateOfSymptomsOnset;
 
-            return _NewPollTokenWriter.Execute(wf);
+            return _newPollTokenWriter.Execute(wf);
         }
     }
 }

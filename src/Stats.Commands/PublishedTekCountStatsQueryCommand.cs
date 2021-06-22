@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -11,11 +11,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
 {
     public class PublishedTekCountStatsQueryCommand : IStatsQueryCommand
     {
-        private readonly WorkflowDbContext _DbContext;
+        private readonly WorkflowDbContext _dbContext;
 
         public PublishedTekCountStatsQueryCommand(WorkflowDbContext dbContext)
         {
-            _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
         public const string Name = "TekPublishedCount";
@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
             return new StatisticArgs
             {
                 Name = Name,
-                Value = _DbContext.TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published)
+                Value = _dbContext.TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published)
             };
         }
     }

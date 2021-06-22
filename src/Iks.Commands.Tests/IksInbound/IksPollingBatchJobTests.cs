@@ -1,27 +1,26 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksInbound
 {
     public class IksPollingBatchJobTests
     {
-        private readonly IDbProvider<IksInDbContext> _IksInDbProvider;
+        private readonly IDbProvider<IksInDbContext> _iksInDbProvider;
 
         public IksPollingBatchJobTests()
         {
-            _IksInDbProvider = new SqliteInMemoryDbProvider<IksInDbContext>();
+            _iksInDbProvider = new SqliteInMemoryDbProvider<IksInDbContext>();
         }
 
         [Fact]
@@ -49,8 +48,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
             // Assemble: create the job to be tested
-            IksPollingBatchJob sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _IksInDbProvider.CreateNew(), new EfgsConfig(), logger);
+            var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
+                _iksInDbProvider.CreateNew(), new EfgsConfig(), logger);
 
             // Act
             await sut.ExecuteAsync();
@@ -85,8 +84,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
             // Assemble: create the job to be tested
-            IksPollingBatchJob sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _IksInDbProvider.CreateNew(), new EfgsConfig(), logger);
+            var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
+                _iksInDbProvider.CreateNew(), new EfgsConfig(), logger);
 
             // Act
             await sut.ExecuteAsync();
@@ -121,8 +120,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
             // Assemble: create the job to be tested
-            IksPollingBatchJob sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _IksInDbProvider.CreateNew(), new EfgsConfig(), logger);
+            var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
+                _iksInDbProvider.CreateNew(), new EfgsConfig(), logger);
 
             // Act
             await sut.ExecuteAsync();
@@ -132,7 +131,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             // Assemble: add another batch
             receiver.AddItem(new HttpGetIksSuccessResult
-                {BatchTag = "2", Content = new byte[] {0x0, 0x0}, NextBatchTag = null});
+            { BatchTag = "2", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = null });
 
             // Act
             await sut.ExecuteAsync();
@@ -159,7 +158,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 .Callback((IksWriteArgs args) =>
                 {
                     downloadedBatches.Add(args);
-                    using var iksInCtx = _IksInDbProvider.CreateNew();
+                    using var iksInCtx = _iksInDbProvider.CreateNew();
                     iksInCtx.Received.Add(new IksInEntity
                     {
                         BatchTag = args.BatchTag,
@@ -182,8 +181,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
             // Assemble: create the job to be tested
-            IksPollingBatchJob sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _IksInDbProvider.CreateNew(), new EfgsConfig(), logger);
+            var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
+                _iksInDbProvider.CreateNew(), new EfgsConfig(), logger);
 
             // Act
             await sut.ExecuteAsync();
@@ -220,8 +219,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = FixedResultHttpGetIksCommand.Create(responses, now.AddDays(-1));
 
             // Assemble: create the job to be tested
-            IksPollingBatchJob sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _IksInDbProvider.CreateNew(), new EfgsConfig(), logger);
+            var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
+                _iksInDbProvider.CreateNew(), new EfgsConfig(), logger);
 
             // Act - process files for FIRST day
             await sut.ExecuteAsync();
@@ -231,9 +230,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             // Assemble: add the batches for the SECOND day to the receiver
             receiver.AddItem(new HttpGetIksSuccessResult
-                {BatchTag = "3", Content = new byte[] {0x0, 0x0}, NextBatchTag = "4"}, now);
+            { BatchTag = "3", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = "4" }, now);
             receiver.AddItem(new HttpGetIksSuccessResult
-                {BatchTag = "4", Content = new byte[] {0x0, 0x0}, NextBatchTag = null}, now);
+            { BatchTag = "4", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = null }, now);
 
             // Act - process files for SECOND day
             await sut.ExecuteAsync();

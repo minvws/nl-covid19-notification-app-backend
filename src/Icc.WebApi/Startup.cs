@@ -40,23 +40,26 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
     {
         private const string Title = "GGD Portal Backend V1";
 
-        private readonly bool _IsDev;
-        private readonly bool _UseTestJwtClaims;
-        private readonly IConfiguration _Configuration;
-        private readonly IWebHostEnvironment _WebHostEnvironment;
+        private readonly bool _isDev;
+        private readonly bool _useTestJwtClaims;
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _WebHostEnvironment = env;
-            _IsDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
-            _UseTestJwtClaims = !env.IsProduction();
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _webHostEnvironment = env;
+            _isDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
+            _useTestJwtClaims = !env.IsProduction();
         }
 
 
         public void ConfigureServices(IServiceCollection services)
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -67,7 +70,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
             services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            
+
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
 
             services.AddTransient<IAuthCodeGenerator, AuthCodeGenerator>();
@@ -75,14 +78,14 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
 
             services.AddDistributedSqlServerCache(options =>
             {
-                options.ConnectionString = _Configuration.GetConnectionString(DatabaseConnectionStringNames.IccDistMemCache);
+                options.ConnectionString = _configuration.GetConnectionString(DatabaseConnectionStringNames.IccDistMemCache);
                 options.SchemaName = "dbo";
                 options.TableName = "Cache";
             });
 
             services.AddScoped(x => x.CreateDbContext(y => new DataProtectionKeysDbContext(y), DatabaseConnectionStringNames.DataProtectionKeys));
             services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow, false));
-            
+
             services.AddDataProtection().PersistKeysToDbContext<DataProtectionKeysDbContext>();
 
             services.AddScoped<HttpPostAuthoriseCommand>();
@@ -108,7 +111,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
 
             services.AddTransient<IJwtService, JwtService>();
 
-            if (_UseTestJwtClaims)
+            if (_useTestJwtClaims)
             {
                 services.AddTransient<IJwtClaimValidator, TestJwtClaimValidator>();
                 services.AddSingleton<TestJwtGeneratorService>();
@@ -123,8 +126,10 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
             services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
             services.AddCors();
 
-            if (_IsDev)
+            if (_isDev)
+            {
                 services.AddSwaggerGen(StartupSwagger);
+            }
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -140,7 +145,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
 
         private void StartupSwagger(SwaggerGenOptions o)
         {
-            o.SwaggerDoc("v1", new OpenApiInfo {Title = Title, Version = "v1"});
+            o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" });
 
             o.OperationFilter<SecurityRequirementsOperationFilter>();
 
@@ -162,7 +167,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
 
         private void StartupIdentityHub(IServiceCollection services)
         {
-            var iccIdentityHubConfig = new IccIdentityHubConfig(_Configuration);
+            var iccIdentityHubConfig = new IccIdentityHubConfig(_configuration);
 
             services
                 .AddAuthentication(auth =>
@@ -182,9 +187,9 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
                 });
 
 
-            var iccPortalConfig = new IccPortalConfig(_Configuration);
+            var iccPortalConfig = new IccPortalConfig(_configuration);
 
-            var policyAuthorizationOptions = new PolicyAuthorizationOptions(_WebHostEnvironment, iccPortalConfig);
+            var policyAuthorizationOptions = new PolicyAuthorizationOptions(_webHostEnvironment, iccPortalConfig);
             services.AddAuthorization(policyAuthorizationOptions.Build);
 
             services.AddTransient<ITheIdentityHubService, TheIdentityHubService>();
@@ -202,7 +207,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
 
         public void Configure(IApplicationBuilder app)
         {
-            if (_IsDev)
+            if (_isDev)
             {
                 app.ApplicationServices.GetService<TestJwtGeneratorService>();
                 app.UseDeveloperExceptionPage();
@@ -212,9 +217,12 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
 
             app.UseForwardedHeaders();
 
-            if (app == null) throw new ArgumentNullException(nameof(app));
+            if (app == null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
 
-            var iccPortalConfig = new IccPortalConfig(_Configuration);
+            var iccPortalConfig = new IccPortalConfig(_configuration);
 
             var corsOptions = new CorsOptions(iccPortalConfig);
             app.UseCors(corsOptions.Build);

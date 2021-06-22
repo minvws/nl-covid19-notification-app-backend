@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests</RootNamespace>
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Crypto.Tests\Crypto.Tests.csproj" />
     <ProjectReference Include="..\Manifest.Commands\Manifest.Commands.csproj" />
     <ProjectReference Include="..\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
     <ProjectReference Include="..\TestDataGeneration.Commands\TestDataGeneration.Commands.csproj" />

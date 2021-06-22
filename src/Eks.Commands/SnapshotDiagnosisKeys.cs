@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -21,62 +21,79 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     /// </summary>
     public class SnapshotDiagnosisKeys : ISnapshotEksInput
     {
-        private readonly SnapshotLoggingExtensions _Logger;
-        private readonly DkSourceDbContext _DkSourceDbContext;
-        private readonly Func<EksPublishingJobDbContext> _PublishingDbContextFactory;
+        private readonly SnapshotLoggingExtensions _logger;
+        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly Func<EksPublishingJobDbContext> _publishingDbContextFactory;
         private readonly IInfectiousness _infectiousness;
 
         public SnapshotDiagnosisKeys(SnapshotLoggingExtensions logger, DkSourceDbContext dkSourceDbContext, Func<EksPublishingJobDbContext> publishingDbContextFactory, IInfectiousness infectiousness)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _DkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
-            _PublishingDbContextFactory = publishingDbContextFactory ?? throw new ArgumentNullException(nameof(publishingDbContextFactory));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
+            _publishingDbContextFactory = publishingDbContextFactory ?? throw new ArgumentNullException(nameof(publishingDbContextFactory));
             _infectiousness = infectiousness ?? throw new ArgumentNullException(nameof(infectiousness));
         }
 
         public async Task<SnapshotEksInputResult> ExecuteAsync(DateTime snapshotStart)
         {
-            _Logger.WriteStart();
+            _logger.WriteStart();
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            const int pageSize = 10000;
+            const int PageSize = 10000;
             var index = 0;
             var filteredTekInputCount = 0;
 
-            await using var tx = _DkSourceDbContext.BeginTransaction();
-            var (filteredResult, pageCount) = ReadAndFilter(index, pageSize);
-            
-            while (pageCount > 0)
+            await using var tx = _dkSourceDbContext.BeginTransaction();
+            var (page, filteredResult) = ReadAndFilter(index, PageSize);
+
+            while (page.Length > 0)
             {
-                var db = _PublishingDbContextFactory();
+                MarkFilteredEntitiesForCleanup(page, filteredResult);
+
+                var db = _publishingDbContextFactory();
                 if (filteredResult.Length > 0)
                 {
                     await db.BulkInsertAsync2(filteredResult, new SubsetBulkArgs());
                 }
 
-                index += pageCount;
+                index += page.Length;
                 filteredTekInputCount += filteredResult.Length;
-                (filteredResult, pageCount) = ReadAndFilter(index, pageSize);
+                (page, filteredResult) = ReadAndFilter(index, PageSize);
             }
 
-            var result = new SnapshotEksInputResult
+            _dkSourceDbContext.SaveAndCommit();
+
+            var snapshotEksInputResult = new SnapshotEksInputResult
             {
                 SnapshotSeconds = stopwatch.Elapsed.TotalSeconds,
                 TekInputCount = index,
                 FilteredTekInputCount = filteredTekInputCount
             };
 
-            _Logger.WriteTeksToPublish(index);
+            _logger.WriteTeksToPublish(index);
 
-            return result;
+            return snapshotEksInputResult;
         }
 
-        private (EksCreateJobInputEntity[], int pageCount) ReadAndFilter(int index, int pageSize)
+        private void MarkFilteredEntitiesForCleanup(EksCreateJobInputEntity[] allEntities, EksCreateJobInputEntity[] filteredResult)
         {
-            var result = _DkSourceDbContext.DiagnosisKeys
-                .Where(x => !x.PublishedLocally)
+            var leftoverDKIds = allEntities.Except(filteredResult).Select(x => x.TekId).ToArray();
+            if(leftoverDKIds.Any())
+            {
+                var dksToMarkForCleanup = _dkSourceDbContext.DiagnosisKeys.Where(x => leftoverDKIds.Contains(x.Id)).ToList();
+                foreach (var diagnosisKeyEntity in dksToMarkForCleanup)
+                {
+                    diagnosisKeyEntity.ReadyForCleanup = true;
+                }
+            }
+        }
+
+        private (EksCreateJobInputEntity[], EksCreateJobInputEntity[]) ReadAndFilter(int index, int pageSize)
+        {
+            var page = _dkSourceDbContext.DiagnosisKeys
+                .Where(x => !x.PublishedLocally && (!x.ReadyForCleanup.HasValue || !x.ReadyForCleanup.Value))
                 .OrderBy(x => x.Id)
                 .AsNoTracking()
                 .Skip(index)
@@ -94,11 +111,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 }).ToArray();
 
             // Filter the List of EksCreateJobInputEntities by the RiskCalculationParameter filters
-            var filteredResult = result.Where(x =>
+            var filteredResult = page.Where(x =>
                     _infectiousness.IsInfectious(x.Symptomatic, x.DaysSinceSymptomsOnset))
                 .ToArray();
 
-            return (filteredResult, result.Length);
+            return (page, filteredResult);
         }
     }
 }

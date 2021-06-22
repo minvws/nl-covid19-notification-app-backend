@@ -9,23 +9,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
 {
     public class StandardEfDbConfig : IEfDbConfig
     {
-        private readonly IConfiguration _Configuration;
-        private readonly string _ConnStringName;
+        private readonly IConfiguration _configuration;
+        private readonly string _connStringName;
 
         public StandardEfDbConfig(IConfiguration configuration, string connStringName)
         {
-            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            if (string.IsNullOrWhiteSpace(connStringName)) throw new ArgumentException(nameof(connStringName));
-            _ConnStringName = connStringName;
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            if (string.IsNullOrWhiteSpace(connStringName))
+            {
+                throw new ArgumentException(nameof(connStringName));
+            }
+
+            _connStringName = connStringName;
         }
 
         public string ConnectionString
         {
-            get { 
-                var result = _Configuration.GetConnectionString(_ConnStringName);
+            get
+            {
+                var result = _configuration.GetConnectionString(_connStringName);
 
                 if (string.IsNullOrWhiteSpace(result))
-                    throw new MissingConfigurationValueException(_ConnStringName);
+                {
+                    throw new MissingConfigurationValueException(_connStringName);
+                }
 
                 return result;
             }

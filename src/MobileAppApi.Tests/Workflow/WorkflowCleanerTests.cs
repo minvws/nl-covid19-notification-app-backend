@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -17,26 +17,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
 {
     public abstract class WorkflowCleanerTests : IDisposable
     {
-        private readonly IDbProvider<WorkflowDbContext> _WorkflowDbProvider;
+        private readonly IDbProvider<WorkflowDbContext> _workflowDbProvider;
 
         protected WorkflowCleanerTests(IDbProvider<WorkflowDbContext> workflowDbProvider)
         {
-            _WorkflowDbProvider = workflowDbProvider ?? throw new ArgumentNullException(nameof(workflowDbProvider));
-            _DbContext = _WorkflowDbProvider.CreateNew();
-            _FakeConfig = new FakeConfig();
-            _Dtp = new FakeDtp();
+            _workflowDbProvider = workflowDbProvider ?? throw new ArgumentNullException(nameof(workflowDbProvider));
+            _dbContext = _workflowDbProvider.CreateNew();
+            _fakeConfig = new FakeConfig();
+            _dtp = new FakeDtp();
 
             var lf = new LoggerFactory();
             var expWorkflowLogger = new ExpiredWorkflowLoggingExtensions(lf.CreateLogger<ExpiredWorkflowLoggingExtensions>());
-            _Command = new RemoveExpiredWorkflowsCommand(_WorkflowDbProvider.CreateNew, expWorkflowLogger, _Dtp, _FakeConfig);
+            _command = new RemoveExpiredWorkflowsCommand(_workflowDbProvider.CreateNew, expWorkflowLogger, _dtp, _fakeConfig);
         }
 
-        private readonly RemoveExpiredWorkflowsCommand _Command;
-        private readonly WorkflowDbContext _DbContext;
-        private readonly FakeConfig _FakeConfig;
-        private readonly FakeDtp _Dtp;
+        private readonly RemoveExpiredWorkflowsCommand _command;
+        private readonly WorkflowDbContext _dbContext;
+        private readonly FakeConfig _fakeConfig;
+        private readonly FakeDtp _dtp;
 
-        private int _WorkflowCount;
+        private int _workflowCount;
 
         private class FakeConfig : IWorkflowConfig
         {
@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         [ExclusivelyUses("WorkflowCleanerTests")]
         public void Cleaner()
         {
-            var result = _Command.Execute();
+            var result = _command.Execute();
 
             Assert.Equal(0, result.Before.Count);
             Assert.Equal(0, result.Before.Expired);
@@ -85,11 +85,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         [ExclusivelyUses("WorkflowCleanerTests")]
         public void NoKill()
         {
-            _Dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
+            _dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
             Add(1, 0, null);
-            _DbContext.SaveChanges();
+            _dbContext.SaveChanges();
 
-            var result = _Command.Execute();
+            var result = _command.Execute();
 
             Assert.Equal(1, result.Before.Count);
             Assert.Equal(1, result.Before.Expired);
@@ -116,12 +116,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         [ExclusivelyUses("WorkflowCleanerTests")]
         public void Kill()
         {
-            _Dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
-            _FakeConfig.CleanupDeletesData = true;
+            _dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
+            _fakeConfig.CleanupDeletesData = true;
             Add(1, 0, null);
-            _DbContext.SaveChanges();
+            _dbContext.SaveChanges();
 
-            var result = _Command.Execute();
+            var result = _command.Execute();
 
             Assert.Equal(1, result.Before.Count);
             Assert.Equal(1, result.Before.Expired);
@@ -148,34 +148,34 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         [ExclusivelyUses("WorkflowCleanerTests")]
         public void Abort()
         {
-            _Dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
-            _FakeConfig.CleanupDeletesData = true;
+            _dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
+            _fakeConfig.CleanupDeletesData = true;
             Add(1, 0, null);
             Add(1, 0, null);
             Add(1, 14, 14);
             Add(1, 10, 5);
             Add(-10, 10, 5);
-            _DbContext.SaveChanges();
+            _dbContext.SaveChanges();
 
-            Assert.Throws<InvalidOperationException>(()=>_Command.Execute());
+            Assert.Throws<InvalidOperationException>(() => _command.Execute());
         }
 
         [Fact]
         [ExclusivelyUses("WorkflowCleanerTests")]
         public void MoreRealistic()
         {
-            _Dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
-            _FakeConfig.CleanupDeletesData = true;
+            _dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
+            _fakeConfig.CleanupDeletesData = true;
             Add(1, 0, null);
             Add(1, 0, null);
             Add(1, 14, 14);
             Add(1, 10, 10);
             Add(-10, 10, 0);
-            _DbContext.SaveChanges();
+            _dbContext.SaveChanges();
 
-            var result = _Command.Execute();
+            var result = _command.Execute();
 
-            Assert.Equal(_WorkflowCount, result.Before.Count);
+            Assert.Equal(_workflowCount, result.Before.Count);
             Assert.Equal(4, result.Before.Expired);
             Assert.Equal(2, result.Before.Unauthorised);
             Assert.Equal(2, result.Before.Authorised);
@@ -183,7 +183,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
             Assert.Equal(34, result.Before.TekCount);
             Assert.Equal(24, result.Before.TekPublished);
             Assert.Equal(10, result.Before.TekUnpublished);
-            
+
             Assert.Equal(4, result.GivenMercy);
 
             Assert.Equal(1, result.After.Count);
@@ -198,23 +198,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
 
         private void Add(int offsetHours, int tekCount, int? publishedCount)
         {
-            ++_WorkflowCount;
+            ++_workflowCount;
 
-            var v = _Dtp.Snapshot - TimeSpan.FromHours(offsetHours);
+            var v = _dtp.Snapshot - TimeSpan.FromHours(offsetHours);
 
             var w = new TekReleaseWorkflowStateEntity
             {
-                Created = _Dtp.Snapshot, //Doesnt matter
-                BucketId = new[] { (byte)_WorkflowCount },
-                ConfirmationKey = new[] { (byte)_WorkflowCount },
-                LabConfirmationId = publishedCount.HasValue ? null : _WorkflowCount.ToString(),
-                PollToken = publishedCount.HasValue ? _WorkflowCount.ToString() : null,
-                AuthorisedByCaregiver = publishedCount.HasValue ? _Dtp.Snapshot : (DateTime?)null,
-                StartDateOfTekInclusion = publishedCount.HasValue ? _Dtp.Snapshot : (DateTime?)null,
+                Created = _dtp.Snapshot, //Doesnt matter
+                BucketId = new[] { (byte)_workflowCount },
+                ConfirmationKey = new[] { (byte)_workflowCount },
+                LabConfirmationId = publishedCount.HasValue ? null : _workflowCount.ToString(),
+                PollToken = publishedCount.HasValue ? _workflowCount.ToString() : null,
+                AuthorisedByCaregiver = publishedCount.HasValue ? _dtp.Snapshot : (DateTime?)null,
+                StartDateOfTekInclusion = publishedCount.HasValue ? _dtp.Snapshot : (DateTime?)null,
                 ValidUntil = v
             };
 
-            _DbContext.KeyReleaseWorkflowStates.Add(w);
+            _dbContext.KeyReleaseWorkflowStates.Add(w);
 
             for (var i = 0; i < tekCount; i++)
             {
@@ -223,18 +223,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
                     Owner = w,
                     RollingStartNumber = 0,
                     RollingPeriod = 0,
-                    PublishAfter = _Dtp.Snapshot,
+                    PublishAfter = _dtp.Snapshot,
                     KeyData = new byte[0],
                     PublishingState = i < (publishedCount ?? 0) ? PublishingState.Published : PublishingState.Unpublished,
                 };
-                _DbContext.TemporaryExposureKeys.Add(t);
+                _dbContext.TemporaryExposureKeys.Add(t);
             }
         }
 
         public void Dispose()
         {
-            _WorkflowDbProvider.Dispose();
-            _DbContext.Dispose();
+            _workflowDbProvider.Dispose();
+            _dbContext.Dispose();
         }
     }
 }

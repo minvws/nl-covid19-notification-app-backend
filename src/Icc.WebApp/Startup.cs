@@ -55,7 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
             });
-            
+
             services.AddControllersWithViews();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -84,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
             services.AddTransient<ILuhnModNGenerator, LuhnModNGenerator>();
 
             services.AddTransient<IJwtService, JwtService>();
-            
+
             services.AddSingleton<IAuthCodeService, AuthCodeService>();
             services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
             services.AddCors();

@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>e173d619-05e0-46ae-8454-f302e8d1e52c</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>

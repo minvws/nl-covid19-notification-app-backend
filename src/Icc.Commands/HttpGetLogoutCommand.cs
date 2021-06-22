@@ -16,31 +16,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 {
     public class HttpGetLogoutCommand
     {
-        private readonly IIccPortalConfig _Configuration;
-        private readonly ITheIdentityHubService _TheIdentityHubService;
+        private readonly IIccPortalConfig _configuration;
+        private readonly ITheIdentityHubService _theIdentityHubService;
 
         public HttpGetLogoutCommand(IIccPortalConfig configuration, ITheIdentityHubService theIdentityHubService)
         {
-            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _TheIdentityHubService =
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _theIdentityHubService =
                 theIdentityHubService ?? throw new ArgumentNullException(nameof(theIdentityHubService));
         }
 
         public async Task<IActionResult> ExecuteAsync(HttpContext httpContext)
         {
             if (httpContext == null)
+            {
                 throw new ArgumentNullException(nameof(httpContext));
+            }
 
             var accessToken = httpContext.User?.Claims
                 .FirstOrDefault((c => c.Type == TheIdentityHubClaimTypes.AccessToken))
                 ?.Value;
             if (accessToken != null)
-                await _TheIdentityHubService.RevokeAccessTokenAsync(accessToken);
+            {
+                await _theIdentityHubService.RevokeAccessTokenAsync(accessToken);
+            }
 
             httpContext.Response.Cookies.Delete(".AspNetCore.Cookies");
             await httpContext.SignOutAsync();
 
-            return new RedirectResult(_Configuration.FrontendBaseUrl);
+            return new RedirectResult(_configuration.FrontendBaseUrl);
         }
     }
 }

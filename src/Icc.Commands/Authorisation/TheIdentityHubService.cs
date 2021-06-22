@@ -19,22 +19,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 {
     public class TheIdentityHubService : ITheIdentityHubService
     {
-        private readonly TheIdentityHubOptions _Options;
-        private readonly ILogger<TheIdentityHubService> _Logger;
+        private readonly TheIdentityHubOptions _options;
+        private readonly ILogger<TheIdentityHubService> _logger;
 
         public TheIdentityHubService(IOptionsMonitor<TheIdentityHubOptions> options,
             ILogger<TheIdentityHubService> logger)
         {
-            _Options = options.Get(TheIdentityHubDefaults.AuthenticationScheme) ??
+            _options = options.Get(TheIdentityHubDefaults.AuthenticationScheme) ??
                        throw new ArgumentNullException(nameof(options));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<bool> VerifyTokenAsync(string accessToken)
         {
-            if (accessToken == null) throw new ArgumentNullException(nameof(accessToken));
-            var requestUri = new Uri(_Options.TheIdentityHubUrl, _Options.VerifyTokenEndpoint);
-            HttpResponseMessage response = await _Options.Backchannel.SendAsync(
+            if (accessToken == null)
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            var requestUri = new Uri(_options.TheIdentityHubUrl, _options.VerifyTokenEndpoint);
+            var response = await _options.Backchannel.SendAsync(
                 new HttpRequestMessage(HttpMethod.Get, requestUri)
                 {
                     Headers =
@@ -47,17 +51,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
                     }
                 }).ConfigureAwait(false);
 
-            if (response == null) return false;
-            var responseString = await response.Content.ReadAsStringAsync();
-            if (!response.IsSuccessStatusCode)
+            if (response == null)
             {
-                _Logger.WriteHttpFail(requestUri, response.StatusCode, responseString);
                 return false;
             }
 
-            if (String.IsNullOrEmpty(responseString))
+            var responseString = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
             {
-                _Logger.WriteEmptyResponseString(requestUri, response.StatusCode, responseString);
+                _logger.WriteHttpFail(requestUri, response.StatusCode, responseString);
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(responseString))
+            {
+                _logger.WriteEmptyResponseString(requestUri, response.StatusCode, responseString);
                 return false;
             }
 
@@ -65,25 +73,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 
             if (responseObject.ContainsKey("error") && responseObject["error"] != null)
             {
-                _Logger.WriteHttpFail(requestUri, response.StatusCode, responseString);
+                _logger.WriteHttpFail(requestUri, response.StatusCode, responseString);
                 return false;
             }
 
-            _Logger.WriteTokenVerifyResult(responseString);
+            _logger.WriteTokenVerifyResult(responseString);
             return responseObject.ContainsKey("audience") && responseObject["audience"] != null;
         }
 
         public async Task<bool> RevokeAccessTokenAsync(string accessToken)
         {
-            if (accessToken == null) throw new ArgumentNullException(nameof(accessToken));
-            var requestUri = new Uri(_Options.TheIdentityHubUrl, _Options.Tenant + "/oauth2/v1/revoke");
+            if (accessToken == null)
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            var requestUri = new Uri(_options.TheIdentityHubUrl, _options.Tenant + "/oauth2/v1/revoke");
 
             var payload = new List<KeyValuePair<string, string>>();
-            payload.Add(new KeyValuePair<string, string>("client_id", _Options.ClientId));
+            payload.Add(new KeyValuePair<string, string>("client_id", _options.ClientId));
             payload.Add(new KeyValuePair<string, string>("token", accessToken));
             payload.Add(new KeyValuePair<string, string>("token_type_hint", "access_token"));
 
-            HttpResponseMessage response = await _Options.Backchannel.SendAsync(
+            var response = await _options.Backchannel.SendAsync(
                 new HttpRequestMessage(HttpMethod.Post, requestUri)
                 {
                     Content = new FormUrlEncodedContent(payload),
@@ -99,11 +111,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 
             if (response.IsSuccessStatusCode)
             {
-                _Logger.WriteTokenRevokeSuccess();
+                _logger.WriteTokenRevokeSuccess();
                 return true;
             }
 
-            _Logger.WriteTokenNotRevoked(response.StatusCode.ToString());
+            _logger.WriteTokenNotRevoked(response.StatusCode.ToString());
             return false;
         }
 

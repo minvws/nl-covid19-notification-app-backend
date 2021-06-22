@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -14,15 +14,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
     public class IksImportBatchJob
     {
 
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly IksInDbContext _IksInDbContext;
-        private readonly Func<IksImportCommand> _InboundIksReaderFunc;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly IksInDbContext _iksInDbContext;
+        private readonly Func<IksImportCommand> _inboundIksReaderFunc;
 
         public IksImportBatchJob(IUtcDateTimeProvider dateTimeProvider, IksInDbContext iksInDbContext, Func<IksImportCommand> inboundIksReaderFunc)
         {
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _IksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
-            _InboundIksReaderFunc = inboundIksReaderFunc ?? throw new ArgumentNullException(nameof(inboundIksReaderFunc));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _iksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
+            _inboundIksReaderFunc = inboundIksReaderFunc ?? throw new ArgumentNullException(nameof(inboundIksReaderFunc));
         }
 
         public async Task ExecuteAsync()
@@ -39,14 +39,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
         {
             try
             {
-                var processor = _InboundIksReaderFunc();
+                var processor = _inboundIksReaderFunc();
                 await processor.Execute(item);
 
                 if (!item.Error)
-                    item.Accepted = _DateTimeProvider.Snapshot;
+                {
+                    item.Accepted = _dateTimeProvider.Snapshot;
+                }
 
-                _IksInDbContext.Update(item);
-                _IksInDbContext.SaveChanges();
+                _iksInDbContext.Update(item);
+                _iksInDbContext.SaveChanges();
             }
             catch (Exception e)
             {
@@ -56,9 +58,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             }
         }
 
-        private IksInEntity? GetItem()
+        private IksInEntity GetItem()
         {
-            return _IksInDbContext.Received
+            return _iksInDbContext.Received
                 .Where(x => x.Content != null && x.Accepted == null && !x.Error)
                 .OrderBy(x => x.Created)
                 .Take(1)

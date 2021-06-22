@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         /// <summary>
         /// Padding is provided by the frontend to control request sizes, it is ignored here further
         /// </summary>
-        public string? Padding { get; set; }
+        public string Padding { get; set; }
     }
 }
 

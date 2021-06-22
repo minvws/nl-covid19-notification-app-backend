@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
 
         [MinLength(7), MaxLength(7)]
         public string GGDKey { get; set; }
-        
+
         [MinLength(32), MaxLength(32)]
         public byte[] ConfirmationKey { get; set; }
 
@@ -50,10 +50,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
         /// </summary>
         public InfectiousPeriodType? IsSymptomatic { get; set; }
 
-    /// <summary>
-    /// Rotating auth token for Icc Portal refresh to see KeysLastUploaded time.
-    /// </summary>
-    [Obsolete("PollToken will be obsolete for new version of the ICC backend API")]
+        /// <summary>
+        /// Rotating auth token for Icc Portal refresh to see KeysLastUploaded time.
+        /// </summary>
+        [Obsolete("PollToken will be obsolete for new version of the ICC backend API")]
         public string PollToken { get; set; }
 
         public virtual ICollection<TekEntity> Teks { get; set; } = new List<TekEntity>();

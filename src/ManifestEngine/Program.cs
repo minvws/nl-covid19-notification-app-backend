@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
                 new ConsoleAppRunner().Execute(args, Configure, Start);
                 return 0;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return -1;
             }
@@ -59,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddTransient<StandardContentEntityFormatter>();
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
             services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient(x => 
+            services.AddTransient(x =>
                 SignerConfigStartup.BuildEvSigner(
                     x.GetRequiredService<IConfiguration>(),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),

@@ -1,6 +1,9 @@
-﻿using System;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -14,11 +17,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
 {
     public class RemoveExpiredIksOutCommandTests
     {
-        private readonly IDbProvider<IksOutDbContext> _IksOutDbProvider;
+        private readonly IDbProvider<IksOutDbContext> _iksOutDbProvider;
 
         public RemoveExpiredIksOutCommandTests()
         {
-            _IksOutDbProvider = new SqliteInMemoryDbProvider<IksOutDbContext>();
+            _iksOutDbProvider = new SqliteInMemoryDbProvider<IksOutDbContext>();
         }
 
         [Fact]
@@ -31,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
             var configurationMock = new Mock<IIksCleaningConfig>();
             configurationMock.Setup(p => p.LifetimeDays).Returns(14);
             var logger = new Mock<ILogger<RemoveExpiredIksLoggingExtensions>>();
-            var contextFunc = _IksOutDbProvider.CreateNew;
+            var contextFunc = _iksOutDbProvider.CreateNew;
             var context = contextFunc();
 
             // Assemble - add data up to "now"
@@ -43,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
                     Created = firstDate.AddDays(day),
                     ValidFor = firstDate.AddDays(day),
                     Sent = false,
-                    Content = new byte[] {0x0}
+                    Content = new byte[] { 0x0 }
                 });
             }
             context.SaveChanges();
@@ -57,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
                 dateTimeProvider.Object,
                 configurationMock.Object
             );
-            command.ExecuteAsync();
+            command.ExecuteAsync().GetAwaiter().GetResult();
 
             // Assert
             Assert.Empty(context.Iks.Where(x => x.Created < DateTime.Parse("2020-12-12T00:00:00Z")));

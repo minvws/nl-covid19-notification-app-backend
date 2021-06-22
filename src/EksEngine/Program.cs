@@ -1,12 +1,12 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -82,8 +82,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var c55 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
             run.Add(() => c55.Execute());
 
+            var c56 = serviceProvider.GetRequiredService<RemoveDiagnosisKeysReadyForCleanup>();
+            run.Add(() => c56.ExecuteAsync().GetAwaiter().GetResult());
+
             var c60 = serviceProvider.GetService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());
+
+            var c61 = serviceProvider.GetService<RemoveLocalDuplicateDiagnosisKeysCommand>();
+            run.Add(() => c61.ExecuteAsync().GetAwaiter().GetResult());
 
             var c35 = serviceProvider.GetRequiredService<IksEngine>();
             run.Add(() => c35.ExecuteAsync().GetAwaiter().GetResult());
@@ -91,7 +97,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             //TODO write EFGS run.
 
             foreach (var i in run)
+            {
                 i();
+            }
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
@@ -135,7 +143,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.EksEngine();
 
             services.AddTransient<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
+            services.AddTransient<RemoveLocalDuplicateDiagnosisKeysCommand>();
             services.AddTransient<RemovePublishedDiagnosisKeys>();
+            services.AddTransient<RemoveDiagnosisKeysReadyForCleanup>();
 
             services.AddSingleton<EksBuilderV1LoggingExtensions>();
             services.AddSingleton<ResignerLoggingExtensions>();
@@ -159,7 +169,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             //Signing
             services.NlResignerStartup();
             services.DummySignerStartup();
-            services.GaSignerStartup();
 
             services.AddTransient<IksImportBatchJob>();
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
@@ -171,8 +180,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                         x.GetRequiredService<OnlyIncludeCountryOfOriginKeyProcessor>(),
                         x.GetRequiredService<DosDecodingDiagnosticKeyProcessor>(), //Adds result to metadata
                         x.GetRequiredService<NlTrlFromDecodedDosDiagnosticKeyProcessor>(),
-                        x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
-                        x.GetRequiredService<NlSymptomaticFromDecodedDosDiagnosticKeyProcessor>(),
+                        x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>()
                     },
                     x.GetRequiredService<ITekValidatorConfig>(),
                     x.GetRequiredService<IUtcDateTimeProvider>(),
@@ -184,7 +192,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddTransient<DosDecodingDiagnosticKeyProcessor>();
             services.AddTransient<NlTrlFromDecodedDosDiagnosticKeyProcessor>();
             services.AddTransient<ExcludeTrlNoneDiagnosticKeyProcessor>();
-            services.AddTransient<NlSymptomaticFromDecodedDosDiagnosticKeyProcessor>();
 
             services.AddTransient<IksEngine>();
 
@@ -207,6 +214,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                     x.GetRequiredService<IConfiguration>(),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
                     x.GetRequiredService<IUtcDateTimeProvider>()));
+            services.AddTransient(x =>
+                SignerConfigStartup.BuildGaSigner(
+                    x.GetRequiredService<IConfiguration>(),
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
         }
     }

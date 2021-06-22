@@ -21,8 +21,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 
         //private const string AccessTokenElement = "access_token";
 
-        private readonly IJwtService _JwtService;
-        private readonly IJwtClaimValidator _JwtClaimValidator;
+        private readonly IJwtService _jwtService;
+        private readonly IJwtClaimValidator _jwtClaimValidator;
 
         public JwtAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -32,8 +32,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
             IJwtService jwtService,
             IJwtClaimValidator jwtClaimValidator) : base(options, loggerFactory, encoder, clock)
         {
-            _JwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
-            _JwtClaimValidator = jwtClaimValidator ?? throw new ArgumentNullException(nameof(jwtClaimValidator));
+            _jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
+            _jwtClaimValidator = jwtClaimValidator ?? throw new ArgumentNullException(nameof(jwtClaimValidator));
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -52,12 +52,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 
             var jwt = authHeader.ToString().Replace("Bearer ", "").Trim();
 
-            if (!_JwtService.TryDecode(jwt, out var decodedClaims))
+            if (!_jwtService.TryDecode(jwt, out var decodedClaims))
             {
                 return AuthenticateResult.Fail("Invalid jwt token");
             }
 
-            if (!decodedClaims.ContainsKey("id") || !decodedClaims.ContainsKey("access_token") || !await _JwtClaimValidator.ValidateAsync(decodedClaims))
+            if (!decodedClaims.ContainsKey("id") || !decodedClaims.ContainsKey("access_token") || !await _jwtClaimValidator.ValidateAsync(decodedClaims))
             {
                 return AuthenticateResult.Fail("Invalid jwt token");
             }

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -16,25 +16,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
 {
     public class AuthController : Controller
     {
-        private readonly ILogger<AuthController> _Logger;
+        private readonly ILogger<AuthController> _logger;
 
         public AuthController(ILogger<AuthController> logger)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [Authorize(Policy = "TelefonistRole", AuthenticationSchemes = TheIdentityHubDefaults.AuthenticationScheme)]
         [HttpGet]
-        public Task<IActionResult> Redirect([FromServices] HttpGetAuthorisationRedirectCommand command) =>  command.ExecuteAsync(HttpContext);
+        public Task<IActionResult> Redirect([FromServices] HttpGetAuthorisationRedirectCommand command) => command.ExecuteAsync(HttpContext);
 
 
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Token([FromBody] TokenAuthorisationArgs args, [FromServices] HttpPostAuthorizationTokenCommand command)
         {
-            if (command == null) throw new ArgumentNullException(nameof(command));
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
 
-            _Logger.WriteAuthStart();
+            _logger.WriteAuthStart();
             return await command.ExecuteAsync(HttpContext, args);
         }
 

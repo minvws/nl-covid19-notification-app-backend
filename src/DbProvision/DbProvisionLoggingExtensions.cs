@@ -1,6 +1,10 @@
-﻿using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
 using System;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace DbProvision
 {
@@ -22,76 +26,76 @@ namespace DbProvision
         private const int IksOutDb = Base + 8;
         private const int IksPublishingJobDb = Base + 9;
 
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
 
         public DbProvisionLoggingExtensions(ILogger<DbProvisionLoggingExtensions> logger)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void WriteStart()
         {
-            _Logger.LogInformation("[{name}/{id}] Start.",
+            _logger.LogInformation("[{name}/{id}] Start.",
                 Name, Start);
         }
 
         public void WriteFinished()
         {
-            _Logger.LogInformation("[{name}/{id}] Complete.",
+            _logger.LogInformation("[{name}/{id}] Complete.",
                 Name, Finished);
         }
 
         public void WriteWorkFlowDb()
         {
-            _Logger.LogInformation("[{name}/{id}] Workflow...",
+            _logger.LogInformation("[{name}/{id}] Workflow...",
                 Name, WorkflowDb);
         }
 
         public void WriteContentDb()
         {
-            _Logger.LogInformation("[{name}/{id}] Content...",
+            _logger.LogInformation("[{name}/{id}] Content...",
                 Name, ContentDb);
         }
 
         public void WriteJobDb()
         {
-            _Logger.LogInformation("[{name}/{id}] Job...",
+            _logger.LogInformation("[{name}/{id}] Job...",
                 Name, JobDb);
         }
         public void WriteDataProtectionKeysDb()
         {
-            _Logger.LogInformation("[{name}/{id}] DataProtectionKeys...",
+            _logger.LogInformation("[{name}/{id}] DataProtectionKeys...",
                 Name, DataProtectionKeysDb);
         }
 
 
         public void WriteStatsDb()
         {
-            _Logger.LogInformation("[{name}/{id}] Stats...",
+            _logger.LogInformation("[{name}/{id}] Stats...",
                 Name, StatsDb);
         }
 
         public void WriteDkSourceDb()
         {
-            _Logger.LogInformation("[{name}/{id}] DkSource...",
+            _logger.LogInformation("[{name}/{id}] DkSource...",
                 Name, DkSourceDb);
         }
 
         public void WriteIksInDb()
         {
-            _Logger.LogInformation("[{name}/{id}] IksIn...",
+            _logger.LogInformation("[{name}/{id}] IksIn...",
                 Name, IksInDb);
         }
 
         public void WriteIksOutDb()
         {
-            _Logger.LogInformation("[{name}/{id}] IksOut...",
+            _logger.LogInformation("[{name}/{id}] IksOut...",
                 Name, IksOutDb);
         }
 
         public void WriteIksPublishingJobDb()
         {
-            _Logger.LogInformation("[{name}/{id}] eIksPublishingJob...",
+            _logger.LogInformation("[{name}/{id}] eIksPublishingJob...",
                 Name, IksPublishingJobDb);
         }
     }

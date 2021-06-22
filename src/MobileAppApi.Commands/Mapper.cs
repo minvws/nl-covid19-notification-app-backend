@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -9,7 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
 {
     public static class Mapper
     {
- public static Tek MapToTek(this PostTeksItemArgs value)
+        public static Tek MapToTek(this PostTeksItemArgs value)
         {
             return new Tek
             {
@@ -20,10 +20,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
         }
 
         //Read
-        public static Tek? MapToTek(this TekEntity? value)
+        public static Tek MapToTek(this TekEntity value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             return new Tek
             {
@@ -31,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
                 RollingPeriod = value.RollingPeriod,
                 RollingStartNumber = value.RollingStartNumber,
                 PublishingState = value.PublishingState,
-                PublishAfter  = value.PublishAfter,
+                PublishAfter = value.PublishAfter,
             };
         }
 

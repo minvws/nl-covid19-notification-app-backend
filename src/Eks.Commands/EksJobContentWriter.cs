@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -17,22 +17,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 {
     public class EksJobContentWriter : IEksJobContentWriter
     {
-        private readonly Func<ContentDbContext> _ContentDbContext;
-        private readonly Func<EksPublishingJobDbContext> _PublishingDbContext;
-        private readonly IPublishingIdService _PublishingIdService;
-        private readonly EksJobContentWriterLoggingExtensions _Logger;
+        private readonly Func<ContentDbContext> _contentDbContext;
+        private readonly Func<EksPublishingJobDbContext> _publishingDbContext;
+        private readonly IPublishingIdService _publishingIdService;
+        private readonly EksJobContentWriterLoggingExtensions _logger;
 
         public EksJobContentWriter(Func<ContentDbContext> contentDbContext, Func<EksPublishingJobDbContext> publishingDbContext, IPublishingIdService publishingIdService, EksJobContentWriterLoggingExtensions logger)
         {
-            _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
-            _PublishingDbContext = publishingDbContext ?? throw new ArgumentNullException(nameof(publishingDbContext));
-            _PublishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _contentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
+            _publishingDbContext = publishingDbContext ?? throw new ArgumentNullException(nameof(publishingDbContext));
+            _publishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task ExecuteAsync()
         {
-            await using var pdbc = _PublishingDbContext();
+            await using var pdbc = _publishingDbContext();
             await using (pdbc.BeginTransaction()) //Read consistency
             {
                 var move = pdbc.EksOutput.Select(
@@ -43,17 +43,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                         ContentTypeName = MediaTypeNames.Application.Zip,
                         Content = x.Content,
                         Type = ContentTypes.ExposureKeySet,
-                        PublishingId = _PublishingIdService.Create(x.Content)
+                        PublishingId = _publishingIdService.Create(x.Content)
                     }).ToArray();
 
-                await using var cdbc = _ContentDbContext();
+                await using var cdbc = _contentDbContext();
                 await using (cdbc.BeginTransaction())
                 {
                     cdbc.Content.AddRange(move);
                     cdbc.SaveAndCommit();
                 }
 
-                _Logger.WritePublished(move.Length);
+                _logger.WritePublished(move.Length);
             }
         }
     }

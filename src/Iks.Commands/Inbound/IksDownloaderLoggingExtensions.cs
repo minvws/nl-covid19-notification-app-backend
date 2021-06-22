@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -37,22 +37,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         private const int NoNextBatch = Base + 18;
         private const int NextBatchFound = Base + 19;
 
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
 
         public IksDownloaderLoggingExtensions(ILogger<IksDownloaderLoggingExtensions> logger)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void WriteDisabledByConfig()
         {
-            _Logger.LogWarning("[{name}/{id}] EfgsDownloader is disabled by the configuration.",
+            _logger.LogWarning("[{name}/{id}] EfgsDownloader is disabled by the configuration.",
                 Name, DisabledByConfig);
         }
 
         public void WriteProcessingData(DateTime date, string batchtag)
         {
-            _Logger.LogInformation("[{name}/{id}] Processing data for {date}, batch {batchTag}",
+            _logger.LogInformation("[{name}/{id}] Processing data for {date}, batch {batchTag}",
                 Name, ProcessingData,
                 date, batchtag);
         }
@@ -63,15 +63,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             {
                 throw new ArgumentNullException(nameof(requestMessage));
             }
-            
-            _Logger.LogInformation("[{name}/{id}] EFGS request: {request}",
+
+            _logger.LogInformation("[{name}/{id}] EFGS request: {request}",
                 Name, Request,
                 requestMessage);
         }
 
         public void WriteResponse(HttpStatusCode statusCode)
         {
-            _Logger.LogInformation("[{name}/{id}] Response from EFGS: {statusCodeInt} {statuscode}.",
+            _logger.LogInformation("[{name}/{id}] Response from EFGS: {statusCodeInt} {statuscode}.",
                 Name, Response,
                 (int)statusCode, statusCode);
         }
@@ -83,44 +83,44 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 throw new ArgumentNullException(nameof(responseHeaders));
             }
 
-            _Logger.LogInformation("[{name}/{id}] Response headers: {headers}",
+            _logger.LogInformation("[{name}/{id}] Response headers: {headers}",
                 Name, ResponseHeaders,
                 responseHeaders.ToString());
         }
 
         public void WriteResponseNotFound()
         {
-            _Logger.LogWarning("[{name}/{id}] EFGS: No data found.",
+            _logger.LogWarning("[{name}/{id}] EFGS: No data found.",
                 Name, ResponseNotFound);
         }
 
         public void WriteResponseGone()
         {
-            _Logger.LogWarning("[{name}/{id}] EFGS: No data found (expired).",
+            _logger.LogWarning("[{name}/{id}] EFGS: No data found (expired).",
                 Name, ResponseGone);
         }
 
         public void WriteResponseBadRequest()
         {
-            _Logger.LogCritical("[{name}/{id}] EFGS: missing or invalid header!",
+            _logger.LogCritical("[{name}/{id}] EFGS: missing or invalid header!",
                 Name, ResponseBadRequest);
         }
 
         public void WriteResponseForbidden()
         {
-            _Logger.LogCritical("[{name}/{id}] EFGS: missing or invalid certificate!",
+            _logger.LogCritical("[{name}/{id}] EFGS: missing or invalid certificate!",
                 Name, ResponseForbidden);
         }
 
         public void WriteResponseNotAcceptable()
         {
-            _Logger.LogCritical("[{name}/{id}] EFGS: data format or content is not valid!",
+            _logger.LogCritical("[{name}/{id}] EFGS: data format or content is not valid!",
                 Name, ResponseNotAcceptable);
         }
 
         public void WriteResponseUndefined(HttpStatusCode statusCode)
         {
-            _Logger.LogCritical("[{name}/{id}] EFGS: undefined HTTP status ({status}) returned!",
+            _logger.LogCritical("[{name}/{id}] EFGS: undefined HTTP status ({status}) returned!",
                 Name, ResponseUndefined,
                 statusCode);
         }
@@ -132,54 +132,54 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 throw new ArgumentNullException(nameof(exception));
             }
 
-            _Logger.LogCritical("[{name}/{id}] EFGS error: {Message}",
+            _logger.LogCritical("[{name}/{id}] EFGS error: {Message}",
                 Name, EfgsError,
                 exception.Message);
         }
 
         public void WriteBatchMaximumReached(int maxBatchesPerRun)
         {
-            _Logger.LogInformation("[{name}/{id}] Maximum number of batches per run of {maxBatches} reached.",
+            _logger.LogInformation("[{name}/{id}] Maximum number of batches per run of {maxBatches} reached.",
                 Name, BatchMaximumReached,
                 maxBatchesPerRun);
         }
 
-        public void WriteNextBatchReceived(string batchTag, string? nextBatchTag)
+        public void WriteNextBatchReceived(string batchTag, string nextBatchTag)
         {
-            _Logger.LogInformation("[{name}/{id}] Batch {BatchTag} with next batch {NextBatchTag} received.",
+            _logger.LogInformation("[{name}/{id}] Batch {BatchTag} with next batch {NextBatchTag} received.",
                 Name, NextBatchReceived,
                 batchTag, nextBatchTag);
         }
 
         public void WriteBatchAlreadyProcessed(string batchTag)
         {
-            _Logger.LogInformation("[{name}/{id}] Batch {BatchTag} has already been processed.",
+            _logger.LogInformation("[{name}/{id}] Batch {BatchTag} has already been processed.",
                 Name, BatchAlreadyProcessed,
                 batchTag);
         }
 
-        public void WriteBatchProcessedInNextLoop(string? nextBatchTag)
+        public void WriteBatchProcessedInNextLoop(string nextBatchTag)
         {
-            _Logger.LogInformation("[{name}/{id}] New NextBatchTag {NextBatchTag}, it will be processed next loop.",
+            _logger.LogInformation("[{name}/{id}] New NextBatchTag {NextBatchTag}, it will be processed next loop.",
                 Name, BatchProcessedInNextLoop,
                 nextBatchTag);
         }
 
         public void WriteMovingToNextDay()
         {
-            _Logger.LogInformation("[{name}/{id}] Moving to the next day!",
+            _logger.LogInformation("[{name}/{id}] Moving to the next day!",
                 Name, MovingToNextDay);
         }
 
         public void WriteNoNextBatch()
         {
-            _Logger.LogInformation("[{name}/{id}] No next batch, so: ending.",
+            _logger.LogInformation("[{name}/{id}] No next batch, so: ending.",
                 Name, NoNextBatch);
         }
 
-        public void WriteNextBatchFound(string? nextBatchTag)
+        public void WriteNextBatchFound(string nextBatchTag)
         {
-            _Logger.LogInformation("[{name}/{id}] We have a nextBatch with value {NextBatchTag} so we keep going.",
+            _logger.LogInformation("[{name}/{id}] We have a nextBatch with value {NextBatchTag} so we keep going.",
                 Name, NextBatchFound,
                 nextBatchTag);
         }

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -14,27 +14,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 {
     public class IksPollingBatchJob
     {
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly Func<IIHttpGetIksCommand> _ReceiverFactory;
-        private readonly Func<IIksWriterCommand> _WriterFactory;
-        private readonly IksInDbContext _IksInDbContext;
-        private readonly IEfgsConfig _EfgsConfig;
-        private readonly IksDownloaderLoggingExtensions _Logger;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly Func<IiHttpGetIksCommand> _receiverFactory;
+        private readonly Func<IIksWriterCommand> _writerFactory;
+        private readonly IksInDbContext _iksInDbContext;
+        private readonly IEfgsConfig _efgsConfig;
+        private readonly IksDownloaderLoggingExtensions _logger;
 
         public IksPollingBatchJob(
             IUtcDateTimeProvider dateTimeProvider,
-            Func<IIHttpGetIksCommand> receiverFactory,
+            Func<IiHttpGetIksCommand> receiverFactory,
             Func<IIksWriterCommand> writerFactory,
-            IksInDbContext iksInDbContext, 
+            IksInDbContext iksInDbContext,
             IEfgsConfig efgsConfig,
             IksDownloaderLoggingExtensions logger)
         {
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _ReceiverFactory = receiverFactory ?? throw new ArgumentNullException(nameof(receiverFactory));
-            _WriterFactory = writerFactory ?? throw new ArgumentNullException(nameof(writerFactory));
-            _IksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
-            _EfgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _receiverFactory = receiverFactory ?? throw new ArgumentNullException(nameof(receiverFactory));
+            _writerFactory = writerFactory ?? throw new ArgumentNullException(nameof(writerFactory));
+            _iksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
+            _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task ExecuteAsync()
@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             // All of the values on first run are empty, all we need to do is set the date to the first date and we can start
             if (jobInfo.LastRun == DateTime.MinValue)
             {
-                batchDate = _DateTimeProvider.Snapshot.Date.AddDays(_EfgsConfig.DaysToDownload * -1);
+                batchDate = _dateTimeProvider.Snapshot.Date.AddDays(_efgsConfig.DaysToDownload * -1);
             }
 
             // TODO: save JobInfo for each loop and refresh it for each loop. Remove the other variables.
@@ -56,19 +56,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             {
                 downloadCount++;
 
-                if (downloadCount == _EfgsConfig.MaxBatchesPerRun)
+                if (downloadCount == _efgsConfig.MaxBatchesPerRun)
                 {
-                    _Logger.WriteBatchMaximumReached(_EfgsConfig.MaxBatchesPerRun);
+                    _logger.WriteBatchMaximumReached(_efgsConfig.MaxBatchesPerRun);
                     break;
                 }
 
-                var result = await _ReceiverFactory().ExecuteAsync(batch, batchDate);
+                var result = await _receiverFactory().ExecuteAsync(batch, batchDate);
 
                 // Handle no found / gone
                 if (result == null)
                 {
                     // Move to the next day if possible
-                    if (batchDate < _DateTimeProvider.Snapshot.Date)
+                    if (batchDate < _dateTimeProvider.Snapshot.Date)
                     {
                         batchDate = batchDate.AddDays(1);
                         batch = string.Empty;
@@ -79,17 +79,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                     break;
                 }
 
-                _Logger.WriteNextBatchReceived(result.BatchTag, result.NextBatchTag);
+                _logger.WriteNextBatchReceived(result.BatchTag, result.NextBatchTag);
 
                 // Process a previous batch
-                if (result.BatchTag == previousBatch || _IksInDbContext.Received.Any(_ => _.BatchTag == batch))
+                if (result.BatchTag == previousBatch || _iksInDbContext.Received.Any(_ => _.BatchTag == batch))
                 {
-                    _Logger.WriteBatchAlreadyProcessed(result.BatchTag);
+                    _logger.WriteBatchAlreadyProcessed(result.BatchTag);
 
                     // New batch so process it next time
                     if (!string.IsNullOrWhiteSpace(result.NextBatchTag))
                     {
-                        _Logger.WriteBatchProcessedInNextLoop(result.NextBatchTag);
+                        _logger.WriteBatchProcessedInNextLoop(result.NextBatchTag);
 
                         batch = result.NextBatchTag;
                     }
@@ -97,7 +97,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 else
                 {
                     // Process a new batch
-                    var writer = _WriterFactory();
+                    var writer = _writerFactory();
 
                     await writer.Execute(new IksWriteArgs
                     {
@@ -107,7 +107,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
                     // Update the job info as a batch has been downloaded
                     jobInfo.LastRun = batchDate;
-                    jobInfo.LastBatchTag =  result.BatchTag;
+                    jobInfo.LastBatchTag = result.BatchTag;
 
                     previousBatch = result.BatchTag;
 
@@ -122,36 +122,38 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 if (string.IsNullOrWhiteSpace(result.NextBatchTag))
                 {
                     // Move to the next day if possible
-                    if (batchDate < _DateTimeProvider.Snapshot.Date)
+                    if (batchDate < _dateTimeProvider.Snapshot.Date)
                     {
                         batchDate = batchDate.AddDays(1);
                         batch = string.Empty;
 
-                        _Logger.WriteMovingToNextDay();
+                        _logger.WriteMovingToNextDay();
 
                         continue;
                     }
 
-                    _Logger.WriteNoNextBatch();
+                    _logger.WriteNoNextBatch();
                     break;
                 }
 
-                _Logger.WriteNextBatchFound(result.NextBatchTag);
+                _logger.WriteNextBatchFound(result.NextBatchTag);
             }
 
             // TODO the downloaded batches must also be done in one transaction
-            await _IksInDbContext.SaveChangesAsync();
+            await _iksInDbContext.SaveChangesAsync();
         }
 
         private IksInJobEntity GetJobInfo()
         {
-            var result = _IksInDbContext.InJob.SingleOrDefault();
-            
+            var result = _iksInDbContext.InJob.SingleOrDefault();
+
             if (result != null)
+            {
                 return result;
+            }
 
             result = new IksInJobEntity();
-            _IksInDbContext.InJob.Add(result);
+            _iksInDbContext.InJob.Add(result);
             return result;
         }
     }

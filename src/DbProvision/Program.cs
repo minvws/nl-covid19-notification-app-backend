@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -34,8 +34,11 @@ namespace DbProvision
         private static void Start(IServiceProvider services, string[] args)
         {
             services.GetRequiredService<DatabaseProvisioner>().ExecuteAsync(args).GetAwaiter().GetResult();
-            
-            if (args.Length < 2) return; // No ContentPublisher arguments given
+
+            if (args.Length < 2)
+            {
+                return; // No ContentPublisher arguments given
+            }
 
             for (var i = 0; i < args.Length; i++)
             {

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -15,21 +15,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 {
     public class IksJobContentWriter
     {
-        private readonly Func<IksOutDbContext> _ContentDbContext;
-        private readonly Func<IksPublishingJobDbContext> _PublishingDbContext;
-        private readonly ILogger<IksJobContentWriter> _Logger;
+        private readonly Func<IksOutDbContext> _contentDbContext;
+        private readonly Func<IksPublishingJobDbContext> _publishingDbContext;
+        private readonly ILogger<IksJobContentWriter> _logger;
 
         public IksJobContentWriter(Func<IksOutDbContext> contentDbContext, Func<IksPublishingJobDbContext> publishingDbContext, ILogger<IksJobContentWriter> logger)
         {
-            _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
-            _PublishingDbContext = publishingDbContext ?? throw new ArgumentNullException(nameof(publishingDbContext));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _contentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
+            _publishingDbContext = publishingDbContext ?? throw new ArgumentNullException(nameof(publishingDbContext));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
 
         public async Task ExecuteAsyc()
         {
-            await using var pdbc = _PublishingDbContext();
+            await using var pdbc = _publishingDbContext();
             await using (pdbc.BeginTransaction()) //Read consistency
             {
                 var move = pdbc.Output.Select(
@@ -42,14 +42,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                         //TODO batch id? use qualifier
                     }).ToArray();
 
-                await using var cdbc = _ContentDbContext();
+                await using var cdbc = _contentDbContext();
                 await using (cdbc.BeginTransaction())
                 {
                     cdbc.Iks.AddRange(move);
                     cdbc.SaveAndCommit();
                 }
 
-                _Logger.LogInformation("Published EKSs - Count:{Count}.", move.Length);
+                _logger.LogInformation("Published EKSs - Count:{Count}.", move.Length);
             }
         }
     }

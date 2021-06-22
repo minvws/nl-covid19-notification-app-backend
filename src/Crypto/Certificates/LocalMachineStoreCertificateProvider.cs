@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -10,13 +10,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
     public class LocalMachineStoreCertificateProvider : ICertificateProvider, IAuthenticationCertificateProvider
     {
-        private readonly IThumbprintConfig _ThumbprintConfig;
-        private readonly LocalMachineStoreCertificateProviderLoggingExtensions _Logger;
+        private readonly IThumbprintConfig _thumbprintConfig;
+        private readonly LocalMachineStoreCertificateProviderLoggingExtensions _logger;
 
         public LocalMachineStoreCertificateProvider(IThumbprintConfig thumbprintConfig, LocalMachineStoreCertificateProviderLoggingExtensions logger)
         {
-            _ThumbprintConfig = thumbprintConfig ?? throw new ArgumentNullException(nameof(thumbprintConfig));
-            _Logger = logger;
+            _thumbprintConfig = thumbprintConfig ?? throw new ArgumentNullException(nameof(thumbprintConfig));
+            _logger = logger;
         }
 
         public X509Certificate2 GetCertificate()
@@ -24,18 +24,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
             using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             store.Open(OpenFlags.ReadOnly);
 
-            _Logger.WriteFindingCert(_ThumbprintConfig.Thumbprint, _ThumbprintConfig.RootTrusted);
+            _logger.WriteFindingCert(_thumbprintConfig.Thumbprint, _thumbprintConfig.RootTrusted);
 
             var result = ReadCertFromStore(store);
             if (result == null)
             {
-                _Logger.WriteCertNotFound(_ThumbprintConfig.Thumbprint);
+                _logger.WriteCertNotFound(_thumbprintConfig.Thumbprint);
                 throw new InvalidOperationException("Certificate not found.");
             }
 
             if (!result.HasPrivateKey)
             {
-                _Logger.WriteNoPrivateKey(_ThumbprintConfig.Thumbprint);
+                _logger.WriteNoPrivateKey(_thumbprintConfig.Thumbprint);
                 throw new InvalidOperationException("Private key not found.");
             }
 
@@ -46,13 +46,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
             try
             {
                 return x509Store.Certificates
-                    .Find(X509FindType.FindByThumbprint, _ThumbprintConfig.Thumbprint, _ThumbprintConfig.RootTrusted)
+                    .Find(X509FindType.FindByThumbprint, _thumbprintConfig.Thumbprint, _thumbprintConfig.RootTrusted)
                     .OfType<X509Certificate2>()
                     .FirstOrDefault();
             }
             catch (Exception e)
             {
-                _Logger.WriteCertReadError(e);
+                _logger.WriteCertReadError(e);
                 throw;
             }
         }

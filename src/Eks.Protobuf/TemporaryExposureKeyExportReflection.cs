@@ -8,16 +8,19 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf
 {
     /// <summary>Holder for reflection information generated from TemporaryExposureKeyExport.proto</summary>
-    public static partial class TemporaryExposureKeyExportReflection {
+    public static partial class TemporaryExposureKeyExportReflection
+    {
 
         #region Descriptor
         /// <summary>File descriptor for TemporaryExposureKeyExport.proto</summary>
-        public static FileDescriptor Descriptor {
+        public static FileDescriptor Descriptor
+        {
             get { return descriptor; }
         }
-        private static FileDescriptor descriptor;
+        private static readonly FileDescriptor descriptor;
 
-        static TemporaryExposureKeyExportReflection() {
+        static TemporaryExposureKeyExportReflection()
+        {
             var descriptorData = System.Convert.FromBase64String(
                 string.Concat(
                     "CiBUZW1wb3JhcnlFeHBvc3VyZUtleUV4cG9ydC5wcm90byL+AQoaVGVtcG9y",
