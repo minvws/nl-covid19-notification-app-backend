@@ -35,9 +35,8 @@ else
 
 function SetErrorToStop
 {
-	$ErrorAtStart = $ErrorActionPreference
-	$ErrorActionPreference = "Stop"
-	write-host "Error-behaviour is set from $ErrorAtStart to $ErrorActionPreference."
+	$script:ErrorActionPreference = "Stop"
+	write-host "Error-behaviour of script is set to $script:ErrorActionPreference."
 }
 
 function CheckNotIse
@@ -127,6 +126,8 @@ function RunWithErrorCheck ([string]$command)
 function GenTestFile
 {
 	$contentstring = read-host "Please input a test string that will be used for signing"
+	$Host.UI.RawUI.FlushInputBuffer() #clears any annoying newlines that were accidentally copied in
+	
 	$script:date = Get-Date -Format "MM_dd_HH-mm-ss"
 	$fileContent = "Key verification file ($script:Environment)`r`n$contentstring"
 	$script:TestfileNameNoExt = "KeyExtractionRawData"
@@ -164,6 +165,7 @@ function TestHsmConnection
 
 
 write-host "Certificate-Verifier"
+write-host "Location and date: $env:computername. $(Get-Date -Format `"dd MMM, HH:mm:ss`")."
 CheckNotWin7
 CheckNotIse
 

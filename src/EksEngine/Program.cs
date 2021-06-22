@@ -88,6 +88,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var c60 = serviceProvider.GetService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());
 
+            var c61 = serviceProvider.GetService<RemoveLocalDuplicateDiagnosisKeysCommand>();
+            run.Add(() => c61.ExecuteAsync().GetAwaiter().GetResult());
+
             var c35 = serviceProvider.GetRequiredService<IksEngine>();
             run.Add(() => c35.ExecuteAsync().GetAwaiter().GetResult());
 
@@ -140,6 +143,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.EksEngine();
 
             services.AddTransient<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
+            services.AddTransient<RemoveLocalDuplicateDiagnosisKeysCommand>();
             services.AddTransient<RemovePublishedDiagnosisKeys>();
             services.AddTransient<RemoveDiagnosisKeysReadyForCleanup>();
 
@@ -165,7 +169,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             //Signing
             services.NlResignerStartup();
             services.DummySignerStartup();
-            services.GaSignerStartup();
 
             services.AddTransient<IksImportBatchJob>();
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
@@ -211,6 +214,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                     x.GetRequiredService<IConfiguration>(),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
                     x.GetRequiredService<IUtcDateTimeProvider>()));
+            services.AddTransient(x =>
+                SignerConfigStartup.BuildGaSigner(
+                    x.GetRequiredService<IConfiguration>(),
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
         }
     }

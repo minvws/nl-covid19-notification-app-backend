@@ -116,6 +116,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             var c130 = serviceProvider.GetRequiredService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             run.Add(() => c130.ExecuteAsync().GetAwaiter().GetResult());
 
+            var c131 = serviceProvider.GetService<RemoveLocalDuplicateDiagnosisKeysCommand>();
+            run.Add(() => c131.ExecuteAsync().GetAwaiter().GetResult());
+
             var c140 = serviceProvider.GetRequiredService<RemoveExpiredIksInCommand>();
             run.Add(() => c140.ExecuteAsync().GetAwaiter().GetResult());
 
@@ -197,7 +200,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             services.NlResignerStartup();
             services.DummySignerStartup();
-            services.GaSignerStartup();
             services.DailyStatsStartup();
 
             services.AddTransient<IksImportBatchJob>();
@@ -259,6 +261,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
                     x.GetRequiredService<IConfiguration>(),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
                     x.GetRequiredService<IUtcDateTimeProvider>()));
+            services.AddTransient(x =>
+                SignerConfigStartup.BuildGaSigner(
+                    x.GetRequiredService<IConfiguration>(),
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
         }
     }

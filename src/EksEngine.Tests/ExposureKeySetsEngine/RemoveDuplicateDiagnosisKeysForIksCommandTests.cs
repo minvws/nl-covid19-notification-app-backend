@@ -115,7 +115,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
 
-        private IRemoveDuplicateDiagnosisKeysForIksCommand CreateCommand()
+        private IRemoveDuplicateDiagnosisKeysCommand CreateCommand()
         {
             return new RemoveDuplicateDiagnosisKeysForIksWithSpCommand(() => _dkSourceDbProvider.CreateNew());
         }
