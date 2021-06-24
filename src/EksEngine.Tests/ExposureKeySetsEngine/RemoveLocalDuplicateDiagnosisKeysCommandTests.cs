@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         public RemoveLocalDuplicateDiagnosisKeysCommandTests()
         {
-            _dkSourceDbProvider = new SqlServerDbProvider<DkSourceDbContext>(nameof(RemoveDuplicateDiagnosisKeysForIksCommandTests) + "_DK");
+            _dkSourceDbProvider = new SqlServerDbProvider<DkSourceDbContext>(nameof(RemoveLocalDuplicateDiagnosisKeysCommandTests) + "_DK");
             var sp = File.ReadAllText(Path.Combine(Path.GetDirectoryName(NCrunch.Framework.NCrunchEnvironment.GetOriginalSolutionPath()), @"Database\DiagnosisKeys\dbo\StoredProcedures\RemoveLocalDuplicateDiagnosisKeys.sql"));
             using var ctx = _dkSourceDbProvider.CreateNew();
             ctx.Database.ExecuteSqlRaw(sp);
