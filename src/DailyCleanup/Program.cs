@@ -115,10 +115,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             var c130 = serviceProvider.GetRequiredService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             run.Add(() => c130.ExecuteAsync().GetAwaiter().GetResult());
-
-            //var c131 = serviceProvider.GetService<RemoveLocalDuplicateDiagnosisKeysCommand>();
-            //run.Add(() => c131.ExecuteAsync().GetAwaiter().GetResult());
-
+            
             var c140 = serviceProvider.GetRequiredService<RemoveExpiredIksInCommand>();
             run.Add(() => c140.ExecuteAsync().GetAwaiter().GetResult());
 
