@@ -189,7 +189,7 @@ SetErrorToStop
 write-host "`nCheck if HSM is accessible"
 Pause
 
-#TestHsmConnection
+TestHsmConnection
 
 write-host "`nGenerating testfile"
 Pause
