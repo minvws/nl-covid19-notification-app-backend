@@ -43,4 +43,8 @@
     <Folder Include="Resources\" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy $(ProjectDir)Resources  $(OutDir)Resources /S /R /I" />
+  </Target>
+
 </Project>

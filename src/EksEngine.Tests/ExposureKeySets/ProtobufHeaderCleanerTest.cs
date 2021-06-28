@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             //Arrange
             Func<ZipArchive, byte[]> sut = x => ProtobufHeaderCleaner.RemoveExcessBytes(x);
 
-            var testFileLocation = ".\\..\\..\\..\\Resources\\ProtobufHeaderTestFile.zip";
+            var testFileLocation = ".\\Resources\\ProtobufHeaderTestFile.zip";
             var expectedLength = 70;
 
             //Act
