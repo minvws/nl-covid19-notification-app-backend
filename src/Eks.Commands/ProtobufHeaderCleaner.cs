@@ -11,10 +11,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     public static class ProtobufHeaderCleaner
     {
         // Currently, GAEN uses ASN.1-encoding for its signature in the header.
-        // This encoding adds at least two bytets to the header.
+        // This encoding adds at least two bytes to the header.
         // OpenSSL and .Net, however, don't expect this encoding and will throw a parse error.
         // To overcome this discrepancy, use this method, which omits the bytes from the header.
-        // For more info, see X962PackagingFix.cs
+        // For more info, see X962PackagingFix.cs in this solution.
 
         public static byte[] RemoveExcessBytes(ZipArchive eksZip)
         {

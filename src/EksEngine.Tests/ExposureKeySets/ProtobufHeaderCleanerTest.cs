@@ -14,12 +14,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     public class ProtobufHeaderCleanerTest
     {
         [Fact]
-        public void HeaderWithExtraBytes_RemoveExcessBytes_HeaderWithoutExtraBytes()
+        public void RegularProtobufHeader_RemoveExcessBytes_HeaderWithoutExtraBytes()
         {
             //Arrange
             Func<ZipArchive, byte[]> sut = x => ProtobufHeaderCleaner.RemoveExcessBytes(x);
 
-            var testFileLocation = ".\\Resources\\ProtobufHeaderTestFile.zip";
+            var testFileLocation = "ProtobufHeaderTestFile.zip"; //found in Resources-folder; copied to destination after build
             var expectedLength = 70;
 
             //Act
