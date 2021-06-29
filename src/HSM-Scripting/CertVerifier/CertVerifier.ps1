@@ -12,13 +12,13 @@ $VariablesSource = "Development"
 if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
 {
 	#dev
-    $OpenSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
+    $OpenSslLoc = "`"C:\Applications\OpenSSL\bin\openssl.exe`""
     $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
-    $SignerLoc = "..\..\SigTestFileCreator\SigTestFileCreator.exe"
-    $EksParserLoc = "..\..\..\EksParser\EksParser.exe"
+    $SignerLoc = ".\..\..\SigTestFileCreator\bin\Debug\netcoreapp3.1\SigTestFileCreator.exe"
+    $ScrubberLoc = ".\..\..\ProtobufScrubber\bin\Debug\netcoreapp3.1\ProtobufScrubber.exe"
     
-    $RsaRootCertThumbPrint = "2cb199296503438e7d87f71a7453d7dd24021696"
-    $EcdsaCertThumbPrint = "a9102034f7056621155c608925b7c4eae7b241b1"
+    $RsaRootCertThumbPrint = "235930c0869a8d84b3cb0a9379522a4b0b4dbe0b"
+    $EcdsaCertThumbPrint = "d5b4ed5ddd8f6492a3c859792709570e9cc0a2ce"
 	$Hsm1Address = "3001@127.0.0.1"
 	$Hsm2Address = ""
 }
@@ -29,7 +29,7 @@ else
     $OpenSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
     $HSMAdminToolsDir = "#{Deploy.HSMScripting.HSMAdminToolsDir}#"
     $SignerLoc = "`"#{Deploy.HSMScripting.VerifierLoc}#`""
-    $EksParserLoc = "`"#{Deploy.HSMScripting.EksParserLoc}#`""
+    $ScrubberLoc = "`"#{Deploy.HSMScripting.EksParserLoc}#`""
     
     $RsaRootCertThumbPrint = "#{Deploy.HSMScripting.RsaRootCertificateThumbprint}#"
     $EcdsaCertThumbPrint = "#{Deploy.HSMScripting.EcdsaCertThumbPrint}#"
@@ -127,7 +127,7 @@ function CheckNotWin7
 	}
 }
 
-function GenTestFile
+function GenTestFileAndFolders
 {
 	$date = Get-Date -Format "MM_dd_HH-mm-ss"
 	$fileContent = "Key verification file: $date"
@@ -136,6 +136,8 @@ function GenTestFile
 	$script:testfileName = ("keytest$date" + ".txt") 
 	
 	New-Item -force -name ($script:testfileName) -path ".\$script:tempFolderLoc\" -ItemType File -Value $fileContent -ErrorAction Stop
+	New-Item -force -name "$script:testfileNameNoExt-RSA" -path ".\$script:tempFolderLoc\" -ItemType Directory
+	New-Item -force -name "$script:testfileNameNoExt-ECDSA" -path ".\$script:tempFolderLoc\" -ItemType Directory
 }
 
 function ExtractCert ([String] $ThumbPrint, [String] $Store, [String] $ExportPath)
@@ -176,7 +178,7 @@ write-warning "`nPlease check the following:`
 - Rsa ROOT thumbprint is $RsaRootCertThumbPrint. Correct?`
 - Ecdsa thumbprint is $EcdsaCertThumbPrint. Correct?`
 - Signer is located at $SignerLoc. Correct?`
-- Parser is located at $EksParserLoc. Correct?`
+- Scrubber is located at $ScrubberLoc. Correct?`
 - HSM-addresses are $Hsm1Address and $Hsm2Address. Correct?`
 - Did you add the Rsa (non-root)- and Ecdsa thumbprint to the signer appsettings.json?`
 If not: abort this script with Ctrl+C."
@@ -192,35 +194,43 @@ TestHsmConnection
 write-host "`nGenerating testfile"
 Pause
 
-gentestfile
+GenTestFileAndFolders
 
 write-host "`nExtracting certificates"
 Pause
 
-$RsaRootCertLoc = ExtractCert -ThumbPrint $RsaRootCertThumbPrint -Store "root" -ExportPath ".\$tempFolderLoc\RsaRootCert"
-$EcdsaCertLoc = ExtractCert -ThumbPrint $EcdsaCertThumbPrint -Store "my" -ExportPath ".\$tempFolderLoc\EcdsaCert"
+if($VariablesSource -eq "Development")
+{
+	#use local RSA cert for verification instead of root cert 
+	$RsaRootCertLoc = ExtractCert -ThumbPrint $RsaRootCertThumbPrint -Store "my" -ExportPath ".\$tempFolderLoc\$testfileNameNoExt-RSA\RsaRootCert"
+}
+else
+{
+	$RsaRootCertLoc = ExtractCert -ThumbPrint $RsaRootCertThumbPrint -Store "root" -ExportPath ".\$tempFolderLoc\$testfileNameNoExt-RSA\RsaRootCert"
+}
 
-#extract public key from ECDSA Key
+$EcdsaCertLoc = ExtractCert -ThumbPrint $EcdsaCertThumbPrint -Store "my" -ExportPath ".\$tempFolderLoc\$testfileNameNoExt-ECDSA\EcdsaCert"
+
+#extract public key from ECDSA cert
 RunWithErrorCheck "$openSslLoc x509 -in $EcdsaCertLoc -inform pem -noout -pubkey -out $EcdsaCertLoc.pub"
 
-write-host "`nSigning testfile with SigTestFileCreator"
+write-host "`nSigning testfile with SigTestFileCreator and scrubbing protobuf-header"
 Pause
 
 RunWithErrorCheck "$SignerLoc .\$tempFolderLoc\$testfileName"
+RunWithErrorCheck "$ScrubberLoc .\$tempFolderLoc\$testfileNameNoExt-signed.zip"
 
 write-host "`nChecking signature of signed testfiles"
 Pause
 
-Expand-Archive -Force -LiteralPath ".\$tempFolderLoc\$testfileNameNoExt-eks.zip" -DestinationPath ".\$tempFolderLoc\$testfileNameNoExt\" -ErrorAction Stop
+Expand-Archive -Force -LiteralPath ".\$tempFolderLoc\$testfileNameNoExt-signed.zip" -DestinationPath ".\$tempFolderLoc\$testfileNameNoExt-RSA\" -ErrorAction Stop
+Expand-Archive -Force -LiteralPath ".\$tempFolderLoc\$testfileNameNoExt-signed-scrubbed.zip" -DestinationPath ".\$tempFolderLoc\$testfileNameNoExt-ECDSA\" -ErrorAction Stop
 
 write-host "`nRSA: "
-RunWithErrorCheck "$openSslLoc cms -verify -CAfile $RsaRootCertLoc -in .\$tempFolderLoc\$testfileNameNoExt\content.sig -inform DER -binary -content .\$tempFolderLoc\$testfileNameNoExt\export.bin -purpose any"
+RunWithErrorCheck "$openSslLoc cms -verify -CAfile $RsaRootCertLoc -in .\$tempFolderLoc\$testfileNameNoExt-RSA\content.sig -inform DER -binary -content .\$tempFolderLoc\$testfileNameNoExt-RSA\export.bin -purpose any"
 
 write-host "`nECDSA: "
-cd ".\$tempFolderLoc" # EksParser puts results in calling folder
-RunWithErrorCheck "$EksParserLoc $testfileNameNoExt-eks.zip"
-cd ..
-RunWithErrorCheck "$openSslLoc dgst -sha256 -verify $EcdsaCertLoc.pub -signature .\$tempFolderLoc\export.sig .\$tempFolderLoc\export.bin"
+RunWithErrorCheck "$openSslLoc dgst -sha256 -verify $EcdsaCertLoc.pub -signature .\$tempFolderLoc\$testfileNameNoExt-ECDSA\export.sig .\$tempFolderLoc\$testfileNameNoExt-ECDSA\export.bin"
 
 write-host "`nIf both checks return a succesful verification, then we're done!"
 Pause
