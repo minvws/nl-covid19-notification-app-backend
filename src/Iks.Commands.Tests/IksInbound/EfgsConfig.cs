@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
     {
         public string BaseUrl => "";
         public bool SendClientAuthenticationHeaders => true;
-        public int DaysToDownload => 1;
+        public int DaysToDownload => 0;
         public int MaxBatchesPerRun => 10;
         public bool UploaderEnabled => true;
         public bool DownloaderEnabled => true;

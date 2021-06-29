@@ -239,10 +239,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             Assert.Equal(2, downloadedBatches.Count);
 
             // Assemble: add the batches for the SECOND day to the receiver
+            var secondDayDatePart = dtp.Object.Snapshot.Date.AddDays(1).ToString("yyyyMMdd");
             receiver.AddItem(new HttpGetIksSuccessResult
-            { BatchTag = $"{datePart}-3", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = $"{datePart}-4" }, now.AddDays(1));
+            { BatchTag = $"{secondDayDatePart}-1", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = $"{secondDayDatePart}-2" });
             receiver.AddItem(new HttpGetIksSuccessResult
-            { BatchTag = $"{datePart}-4", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = null }, now.AddDays(1));
+            { BatchTag = $"{secondDayDatePart}-2", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = null });
 
             // Act - process files for SECOND day
             await sut.ExecuteAsync();
@@ -251,8 +252,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             Assert.Equal(4, downloadedBatches.Count);
             Assert.Equal($"{datePart}-1", downloadedBatches[0].BatchTag);
             Assert.Equal($"{datePart}-2", downloadedBatches[1].BatchTag);
-            Assert.Equal($"{datePart}-3", downloadedBatches[2].BatchTag);
-            Assert.Equal($"{datePart}-4", downloadedBatches[3].BatchTag);
+            Assert.Equal($"{secondDayDatePart}-1", downloadedBatches[2].BatchTag);
+            Assert.Equal($"{secondDayDatePart}-2", downloadedBatches[3].BatchTag);
         }
     }
 }

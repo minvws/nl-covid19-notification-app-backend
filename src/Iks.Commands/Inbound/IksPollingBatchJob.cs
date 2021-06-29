@@ -43,9 +43,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             var downloadCount = 0;
             var lastWrittenBatchTag = jobInfo.LastBatchTag;
 
-            // The first batch of the given date will be returned by EFGS; we may already have it.
-            var date = jobInfo.LastRun == DateTime.MinValue ? _dateTimeProvider.Snapshot.Date : jobInfo.LastRun;
-            var result = await _receiverFactory().ExecuteAsync(date);
+            var date = _dateTimeProvider.Snapshot.Date;
+            var batchTagDatePart = lastWrittenBatchTag.Split("-").FirstOrDefault();
+
+            if (!string.IsNullOrEmpty(batchTagDatePart))
+            {
+                // All is good, start requesting batch from where we left off.
+                date = DateTime.ParseExact(batchTagDatePart, "yyyyMMdd", null);
+            }
+            else
+            {
+                // If lastWrittenBatchTag is somehow unusable, go as far back as allowed,
+                // and don't send the batchTag to EFGS.
+                date = date.AddDays(_efgsConfig.DaysToDownload * -1);
+                lastWrittenBatchTag = string.Empty;
+            }
+
+            // If we have a batchTag, we will request that batch from EFGS.
+            // The date parameter will then be used by EFGS to compare against the "created" date of the provided batchTag's batch.
+            // EFGS will return a 404 if those 2 dates do not match.
+
+            // If we do not have a batchTag (it is null or empty), the first batch of the date requested will be returned by EFGS.
+            // We may already have that first batch, but we may not have the next batches.
+
+            var result = await _receiverFactory().ExecuteAsync(date, lastWrittenBatchTag);
 
             while (result != null && downloadCount < _efgsConfig.MaxBatchesPerRun)
             {
@@ -57,18 +78,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                         await WriteSingleBatchAsync(result.BatchTag, result.Content);
                         lastWrittenBatchTag = result.BatchTag;
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        //TODO: catch specific exception and handle them properly.
+                        // TODO: check if we want to handle the specific exceptions
+                        _logger.WriteEfgsError(e);
                     }
-
                 }
 
-                // Move on to the next batch, or stop.
+                // Now move on to the next batch, or stop.
                 if (!string.IsNullOrEmpty(result.NextBatchTag))
                 {
-                    // The date is ignored by EFGS when a specific batchTag is requested,
-                    // but it is required so let's send it anyway.
                     result = await _receiverFactory().ExecuteAsync(date, result.NextBatchTag);
                     downloadCount++;
                 }
@@ -80,11 +99,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             }
 
             // Update IksInJob
-            var lastBatchTagDate = lastWrittenBatchTag.Split("-").FirstOrDefault();
-            var lastRun = !string.IsNullOrEmpty(lastBatchTagDate) ? DateTime.ParseExact(lastBatchTagDate, "yyyyMMdd", null) : _dateTimeProvider.Snapshot.Date;
-
             jobInfo.LastBatchTag = lastWrittenBatchTag;
-            jobInfo.LastRun = lastRun;
+            jobInfo.LastRun = _dateTimeProvider.Snapshot.Date;
 
             // Persist updated jobinfo to database.
             await _iksInDbContext.SaveChangesAsync();

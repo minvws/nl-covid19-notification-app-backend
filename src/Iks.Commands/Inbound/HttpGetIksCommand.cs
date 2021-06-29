@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<HttpGetIksSuccessResult> ExecuteAsync(DateTime date, string batchTag = null)
+        public async Task<HttpGetIksSuccessResult> ExecuteAsync(DateTime date, string batchTag)
         {
             _logger.WriteProcessingData(date, batchTag);
 
@@ -51,9 +51,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 var request = new HttpRequestMessage { RequestUri = uri };
                 request.Headers.Add("Accept", ApplicationProtobuf);
 
-                // If we have a batchTag, request that batch from EFGS; the date will be ignored by EFGS.
-                // If we do not have a batchTag, the first batch of the date requested will be returned by EFGS.
-                // Most likely we already have that first batch, but we may not have the next batches.
                 if (!string.IsNullOrWhiteSpace(batchTag))
                 {
                     request.Headers.Add("batchTag", batchTag);
