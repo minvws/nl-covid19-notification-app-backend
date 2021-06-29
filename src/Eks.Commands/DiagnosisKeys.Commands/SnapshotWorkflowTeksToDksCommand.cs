@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly ITransmissionRiskLevelCalculationMk2 _transmissionRiskLevelCalculation;
         private readonly WorkflowDbContext _workflowDbContext;
-        private readonly Func<WorkflowDbContext> _workflowDbContextFactory;
+        private readonly WorkflowDbContext _workflowDbContextFactory;
         private readonly Func<DkSourceDbContext> _dkSourceDbContextFactory;
         private readonly IWrappedEfExtensions _sqlCommands;
         private readonly IDiagnosticKeyProcessor[] _orderedProcessorList;
@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         private int _commitIndex;
         private SnapshotWorkflowTeksToDksResult _result;
 
-        public SnapshotWorkflowTeksToDksCommand(ILogger<SnapshotWorkflowTeksToDksCommand> logger, IUtcDateTimeProvider dateTimeProvider, ITransmissionRiskLevelCalculationMk2 transmissionRiskLevelCalculation, WorkflowDbContext workflowDbContext, Func<WorkflowDbContext> workflowDbContextFactory, Func<DkSourceDbContext> dkSourceDbContextFactory, IWrappedEfExtensions sqlCommands, IDiagnosticKeyProcessor[] orderedProcessorList)
+        public SnapshotWorkflowTeksToDksCommand(ILogger<SnapshotWorkflowTeksToDksCommand> logger, IUtcDateTimeProvider dateTimeProvider, ITransmissionRiskLevelCalculationMk2 transmissionRiskLevelCalculation, WorkflowDbContext workflowDbContext, WorkflowDbContext workflowDbContextFactory, Func<DkSourceDbContext> dkSourceDbContextFactory, IWrappedEfExtensions sqlCommands, IDiagnosticKeyProcessor[] orderedProcessorList)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
@@ -173,7 +173,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
         private async Task MarkTeksAsPublishedAsync(long[] used)
         {
-            await using var wfDb = _workflowDbContextFactory();
+            await using var wfDb = _workflowDbContextFactory;
 
             var zap = wfDb.TemporaryExposureKeys
                 .Where(x => used.Contains(x.Id))

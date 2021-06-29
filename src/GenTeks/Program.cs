@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret;
@@ -38,7 +38,7 @@ namespace GenTeks
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
             services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddTransient(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
+            services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
 
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IRandomNumberGenerator, StandardRandomNumberGenerator>();
@@ -47,13 +47,10 @@ namespace GenTeks
             services.AddTransient<ILuhnModNConfig, LuhnModNConfig>();
             services.AddTransient<ILuhnModNGenerator, LuhnModNGenerator>();
 
-            services.AddTransient(x => new GenerateTeksCommand(
-                x.GetRequiredService<IRandomNumberGenerator>(),
-                x.GetRequiredService<WorkflowDbContext>,
-                x.GetRequiredService<TekReleaseWorkflowStateCreateV2>
-                ));
-
+            services.AddTransient<GenerateTeksCommand>();
             services.AddTransient<TekReleaseWorkflowStateCreateV2>();
+
+            services.AddTransient<Func<TekReleaseWorkflowStateCreateV2>>(x => x.GetRequiredService<TekReleaseWorkflowStateCreateV2>);
             services.AddTransient<IWorkflowTime, TekReleaseWorkflowTime>();
 
             services.AddSingleton<RegisterSecretLoggingExtensionsV2>();

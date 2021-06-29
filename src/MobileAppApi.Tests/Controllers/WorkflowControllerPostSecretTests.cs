@@ -38,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                 {
                     builder.ConfigureTestServices(services =>
                     {
-                        services.AddScoped(sp => _workflowDbProvider.CreateNewWithTx());
+                        services.AddScoped(sp => _workflowDbProvider.CreateNew());
                         services.Replace(new ServiceDescriptor(typeof(IRandomNumberGenerator), _fakeNumbers));
                         services.AddTransient<DecoyTimeAggregatorAttribute>();
                     });

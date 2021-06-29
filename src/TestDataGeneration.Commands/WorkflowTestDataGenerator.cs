@@ -23,16 +23,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
 {
     public class WorkflowTestDataGenerator
     {
-        private readonly IDbProvider<WorkflowDbContext> _workflowDbContextProvider;
+        private readonly WorkflowDbContext _workflowDbContext;
         private readonly IDbProvider<DkSourceDbContext> _dkSourceDbContextProvider;
         private readonly ILoggerFactory _loggerFactory = new SerilogLoggerFactory();
         private readonly IUtcDateTimeProvider _utcDateTimeProvider = new StandardUtcDateTimeProvider();
         private readonly StandardRandomNumberGenerator _rng = new StandardRandomNumberGenerator();
         private readonly IWrappedEfExtensions _efExtensions;
 
-        public WorkflowTestDataGenerator(IDbProvider<WorkflowDbContext> workflowDbContextProvider, IDbProvider<DkSourceDbContext> dkSourceDbContextProvider, IWrappedEfExtensions efExtensions)
+        private readonly LoggerFactory _lf;
+
+
+
+        public WorkflowTestDataGenerator(WorkflowDbContext workflowDbContext, IDbProvider<DkSourceDbContext> dkSourceDbContextProvider, IWrappedEfExtensions efExtensions)
         {
-            _workflowDbContextProvider = workflowDbContextProvider ?? throw new ArgumentNullException(nameof(workflowDbContextProvider));
+            _lf = new LoggerFactory();
+
+            _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
             _dkSourceDbContextProvider = dkSourceDbContextProvider ?? throw new ArgumentNullException(nameof(dkSourceDbContextProvider));
             _efExtensions = efExtensions ?? throw new ArgumentNullException(nameof(efExtensions));
         }
@@ -53,8 +59,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
             await new SnapshotWorkflowTeksToDksCommand(_loggerFactory.CreateLogger<SnapshotWorkflowTeksToDksCommand>(),
                 _utcDateTimeProvider,
                 new TransmissionRiskLevelCalculationMk2(),
-                _workflowDbContextProvider.CreateNew(),
-                _workflowDbContextProvider.CreateNew,
+                _workflowDbContext,
+                _workflowDbContext,
                 _dkSourceDbContextProvider.CreateNew,
                 _efExtensions,
                 new IDiagnosticKeyProcessor[] {
@@ -73,27 +79,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
 
             var luhnModNConfig = new LuhnModNConfig();
             var luhnModNGenerator = new LuhnModNGenerator(luhnModNConfig);
-
-            Func<TekReleaseWorkflowStateCreateV2> createWf = () =>
-                new TekReleaseWorkflowStateCreateV2(
-                    _workflowDbContextProvider.CreateNewWithTx(),
-                    _utcDateTimeProvider,
-                    _rng,
-                    new TekReleaseWorkflowTime(workflowConfigMock.Object),
-                    new RegisterSecretLoggingExtensionsV2(_loggerFactory.CreateLogger<RegisterSecretLoggingExtensionsV2>()),
-                        luhnModNConfig,
-                        luhnModNGenerator
-                    );
-
-            var gen = new GenerateTeksCommand(_rng, _workflowDbContextProvider.CreateNewWithTx, createWf);
+            
+            var gen = new GenerateTeksCommand(_workflowDbContext, _rng, _utcDateTimeProvider, new TekReleaseWorkflowTime(workflowConfigMock.Object), luhnModNConfig, luhnModNGenerator, _lf.CreateLogger<GenerateTeksCommand>());
             await gen.ExecuteAsync(new GenerateTeksCommandArgs { WorkflowCount = workflowCount, TekCountPerWorkflow = tekPerWorkflowCount });
 
-            if (workflowCount != _workflowDbContextProvider.CreateNew().KeyReleaseWorkflowStates.Count())
+            if (workflowCount != _workflowDbContext.KeyReleaseWorkflowStates.Count())
             {
                 throw new InvalidOperationException();
             }
 
-            if (workflowCount * tekPerWorkflowCount != _workflowDbContextProvider.CreateNew().TemporaryExposureKeys.Count())
+            if (workflowCount * tekPerWorkflowCount != _workflowDbContext.TemporaryExposureKeys.Count())
             {
                 throw new InvalidOperationException();
             }
@@ -101,7 +96,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
 
         public async Task AuthoriseAllWorkflowsAsync()
         {
-            var wfdb = _workflowDbContextProvider.CreateNew();
+            var wfdb = _workflowDbContext;
             foreach (var i in wfdb.KeyReleaseWorkflowStates)
             {
                 i.AuthorisedByCaregiver = _utcDateTimeProvider.Snapshot;

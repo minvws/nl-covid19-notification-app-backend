@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 x.GetRequiredService<IUtcDateTimeProvider>(),
                 x.GetRequiredService<ITransmissionRiskLevelCalculationMk2>(),
                 x.GetRequiredService<WorkflowDbContext>(),
-                x.GetRequiredService<Func<WorkflowDbContext>>(),
+                x.GetRequiredService<WorkflowDbContext>(),
                 x.GetRequiredService<Func<DkSourceDbContext>>(),
                 x.GetRequiredService<IWrappedEfExtensions>(),
                 new IDiagnosticKeyProcessor[]

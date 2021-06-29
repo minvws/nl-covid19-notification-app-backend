@@ -174,7 +174,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             _utcDateTimeProviderMock.Setup(x => x.Snapshot).Returns(new DateTime(2020, 11, 16, 15, 14, 13, DateTimeKind.Utc));
 
             var usableDkCount = await new WorkflowTestDataGenerator(
-                _workflowDbContextProvider,
+                _workflowDbContextProvider.CreateNew(),
                 _dkSourceDbContextProvider,
                 _efExtensions
             ).GenerateAndAuthoriseWorkflowsAsync();
@@ -207,7 +207,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             _utcDateTimeProviderMock.Setup(x => x.Snapshot).Returns(new DateTime(2020, 11, 16, 15, 14, 13, DateTimeKind.Utc));
 
             var usableDkCount = await new WorkflowTestDataGenerator(
-                _workflowDbContextProvider,
+                _workflowDbContextProvider.CreateNew(),
                 _dkSourceDbContextProvider,
                 _efExtensions
             ).GenerateAndAuthoriseWorkflowsAsync();

@@ -11,6 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
     public class TekEntity
     {
         public long Id { get; set; }
+        public long OwnerId { get; set; }
         public TekReleaseWorkflowStateEntity Owner { get; set; }
 
         [MinLength(UniversalConstants.DailyKeyDataByteCount), MaxLength(UniversalConstants.DailyKeyDataByteCount)]

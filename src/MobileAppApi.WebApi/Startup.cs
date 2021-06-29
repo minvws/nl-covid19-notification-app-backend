@@ -5,6 +5,8 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
@@ -28,19 +30,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
         private readonly bool _isDev;
 
-        public Startup(IWebHostEnvironment env)
+        public IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
+            Configuration = configuration;
             _isDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
 
             services.AddControllers();
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
+            //services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
+            services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
 
             services.AddScoped<HttpPostReleaseTeksCommand2>();
             services.AddScoped<HttpPostRegisterSecret>();

@@ -37,7 +37,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 {
     public abstract class EksEngineTests : IDisposable
     {
-        private readonly IWrappedEfExtensions _efExtensions;
         private readonly IDbProvider<WorkflowDbContext> _workflowDbProvider;
         private readonly IDbProvider<ContentDbContext> _contentDbProvider;
         private readonly IDbProvider<EksPublishingJobDbContext> _eksPublishingJobDbProvider;
@@ -57,7 +56,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
         {
             _lf = new LoggerFactory();
 
-            _efExtensions = efExtensions;
             _workflowDbProvider = workflowDbProvider;
             _dkSourceDbProvider = dkSourceDbProvider;
             _eksPublishingJobDbProvider = eksPublishingJobDbProvider;
@@ -80,9 +78,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 _dtp,
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowDbProvider.CreateNew(),
-                _workflowDbProvider.CreateNew,
+                _workflowDbProvider.CreateNew(),
                 _dkSourceDbProvider.CreateNew,
-                _efExtensions,
+                efExtensions,
                 new IDiagnosticKeyProcessor[] { }
             );
 
@@ -116,7 +114,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(countriesOut.Object),
                     new NlToEfgsDsosDiagnosticKeyProcessorMk1()}
                 ),
-                _efExtensions
+                efExtensions
                 );
 
             var jsonSerializer = new StandardJsonSerializer();
@@ -162,6 +160,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
         [ExclusivelyUses(nameof(EksEngineTests))]
         public async Task EmptySystemSingleTek()
         {
+            // Arrange
             var workflowConfig = new Mock<IWorkflowConfig>(MockBehavior.Strict);
             workflowConfig.Setup(x => x.TimeToLiveMinutes).Returns(24 * 60 * 60); //Approx
             workflowConfig.Setup(x => x.PermittedMobileDeviceClockErrorMinutes).Returns(30);
@@ -169,27 +168,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             var luhnModNConfig = new LuhnModNConfig();
             var luhnModNGenerator = new LuhnModNGenerator(luhnModNConfig);
 
-            Func<TekReleaseWorkflowStateCreateV2> createWf = () =>
-                new TekReleaseWorkflowStateCreateV2(
-                    _workflowDbProvider.CreateNewWithTx(),
-                    _dtp,
-                    _rng,
-                    new TekReleaseWorkflowTime(workflowConfig.Object),
-                    new RegisterSecretLoggingExtensionsV2(_lf.CreateLogger<RegisterSecretLoggingExtensionsV2>()),
-                    luhnModNConfig,
-                    luhnModNGenerator
-                );
-
-            await new GenerateTeksCommand(_rng, _workflowDbProvider.CreateNewWithTx, createWf).ExecuteAsync(new GenerateTeksCommandArgs { TekCountPerWorkflow = 1, WorkflowCount = 1 });
+            await new GenerateTeksCommand(_workflowDbProvider.CreateNew(), _rng, _dtp, new TekReleaseWorkflowTime(workflowConfig.Object), luhnModNConfig, luhnModNGenerator, _lf.CreateLogger<GenerateTeksCommand>()).ExecuteAsync(new GenerateTeksCommandArgs { TekCountPerWorkflow = 1, WorkflowCount = 1 });
 
             Assert.Equal(1, _workflowDbProvider.CreateNew().TemporaryExposureKeys.Count());
             Assert.Equal(0, _dkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
 
+            // Act
             await _snapshot.ExecuteAsync(); //Too soon to publish TEKs
             await _eksJob.ExecuteAsync();
             await _manifestJob.ExecuteAllAsync();
             await _resign.ExecuteAsync();
 
+            // Assert
             Assert.Equal(1, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV2));
             Assert.Equal(0, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2));
             //Obsolete - replace with raw content

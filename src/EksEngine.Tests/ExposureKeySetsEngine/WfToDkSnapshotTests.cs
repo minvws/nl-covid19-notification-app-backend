@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 _dateTimeProvider.Object,
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowDbProvider.CreateNew(),
-                _workflowDbProvider.CreateNew,
+                _workflowDbProvider.CreateNew(),
                 _dkSourceDbProvider.CreateNew,
                 _efExtensions,
                 new IDiagnosticKeyProcessor[0]

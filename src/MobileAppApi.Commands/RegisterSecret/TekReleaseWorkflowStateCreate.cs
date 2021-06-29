@@ -45,22 +45,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 
         public async Task<TekReleaseWorkflowStateEntity> ExecuteAsync()
         {
-            var entity = await BuildEntityAndAddToContextAsync();
+            var entity = new TekReleaseWorkflowStateEntity
+            {
+                Created = _dateTimeProvider.Snapshot.Date,
+                ValidUntil = _workflowTime.Expiry(_dateTimeProvider.Snapshot),
+                LabConfirmationId = _labConfirmationIdService.Next(),
+                BucketId = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount),
+                ConfirmationKey = _numberGenerator.NextByteArray(UniversalConstants.ConfirmationKeyByteCount)
+            };
 
             _logger.WriteWritingStart();
 
-            var success = TryGenerateRemainingFieldsAndWriteToDb(entity);
+            var success = await BuildEntityAndAddToContextAsync(entity);
             while (!success)
             {
-                _workflowDbContext.BeginTransaction();
-                entity = await BuildEntityAndAddToContextAsync();
-                success = TryGenerateRemainingFieldsAndWriteToDb(entity);
+                success = await BuildEntityAndAddToContextAsync(entity);
             }
 
             return entity;
         }
 
-        private bool TryGenerateRemainingFieldsAndWriteToDb(TekReleaseWorkflowStateEntity item)
+        private async Task<bool> BuildEntityAndAddToContextAsync(TekReleaseWorkflowStateEntity entity)
         {
             if (++_attemptCount > AttemptCountMax)
             {
@@ -73,27 +78,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
                 _logger.WriteDuplicatesFound(_attemptCount);
             }
 
-            item.LabConfirmationId = _labConfirmationIdService.Next();
-            item.BucketId = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount);
-            item.ConfirmationKey = _numberGenerator.NextByteArray(UniversalConstants.ConfirmationKeyByteCount);
+            _workflowDbContext.BeginTransaction();
 
             try
             {
+                await _workflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
+
                 _workflowDbContext.SaveAndCommit();
                 _logger.WriteCommitted();
                 return true;
             }
             catch (DbUpdateException ex)
             {
-                _workflowDbContext.Database.CurrentTransaction.RollbackAsync();
-                _workflowDbContext.Remove(item);
+                await _workflowDbContext.Database.CurrentTransaction.RollbackAsync();
+                _workflowDbContext.KeyReleaseWorkflowStates.Remove(entity);
 
                 if (CanRetry(ex))
                 {
                     return false;
                 }
-
-                throw;
+                return false;
+                //throw;
             }
         }
 
@@ -117,20 +122,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
                     || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.ConfirmationKey))
                     || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.BucketId)))
             );
-
-        }
-
-        private async Task<TekReleaseWorkflowStateEntity> BuildEntityAndAddToContextAsync()
-        {
-            var entity = new TekReleaseWorkflowStateEntity
-            {
-                Created = _dateTimeProvider.Snapshot.Date,
-                ValidUntil = _workflowTime.Expiry(_dateTimeProvider.Snapshot)
-            };
-
-            await _workflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
-
-            return entity;
         }
     }
 }
