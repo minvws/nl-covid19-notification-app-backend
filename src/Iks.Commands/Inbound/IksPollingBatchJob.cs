@@ -43,36 +43,80 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             var downloadCount = 0;
             var lastWrittenBatchTag = jobInfo.LastBatchTag;
 
+            // Set date to a default of today.
+            // Either we continue where we left off, or we grab as many batches as allowed
+            // (i.e., a few days worth back from today)
             var date = _dateTimeProvider.Snapshot.Date;
             var batchTagDatePart = lastWrittenBatchTag.Split("-").FirstOrDefault();
 
             if (!string.IsNullOrEmpty(batchTagDatePart))
             {
                 // All is good, start requesting batch from where we left off.
+                // The date and the batchTag's creation date need to be the same,
+                // otherwise EFGS will return a HTTP status 404.
                 date = DateTime.ParseExact(batchTagDatePart, "yyyyMMdd", null);
             }
             else
             {
-                // If lastWrittenBatchTag is somehow unusable, go as far back as allowed,
-                // and don't send the batchTag to EFGS.
+                // If lastWrittenBatchTag is somehow unusable or unavailable,
+                // go as far back as allowed and don't send a batchTag to EFGS.
                 date = date.AddDays(_efgsConfig.DaysToDownload * -1);
                 lastWrittenBatchTag = string.Empty;
             }
 
-            // If we have a batchTag, we will request that batch from EFGS.
-            // The date parameter will then be used by EFGS to compare against the "created" date of the provided batchTag's batch.
-            // EFGS will return a 404 if those 2 dates do not match.
+            // If we have a batchTag, we will re-request that batch from EFGS to start our run.
 
             // If we do not have a batchTag (it is null or empty), the first batch of the date requested will be returned by EFGS.
-            // We may already have that first batch, but we may not have the next batches.
+            // We may already have some of that requested date's batches,
+            // but we may not have all its batches or batches from the subsequent days.
 
             var result = await _receiverFactory().ExecuteAsync(date, lastWrittenBatchTag);
+            downloadCount++;
 
-            while (result != null && downloadCount < _efgsConfig.MaxBatchesPerRun)
+            while (result != null && downloadCount <= _efgsConfig.MaxBatchesPerRun)
             {
-                // If we haven't already received the current batchTag, process it
-                if (!_iksInDbContext.Received.Any(x => x.BatchTag == result.BatchTag))
+                // If we've already previously processed the current batchTag:
+                // move on to the next batch if available, otherwise move on to the next date if possible, or stop.
+                if (_iksInDbContext.Received.Any(x => x.BatchTag == result.BatchTag))
                 {
+                    _logger.WriteBatchAlreadyProcessed(result.BatchTag);
+
+                    if (!string.IsNullOrEmpty(result.NextBatchTag))
+                    {
+                        _logger.WriteNextBatchFound(result.NextBatchTag);
+                        _logger.WriteBatchProcessedInNextLoop(result.NextBatchTag);
+
+                        result = await _receiverFactory().ExecuteAsync(date, result.NextBatchTag);
+                        downloadCount++;
+                    }
+                    else
+                    {
+                        // No next batch available, we're done for lastWrittenBatchTag's day's set of batches.
+                        _logger.WriteNoNextBatch();
+
+                        // Check if we can move on to a possible next day's worth of batches,
+                        // now that this current set of batches is finished.
+                        // Don't move past today though :)
+                        if (date < _dateTimeProvider.Snapshot.Date)
+                        {
+                            _logger.WriteMovingToNextDay();
+                            date = date.AddDays(1);
+                            result = await _receiverFactory().ExecuteAsync(date, string.Empty);
+                            downloadCount++;
+                        }
+                        else
+                        {
+                            // No more days with batches available, we're done.
+                            _logger.WriteNoNextBatchNoMoreDays();
+                            result = null;
+                        }
+                    }
+                }
+                else
+                {
+                    // If we haven't already received the current batchTag, process it
+                    _logger.WriteProcessingData(date, result.BatchTag);
+
                     try
                     {
                         await WriteSingleBatchAsync(result.BatchTag, result.Content);
@@ -80,26 +124,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                     }
                     catch (Exception e)
                     {
-                        // TODO: check if we want to handle the specific exceptions
                         _logger.WriteEfgsError(e);
+                        result = null;
                     }
                 }
 
-                // Now move on to the next batch, or stop.
-                if (!string.IsNullOrEmpty(result.NextBatchTag))
+                // Log this for informational purposes only
+                if (downloadCount > _efgsConfig.MaxBatchesPerRun)
                 {
-                    result = await _receiverFactory().ExecuteAsync(date, result.NextBatchTag);
-                    downloadCount++;
-                }
-                else
-                {
-                    // No next batch available, we're done: end the loop.
-                    result = null;
+                    _logger.WriteBatchMaximumReached(downloadCount);
                 }
             }
 
-            // Update IksInJob
+            // Update IksInJob:
+            // Keep track of the last batch we wrote to the database
             jobInfo.LastBatchTag = lastWrittenBatchTag;
+            // And keep track of the last time this job was run
             jobInfo.LastRun = _dateTimeProvider.Snapshot.Date;
 
             // Persist updated jobinfo to database.
