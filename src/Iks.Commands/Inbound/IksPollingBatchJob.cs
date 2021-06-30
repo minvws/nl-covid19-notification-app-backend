@@ -121,6 +121,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                     {
                         await WriteSingleBatchAsync(result.BatchTag, result.Content);
                         lastWrittenBatchTag = result.BatchTag;
+                        await UpdateJobInfoAsync(jobInfo, lastWrittenBatchTag);
                     }
                     catch (Exception e)
                     {
@@ -129,14 +130,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                     }
                 }
 
-                // Log this for informational purposes only
+                // Log this for informational purposes
                 if (downloadCount > _efgsConfig.MaxBatchesPerRun)
                 {
                     _logger.WriteBatchMaximumReached(downloadCount);
                 }
             }
 
-            // Update IksInJob:
+            await UpdateJobInfoAsync(jobInfo, lastWrittenBatchTag);
+        }
+
+        private async Task UpdateJobInfoAsync(IksInJobEntity jobInfo, string lastWrittenBatchTag)
+        {
             // Keep track of the last batch we wrote to the database
             jobInfo.LastBatchTag = lastWrittenBatchTag;
             // And keep track of the last time this job was run
