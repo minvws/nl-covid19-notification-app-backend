@@ -9,7 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
     /// <summary>
     /// Stub for my config
     /// </summary>
-    class EfgsConfig : IEfgsConfig
+    class EfgsConfigMock : IEfgsConfig
     {
         public string BaseUrl => "";
         public bool SendClientAuthenticationHeaders => true;

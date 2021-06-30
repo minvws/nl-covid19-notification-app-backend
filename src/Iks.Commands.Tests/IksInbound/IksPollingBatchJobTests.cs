@@ -51,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             // Assemble: create the job to be tested
             var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _iksInDbProvider.CreateNew(), new EfgsConfig(), logger);
+                _iksInDbProvider.CreateNew(), new EfgsConfigMock(), logger);
 
             // Act
             await sut.ExecuteAsync();
@@ -89,7 +89,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             // Assemble: create the job to be tested
             var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _iksInDbProvider.CreateNew(), new EfgsConfig(), logger);
+                _iksInDbProvider.CreateNew(), new EfgsConfigMock(), logger);
 
             // Act
             await sut.ExecuteAsync();
@@ -127,7 +127,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             // Assemble: create the job to be tested
             var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _iksInDbProvider.CreateNew(), new EfgsConfig(), logger);
+                _iksInDbProvider.CreateNew(), new EfgsConfigMock(), logger);
 
             // Act
             await sut.ExecuteAsync();
@@ -190,7 +190,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             // Assemble: create the job to be tested
             var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _iksInDbProvider.CreateNew(), new EfgsConfig(), logger);
+                _iksInDbProvider.CreateNew(), new EfgsConfigMock(), logger);
 
             // Act
             await sut.ExecuteAsync();
@@ -230,7 +230,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             // Assemble: create the job to be tested
             var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _iksInDbProvider.CreateNew(), new EfgsConfig(), logger);
+                _iksInDbProvider.CreateNew(), new EfgsConfigMock(), logger);
 
             // Act - process files for FIRST day
             await sut.ExecuteAsync();
