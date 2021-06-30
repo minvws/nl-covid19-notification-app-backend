@@ -136,8 +136,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                     _logger.WriteBatchMaximumReached(downloadCount);
                 }
             }
-
-            await UpdateJobInfoAsync(jobInfo, lastWrittenBatchTag);
         }
 
         private async Task UpdateJobInfoAsync(IksInJobEntity jobInfo, string lastWrittenBatchTag)
