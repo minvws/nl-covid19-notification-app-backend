@@ -75,46 +75,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
             while (result != null && downloadCount <= _efgsConfig.MaxBatchesPerRun)
             {
-                // If we've already previously processed the current batchTag:
-                // move on to the next batch if available, otherwise move on to the next date if possible, or stop.
-                if (_iksInDbContext.Received.Any(x => x.BatchTag == result.BatchTag))
+                // If we haven't already received the current batchTag, process it
+                if (!_iksInDbContext.Received.Any(x => x.BatchTag == result.BatchTag))
                 {
-                    _logger.WriteBatchAlreadyProcessed(result.BatchTag);
-
-                    if (!string.IsNullOrEmpty(result.NextBatchTag))
-                    {
-                        _logger.WriteNextBatchFound(result.NextBatchTag);
-                        _logger.WriteBatchProcessedInNextLoop(result.NextBatchTag);
-
-                        result = await _receiverFactory().ExecuteAsync(date, result.NextBatchTag);
-                        downloadCount++;
-                    }
-                    else
-                    {
-                        // No next batch available, we're done for lastWrittenBatchTag's day's set of batches.
-                        _logger.WriteNoNextBatch();
-
-                        // Check if we can move on to a possible next day's worth of batches,
-                        // now that this current set of batches is finished.
-                        // Don't move past today though :)
-                        if (date < _dateTimeProvider.Snapshot.Date)
-                        {
-                            _logger.WriteMovingToNextDay();
-                            date = date.AddDays(1);
-                            result = await _receiverFactory().ExecuteAsync(date, string.Empty);
-                            downloadCount++;
-                        }
-                        else
-                        {
-                            // No more days with batches available, we're done.
-                            _logger.WriteNoNextBatchNoMoreDays();
-                            result = null;
-                        }
-                    }
-                }
-                else
-                {
-                    // If we haven't already received the current batchTag, process it
                     _logger.WriteProcessingData(date, result.BatchTag);
 
                     try
@@ -126,6 +89,41 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                     catch (Exception e)
                     {
                         _logger.WriteEfgsError(e);
+                    }
+                }
+                else
+                {
+                    _logger.WriteBatchAlreadyProcessed(result.BatchTag);
+                }
+
+                // Move on to the next batchTag
+                if (!string.IsNullOrEmpty(result.NextBatchTag))
+                {
+                    _logger.WriteNextBatchFound(result.NextBatchTag);
+                    _logger.WriteBatchProcessedInNextLoop(result.NextBatchTag);
+
+                    result = await _receiverFactory().ExecuteAsync(date, result.NextBatchTag);
+                    downloadCount++;
+                }
+                else
+                {
+                    // No next batch available, we're done for lastWrittenBatchTag's day's set of batches.
+                    _logger.WriteNoNextBatch();
+
+                    // Check if we can move on to a possible next day's worth of batches,
+                    // now that this current set of batches is finished.
+                    // Don't move past today though :)
+                    if (date < _dateTimeProvider.Snapshot.Date)
+                    {
+                        _logger.WriteMovingToNextDay();
+                        date = date.AddDays(1);
+                        result = await _receiverFactory().ExecuteAsync(date, string.Empty);
+                        downloadCount++;
+                    }
+                    else
+                    {
+                        // No more days with batches available, we're done.
+                        _logger.WriteNoNextBatchNoMoreDays();
                         result = null;
                     }
                 }
