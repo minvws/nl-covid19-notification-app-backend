@@ -70,9 +70,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
                 logger.LogInformation("IksImport is disabled; Iks files will not be processed.");
             }
 
-            var c25 = serviceProvider.GetService<RemoveLocalDuplicateDiagnosisKeysCommand>();
-            run.Add(() => c25.ExecuteAsync().GetAwaiter().GetResult());
-
             var c30 = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
             run.Add(() => c30.ExecuteAsync().GetAwaiter().GetResult());
 
