@@ -37,6 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         private const int NoNextBatch = Base + 18;
         private const int NextBatchFound = Base + 19;
         private const int NoNextBatchNoNextDay = Base + 20;
+        private const int RequestingData = Base + 21;
 
         private readonly ILogger _logger;
 
@@ -56,6 +57,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             _logger.LogInformation("[{name}/{id}] Processing data for {date}, batch {batchTag}",
                 Name, ProcessingData,
                 date, batchtag);
+        }
+
+        public void WriteRequestingData(DateTime date, string batchTag)
+        {
+            _logger.LogInformation("[{name}/{id}] Requesting data from EFGS for {date}, batch {batchTag}",
+                Name, RequestingData,
+                date, batchTag);
         }
 
         public void WriteRequest(HttpRequestMessage requestMessage)

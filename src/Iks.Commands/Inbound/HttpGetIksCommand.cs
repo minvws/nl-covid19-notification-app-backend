@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
         public async Task<HttpGetIksSuccessResult> ExecuteAsync(DateTime date, string batchTag)
         {
-            _logger.WriteProcessingData(date, batchTag);
+            _logger.WriteRequestingData(date, batchTag);
 
             var uri = new Uri($"{_efgsConfig.BaseUrl}/diagnosiskeys/download/{date:yyyy-MM-dd}");
 
