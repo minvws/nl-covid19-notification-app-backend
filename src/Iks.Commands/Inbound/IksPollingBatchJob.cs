@@ -141,7 +141,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             // Keep track of the last batch we wrote to the database
             jobInfo.LastBatchTag = lastWrittenBatchTag;
             // And keep track of the last time this job was run
-            jobInfo.LastRun = _dateTimeProvider.Snapshot.Date;
+            jobInfo.LastRun = _dateTimeProvider.Snapshot;
 
             // Persist updated jobinfo to database.
             await _iksInDbContext.SaveChangesAsync();
