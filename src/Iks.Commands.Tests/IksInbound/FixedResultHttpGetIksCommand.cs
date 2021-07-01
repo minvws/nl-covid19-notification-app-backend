@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
     /// IHttpGetIksCommand which returns the provided results in order.
     /// Use for tests.
     /// </summary>
-    internal class FixedResultHttpGetIksCommand : IiHttpGetIksCommand
+    internal class FixedResultHttpGetIksCommand : IHttpGetIksCommand
     {
         private const string DateFormatString = "yyyyMMdd";
         private readonly Dictionary<string, List<HttpGetIksSuccessResult>> _responses;
@@ -22,14 +22,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
         public static FixedResultHttpGetIksCommand Create(List<HttpGetIksSuccessResult> responses)
         {
-            return Create(responses, DateTime.Now);
+
+            //TODO don't map response to dates, just map responses to batchTags
+
+            return Create(responses, DateTime.Now.Date.ToString("yyyyMMdd"));
         }
 
-        public static FixedResultHttpGetIksCommand Create(List<HttpGetIksSuccessResult> responses, DateTime date)
+        public static FixedResultHttpGetIksCommand Create(List<HttpGetIksSuccessResult> responses, string batchTag)
         {
             return new FixedResultHttpGetIksCommand(new Dictionary<string, List<HttpGetIksSuccessResult>>
             {
-                {date.ToString(DateFormatString), responses}
+                {batchTag, responses}
             });
         }
 
@@ -67,10 +70,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             AddItem(item, DateTime.Now);
         }
 
-        public Task<HttpGetIksSuccessResult> ExecuteAsync(string batchTag, DateTime date)
+        public Task<HttpGetIksSuccessResult> ExecuteAsync(DateTime date, string batchTag = null)
         {
             HttpGetIksSuccessResult result = null;
             var dateString = date.ToString(DateFormatString);
+
+            //TODO: If batchTag is null, return the first batch from date; otherwise get the batch matching batchTag
 
             if (_callIndexes.ContainsKey(dateString) && _callIndexes[dateString] < _responses[dateString].Count)
             {

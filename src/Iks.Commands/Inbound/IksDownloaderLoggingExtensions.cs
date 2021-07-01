@@ -36,6 +36,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         private const int MovingToNextDay = Base + 17;
         private const int NoNextBatch = Base + 18;
         private const int NextBatchFound = Base + 19;
+        private const int NoNextBatchNoNextDay = Base + 20;
+        private const int RequestingData = Base + 21;
 
         private readonly ILogger _logger;
 
@@ -55,6 +57,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             _logger.LogInformation("[{name}/{id}] Processing data for {date}, batch {batchTag}",
                 Name, ProcessingData,
                 date, batchtag);
+        }
+
+        public void WriteRequestingData(DateTime date, string batchTag)
+        {
+            _logger.LogInformation("[{name}/{id}] Requesting data from EFGS for {date}, batch {batchTag}",
+                Name, RequestingData,
+                date, batchTag);
         }
 
         public void WriteRequest(HttpRequestMessage requestMessage)
@@ -173,7 +182,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
         public void WriteNoNextBatch()
         {
-            _logger.LogInformation("[{name}/{id}] No next batch, so: ending.",
+            _logger.LogInformation("[{name}/{id}] No next batch, so: ending this day.",
                 Name, NoNextBatch);
         }
 
@@ -182,6 +191,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             _logger.LogInformation("[{name}/{id}] We have a nextBatch with value {NextBatchTag} so we keep going.",
                 Name, NextBatchFound,
                 nextBatchTag);
+        }
+
+        public void WriteNoNextBatchNoMoreDays()
+        {
+            _logger.LogInformation("[{name}/{id}] No next batch, no more available days, so: ending.",
+            Name, NoNextBatchNoNextDay);
         }
 
     }
