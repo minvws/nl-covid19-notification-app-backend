@@ -131,7 +131,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 // Log this for informational purposes
                 if (downloadCount > _efgsConfig.MaxBatchesPerRun)
                 {
-                    _logger.WriteBatchMaximumReached(downloadCount);
+                    _logger.WriteBatchMaximumReached(_efgsConfig.MaxBatchesPerRun);
                 }
             }
         }
