@@ -40,16 +40,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 throw new ArgumentNullException(nameof(httpContext));
             }
 
-            if (!ContentTypes.IsValid(type))
+            if (!_publishingIdService.Validate(id))
             {
-                _logger.WriteInvalidType(id);
+                _logger.WriteInvalidId(id);
                 httpContext.Response.StatusCode = 400;
                 httpContext.Response.ContentLength = 0;
             }
 
-            if (!_publishingIdService.Validate(id))
+            if (!ContentTypes.IsValid(type))
             {
-                _logger.WriteInvalidId(id);
+                _logger.WriteInvalidType(id);
                 httpContext.Response.StatusCode = 400;
                 httpContext.Response.ContentLength = 0;
             }

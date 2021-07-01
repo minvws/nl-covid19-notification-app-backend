@@ -12,7 +12,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 {
-    public class HttpGetIksCommand : IiHttpGetIksCommand
+    public class HttpGetIksCommand : IHttpGetIksCommand
     {
 
         const string ApplicationProtobuf = "application/protobuf; version=1.0";
@@ -28,9 +28,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<HttpGetIksSuccessResult> ExecuteAsync(string batchTag, DateTime date)
+        public async Task<HttpGetIksSuccessResult> ExecuteAsync(DateTime date, string batchTag)
         {
-            _logger.WriteProcessingData(date, batchTag);
+            _logger.WriteRequestingData(date, batchTag);
 
             var uri = new Uri($"{_efgsConfig.BaseUrl}/diagnosiskeys/download/{date:yyyy-MM-dd}");
 
@@ -50,6 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 // Build the request
                 var request = new HttpRequestMessage { RequestUri = uri };
                 request.Headers.Add("Accept", ApplicationProtobuf);
+
                 if (!string.IsNullOrWhiteSpace(batchTag))
                 {
                     request.Headers.Add("batchTag", batchTag);
