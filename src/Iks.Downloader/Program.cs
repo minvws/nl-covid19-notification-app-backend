@@ -4,6 +4,7 @@
 
 using System;
 using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -52,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
-            services.AddTransient(x => x.CreateDbContext(y => new IksInDbContext(y), DatabaseConnectionStringNames.IksIn, false));
+            services.AddDbContext<IksInDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksIn)));
 
             services.AddSingleton<IEfgsConfig, EfgsConfig>();
             services.AddTransient<IHttpGetIksCommand, HttpGetIksCommand>();

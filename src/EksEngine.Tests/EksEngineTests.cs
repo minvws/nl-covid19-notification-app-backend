@@ -2,19 +2,22 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
@@ -35,12 +38,12 @@ using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 {
-    public abstract class EksEngineTests : IDisposable
+    public abstract class EksEngineTests
     {
-        private readonly IDbProvider<WorkflowDbContext> _workflowDbProvider;
-        private readonly IDbProvider<ContentDbContext> _contentDbProvider;
-        private readonly IDbProvider<EksPublishingJobDbContext> _eksPublishingJobDbProvider;
-        private readonly IDbProvider<DkSourceDbContext> _dkSourceDbProvider;
+        private readonly WorkflowDbContext _workflowContext;
+        private readonly DkSourceDbContext _dkSourceContext;
+        private readonly EksPublishingJobDbContext _eksPublishingJobContext;
+        private readonly ContentDbContext _contentDbContext;
 
         private readonly IUtcDateTimeProvider _dtp = new StandardUtcDateTimeProvider();
 
@@ -52,14 +55,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
         private readonly NlContentResignExistingV1ContentCommand _resign;
         private readonly StandardRandomNumberGenerator _rng;
 
-        public EksEngineTests(IDbProvider<WorkflowDbContext> workflowDbProvider, IDbProvider<DkSourceDbContext> dkSourceDbProvider, IDbProvider<EksPublishingJobDbContext> eksPublishingJobDbProvider, IDbProvider<ContentDbContext> contentDbProvider, IWrappedEfExtensions efExtensions)
+        public EksEngineTests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions, DbContextOptions<EksPublishingJobDbContext> eksPublishingJobDbContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions, IWrappedEfExtensions efExtensions)
         {
             _lf = new LoggerFactory();
 
-            _workflowDbProvider = workflowDbProvider;
-            _dkSourceDbProvider = dkSourceDbProvider;
-            _eksPublishingJobDbProvider = eksPublishingJobDbProvider;
-            _contentDbProvider = contentDbProvider;
+            _workflowContext = new WorkflowDbContext(workflowContextOptions);
+            _workflowContext.Database.EnsureCreated();
+            _dkSourceContext = new DkSourceDbContext(dkSourceContextOptions);
+            _dkSourceContext.Database.EnsureCreated();
+            _eksPublishingJobContext = new EksPublishingJobDbContext(eksPublishingJobDbContextOptions);
+            _eksPublishingJobContext.Database.EnsureCreated();
+            _contentDbContext = new ContentDbContext(contentDbContextOptions);
+            _contentDbContext.Database.EnsureCreated();
 
             // Configuration
             var eksHeaderConfig = new Mock<IEksHeaderInfoConfig>(MockBehavior.Strict);
@@ -77,9 +84,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 _lf.CreateLogger<SnapshotWorkflowTeksToDksCommand>(),
                 _dtp,
                 new TransmissionRiskLevelCalculationMk2(),
-                _workflowDbProvider.CreateNew(),
-                _workflowDbProvider.CreateNew(),
-                _dkSourceDbProvider.CreateNew,
+                _workflowContext,
+                _dkSourceContext,
                 efExtensions,
                 new IDiagnosticKeyProcessor[] { }
             );
@@ -92,12 +98,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 new EksBuilderV1(eksHeaderConfig.Object, gaSigner.Object, nlSigner.Object, _dtp, new GeneratedProtobufEksContentFormatter(),
                     new EksBuilderV1LoggingExtensions(_lf.CreateLogger<EksBuilderV1LoggingExtensions>())
                     ),
-                _eksPublishingJobDbProvider.CreateNew,
+                _eksPublishingJobContext,
                 _dtp,
                 new EksEngineLoggingExtensions(_lf.CreateLogger<EksEngineLoggingExtensions>()),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(), _rng, _dtp, eksConfig.Object),
-                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new TestLogger<SnapshotLoggingExtensions>()), _dkSourceDbProvider.CreateNew(), _eksPublishingJobDbProvider.CreateNew,
-                    new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
+                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new TestLogger<SnapshotLoggingExtensions>()), _dkSourceContext, _eksPublishingJobContext, new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
                         {
                             InfectiousPeriodType.Symptomatic,
                             new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
@@ -107,9 +112,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                             new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
                         }
                     })),
-                new MarkDiagnosisKeysAsUsedLocally(_dkSourceDbProvider.CreateNew, eksConfig.Object, _eksPublishingJobDbProvider.CreateNew, _lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
-                new EksJobContentWriter(_contentDbProvider.CreateNew, _eksPublishingJobDbProvider.CreateNew, new Sha256HexPublishingIdService(), new EksJobContentWriterLoggingExtensions(_lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
-                new WriteStuffingToDiagnosisKeys(_dkSourceDbProvider.CreateNew(), _eksPublishingJobDbProvider.CreateNew(),
+                new MarkDiagnosisKeysAsUsedLocally(_dkSourceContext, eksConfig.Object, _eksPublishingJobContext, _lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
+                new EksJobContentWriter(_contentDbContext, _eksPublishingJobContext, new Sha256HexPublishingIdService(), new EksJobContentWriterLoggingExtensions(_lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
+                new WriteStuffingToDiagnosisKeys(_dkSourceContext, _eksPublishingJobContext,
                 new IDiagnosticKeyProcessor[] {
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(countriesOut.Object),
                     new NlToEfgsDsosDiagnosticKeyProcessorMk1()}
@@ -119,10 +124,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 
             var jsonSerializer = new StandardJsonSerializer();
             _manifestJob = new ManifestUpdateCommand(
-                new ManifestV2Builder(_contentDbProvider.CreateNew(), eksConfig.Object, _dtp),
-                new ManifestV3Builder(_contentDbProvider.CreateNew(), eksConfig.Object, _dtp),
-                new ManifestV4Builder(_contentDbProvider.CreateNew(), eksConfig.Object, _dtp),
-                _contentDbProvider.CreateNew,
+                new ManifestV2Builder(_contentDbContext, eksConfig.Object, _dtp),
+                new ManifestV3Builder(_contentDbContext, eksConfig.Object, _dtp),
+                new ManifestV4Builder(_contentDbContext, eksConfig.Object, _dtp),
+                _contentDbContext,
                 new ManifestUpdateCommandLoggingExtensions(_lf.CreateLogger<ManifestUpdateCommandLoggingExtensions>()),
                 _dtp,
                 jsonSerializer,
@@ -131,29 +136,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 
             var thumbprintConfig = new Mock<IThumbprintConfig>(MockBehavior.Strict);
             _resign = new NlContentResignExistingV1ContentCommand(
-                new NlContentResignCommand(_contentDbProvider.CreateNew, nlSigner.Object, new ResignerLoggingExtensions(_lf.CreateLogger<ResignerLoggingExtensions>())));
+                new NlContentResignCommand(_contentDbContext, nlSigner.Object, new ResignerLoggingExtensions(_lf.CreateLogger<ResignerLoggingExtensions>())));
         }
 
         [Fact]
         [ExclusivelyUses(nameof(EksEngineTests))]
         public async Task EmptySystemNoTeks()
         {
-            Assert.Equal(0, _workflowDbProvider.CreateNew().TemporaryExposureKeys.Count());
-            Assert.Equal(0, _dkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
+            // Arrange
+            await _workflowContext.BulkDeleteAsync(_workflowContext.KeyReleaseWorkflowStates.ToList());
+            await _dkSourceContext.TruncateAsync<DiagnosisKeyEntity>();
 
+            Assert.Equal(0, _workflowContext.TemporaryExposureKeys.Count());
+            Assert.Equal(0, _dkSourceContext.DiagnosisKeys.Count());
+
+            // Act
             await _snapshot.ExecuteAsync();
             await _eksJob.ExecuteAsync();
             await _manifestJob.ExecuteAllAsync();
             await _resign.ExecuteAsync();
 
-            Assert.Equal(1, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV2));
-            Assert.Equal(0, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2));
+            // Assert
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
+            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2));
             //Obsolete - replace with raw content
-            Assert.Equal(0, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet));
-            Assert.Equal(0, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.Manifest));
+            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet));
+            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.Manifest));
 
-            Assert.Equal(0, _workflowDbProvider.CreateNew().TemporaryExposureKeys.Count());
-            Assert.Equal(0, _dkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
+            Assert.Equal(0, _workflowContext.TemporaryExposureKeys.Count());
+            Assert.Equal(0, _dkSourceContext.DiagnosisKeys.Count());
         }
 
         [Fact]
@@ -161,6 +172,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
         public async Task EmptySystemSingleTek()
         {
             // Arrange
+            await _workflowContext.BulkDeleteAsync(_workflowContext.KeyReleaseWorkflowStates.ToList());
+            await _dkSourceContext.TruncateAsync<DiagnosisKeyEntity>();
+            await _contentDbContext.TruncateAsync<ContentEntity>();
+
             var workflowConfig = new Mock<IWorkflowConfig>(MockBehavior.Strict);
             workflowConfig.Setup(x => x.TimeToLiveMinutes).Returns(24 * 60 * 60); //Approx
             workflowConfig.Setup(x => x.PermittedMobileDeviceClockErrorMinutes).Returns(30);
@@ -168,10 +183,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             var luhnModNConfig = new LuhnModNConfig();
             var luhnModNGenerator = new LuhnModNGenerator(luhnModNConfig);
 
-            await new GenerateTeksCommand(_workflowDbProvider.CreateNew(), _rng, _dtp, new TekReleaseWorkflowTime(workflowConfig.Object), luhnModNConfig, luhnModNGenerator, _lf.CreateLogger<GenerateTeksCommand>()).ExecuteAsync(new GenerateTeksCommandArgs { TekCountPerWorkflow = 1, WorkflowCount = 1 });
+            await new GenerateTeksCommand(_workflowContext, _rng, _dtp, new TekReleaseWorkflowTime(workflowConfig.Object), luhnModNConfig, luhnModNGenerator, _lf.CreateLogger<GenerateTeksCommand>()).ExecuteAsync(new GenerateTeksCommandArgs { TekCountPerWorkflow = 1, WorkflowCount = 1 });
 
-            Assert.Equal(1, _workflowDbProvider.CreateNew().TemporaryExposureKeys.Count());
-            Assert.Equal(0, _dkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
+            Assert.Equal(1, _workflowContext.TemporaryExposureKeys.Count());
+            Assert.Equal(0, _dkSourceContext.DiagnosisKeys.Count());
 
             // Act
             await _snapshot.ExecuteAsync(); //Too soon to publish TEKs
@@ -180,19 +195,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             await _resign.ExecuteAsync();
 
             // Assert
-            Assert.Equal(1, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV2));
-            Assert.Equal(0, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
+            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2));
             //Obsolete - replace with raw content
-            Assert.Equal(0, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ExposureKeySet));
-            Assert.Equal(0, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.Manifest));
-        }
-
-        public void Dispose()
-        {
-            _workflowDbProvider.Dispose();
-            _contentDbProvider.Dispose();
-            _eksPublishingJobDbProvider.Dispose();
-            _dkSourceDbProvider.Dispose();
+            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet));
+            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.Manifest));
         }
     }
 }

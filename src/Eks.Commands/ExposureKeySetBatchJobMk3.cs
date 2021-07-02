@@ -47,13 +47,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private bool _fired;
         private readonly Stopwatch _buildEksStopwatch = new Stopwatch();
-        private readonly Func<EksPublishingJobDbContext> _publishingDbContextFac;
+        private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
 
-        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, Func<EksPublishingJobDbContext> publishingDbContextFac, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys, IWrappedEfExtensions sqlCommands)
+        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, EksPublishingJobDbContext eksPublishingJobDbContext, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys, IWrappedEfExtensions sqlCommands)
         {
             _eksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
             _setBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
-            _publishingDbContextFac = publishingDbContextFac ?? throw new ArgumentNullException(nameof(publishingDbContextFac));
+            _eksPublishingJobDbContext = eksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContext));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _eksStuffingGenerator = eksStuffingGenerator ?? throw new ArgumentNullException(nameof(eksStuffingGenerator));
             _snapshotter = snapshotter;
@@ -116,17 +116,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private async Task<int> GetTransmissionRiskNoneCountAsync()
         {
-            await using var dbc = _publishingDbContextFac();
-            return dbc.EksInput.Count(x => x.TransmissionRiskLevel == TransmissionRiskLevel.None);
+            return _eksPublishingJobDbContext.EksInput.Count(x => x.TransmissionRiskLevel == TransmissionRiskLevel.None);
         }
 
         private async Task ClearJobTablesAsync()
         {
             _logger.WriteCleartables();
 
-            var dbc = _publishingDbContextFac();
-            await _sqlCommands.TruncateTableAsync(dbc, TableNames.EksEngineInput);
-            await _sqlCommands.TruncateTableAsync(dbc, TableNames.EksEngineOutput);
+            await _sqlCommands.TruncateTableAsync(_eksPublishingJobDbContext, TableNames.EksEngineInput);
+            await _sqlCommands.TruncateTableAsync(_eksPublishingJobDbContext, TableNames.EksEngineOutput);
         }
 
         private async Task StuffAsync()
@@ -137,8 +135,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 return;
             }
 
-            await using var dbc = _publishingDbContextFac();
-            var tekCount = dbc.EksInput.Count(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None);
+            var tekCount = _eksPublishingJobDbContext.EksInput.Count(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None);
 
             var stuffingCount = tekCount < _eksConfig.TekCountMin ? _eksConfig.TekCountMin - tekCount : 0;
             if (stuffingCount == 0)
@@ -157,9 +154,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
             _logger.WriteStuffingRequired(stuffing.Length);
 
-            await using var tx = dbc.BeginTransaction();
-            await dbc.EksInput.AddRangeAsync(stuffing);
-            dbc.SaveAndCommit();
+            await using var tx = _eksPublishingJobDbContext.BeginTransaction();
+            await _eksPublishingJobDbContext.EksInput.AddRangeAsync(stuffing);
+            _eksPublishingJobDbContext.SaveAndCommit();
 
             _logger.WriteStuffingAdded();
         }
@@ -236,13 +233,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
             _logger.WriteWritingCurrentEks(e.CreatingJobQualifier);
 
-
-            await using (var dbc = _publishingDbContextFac())
-            {
-                await using var tx = dbc.BeginTransaction();
-                await dbc.AddAsync(e);
-                dbc.SaveAndCommit();
-            }
+            await using var tx = _eksPublishingJobDbContext.BeginTransaction();
+            await _eksPublishingJobDbContext.AddAsync(e);
+            _eksPublishingJobDbContext.SaveAndCommit();
 
             _logger.WriteMarkTekAsUsed();
 
@@ -252,14 +245,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             }
 
             //Could be 750k in this hit
-            await using (var dbc2 = _publishingDbContextFac())
+            var bargs = new SubsetBulkArgs
             {
-                var bargs = new SubsetBulkArgs
-                {
-                    PropertiesToInclude = new[] { nameof(EksCreateJobInputEntity.Used) }
-                };
-                await dbc2.BulkUpdateAsync2(_output, bargs); //TX
-            }
+                PropertiesToInclude = new[] { nameof(EksCreateJobInputEntity.Used) }
+            };
+            await _eksPublishingJobDbContext.BulkUpdateAsync2(_output, bargs); //TX
 
             _eksEngineResult.OutputCount += _output.Count;
 
@@ -271,8 +261,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         {
             _logger.WriteStartReadPage(skip, take);
 
-            using var dbc = _publishingDbContextFac();
-            var unFilteredResult = dbc.EksInput
+            var unFilteredResult = _eksPublishingJobDbContext.EksInput
                 .OrderBy(x => x.KeyData)
                 .ThenBy(x => x.Id)
                 .Skip(skip)

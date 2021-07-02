@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
     public class RemoveExpiredManifestsReceiver
     {
         private readonly IUtcDateTimeProvider _dateTimeProvider;
-        private readonly Func<ContentDbContext> _dbContextProvider;
+        private readonly ContentDbContext _contentDbContext;
         private readonly IManifestConfig _manifestConfig;
         private readonly ILogger<RemoveExpiredManifestsReceiver> _logger;
 
@@ -29,9 +29,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         private const int DeletionReconciliationFailed = 4;
         private const int FinishedNothingRemoved = 98;
 
-        public RemoveExpiredManifestsReceiver(Func<ContentDbContext> dbContextProvider, IManifestConfig manifestConfig, IUtcDateTimeProvider dateTimeProvider, ILogger<RemoveExpiredManifestsReceiver> logger)
+        public RemoveExpiredManifestsReceiver(ContentDbContext contentDbContext, IManifestConfig manifestConfig, IUtcDateTimeProvider dateTimeProvider, ILogger<RemoveExpiredManifestsReceiver> logger)
         {
-            _dbContextProvider = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
+            _contentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _manifestConfig = manifestConfig ?? throw new ArgumentNullException(nameof(manifestConfig));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(manifestConfig));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -44,12 +44,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             _logger.LogInformation("[{Name}/{Id}] Begin removing expired Manifests - Keep Alive Count:{Count}.",
                 manifestType, loggingBaseNumber + Start, _manifestConfig.KeepAliveCount);
 
-            await using (var dbContext = _dbContextProvider())
-            await using (var tx = dbContext.BeginTransaction())
+            await using (var tx = _contentDbContext.BeginTransaction())
             {
-                result.Found = dbContext.Content.Count();
+                result.Found = _contentDbContext.Content.Count();
 
-                var zombies = dbContext.Content
+                var zombies = _contentDbContext.Content
                     .Where(x => x.Type == manifestType && x.Release < _dateTimeProvider.Snapshot)
                     .OrderByDescending(x => x.Release)
                     .Skip(_manifestConfig.KeepAliveCount)
@@ -74,19 +73,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                     return result;
                 }
 
-                dbContext.RemoveRange(zombies);
-                result.GivenMercy = dbContext.SaveChanges();
+                _contentDbContext.RemoveRange(zombies);
+                result.GivenMercy = _contentDbContext.SaveChanges();
 
-                var futureZombies = dbContext.Content
+                var futureZombies = _contentDbContext.Content
                     .Where(x => x.Type == manifestType && x.Release > _dateTimeProvider.Snapshot)
                     .ToList();
 
-                dbContext.RemoveRange(futureZombies);
-                result.GivenMercy += dbContext.SaveChanges();
+                _contentDbContext.RemoveRange(futureZombies);
+                result.GivenMercy += _contentDbContext.SaveChanges();
 
-                result.Remaining = dbContext.Content.Count();
+                result.Remaining = _contentDbContext.Content.Count();
 
-                tx.Commit();
+                await tx.CommitAsync();
             }
 
             _logger.LogInformation("[{Name}/{Id}] Finished removing expired Manifests - ExpectedCount:{count} ActualCount:{givenMercy}.",

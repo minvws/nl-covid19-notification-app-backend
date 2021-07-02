@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCrunch.Framework;
@@ -20,14 +21,14 @@ using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 {
-    public abstract class ManifestV3CreationTest : IDisposable
+    public abstract class ManifestV3CreationTest
     {
 
-        private readonly IDbProvider<ContentDbContext> _contentDbProvider;
+        private readonly DbContextOptions<ContentDbContext> _contentDbContextOptions;
 
-        protected ManifestV3CreationTest(IDbProvider<ContentDbContext> contentDbProvider)
+        protected ManifestV3CreationTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _contentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
+            _contentDbContextOptions = contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions));
         }
 
         [Fact]
@@ -42,8 +43,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             //Act
             sut.ExecuteV3Async().GetAwaiter().GetResult();
 
-            var database = _contentDbProvider.CreateNew();
-            var result = database.SafeGetLatestContentAsync(ContentTypes.ManifestV3, DateTime.Now).GetAwaiter().GetResult();
+            var contentDbContext = new ContentDbContext(_contentDbContextOptions);
+            contentDbContext.Database.EnsureCreated();
+
+            var result = contentDbContext.SafeGetLatestContentAsync(ContentTypes.ManifestV3, DateTime.Now).GetAwaiter().GetResult();
 
             //Assert
             Assert.NotNull(result);
@@ -78,18 +81,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
             var result = new ManifestUpdateCommand(
                 new ManifestV2Builder(
-                    _contentDbProvider.CreateNew(),
+                    new ContentDbContext(_contentDbContextOptions),
                     eksConfigMock.Object,
                     dateTimeProvider),
                 new ManifestV3Builder(
-                    _contentDbProvider.CreateNew(),
+                    new ContentDbContext(_contentDbContextOptions),
                     eksConfigMock.Object,
                     dateTimeProvider),
                 new ManifestV4Builder(
-                    _contentDbProvider.CreateNew(),
+                    new ContentDbContext(_contentDbContextOptions),
                     eksConfigMock.Object,
                     dateTimeProvider),
-                _contentDbProvider.CreateNew,
+                new ContentDbContext(_contentDbContextOptions),
                 new ManifestUpdateCommandLoggingExtensions(lf.CreateLogger<ManifestUpdateCommandLoggingExtensions>()),
                 dateTimeProvider,
                 jsonSerialiser,
@@ -101,11 +104,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
         private void PopulateContentDb()
         {
-            var database = _contentDbProvider.CreateNew();
+            var contentDbContext = new ContentDbContext(_contentDbContextOptions);
+            contentDbContext.Database.EnsureCreated();
+
             var yesterday = DateTime.Now.AddDays(-1);
             var content = "This is a ResourceBundleV3";
 
-            database.Content.AddRange(new[]
+            contentDbContext.Content.AddRange(new[]
             {
                 new ContentEntity{
                     Content = Encoding.ASCII.GetBytes(content),
@@ -127,12 +132,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
                 }
             });
 
-            database.SaveChanges();
-        }
-
-        public void Dispose()
-        {
-            _contentDbProvider.Dispose();
+            contentDbContext.SaveChanges();
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
             _isDev = env.IsDevelopment();
         }
 
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             if (services == null)
             {
@@ -45,8 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-
-            services.AddScoped(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content));
+            services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
 
             services.AddScoped<HttpGetCdnManifestCommand>();
             services.AddScoped<HttpGetCdnEksCommand>();

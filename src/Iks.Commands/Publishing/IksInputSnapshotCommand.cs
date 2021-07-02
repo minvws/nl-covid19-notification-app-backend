@@ -21,14 +21,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
     {
         private readonly ILogger<IksInputSnapshotCommand> _logger;
         private readonly DkSourceDbContext _dkSourceDbContext;
-        private readonly Func<IksPublishingJobDbContext> _publishingDbContextFactory;
+        private readonly IksPublishingJobDbContext _iksPublishingJobDbContext;
         private readonly IOutboundFixedCountriesOfInterestSetting _config;
 
-        public IksInputSnapshotCommand(ILogger<IksInputSnapshotCommand> logger, DkSourceDbContext dkSourceDbContext, Func<IksPublishingJobDbContext> tekSourceDbContextFunc, IOutboundFixedCountriesOfInterestSetting config)
+        public IksInputSnapshotCommand(ILogger<IksInputSnapshotCommand> logger, DkSourceDbContext dkSourceDbContext, IksPublishingJobDbContext iksPublishingJobDbContext, IOutboundFixedCountriesOfInterestSetting config)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
-            _publishingDbContextFactory = tekSourceDbContextFunc ?? throw new ArgumentNullException(nameof(tekSourceDbContextFunc));
+            _iksPublishingJobDbContext = iksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(iksPublishingJobDbContext));
             _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
@@ -47,8 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 
             while (page.Count > 0)
             {
-                var db = _publishingDbContextFactory();
-                await db.BulkInsertAsync2(page.ToList(), new SubsetBulkArgs());
+                await _iksPublishingJobDbContext.BulkInsertAsync2(page.ToList(), new SubsetBulkArgs());
 
                 index += page.Count;
                 page = Read(index, pagesize);

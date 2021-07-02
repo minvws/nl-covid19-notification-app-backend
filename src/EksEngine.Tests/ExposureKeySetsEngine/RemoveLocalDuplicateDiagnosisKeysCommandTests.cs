@@ -3,16 +3,18 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySetsEngine
@@ -20,28 +22,44 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     [Trait("db", "ss")]
     public class RemoveLocalDuplicateDiagnosisKeysCommandTests : IDisposable
     {
-        private readonly IDbProvider<DkSourceDbContext> _dkSourceDbProvider;
+        private static DbConnection _connection;
+        private readonly DkSourceDbContext _dkSourceContext;
 
         public RemoveLocalDuplicateDiagnosisKeysCommandTests()
         {
-            _dkSourceDbProvider = new SqlServerDbProvider<DkSourceDbContext>(nameof(RemoveLocalDuplicateDiagnosisKeysCommandTests) + "_DK");
+            var dkSourceDbProvider = new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlServer(CreateSqlDatabase()).Options;
             var sp = File.ReadAllText(Path.Combine(Path.GetDirectoryName(NCrunch.Framework.NCrunchEnvironment.GetOriginalSolutionPath()), @"Database\DiagnosisKeys\dbo\StoredProcedures\RemoveLocalDuplicateDiagnosisKeys.sql"));
-            using var ctx = _dkSourceDbProvider.CreateNew();
-            ctx.Database.ExecuteSqlRaw(sp);
+            _dkSourceContext = new DkSourceDbContext(dkSourceDbProvider);
+            _dkSourceContext.Database.EnsureDeleted(); // Delete database first because the sp cannot be added twice.
+            _dkSourceContext.Database.EnsureCreated();
+            _dkSourceContext.Database.ExecuteSqlRaw(sp);
+
         }
+        private static DbConnection CreateSqlDatabase()
+        {
+            var csb = new SqlConnectionStringBuilder($"Data Source=.;Initial Catalog={nameof(RemoveLocalDuplicateDiagnosisKeysCommandTests) + "_D"};Integrated Security=True")
+            {
+                MultipleActiveResultSets = true
+            };
+
+            _connection = new SqlConnection(csb.ConnectionString);
+            return _connection;
+        }
+
+        public void Dispose() => _connection.Dispose();
 
         [Fact]
         [ExclusivelyUses(nameof(RemoveLocalDuplicateDiagnosisKeysCommandTests))]
         public async Task No_Action_Taken_For_Published_Duplicates()
         {
+            // Arrange
+            await _dkSourceContext.TruncateAsync<DiagnosisKeyEntity>();
 
-            // Assemble
-            using var context = _dkSourceDbProvider.CreateNew();
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, true));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, true));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xB }, 1, 144, false));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xC }, 1, 144, false));
-            context.SaveChanges();
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, true));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, true));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xB }, 1, 144, false));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xC }, 1, 144, false));
+            await _dkSourceContext.SaveChangesAsync();
 
             var sut = CreateCommand();
 
@@ -49,21 +67,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             await sut.ExecuteAsync();
 
             // Assert
-            Assert.Equal(2, context.DiagnosisKeys.Count(_ => _.PublishedLocally));
+            Assert.Equal(2, _dkSourceContext.DiagnosisKeys.Count(_ => _.PublishedLocally));
         }
 
         [Fact]
         [ExclusivelyUses(nameof(RemoveLocalDuplicateDiagnosisKeysCommandTests))]
         public async void When_DK_Has_Been_Published_All_Duplicates_Marked_As_Published()
         {
-            // Assemble
-            using var context = _dkSourceDbProvider.CreateNew();
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, true));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xB }, 1, 144, false));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xC }, 1, 144, false));
-            context.SaveChanges();
+            // Arrange
+            await _dkSourceContext.TruncateAsync<DiagnosisKeyEntity>();
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, true));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xB }, 1, 144, false));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xC }, 1, 144, false));
+            await _dkSourceContext.SaveChangesAsync();
 
             var sut = CreateCommand();
 
@@ -71,21 +89,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             await sut.ExecuteAsync();
 
             // Assert
-            Assert.Equal(3, context.DiagnosisKeys.Count(_ => _.PublishedLocally));
+            Assert.Equal(3, _dkSourceContext.DiagnosisKeys.Count(_ => _.PublishedLocally));
         }
 
         [Fact]
         [ExclusivelyUses(nameof(RemoveLocalDuplicateDiagnosisKeysCommandTests))]
         public async Task When_DK_Has_Not_Been_Published_All_Duplicates_Except_The_Highest_TRL_Are_Marked_As_Published()
         {
-            // Assemble
-            await using var context = _dkSourceDbProvider.CreateNew();
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, null, TransmissionRiskLevel.High));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xB }, 1, 144, false));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xC }, 1, 144, false));
-            await context.SaveChangesAsync();
+            // Arrange
+            await _dkSourceContext.TruncateAsync<DiagnosisKeyEntity>();
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, null, TransmissionRiskLevel.High));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xB }, 1, 144, false));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xC }, 1, 144, false));
+            await _dkSourceContext.SaveChangesAsync();
 
             var sut = CreateCommand();
 
@@ -93,8 +111,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             await sut.ExecuteAsync();
 
             // Assert
-            Assert.Single(context.DiagnosisKeys.Where(x => x.Local.TransmissionRiskLevel == TransmissionRiskLevel.High && x.PublishedLocally == false && x.DailyKey.KeyData == new byte[] { 0xA }));
-            Assert.Equal(2, context.DiagnosisKeys.Count(x => x.Local.TransmissionRiskLevel == TransmissionRiskLevel.Low && x.PublishedLocally == true && x.DailyKey.KeyData == new byte[] { 0xA }));
+            Assert.Single(_dkSourceContext.DiagnosisKeys.Where(x => x.Local.TransmissionRiskLevel == TransmissionRiskLevel.High && x.PublishedLocally == false && x.DailyKey.KeyData == new byte[] { 0xA }));
+            Assert.Equal(2, _dkSourceContext.DiagnosisKeys.Count(x => x.Local.TransmissionRiskLevel == TransmissionRiskLevel.Low && x.PublishedLocally == true && x.DailyKey.KeyData == new byte[] { 0xA }));
         }
 
         [Fact]
@@ -105,13 +123,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var firstCreatedDate = DateTime.Now.AddHours(-1);
             var otherCreatedDate = DateTime.Now;
 
-            await using var context = _dkSourceDbProvider.CreateNew();
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, firstCreatedDate));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, otherCreatedDate));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, otherCreatedDate));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xB }, 1, 144, false, otherCreatedDate));
-            context.DiagnosisKeys.Add(CreateDk(new byte[] { 0xC }, 1, 144, false, otherCreatedDate));
-            await context.SaveChangesAsync();
+            // Arrange
+            await _dkSourceContext.TruncateAsync<DiagnosisKeyEntity>();
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, firstCreatedDate));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, otherCreatedDate));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, otherCreatedDate));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xB }, 1, 144, false, otherCreatedDate));
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xC }, 1, 144, false, otherCreatedDate));
+            await _dkSourceContext.SaveChangesAsync();
 
             var sut = CreateCommand();
 
@@ -120,9 +139,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             // Assert
             // For Keydata '0xA', expected a single entity having the first Created date and Not published locally
-            Assert.Single(context.DiagnosisKeys.Where(x => x.Created == firstCreatedDate && x.PublishedLocally == false && x.DailyKey.KeyData == new byte[] { 0xA }));
+            Assert.Single(_dkSourceContext.DiagnosisKeys.Where(x => x.Created == firstCreatedDate && x.PublishedLocally == false && x.DailyKey.KeyData == new byte[] { 0xA }));
             // For Keydata '0xA', expected 2 entities having a later Created date and both published locally
-            Assert.Equal(2, context.DiagnosisKeys.Count(x => x.Created == otherCreatedDate && x.PublishedLocally == true && x.DailyKey.KeyData == new byte[] { 0xA }));
+            Assert.Equal(2, _dkSourceContext.DiagnosisKeys.Count(x => x.Created == otherCreatedDate && x.PublishedLocally == true && x.DailyKey.KeyData == new byte[] { 0xA }));
         }
 
         private static DiagnosisKeyEntity CreateDk(byte[] keyData, int rsn, int rp, bool publishedLocally, DateTime? created = null, TransmissionRiskLevel trl = TransmissionRiskLevel.Low)
@@ -147,12 +166,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         private IRemoveDuplicateDiagnosisKeysCommand CreateCommand()
         {
-            return new RemoveLocalDuplicateDiagnosisKeysCommand(() => _dkSourceDbProvider.CreateNew());
-        }
-
-        public void Dispose()
-        {
-            _dkSourceDbProvider.Dispose();
+            return new RemoveLocalDuplicateDiagnosisKeysCommand(_dkSourceContext);
         }
     }
 }

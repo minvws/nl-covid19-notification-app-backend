@@ -58,7 +58,7 @@ namespace Icc.V2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            StartDateOfTekInclusion = args.SelectedDate
+                            StartDateOfTekInclusion = args.SelectedDate,
 
                         });
                         db.SaveChanges();
@@ -113,7 +113,7 @@ namespace Icc.V2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            StartDateOfTekInclusion = args.SelectedDate
+                            StartDateOfTekInclusion = args.SelectedDate,
                         });
                         db.SaveChanges();
                     }
@@ -169,7 +169,7 @@ namespace Icc.V2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            StartDateOfTekInclusion = args.SelectedDate
+                            StartDateOfTekInclusion = args.SelectedDate,
 
                         });
                         db.SaveChanges();
@@ -224,7 +224,7 @@ namespace Icc.V2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            StartDateOfTekInclusion = args.SelectedDate
+                            StartDateOfTekInclusion = args.SelectedDate,
                         });
                         db.SaveChanges();
                     }
@@ -259,7 +259,7 @@ namespace Icc.V2.WebApi.Tests
             {
                 GGDKey = "L8T6LJR",
                 SelectedDate = DateTime.Today,
-                Symptomatic = true
+                Symptomatic = true,
             };
 
             var client = _factory.WithWebHostBuilder(builder =>
@@ -278,7 +278,7 @@ namespace Icc.V2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            StartDateOfTekInclusion = args.SelectedDate
+                            StartDateOfTekInclusion = args.SelectedDate,
                         });
                         db.SaveChanges();
                     }
@@ -332,7 +332,7 @@ namespace Icc.V2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            StartDateOfTekInclusion = args.SelectedDate
+                            StartDateOfTekInclusion = args.SelectedDate,
                         });
                         db.SaveChanges();
                     }
@@ -387,7 +387,7 @@ namespace Icc.V2.WebApi.Tests
                         db.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
                         {
                             GGDKey = args.GGDKey,
-                            StartDateOfTekInclusion = args.SelectedDate
+                            StartDateOfTekInclusion = args.SelectedDate,
                         });
                         db.SaveChanges();
                     }

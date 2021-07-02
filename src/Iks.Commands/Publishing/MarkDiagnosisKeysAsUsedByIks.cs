@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
@@ -16,17 +17,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 {
     public class MarkDiagnosisKeysAsUsedByIks
     {
-        private readonly Func<DkSourceDbContext> _dkDbContextFactory;
+        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly IksPublishingJobDbContext _iksPublishingJobDbContext;
         private readonly IIksConfig _iksConfig;
-        private readonly Func<IksPublishingJobDbContext> _publishingDbContextFac;
         private readonly ILogger<MarkDiagnosisKeysAsUsedByIks> _logger;
         private int _index;
 
-        public MarkDiagnosisKeysAsUsedByIks(Func<DkSourceDbContext> dkDbContextFactory, IIksConfig config, Func<IksPublishingJobDbContext> publishingDbContextFac, ILogger<MarkDiagnosisKeysAsUsedByIks> logger)
+        public MarkDiagnosisKeysAsUsedByIks(DkSourceDbContext dkSourceDbContext, IIksConfig config, IksPublishingJobDbContext iksPublishingJobDbContext, ILogger<MarkDiagnosisKeysAsUsedByIks> logger)
         {
-            _dkDbContextFactory = dkDbContextFactory ?? throw new ArgumentNullException(nameof(dkDbContextFactory));
+            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
             _iksConfig = config ?? throw new ArgumentNullException(nameof(config));
-            _publishingDbContextFac = publishingDbContextFac ?? throw new ArgumentNullException(nameof(publishingDbContextFac));
+            _iksPublishingJobDbContext = iksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(iksPublishingJobDbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -43,9 +44,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 
         private async Task Zap(long[] used)
         {
-            await using var wfDb = _dkDbContextFactory();
-
-            var zap = wfDb.DiagnosisKeys
+            var zap = _dkSourceDbContext.DiagnosisKeys
+                .AsNoTracking()
                 .Where(x => used.Contains(x.Id))
                 .ToList();
 
@@ -67,14 +67,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                 PropertiesToInclude = new[] { $"{nameof(DiagnosisKeyEntity.PublishedToEfgs)}" }
             };
 
-            await wfDb.BulkUpdateAsync2(zap, bargs); //TX
+            await _dkSourceDbContext.BulkUpdateAsync2(zap, bargs); //TX
         }
 
         private long[] ReadPage()
         {
             //No tx cos nothing else is touching this context.
             //New context each time
-            return _publishingDbContextFac().Input
+            return _iksPublishingJobDbContext.Input
+                .AsNoTracking()
                 .Where(x => x.Used)
                 .OrderBy(x => x.DkId)
                 .Skip(_index)

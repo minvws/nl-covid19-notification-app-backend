@@ -23,14 +23,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     {
         private readonly SnapshotLoggingExtensions _logger;
         private readonly DkSourceDbContext _dkSourceDbContext;
-        private readonly Func<EksPublishingJobDbContext> _publishingDbContextFactory;
+        private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
         private readonly IInfectiousness _infectiousness;
 
-        public SnapshotDiagnosisKeys(SnapshotLoggingExtensions logger, DkSourceDbContext dkSourceDbContext, Func<EksPublishingJobDbContext> publishingDbContextFactory, IInfectiousness infectiousness)
+        public SnapshotDiagnosisKeys(SnapshotLoggingExtensions logger, DkSourceDbContext dkSourceDbContext, EksPublishingJobDbContext eksPublishingJobDbContext, IInfectiousness infectiousness)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
-            _publishingDbContextFactory = publishingDbContextFactory ?? throw new ArgumentNullException(nameof(publishingDbContextFactory));
+            _eksPublishingJobDbContext = eksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContext));
             _infectiousness = infectiousness ?? throw new ArgumentNullException(nameof(infectiousness));
         }
 
@@ -52,10 +52,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             {
                 MarkFilteredEntitiesForCleanup(page, filteredResult);
 
-                var db = _publishingDbContextFactory();
                 if (filteredResult.Length > 0)
                 {
-                    await db.BulkInsertAsync2(filteredResult, new SubsetBulkArgs());
+                    await _eksPublishingJobDbContext.BulkInsertAsync2(filteredResult, new SubsetBulkArgs());
                 }
 
                 index += page.Length;

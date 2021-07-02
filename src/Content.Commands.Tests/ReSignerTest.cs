@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
@@ -17,14 +18,13 @@ using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 {
-    public abstract class ReSignerTest : IDisposable
+    public abstract class ReSignerTest
     {
+        private readonly DbContextOptions<ContentDbContext> _contentDbContextOptions;
 
-        private readonly IDbProvider<ContentDbContext> _contentDbProvider;
-
-        protected ReSignerTest(IDbProvider<ContentDbContext> contentDbProvider)
+        protected ReSignerTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _contentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
+            _contentDbContextOptions = contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions));
         }
 
         [Fact]
@@ -33,6 +33,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
         {
             var lf = new LoggerFactory();
             var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
+
+            var contentDbContext = new ContentDbContext(_contentDbContextOptions);
+            contentDbContext.Database.EnsureCreated();
 
             var d = DateTime.Now;
 
@@ -44,8 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
             var m1 = new ContentEntity { Content = zipContent, PublishingId = "1", ContentTypeName = "Meh", Type = ContentTypes.Manifest, Created = d, Release = d };
 
-            var dbc = _contentDbProvider.CreateNew();
-            dbc.Content.AddRange(new[] {
+            contentDbContext.Content.AddRange(new[] {
                 m1,
                 new ContentEntity { Content = new byte[0], PublishingId = "2", ContentTypeName = "Meh", Type = ContentTypes.AppConfig, Created = d, Release = d },
                 new ContentEntity { Content = new byte[0], PublishingId = "3", ContentTypeName = "Meh", Type = ContentTypes.AppConfigV2, Created = d, Release = d },
@@ -53,15 +55,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
                 new ContentEntity { Content = new byte[0], PublishingId = "5", ContentTypeName = "Meh", Type = ContentTypes.ExposureKeySetV2, Created = d, Release = d },
                 });
 
-            dbc.SaveChanges();
+            contentDbContext.SaveChanges();
 
-            var resigner = new NlContentResignCommand(_contentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
+            var resigner = new NlContentResignCommand(new ContentDbContext(_contentDbContextOptions), TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
             resigner.ExecuteAsync(ContentTypes.Manifest, ContentTypes.ManifestV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
-            Assert.Equal(6, dbc.Content.Count());
+            Assert.Equal(6, contentDbContext.Content.Count());
 
-            var m2 = dbc.Content.Single(x => x.PublishingId == "1" && x.Type == ContentTypes.ManifestV2);
+            var m2 = contentDbContext.Content.Single(x => x.PublishingId == "1" && x.Type == ContentTypes.ManifestV2);
 
             Assert.Equal(m1.Created, m2.Created);
             Assert.Equal(m1.Release, m2.Release);
@@ -83,9 +85,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             var lf = new LoggerFactory();
             var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
 
-            //Add some db rows to Content
-            var dbc = _contentDbProvider.CreateNew();
+            var contentDbContext = new ContentDbContext(_contentDbContextOptions);
+            contentDbContext.Database.EnsureCreated();
 
+            //Add some db rows to Content
             var d = DateTime.Now;
             var laterDate = d.AddDays(1);
             var publishingId = "1";
@@ -100,23 +103,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             var sourceAppConfigContent2 = new ContentEntity { Content = zipContent, PublishingId = publishingId, ContentTypeName = ".", Type = ContentTypes.AppConfig, Created = d.AddMilliseconds(2), Release = laterDate };
             var sourceAppConfigContent3 = new ContentEntity { Content = zipContent, PublishingId = publishingId, ContentTypeName = ".", Type = ContentTypes.AppConfig, Created = d.AddMilliseconds(3), Release = laterDate };
 
-            dbc.Content.AddRange(
+            contentDbContext.Content.AddRange(
                 sourceAppConfigContent1,
                 sourceAppConfigContent2,
                 sourceAppConfigContent3
                 );
 
-            dbc.SaveChanges();
+            contentDbContext.SaveChanges();
 
-            Assert.Equal(3, dbc.Content.Count());
+            Assert.Equal(3, contentDbContext.Content.Count());
 
-            var resigner = new NlContentResignCommand(_contentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
+            var resigner = new NlContentResignCommand(new ContentDbContext(_contentDbContextOptions), TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
             resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
-            Assert.Equal(6, dbc.Content.Count());
+            Assert.Equal(6, contentDbContext.Content.Count());
 
-            var resignedAppConfigContent = dbc.Content.Where(x => x.PublishingId == publishingId && x.Type == ContentTypes.AppConfigV2);
+            var resignedAppConfigContent = contentDbContext.Content.Where(x => x.PublishingId == publishingId && x.Type == ContentTypes.AppConfigV2);
 
             var originalContentStream = new MemoryStream(zipContent);
             using var originalZipArchive = new ZipArchive(originalContentStream);
@@ -134,7 +137,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
             //Repeating should have no effect
             resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
-            Assert.Equal(6, dbc.Content.Count());
+            Assert.Equal(6, contentDbContext.Content.Count());
         }
 
         [Fact]
@@ -146,7 +149,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
 
             //Add some db rows to Content
-            var dbc = _contentDbProvider.CreateNew();
+            var contentDbContext = new ContentDbContext(_contentDbContextOptions);
+            contentDbContext.Database.EnsureCreated();
 
             var d = DateTime.Now;
             var laterDate = d.AddDays(1);
@@ -162,23 +166,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             var sourceAppConfigContent2 = new ContentEntity { Content = zipContent, PublishingId = publishingId, ContentTypeName = ".", Type = ContentTypes.AppConfig, Created = d, Release = laterDate };
             var sourceAppConfigContent3 = new ContentEntity { Content = zipContent, PublishingId = publishingId, ContentTypeName = ".", Type = ContentTypes.AppConfig, Created = d, Release = laterDate };
 
-            dbc.Content.AddRange(
+            contentDbContext.Content.AddRange(
                 sourceAppConfigContent1,
                 sourceAppConfigContent2,
                 sourceAppConfigContent3
                 );
 
-            dbc.SaveChanges();
+            contentDbContext.SaveChanges();
 
-            Assert.Equal(3, dbc.Content.Count());
+            Assert.Equal(3, contentDbContext.Content.Count());
 
-            var resigner = new NlContentResignCommand(_contentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
+            var resigner = new NlContentResignCommand(new ContentDbContext(_contentDbContextOptions), TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
             resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
 
             //check the numbers
-            Assert.Equal(4, dbc.Content.Count());
+            Assert.Equal(4, contentDbContext.Content.Count());
 
-            var resignedAppConfigContent = dbc.Content.Where(x => x.PublishingId == publishingId && x.Type == ContentTypes.AppConfigV2);
+            var resignedAppConfigContent = contentDbContext.Content.Where(x => x.PublishingId == publishingId && x.Type == ContentTypes.AppConfigV2);
 
             var originalContentStream = new MemoryStream(zipContent);
             using var originalZipArchive = new ZipArchive(originalContentStream);
@@ -197,12 +201,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
             //Repeating should have no effect
             resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
-            Assert.Equal(4, dbc.Content.Count());
-        }
-
-        public void Dispose()
-        {
-            _contentDbProvider.Dispose();
+            Assert.Equal(4, contentDbContext.Content.Count());
         }
     }
 }

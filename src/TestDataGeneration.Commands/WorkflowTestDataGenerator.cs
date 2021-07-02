@@ -16,7 +16,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Serilog.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Commands
@@ -24,22 +23,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
     public class WorkflowTestDataGenerator
     {
         private readonly WorkflowDbContext _workflowDbContext;
-        private readonly IDbProvider<DkSourceDbContext> _dkSourceDbContextProvider;
+        private readonly DkSourceDbContext _dkSourceDbContext;
         private readonly ILoggerFactory _loggerFactory = new SerilogLoggerFactory();
         private readonly IUtcDateTimeProvider _utcDateTimeProvider = new StandardUtcDateTimeProvider();
         private readonly StandardRandomNumberGenerator _rng = new StandardRandomNumberGenerator();
         private readonly IWrappedEfExtensions _efExtensions;
-
         private readonly LoggerFactory _lf;
-
-
-
-        public WorkflowTestDataGenerator(WorkflowDbContext workflowDbContext, IDbProvider<DkSourceDbContext> dkSourceDbContextProvider, IWrappedEfExtensions efExtensions)
+        
+        public WorkflowTestDataGenerator(WorkflowDbContext workflowDbContext, DkSourceDbContext dkSourceDbContext, IWrappedEfExtensions efExtensions)
         {
             _lf = new LoggerFactory();
 
             _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
-            _dkSourceDbContextProvider = dkSourceDbContextProvider ?? throw new ArgumentNullException(nameof(dkSourceDbContextProvider));
+            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
             _efExtensions = efExtensions ?? throw new ArgumentNullException(nameof(efExtensions));
         }
 
@@ -48,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
             await GenerateWorkflowsAsync(workflowCount, tekPerWOrkflowCount);
             await AuthoriseAllWorkflowsAsync();
             await SnapshotToDks();
-            return _dkSourceDbContextProvider.CreateNew().DiagnosisKeys.Count();
+            return _dkSourceDbContext.DiagnosisKeys.Count();
         }
 
         public async Task SnapshotToDks()
@@ -60,8 +56,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                 _utcDateTimeProvider,
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowDbContext,
-                _workflowDbContext,
-                _dkSourceDbContextProvider.CreateNew,
+                _dkSourceDbContext,
                 _efExtensions,
                 new IDiagnosticKeyProcessor[] {
                     new ExcludeTrlNoneDiagnosticKeyProcessor(),

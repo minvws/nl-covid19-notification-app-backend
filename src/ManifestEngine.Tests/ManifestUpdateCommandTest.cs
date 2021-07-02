@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
@@ -13,21 +14,20 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 {
-    public abstract class ManifestUpdateCommandTest : IDisposable
+    public abstract class ManifestUpdateCommandTest
     {
-        private readonly IDbProvider<ContentDbContext> _contentDbProvider;
+        private readonly DbContextOptions<ContentDbContext> _contentDbContextOptions;
         private readonly ManifestUpdateCommand _sut;
         private readonly Mock<IUtcDateTimeProvider> _dateTimeProviderMock;
         private readonly DateTime _mockedTime = DateTime.UtcNow;
 
-        public ManifestUpdateCommandTest(IDbProvider<ContentDbContext> contentDbProvider)
+        public ManifestUpdateCommandTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _contentDbProvider = contentDbProvider ?? throw new ArgumentException();
+            _contentDbContextOptions = contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions));
 
             var nlSignerMock = new Mock<IContentSigner>();
             nlSignerMock.Setup(x => x.GetSignature(new byte[0]))
@@ -46,6 +46,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             var loggingExtensionsMock = new ManifestUpdateCommandLoggingExtensions(
                 loggerFactory.CreateLogger<ManifestUpdateCommandLoggingExtensions>());
 
+            var contentDbContext = new ContentDbContext(_contentDbContextOptions);
+            contentDbContext.Database.EnsureCreated();
+
             Func<IContentEntityFormatter> contentFormatterInjector = () =>
                 new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(nlSignerMock.Object),
@@ -53,10 +56,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
                     jsonSerializer);
 
             _sut = new ManifestUpdateCommand(
-                new ManifestV2Builder(_contentDbProvider.CreateNew(), eksConfigMock.Object, _dateTimeProviderMock.Object),
-                new ManifestV3Builder(_contentDbProvider.CreateNew(), eksConfigMock.Object, _dateTimeProviderMock.Object),
-                new ManifestV4Builder(_contentDbProvider.CreateNew(), eksConfigMock.Object, _dateTimeProviderMock.Object),
-                _contentDbProvider.CreateNew,
+                new ManifestV2Builder(contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
+                new ManifestV3Builder(contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
+                new ManifestV4Builder(contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
+                new ContentDbContext(_contentDbContextOptions),
                 loggingExtensionsMock,
                 _dateTimeProviderMock.Object,
                 jsonSerializer,
@@ -67,19 +70,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         [Fact]
         public async Task NoManifestInDb_ExecuteAll_ThreeManifestsInDb()
         {
+            // Arrange
+            var contentDbContext = new ContentDbContext(_contentDbContextOptions);
+            await contentDbContext.Database.EnsureCreatedAsync();
+
             //Act
             await _sut.ExecuteAllAsync();
 
             //Assert
-            Assert.Equal(3, _contentDbProvider.CreateNew().Content.Count());
-            Assert.Equal(1, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV2));
-            Assert.Equal(1, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV3));
-            Assert.Equal(1, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV4));
+            Assert.Equal(3, contentDbContext.Content.Count());
+            Assert.Equal(1, contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
+            Assert.Equal(1, contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV3));
+            Assert.Equal(1, contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV4));
         }
 
         [Fact]
         public async Task NoManifestInDb_ExecuteAllTwice_ThreeManifestsInDb()
         {
+            // Arrange
+            var contentDbContext = new ContentDbContext(_contentDbContextOptions);
+            await contentDbContext.Database.EnsureCreatedAsync();
+
             //Act
             await _sut.ExecuteAllAsync();
 
@@ -90,15 +101,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             await _sut.ExecuteAllAsync();
 
             //Assert
-            Assert.Equal(3, _contentDbProvider.CreateNew().Content.Count());
-            Assert.Equal(1, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV2));
-            Assert.Equal(1, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV3));
-            Assert.Equal(1, _contentDbProvider.CreateNew().Content.Count(x => x.Type == ContentTypes.ManifestV4));
-        }
-
-        public void Dispose()
-        {
-            _contentDbProvider.Dispose();
+            Assert.Equal(3, contentDbContext.Content.Count());
+            Assert.Equal(1, contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
+            Assert.Equal(1, contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV3));
+            Assert.Equal(1, contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV4));
         }
     }
 }

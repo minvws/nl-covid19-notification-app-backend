@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
@@ -11,18 +13,18 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFrame
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySets
 {
-    public abstract class ExposureKeySetCleanerTests : IDisposable
+    public abstract class ExposureKeySetCleanerTests
     {
-        private readonly IDbProvider<ContentDbContext> _contentDbProvider;
+        private readonly ContentDbContext _contentDbContext;
 
-        protected ExposureKeySetCleanerTests(IDbProvider<ContentDbContext> contentDbProvider)
+        protected ExposureKeySetCleanerTests(DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _contentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
+            _contentDbContext = new ContentDbContext(contentDbContextOptions);
+            _contentDbContext.Database.EnsureCreated();
         }
 
         private class FakeDtp : IUtcDateTimeProvider
@@ -39,9 +41,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             public int PageSize => throw new NotImplementedException(); //ncrunch: no coverage
             public bool CleanupDeletesData { get; set; }
         }
-        private static void Add(ContentDbContext contentDbContext, int id)
+        private void Add(int id)
         {
-            contentDbContext.Content.Add(new ContentEntity
+            _contentDbContext.Content.Add(new ContentEntity
             {
                 Content = new byte[0],
                 PublishingId = id.ToString(),
@@ -50,19 +52,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 Release = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) - TimeSpan.FromDays(id),
                 Type = ContentTypes.ExposureKeySet
             });
+
+            _contentDbContext.SaveChanges();
         }
 
         [Fact]
         [ExclusivelyUses(nameof(ExposureKeySetCleanerTests))]
         public void Cleaner()
         {
+            // Arrange
+            _contentDbContext.Truncate<ContentEntity>();
+
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
+            var command = new RemoveExpiredEksCommand(_contentDbContext, new FakeEksConfig(), new StandardUtcDateTimeProvider(), expEksLogger);
 
-            var command = new RemoveExpiredEksCommand(_contentDbProvider.CreateNew(), new FakeEksConfig(), new StandardUtcDateTimeProvider(), expEksLogger);
-
+            // Act
             var result = command.Execute();
 
+            // Assert
             Assert.Equal(0, result.Found);
             Assert.Equal(0, result.Zombies);
             Assert.Equal(0, result.GivenMercy);
@@ -74,19 +82,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         [ExclusivelyUses(nameof(ExposureKeySetCleanerTests))]
         public void NoKill()
         {
+            // Arrange
+            _contentDbContext.Truncate<ContentEntity>();
+
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
-
-            var contentDbContext = _contentDbProvider.CreateNew();
-
-            Add(contentDbContext, 15);
-            contentDbContext.SaveChanges();
-
             var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
-            var command = new RemoveExpiredEksCommand(contentDbContext, new FakeEksConfig(), fakeDtp, expEksLogger);
+            var command = new RemoveExpiredEksCommand(_contentDbContext, new FakeEksConfig(), fakeDtp, expEksLogger);
 
+            Add(15);
+ 
+            // Act
             var result = command.Execute();
 
+            // Assert
             Assert.Equal(1, result.Found);
             Assert.Equal(1, result.Zombies);
             Assert.Equal(0, result.GivenMercy);
@@ -99,20 +108,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         [ExclusivelyUses(nameof(ExposureKeySetCleanerTests))]
         public void Kill()
         {
+            // Arrange
+            _contentDbContext.Truncate<ContentEntity>();
+
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
-
-            var contentDbContext = _contentDbProvider.CreateNew();
-
-            Add(contentDbContext, 15);
-            contentDbContext.SaveChanges();
-
             var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
             var fakeEksConfig = new FakeEksConfig() { CleanupDeletesData = true };
-            var command = new RemoveExpiredEksCommand(contentDbContext, fakeEksConfig, fakeDtp, expEksLogger);
+            var command = new RemoveExpiredEksCommand(_contentDbContext, fakeEksConfig, fakeDtp, expEksLogger);
 
+            Add(15);
+
+            // Act
             var result = command.Execute();
 
+            // Assert
             Assert.Equal(1, result.Found);
             Assert.Equal(1, result.Zombies);
             Assert.Equal(1, result.GivenMercy);
@@ -125,34 +135,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         [ExclusivelyUses(nameof(ExposureKeySetCleanerTests))]
         public void MoreRealistic()
         {
+            // Arrange
+            _contentDbContext.Truncate<ContentEntity>();
+
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
-
-            var contentDbContext = _contentDbProvider.CreateNew();
+            var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
+            var fakeEksConfig = new FakeEksConfig() { CleanupDeletesData = true };
+            var command = new RemoveExpiredEksCommand(_contentDbContext, fakeEksConfig, fakeDtp, expEksLogger);
 
             for (var i = 0; i < 20; i++)
             {
-                Add(contentDbContext, i);
+                Add(i);
             }
 
-            contentDbContext.SaveChanges();
-
-            var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
-            var fakeEksConfig = new FakeEksConfig() { CleanupDeletesData = true };
-            var command = new RemoveExpiredEksCommand(contentDbContext, fakeEksConfig, fakeDtp, expEksLogger);
-
+            // Act
             var result = command.Execute();
 
+            // Assert
             Assert.Equal(20, result.Found);
             Assert.Equal(5, result.Zombies);
             Assert.Equal(5, result.GivenMercy);
             Assert.Equal(15, result.Remaining);
             Assert.Equal(0, result.Reconciliation);
-        }
-
-        public void Dispose()
-        {
-            _contentDbProvider.Dispose();
         }
     }
 }
