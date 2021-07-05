@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -10,29 +11,28 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workflow
 {
-    public abstract class WorkflowCleanerTests : IDisposable
+    public abstract class WorkflowCleanerTests
     {
-        private readonly IDbProvider<WorkflowDbContext> _workflowDbProvider;
+        private readonly WorkflowDbContext _workflowDbContext;
 
-        protected WorkflowCleanerTests(IDbProvider<WorkflowDbContext> workflowDbProvider)
+        protected WorkflowCleanerTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions)
         {
-            _workflowDbProvider = workflowDbProvider ?? throw new ArgumentNullException(nameof(workflowDbProvider));
-            _dbContext = _workflowDbProvider.CreateNew();
+            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions);
+            _workflowDbContext.Database.EnsureCreated();
+
             _fakeConfig = new FakeConfig();
             _dtp = new FakeDtp();
 
             var lf = new LoggerFactory();
             var expWorkflowLogger = new ExpiredWorkflowLoggingExtensions(lf.CreateLogger<ExpiredWorkflowLoggingExtensions>());
-            _command = new RemoveExpiredWorkflowsCommand(_workflowDbProvider.CreateNew, expWorkflowLogger, _dtp, _fakeConfig);
+            _command = new RemoveExpiredWorkflowsCommand(_workflowDbContext, expWorkflowLogger, _dtp, _fakeConfig);
         }
 
         private readonly RemoveExpiredWorkflowsCommand _command;
-        private readonly WorkflowDbContext _dbContext;
         private readonly FakeConfig _fakeConfig;
         private readonly FakeDtp _dtp;
 
@@ -87,7 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         {
             _dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
             Add(1, 0, null);
-            _dbContext.SaveChanges();
+            _workflowDbContext.SaveChanges();
 
             var result = _command.Execute();
 
@@ -119,7 +119,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
             _dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
             _fakeConfig.CleanupDeletesData = true;
             Add(1, 0, null);
-            _dbContext.SaveChanges();
+            _workflowDbContext.SaveChanges();
 
             var result = _command.Execute();
 
@@ -155,7 +155,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
             Add(1, 14, 14);
             Add(1, 10, 5);
             Add(-10, 10, 5);
-            _dbContext.SaveChanges();
+            _workflowDbContext.SaveChanges();
 
             Assert.Throws<InvalidOperationException>(() => _command.Execute());
         }
@@ -171,7 +171,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
             Add(1, 14, 14);
             Add(1, 10, 10);
             Add(-10, 10, 0);
-            _dbContext.SaveChanges();
+            _workflowDbContext.SaveChanges();
 
             var result = _command.Execute();
 
@@ -214,7 +214,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
                 ValidUntil = v
             };
 
-            _dbContext.KeyReleaseWorkflowStates.Add(w);
+            _workflowDbContext.KeyReleaseWorkflowStates.Add(w);
 
             for (var i = 0; i < tekCount; i++)
             {
@@ -227,14 +227,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
                     KeyData = new byte[0],
                     PublishingState = i < (publishedCount ?? 0) ? PublishingState.Published : PublishingState.Unpublished,
                 };
-                _dbContext.TemporaryExposureKeys.Add(t);
+                _workflowDbContext.TemporaryExposureKeys.Add(t);
             }
-        }
-
-        public void Dispose()
-        {
-            _workflowDbProvider.Dispose();
-            _dbContext.Dispose();
         }
     }
 }

@@ -19,7 +19,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.Extensions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
@@ -50,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
 
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -108,9 +107,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
                 options.TableName = "Cache";
             });
 
-            services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
+            services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(_configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
 
-            //services.AddTransient(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
             services.AddTransient<WriteNewPollTokenWriter>();
             services.AddTransient<IPollTokenService, PollTokenService>();
 

@@ -16,15 +16,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
 {
     public class RemoveExpiredWorkflowsCommand
     {
-        private readonly Func<WorkflowDbContext> _dbContextProvider;
+        private readonly WorkflowDbContext _workflowDbContext;
         private readonly ExpiredWorkflowLoggingExtensions _logger;
         private readonly IUtcDateTimeProvider _dtp;
         private RemoveExpiredWorkflowsResult _result;
         private readonly IWorkflowConfig _config;
 
-        public RemoveExpiredWorkflowsCommand(Func<WorkflowDbContext> dbContext, ExpiredWorkflowLoggingExtensions logger, IUtcDateTimeProvider dtp, IWorkflowConfig config)
+        public RemoveExpiredWorkflowsCommand(WorkflowDbContext workflowDbContext, ExpiredWorkflowLoggingExtensions logger, IUtcDateTimeProvider dtp, IWorkflowConfig config)
         {
-            _dbContextProvider = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dtp = dtp ?? throw new ArgumentNullException(nameof(dtp));
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -88,39 +88,37 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
 
             _logger.WriteStart();
 
-            using (var dbc = _dbContextProvider())
+            using (var tx = _workflowDbContext.BeginTransaction())
             {
-                using (var tx = dbc.BeginTransaction())
+                ReadStats(_result.Before, _workflowDbContext);
+                LogReport(_result.Before, "Workflow stats before cleanup:");
+
+                if (!_result.DeletionsOn)
                 {
-                    ReadStats(_result.Before, dbc);
-                    LogReport(_result.Before, "Workflow stats before cleanup:");
-
-                    if (!_result.DeletionsOn)
-                    {
-                        _logger.WriteFinishedNothingRemoved();
-                        return _result;
-                    }
-
-                    if (_result.Before.Authorised != _result.Before.AuthorisedAndFullyPublished)
-                    {
-                        _logger.WriteUnpublishedTekFound();
-                        throw new InvalidOperationException("Authorised unpublished TEKs exist. Aborting workflow cleanup.");
-                    }
-
-                    _result.GivenMercy = dbc.Database.ExecuteSqlInterpolated($"DELETE FROM TekReleaseWorkflowState WHERE [ValidUntil] < {_dtp.Snapshot}");
-                    _logger.WriteRemovedAmount(_result.GivenMercy);
-                    tx.Commit();
+                    _logger.WriteFinishedNothingRemoved();
+                    return _result;
                 }
 
-                using (dbc.BeginTransaction())
+                if (_result.Before.Authorised != _result.Before.AuthorisedAndFullyPublished)
                 {
-                    ReadStats(_result.After, dbc);
+                    _logger.WriteUnpublishedTekFound();
+                    throw new InvalidOperationException("Authorised unpublished TEKs exist. Aborting workflow cleanup.");
                 }
 
-                LogReport(_result.Before, "Workflow stats after cleanup:");
-                _logger.WriteFinished();
-                return _result;
+                _result.GivenMercy = _workflowDbContext.Database.ExecuteSqlInterpolated($"DELETE FROM TekReleaseWorkflowState WHERE [ValidUntil] < {_dtp.Snapshot}");
+                _logger.WriteRemovedAmount(_result.GivenMercy);
+                tx.Commit();
             }
+
+            using (_workflowDbContext.BeginTransaction())
+            {
+                ReadStats(_result.After, _workflowDbContext);
+            }
+
+            LogReport(_result.Before, "Workflow stats after cleanup:");
+            _logger.WriteFinished();
+            return _result;
+            
         }
     }
 }

@@ -2,10 +2,11 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Data.Common;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
@@ -15,12 +16,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
     [ExclusivelyUses(nameof(ManifestUpdateCommandTestSqlServer))]
     public class ManifestUpdateCommandTestSqlServer : ManifestUpdateCommandTest
     {
-        //private const string Prefix = nameof(ManifestUpdateCommandTest) + "_";
-        //public ManifestUpdateCommandTestSqlServer()
-        //    : base(new SqlServerDbProvider<ContentDbContext>(Prefix + "C"))
-        //{ }
-        public ManifestUpdateCommandTestSqlServer(DbContextOptions<ContentDbContext> contentDbContextOptions) : base(contentDbContextOptions)
+        private const string Prefix = nameof(ManifestUpdateCommandTest) + "_";
+        private static DbConnection connection;
+
+        public ManifestUpdateCommandTestSqlServer()
+            : base(
+                new DbContextOptionsBuilder<ContentDbContext>().UseSqlServer(CreateSqlDatabase("C")).Options)
+        { }
+
+        private static DbConnection CreateSqlDatabase(string suffix)
         {
+            var csb = new SqlConnectionStringBuilder($"Data Source=.;Initial Catalog={Prefix + suffix};Integrated Security=True")
+            {
+                MultipleActiveResultSets = true
+            };
+
+            connection = new SqlConnection(csb.ConnectionString);
+            return connection;
         }
+
+        public void Dispose() => connection.Dispose();
     }
 }

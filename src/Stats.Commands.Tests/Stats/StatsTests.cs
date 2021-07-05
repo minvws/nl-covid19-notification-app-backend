@@ -5,28 +5,30 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Stats
 {
-    public abstract class StatsTests : IDisposable
+    public abstract class StatsTests
     {
-
-        private readonly IDbProvider<WorkflowDbContext> _workflowDbProvider;
-        private readonly IDbProvider<StatsDbContext> _statsDbProvider;
+        private readonly WorkflowDbContext _workflowDbContext;
+        private readonly StatsDbContext _statsDbContext;
         private readonly IUtcDateTimeProvider _fakeDtp;
 
-        protected StatsTests(IDbProvider<WorkflowDbContext> workflowDbProvider, IDbProvider<StatsDbContext> statsDbProvider)
+        protected StatsTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions, DbContextOptions<StatsDbContext> statsDbContextOptions)
         {
-            _workflowDbProvider = workflowDbProvider ?? throw new ArgumentNullException(nameof(workflowDbProvider));
-            _statsDbProvider = statsDbProvider ?? throw new ArgumentNullException(nameof(statsDbProvider));
+            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions);
+            _workflowDbContext.Database.EnsureCreated();
+            _statsDbContext = new StatsDbContext(statsDbContextOptions);
+            _statsDbContext.Database.EnsureCreated();
+
             var snapshot = DateTime.UtcNow;
             var mock = new Mock<IUtcDateTimeProvider>(MockBehavior.Strict);
             mock.Setup(x => x.Snapshot).Returns(snapshot);
@@ -37,32 +39,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Sta
         [ExclusivelyUses(nameof(StatsTests))]
         public void NothingToSeeHere()
         {
-            var wf = _workflowDbProvider.CreateNew();
-            var statsDbContext = _statsDbProvider.CreateNew();
-            var cmd = new StatisticsCommand(new StatisticsDbWriter(statsDbContext, _fakeDtp),
+            var cmd = new StatisticsCommand(new StatisticsDbWriter(_statsDbContext, _fakeDtp),
                 new IStatsQueryCommand[]
                 {
-                    new TotalWorkflowCountStatsQueryCommand(wf),
-                    new TotalWorkflowsWithTeksQueryCommand(wf),
-                    new TotalWorkflowAuthorisedCountStatsQueryCommand(wf),
-                    new PublishedTekCountStatsQueryCommand(wf),
-                    new TotalTekCountStatsQueryCommand(wf),
+                    new TotalWorkflowCountStatsQueryCommand(_workflowDbContext),
+                    new TotalWorkflowsWithTeksQueryCommand(_workflowDbContext),
+                    new TotalWorkflowAuthorisedCountStatsQueryCommand(_workflowDbContext),
+                    new PublishedTekCountStatsQueryCommand(_workflowDbContext),
+                    new TotalTekCountStatsQueryCommand(_workflowDbContext),
                 });
             cmd.Execute();
 
-            Assert.Equal(0, statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowCountStatsQueryCommand.Name).Value);
-            Assert.Equal(0, statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowsWithTeksQueryCommand.Name).Value);
-            Assert.Equal(0, statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowAuthorisedCountStatsQueryCommand.Name).Value);
-            Assert.Equal(0, statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == PublishedTekCountStatsQueryCommand.Name).Value);
-            Assert.Equal(0, statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalTekCountStatsQueryCommand.Name).Value);
+            Assert.Equal(0, _statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowCountStatsQueryCommand.Name).Value);
+            Assert.Equal(0, _statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowsWithTeksQueryCommand.Name).Value);
+            Assert.Equal(0, _statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowAuthorisedCountStatsQueryCommand.Name).Value);
+            Assert.Equal(0, _statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == PublishedTekCountStatsQueryCommand.Name).Value);
+            Assert.Equal(0, _statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalTekCountStatsQueryCommand.Name).Value);
         }
 
         [Fact]
         [ExclusivelyUses(nameof(StatsTests))]
         public void WithData()
         {
-            var wf = _workflowDbProvider.CreateNew();
-
             var workflows = new[] {
                 new TekReleaseWorkflowStateEntity { BucketId = new byte[]{1}, ConfirmationKey = new byte[]{1}, LabConfirmationId = "1", Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>()},
                 new TekReleaseWorkflowStateEntity { BucketId = new byte[]{2}, ConfirmationKey = new byte[]{2}, LabConfirmationId = "2",  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() },
@@ -91,32 +89,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Sta
                 new TekEntity { KeyData = new byte[0], PublishingState = PublishingState.Unpublished, PublishAfter = DateTime.MinValue }
             });
 
-            wf.KeyReleaseWorkflowStates.AddRange(workflows);
-            wf.SaveChanges();
+            _workflowDbContext.KeyReleaseWorkflowStates.AddRange(workflows);
+            _workflowDbContext.SaveChanges();
 
-            var statsDbContext = _statsDbProvider.CreateNew();
-            var cmd = new StatisticsCommand(new StatisticsDbWriter(statsDbContext, _fakeDtp),
+            var cmd = new StatisticsCommand(new StatisticsDbWriter(_statsDbContext, _fakeDtp),
                 new IStatsQueryCommand[]
                 {
-                    new TotalWorkflowCountStatsQueryCommand(wf),
-                    new TotalWorkflowsWithTeksQueryCommand(wf),
-                    new TotalWorkflowAuthorisedCountStatsQueryCommand(wf),
-                    new PublishedTekCountStatsQueryCommand(wf),
-                    new TotalTekCountStatsQueryCommand(wf),
+                    new TotalWorkflowCountStatsQueryCommand(_workflowDbContext),
+                    new TotalWorkflowsWithTeksQueryCommand(_workflowDbContext),
+                    new TotalWorkflowAuthorisedCountStatsQueryCommand(_workflowDbContext),
+                    new PublishedTekCountStatsQueryCommand(_workflowDbContext),
+                    new TotalTekCountStatsQueryCommand(_workflowDbContext),
                 });
             cmd.Execute();
 
-            Assert.Equal(8, statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowCountStatsQueryCommand.Name).Value);
-            Assert.Equal(3, statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowsWithTeksQueryCommand.Name).Value);
-            Assert.Equal(3, statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowAuthorisedCountStatsQueryCommand.Name).Value);
-            Assert.Equal(4, statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == PublishedTekCountStatsQueryCommand.Name).Value);
-            Assert.Equal(9, statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalTekCountStatsQueryCommand.Name).Value);
-        }
-
-        public void Dispose()
-        {
-            _workflowDbProvider.Dispose();
-            _statsDbProvider.Dispose();
+            Assert.Equal(8, _statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowCountStatsQueryCommand.Name).Value);
+            Assert.Equal(3, _statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowsWithTeksQueryCommand.Name).Value);
+            Assert.Equal(3, _statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowAuthorisedCountStatsQueryCommand.Name).Value);
+            Assert.Equal(4, _statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == PublishedTekCountStatsQueryCommand.Name).Value);
+            Assert.Equal(9, _statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalTekCountStatsQueryCommand.Name).Value);
         }
     }
 }

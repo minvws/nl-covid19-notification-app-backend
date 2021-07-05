@@ -18,7 +18,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
@@ -30,16 +29,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         private readonly byte[] _key = Convert.FromBase64String(@"PwMcyc8EXF//Qkye1Vl2S6oCOo9HFS7E7vw7y9GOzJk=");
         private readonly WebApplicationFactory<Startup> _factory;
         private readonly byte[] _bucketId = Convert.FromBase64String(@"idlVmyDGeAXTyaNN06Uejy6tLgkgWtj32sLRJm/OuP8=");
-        private readonly IDbProvider<WorkflowDbContext> _workflowDbProvider;
+        private readonly WorkflowDbContext _workflowDbContext;
 
-        protected WorkflowControllerPostKeysTests(IDbProvider<WorkflowDbContext> workflowDbProvider)
+        protected WorkflowControllerPostKeysTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions)
         {
-            _workflowDbProvider = workflowDbProvider;
+            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions);
+            _workflowDbContext.Database.EnsureCreated();
+
             _factory = WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddScoped(sp => _workflowDbProvider.CreateNewWithTx());
                     services.AddTransient<DecoyTimeAggregatorAttribute>();
                 });
 
@@ -55,22 +55,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                 });
             });
 
-            var dbContext = _workflowDbProvider.CreateNew();
-            dbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+            _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
                 BucketId = _bucketId,
                 ValidUntil = DateTime.UtcNow.AddHours(1),
                 Created = DateTime.UtcNow,
                 ConfirmationKey = _key,
             });
-            dbContext.SaveChanges();
+            _workflowDbContext.SaveChanges();
         }
 
-        void IDisposable.Dispose()
-        {
-            base.Dispose();
-            _workflowDbProvider.Dispose();
-        }
 
         [Fact]
         [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
@@ -89,7 +83,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var result = await client.PostAsync($"v1/postkeys?sig={signature}", content);
 
             // Assert
-            var items = await _workflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
+            var items = await _workflowDbContext.TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Empty(items);
         }
@@ -111,7 +105,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var result = await client.PostAsync($"v1/postkeys?sig={signature}", content);
 
             // Assert
-            var items = await _workflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
+            var items = await _workflowDbContext.TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Empty(items);
         }
@@ -132,7 +126,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var result = await client.PostAsync("v1/postkeys", content);
 
             // Assert
-            var items = await _workflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
+            var items = await _workflowDbContext.TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Empty(items);
         }
@@ -153,7 +147,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var result = await client.PostAsync($"v1/postkeys?sig={string.Empty}", content);
 
             // Assert
-            var items = await _workflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
+            var items = await _workflowDbContext.TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode); //All coerced by middleware to 200 now.
             Assert.Empty(items);
         }

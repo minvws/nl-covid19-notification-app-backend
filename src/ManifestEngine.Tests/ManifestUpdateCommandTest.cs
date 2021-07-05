@@ -20,14 +20,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 {
     public abstract class ManifestUpdateCommandTest
     {
-        private readonly DbContextOptions<ContentDbContext> _contentDbContextOptions;
+        private readonly ContentDbContext _contentDbContext;
         private readonly ManifestUpdateCommand _sut;
         private readonly Mock<IUtcDateTimeProvider> _dateTimeProviderMock;
         private readonly DateTime _mockedTime = DateTime.UtcNow;
 
         public ManifestUpdateCommandTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _contentDbContextOptions = contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions));
+            _contentDbContext = new ContentDbContext(contentDbContextOptions);
+            _contentDbContext.Database.EnsureCreated();
 
             var nlSignerMock = new Mock<IContentSigner>();
             nlSignerMock.Setup(x => x.GetSignature(new byte[0]))
@@ -45,10 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             var jsonSerializer = new StandardJsonSerializer();
             var loggingExtensionsMock = new ManifestUpdateCommandLoggingExtensions(
                 loggerFactory.CreateLogger<ManifestUpdateCommandLoggingExtensions>());
-
-            var contentDbContext = new ContentDbContext(_contentDbContextOptions);
-            contentDbContext.Database.EnsureCreated();
-
+            
             Func<IContentEntityFormatter> contentFormatterInjector = () =>
                 new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(nlSignerMock.Object),
@@ -56,10 +54,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
                     jsonSerializer);
 
             _sut = new ManifestUpdateCommand(
-                new ManifestV2Builder(contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
-                new ManifestV3Builder(contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
-                new ManifestV4Builder(contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
-                new ContentDbContext(_contentDbContextOptions),
+                new ManifestV2Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
+                new ManifestV3Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
+                new ManifestV4Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
+                _contentDbContext,
                 loggingExtensionsMock,
                 _dateTimeProviderMock.Object,
                 jsonSerializer,
@@ -71,25 +69,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         public async Task NoManifestInDb_ExecuteAll_ThreeManifestsInDb()
         {
             // Arrange
-            var contentDbContext = new ContentDbContext(_contentDbContextOptions);
-            await contentDbContext.Database.EnsureCreatedAsync();
+            
 
             //Act
             await _sut.ExecuteAllAsync();
 
             //Assert
-            Assert.Equal(3, contentDbContext.Content.Count());
-            Assert.Equal(1, contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
-            Assert.Equal(1, contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV3));
-            Assert.Equal(1, contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV4));
+            Assert.Equal(3, _contentDbContext.Content.Count());
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV3));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV4));
         }
 
         [Fact]
         public async Task NoManifestInDb_ExecuteAllTwice_ThreeManifestsInDb()
         {
             // Arrange
-            var contentDbContext = new ContentDbContext(_contentDbContextOptions);
-            await contentDbContext.Database.EnsureCreatedAsync();
+            
 
             //Act
             await _sut.ExecuteAllAsync();
@@ -101,10 +97,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             await _sut.ExecuteAllAsync();
 
             //Assert
-            Assert.Equal(3, contentDbContext.Content.Count());
-            Assert.Equal(1, contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
-            Assert.Equal(1, contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV3));
-            Assert.Equal(1, contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV4));
+            Assert.Equal(3, _contentDbContext.Content.Count());
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV3));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV4));
         }
     }
 }

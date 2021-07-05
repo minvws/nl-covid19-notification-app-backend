@@ -4,19 +4,20 @@
 
 using System;
 using System.Data.Common;
+using Icc.V2.WebApi.Tests;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
+namespace Icc.v2.WebApi.Tests.Workflow
 {
     [Trait("db", "mem")]
-    public class WorkflowControllerPostKeysTestsTestsSqlite : WorkflowControllerPostKeysTests, IDisposable
+    public class WorkflowTestsSqlite : WorkflowControllerTests, IDisposable
     {
         private static DbConnection connection;
 
-        public WorkflowControllerPostKeysTestsTestsSqlite() : base(
+        public WorkflowTestsSqlite() : base(
             new DbContextOptionsBuilder<WorkflowDbContext>().UseSqlite(CreateInMemoryDatabase()).Options
         )
         { }

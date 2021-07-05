@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -17,28 +18,29 @@ using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
 {
     [Collection(nameof(WorkflowControllerPostSecretTests))]
     [ExclusivelyUses(nameof(WorkflowControllerPostSecretTests))]
-    public abstract class WorkflowControllerPostSecretTests : WebApplicationFactory<Startup>, IDisposable
+    public abstract class WorkflowControllerPostSecretTests : WebApplicationFactory<Startup>
     {
         private readonly WebApplicationFactory<Startup> _factory;
         private readonly FakeNumberGen _fakeNumbers = new FakeNumberGen();
-        private readonly IDbProvider<WorkflowDbContext> _workflowDbProvider;
+        private readonly WorkflowDbContext _workflowDbContext;
 
-        protected WorkflowControllerPostSecretTests(IDbProvider<WorkflowDbContext> workflowDbProvider)
+        protected WorkflowControllerPostSecretTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions)
         {
-            _workflowDbProvider = workflowDbProvider;
+            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions);
+            _workflowDbContext.Database.EnsureCreated();
+
             _factory = WithWebHostBuilder(
                 builder =>
                 {
                     builder.ConfigureTestServices(services =>
                     {
-                        services.AddScoped(sp => _workflowDbProvider.CreateNew());
+                        services.AddScoped(sp => new WorkflowDbContext(workflowDbContextOptions));
                         services.Replace(new ServiceDescriptor(typeof(IRandomNumberGenerator), _fakeNumbers));
                         services.AddTransient<DecoyTimeAggregatorAttribute>();
                     });
@@ -68,11 +70,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             }
         }
 
-        void IDisposable.Dispose()
-        {
-            base.Dispose();
-        }
-
         [Theory]
         [InlineData("v1/register")]
         [InlineData("v2/register")]
@@ -80,6 +77,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         public async Task PostSecretTest_EmptyDb(string endpoint)
         {
             // Arrange
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+
             var client = _factory.CreateClient();
 
             _fakeNumbers.Value = 1;
@@ -88,7 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var result = await client.PostAsync(endpoint, null);
 
             // Assert
-            var items = await _workflowDbProvider.CreateNew().KeyReleaseWorkflowStates.ToListAsync();
+            var items = await _workflowDbContext.KeyReleaseWorkflowStates.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Single(items);
         }
@@ -115,22 +114,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         [ExclusivelyUses("WorkflowControllerPostSecretTests")]
         public async Task PostSecretTest_5RetriesAndBang(string endpoint)
         {
+            // Arrange
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+
             var endpointToResultMap = new Dictionary<string, string>()
             {
                 { "v1", "{\"labConfirmationId\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}" },
                 { "v2", "{\"ggdKey\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}"}
             };
 
-            using var dbContext = _workflowDbProvider.CreateNew();
-            dbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
-            dbContext.SaveChanges();
-            // Arrange
+            _workflowDbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
+            _workflowDbContext.SaveChanges();
+
             var client = _factory.CreateClient();
             _fakeNumbers.Value = 1;
 
             // Act
             var result = await client.PostAsync($"{endpoint}/register", null);
 
+            //Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Equal(endpointToResultMap[endpoint], await result.Content.ReadAsStringAsync());
         }
@@ -141,19 +143,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         [ExclusivelyUses("WorkflowControllerPostSecretTests")]
         public async Task PostSecret_MissThe5Existing(string endpoint)
         {
-            using var dbContext = _workflowDbProvider.CreateNew();
-            dbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
-            dbContext.SaveChanges();
+            // Arrange
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+
+            _workflowDbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
+            _workflowDbContext.SaveChanges();
 
             _fakeNumbers.Value = 6;
-            // Arrange
+
             var client = _factory.CreateClient();
 
             // Act
             var result = await client.PostAsync(endpoint, null);
 
             // Assert
-            var items = await dbContext.KeyReleaseWorkflowStates.ToListAsync();
+            var items = await _workflowDbContext.KeyReleaseWorkflowStates.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Equal(6, items.Count);
         }
@@ -164,6 +168,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         public async Task Register_has_padding(string endpoint)
         {
             // Arrange
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+
             var client = _factory.CreateClient();
 
             // Act

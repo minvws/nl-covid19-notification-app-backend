@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
     [ExclusivelyUses(nameof(ManifestUpdateCommandTestSqlite))]
     public class ManifestUpdateCommandTestSqlite : ManifestUpdateCommandTest, IDisposable
     {
-        private static DbConnection _connection;
+        private static DbConnection connection;
         public ManifestUpdateCommandTestSqlite() : base(
             new DbContextOptionsBuilder<ContentDbContext>().UseSqlite(CreateInMemoryDatabase()).Options
         )
@@ -26,13 +26,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 
         private static DbConnection CreateInMemoryDatabase()
         {
-            _connection = new SqliteConnection("Filename=:memory:");
+            connection = new SqliteConnection("Filename=:memory:");
 
-            _connection.Open();
+            connection.Open();
 
-            return _connection;
+            return connection;
         }
 
-        public void Dispose() => _connection.Dispose();
+        public void Dispose() => connection.Dispose();
     }
 }
