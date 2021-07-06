@@ -5,7 +5,6 @@
 using System.Data.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using Xunit;
@@ -16,12 +15,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     public class WfToDkSnapshotTestsSqlServer : WfToDkSnapshotTests
     {
         private const string Prefix = nameof(WfToDkSnapshotTests) + "_";
-        private static DbConnection _connection;
+        private static DbConnection connection;
 
         public WfToDkSnapshotTestsSqlServer() : base(
             new DbContextOptionsBuilder<WorkflowDbContext>().UseSqlServer(CreateSqlDatabase("W")).Options,
-            new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlServer(CreateSqlDatabase("D")).Options,
-            new SqlServerWrappedEfExtensions()
+            new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlServer(CreateSqlDatabase("D")).Options
         )
         { }
 
@@ -32,10 +30,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 MultipleActiveResultSets = true
             };
 
-            _connection = new SqlConnection(csb.ConnectionString);
-            return _connection;
+            connection = new SqlConnection(csb.ConnectionString);
+            return connection;
         }
 
-        public void Dispose() => _connection.Dispose();
+        public void Dispose() => connection.Dispose();
     }
 }

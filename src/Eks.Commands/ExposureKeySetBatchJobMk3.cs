@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -26,7 +27,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     /// </summary>
     public sealed class ExposureKeySetBatchJobMk3
     {
-        private readonly IWrappedEfExtensions _sqlCommands;
         private readonly IEksConfig _eksConfig;
         private readonly IEksBuilder _setBuilder;
         private readonly IEksStuffingGeneratorMk2 _eksStuffingGenerator;
@@ -49,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private readonly Stopwatch _buildEksStopwatch = new Stopwatch();
         private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
 
-        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, EksPublishingJobDbContext eksPublishingJobDbContext, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys, IWrappedEfExtensions sqlCommands)
+        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, EksPublishingJobDbContext eksPublishingJobDbContext, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys)
         {
             _eksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
             _setBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
@@ -63,7 +63,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _output = new List<EksCreateJobInputEntity>(_eksConfig.TekCountMax);
             _writeStuffingToDiagnosisKeys = writeStuffingToDiagnosisKeys ?? throw new ArgumentNullException(nameof(writeStuffingToDiagnosisKeys));
             _jobName = $"ExposureKeySetsJob_{_dateTimeProvider.Snapshot:u}".Replace(" ", "_").Replace(":", "_");
-            _sqlCommands = sqlCommands ?? throw new ArgumentNullException(nameof(sqlCommands));
         }
 
         public async Task<EksEngineResult> ExecuteAsync()
@@ -122,9 +121,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private async Task ClearJobTablesAsync()
         {
             _logger.WriteCleartables();
-
-            await _sqlCommands.TruncateTableAsync(_eksPublishingJobDbContext, TableNames.EksEngineInput);
-            await _sqlCommands.TruncateTableAsync(_eksPublishingJobDbContext, TableNames.EksEngineOutput);
+            
+            await _eksPublishingJobDbContext.TruncateAsync<EksCreateJobInputEntity>();
+            await _eksPublishingJobDbContext.TruncateAsync<EksCreateJobOutputEntity>();
         }
 
         private async Task StuffAsync()

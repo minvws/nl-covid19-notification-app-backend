@@ -24,8 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             new DbContextOptionsBuilder<WorkflowDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
             new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
             new DbContextOptionsBuilder<EksPublishingJobDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
-            new DbContextOptionsBuilder<ContentDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
-            new SqliteWrappedEfExtensions()
+            new DbContextOptionsBuilder<ContentDbContext>().UseSqlite(CreateInMemoryDatabase()).Options
         )
         { }
         private static DbConnection CreateInMemoryDatabase()

@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -26,19 +25,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     {
         private readonly WorkflowDbContext _workflowDbContext;
         private readonly DkSourceDbContext _dkSourceDbContext;
-        private readonly IWrappedEfExtensions _efExtensions;
         private readonly LoggerFactory _lf;
         private readonly Mock<IUtcDateTimeProvider> _dateTimeProvider;
         private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _outboundCountries;
 
-        protected TekToDkSnapshotTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions, DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions, IWrappedEfExtensions efExtensions)
+        protected TekToDkSnapshotTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions, DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions)
         {
             _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions);
             _workflowDbContext.Database.EnsureCreated();
             _dkSourceDbContext = new DkSourceDbContext(dkSourceDbContextOptions);
             _dkSourceDbContext.Database.EnsureCreated();
 
-            _efExtensions = efExtensions ?? throw new ArgumentNullException(nameof(efExtensions));
             _dateTimeProvider = new Mock<IUtcDateTimeProvider>();
             _outboundCountries = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
             _lf = new LoggerFactory();
@@ -53,7 +50,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowDbContext,
                 _dkSourceDbContext,
-                _efExtensions,
                 new IDiagnosticKeyProcessor[] {
                     new ExcludeTrlNoneDiagnosticKeyProcessor(),
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_outboundCountries.Object),

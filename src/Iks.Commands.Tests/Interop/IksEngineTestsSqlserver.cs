@@ -27,8 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             new DbContextOptionsBuilder<IksInDbContext>().UseSqlServer(CreateSqlDatabase("II")).Options,
             new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlServer(CreateSqlDatabase("D")).Options,
             new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseSqlServer(CreateSqlDatabase("P")).Options,
-            new DbContextOptionsBuilder<IksOutDbContext>().UseSqlServer(CreateSqlDatabase("IO")).Options,
-            new SqliteWrappedEfExtensions()
+            new DbContextOptionsBuilder<IksOutDbContext>().UseSqlServer(CreateSqlDatabase("IO")).Options
         )
         { }
 

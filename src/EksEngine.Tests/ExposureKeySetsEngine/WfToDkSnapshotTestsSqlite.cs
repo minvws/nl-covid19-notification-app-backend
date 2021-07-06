@@ -8,7 +8,6 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySetsEngine
@@ -16,23 +15,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     [Trait("db", "mem")]
     public class WfToDkSnapshotTestsSqlite : WfToDkSnapshotTests, IDisposable
     {
-        private static DbConnection _connection;
+        private static DbConnection connection;
 
         public WfToDkSnapshotTestsSqlite() : base(
             new DbContextOptionsBuilder<WorkflowDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
-            new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
-            new SqliteWrappedEfExtensions())
+            new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlite(CreateInMemoryDatabase()).Options
+            )
         { }
 
         private static DbConnection CreateInMemoryDatabase()
         {
-            _connection = new SqliteConnection("Filename=:memory:");
+            connection = new SqliteConnection("Filename=:memory:");
 
-            _connection.Open();
+            connection.Open();
 
-            return _connection;
+            return connection;
         }
 
-        public void Dispose() => _connection.Dispose();
+        public void Dispose() => connection.Dispose();
     }
 }

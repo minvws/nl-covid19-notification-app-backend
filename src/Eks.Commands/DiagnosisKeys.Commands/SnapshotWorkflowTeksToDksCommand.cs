@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -27,20 +28,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         private readonly ITransmissionRiskLevelCalculationMk2 _transmissionRiskLevelCalculation;
         private readonly WorkflowDbContext _workflowDbContext;
         private readonly DkSourceDbContext _dkSourceDbContext;
-        private readonly IWrappedEfExtensions _sqlCommands;
         private readonly IDiagnosticKeyProcessor[] _orderedProcessorList;
 
         private int _commitIndex;
         private SnapshotWorkflowTeksToDksResult _result;
 
-        public SnapshotWorkflowTeksToDksCommand(ILogger<SnapshotWorkflowTeksToDksCommand> logger, IUtcDateTimeProvider dateTimeProvider, ITransmissionRiskLevelCalculationMk2 transmissionRiskLevelCalculation, WorkflowDbContext workflowDbContext, DkSourceDbContext dkSourceDbContext, IWrappedEfExtensions sqlCommands, IDiagnosticKeyProcessor[] orderedProcessorList)
+        public SnapshotWorkflowTeksToDksCommand(ILogger<SnapshotWorkflowTeksToDksCommand> logger, IUtcDateTimeProvider dateTimeProvider, ITransmissionRiskLevelCalculationMk2 transmissionRiskLevelCalculation, WorkflowDbContext workflowDbContext, DkSourceDbContext dkSourceDbContext, IDiagnosticKeyProcessor[] orderedProcessorList)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _transmissionRiskLevelCalculation = transmissionRiskLevelCalculation ?? throw new ArgumentNullException(nameof(transmissionRiskLevelCalculation));
             _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
             _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
-            _sqlCommands = sqlCommands ?? throw new ArgumentNullException(nameof(sqlCommands));
             _orderedProcessorList = orderedProcessorList ?? throw new ArgumentNullException(nameof(orderedProcessorList));
         }
 
@@ -60,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
         private async Task ClearJobTablesAsync()
         {
-            await _sqlCommands.TruncateTableAsync(_dkSourceDbContext, TableNames.DiagnosisKeysInput);
+            await _dkSourceDbContext.TruncateAsync<DiagnosisKeyInputEntity>();
         }
 
         private async Task SnapshotTeks()

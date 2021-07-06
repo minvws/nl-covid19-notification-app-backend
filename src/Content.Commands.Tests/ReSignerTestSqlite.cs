@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
     [Trait("db", "mem")]
     public class ReSignerTestSqlite : ReSignerTest, IDisposable
     {
-        private static DbConnection _connection;
+        private static DbConnection connection;
         public ReSignerTestSqlite() : base(
             new DbContextOptionsBuilder<ContentDbContext>().UseSqlite(CreateInMemoryDatabase()).Options
         )
@@ -22,13 +22,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
         private static DbConnection CreateInMemoryDatabase()
         {
-            _connection = new SqliteConnection("Filename=:memory:");
+            connection = new SqliteConnection("Filename=:memory:");
 
-            _connection.Open();
+            connection.Open();
 
-            return _connection;
+            return connection;
         }
 
-        public void Dispose() => _connection.Dispose();
+        public void Dispose() => connection.Dispose();
     }
 }

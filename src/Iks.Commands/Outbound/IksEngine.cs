@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -21,8 +22,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
     /// </summary>
     public class IksEngine
     {
-        private readonly IWrappedEfExtensions _sqlCommands;
-
         private readonly ILogger<IksEngine> _logger;
         private readonly IksInputSnapshotCommand _snapshotter;
         private readonly IksFormatter _formatter;
@@ -46,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private readonly IksPublishingJobDbContext _publishingDbContext;
 
 
-        public IksEngine(ILogger<IksEngine> logger, IksInputSnapshotCommand snapshotter, IksFormatter formatter, IIksConfig config, IUtcDateTimeProvider dateTimeProvider, MarkDiagnosisKeysAsUsedByIks markSourceAsUsed, IksJobContentWriter contentWriter, IksPublishingJobDbContext publishingDbContext, IWrappedEfExtensions sqlCommands)
+        public IksEngine(ILogger<IksEngine> logger, IksInputSnapshotCommand snapshotter, IksFormatter formatter, IIksConfig config, IUtcDateTimeProvider dateTimeProvider, MarkDiagnosisKeysAsUsedByIks markSourceAsUsed, IksJobContentWriter contentWriter, IksPublishingJobDbContext publishingDbContext)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _snapshotter = snapshotter ?? throw new ArgumentNullException(nameof(snapshotter));
@@ -56,7 +55,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             _markSourceAsUsed = markSourceAsUsed ?? throw new ArgumentNullException(nameof(markSourceAsUsed));
             _contentWriter = contentWriter ?? throw new ArgumentNullException(nameof(contentWriter));
             _publishingDbContext = publishingDbContext ?? throw new ArgumentNullException(nameof(publishingDbContext));
-            _sqlCommands = sqlCommands ?? throw new ArgumentNullException(nameof(sqlCommands));
             _jobName = "IksEngine";
         }
 
@@ -109,8 +107,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         {
             _logger.LogDebug("Clear job tables.");
 
-            await _sqlCommands.TruncateTableAsync(_publishingDbContext, TableNames.IksEngineInput);
-            await _sqlCommands.TruncateTableAsync(_publishingDbContext, TableNames.IksEngineOutput);
+            await _publishingDbContext.TruncateAsync<IksCreateJobInputEntity>();
+            await _publishingDbContext.TruncateAsync<IksCreateJobOutputEntity>();
         }
 
         private async Task BuildOutput()

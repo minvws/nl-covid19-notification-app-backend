@@ -45,8 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         private readonly DkSourceDbContext _dkSourceContext;
         private readonly EksPublishingJobDbContext _eksPublishingJobContext;
         private readonly ContentDbContext _contentContext;
-        private readonly IWrappedEfExtensions _efExtensions;
-
+        
         private readonly LoggerFactory _lf;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
 
@@ -54,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         private readonly SnapshotWorkflowTeksToDksCommand _snapshot;
         private Mock<IOutboundFixedCountriesOfInterestSetting> _countriesOut;
 
-        protected WfToEksEksBatchJobMk3Tests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions, DbContextOptions<EksPublishingJobDbContext> publishingContextOptions, DbContextOptions<ContentDbContext> contentContextOptions, IWrappedEfExtensions efExtensions)
+        protected WfToEksEksBatchJobMk3Tests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions, DbContextOptions<EksPublishingJobDbContext> publishingContextOptions, DbContextOptions<ContentDbContext> contentContextOptions)
         {
             _workflowContext = new WorkflowDbContext(workflowContextOptions);
             _workflowContext.Database.EnsureCreated();
@@ -65,8 +64,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             _contentContext = new ContentDbContext(contentContextOptions);
             _contentContext.Database.EnsureCreated();
 
-            _efExtensions = efExtensions ?? throw new ArgumentNullException(nameof(efExtensions));
-
             _dateTimeProvider = new StandardUtcDateTimeProvider();
             _fakeEksConfig = new FakeEksConfig { LifetimeDays = 14, PageSize = 1000, TekCountMax = 10, TekCountMin = 5 };
             _lf = new LoggerFactory();
@@ -76,7 +73,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowContext,
                 _dkSourceContext,
-                _efExtensions,
                 new IDiagnosticKeyProcessor[0]
             );
         }
@@ -149,8 +145,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                         new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_countriesOut.Object),
                         new NlToEfgsDsosDiagnosticKeyProcessorMk1()
                     }
-                ),
-                _efExtensions);
+                )
+                );
 
             return _engine.ExecuteAsync().GetAwaiter().GetResult();
         }

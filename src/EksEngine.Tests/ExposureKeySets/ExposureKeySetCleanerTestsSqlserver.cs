@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     public class ExposureKeySetCleanerTestsSqlserver : ExposureKeySetCleanerTests
     {
         private const string Prefix = nameof(ExposureKeySetCleanerTests) + "_";
-        private static DbConnection _connection;
+        private static DbConnection connection;
 
         public ExposureKeySetCleanerTestsSqlserver() : base(
             new DbContextOptionsBuilder<ContentDbContext>().UseSqlServer(CreateSqlDatabase("C")).Options
@@ -28,10 +28,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 MultipleActiveResultSets = true
             };
 
-            _connection = new SqlConnection(csb.ConnectionString);
-            return _connection;
+            connection = new SqlConnection(csb.ConnectionString);
+            return connection;
         }
 
-        public void Dispose() => _connection.Dispose();
+        public void Dispose() => connection.Dispose();
     }
 }

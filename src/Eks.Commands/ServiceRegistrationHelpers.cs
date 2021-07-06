@@ -2,11 +2,9 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
@@ -24,7 +22,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     {
         public static void EksEngine(this IServiceCollection services)
         {
-            //services.AddSingleton<ITekValidatorConfig, TekValidatorConfig>();
             services.AddSingleton<IEksHeaderInfoConfig, EksHeaderInfoConfig>();
             services.AddSingleton<IEksConfig, StandardEksConfig>();
 
@@ -49,7 +46,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 x.GetRequiredService<ITransmissionRiskLevelCalculationMk2>(),
                 x.GetRequiredService<WorkflowDbContext>(),
                 x.GetRequiredService<DkSourceDbContext>(),
-                x.GetRequiredService<IWrappedEfExtensions>(),
                 new IDiagnosticKeyProcessor[]
                 {
                     x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),

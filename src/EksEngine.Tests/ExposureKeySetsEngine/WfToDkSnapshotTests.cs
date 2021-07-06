@@ -29,13 +29,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         private readonly WorkflowDbContext _workflowContext;
         private readonly DkSourceDbContext _dkSourceContext;
-        private readonly IWrappedEfExtensions _efExtensions;
         private readonly LoggerFactory _lf;
         private readonly Mock<IUtcDateTimeProvider> _dateTimeProvider;
 
-        protected WfToDkSnapshotTests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions, IWrappedEfExtensions efExtensions)
+        protected WfToDkSnapshotTests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions)
         {
-            _efExtensions = efExtensions ?? throw new ArgumentNullException(nameof(efExtensions));
             _dateTimeProvider = new Mock<IUtcDateTimeProvider>();
             _lf = new LoggerFactory();
 
@@ -52,7 +50,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowContext,
                 _dkSourceContext,
-                _efExtensions,
                 new IDiagnosticKeyProcessor[0]
             );
         }

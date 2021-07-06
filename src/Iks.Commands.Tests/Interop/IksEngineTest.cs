@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
@@ -42,18 +41,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         private readonly IksPublishingJobDbContext _iksPublishingJobDbContext;
         private readonly IksOutDbContext _iksOutDbContext;
 
-        private readonly IWrappedEfExtensions _efExtensions;
-
         private readonly ILoggerFactory _loggerFactory = new SerilogLoggerFactory();
 
         private readonly Mock<IIksConfig> _iksConfigMock = new Mock<IIksConfig>(MockBehavior.Strict);
         private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _countriesConfigMock = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
         private readonly Mock<IUtcDateTimeProvider> _utcDateTimeProviderMock = new Mock<IUtcDateTimeProvider>(MockBehavior.Strict);
 
-        protected IksEngineTest(DbContextOptions<WorkflowDbContext> workflowDbContextOptions, DbContextOptions<IksInDbContext> iksInDbContextOptions, DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions, DbContextOptions<IksPublishingJobDbContext> iksPublishingJobDbContextOptions, DbContextOptions<IksOutDbContext> iksOutDbContextOptions, IWrappedEfExtensions efExtensions)
+        protected IksEngineTest(DbContextOptions<WorkflowDbContext> workflowDbContextOptions, DbContextOptions<IksInDbContext> iksInDbContextOptions, DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions, DbContextOptions<IksPublishingJobDbContext> iksPublishingJobDbContextOptions, DbContextOptions<IksOutDbContext> iksOutDbContextOptions)
         {
-            _efExtensions = efExtensions ?? throw new ArgumentNullException(nameof(efExtensions));
-
             _iksInDbContext = new IksInDbContext(iksInDbContextOptions);
             _iksInDbContext.Database.EnsureCreated();
             _dkSourceDbContext = new DkSourceDbContext(dkSourceDbContextOptions);
@@ -79,8 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
                 _utcDateTimeProviderMock.Object,
                 new MarkDiagnosisKeysAsUsedByIks(_dkSourceDbContext, _iksConfigMock.Object, _iksPublishingJobDbContext, _loggerFactory.CreateLogger<MarkDiagnosisKeysAsUsedByIks>()),
                 new IksJobContentWriter(_iksOutDbContext, _iksPublishingJobDbContext, _loggerFactory.CreateLogger<IksJobContentWriter>()),
-                _iksPublishingJobDbContext,
-                _efExtensions
+                _iksPublishingJobDbContext
             );
         }
 
@@ -187,8 +181,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 
             var usableDkCount = await new WorkflowTestDataGenerator(
                 _workflowDbContext,
-                _dkSourceDbContext,
-                _efExtensions
+                _dkSourceDbContext
             ).GenerateAndAuthoriseWorkflowsAsync();
 
             //Act
@@ -222,8 +215,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 
             var usableDkCount = await new WorkflowTestDataGenerator(
                 _workflowDbContext,
-                _dkSourceDbContext,
-                _efExtensions
+                _dkSourceDbContext
             ).GenerateAndAuthoriseWorkflowsAsync();
 
             //Act

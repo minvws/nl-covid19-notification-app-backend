@@ -18,26 +18,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     [Trait("db", "mem")]
     public class WfToEksEksBatchJobMk3TestsSqlite : WfToEksEksBatchJobMk3Tests, IDisposable
     {
-        private static DbConnection _connection;
+        private static DbConnection connection;
 
         public WfToEksEksBatchJobMk3TestsSqlite() : base(
             new DbContextOptionsBuilder<WorkflowDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
             new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
             new DbContextOptionsBuilder<EksPublishingJobDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
-            new DbContextOptionsBuilder<ContentDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
-            new SqliteWrappedEfExtensions()
+            new DbContextOptionsBuilder<ContentDbContext>().UseSqlite(CreateInMemoryDatabase()).Options
         )
         { }
 
         private static DbConnection CreateInMemoryDatabase()
         {
-            _connection = new SqliteConnection("Filename=:memory:");
+            connection = new SqliteConnection("Filename=:memory:");
 
-            _connection.Open();
+            connection.Open();
 
-            return _connection;
+            return connection;
         }
 
-        public void Dispose() => _connection.Dispose();
+        public void Dispose() => connection.Dispose();
     }
 }

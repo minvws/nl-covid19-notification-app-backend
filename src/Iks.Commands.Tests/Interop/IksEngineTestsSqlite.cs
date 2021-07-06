@@ -11,7 +11,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramewo
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop
@@ -26,8 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             new DbContextOptionsBuilder<IksInDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
             new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
             new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
-            new DbContextOptionsBuilder<IksOutDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
-            new SqliteWrappedEfExtensions()
+            new DbContextOptionsBuilder<IksOutDbContext>().UseSqlite(CreateInMemoryDatabase()).Options
         )
         { }
 

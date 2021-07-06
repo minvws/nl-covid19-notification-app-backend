@@ -145,9 +145,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddDbContext<IksPublishingJobDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksPublishing)));
             services.AddDbContext<EksPublishingJobDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.EksPublishing)));
             services.AddDbContext<StatsDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Stats)));
-
-            services.AddSingleton<IWrappedEfExtensions, SqlServerWrappedEfExtensions>();
-
+            
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
             services.AddSingleton<IConfiguration>(configuration);

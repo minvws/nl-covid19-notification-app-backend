@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -27,16 +26,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
         private readonly ILoggerFactory _loggerFactory = new SerilogLoggerFactory();
         private readonly IUtcDateTimeProvider _utcDateTimeProvider = new StandardUtcDateTimeProvider();
         private readonly StandardRandomNumberGenerator _rng = new StandardRandomNumberGenerator();
-        private readonly IWrappedEfExtensions _efExtensions;
         private readonly LoggerFactory _lf;
         
-        public WorkflowTestDataGenerator(WorkflowDbContext workflowDbContext, DkSourceDbContext dkSourceDbContext, IWrappedEfExtensions efExtensions)
+        public WorkflowTestDataGenerator(WorkflowDbContext workflowDbContext, DkSourceDbContext dkSourceDbContext)
         {
             _lf = new LoggerFactory();
 
             _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
             _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
-            _efExtensions = efExtensions ?? throw new ArgumentNullException(nameof(efExtensions));
         }
 
         public async Task<int> GenerateAndAuthoriseWorkflowsAsync(int workflowCount = 25, int tekPerWOrkflowCount = 4)
@@ -57,7 +54,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowDbContext,
                 _dkSourceDbContext,
-                _efExtensions,
                 new IDiagnosticKeyProcessor[] {
                     new ExcludeTrlNoneDiagnosticKeyProcessor(),
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(countriesOutMock.Object),

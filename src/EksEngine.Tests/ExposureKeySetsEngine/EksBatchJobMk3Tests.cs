@@ -38,17 +38,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         private readonly DkSourceDbContext _dkSourceContext;
         private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
         private readonly ContentDbContext _contentDbContext;
-        private readonly IWrappedEfExtensions _efExtensions;
         private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _outboundCountriesMock;
         private readonly LoggerFactory _lf;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly SnapshotWorkflowTeksToDksCommand _snapshot;
         private ExposureKeySetBatchJobMk3 _engine;
 
-        protected EksBatchJobMk3Tests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions, DbContextOptions<EksPublishingJobDbContext> eksPublishingJobDbContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions, IWrappedEfExtensions efExtensions)
+        protected EksBatchJobMk3Tests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions, DbContextOptions<EksPublishingJobDbContext> eksPublishingJobDbContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _efExtensions = efExtensions ?? throw new ArgumentNullException(nameof(efExtensions));
-
             _workflowContext = new WorkflowDbContext(workflowContextOptions);
             _workflowContext.Database.EnsureCreated();
             _dkSourceContext = new DkSourceDbContext(dkSourceDbContextOptions);
@@ -67,7 +64,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowContext,
                 _dkSourceContext,
-                _efExtensions,
                 new IDiagnosticKeyProcessor[] { }
             );
 
@@ -134,8 +130,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_outboundCountriesMock.Object),
                     new NlToEfgsDsosDiagnosticKeyProcessorMk1()
                     }
-                    ),
-                _efExtensions);
+                    )
+                );
 
             return await _engine.ExecuteAsync();
         }

@@ -54,7 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
         private readonly NlContentResignExistingV1ContentCommand _resign;
         private readonly StandardRandomNumberGenerator _rng;
 
-        protected EksEngineTests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions, DbContextOptions<EksPublishingJobDbContext> eksPublishingJobDbContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions, IWrappedEfExtensions efExtensions)
+        protected EksEngineTests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions, DbContextOptions<EksPublishingJobDbContext> eksPublishingJobDbContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
             _lf = new LoggerFactory();
 
@@ -85,7 +85,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowContext,
                 _dkSourceContext,
-                efExtensions,
                 new IDiagnosticKeyProcessor[] { }
             );
 
@@ -117,9 +116,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 new IDiagnosticKeyProcessor[] {
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(countriesOut.Object),
                     new NlToEfgsDsosDiagnosticKeyProcessorMk1()}
-                ),
-                efExtensions
-                );
+                ));
 
             var jsonSerializer = new StandardJsonSerializer();
             _manifestJob = new ManifestUpdateCommand(
