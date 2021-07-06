@@ -56,7 +56,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             });
         }
 
-
         [Fact]
         public async Task PostWorkflowTest_InvalidSignature()
         {

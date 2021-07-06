@@ -41,17 +41,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
 
         private class FakeConfig : IWorkflowConfig
         {
-            public int TimeToLiveMinutes => throw new NotImplementedException(); //ncrunch: no coverage
-            public int PermittedMobileDeviceClockErrorMinutes => throw new NotImplementedException(); //ncrunch: no coverage
-            public int PostKeysSignatureLength => throw new NotImplementedException(); //ncrunch: no coverage
-            public int BucketIdLength => throw new NotImplementedException(); //ncrunch: no coverage
-            public int ConfirmationKeyLength => throw new NotImplementedException(); //ncrunch: no coverage
+            public int TimeToLiveMinutes => throw new NotImplementedException();
+            public int PermittedMobileDeviceClockErrorMinutes => throw new NotImplementedException();
+            public int PostKeysSignatureLength => throw new NotImplementedException();
+            public int BucketIdLength => throw new NotImplementedException();
+            public int ConfirmationKeyLength => throw new NotImplementedException();
             public bool CleanupDeletesData { get; set; }
         }
         private class FakeDtp : IUtcDateTimeProvider
         {
-            public DateTime Now() => throw new NotImplementedException(); //ncrunch: no coverage
-            public DateTime TakeSnapshot() => throw new NotImplementedException(); //ncrunch: no coverage
+            public DateTime Now() => throw new NotImplementedException();
+            public DateTime TakeSnapshot() => throw new NotImplementedException();
             public DateTime Snapshot { get; set; }
         }
 

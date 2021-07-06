@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         private class FakeTimeProvider : IUtcDateTimeProvider
         {
             public DateTime Value { get; set; }
-            public DateTime Now() => Value; //ncrunch: no coverage
+            public DateTime Now() => Value;
             public DateTime Snapshot => Value;
         }
 

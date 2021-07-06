@@ -16,7 +16,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework
         {
         }
 
-        //ncrunch: no coverage start 
         public bool IsEnabled(LogLevel logLevel)
         {
             throw new NotImplementedException();
@@ -26,6 +25,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework
         {
             throw new NotImplementedException();
         }
-        //ncrunch: no coverage end
     }
 }

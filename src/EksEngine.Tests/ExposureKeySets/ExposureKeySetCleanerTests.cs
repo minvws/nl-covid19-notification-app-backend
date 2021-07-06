@@ -28,16 +28,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         private class FakeDtp : IUtcDateTimeProvider
         {
-            public DateTime Now() => throw new NotImplementedException(); //ncrunch: no coverage
-            public DateTime TakeSnapshot() => throw new NotImplementedException(); //ncrunch: no coverage
+            public DateTime Now() => throw new NotImplementedException();
+            public DateTime TakeSnapshot() => throw new NotImplementedException();
             public DateTime Snapshot { get; set; }
         }
         private class FakeEksConfig : IEksConfig
         {
             public int LifetimeDays => 14;
-            public int TekCountMax => throw new NotImplementedException(); //ncrunch: no coverage
-            public int TekCountMin => throw new NotImplementedException(); //ncrunch: no coverage
-            public int PageSize => throw new NotImplementedException(); //ncrunch: no coverage
+            public int TekCountMax => throw new NotImplementedException();
+            public int TekCountMin => throw new NotImplementedException();
+            public int PageSize => throw new NotImplementedException();
             public bool CleanupDeletesData { get; set; }
         }
         private void Add(int id)

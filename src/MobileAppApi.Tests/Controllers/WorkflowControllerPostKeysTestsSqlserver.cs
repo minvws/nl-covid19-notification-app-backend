@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
     [Trait("db", "ss")]
     public class WorkflowControllerPostKeysTestsSqlserver : WorkflowControllerPostKeysTests, IDisposable
     {
-        private const string Prefix = nameof(WorkflowControllerPostKeysDiagnosticTests) + "_";
+        private const string Prefix = nameof(WorkflowControllerPostKeysTests) + "_";
         private static DbConnection connection;
 
         public WorkflowControllerPostKeysTestsSqlserver() : base(
