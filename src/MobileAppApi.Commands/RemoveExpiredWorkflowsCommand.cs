@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -82,9 +83,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
                 throw new InvalidOperationException("Object already used.");
             }
 
-
-            _result = new RemoveExpiredWorkflowsResult();
-            _result.DeletionsOn = _config.CleanupDeletesData;
+            _result = new RemoveExpiredWorkflowsResult
+            {
+                DeletionsOn = _config.CleanupDeletesData
+            };
 
             _logger.WriteStart();
 
@@ -118,7 +120,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
             LogReport(_result.Before, "Workflow stats after cleanup:");
             _logger.WriteFinished();
             return _result;
-            
         }
     }
 }

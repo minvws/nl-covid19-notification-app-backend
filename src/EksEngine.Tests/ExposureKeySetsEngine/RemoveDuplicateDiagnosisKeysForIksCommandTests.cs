@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -28,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         public RemoveDuplicateDiagnosisKeysForIksCommandTests()
         {
             var dkSourceDbProvider = new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlServer(CreateSqlDatabase()).Options;
-            var sp = File.ReadAllText(Path.Combine(Path.GetDirectoryName(NCrunch.Framework.NCrunchEnvironment.GetOriginalSolutionPath()), @"Database\DiagnosisKeys\dbo\StoredProcedures\RemoveDuplicateDiagnosisKeysForIks.sql"));
+            var sp = File.ReadAllText(@"Resources\RemoveDuplicateDiagnosisKeysForIks.sql");
             _dkSourceContext = new DkSourceDbContext(dkSourceDbProvider);
             _dkSourceContext.Database.EnsureDeleted(); // Delete database first because the sp cannot be added twice.
             _dkSourceContext.Database.EnsureCreated();
@@ -49,7 +48,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         public void Dispose() => _connection.Dispose();
 
         [Fact]
-        [ExclusivelyUses(nameof(RemoveDuplicateDiagnosisKeysForIksCommandTests))]
         public async Task Tests_that_no_action_taken_for_published_duplicates()
         {
             // Arrange
@@ -71,7 +69,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(RemoveDuplicateDiagnosisKeysForIksCommandTests))]
         public async Task Tests_that_when_DK_has_been_published_that_all_duplicates_marked_as_published()
         {
             // Arrange
@@ -94,8 +91,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(RemoveDuplicateDiagnosisKeysForIksCommandTests))]
-        public async Task Tests_that_when_DK_has_not_been_published_that_all_duplicates_except_the_highest_TRL_are_marked_as_published()
+                public async Task Tests_that_when_DK_has_not_been_published_that_all_duplicates_except_the_highest_TRL_are_marked_as_published()
         {
             // Arrange
             await _dkSourceContext.TruncateAsync<DiagnosisKeyEntity>();

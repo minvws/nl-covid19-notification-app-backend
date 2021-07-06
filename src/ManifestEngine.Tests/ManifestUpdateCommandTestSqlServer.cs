@@ -5,7 +5,6 @@
 using System.Data.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using Xunit;
 
@@ -13,7 +12,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 {
     [Trait("db", "ss")]
     [Collection(nameof(ManifestUpdateCommandTestSqlServer))]
-    [ExclusivelyUses(nameof(ManifestUpdateCommandTestSqlServer))]
     public class ManifestUpdateCommandTestSqlServer : ManifestUpdateCommandTest
     {
         private const string Prefix = nameof(ManifestUpdateCommandTest) + "_";

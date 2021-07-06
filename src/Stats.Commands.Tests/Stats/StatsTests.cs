@@ -5,9 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
@@ -36,9 +36,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Sta
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(StatsTests))]
         public void NothingToSeeHere()
         {
+            _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            _statsDbContext.BulkDelete(_statsDbContext.StatisticsEntries.ToList());
+
             var cmd = new StatisticsCommand(new StatisticsDbWriter(_statsDbContext, _fakeDtp),
                 new IStatsQueryCommand[]
                 {
@@ -58,9 +60,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Sta
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(StatsTests))]
         public void WithData()
         {
+            _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            _statsDbContext.BulkDelete(_statsDbContext.StatisticsEntries.ToList());
+
             var workflows = new[] {
                 new TekReleaseWorkflowStateEntity { BucketId = new byte[]{1}, ConfirmationKey = new byte[]{1}, LabConfirmationId = "1", Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>()},
                 new TekReleaseWorkflowStateEntity { BucketId = new byte[]{2}, ConfirmationKey = new byte[]{2}, LabConfirmationId = "2",  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() },

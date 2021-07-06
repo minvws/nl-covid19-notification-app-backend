@@ -4,18 +4,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
+using EFCore.BulkExtensions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using Xunit;
@@ -23,7 +24,6 @@ using Xunit;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
 {
     [Collection(nameof(WorkflowControllerPostKeysTests))]
-    [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
     public abstract class WorkflowControllerPostKeysTests : WebApplicationFactory<Startup>, IDisposable
     {
         private readonly byte[] _key = Convert.FromBase64String(@"PwMcyc8EXF//Qkye1Vl2S6oCOo9HFS7E7vw7y9GOzJk=");
@@ -54,20 +54,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                     });
                 });
             });
-
-            _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
-            {
-                BucketId = _bucketId,
-                ValidUntil = DateTime.UtcNow.AddHours(1),
-                Created = DateTime.UtcNow,
-                ConfirmationKey = _key,
-            });
-            _workflowDbContext.SaveChanges();
         }
 
 
         [Fact]
-        [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
         public async Task PostWorkflowTest_InvalidSignature()
         {
             // Arrange
@@ -79,6 +69,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var content = new ByteArrayContent(data);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+            {
+                BucketId = _bucketId,
+                ValidUntil = DateTime.UtcNow.AddHours(1),
+                Created = DateTime.UtcNow,
+                ConfirmationKey = _key,
+            });
+            await _workflowDbContext.SaveChangesAsync();
+
             // Act
             var result = await client.PostAsync($"v1/postkeys?sig={signature}", content);
 
@@ -89,7 +89,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
         public async Task PostWorkflowTest_ScriptInjectionInSignature()
         {
             // Arrange
@@ -101,6 +100,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var content = new ByteArrayContent(data);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
+
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+            {
+                BucketId = _bucketId,
+                ValidUntil = DateTime.UtcNow.AddHours(1),
+                Created = DateTime.UtcNow,
+                ConfirmationKey = _key,
+            });
+            await _workflowDbContext.SaveChangesAsync();
+
             // Act
             var result = await client.PostAsync($"v1/postkeys?sig={signature}", content);
 
@@ -111,7 +121,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
         public async Task PostWorkflowTest_NullSignature()
         {
             // Arrange
@@ -121,6 +130,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var data = inputStream.ToArray();
             var content = new ByteArrayContent(data);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+            {
+                BucketId = _bucketId,
+                ValidUntil = DateTime.UtcNow.AddHours(1),
+                Created = DateTime.UtcNow,
+                ConfirmationKey = _key,
+            });
+            await _workflowDbContext.SaveChangesAsync();
 
             // Act
             var result = await client.PostAsync("v1/postkeys", content);
@@ -132,7 +151,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
         public async Task PostWorkflowTest_EmptySignature()
         {
             // Arrange
@@ -142,6 +160,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var data = inputStream.ToArray();
             var content = new ByteArrayContent(data);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+            {
+                BucketId = _bucketId,
+                ValidUntil = DateTime.UtcNow.AddHours(1),
+                Created = DateTime.UtcNow,
+                ConfirmationKey = _key,
+            });
+            await _workflowDbContext.SaveChangesAsync();
 
             // Act
             var result = await client.PostAsync($"v1/postkeys?sig={string.Empty}", content);
@@ -157,6 +185,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         {
             // Arrange
             var client = _factory.CreateClient();
+
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+            {
+                BucketId = _bucketId,
+                ValidUntil = DateTime.UtcNow.AddHours(1),
+                Created = DateTime.UtcNow,
+                ConfirmationKey = _key,
+            });
+            await _workflowDbContext.SaveChangesAsync();
 
             // Act
             var result = await client.PostAsync("v1/postkeys", null);

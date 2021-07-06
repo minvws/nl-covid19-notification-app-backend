@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.SendTeks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
@@ -29,7 +28,6 @@ using Xunit;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
 {
     [Collection(nameof(WorkflowControllerPostKeysDiagnosticTests))]
-    [ExclusivelyUses(nameof(WorkflowControllerPostKeysDiagnosticTests))]
     public abstract class WorkflowControllerPostKeysDiagnosticTests : WebApplicationFactory<Startup>
     {
         private readonly WebApplicationFactory<Startup> _factory;
@@ -90,11 +88,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         [InlineData("Resources.payload-duplicate-TEKs-KeyData.json", 0, 7, 11)]
         [InlineData("Resources.payload-duplicate-TEKs-RSN.json", 13, 8, 13)]
         [InlineData("Resources.payload-ancient-TEKs.json", 1, 7, 1)]
-        [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
         public async Task PostWorkflowTest(string file, int keyCount, int mm, int dd)
         {
             // Arrange
             await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.TemporaryExposureKeys.ToList());
+
             _fakeTimeProvider.Value = new DateTime(2020, mm, dd, 0, 0, 0, DateTimeKind.Utc);
 
             var client = _factory.CreateClient();

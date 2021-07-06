@@ -9,7 +9,6 @@ using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
@@ -111,7 +110,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         [InlineData(1, 10, 120, 10)] //Exactly
         [InlineData(1, 10, 121, 10)] //After
         [Theory]
-        [ExclusivelyUses(nameof(WfToDkSnapshotTests))]
         public async Task PublishAfter(int wfCount, int tekPerWfCount, int addMins, int resultCount)
         {
             // Arrange
@@ -142,7 +140,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         [InlineData(1, 1, 1)]
         [InlineData(1, 10, 10)]
         [Theory]
-        [ExclusivelyUses(nameof(WfToDkSnapshotTests))]
         public async Task SecondRunShouldChangeNothing(int wfCount, int tekPerWfCount, int resultCount)
         {
             // Arrange

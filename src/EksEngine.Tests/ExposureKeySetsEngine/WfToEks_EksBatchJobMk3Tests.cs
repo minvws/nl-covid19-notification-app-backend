@@ -10,7 +10,6 @@ using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
@@ -173,7 +172,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         #endregion
 
         [Fact]
-        [ExclusivelyUses(nameof(WfToEksEksBatchJobMk3Tests))]
         public void FireSameEngineTwice()
         {
             RunEngine();
@@ -181,7 +179,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(WfToEksEksBatchJobMk3Tests))]
         public void FireTwice()
         {
             // Arrange
@@ -235,7 +232,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
 
         [Fact]
-        [ExclusivelyUses(nameof(WfToEksEksBatchJobMk3Tests))]
         public void Teks0_NothingToSeeHereMoveAlong()
         {
             // Arrange
@@ -263,7 +259,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(WfToEksEksBatchJobMk3Tests))]
         public void Teks1_GetStuffed()
         {
             // Arrange
@@ -300,7 +295,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(WfToEksEksBatchJobMk3Tests))]
         public void Tek5_NotStuffed()
         {
             _contentContext.Truncate<ContentEntity>();
@@ -337,7 +331,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(WfToEksEksBatchJobMk3Tests))]
         public void Tek10_NotStuffed()
         {
             // Arrange
@@ -378,7 +371,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(WfToEksEksBatchJobMk3Tests))]
         public void Tek11_NotStuffed_2Eks()
         {
             // Arrange

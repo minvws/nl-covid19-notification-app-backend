@@ -29,7 +29,7 @@ namespace Icc.V2.WebApi.Tests
         private readonly WebApplicationFactory<Startup> _factory;
         private readonly WorkflowDbContext _workflowDbContext;
 
-        public WorkflowControllerTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions)
+        protected WorkflowControllerTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions)
         {
             _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions);
             _workflowDbContext.Database.EnsureCreated();

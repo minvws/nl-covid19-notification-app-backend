@@ -10,13 +10,10 @@ using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
@@ -37,20 +34,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     public abstract class EksBatchJobMk3Tests
     {
         private readonly FakeEksConfig _fakeEksConfig;
-
         private readonly WorkflowDbContext _workflowContext;
         private readonly DkSourceDbContext _dkSourceContext;
         private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
         private readonly ContentDbContext _contentDbContext;
-
         private readonly IWrappedEfExtensions _efExtensions;
         private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _outboundCountriesMock;
-
         private readonly LoggerFactory _lf;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
-
-        private ExposureKeySetBatchJobMk3 _engine;
         private readonly SnapshotWorkflowTeksToDksCommand _snapshot;
+        private ExposureKeySetBatchJobMk3 _engine;
 
         protected EksBatchJobMk3Tests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions, DbContextOptions<EksPublishingJobDbContext> eksPublishingJobDbContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions, IWrappedEfExtensions efExtensions)
         {
@@ -82,18 +75,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             _outboundCountriesMock.Setup(x => x.CountriesOfInterest).Returns(new[] { "CY", "BG" });
         }
 
-        private void Write(TekReleaseWorkflowStateEntity[] workflows)
+        private async Task Write(TekReleaseWorkflowStateEntity[] workflows)
         {
-            _workflowContext.BulkDelete(_workflowContext.KeyReleaseWorkflowStates.AsNoTracking().ToList());
-
-            _workflowContext.KeyReleaseWorkflowStates.AddRange(workflows);
-            _workflowContext.TemporaryExposureKeys.AddRange(workflows.SelectMany(x => x.Teks));
-            _workflowContext.SaveChanges();
+            await _workflowContext.KeyReleaseWorkflowStates.AddRangeAsync(workflows);
+            await _workflowContext.TemporaryExposureKeys.AddRangeAsync(workflows.SelectMany(x => x.Teks));
+            await _workflowContext.SaveChangesAsync();
 
             Assert.Equal(workflows.Length, _workflowContext.KeyReleaseWorkflowStates.Count());
             Assert.Equal(workflows.Sum(x => x.Teks.Count), _workflowContext.TemporaryExposureKeys.Count());
 
-            _snapshot.ExecuteAsync().GetAwaiter().GetResult();
+            await _snapshot.ExecuteAsync();
         }
 
         private static TekEntity CreateTek(int rsn)
@@ -115,8 +106,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 Teks = items
             };
         }
-
-        private EksEngineResult RunEngine()
+        private async Task<EksEngineResult> RunEngine()
         {
             _engine = new ExposureKeySetBatchJobMk3(
                 _fakeEksConfig,
@@ -147,7 +137,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                     ),
                 _efExtensions);
 
-            return _engine.ExecuteAsync().GetAwaiter().GetResult();
+            return await _engine.ExecuteAsync();
         }
 
         private class FakeEksConfig : IEksConfig
@@ -165,30 +155,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
-        public void FireSameEngineTwice()
+        public async Task FireSameEngineTwice()
         {
-            RunEngine();
+            // Arrange
+            await BulkDeleteAllDataInTest();
+
+            await RunEngine();
             Assert.Throws<InvalidOperationException>(() => _engine.ExecuteAsync().GetAwaiter().GetResult());
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
-        public void FireTwice()
+        public async Task FireTwice()
         {
             // Arrange
-            _contentDbContext.Truncate<ContentEntity>();
-            _dkSourceContext.Truncate<DiagnosisKeyEntity>();
+            await BulkDeleteAllDataInTest();
 
             var wfs = new[]
             {
                 Create(_dateTimeProvider.Snapshot, InfectiousPeriodType.Symptomatic, CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
             };
 
-            Write(wfs);
+            await Write(wfs);
 
             // Act
-            var result = RunEngine();
+            var result = await RunEngine();
 
             // Assert
             Assert.True(result.Started > new DateTime(2020, 8, 1, 0, 0, 0, DateTimeKind.Utc));
@@ -207,7 +197,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             Assert.True(result.TotalSeconds > 0);
 
-            result = RunEngine();
+            result = await RunEngine();
 
             Assert.Equal(0, result.InputCount);
             Assert.Equal(0, result.StuffingCount);
@@ -225,15 +215,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
-        public void Teks0_NothingToSeeHereMoveAlong()
+        public async Task Teks0_NothingToSeeHereMoveAlong()
         {
             // Arrange
-            _contentDbContext.Truncate<ContentEntity>();
-            _workflowContext.Truncate<TekEntity>();
+            await BulkDeleteAllDataInTest();
 
             // Act
-            var result = RunEngine();
+            var result = await RunEngine();
 
             // Assert
             Assert.True(result.Started > new DateTime(2020, 8, 1, 0, 0, 0, DateTimeKind.Utc));
@@ -254,22 +242,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
-        public void Teks1_GetStuffed()
+        public async Task Teks1_GetStuffed()
         {
             // Arrange
-            _contentDbContext.Truncate<ContentEntity>();
-            _dkSourceContext.Truncate<DiagnosisKeyEntity>();
+            await BulkDeleteAllDataInTest();
 
             var wfs = new[]
             {
                 Create(_dateTimeProvider.Snapshot, InfectiousPeriodType.Symptomatic, CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
             };
 
-            Write(wfs);
+            await Write(wfs);
 
             // Act
-            var result = RunEngine();
+            var result = await RunEngine();
 
             // Assert
             Assert.True(result.Started > new DateTime(2020, 8, 1, 0, 0, 0, DateTimeKind.Utc));
@@ -291,12 +277,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
-        public void Tek5_NotStuffed()
+        public async Task Tek5_NotStuffed()
         {
             // Arrange
-            _contentDbContext.Truncate<ContentEntity>();
-            _dkSourceContext.Truncate<DiagnosisKeyEntity>();
+            await BulkDeleteAllDataInTest();
 
             var teks = Enumerable.Range(1, 5)
                 .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
@@ -307,10 +291,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 Create(_dateTimeProvider.Snapshot, InfectiousPeriodType.Symptomatic, teks)
             };
 
-            Write(wfs);
+            await Write(wfs);
 
             // Act
-            var result = RunEngine();
+            var result = await RunEngine();
 
             // Assert
             Assert.True(result.Started > new DateTime(2020, 8, 10, 0, 0, 0, DateTimeKind.Utc));
@@ -332,12 +316,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
-        public void Tek5_Stuffed()
+        public async Task Tek5_Stuffed()
         {
             // Arrange
-            _contentDbContext.Truncate<ContentEntity>();
-            _dkSourceContext.Truncate<DiagnosisKeyEntity>();
+            await BulkDeleteAllDataInTest();
 
             var teks = Enumerable.Range(1, 5)
                 .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
@@ -348,10 +330,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 Create(_dateTimeProvider.Snapshot, InfectiousPeriodType.Asymptomatic, teks)
             };
 
-            Write(wfs);
+            await Write(wfs);
 
             // Act
-            var result = RunEngine();
+            var result = await RunEngine();
 
             // Assert
             Assert.True(result.Started > new DateTime(2020, 8, 10, 0, 0, 0, DateTimeKind.Utc));
@@ -373,12 +355,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
-        public void Tek5_AsymptomaticNotStuffed()
+        public async Task Tek5_AsymptomaticNotStuffed()
         {
             // Arrange
-            _contentDbContext.Truncate<ContentEntity>();
-            _dkSourceContext.Truncate<DiagnosisKeyEntity>();
+            await BulkDeleteAllDataInTest();
 
             var teks = Enumerable.Range(1, 5)
                 .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(0).ToRollingStartNumber()))
@@ -389,10 +369,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 Create(_dateTimeProvider.Snapshot, InfectiousPeriodType.Asymptomatic, teks)
             };
 
-            Write(wfs);
+            await Write(wfs);
 
             // Act
-            var result = RunEngine();
+            var result = await RunEngine();
 
             // Assert
             Assert.True(result.Started > new DateTime(2020, 8, 10, 0, 0, 0, DateTimeKind.Utc));
@@ -414,12 +394,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
-        public void Tek5_Asymptomatic2Stuffed()
+        public async Task Tek5_Asymptomatic2Stuffed()
         {
             // Arrange
-            _contentDbContext.Truncate<ContentEntity>();
-            _dkSourceContext.Truncate<DiagnosisKeyEntity>();
+            await BulkDeleteAllDataInTest();
 
             var teks = new List<TekEntity>();
             teks.AddRange(Enumerable.Range(1, 3).Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-1).ToRollingStartNumber()))); // dsos = 0
@@ -430,10 +408,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 Create(_dateTimeProvider.Snapshot, InfectiousPeriodType.Asymptomatic, teks.ToArray())
             };
 
-            Write(wfs);
+            await Write(wfs);
 
             // Act
-            var result = RunEngine();
+            var result = await RunEngine();
 
             // Assert
             Assert.True(result.Started > new DateTime(2020, 8, 10, 0, 0, 0, DateTimeKind.Utc));
@@ -455,12 +433,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
-        public void Tek10_NotStuffed()
+        public async Task Tek10_NotStuffed()
         {
             // Arrange
-            _contentDbContext.Truncate<ContentEntity>();
-            _dkSourceContext.Truncate<DiagnosisKeyEntity>();
+            await BulkDeleteAllDataInTest();
 
             var teks = Enumerable.Range(1, 10)
                 .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
@@ -471,10 +447,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 Create(_dateTimeProvider.Snapshot, InfectiousPeriodType.Symptomatic, teks)
             };
 
-            Write(wfs);
+            await Write(wfs);
 
             // Act
-            var result = RunEngine();
+            var result = await RunEngine();
 
             // Assert
             Assert.True(result.Started > new DateTime(2020, 8, 1, 0, 0, 0, DateTimeKind.Utc));
@@ -496,12 +472,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(EksBatchJobMk3Tests))]
-        public void Tek11_NotStuffed_2Eks()
+        public async Task Tek11_NotStuffed_2Eks()
         {
             // Arrange
-            _contentDbContext.Truncate<ContentEntity>();
-            _dkSourceContext.Truncate<DiagnosisKeyEntity>();
+            await BulkDeleteAllDataInTest();
 
             var teks = Enumerable.Range(1, 11)
                 .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
@@ -512,10 +486,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 Create(_dateTimeProvider.Snapshot, InfectiousPeriodType.Symptomatic, teks)
             };
 
-            Write(wfs);
+            await Write(wfs);
 
             // Act
-            var result = RunEngine();
+            var result = await RunEngine();
 
             // Assert
             Assert.True(result.Started > new DateTime(2020, 8, 1, 0, 0, 0, DateTimeKind.Utc));
@@ -535,6 +509,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
+        }
+
+        private async Task BulkDeleteAllDataInTest()
+        {
+            await _workflowContext.BulkDeleteAsync(_workflowContext.KeyReleaseWorkflowStates.ToList());
+            await _workflowContext.BulkDeleteAsync(_workflowContext.TemporaryExposureKeys.ToList());
+            await _contentDbContext.BulkDeleteAsync(_contentDbContext.Content.ToList());
+            await _dkSourceContext.BulkDeleteAsync(_dkSourceContext.DiagnosisKeys.ToList());
+            await _dkSourceContext.BulkDeleteAsync(_dkSourceContext.DiagnosisKeysInput.ToList());
+            await _eksPublishingJobDbContext.BulkDeleteAsync(_eksPublishingJobDbContext.EksInput.ToList());
+            await _eksPublishingJobDbContext.BulkDeleteAsync(_eksPublishingJobDbContext.EksOutput.ToList());
         }
     }
 }

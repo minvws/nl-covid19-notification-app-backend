@@ -9,7 +9,6 @@ using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
@@ -55,7 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
         private readonly NlContentResignExistingV1ContentCommand _resign;
         private readonly StandardRandomNumberGenerator _rng;
 
-        public EksEngineTests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions, DbContextOptions<EksPublishingJobDbContext> eksPublishingJobDbContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions, IWrappedEfExtensions efExtensions)
+        protected EksEngineTests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions, DbContextOptions<EksPublishingJobDbContext> eksPublishingJobDbContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions, IWrappedEfExtensions efExtensions)
         {
             _lf = new LoggerFactory();
 
@@ -140,7 +139,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(EksEngineTests))]
         public async Task EmptySystemNoTeks()
         {
             // Arrange
@@ -168,7 +166,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(EksEngineTests))]
         public async Task EmptySystemSingleTek()
         {
             // Arrange

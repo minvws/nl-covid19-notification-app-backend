@@ -7,7 +7,6 @@ using System.Data.Common;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
@@ -15,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
     [Trait("db", "mem")]
     public class ManifestV3CreationTestSqlite : ManifestV3CreationTest, IDisposable
     {
-        private static DbConnection _connection;
+        private static DbConnection connection;
         public ManifestV3CreationTestSqlite() : base(
             new DbContextOptionsBuilder<ContentDbContext>().UseSqlite(CreateInMemoryDatabase()).Options
         )
@@ -23,11 +22,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
         private static DbConnection CreateInMemoryDatabase()
         {
-            _connection = new SqliteConnection("Filename=:memory:");
-            _connection.Open();
-            return _connection;
+            connection = new SqliteConnection("Filename=:memory:");
+            connection.Open();
+            return connection;
         }
 
-        public void Dispose() => _connection.Dispose();
+        public void Dispose() => connection.Dispose();
     }
 }

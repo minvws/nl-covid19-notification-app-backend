@@ -4,16 +4,13 @@
 
 using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -117,13 +114,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         [InlineData(1, 10, 120, 10)] //Exactly
         [InlineData(1, 10, 121, 10)] //After
         [Theory]
-        [ExclusivelyUses(nameof(TekToDkSnapshotTests))]
         public async Task PublishAfter(int wfCount, int tekPerWfCount, int addMins, int resultCount)
         {
             // Arrange
-            await _workflowDbContext.KeyReleaseWorkflowStates.BatchDeleteAsync(new CancellationToken());
-            await _dkSourceDbContext.TruncateAsync<DiagnosisKeyEntity>();
-
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            await _dkSourceDbContext.BulkDeleteAsync(_dkSourceDbContext.DiagnosisKeys.ToList());
 
             var t = new DateTime(2020, 11, 5, 12, 0, 0, DateTimeKind.Utc);
             _dateTimeProvider.Setup(x => x.Snapshot).Returns(t);
@@ -149,12 +144,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         [InlineData(1, 1)]
         [InlineData(1, 4)] //was 10 - 6 are now filtered out as they have TRL None
         [Theory]
-        [ExclusivelyUses(nameof(TekToDkSnapshotTests))]
         public async Task SecondRunShouldChangeNothing(int wfCount, int tekPerWfCount)
         {
             // Arrange
-            await _workflowDbContext.KeyReleaseWorkflowStates.BatchDeleteAsync(new CancellationToken());
-            await _dkSourceDbContext.TruncateAsync<DiagnosisKeyEntity>();
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            await _dkSourceDbContext.BulkDeleteAsync(_dkSourceDbContext.DiagnosisKeys.ToList());
 
             _dateTimeProvider.Setup(x => x.Snapshot).Returns(new DateTime(2020, 11, 5, 14, 00, 0, DateTimeKind.Utc));
             GenerateWorkflowTeks(wfCount, tekPerWfCount);

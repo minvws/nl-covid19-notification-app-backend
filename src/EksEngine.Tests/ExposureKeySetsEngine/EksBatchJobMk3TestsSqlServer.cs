@@ -15,11 +15,10 @@ using Xunit;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySetsEngine
 {
     [Trait("db", "ss")]
-    [Collection(nameof(EksBatchJobMk3TestsSqlServer))]
     public class EksBatchJobMk3TestsSqlServer : EksBatchJobMk3Tests
     {
         private const string Prefix = nameof(EksBatchJobMk3Tests) + "_";
-        private static DbConnection _connection;
+        private static DbConnection connection;
 
         public EksBatchJobMk3TestsSqlServer() : base(
             new DbContextOptionsBuilder<WorkflowDbContext>().UseSqlServer(CreateSqlDatabase("W")).Options,
@@ -36,10 +35,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 MultipleActiveResultSets = true
             };
 
-            _connection = new SqlConnection(csb.ConnectionString);
-            return _connection;
+            connection = new SqlConnection(csb.ConnectionString);
+            return connection;
         }
 
-        public void Dispose() => _connection.Dispose();
+        public void Dispose() => connection.Dispose();
     }
 }

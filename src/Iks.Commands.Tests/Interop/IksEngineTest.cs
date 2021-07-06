@@ -5,10 +5,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -65,7 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions);
             _workflowDbContext.Database.EnsureCreated();
         }
-
+        
         private IksEngine Create()
         {
             _iksConfigMock.Setup(x => x.ItemCountMax).Returns(750);
@@ -84,12 +84,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             );
         }
 
-
         [InlineData(2)]
         [Theory]
-        [ExclusivelyUses(nameof(IksEngineTest))]
         public async Task Execute(int iksCount)
         {
+            // Arrange
+            await _dkSourceDbContext.BulkDeleteAsync(_dkSourceDbContext.DiagnosisKeys.ToList());
+            await _iksInDbContext.BulkDeleteAsync(_iksInDbContext.InJob.ToList());
+            await _iksOutDbContext.BulkDeleteAsync(_iksOutDbContext.Iks.ToList());
+
             //Mocks
             _iksConfigMock.Setup(x => x.ItemCountMax).Returns(750);
             _iksConfigMock.Setup(x => x.PageSize).Returns(1000);
@@ -147,9 +150,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(IksEngineTest))]
         public async Task Empty()
         {
+            // Arrange
+            await BulkDeleteAllDataInTest();
+
             //Mocks
             _utcDateTimeProviderMock.Setup(x => x.Snapshot).Returns(new DateTime(2020, 11, 16, 15, 14, 13, DateTimeKind.Utc));
 
@@ -170,9 +175,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(IksEngineTest))]
         public async Task ExecuteFromWorkflows()
         {
+            // Arrange
+            await BulkDeleteAllDataInTest();
+
             //Mocks
             _iksConfigMock.Setup(x => x.ItemCountMax).Returns(750);
             _iksConfigMock.Setup(x => x.PageSize).Returns(1000);
@@ -203,9 +210,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(IksEngineTest))]
         public async Task ExecuteFromWorkflowsTwice()
         {
+            // Arrange
+            await BulkDeleteAllDataInTest();
+
             //Mocks
             _iksConfigMock.Setup(x => x.ItemCountMax).Returns(750);
             _iksConfigMock.Setup(x => x.PageSize).Returns(1000);
@@ -245,6 +254,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             Assert.Equal(usableDkCount, _dkSourceDbContext.DiagnosisKeys.Count());
             Assert.Equal(usableDkCount, _dkSourceDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
             Assert.Equal(1, _iksOutDbContext.Iks.Count());
+        }
+
+        private async Task BulkDeleteAllDataInTest()
+        {
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            await _dkSourceDbContext.BulkDeleteAsync(_dkSourceDbContext.DiagnosisKeys.ToList());
+            await _iksInDbContext.BulkDeleteAsync(_iksInDbContext.InJob.ToList());
+            await _iksInDbContext.BulkDeleteAsync(_iksInDbContext.Received.ToList());
+            await _iksOutDbContext.BulkDeleteAsync(_iksOutDbContext.Iks.ToList());
         }
     }
 }

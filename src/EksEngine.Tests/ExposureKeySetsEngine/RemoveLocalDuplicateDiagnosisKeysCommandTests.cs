@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -28,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         public RemoveLocalDuplicateDiagnosisKeysCommandTests()
         {
             var dkSourceDbProvider = new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlServer(CreateSqlDatabase()).Options;
-            var sp = File.ReadAllText(Path.Combine(Path.GetDirectoryName(NCrunch.Framework.NCrunchEnvironment.GetOriginalSolutionPath()), @"Database\DiagnosisKeys\dbo\StoredProcedures\RemoveLocalDuplicateDiagnosisKeys.sql"));
+            var sp = File.ReadAllText(@"Resources\RemoveLocalDuplicateDiagnosisKeys.sql");
             _dkSourceContext = new DkSourceDbContext(dkSourceDbProvider);
             _dkSourceContext.Database.EnsureDeleted(); // Delete database first because the sp cannot be added twice.
             _dkSourceContext.Database.EnsureCreated();
@@ -49,11 +48,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         public void Dispose() => _connection.Dispose();
 
         [Fact]
-        [ExclusivelyUses(nameof(RemoveLocalDuplicateDiagnosisKeysCommandTests))]
         public async Task No_Action_Taken_For_Published_Duplicates()
         {
             // Arrange
-            await _dkSourceContext.TruncateAsync<DiagnosisKeyEntity>();
+            await _dkSourceContext.BulkDeleteAsync(_dkSourceContext.DiagnosisKeys.ToList());
 
             _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, true));
             _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, true));
@@ -71,11 +69,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(RemoveLocalDuplicateDiagnosisKeysCommandTests))]
         public async void When_DK_Has_Been_Published_All_Duplicates_Marked_As_Published()
         {
             // Arrange
-            await _dkSourceContext.TruncateAsync<DiagnosisKeyEntity>();
+            await _dkSourceContext.BulkDeleteAsync(_dkSourceContext.DiagnosisKeys.ToList());
+
             _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, true));
             _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false));
             _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false));
@@ -93,11 +91,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(RemoveLocalDuplicateDiagnosisKeysCommandTests))]
         public async Task When_DK_Has_Not_Been_Published_All_Duplicates_Except_The_Highest_TRL_Are_Marked_As_Published()
         {
             // Arrange
-            await _dkSourceContext.TruncateAsync<DiagnosisKeyEntity>();
+            await _dkSourceContext.BulkDeleteAsync(_dkSourceContext.DiagnosisKeys.ToList());
+
             _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false));
             _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false));
             _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, null, TransmissionRiskLevel.High));
@@ -116,7 +114,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(RemoveLocalDuplicateDiagnosisKeysCommandTests))]
         public async Task When_DK_Has_Not_Been_Published_All_Duplicates_Except_The_First_Confirmed_Are_Marked_As_Published()
         {
             // Assemble
@@ -124,7 +121,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var otherCreatedDate = DateTime.Now;
 
             // Arrange
-            await _dkSourceContext.TruncateAsync<DiagnosisKeyEntity>();
+            await _dkSourceContext.BulkDeleteAsync(_dkSourceContext.DiagnosisKeys.ToList());
+
             _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, firstCreatedDate));
             _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, otherCreatedDate));
             _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xA }, 1, 144, false, otherCreatedDate));

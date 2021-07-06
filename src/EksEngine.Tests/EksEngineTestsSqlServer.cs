@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
     public class EksEngineTestsSqlServer : EksEngineTests, IDisposable
     {
         private const string Prefix = nameof(EksEngineTests) + "_";
-        private static DbConnection _connection;
+        private static DbConnection connection;
 
         public EksEngineTestsSqlServer()
             : base(
@@ -38,10 +38,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 MultipleActiveResultSets = true
             };
 
-            _connection = new SqlConnection(csb.ConnectionString);
-            return _connection;
+            connection = new SqlConnection(csb.ConnectionString);
+            return connection;
         }
 
-        public void Dispose() => _connection.Dispose();
+        public void Dispose() => connection.Dispose();
     }
 }

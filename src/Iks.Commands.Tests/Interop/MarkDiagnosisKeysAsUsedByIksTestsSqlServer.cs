@@ -6,16 +6,13 @@ using System;
 using System.Data.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop
 {
     [Collection(nameof(MarkDiagnosisKeysAsUsedByIksTestsSqlServer))]
-    [ExclusivelyUses(nameof(MarkDiagnosisKeysAsUsedByIksTestsSqlServer))]
     [Trait("db", "ss")]
     public class MarkDiagnosisKeysAsUsedByIksTestsSqlServer : MarkDiagnosisKeysAsUsedByIksTests, IDisposable
     {

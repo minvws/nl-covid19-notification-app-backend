@@ -9,7 +9,6 @@ using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -130,12 +129,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             Write(NotLocal(GenerateDks(baseCount)));
         }
 
-        [ExclusivelyUses(nameof(DkToIksSnapshotTests))]
         [InlineData(0)] //Null case
         [InlineData(100)]
         [Theory]
         public async Task Run1(int baseCount)
         {
+            await _dkSourceDbContext.BulkDeleteAsync(_dkSourceDbContext.DiagnosisKeys.ToList());
+            await _iksPublishingDbContext.BulkDeleteAsync(_iksPublishingDbContext.Input.ToList());
+
             _dateTimeProvider.Setup(x => x.Snapshot).Returns(DateTime.UtcNow);
             Setup(baseCount);
 

@@ -2,7 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -14,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
@@ -23,7 +21,6 @@ using Xunit;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
 {
     [Collection(nameof(WorkflowControllerPostSecretTests))]
-    [ExclusivelyUses(nameof(WorkflowControllerPostSecretTests))]
     public abstract class WorkflowControllerPostSecretTests : WebApplicationFactory<Startup>
     {
         private readonly WebApplicationFactory<Startup> _factory;
@@ -73,7 +70,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         [Theory]
         [InlineData("v1/register")]
         [InlineData("v2/register")]
-        [ExclusivelyUses("WorkflowControllerPostSecretTests")]
         public async Task PostSecretTest_EmptyDb(string endpoint)
         {
             // Arrange
@@ -111,7 +107,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         [Theory]
         [InlineData("v1")]
         [InlineData("v2")]
-        [ExclusivelyUses("WorkflowControllerPostSecretTests")]
         public async Task PostSecretTest_5RetriesAndBang(string endpoint)
         {
             // Arrange
@@ -140,7 +135,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         [Theory]
         [InlineData("v1/register")]
         [InlineData("v2/register")]
-        [ExclusivelyUses("WorkflowControllerPostSecretTests")]
         public async Task PostSecret_MissThe5Existing(string endpoint)
         {
             // Arrange

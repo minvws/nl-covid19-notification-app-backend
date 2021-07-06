@@ -6,7 +6,6 @@ using System;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
@@ -57,7 +56,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(ExposureKeySetCleanerTests))]
         public void Cleaner()
         {
             // Arrange
@@ -79,7 +77,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(ExposureKeySetCleanerTests))]
         public void NoKill()
         {
             // Arrange
@@ -105,7 +102,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
 
         [Fact]
-        [ExclusivelyUses(nameof(ExposureKeySetCleanerTests))]
         public void Kill()
         {
             // Arrange
@@ -132,7 +128,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
 
         [Fact]
-        [ExclusivelyUses(nameof(ExposureKeySetCleanerTests))]
         public void MoreRealistic()
         {
             // Arrange

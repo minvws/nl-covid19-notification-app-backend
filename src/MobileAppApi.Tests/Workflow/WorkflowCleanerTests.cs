@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Linq;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands;
@@ -55,9 +56,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         }
 
         [Fact]
-        [ExclusivelyUses("WorkflowCleanerTests")]
         public void Cleaner()
         {
+            _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+
             var result = _command.Execute();
 
             Assert.Equal(0, result.Before.Count);
@@ -82,9 +84,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         }
 
         [Fact]
-        [ExclusivelyUses("WorkflowCleanerTests")]
         public void NoKill()
         {
+            _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+
             _dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
             Add(1, 0, null);
             _workflowDbContext.SaveChanges();
@@ -113,9 +116,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         }
 
         [Fact]
-        [ExclusivelyUses("WorkflowCleanerTests")]
         public void Kill()
         {
+            _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+
             _dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
             _fakeConfig.CleanupDeletesData = true;
             Add(1, 0, null);
@@ -145,9 +149,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         }
 
         [Fact]
-        [ExclusivelyUses("WorkflowCleanerTests")]
         public void Abort()
         {
+            _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+
             _dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
             _fakeConfig.CleanupDeletesData = true;
             Add(1, 0, null);
@@ -161,9 +166,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         }
 
         [Fact]
-        [ExclusivelyUses("WorkflowCleanerTests")]
         public void MoreRealistic()
         {
+            _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+
             _dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
             _fakeConfig.CleanupDeletesData = true;
             Add(1, 0, null);

@@ -6,16 +6,13 @@ using System;
 using System.Data.Common;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 {
     [Trait("db", "mem")]
     [Collection(nameof(ManifestUpdateCommandTestSqlite))]
-    [ExclusivelyUses(nameof(ManifestUpdateCommandTestSqlite))]
     public class ManifestUpdateCommandTestSqlite : ManifestUpdateCommandTest, IDisposable
     {
         private static DbConnection connection;

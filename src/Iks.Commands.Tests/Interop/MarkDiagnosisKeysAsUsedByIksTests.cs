@@ -5,10 +5,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
@@ -52,9 +52,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         [InlineData(0)] //Null case
         [InlineData(100)]
         [Theory]
-        [ExclusivelyUses(nameof(MarkDiagnosisKeysAsUsedByIksTests))]
         public async Task Simple(int baseCount)
         {
+            // Arrange
+            await BulkDeleteAllDataInTest();
+
             _utcDateTimeProviderMock.Setup(x => x.Snapshot).Returns(DateTime.UtcNow);
             _iksConfigMock.Setup(x => x.PageSize).Returns(10);
 
@@ -81,9 +83,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         [InlineData(0)] //Null case
         [InlineData(100)]
         [Theory]
-        [ExclusivelyUses(nameof(MarkDiagnosisKeysAsUsedByIksTests))]
         public async Task RealisticBothSourcesOfDks(int baseCount)
         {
+            // Arrange
+            await BulkDeleteAllDataInTest();
+
             _utcDateTimeProviderMock.Setup(x => x.Snapshot).Returns(DateTime.UtcNow);
             _iksConfigMock.Setup(x => x.PageSize).Returns(10);
 
@@ -106,6 +110,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             Assert.Equal(baseCount, _iksPublishingDbContext.Input.Count()); //Unchanged
             Assert.Equal(baseCount * 3, _dkSourceDbContext.DiagnosisKeys.Count()); //Unchanged
             Assert.Equal(baseCount * 3, _dkSourceDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs)); //
+        }
+
+        private async Task BulkDeleteAllDataInTest()
+        {
+            await _iksPublishingDbContext.BulkDeleteAsync(_iksPublishingDbContext.Input.ToList());
+            await _iksPublishingDbContext.BulkDeleteAsync(_iksPublishingDbContext.Output.ToList());
+            await _dkSourceDbContext.BulkDeleteAsync(_dkSourceDbContext.DiagnosisKeys.ToList());
         }
     }
 }
