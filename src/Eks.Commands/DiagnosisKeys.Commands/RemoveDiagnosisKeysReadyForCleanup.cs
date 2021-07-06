@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -14,20 +13,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 {
     public class RemoveDiagnosisKeysReadyForCleanup
     {
-        private readonly Func<DkSourceDbContext> _diagnosticKeyDbContextProvider;
+        private readonly DkSourceDbContext _diagnosticKeyDbContext;
 
 
-        public RemoveDiagnosisKeysReadyForCleanup(Func<DkSourceDbContext> diagnosticKeyDbContextProvider)
+        public RemoveDiagnosisKeysReadyForCleanup(DkSourceDbContext diagnosticKeyDbContext)
         {
-            _diagnosticKeyDbContextProvider = diagnosticKeyDbContextProvider ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContextProvider));
+            _diagnosticKeyDbContext = diagnosticKeyDbContext ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContext));
         }
 
         public async Task ExecuteAsync()
         {
-            await using var dbc = _diagnosticKeyDbContextProvider();
-            await using var tx = dbc.BeginTransaction();
+            await using var tx = _diagnosticKeyDbContext.BeginTransaction();
 
-            await dbc.Database.ExecuteSqlRawAsync($"DELETE FROM {TableNames.DiagnosisKeys} WHERE [ReadyForCleanup] = 1;");
+            await _diagnosticKeyDbContext.Database.ExecuteSqlRawAsync($"DELETE FROM {TableNames.DiagnosisKeys} WHERE [ReadyForCleanup] = 1;");
             await tx.CommitAsync();
         }
     }
