@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ManifestEngine\ManifestEngine.csproj" />
-    <ProjectReference Include="..\TestFramework\TestFramework.csproj" />
   </ItemGroup>
 
 </Project>

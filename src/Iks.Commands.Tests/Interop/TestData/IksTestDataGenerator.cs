@@ -10,7 +10,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using EfgsReportType = Iks.Protobuf.EfgsReportType;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop.TestData

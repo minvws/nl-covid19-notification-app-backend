@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
@@ -32,7 +32,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Commands;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
@@ -100,7 +99,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 _dtp,
                 new EksEngineLoggingExtensions(_lf.CreateLogger<EksEngineLoggingExtensions>()),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(), _rng, _dtp, eksConfig.Object),
-                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new TestLogger<SnapshotLoggingExtensions>()), _dkSourceContext, _eksPublishingJobContext, new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
+                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new NullLogger<SnapshotLoggingExtensions>()), _dkSourceContext, _eksPublishingJobContext, new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
                         {
                             InfectiousPeriodType.Symptomatic,
                             new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }

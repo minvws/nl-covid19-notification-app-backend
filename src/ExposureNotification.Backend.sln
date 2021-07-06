@@ -67,8 +67,6 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "WorkFlow", "Database\WorkFl
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DataProtectionKeys", "Database\DataProtectionKeys\DataProtectionKeys.sqlproj", "{CF8CB421-3554-4647-A9F0-55DBB8390BDE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestFramework", "TestFramework\TestFramework.csproj", "{D7BCA597-3ECA-4AA1-AB7C-252D9547A7D2}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManifestEngine.Tests", "ManifestEngine.Tests\ManifestEngine.Tests.csproj", "{0D0A4401-8F45-4A8A-942D-F0E98C47F10F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksEngine.Tests", "EksEngine.Tests\EksEngine.Tests.csproj", "{B1367247-E27B-481E-9EE3-28396FEA539C}"
@@ -269,10 +267,6 @@ Global
 		{CF8CB421-3554-4647-A9F0-55DBB8390BDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF8CB421-3554-4647-A9F0-55DBB8390BDE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CF8CB421-3554-4647-A9F0-55DBB8390BDE}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{D7BCA597-3ECA-4AA1-AB7C-252D9547A7D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D7BCA597-3ECA-4AA1-AB7C-252D9547A7D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D7BCA597-3ECA-4AA1-AB7C-252D9547A7D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D7BCA597-3ECA-4AA1-AB7C-252D9547A7D2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0D0A4401-8F45-4A8A-942D-F0E98C47F10F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0D0A4401-8F45-4A8A-942D-F0E98C47F10F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D0A4401-8F45-4A8A-942D-F0E98C47F10F}.Release|Any CPU.ActiveCfg = Release|Any CPU

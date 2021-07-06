@@ -22,7 +22,7 @@ using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
 {
-    public class WorkflowControllerStopKeysTests : WebApplicationFactory<Startup>, IDisposable
+    public class WorkflowControllerStopKeysTests : WebApplicationFactory<Startup>
     {
         private readonly WebApplicationFactory<Startup> _factory;
         private readonly Mock<IDecoyTimeCalculator> _mockTimeCalculator = new Mock<IDecoyTimeCalculator>();

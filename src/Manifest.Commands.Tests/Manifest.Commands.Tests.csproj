@@ -21,7 +21,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Crypto.Tests\Crypto.Tests.csproj" />
     <ProjectReference Include="..\Manifest.Commands\Manifest.Commands.csproj" />
-    <ProjectReference Include="..\TestFramework\TestFramework.csproj" />
   </ItemGroup>
 
 </Project>
