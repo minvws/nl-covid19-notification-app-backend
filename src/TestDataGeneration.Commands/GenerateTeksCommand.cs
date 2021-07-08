@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.Extensions.Logging;
@@ -55,6 +56,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
 
         private async Task GenWorkflowsAsync()
         {
+            await _workflowDb.BulkDeleteAsync(_workflowDb.KeyReleaseWorkflowStates.ToList());
+
             var workflowList = new List<TekReleaseWorkflowStateEntity>();
             var tekList = new List<TekEntity>();
 
