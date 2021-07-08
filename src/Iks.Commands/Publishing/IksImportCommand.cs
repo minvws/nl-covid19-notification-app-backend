@@ -86,7 +86,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                 }).ToArray();
 
             items = _importProcessors.Execute(items);
-            var result = items.Select(x => x.DiagnosisKey).ToList(); //Can't get rid of compiler warning.
+            var result = items.Select(x => x.DiagnosisKey).ToList();
             await _dkSourceDbContext.BulkInsertAsync2(result, new SubsetBulkArgs());
         }
 

@@ -4,9 +4,10 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands
@@ -23,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             _utcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
         }
 
-        public RemovePublishedDiagnosisKeysResult Execute()
+        public async Task<RemovePublishedDiagnosisKeysResult> ExecuteAsync()
         {
             if (_result != null)
             {
@@ -35,11 +36,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             //TODO setting
             var cutoff = _utcDateTimeProvider.Snapshot.AddDays(-14).Date.ToRollingStartNumber();
 
-            using (var tx = _diagnosticKeyDbContext.BeginTransaction())
-            {
-                _result.GivenMercy = _diagnosticKeyDbContext.Database.ExecuteSqlRaw($"DELETE FROM {TableNames.DiagnosisKeys} WHERE [PublishedLocally] = 1 AND [PublishedToEfgs] = 1 AND DailyKey_RollingStartNumber < {cutoff};");
-                tx.Commit();
-            }
+            var resultToDelete = _diagnosticKeyDbContext.DiagnosisKeys.AsNoTracking().Where(p =>
+                p.PublishedLocally && p.PublishedToEfgs && p.DailyKey.RollingStartNumber < cutoff).ToList();
+
+            _result.GivenMercy = resultToDelete.Count;
+            await _diagnosticKeyDbContext.BulkDeleteAsync(resultToDelete);
 
             _result.RemainingExpiredCount = _diagnosticKeyDbContext.DiagnosisKeys.Count(x => x.DailyKey.RollingStartNumber < cutoff);
 

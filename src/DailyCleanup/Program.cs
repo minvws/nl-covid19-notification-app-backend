@@ -12,7 +12,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -109,14 +108,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             run.Add(() => c110.Execute());
 
             var c125 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
-            run.Add(() => c125.Execute());
+            run.Add(() => c125.ExecuteAsync().GetAwaiter().GetResult());
 
             var c126 = serviceProvider.GetRequiredService<RemoveDiagnosisKeysReadyForCleanup>();
             run.Add(() => c126.ExecuteAsync().GetAwaiter().GetResult());
 
             var c130 = serviceProvider.GetRequiredService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
             run.Add(() => c130.ExecuteAsync().GetAwaiter().GetResult());
-            
+
             var c140 = serviceProvider.GetRequiredService<RemoveExpiredIksInCommand>();
             run.Add(() => c140.ExecuteAsync().GetAwaiter().GetResult());
 
@@ -145,7 +144,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddDbContext<IksPublishingJobDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksPublishing)));
             services.AddDbContext<EksPublishingJobDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.EksPublishing)));
             services.AddDbContext<StatsDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Stats)));
-            
+
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
             services.AddSingleton<IConfiguration>(configuration);

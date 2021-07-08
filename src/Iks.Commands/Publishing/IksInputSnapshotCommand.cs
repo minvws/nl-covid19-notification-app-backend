@@ -39,18 +39,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            const int pagesize = 10000;
+            const int PageSize = 10000;
             var index = 0;
-
-            using var tx = _dkSourceDbContext.BeginTransaction();
-            var page = Read(index, pagesize);
+            
+            var page = Read(index, PageSize);
 
             while (page.Count > 0)
             {
-                await _iksPublishingJobDbContext.BulkInsertAsync2(page.ToList(), new SubsetBulkArgs());
+                await _iksPublishingJobDbContext.BulkInsertAsync2(page, new SubsetBulkArgs());
 
                 index += page.Count;
-                page = Read(index, pagesize);
+                page = Read(index, PageSize);
             }
 
             var result = new SnapshotIksInputResult
@@ -68,14 +67,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
         /// Maps the Local Tek info to Efgs info using 
         /// </summary>
         private IList<IksCreateJobInputEntity> Read(int index, int pageSize)
-        {//All imported IKS DKs are mark PublishedToEfgs as true at the point of import
+        {
+            //All imported IKS DKs are mark PublishedToEfgs as true at the point of import
             var q1 = _dkSourceDbContext.DiagnosisKeys
                 .AsNoTracking() //EF treats DTO property classes as 'owned tables'
                 .Where(x => x.Origin == TekOrigin.Local && !x.PublishedToEfgs)
                 .Skip(index)
                 .Take(pageSize)
-                .Select(x => new { x.Efgs.DaysSinceSymptomsOnset, x.DailyKey, Dkid = x.Id })
-                .ToList();
+                .Select(x => new { x.Efgs.DaysSinceSymptomsOnset, x.DailyKey, Dkid = x.Id });
 
             var q1A = q1.Where(x => x.DaysSinceSymptomsOnset.HasValue)
             .Select(x => new
@@ -83,13 +82,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                 x.Dkid,
                 x.DailyKey,
                 x.DaysSinceSymptomsOnset,
-            }).ToList();
+            });
 
             var q2 = q1A.Select(x => new IksCreateJobInputEntity
             {
                 DkId = x.Dkid,
                 DaysSinceSymptomsOnset = x.DaysSinceSymptomsOnset.Value,
-                TransmissionRiskLevel = TransmissionRiskLevel.None, //Remove this isnt in used in any calculations
+                TransmissionRiskLevel = TransmissionRiskLevel.None, //Remove this isn't in used in any calculations
                 ReportType = ReportType.ConfirmedTest, //TODO move setting this to a DK Processors later.
                 DailyKey = x.DailyKey,
                 CountriesOfInterest = string.Join(",", _config.CountriesOfInterest)

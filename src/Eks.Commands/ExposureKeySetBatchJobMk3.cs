@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -115,13 +116,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private async Task<int> GetTransmissionRiskNoneCountAsync()
         {
-            return _eksPublishingJobDbContext.EksInput.Count(x => x.TransmissionRiskLevel == TransmissionRiskLevel.None);
+            return await _eksPublishingJobDbContext.EksInput.CountAsync(x => x.TransmissionRiskLevel == TransmissionRiskLevel.None);
         }
 
         private async Task ClearJobTablesAsync()
         {
             _logger.WriteCleartables();
-            
+
             await _eksPublishingJobDbContext.TruncateAsync<EksCreateJobInputEntity>();
             await _eksPublishingJobDbContext.TruncateAsync<EksCreateJobOutputEntity>();
         }
@@ -145,18 +146,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
             _eksEngineResult.StuffingCount = stuffingCount;
 
-
-            //TODO Flat distributions by default. If the default changes, delegate to interfaces.
-            //TODO Any weighting of these distributions with current data will be done here.
-            //TODO If there will never be a weighted version, move this inside the generator.
             var stuffing = _eksStuffingGenerator.Execute(stuffingCount);
-
             _logger.WriteStuffingRequired(stuffing.Length);
 
-            await using var tx = _eksPublishingJobDbContext.BeginTransaction();
-            await _eksPublishingJobDbContext.EksInput.AddRangeAsync(stuffing);
-            _eksPublishingJobDbContext.SaveAndCommit();
-
+            await _eksPublishingJobDbContext.BulkInsertAsync(stuffing);
             _logger.WriteStuffingAdded();
         }
 
@@ -222,7 +215,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
             var content = await _setBuilder.BuildAsync(args);
 
-            var e = new EksCreateJobOutputEntity
+            var eksCreateJobOutputEntity = new EksCreateJobOutputEntity
             {
                 Region = DefaultValues.Region,
                 Release = _eksEngineResult.Started,
@@ -230,10 +223,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 Content = content,
             };
 
-            _logger.WriteWritingCurrentEks(e.CreatingJobQualifier);
+            _logger.WriteWritingCurrentEks(eksCreateJobOutputEntity.CreatingJobQualifier);
 
             await using var tx = _eksPublishingJobDbContext.BeginTransaction();
-            await _eksPublishingJobDbContext.AddAsync(e);
+            await _eksPublishingJobDbContext.AddAsync(eksCreateJobOutputEntity);
             _eksPublishingJobDbContext.SaveAndCommit();
 
             _logger.WriteMarkTekAsUsed();
@@ -244,11 +237,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             }
 
             //Could be 750k in this hit
-            var bargs = new SubsetBulkArgs
+            var bulkArgs = new SubsetBulkArgs
             {
                 PropertiesToInclude = new[] { nameof(EksCreateJobInputEntity.Used) }
             };
-            await _eksPublishingJobDbContext.BulkUpdateAsync2(_output, bargs); //TX
+            await _eksPublishingJobDbContext.BulkUpdateAsync2(_output, bulkArgs);
 
             _eksEngineResult.OutputCount += _output.Count;
 
@@ -261,6 +254,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _logger.WriteStartReadPage(skip, take);
 
             var unFilteredResult = _eksPublishingJobDbContext.EksInput
+                .AsNoTracking()
                 .OrderBy(x => x.KeyData)
                 .ThenBy(x => x.Id)
                 .Skip(skip)

@@ -73,12 +73,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 PropertiesToInclude = new[] { $"{nameof(DiagnosisKeyEntity.PublishedLocally)}" }
             };
 
-            await _dkSourceDbContext.BulkUpdateAsync2(zap, bargs); //TX
+            await _dkSourceDbContext.BulkUpdateAsync2(zap, bargs);
         }
 
         private long[] ReadPage()
         {
-            //No tx cos nothing else is touching this context.
             //New context each time
             return _eksPublishingJobDbContext.Set<EksCreateJobInputEntity>()
                 .AsNoTracking()

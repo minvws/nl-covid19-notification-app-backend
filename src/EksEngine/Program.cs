@@ -12,7 +12,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -80,9 +79,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var c50 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             run.Add(() => c50.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c55 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
-            run.Add(() => c55.Execute());
-
             var c56 = serviceProvider.GetRequiredService<RemoveDiagnosisKeysReadyForCleanup>();
             run.Add(() => c56.ExecuteAsync().GetAwaiter().GetResult());
 
@@ -92,7 +88,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var c35 = serviceProvider.GetRequiredService<IksEngine>();
             run.Add(() => c35.ExecuteAsync().GetAwaiter().GetResult());
 
-            //TODO write EFGS run.
+            var c55 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
+            run.Add(() => c55.ExecuteAsync().GetAwaiter().GetResult());
 
             foreach (var i in run)
             {
@@ -111,8 +108,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.AddDbContext<IksPublishingJobDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksPublishing)));
             services.AddDbContext<EksPublishingJobDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.EksPublishing)));
             services.AddDbContext<StatsDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Stats)));
-
-            services.AddSingleton<IWrappedEfExtensions, SqlServerWrappedEfExtensions>();
 
             //Services
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();

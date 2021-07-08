@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -31,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         }
 
         [Fact]
-        public void ManifestUpdateCommand_ExecuteForV3()
+        public async Task ManifestUpdateCommand_ExecuteForV3()
         {
             //Arrange
             PopulateContentDb();
@@ -39,23 +40,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var sut = CompileManifestUpdateCommand();
 
             //Act
-            sut.ExecuteV3Async().GetAwaiter().GetResult();
+            await sut.ExecuteV3Async();
 
             var result = _contentDbContext.SafeGetLatestContentAsync(ContentTypes.ManifestV3, DateTime.Now).GetAwaiter().GetResult();
 
             //Assert
             Assert.NotNull(result);
 
-            using var zipFileInMemory = new MemoryStream();
+            await using var zipFileInMemory = new MemoryStream();
             zipFileInMemory.Write(result.Content, 0, result.Content.Length);
-            using (var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false))
-            {
-                var manifestContent = Encoding.ASCII.GetString(zipFileContent.ReadEntry(ZippedContentEntryNames.Content));
-                var correctResLocation = manifestContent.IndexOf("TheV3ResourceBundleId");
-                var wrongResLocation = manifestContent.IndexOf("TheWrongResourceBundleId");
-                Assert.True(correctResLocation > 0);
-                Assert.True(wrongResLocation == -1);
-            }
+            using var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false);
+            var manifestContent = Encoding.ASCII.GetString(zipFileContent.ReadEntry(ZippedContentEntryNames.Content));
+            var correctResLocation = manifestContent.IndexOf("TheV3ResourceBundleId", StringComparison.Ordinal);
+            var wrongResLocation = manifestContent.IndexOf("TheWrongResourceBundleId", StringComparison.Ordinal);
+            Assert.True(correctResLocation > 0);
+            Assert.True(wrongResLocation == -1);
         }
 
         private ManifestUpdateCommand CompileManifestUpdateCommand()
@@ -64,7 +63,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var lf = new LoggerFactory();
             var dateTimeProvider = new StandardUtcDateTimeProvider();
             var jsonSerialiser = new StandardJsonSerializer();
-            var entityFormatterMock = new Mock<IContentEntityFormatter>();
 
             Func<IContentEntityFormatter> formatterForV3 = () =>
                 new StandardContentEntityFormatter(

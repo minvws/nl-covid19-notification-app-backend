@@ -44,42 +44,41 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 
         private async Task Zap(long[] used)
         {
-            var zap = _dkSourceDbContext.DiagnosisKeys
+            var diagnosisKeyEntities = _dkSourceDbContext.DiagnosisKeys
                 .AsNoTracking()
                 .Where(x => used.Contains(x.Id))
                 .ToList();
 
             _index += used.Length;
-            _logger.LogInformation("Marking as Published - Count:{Count}, Running total:{RunningTotal}.", zap.Count, _index);
+            _logger.LogInformation("Marking as Published - Count:{Count}, Running total:{RunningTotal}.", diagnosisKeyEntities.Count, _index);
 
-            if (zap.Count == 0)
+            if (diagnosisKeyEntities.Count == 0)
             {
                 return;
             }
 
-            foreach (var i in zap)
+            foreach (var i in diagnosisKeyEntities)
             {
                 i.PublishedToEfgs = true;
             }
 
-            var bargs = new SubsetBulkArgs
+            var bulkArgs = new SubsetBulkArgs
             {
                 PropertiesToInclude = new[] { $"{nameof(DiagnosisKeyEntity.PublishedToEfgs)}" }
             };
 
-            await _dkSourceDbContext.BulkUpdateAsync2(zap, bargs); //TX
+            await _dkSourceDbContext.BulkUpdateAsync2(diagnosisKeyEntities, bulkArgs);
         }
 
         private long[] ReadPage()
         {
-            //No tx cos nothing else is touching this context.
             //New context each time
             return _iksPublishingJobDbContext.Input
                 .AsNoTracking()
                 .Where(x => x.Used)
                 .OrderBy(x => x.DkId)
                 .Skip(_index)
-                .Take(_iksConfig.PageSize)
+                .Take(10000)
                 .Select(x => x.DkId)
                 .ToArray();
         }

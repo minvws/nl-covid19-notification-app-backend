@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands
@@ -15,7 +15,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
     {
         private readonly DkSourceDbContext _diagnosticKeyDbContext;
 
-
         public RemoveDiagnosisKeysReadyForCleanup(DkSourceDbContext diagnosticKeyDbContext)
         {
             _diagnosticKeyDbContext = diagnosticKeyDbContext ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContext));
@@ -23,10 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
         public async Task ExecuteAsync()
         {
-            await using var tx = _diagnosticKeyDbContext.BeginTransaction();
-
-            await _diagnosticKeyDbContext.Database.ExecuteSqlRawAsync($"DELETE FROM {TableNames.DiagnosisKeys} WHERE [ReadyForCleanup] = 1;");
-            await tx.CommitAsync();
+            await _diagnosticKeyDbContext.BulkDeleteAsync(_diagnosticKeyDbContext.DiagnosisKeys.AsNoTracking().Where(p => p.ReadyForCleanup.Value).ToList());
         }
     }
 }

@@ -26,7 +26,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFra
             }
 
             base.OnModelCreating(modelBuilder);
-
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -185,11 +186,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             }
 
             //Could be 750k in this hit
-            var bargs = new SubsetBulkArgs
+            var bulkArgs = new SubsetBulkArgs
             {
                 PropertiesToInclude = new[] { nameof(IksCreateJobInputEntity.Used) }
             };
-            await _publishingDbContext.BulkUpdateAsync2(_output, bargs); //TX
+            await _publishingDbContext.BulkUpdateAsync2(_output, bulkArgs);
 
             _engineResult.OutputCount += _output.Count;
 
@@ -201,7 +202,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         {
             _logger.LogDebug("Read page - Skip {Skip}, Take {Take}.", skip, take);
 
-            var result = _publishingDbContext.Set<IksCreateJobInputEntity>()
+            var result = _publishingDbContext.Input
+                .AsNoTracking()
                 .OrderBy(x => x.DailyKey.KeyData)
                 .Skip(skip)
                 .Take(take)

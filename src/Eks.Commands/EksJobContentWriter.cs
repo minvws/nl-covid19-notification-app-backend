@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         public async Task ExecuteAsync()
         {
-            await using (_eksPublishingJobDbContext.BeginTransaction()) //Read consistency
+            await using (_eksPublishingJobDbContext.BeginTransaction())
             {
                 var move = _eksPublishingJobDbContext.EksOutput.AsNoTracking().Select(
                     x => new ContentEntity
@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
                 await using (_contentDbContext.BeginTransaction())
                 {
-                    _contentDbContext.Content.AddRange(move);
+                    await _contentDbContext.Content.AddRangeAsync(move);
                     _contentDbContext.SaveAndCommit();
                 }
 

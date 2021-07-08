@@ -26,10 +26,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-
         public async Task ExecuteAsync()
         {
-            await using (_publishingDbContext.BeginTransaction()) //Read consistency
+            await using (_publishingDbContext.BeginTransaction())
             {
                 var move = _publishingDbContext.Output.Select(
                     x => new IksOutEntity
