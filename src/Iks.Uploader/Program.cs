@@ -1,11 +1,12 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -26,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
                 new ConsoleAppRunner().Execute(args, Configure, Start);
                 return 0;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return -1;
             }
@@ -50,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddTransient(x => x.CreateDbContext(y => new IksOutDbContext(y), DatabaseConnectionStringNames.IksOut, false));
+            services.AddDbContext<IksOutDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksOut)));
 
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IEfgsConfig, EfgsConfig>();
@@ -62,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
             services.AddSingleton<IksUploaderLoggingExtensions>();
-            
+
             // IKS Signing
             services.AddTransient<IIksSigner, EfgsCmsSigner>();
             services.AddTransient<IEmbeddedResourceCertificateConfig, EmbeddedResourceCertificateConfig>();
@@ -73,7 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
                         x.GetRequiredService<IConfiguration>(), "Certificates:EfgsSigning"),
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
                 ));
-            
+
             // Authentication (with certs)
             services
                 .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -19,9 +19,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         /// </summary>
         public static async Task<ContentEntity> SafeGetContentAsync(this DbContext dbContextProvider, string type, string id, DateTime now)
         {
-            if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
+            if (dbContextProvider == null)
+            {
+                throw new ArgumentNullException(nameof(dbContextProvider));
+            }
+
             return await dbContextProvider.Set<ContentEntity>()
-                .Where(x => x.PublishingId == id && x.Type == type && x.Release < now )
+                .Where(x => x.PublishingId == id && x.Type == type && x.Release < now)
                 .OrderByDescending(x => x.Release)
                 .Take(1)
                 .SingleOrDefaultAsync();
@@ -30,9 +34,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         /// <summary>
         /// e.g. GET Manifest
         /// </summary>
-        public static async Task<ContentEntity?> SafeGetLatestContentAsync(this DbContext dbContextProvider, string type, DateTime now)
+        public static async Task<ContentEntity> SafeGetLatestContentAsync(this DbContext dbContextProvider, string type, DateTime now)
         {
-            if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
+            if (dbContextProvider == null)
+            {
+                throw new ArgumentNullException(nameof(dbContextProvider));
+            }
+
             return await dbContextProvider.Set<ContentEntity>()
                 .Where(x => x.Release < now && x.Type == type)
                 .OrderByDescending(x => x.Release)
@@ -45,7 +53,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         /// </summary>
         public static async Task<string> SafeGetLatestContentIdAsync(this DbContext dbContextProvider, string type, DateTime now)
         {
-            if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
+            if (dbContextProvider == null)
+            {
+                throw new ArgumentNullException(nameof(dbContextProvider));
+            }
+
             return await dbContextProvider.Set<ContentEntity>()
                 .Where(x => x.Release < now && x.Type == type)
                 .OrderByDescending(x => x.Release)
@@ -64,10 +76,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 .Select(x => x.PublishingId)
                 .ToArrayAsync();
 
-#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
             return result;
-#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
         }
-
     }
 }

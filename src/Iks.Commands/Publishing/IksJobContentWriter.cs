@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -15,24 +15,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 {
     public class IksJobContentWriter
     {
-        private readonly Func<IksOutDbContext> _ContentDbContext;
-        private readonly Func<IksPublishingJobDbContext> _PublishingDbContext;
-        private readonly ILogger<IksJobContentWriter> _Logger;
+        private readonly IksOutDbContext _contentDbContext;
+        private readonly IksPublishingJobDbContext _publishingDbContext;
+        private readonly ILogger<IksJobContentWriter> _logger;
 
-        public IksJobContentWriter(Func<IksOutDbContext> contentDbContext, Func<IksPublishingJobDbContext> publishingDbContext, ILogger<IksJobContentWriter> logger)
+        public  IksJobContentWriter(IksOutDbContext contentDbContext, IksPublishingJobDbContext publishingDbContext, ILogger<IksJobContentWriter> logger)
         {
-            _ContentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
-            _PublishingDbContext = publishingDbContext ?? throw new ArgumentNullException(nameof(publishingDbContext));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _contentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
+            _publishingDbContext = publishingDbContext ?? throw new ArgumentNullException(nameof(publishingDbContext));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-
-        public async Task ExecuteAsyc()
+        public async Task ExecuteAsync()
         {
-            await using var pdbc = _PublishingDbContext();
-            await using (pdbc.BeginTransaction()) //Read consistency
+            await using (_publishingDbContext.BeginTransaction())
             {
-                var move = pdbc.Output.Select(
+                var move = _publishingDbContext.Output.Select(
                     x => new IksOutEntity
                     {
                         Created = x.Created,
@@ -42,14 +40,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                         //TODO batch id? use qualifier
                     }).ToArray();
 
-                await using var cdbc = _ContentDbContext();
-                await using (cdbc.BeginTransaction())
+                await using (_contentDbContext.BeginTransaction())
                 {
-                    cdbc.Iks.AddRange(move);
-                    cdbc.SaveAndCommit();
+                    await _contentDbContext.Iks.AddRangeAsync(move);
+                    _contentDbContext.SaveAndCommit();
                 }
 
-                _Logger.LogInformation("Published EKSs - Count:{Count}.", move.Length);
+                _logger.LogInformation("Published EKSs - Count:{Count}.", move.Length);
             }
         }
     }

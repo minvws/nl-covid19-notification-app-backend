@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -24,20 +24,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
     /// </summary>
     public class IksImportCommand
     {
-        private readonly DkSourceDbContext _DkSourceDbContext;
-        private readonly IDiagnosticKeyProcessor[] _ImportProcessors;
-        private readonly Iso3166RegionCodeValidator _CountryValidator = new Iso3166RegionCodeValidator();
-        private readonly ITekValidatorConfig _TekValidatorConfig;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly ILogger<IksImportCommand> _Logger;
+        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly IDiagnosticKeyProcessor[] _importProcessors;
+        private readonly Iso3166RegionCodeValidator _countryValidator = new Iso3166RegionCodeValidator();
+        private readonly ITekValidatorConfig _tekValidatorConfig;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly ILogger<IksImportCommand> _logger;
 
         public IksImportCommand(DkSourceDbContext dkSourceDbContext, IDiagnosticKeyProcessor[] importProcessors, ITekValidatorConfig tekValidatorConfig, IUtcDateTimeProvider dateTimeProvider, ILogger<IksImportCommand> logger)
         {
-            _DkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
-            _ImportProcessors = importProcessors ?? throw new ArgumentNullException(nameof(importProcessors));
-            _TekValidatorConfig = tekValidatorConfig ?? throw new ArgumentNullException(nameof(tekValidatorConfig));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
+            _importProcessors = importProcessors ?? throw new ArgumentNullException(nameof(importProcessors));
+            _tekValidatorConfig = tekValidatorConfig ?? throw new ArgumentNullException(nameof(tekValidatorConfig));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task Execute(IksInEntity entity)
@@ -58,38 +58,39 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 
             var items = batch.Keys
                 .Where(Valid)
-                .Select(x => (DkProcessingItem?)new DkProcessingItem
-            {
-                DiagnosisKey = new DiagnosisKeyEntity 
-                { 
-                    DailyKey = new DailyKey(x.KeyData.ToByteArray(), (int)x.RollingStartIntervalNumber, (int)x.RollingPeriod),
-                    Origin = TekOrigin.Efgs,
-                    PublishedToEfgs = true, //Do not send back to EFGS
-                    Efgs = new EfgsTekInfo 
+                .Select(x => (DkProcessingItem)new DkProcessingItem
+                {
+                    DiagnosisKey = new DiagnosisKeyEntity
                     {
-                        CountryOfOrigin = x.Origin,
-                        CountriesOfInterest = string.Join(",", x.VisitedCountries),
-                        DaysSinceSymptomsOnset = x.DaysSinceOnsetOfSymptoms,
-                        ReportType = (ReportType)x.ReportType,
+                        DailyKey = new DailyKey(x.KeyData.ToByteArray(), (int)x.RollingStartIntervalNumber, (int)x.RollingPeriod),
+                        Origin = TekOrigin.Efgs,
+                        PublishedToEfgs = true, //Do not send back to EFGS
+                        Efgs = new EfgsTekInfo
+                        {
+                            CountryOfOrigin = x.Origin,
+                            CountriesOfInterest = string.Join(",", x.VisitedCountries),
+                            DaysSinceSymptomsOnset = x.DaysSinceOnsetOfSymptoms,
+                            ReportType = (ReportType)x.ReportType,
+                        },
+                        Local = new LocalTekInfo
+                        {
+                            //Filled in by filters
+                        }
                     },
-                    Local = new LocalTekInfo {
-                        //Filled in by filters
-                    }
-                }, 
-                Metadata = new Dictionary<string, object> 
-                { 
+                    Metadata = new Dictionary<string, object>
+                {
                     {"Countries", x.VisitedCountries.ToArray() },
                     {"TRL", x.TransmissionRiskLevel },
                     {"ReportType", x.ReportType }
                 }
-            }).ToArray();
+                }).ToArray();
 
-            items = _ImportProcessors.Execute(items);
-            var result = items.Select(x => x.DiagnosisKey).ToList(); //Can't get rid of compiler warning.
-            await _DkSourceDbContext.BulkInsertAsync2(result, new SubsetBulkArgs());
+            items = _importProcessors.Execute(items);
+            var result = items.Select(x => x.DiagnosisKey).ToList();
+            await _dkSourceDbContext.BulkInsertAsync2(result, new SubsetBulkArgs());
         }
 
-        private bool TryParse(byte[] buffer, out DiagnosisKeyBatch? result)
+        private bool TryParse(byte[] buffer, out DiagnosisKeyBatch result)
         {
             result = null;
             try
@@ -100,7 +101,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             }
             catch (InvalidProtocolBufferException e)
             {
-                _Logger.LogError("Error reading IKS protobuf.", e.ToString());
+                _logger.LogError("Error reading IKS protobuf.", e.ToString());
                 return false;
             }
         }
@@ -108,25 +109,37 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
         private bool Valid(DiagnosisKey value)
         {
             if (value == null)
+            {
                 return false;
+            }
 
-            if (!_CountryValidator.IsValid(value.Origin))
+            if (!_countryValidator.IsValid(value.Origin))
+            {
                 return false;
+            }
 
-            var rollingStartMin = _TekValidatorConfig.RollingStartNumberMin;
-            var rollingStartToday = _DateTimeProvider.Snapshot.Date.ToRollingStartNumber();
+            var rollingStartMin = _tekValidatorConfig.RollingStartNumberMin;
+            var rollingStartToday = _dateTimeProvider.Snapshot.Date.ToRollingStartNumber();
 
             if (!(rollingStartMin <= value.RollingStartIntervalNumber && value.RollingStartIntervalNumber <= rollingStartToday))
+            {
                 return false;
+            }
 
             if (!(UniversalConstants.RollingPeriodRange.Lo <= value.RollingPeriod && value.RollingPeriod <= UniversalConstants.RollingPeriodRange.Hi))
+            {
                 return false;
+            }
 
-            if (value.KeyData == null) 
+            if (value.KeyData == null)
+            {
                 return false;
+            }
 
             if (value.KeyData.Length != UniversalConstants.DailyKeyDataByteCount)
+            {
                 return false;
+            }
 
             return true;
         }

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -7,24 +7,22 @@ using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop.TestData
 {
     public class IksDkSnapshotTestDataGenerator
     {
-        private readonly IDbProvider<IksPublishingJobDbContext> _IksPublishingDbProvider;
+        private readonly IksPublishingJobDbContext _iksPublishingDbContext;
 
-        public IksDkSnapshotTestDataGenerator(IDbProvider<IksPublishingJobDbContext> iksPublishingDbProvider)
+        public IksDkSnapshotTestDataGenerator(IksPublishingJobDbContext iksPublishingDbContext)
         {
-            _IksPublishingDbProvider = iksPublishingDbProvider ?? throw new ArgumentNullException(nameof(iksPublishingDbProvider));
+            _iksPublishingDbContext = iksPublishingDbContext ?? throw new ArgumentNullException(nameof(iksPublishingDbContext));
         }
 
         public void Write(IksCreateJobInputEntity[] items)
         {
-            var db = _IksPublishingDbProvider.CreateNew();
-            db.Input.AddRange(items);
-            db.SaveChanges();
+            _iksPublishingDbContext.Input.AddRange(items);
+            _iksPublishingDbContext.SaveChanges();
         }
 
         public IksCreateJobInputEntity[] GenerateInput(long[] dkids)

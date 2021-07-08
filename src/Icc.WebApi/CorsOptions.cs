@@ -11,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
 {
     public class CorsOptions : ICorsOptions
     {
-        private readonly IIccPortalConfig _IccPortalConfig;
+        private readonly IIccPortalConfig _iccPortalConfig;
 
         /// <summary>
         /// Builds options for the CorsPolicyBuilder
@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
         /// <param name="iccPortalConfig"></param>
         public CorsOptions(IIccPortalConfig iccPortalConfig)
         {
-            _IccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
+            _iccPortalConfig = iccPortalConfig ?? throw new ArgumentNullException(nameof(iccPortalConfig));
         }
 
         /// <summary>
@@ -33,18 +33,18 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi
 
         private string[] GetHeaders()
         {
-            return new[] {"Authorization","Content-Type"};
+            return new[] { "Authorization", "Content-Type" };
         }
 
         private string[] GetMethods()
         {
-            return new[] {"POST", "GET", "OPTIONS"};
+            return new[] { "POST", "PUT", "GET", "OPTIONS" };
         }
-        
+
         private string[] GetOrigins()
         {
-            var origin = new OriginBuilder(_IccPortalConfig.FrontendBaseUrl).GetOrigin();
-            return new[] {origin};
+            var origin = new OriginBuilder(_iccPortalConfig.FrontendBaseUrl).GetOrigin();
+            return new[] { origin };
         }
 
     }

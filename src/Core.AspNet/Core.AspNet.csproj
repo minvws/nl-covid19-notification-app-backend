@@ -4,7 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
         <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet</RootNamespace>
-
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,7 +13,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Moq" Version="4.16.0" />
-    <PackageReference Include="NCrunch.Framework" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>

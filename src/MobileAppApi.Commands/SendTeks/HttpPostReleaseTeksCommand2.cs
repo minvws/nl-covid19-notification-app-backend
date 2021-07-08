@@ -1,9 +1,8 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,52 +13,49 @@ using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.SendTeks
 {
     public class HttpPostReleaseTeksCommand2
     {
-        private readonly PostKeysLoggingExtensions _Logger;
-        private readonly WorkflowDbContext _DbContext;
+        private readonly PostKeysLoggingExtensions _logger;
+        private readonly WorkflowDbContext _workflowDbContext;
 
-        private readonly IPostTeksValidator _KeyValidator;
-        private readonly ITekWriter _Writer;
-        private readonly IJsonSerializer _JsonSerializer;
-        private readonly ISignatureValidator _SignatureValidator;
-        private readonly ITekListWorkflowFilter _TekListWorkflowFilter;
-        private readonly IWorkflowConfig _WorkflowConfig;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly ITekValidPeriodFilter _TekApplicableWindowFilter;
+        private readonly IPostTeksValidator _keyValidator;
+        private readonly ITekWriter _writer;
+        private readonly IJsonSerializer _jsonSerializer;
+        private readonly ISignatureValidator _signatureValidator;
+        private readonly ITekListWorkflowFilter _tekListWorkflowFilter;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly ITekValidPeriodFilter _tekApplicableWindowFilter;
 
-        private PostTeksArgs _ArgsObject;
-        private byte[] _BucketIdBytes;
-        private byte[] _BodyBytes;
+        private PostTeksArgs _argsObject;
+        private byte[] _bucketIdBytes;
+        private byte[] _bodyBytes;
 
         public HttpPostReleaseTeksCommand2(
-            PostKeysLoggingExtensions logger, 
+            PostKeysLoggingExtensions logger,
             IWorkflowConfig workflowConfig,
-            WorkflowDbContext dbContextProvider, 
+            WorkflowDbContext dbContextProvider,
             IPostTeksValidator keyValidator,
             ITekWriter writer,
             IJsonSerializer jsonSerializer,
             ISignatureValidator signatureValidator,
-            ITekListWorkflowFilter tekListWorkflowFilter, 
-            IUtcDateTimeProvider dateTimeProvider, 
+            ITekListWorkflowFilter tekListWorkflowFilter,
+            IUtcDateTimeProvider dateTimeProvider,
             ITekValidPeriodFilter tekApplicableWindowFilter
             )
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _WorkflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));
-            _DbContext = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
-            _KeyValidator = keyValidator ?? throw new ArgumentNullException(nameof(keyValidator));
-            _Writer = writer ?? throw new ArgumentNullException(nameof(writer));
-            _JsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
-            _SignatureValidator = signatureValidator ?? throw new ArgumentNullException(nameof(signatureValidator));
-            _TekListWorkflowFilter = tekListWorkflowFilter ?? throw new ArgumentNullException(nameof(tekListWorkflowFilter));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _TekApplicableWindowFilter = tekApplicableWindowFilter ?? throw new ArgumentNullException(nameof(tekApplicableWindowFilter));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _workflowDbContext = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
+            _keyValidator = keyValidator ?? throw new ArgumentNullException(nameof(keyValidator));
+            _writer = writer ?? throw new ArgumentNullException(nameof(writer));
+            _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
+            _signatureValidator = signatureValidator ?? throw new ArgumentNullException(nameof(signatureValidator));
+            _tekListWorkflowFilter = tekListWorkflowFilter ?? throw new ArgumentNullException(nameof(tekListWorkflowFilter));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _tekApplicableWindowFilter = tekApplicableWindowFilter ?? throw new ArgumentNullException(nameof(tekApplicableWindowFilter));
         }
 
         public async Task<IActionResult> ExecuteAsync(byte[] signature, HttpRequest request)
@@ -72,105 +68,109 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
 
         private async Task InnerExecuteAsync(byte[] signature, byte[] body)
         {
-            _BodyBytes = body;
+            _bodyBytes = body;
 
             if ((signature?.Length ?? 0) != UniversalConstants.PostKeysSignatureByteCount)
             {
-                _Logger.WriteSignatureValidationFailed();
+                _logger.WriteSignatureValidationFailed();
                 return;
             }
 
             try
             {
-                var argsJson = Encoding.UTF8.GetString(_BodyBytes);
-                _ArgsObject = _JsonSerializer.Deserialize<PostTeksArgs>(argsJson);
+                var argsJson = Encoding.UTF8.GetString(_bodyBytes);
+                _argsObject = _jsonSerializer.Deserialize<PostTeksArgs>(argsJson);
             }
             catch (Exception e)
             {
-                _Logger.WritePostBodyParsingFailed(e);
+                _logger.WritePostBodyParsingFailed(e);
                 return;
             }
 
             var base64Parser = new Base64();
-            var base64ParserResult = base64Parser.TryParseAndValidate(_ArgsObject.BucketId, UniversalConstants.BucketIdByteCount);
+            var base64ParserResult = base64Parser.TryParseAndValidate(_argsObject.BucketId, UniversalConstants.BucketIdByteCount);
             if (!base64ParserResult.Valid)
             {
-                _Logger.WriteBucketIdParsingFailed(_ArgsObject.BucketId, base64ParserResult.Messages);
+                _logger.WriteBucketIdParsingFailed(_argsObject.BucketId, base64ParserResult.Messages);
                 return;
             }
 
-            _BucketIdBytes = base64ParserResult.Item;
+            _bucketIdBytes = base64ParserResult.Item;
 
-            var messages = _KeyValidator.Validate(_ArgsObject);
+            var messages = _keyValidator.Validate(_argsObject);
             if (messages.Length > 0)
             {
-                _Logger.WriteTekValidationFailed(messages);
+                _logger.WriteTekValidationFailed(messages);
                 return;
             }
 
-            var teks = _ArgsObject.Keys.Select(Mapper.MapToTek).ToArray();
+            var teks = _argsObject.Keys.Select(Mapper.MapToTek).ToArray();
             foreach (var i in teks)
             {
-                i.PublishAfter = _DateTimeProvider.Snapshot;
+                i.PublishAfter = _dateTimeProvider.Snapshot;
             }
 
             messages = new TekListDuplicateValidator().Validate(teks);
             if (messages.Length > 0)
             {
-                _Logger.WriteTekDuplicatesFound(messages);
+                _logger.WriteTekDuplicatesFound(messages);
                 return;
             }
 
             //Validation ends, filtering starts
 
-            var filterResult = _TekApplicableWindowFilter.Execute(teks);
-            _Logger.WriteApplicableWindowFilterResult(filterResult.Messages);
+            var filterResult = _tekApplicableWindowFilter.Execute(teks);
+            _logger.WriteApplicableWindowFilterResult(filterResult.Messages);
             teks = filterResult.Items;
-            _Logger.WriteValidTekCount(teks.Length);
+            _logger.WriteValidTekCount(teks.Length);
 
-            var workflow = _DbContext
+            var workflow = _workflowDbContext
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Teks)
-                .SingleOrDefault(x => x.BucketId == _BucketIdBytes);
+                .SingleOrDefault(x => x.BucketId == _bucketIdBytes);
 
             if (workflow == null)
             {
-                _Logger.WriteBucketDoesNotExist(_ArgsObject.BucketId);
+                _logger.WriteBucketDoesNotExist(_argsObject.BucketId);
                 return;
             }
 
-            if (!_SignatureValidator.Valid(signature, workflow.ConfirmationKey, _BodyBytes))
+            if (!_signatureValidator.Valid(signature, workflow.ConfirmationKey, _bodyBytes))
             {
-                _Logger.WriteSignatureInvalid(workflow.BucketId, signature);
+                _logger.WriteSignatureInvalid(workflow.BucketId, signature);
                 return;
             }
 
-            var filterResults = _TekListWorkflowFilter.Filter(teks, workflow);
-            _Logger.WriteWorkflowFilterResults(filterResults.Messages);
-            _Logger.WriteValidTekCountSecondPass(teks.Length);
+            var filterResults = _tekListWorkflowFilter.Filter(teks, workflow);
+            _logger.WriteWorkflowFilterResults(filterResults.Messages);
+            _logger.WriteValidTekCountSecondPass(teks.Length);
 
             //Run after the filter removes the existing TEKs from the args.
             var allTeks = workflow.Teks.Select(Mapper.MapToTek).Concat(filterResults.Items).ToArray();
             messages = new TekListDuplicateKeyDataValidator().Validate(allTeks);
             if (messages.Length > 0)
             {
-                _Logger.WriteTekDuplicatesFoundWholeWorkflow(messages);
+                _logger.WriteTekDuplicatesFoundWholeWorkflow(messages);
                 return;
             }
 
-            _Logger.WriteDbWriteStart();
+            _logger.WriteDbWriteStart();
             var writeArgs = new TekWriteArgs
             {
                 WorkflowStateEntityEntity = workflow,
                 NewItems = filterResults.Items
             };
 
-            await _Writer.ExecuteAsync(writeArgs);
-            _DbContext.SaveAndCommit();
-            _Logger.WriteDbWriteCommitted();
+            _workflowDbContext.BeginTransaction();
+            await _writer.ExecuteAsync(writeArgs);
+            _workflowDbContext.SaveAndCommit();
+
+            _logger.WriteDbWriteCommitted();
 
             if (filterResults.Items.Length != 0)
-                _Logger.WriteTekCountAdded(filterResults.Items.Length);
+            {
+                _logger.WriteTekCountAdded(filterResults.Items.Length);
+            }
         }
     }
 }

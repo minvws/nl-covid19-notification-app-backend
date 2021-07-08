@@ -14,13 +14,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
 {
     public static class TestTheIdentityHubServiceCreator
     {
-        public static TheIdentityHubService CreateInstance(WireMockServer Server)
+        public static TheIdentityHubService CreateInstance(WireMockServer server)
         {
             var logger = new TestLogger<TheIdentityHubService>();
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddCustomOptions(TheIdentityHubDefaults.AuthenticationScheme, options =>
             {
-                options.TheIdentityHubUrl = new Uri(Server.Urls[0]);
+                options.TheIdentityHubUrl = new Uri(server.Urls[0]);
                 options.Tenant = "ggdghornl_test";
                 options.ClientId = "0";
                 options.ClientSecret = "supersecret";

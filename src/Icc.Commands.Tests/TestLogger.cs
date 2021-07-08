@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -16,7 +16,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         {
         }
 
-        //ncrunch: no coverage start 
         public bool IsEnabled(LogLevel logLevel)
         {
             throw new NotImplementedException();
@@ -26,6 +25,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         {
             throw new NotImplementedException();
         }
-        //ncrunch: no coverage end
     }
 }

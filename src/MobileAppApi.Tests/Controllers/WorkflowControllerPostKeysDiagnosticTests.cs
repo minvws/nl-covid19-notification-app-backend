@@ -13,48 +13,47 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using EFCore.BulkExtensions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.SendTeks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
 {
     [Collection(nameof(WorkflowControllerPostKeysDiagnosticTests))]
-    [ExclusivelyUses(nameof(WorkflowControllerPostKeysDiagnosticTests))]
-    public abstract class WorkflowControllerPostKeysDiagnosticTests : WebApplicationFactory<Startup>, IDisposable
+    public abstract class WorkflowControllerPostKeysDiagnosticTests : WebApplicationFactory<Startup>
     {
-        private readonly WebApplicationFactory<Startup> _Factory;
-        private readonly FakeTimeProvider _FakeTimeProvider;
-        private readonly IDbProvider<WorkflowDbContext> _WorkflowDbProvider;
+        private readonly WebApplicationFactory<Startup> _factory;
+        private readonly FakeTimeProvider _fakeTimeProvider;
+        private readonly WorkflowDbContext _workflowDbContext;
 
         private class FakeTimeProvider : IUtcDateTimeProvider
         {
             public DateTime Value { get; set; }
-            public DateTime Now() => Value; //ncrunch: no coverage
+            public DateTime Now() => Value;
             public DateTime Snapshot => Value;
         }
 
-        protected WorkflowControllerPostKeysDiagnosticTests(IDbProvider<WorkflowDbContext> workflowDbProvider)
+        protected WorkflowControllerPostKeysDiagnosticTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions)
         {
-            _WorkflowDbProvider = workflowDbProvider ?? throw new ArgumentNullException(nameof(workflowDbProvider));
-            _FakeTimeProvider = new FakeTimeProvider();
+            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions ?? throw new ArgumentNullException(nameof(workflowDbContextOptions)));
+            _workflowDbContext.Database.EnsureCreated();
 
-            _Factory = WithWebHostBuilder(builder =>
+            _fakeTimeProvider = new FakeTimeProvider();
+
+            _factory = WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddScoped(_ => _WorkflowDbProvider.CreateNewWithTx());
-                    services.AddTransient<IUtcDateTimeProvider>(x => _FakeTimeProvider);
+                    services.AddScoped(p => new WorkflowDbContext(workflowDbContextOptions));
+                    services.AddTransient<IUtcDateTimeProvider>(x => _fakeTimeProvider);
                     services.AddTransient<DecoyTimeAggregatorAttribute>();
                 });
                 builder.ConfigureAppConfiguration((ctx, config) =>
@@ -68,23 +67,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             });
         }
 
-        void IDisposable.Dispose()
-        {
-            base.Dispose();
-            _WorkflowDbProvider.Dispose();
-        }
-
         private async Task WriteBucket(byte[] bucketId)
         {
-            var workflowDbContext = _WorkflowDbProvider.CreateNew();
-            workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
+            _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
                 BucketId = bucketId,
                 ValidUntil = DateTime.UtcNow.AddHours(1),
                 Created = DateTime.UtcNow,
                 ConfirmationKey = new byte[32],
             });
-            await workflowDbContext.SaveChangesAsync();
+            await _workflowDbContext.SaveChangesAsync();
         }
 
 
@@ -96,14 +88,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         [InlineData("Resources.payload-duplicate-TEKs-KeyData.json", 0, 7, 11)]
         [InlineData("Resources.payload-duplicate-TEKs-RSN.json", 13, 8, 13)]
         [InlineData("Resources.payload-ancient-TEKs.json", 1, 7, 1)]
-        [ExclusivelyUses(nameof(WorkflowControllerPostKeysTests))]
         public async Task PostWorkflowTest(string file, int keyCount, int mm, int dd)
         {
-
-            _FakeTimeProvider.Value = new DateTime(2020, mm, dd, 0, 0, 0, DateTimeKind.Utc);
-
             // Arrange
-            var client = _Factory.CreateClient();
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.TemporaryExposureKeys.ToList());
+
+            _fakeTimeProvider.Value = new DateTime(2020, mm, dd, 0, 0, 0, DateTimeKind.Utc);
+
+            var client = _factory.CreateClient();
             await using var inputStream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(file);
             var data = inputStream.ToArray();
 
@@ -112,10 +105,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
 
             var tekDates = args.Keys
                 .OrderBy(x => x.RollingStartNumber)
-                .Select(x => new {x, Date = x.RollingStartNumber.FromRollingStartNumber()});
+                .Select(x => new { x, Date = x.RollingStartNumber.FromRollingStartNumber() });
 
             foreach (var i in tekDates)
+            {
                 Trace.WriteLine($"RSN:{i.x.RollingStartNumber} Date:{i.Date:yyyy-MM-dd}.");
+            }
 
             var signature = HttpUtility.UrlEncode(HmacSigner.Sign(new byte[32], data));
             var content = new ByteArrayContent(data);
@@ -125,8 +120,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             var result = await client.PostAsync($"v1/postkeys?sig={signature}", content);
 
             // Assert
-            var items = await _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.ToListAsync();
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+
+            var items = await _workflowDbContext.TemporaryExposureKeys.ToListAsync();
             Assert.Equal(keyCount, items.Count);
         }
     }

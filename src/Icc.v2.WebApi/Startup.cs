@@ -4,15 +4,16 @@
 
 using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
@@ -36,7 +37,10 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
         }
         public void ConfigureServices(IServiceCollection services)
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -45,9 +49,10 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
             });
 
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
+            services.AddHttpContextAccessor();
 
             services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            
+
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
 
             services.AddDistributedSqlServerCache(options =>
@@ -57,7 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
                 options.TableName = "Cache";
             });
 
-            services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
+            services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(_configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
 
             services.AddSingleton<IIccPortalConfig, IccPortalConfig>();
 
@@ -67,22 +72,26 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
             services.AddTransient<ILuhnModNConfig, LuhnModNConfig>();
             services.AddTransient<ILuhnModNValidator, LuhnModNValidator>();
             services.AddTransient<ILuhnModNGenerator, LuhnModNGenerator>();
-            
+
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
-            
+
             services.AddCors();
 
             if (_isDev)
+            {
                 services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });
+            }
 
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
+                options.HttpOnly = HttpOnlyPolicy.Always;
+                options.Secure = CookieSecurePolicy.Always;
             });
         }
-        
+
         public void Configure(IApplicationBuilder app)
         {
             if (_isDev)

@@ -5,6 +5,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup</RootNamespace>
     <ProjectGuid>{C2A66519-F947-4B57-9C21-42AB3FE48EA0}</ProjectGuid>
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>

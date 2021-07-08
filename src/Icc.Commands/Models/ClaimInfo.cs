@@ -6,6 +6,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Models
 {
     public class ClaimInfo
     {
-        public string? Id { get; set; } //NB this is set to the VALUE not the id too
+        public string Id { get; set; } //NB this is set to the VALUE not the id too
     }
 }

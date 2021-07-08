@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
 {
     public class WorkflowDbContext : DbContext
     {
-        public WorkflowDbContext(DbContextOptions options)
+        public WorkflowDbContext(DbContextOptions<WorkflowDbContext> options)
             : base(options)
         {
         }
@@ -20,11 +20,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
+            if (modelBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(modelBuilder));
+            }
 
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.BucketId).IsUnique();
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.ConfirmationKey).IsUnique();
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.LabConfirmationId).IsUnique();
+            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.GGDKey).IsUnique();
 
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.ValidUntil);
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.AuthorisedByCaregiver);

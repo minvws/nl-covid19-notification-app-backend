@@ -4,7 +4,11 @@
 
 using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
@@ -26,21 +30,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
     {
         private const string Title = "Mobile App API";
 
-        private readonly bool _IsDev;
+        private readonly bool _isDev;
 
-        public Startup(IWebHostEnvironment env)
+        public IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            _IsDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
+            Configuration = configuration;
+            _isDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
 
             services.AddControllers();
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
+            //services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
+            services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
 
             services.AddScoped<HttpPostReleaseTeksCommand2>();
             services.AddScoped<HttpPostRegisterSecret>();
@@ -60,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddTransient<ITekListWorkflowFilter, BackwardCompatibleV15TekListWorkflowFilter>();
             services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
             services.AddTransient<ISecretWriter, TekReleaseWorkflowStateCreate>();
-            services.AddTransient<ISecretWriter, TekReleaseWorkflowStateCreateV2>();
+            services.AddTransient<TekReleaseWorkflowStateCreateV2>();
             services.AddTransient<ITekWriter, TekWriter>();
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
             services.AddTransient<ILabConfirmationIdFormatter, StandardLabConfirmationIdFormatter>();
@@ -81,13 +90,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<ResponsePaddingLoggingExtensions>();
             services.AddSingleton<SuppressErrorLoggingExtensions>();
 
-            if (_IsDev)
+            if (_isDev)
+            {
                 services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });
+            }
+
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.HttpOnly = HttpOnlyPolicy.Always;
+                options.Secure = CookieSecurePolicy.Always;
+            });
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            if (_IsDev)
+            if (_isDev)
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();

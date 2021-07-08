@@ -40,7 +40,7 @@ dotnet publish ForceTekAuth\ForceTekAuth.csproj --no-self-contained --runtime wi
 IF %ERRORLEVEL% NEQ 0 EXIT 1
 dotnet publish SigTestFileCreator\SigTestFileCreator.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\SigTestFileCreator
 IF %ERRORLEVEL% NEQ 0 EXIT 1
-dotnet publish Eks.Parser\Eks.Parser.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\EksParser --version-suffix %suffix%
+dotnet publish ProtobufScrubber\ProtobufScrubber.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\ProtobufScrubber --version-suffix %suffix%
 IF %ERRORLEVEL% NEQ 0 EXIT 1
 
 @echo on

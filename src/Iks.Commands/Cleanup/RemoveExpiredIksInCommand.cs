@@ -1,4 +1,8 @@
-﻿using System;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -10,19 +14,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
 {
     public class RemoveExpiredIksInCommand
     {
-        private readonly Func<IksInDbContext> _DbContextProvider;
-        private readonly RemoveExpiredIksLoggingExtensions _Logger;
+        private readonly IksInDbContext _iksInDbContext;
+        private readonly RemoveExpiredIksLoggingExtensions _logger;
 
-        private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
-        private RemoveExpiredIksCommandResult _Result;
-        private readonly IIksCleaningConfig _IksCleaningConfig;
+        private readonly IUtcDateTimeProvider _utcDateTimeProvider;
+        private RemoveExpiredIksCommandResult _result;
+        private readonly IIksCleaningConfig _iksCleaningConfig;
 
-        public RemoveExpiredIksInCommand(Func<IksInDbContext> dbContext, RemoveExpiredIksLoggingExtensions logger,  IUtcDateTimeProvider utcDateTimeProvider, IIksCleaningConfig iksCleaningConfig)
+        public RemoveExpiredIksInCommand(IksInDbContext iksInDbContext, RemoveExpiredIksLoggingExtensions logger, IUtcDateTimeProvider utcDateTimeProvider, IIksCleaningConfig iksCleaningConfig)
         {
-            _DbContextProvider = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _UtcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
-            _IksCleaningConfig = iksCleaningConfig;
+            _iksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _utcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
+            _iksCleaningConfig = iksCleaningConfig;
         }
 
         /// <summary>
@@ -30,51 +34,48 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
         /// </summary>
         public async Task<RemoveExpiredIksCommandResult> ExecuteAsync()
         {
-            if (_Result != null)
+            if (_result != null)
             {
                 throw new InvalidOperationException("Object already used.");
             }
 
-            _Logger.WriteStart("IksIn");
+            _logger.WriteStart("IksIn");
 
-            _Result = new RemoveExpiredIksCommandResult();
-            
-            var lifetimeDays = _IksCleaningConfig.LifetimeDays;
-            var cutoff = (_UtcDateTimeProvider.Snapshot - TimeSpan.FromDays(lifetimeDays)).Date;
+            _result = new RemoveExpiredIksCommandResult();
 
-            using (var dbc = _DbContextProvider())
+            var lifetimeDays = _iksCleaningConfig.LifetimeDays;
+            var cutoff = (_utcDateTimeProvider.Snapshot - TimeSpan.FromDays(lifetimeDays)).Date;
+
+            using (var tx = _iksInDbContext.BeginTransaction())
             {
-                using (var tx = dbc.BeginTransaction())
-                {
-                    _Result.Found = dbc.Received.Count();
-                    _Logger.WriteCurrentIksFound(_Result.Found);
+                _result.Found = _iksInDbContext.Received.Count();
+                _logger.WriteCurrentIksFound(_result.Found);
 
-                    var zombies = dbc.Received
-                        .Where(x => x.Created < cutoff)
-                        .Select(x => new { x.Id, x.Created })
-                        .ToList();
+                var zombies = _iksInDbContext.Received
+                    .Where(x => x.Created < cutoff)
+                    .Select(x => new { x.Id, x.Created })
+                    .ToList();
 
-                    _Result.Zombies = zombies.Count;
+                _result.Zombies = zombies.Count;
 
-                    _Logger.WriteTotalIksFound(cutoff, _Result.Zombies);
+                _logger.WriteTotalIksFound(cutoff, _result.Zombies);
 
-                    // DELETE FROM IksIn.dbo.IksIn WHERE Created < (today - 14-days)                    
-                    _Result.GivenMercy = await dbc.Database.ExecuteSqlRawAsync($"DELETE FROM {TableNames.IksIn} WHERE [Created] < '{cutoff:yyyy-MM-dd HH:mm:ss.fff}';");
-                    await tx.CommitAsync();
+                // DELETE FROM IksIn.dbo.IksIn WHERE Created < (today - 14-days)                    
+                _result.GivenMercy = await _iksInDbContext.Database.ExecuteSqlRawAsync($"DELETE FROM {TableNames.IksIn} WHERE [Created] < '{cutoff:yyyy-MM-dd HH:mm:ss.fff}';");
+                await tx.CommitAsync();
 
-                    _Result.Remaining = dbc.Received.Count();
-                }
+                _result.Remaining = _iksInDbContext.Received.Count();
             }
 
-            _Logger.WriteRemovedAmount(_Result.GivenMercy, _Result.Remaining);
+            _logger.WriteRemovedAmount(_result.GivenMercy, _result.Remaining);
 
-            if (_Result.Reconciliation != 0)
+            if (_result.Reconciliation != 0)
             {
-                _Logger.WriteReconciliationFailed(_Result.Reconciliation);
+                _logger.WriteReconciliationFailed(_result.Reconciliation);
             }
 
-            _Logger.WriteFinished();
-            return _Result;
+            _logger.WriteFinished();
+            return _result;
         }
     }
 }

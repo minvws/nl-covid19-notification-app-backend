@@ -11,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
     {
         string Generate(ulong exp, Dictionary<string, object> claims);
         string Generate(IList<AuthClaim> authClaim);
-        
+
         bool TryDecode(string token, out IDictionary<string, string> payload);
     }
 }

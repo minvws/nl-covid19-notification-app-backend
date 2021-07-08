@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -11,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
 {
     public static class EfBulkExtensions
     {
-        public static async Task BulkUpdateAsync2<T>(this DbContext db, IList<T> page, SubsetBulkArgs args) where T:class
+        public static async Task BulkUpdateAsync2<T>(this DbContext db, IList<T> page, SubsetBulkArgs args) where T : class
         {
             await using (db.BeginTransaction())
             {

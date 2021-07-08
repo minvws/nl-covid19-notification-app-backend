@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -16,23 +16,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         private const int StartWriting = Base + 1;
         private const int FinishedWriting = Base + 2;
 
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
 
         public PublishContentLoggingExtensions(ILogger<PublishContentLoggingExtensions> logger)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void WriteStartWriting(string contentType)
         {
-            _Logger.LogDebug("[{name}/{id}] Writing {ContentType} to database.",
+            _logger.LogDebug("[{name}/{id}] Writing {ContentType} to database.",
                 Name, StartWriting,
                 contentType);
         }
 
         public void WriteFinishedWriting(string contentType)
         {
-            _Logger.LogDebug("[{name}/{id}] Done writing {ContentType} to database.",
+            _logger.LogDebug("[{name}/{id}] Done writing {ContentType} to database.",
                 Name, FinishedWriting,
                 contentType);
         }

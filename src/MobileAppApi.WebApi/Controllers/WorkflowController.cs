@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -18,13 +18,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
     [Route("[controller]")]
     public class WorkflowController : ControllerBase
     {
-        private readonly PostKeysLoggingExtensions _LoggerPostKeys;
-        private readonly DecoyKeysLoggingExtensions _LoggerDecoyKeys;
+        private readonly PostKeysLoggingExtensions _loggerPostKeys;
+        private readonly DecoyKeysLoggingExtensions _loggerDecoyKeys;
 
-        public WorkflowController(PostKeysLoggingExtensions loggerPostKeys, DecoyKeysLoggingExtensions LoggerDecoyKeys)
+        public WorkflowController(PostKeysLoggingExtensions loggerPostKeys, DecoyKeysLoggingExtensions loggerDecoyKeys)
         {
-            _LoggerPostKeys = loggerPostKeys ?? throw new ArgumentNullException(nameof(loggerPostKeys));
-            _LoggerDecoyKeys = LoggerDecoyKeys ?? throw new ArgumentNullException(nameof(LoggerDecoyKeys));
+            _loggerPostKeys = loggerPostKeys ?? throw new ArgumentNullException(nameof(loggerPostKeys));
+            _loggerDecoyKeys = loggerDecoyKeys ?? throw new ArgumentNullException(nameof(loggerDecoyKeys));
         }
 
         [ResponsePaddingFilterFactory]
@@ -34,8 +34,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         [Route("/v1/postkeys")]
         public async Task<IActionResult> PostWorkflow([FromQuery] byte[] sig, [FromServices] HttpPostReleaseTeksCommand2 command)
         {
-            if (command == null) throw new ArgumentNullException(nameof(command));
-            _LoggerPostKeys.WriteStartPostKeys();
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
+            _loggerPostKeys.WriteStartPostKeys();
             return await command.ExecuteAsync(sig, Request);
         }
 
@@ -46,7 +50,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         [Route("/v1/register")]
         public async Task<IActionResult> PostSecret([FromServices] HttpPostRegisterSecret command)
         {
-            if (command == null) throw new ArgumentNullException(nameof(command));
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
 
             return await command.ExecuteAsync();
         }
@@ -58,7 +65,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         [Route("/v2/register")]
         public async Task<IActionResult> PostSecretV2([FromServices] HttpPostRegisterSecretV2 command)
         {
-            if (command == null) throw new ArgumentNullException(nameof(command));
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
 
             return await command.ExecuteAsync();
         }
@@ -68,14 +78,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         [DecoyTimeGeneratorAttributeFactory]
         [HttpPost]
         [Route("/v1/stopkeys")]
-        public async Task<IActionResult> StopKeys()
+        public IActionResult StopKeys()
         {
-            _LoggerDecoyKeys.WriteStartDecoy();
+            _loggerDecoyKeys.WriteStartDecoy();
             return new OkResult();
         }
 
         [HttpGet]
         [Route("/")]
-        public IActionResult AssemblyDump([FromServices] IWebHostEnvironment env) => new DumpAssembliesToPlainText().Execute(env.IsDevelopment()); //ncrunch: no coverage
+        public IActionResult AssemblyDump([FromServices] IWebHostEnvironment env) => new DumpAssembliesToPlainText().Execute(env.IsDevelopment());
     }
 }

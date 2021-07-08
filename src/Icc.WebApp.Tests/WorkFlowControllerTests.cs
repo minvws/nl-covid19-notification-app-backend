@@ -1,5 +1,8 @@
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -8,23 +11,33 @@ using System.Threading.Tasks;
 using App.IccPortal.Tests;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using Xunit;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Icc.WebApp.Tests
 {
-    public class WorkflowControllerTests
+    public abstract class WorkflowControllerTests : WebApplicationFactory<Startup>
     {
         private readonly WebApplicationFactory<Startup> _factory;
 
-        public WorkflowControllerTests()
+        public WorkflowControllerTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions)
         {
-            _factory = new WebApplicationFactory<Startup>();
+            _factory = WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    services.AddScoped(p => new WorkflowDbContext(workflowDbContextOptions ?? throw new ArgumentNullException(nameof(workflowDbContextOptions))));
+                    services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
+                    services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
+                });
+            });
         }
 
         [Fact]
@@ -34,21 +47,10 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6L",
-                DateOfSymptomsOnset = DateTime.Today
+                SelectedDate = DateTime.Today
             };
 
-            var client = _factory.WithWebHostBuilder(builder =>
-                {
-                    builder.ConfigureTestServices(services =>
-                    {
-                        var descriptor = services.SingleOrDefault(d => d.ServiceType.Name == nameof(RestApiClient));
-                        services.Remove(descriptor);
-
-                        services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
-
-                    });
-                })
-                .CreateClient();
+            var client = _factory.CreateClient();
 
 
             var source = new CancellationTokenSource();
@@ -76,21 +78,10 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJ",
-                DateOfSymptomsOnset = DateTime.Today
+                SelectedDate = DateTime.Today
             };
 
-            var client = _factory.WithWebHostBuilder(builder =>
-                {
-                    builder.ConfigureTestServices(services =>
-                    {
-                        var descriptor = services.SingleOrDefault(d => d.ServiceType.Name == nameof(RestApiClient));
-                        services.Remove(descriptor);
-
-                        services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
-
-                    });
-                })
-                .CreateClient();
+            var client = _factory.CreateClient();
 
 
             var source = new CancellationTokenSource();
@@ -118,21 +109,10 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                DateOfSymptomsOnset = DateTime.Today
+                SelectedDate = DateTime.Today
             };
 
-            var client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                    var descriptor = services.SingleOrDefault(d => d.ServiceType.Name == nameof(RestApiClient));
-                    services.Remove(descriptor);
-
-                    services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
-
-                });
-            })
-                .CreateClient();
+            var client = _factory.CreateClient();
 
 
             var source = new CancellationTokenSource();
@@ -160,21 +140,10 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJR",
-                DateOfSymptomsOnset = DateTime.Today
+                SelectedDate = DateTime.Today
             };
 
-            var client = _factory.WithWebHostBuilder(builder =>
-                {
-                    builder.ConfigureTestServices(services =>
-                    {
-                        var descriptor = services.SingleOrDefault(d => d.ServiceType.Name == nameof(RestApiClient));
-
-                        services.Remove(descriptor);
-
-                        services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
-                    });
-                })
-                .CreateClient();
+            var client = _factory.CreateClient();
 
 
             var source = new CancellationTokenSource();
@@ -184,7 +153,7 @@ namespace Icc.WebApp.Tests
             {
                 Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
             };
-            
+
             var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
 
             // Assert

@@ -1,25 +1,42 @@
-﻿using Microsoft.Extensions.Logging;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
+using System.Data.Common;
+using System.Linq;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
-using System;
-using System.Linq;
-using Microsoft.Extensions.Configuration;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksInbound
 {
-    public class RemoveExpiredIksInCommandTests
+    public class RemoveExpiredIksInCommandTests : IDisposable
     {
-        private readonly IDbProvider<IksInDbContext> _IksInDbProvider;
+        private readonly IksInDbContext _iksInDbContext;
+        private static DbConnection connection;
 
         public RemoveExpiredIksInCommandTests()
         {
-            _IksInDbProvider = new SqliteInMemoryDbProvider<IksInDbContext>();
+            _iksInDbContext = new IksInDbContext(new DbContextOptionsBuilder<IksInDbContext>().UseSqlite(CreateInMemoryDatabase()).Options);
+            _iksInDbContext.Database.EnsureCreated();
         }
+        private static DbConnection CreateInMemoryDatabase()
+        {
+            connection = new SqliteConnection("Filename=:memory:");
+
+            connection.Open();
+
+            return connection;
+        }
+
+        public void Dispose() => connection.Dispose();
 
         [Fact]
         public void Tests_that_all_and_only_rows_older_than_14_FULL_days_are_removed()
@@ -31,35 +48,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var configurationMock = new Mock<IIksCleaningConfig>();
             configurationMock.Setup(p => p.LifetimeDays).Returns(14);
             var logger = new Mock<ILogger<RemoveExpiredIksLoggingExtensions>>();
-            var contextFunc = _IksInDbProvider.CreateNew;
-            var context = contextFunc();
-            
+           
             // Assemble - add data up to "now"
             var firstDate = DateTime.Parse("2020-12-01T20:00:00Z");
             for (var day = 0; day < 26; day++)
             {
-                context.Received.Add(new IksInEntity
+                _iksInDbContext.Received.Add(new IksInEntity
                 {
-                    Id = day+1,
+                    Id = day + 1,
                     Created = firstDate.AddDays(day),
                 });
             }
-            context.SaveChanges();
+            _iksInDbContext.SaveChanges();
 
-            Assert.Equal(26, context.Received.Count());
+            Assert.Equal(26, _iksInDbContext.Received.Count());
 
             // Act
             var command = new RemoveExpiredIksInCommand(
-                contextFunc,
+                _iksInDbContext,
                 new RemoveExpiredIksLoggingExtensions(logger.Object),
                 dateTimeProvider.Object,
                 configurationMock.Object
             );
-            command.ExecuteAsync();
+            command.ExecuteAsync().GetAwaiter().GetResult();
 
             // Assert
-            Assert.Empty(context.Received.Where(x => x.Created < DateTime.Parse("2020-12-12T00:00:00Z")));
-            Assert.Equal(15, context.Received.Count());
+            Assert.Empty(_iksInDbContext.Received.Where(x => x.Created < DateTime.Parse("2020-12-12T00:00:00Z")));
+            Assert.Equal(15, _iksInDbContext.Received.Count());
         }
     }
 }

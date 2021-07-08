@@ -7,6 +7,7 @@
 	[RollingPeriod] [int] NOT NULL,
 	[TransmissionRiskLevel] [int] NOT NULL,
 	[DaysSinceSymptomsOnset] [int] NULL,
+	[Symptomatic] [int] NULL,
     [ReportType] [int] NULL, 
     CONSTRAINT [PK_EksCreateJobInput] PRIMARY KEY CLUSTERED 
 (

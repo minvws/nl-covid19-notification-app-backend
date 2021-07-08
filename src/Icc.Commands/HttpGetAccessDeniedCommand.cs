@@ -12,20 +12,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 {
     public class HttpGetAccessDeniedCommand
     {
-        private readonly IIccPortalConfig _Configuration;
-        private readonly ILogger<HttpGetAccessDeniedCommand> _Logger;
+        private readonly IIccPortalConfig _configuration;
+        private readonly ILogger<HttpGetAccessDeniedCommand> _logger;
 
         public HttpGetAccessDeniedCommand(IIccPortalConfig configuration,
             ILogger<HttpGetAccessDeniedCommand> logger)
         {
-            _Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public IActionResult Execute(HttpContext httpContext)
         {
-            _Logger.WriteInsufficientRole();
-            var redirectUrl = _Configuration.FrontendBaseUrl + "/?e=access_denied";
+            _logger.WriteInsufficientRole();
+            var redirectUrl = _configuration.FrontendBaseUrl + "/?e=access_denied";
             return new RedirectResult(redirectUrl);
         }
     }

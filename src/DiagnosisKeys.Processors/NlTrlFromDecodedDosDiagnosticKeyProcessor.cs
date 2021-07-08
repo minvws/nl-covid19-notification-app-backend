@@ -1,4 +1,8 @@
-﻿using System;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -9,16 +13,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
 {
     public class NlTrlFromDecodedDosDiagnosticKeyProcessor : IDiagnosticKeyProcessor
     {
-        private readonly ITransmissionRiskLevelCalculationMk2 _TrlCalculation;
+        private readonly ITransmissionRiskLevelCalculationMk2 _trlCalculation;
 
         public NlTrlFromDecodedDosDiagnosticKeyProcessor(ITransmissionRiskLevelCalculationMk2 trlCalculation)
         {
-            _TrlCalculation = trlCalculation ?? throw new ArgumentNullException(nameof(trlCalculation));
+            _trlCalculation = trlCalculation ?? throw new ArgumentNullException(nameof(trlCalculation));
         }
 
-        public DkProcessingItem? Execute(DkProcessingItem? value)
+        public DkProcessingItem Execute(DkProcessingItem value)
         {
-            if (value == null) return value;
+            if (value == null)
+            {
+                return value;
+            }
 
             if (!value.Metadata.TryGetValue(DosDecodingDiagnosticKeyProcessor.DecodedDsosMetadataKey, out var decodedDos))
             {
@@ -40,14 +47,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
                 var symptomaticValue = value.AsSymptomatic();
 
                 if (symptomaticValue.SymptomsOnsetDatePrecision == SymptomsOnsetDatePrecision.Exact)
-                    return _TrlCalculation.Calculate(symptomaticValue.DaysSinceOnsetOfSymptoms);
+                {
+                    return _trlCalculation.Calculate(symptomaticValue.DaysSinceOnsetOfSymptoms);
+                }
 
                 if (symptomaticValue.SymptomsOnsetDatePrecision == SymptomsOnsetDatePrecision.Range)
+                {
                     return GetTrl(symptomaticValue.DaysSinceLastSymptoms);
+                }
             }
 
             //Default
-            return _TrlCalculation.Calculate(value.DaysSinceSubmission);
+            return _trlCalculation.Calculate(value.DaysSinceSubmission);
         }
 
         private TransmissionRiskLevel GetTrl(Range<int> range)
@@ -55,11 +66,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
             var result = new List<TransmissionRiskLevel>();
             for (var i = range.Lo; i <= range.Hi; i++)
             {
-                result.Add(_TrlCalculation.Calculate(i));
+                result.Add(_trlCalculation.Calculate(i));
             }
-            
+
             if (result.All(x => x == TransmissionRiskLevel.None))
+            {
                 return TransmissionRiskLevel.None;
+            }
 
             return result.Max();
         }

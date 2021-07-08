@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -31,16 +31,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private const int ResponseServerError = Base + 12;
         private const int ResponseUnknownError = Base + 13;
 
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
 
         public IksUploaderLoggingExtensions(ILogger<IksUploaderLoggingExtensions> logger)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void WriteDisabledByConfig()
         {
-            _Logger.LogWarning("[{name}/{id}] EfgsUploader is disabled by the configuration.",
+            _logger.LogWarning("[{name}/{id}] EfgsUploader is disabled by the configuration.",
                 Name, DisabledByConfig);
         }
 
@@ -51,14 +51,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 throw new ArgumentNullException(nameof(requestMessage));
             }
 
-            _Logger.LogInformation("[{name}/{id}] EFGS request: {request}",
+            _logger.LogInformation("[{name}/{id}] EFGS request: {request}",
                 Name, Request,
                 requestMessage);
         }
 
         public void WriteRequestContent(byte[] content)
         {
-            _Logger.LogDebug("[{name}/{id}] EFGS request content: {content}",
+            _logger.LogDebug("[{name}/{id}] EFGS request content: {content}",
                 Name, RequestContent,
                 Convert.ToBase64String(content));
         }
@@ -75,7 +75,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 throw new ArgumentNullException(nameof(exception.StackTrace));
             }
 
-            _Logger.LogError("[{name}/{id}] Error calling EFGS, see exception for details.\n{errorMessage}\n{stackTrace}",
+            _logger.LogError("[{name}/{id}] Error calling EFGS, see exception for details.\n{errorMessage}\n{stackTrace}",
                 Name, EfgsError,
                 exception.Message, exception.StackTrace);
         }
@@ -92,56 +92,56 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 throw new ArgumentNullException(nameof(innerexception.StackTrace));
             }
 
-            _Logger.LogError("[{name}/{id}] Inner exception:\n{errorMessage}\n{stackTrace}",
+            _logger.LogError("[{name}/{id}] Inner exception:\n{errorMessage}\n{stackTrace}",
                 Name, EfgsErrorInnerException,
                 innerexception.Message, innerexception.StackTrace);
         }
 
         public void WriteResponseSuccess()
         {
-            _Logger.LogInformation("[{name}/{id}] EFGS: Success.",
+            _logger.LogInformation("[{name}/{id}] EFGS: Success.",
                 Name, ResponseSuccess);
         }
 
-        public void WriteResponseWithWarnings(string? responseContent)
+        public void WriteResponseWithWarnings(string responseContent)
         {
             if (responseContent == null)
             {
                 throw new ArgumentNullException(nameof(responseContent));
             }
 
-            _Logger.LogWarning("[{name}/{id}] EFGS: Successful but with warnings: {content}",
+            _logger.LogWarning("[{name}/{id}] EFGS: Successful but with warnings: {content}",
                 Name, ResponseWithWarnings,
                 responseContent);
         }
 
         public void WriteResponseBadRequest()
         {
-            _Logger.LogError("[{name}/{id}] EFGS: Invalid request (either errors in the data or an invalid signature).",
+            _logger.LogError("[{name}/{id}] EFGS: Invalid request (either errors in the data or an invalid signature).",
                 Name, ResponseBadRequest);
         }
 
         public void WriteResponseForbidden()
         {
-            _Logger.LogError("[{name}/{id}] EFGS: Invalid/missing certificates.",
+            _logger.LogError("[{name}/{id}] EFGS: Invalid/missing certificates.",
                 Name, ResponseForbidden);
         }
 
         public void WriteResponseNotAcceptable()
         {
-            _Logger.LogError("[{name}/{id}] EFGS:  Data format or content is not valid.",
+            _logger.LogError("[{name}/{id}] EFGS:  Data format or content is not valid.",
                 Name, ResponseNotAcceptable);
         }
 
         public void WriteResponseRequestTooLarge()
         {
-            _Logger.LogError("[{name}/{id}] EFGS: Data already exists (Http: Request Entity too large).",
+            _logger.LogError("[{name}/{id}] EFGS: Data already exists (Http: Request Entity too large).",
                 Name, ResponseRequestTooLarge);
         }
 
         public void WriteResponseInternalServerError()
         {
-            _Logger.LogError("[{name}/{id}] EFGS: Not able to write data. Retry please.",
+            _logger.LogError("[{name}/{id}] EFGS: Not able to write data. Retry please.",
                 Name, ResponseServerError);
         }
 
@@ -152,7 +152,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 throw new ArgumentNullException(nameof(statusCode));
             }
 
-            _Logger.LogError("[{name}/{id}] Unknown error: {httpResponseCode}.",
+            _logger.LogError("[{name}/{id}] Unknown error: {httpResponseCode}.",
                 Name, ResponseUnknownError,
                 statusCode);
         }

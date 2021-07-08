@@ -1,14 +1,10 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using Moq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
 using Xunit;
 
@@ -16,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 {
     public class ContentSignerTest
     {
-        private static readonly Random _Random = new Random();
+        private static readonly Random random = new Random();
 
         [Theory]
         [InlineData(500)]
@@ -39,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
             for (var i = 0; i < stringLength; i++)
             {
-                chars[i] = allowedChars[_Random.Next(0, allowedChars.Length)];
+                chars[i] = allowedChars[random.Next(0, allowedChars.Length)];
             }
 
             return new string(chars);

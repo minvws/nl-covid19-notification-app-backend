@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -13,7 +13,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public Range(T lo, T hi)
         {
             if (lo.CompareTo(hi) > 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(hi), "lo > hi");
+            }
 
             Lo = lo;
             Hi = hi;
@@ -35,13 +37,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
             return obj is Range<T> range && Equals(range);
         }
 
         public override int GetHashCode()
         {
-            unchecked { return (Lo.GetHashCode() * 397) ^ Hi.GetHashCode(); }
+            unchecked
+            { return (Lo.GetHashCode() * 397) ^ Hi.GetHashCode(); }
         }
 
         public static bool operator ==(Range<T> left, Range<T> right)
@@ -88,9 +95,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         {
             ////Check.Require(lo.CompareTo(hi) <= 0);
             if (value.CompareTo(Lo) < 0)
+            {
                 return Lo;
+            }
+
             if (value.CompareTo(Hi) > 0)
+            {
                 return Hi;
+            }
 
             return value;
         }

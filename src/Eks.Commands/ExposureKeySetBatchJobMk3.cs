@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -7,9 +7,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
@@ -27,72 +28,73 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     /// </summary>
     public sealed class ExposureKeySetBatchJobMk3
     {
-        private readonly IWrappedEfExtensions _SqlCommands;
-        private readonly IEksConfig _EksConfig;
-        private readonly IEksBuilder _SetBuilder;
-        private readonly IEksStuffingGeneratorMk2 _EksStuffingGenerator;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly EksEngineLoggingExtensions _Logger;
-        private readonly ISnapshotEksInput _Snapshotter;
-        private readonly MarkDiagnosisKeysAsUsedLocally _MarkWorkFlowTeksAsUsed;
-        private readonly IDsosInfectiousness _DsosInfectiousness;
+        private readonly IEksConfig _eksConfig;
+        private readonly IEksBuilder _setBuilder;
+        private readonly IEksStuffingGeneratorMk2 _eksStuffingGenerator;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly EksEngineLoggingExtensions _logger;
+        private readonly ISnapshotEksInput _snapshotter;
+        private readonly MarkDiagnosisKeysAsUsedLocally _markWorkFlowTeksAsUsed;
 
-        private readonly IEksJobContentWriter _ContentWriter;
-        private readonly IWriteStuffingToDiagnosisKeys _WriteStuffingToDiagnosisKeys;
+        private readonly IEksJobContentWriter _contentWriter;
+        private readonly IWriteStuffingToDiagnosisKeys _writeStuffingToDiagnosisKeys;
 
-        private readonly string _JobName;
-        private readonly EksEngineResult _EksEngineResult = new EksEngineResult();
-        private readonly IList<EksInfo> _EksResults = new List<EksInfo>();
+        private readonly string _jobName;
+        private readonly EksEngineResult _eksEngineResult = new EksEngineResult();
+        private readonly IList<EksInfo> _eksResults = new List<EksInfo>();
 
-        private readonly List<EksCreateJobInputEntity> _Output;
-        private int _EksCount;
+        private readonly List<EksCreateJobInputEntity> _output;
+        private int _eksCount;
 
-        private bool _Fired;
-        private readonly Stopwatch _BuildEksStopwatch = new Stopwatch();
-        private readonly Func<EksPublishingJobDbContext> _PublishingDbContextFac;
+        private bool _fired;
+        private readonly Stopwatch _buildEksStopwatch = new Stopwatch();
+        private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
 
-        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, Func<EksPublishingJobDbContext> publishingDbContextFac, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys, IWrappedEfExtensions sqlCommands, IDsosInfectiousness dsosInfectiousness)
+        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, EksPublishingJobDbContext eksPublishingJobDbContext, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys)
         {
-            _EksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
-            _SetBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
-            _PublishingDbContextFac = publishingDbContextFac ?? throw new ArgumentNullException(nameof(publishingDbContextFac));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _EksStuffingGenerator = eksStuffingGenerator ?? throw new ArgumentNullException(nameof(eksStuffingGenerator));
-            _Snapshotter = snapshotter;
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _MarkWorkFlowTeksAsUsed = markDiagnosisKeysAsUsed ?? throw new ArgumentNullException(nameof(markDiagnosisKeysAsUsed));
-            _ContentWriter = contentWriter ?? throw new ArgumentNullException(nameof(contentWriter));
-            _Output = new List<EksCreateJobInputEntity>(_EksConfig.TekCountMax);
-            _WriteStuffingToDiagnosisKeys = writeStuffingToDiagnosisKeys ?? throw new ArgumentNullException(nameof(writeStuffingToDiagnosisKeys));
-            _JobName = $"ExposureKeySetsJob_{_DateTimeProvider.Snapshot:u}".Replace(" ", "_").Replace(":", "_");
-            _SqlCommands = sqlCommands ?? throw new ArgumentNullException(nameof(sqlCommands));
-            _DsosInfectiousness = dsosInfectiousness ?? throw new ArgumentNullException(nameof(dsosInfectiousness));
+            _eksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
+            _setBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
+            _eksPublishingJobDbContext = eksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContext));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _eksStuffingGenerator = eksStuffingGenerator ?? throw new ArgumentNullException(nameof(eksStuffingGenerator));
+            _snapshotter = snapshotter;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _markWorkFlowTeksAsUsed = markDiagnosisKeysAsUsed ?? throw new ArgumentNullException(nameof(markDiagnosisKeysAsUsed));
+            _contentWriter = contentWriter ?? throw new ArgumentNullException(nameof(contentWriter));
+            _output = new List<EksCreateJobInputEntity>(_eksConfig.TekCountMax);
+            _writeStuffingToDiagnosisKeys = writeStuffingToDiagnosisKeys ?? throw new ArgumentNullException(nameof(writeStuffingToDiagnosisKeys));
+            _jobName = $"ExposureKeySetsJob_{_dateTimeProvider.Snapshot:u}".Replace(" ", "_").Replace(":", "_");
         }
 
         public async Task<EksEngineResult> ExecuteAsync()
         {
-            if (_Fired)
+            if (_fired)
+            {
                 throw new InvalidOperationException("One use only.");
+            }
 
-            _Fired = true;
+            _fired = true;
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            _Logger.WriteStart(_JobName);
+            _logger.WriteStart(_jobName);
 
             if (Environment.UserInteractive && !WindowsIdentityQueries.CurrentUserIsAdministrator())
-                _Logger.WriteNoElevatedPrivs(_JobName);
+            {
+                _logger.WriteNoElevatedPrivs(_jobName);
+            }
 
-            _EksEngineResult.Started = _DateTimeProvider.Snapshot; //Align with the logged job name.
+            _eksEngineResult.Started = _dateTimeProvider.Snapshot; //Align with the logged job name.
 
             await ClearJobTablesAsync();
 
-            var snapshotResult = await _Snapshotter.ExecuteAsync(_EksEngineResult.Started);
-            
-            _EksEngineResult.InputCount = snapshotResult.TekInputCount;
-            _EksEngineResult.SnapshotSeconds = snapshotResult.SnapshotSeconds;
-            _EksEngineResult.TransmissionRiskNoneCount = await GetTransmissionRiskNoneCountAsync();
+            var snapshotResult = await _snapshotter.ExecuteAsync(_eksEngineResult.Started);
+
+            _eksEngineResult.InputCount = snapshotResult.TekInputCount;
+            _eksEngineResult.FilteredInputCount = snapshotResult.FilteredTekInputCount;
+            _eksEngineResult.SnapshotSeconds = snapshotResult.SnapshotSeconds;
+            _eksEngineResult.TransmissionRiskNoneCount = await GetTransmissionRiskNoneCountAsync();
 
             if (snapshotResult.TekInputCount != 0)
             {
@@ -101,82 +103,71 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 await CommitResultsAsync();
             }
 
-            _EksEngineResult.TotalSeconds = stopwatch.Elapsed.TotalSeconds;
-            _EksEngineResult.EksInfo = _EksResults.ToArray();
+            _eksEngineResult.TotalSeconds = stopwatch.Elapsed.TotalSeconds;
+            _eksEngineResult.EksInfo = _eksResults.ToArray();
 
-            _Logger.WriteReconciliationMatchUsable(_EksEngineResult.ReconcileOutputCount);
-            _Logger.WriteReconciliationMatchCount(_EksEngineResult.ReconcileEksSumCount);
+            _logger.WriteReconciliationMatchUsable(_eksEngineResult.ReconcileOutputCount);
+            _logger.WriteReconciliationMatchCount(_eksEngineResult.ReconcileEksSumCount);
 
-            _Logger.WriteFinished(_JobName);
+            _logger.WriteFinished(_jobName);
 
-            return _EksEngineResult;
+            return _eksEngineResult;
         }
 
         private async Task<int> GetTransmissionRiskNoneCountAsync()
         {
-            await using var dbc = _PublishingDbContextFac();
-            return dbc.EksInput.Count(x => x.TransmissionRiskLevel == TransmissionRiskLevel.None);
+            return await _eksPublishingJobDbContext.EksInput.CountAsync(x => x.TransmissionRiskLevel == TransmissionRiskLevel.None);
         }
 
         private async Task ClearJobTablesAsync()
         {
-            _Logger.WriteCleartables();
+            _logger.WriteCleartables();
 
-            var dbc = _PublishingDbContextFac();
-            await _SqlCommands.TruncateTableAsync(dbc, TableNames.EksEngineInput);
-            await _SqlCommands.TruncateTableAsync(dbc, TableNames.EksEngineOutput);
+            await _eksPublishingJobDbContext.TruncateAsync<EksCreateJobInputEntity>();
+            await _eksPublishingJobDbContext.TruncateAsync<EksCreateJobOutputEntity>();
         }
 
         private async Task StuffAsync()
         {
-            await using var dbc = _PublishingDbContextFac();
-            var tekCount = dbc.EksInput.Count(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None);
-
-            if (tekCount == 0)
+            if (_eksEngineResult.InputCount == 0)
             {
-                _Logger.WriteNoStuffingNoTeks();
+                _logger.WriteNoStuffingNoTeks();
                 return;
             }
 
-            var stuffingCount = tekCount < _EksConfig.TekCountMin ? _EksConfig.TekCountMin - tekCount : 0;
+            var tekCount = _eksPublishingJobDbContext.EksInput.Count(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None);
+
+            var stuffingCount = tekCount < _eksConfig.TekCountMin ? _eksConfig.TekCountMin - tekCount : 0;
             if (stuffingCount == 0)
             {
-                _Logger.WriteNoStuffingMinimumOk();
+                _logger.WriteNoStuffingMinimumOk();
                 return;
             }
 
-            _EksEngineResult.StuffingCount = stuffingCount;
+            _eksEngineResult.StuffingCount = stuffingCount;
 
+            var stuffing = _eksStuffingGenerator.Execute(stuffingCount);
+            _logger.WriteStuffingRequired(stuffing.Length);
 
-            //TODO Flat distributions by default. If the default changes, delegate to interfaces.
-            //TODO Any weighting of these distributions with current data will be done here.
-            //TODO If there will never be a weighted version, move this inside the generator.
-            var stuffing = _EksStuffingGenerator.Execute(stuffingCount);
-
-            _Logger.WriteStuffingRequired(stuffing.Length);
-
-            await using var tx = dbc.BeginTransaction();
-            await dbc.EksInput.AddRangeAsync(stuffing);
-            dbc.SaveAndCommit();
-
-            _Logger.WriteStuffingAdded();
+            await _eksPublishingJobDbContext.BulkInsertAsync(stuffing);
+            _logger.WriteStuffingAdded();
         }
 
         private async Task BuildOutputAsync()
         {
-            _Logger.WriteBuildEkses();
-            _BuildEksStopwatch.Start();
+            _logger.WriteBuildEkses();
+            _buildEksStopwatch.Start();
 
             var inputIndex = 0;
-            var page = GetInputPage(inputIndex, _EksConfig.PageSize);
-            _Logger.WriteReadTeks(page.Length);
+            var page = GetInputPage(inputIndex, _eksConfig.PageSize);
+            _logger.WriteReadTeks(page.Length);
 
             while (page.Length > 0)
             {
-                if (_Output.Count + page.Length >= _EksConfig.TekCountMax)
+                if (_output.Count + page.Length >= _eksConfig.TekCountMax)
                 {
-                    _Logger.WritePageFillsToCapacity(_EksConfig.TekCountMax);
-                    var remainingCapacity = _EksConfig.TekCountMax - _Output.Count;
+                    _logger.WritePageFillsToCapacity(_eksConfig.TekCountMax);
+                    var remainingCapacity = _eksConfig.TekCountMax - _output.Count;
                     AddToOutput(page.Take(remainingCapacity).ToArray()); //Fill to max
                     await WriteNewEksToOutputAsync();
                     AddToOutput(page.Skip(remainingCapacity).ToArray()); //Use leftovers from the page
@@ -186,121 +177,110 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     AddToOutput(page);
                 }
 
-                inputIndex += _EksConfig.PageSize; //Move input index
-                page = GetInputPage(inputIndex, _EksConfig.PageSize); //Read next page.
-                _Logger.WriteReadTeks(page.Length);
+                inputIndex += _eksConfig.PageSize; //Move input index
+                page = GetInputPage(inputIndex, _eksConfig.PageSize); //Read next page.
+                _logger.WriteReadTeks(page.Length);
             }
 
-            if (_Output.Count > 0)
+            if (_output.Count > 0)
             {
-                _Logger.WriteRemainingTeks(_Output.Count);
+                _logger.WriteRemainingTeks(_output.Count);
                 await WriteNewEksToOutputAsync();
             }
         }
 
         private void AddToOutput(EksCreateJobInputEntity[] page)
         {
-            _Output.AddRange(page); //Lots of memory
-            _Logger.WriteAddTeksToOutput(page.Length, _Output.Count);
+            _output.AddRange(page); //Lots of memory
+            _logger.WriteAddTeksToOutput(page.Length, _output.Count);
         }
 
         private static TemporaryExposureKeyArgs Map(EksCreateJobInputEntity c)
-            => new TemporaryExposureKeyArgs 
-            { 
+            => new TemporaryExposureKeyArgs
+            {
                 RollingPeriod = c.RollingPeriod,
                 TransmissionRiskLevel = c.TransmissionRiskLevel,
                 KeyData = c.KeyData,
                 RollingStartNumber = c.RollingStartNumber,
                 DaysSinceOnsetSymptoms = c.DaysSinceSymptomsOnset,
+                Symptomatic = c.Symptomatic,
                 ReportType = c.ReportType
             };
 
         private async Task WriteNewEksToOutputAsync()
         {
-            _Logger.WriteBuildEntry();
+            _logger.WriteBuildEntry();
 
-            var args = _Output.Select(Map).ToArray();
+            var args = _output.Select(Map).ToArray();
 
-            var content = await _SetBuilder.BuildAsync(args);
-            
-            var e = new EksCreateJobOutputEntity
+            var content = await _setBuilder.BuildAsync(args);
+
+            var eksCreateJobOutputEntity = new EksCreateJobOutputEntity
             {
                 Region = DefaultValues.Region,
-                Release = _EksEngineResult.Started,
-                CreatingJobQualifier = ++_EksCount,
-                Content = content, 
+                Release = _eksEngineResult.Started,
+                CreatingJobQualifier = ++_eksCount,
+                Content = content,
             };
 
-            _Logger.WriteWritingCurrentEks(e.CreatingJobQualifier);
+            _logger.WriteWritingCurrentEks(eksCreateJobOutputEntity.CreatingJobQualifier);
 
-            
-            await using (var dbc = _PublishingDbContextFac())
+            await using var tx = _eksPublishingJobDbContext.BeginTransaction();
+            await _eksPublishingJobDbContext.AddAsync(eksCreateJobOutputEntity);
+            _eksPublishingJobDbContext.SaveAndCommit();
+
+            _logger.WriteMarkTekAsUsed();
+
+            foreach (var i in _output)
             {
-                await using var tx = dbc.BeginTransaction();
-                await dbc.AddAsync(e);
-                dbc.SaveAndCommit();
-            }
-
-            _Logger.WriteMarkTekAsUsed();
-
-            foreach (var i in _Output)
                 i.Used = true;
+            }
 
             //Could be 750k in this hit
-            await using (var dbc2 = _PublishingDbContextFac())
+            var bulkArgs = new SubsetBulkArgs
             {
-                var bargs = new SubsetBulkArgs
-                {
-                    PropertiesToInclude = new[] {nameof(EksCreateJobInputEntity.Used)}
-                };
-                await dbc2.BulkUpdateAsync2(_Output, bargs); //TX
-            }
+                PropertiesToInclude = new[] { nameof(EksCreateJobInputEntity.Used) }
+            };
+            await _eksPublishingJobDbContext.BulkUpdateAsync2(_output, bulkArgs);
 
-            _EksEngineResult.OutputCount += _Output.Count;
+            _eksEngineResult.OutputCount += _output.Count;
 
-            _EksResults.Add(new EksInfo { TekCount = _Output.Count, TotalSeconds = _BuildEksStopwatch.Elapsed.TotalSeconds });
-            _Output.Clear();
+            _eksResults.Add(new EksInfo { TekCount = _output.Count, TotalSeconds = _buildEksStopwatch.Elapsed.TotalSeconds });
+            _output.Clear();
         }
 
         private EksCreateJobInputEntity[] GetInputPage(int skip, int take)
         {
-            _Logger.WriteStartReadPage(skip, take);
+            _logger.WriteStartReadPage(skip, take);
 
-            using var dbc = _PublishingDbContextFac();
-            var unFilteredResult = dbc.EksInput
+            var unFilteredResult = _eksPublishingJobDbContext.EksInput
+                .AsNoTracking()
                 .OrderBy(x => x.KeyData)
                 .ThenBy(x => x.Id)
                 .Skip(skip)
                 .Take(take)
                 .ToArray();
 
+            _logger.WriteFinishedReadPage(unFilteredResult.Length);
 
-            var filteredResult = unFilteredResult
-                .Where(x =>
-                _DsosInfectiousness.IsInfectious(x
-                    .DaysSinceSymptomsOnset)) 
-            .ToArray();
-
-            _Logger.WriteFinishedReadPage(filteredResult.Length);
-
-            return filteredResult;
+            return unFilteredResult;
         }
 
         private async Task CommitResultsAsync()
         {
-            _Logger.WriteCommitPublish();
+            _logger.WriteCommitPublish();
 
-            await _ContentWriter.ExecuteAsync();
+            await _contentWriter.ExecuteAsync();
 
-            _Logger.WriteCommitMarkTeks();
-            var result = await _MarkWorkFlowTeksAsUsed.ExecuteAsync();
-            _Logger.WriteTotalMarked(result.Marked);
-            
+            _logger.WriteCommitMarkTeks();
+            var result = await _markWorkFlowTeksAsUsed.ExecuteAsync();
+            _logger.WriteTotalMarked(result.Marked);
+
 
             //Write stuffing to DKs
-            await _WriteStuffingToDiagnosisKeys.ExecuteAsync();
+            await _writeStuffingToDiagnosisKeys.ExecuteAsync();
 
             await ClearJobTablesAsync();
         }
-   }
+    }
 }

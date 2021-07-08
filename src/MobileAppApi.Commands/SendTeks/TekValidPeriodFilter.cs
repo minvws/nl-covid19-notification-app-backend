@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -11,13 +11,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
 {
     public class TekValidPeriodFilter : ITekValidPeriodFilter
     {
-        private readonly ITekValidatorConfig _Config;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly ITekValidatorConfig _config;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
 
         public TekValidPeriodFilter(ITekValidatorConfig config, IUtcDateTimeProvider dateTimeProvider)
         {
-            _Config = config ?? throw new ArgumentNullException(nameof(config));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
 
         /// <summary>
@@ -26,10 +26,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         /// </summary>
         public FilterResult<Tek> Execute(Tek[] values)
         {
-            if (values == null) throw new ArgumentNullException(nameof(values));
-            if (values.Any(x => x == null)) throw new ArgumentException(nameof(values));
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
 
-            var lowerInclusiveDate = _DateTimeProvider.Snapshot.Date - TimeSpan.FromDays(_Config.MaxAgeDays);
+            if (values.Any(x => x == null))
+            {
+                throw new ArgumentException(nameof(values));
+            }
+
+            var lowerInclusiveDate = _dateTimeProvider.Snapshot.Date - TimeSpan.FromDays(_config.MaxAgeDays);
             var lowerLimit = lowerInclusiveDate.ToRollingStartNumber();
             var result = values.Where(x => x.RollingStartNumber >= lowerLimit).ToArray();
 

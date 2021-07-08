@@ -15,6 +15,8 @@
     <ProjectGuid>{B701DAD1-CD0E-4E25-B47F-53211653D1EA}</ProjectGuid>
     <UserSecretsId>40a98d16-dbd2-463e-81a8-ff473085eeb0</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,8 +38,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\app\helpers\date.helper.spec.ts" />
+    <None Remove="ClientApp\src\app\helpers\date.helper.ts" />
+    <None Remove="ClientApp\src\app\models\index-data.ts" />
+    <None Remove="ClientApp\src\tsconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Core.AspNet\Core.AspNet.csproj" />
     <ProjectReference Include="..\Icc.Commands\Icc.Commands.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\helpers\date.helper.spec.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\helpers\date.helper.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\models\index-data.ts" />
+    <TypeScriptCompile Include="ClientApp\src\tsconfig.json" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

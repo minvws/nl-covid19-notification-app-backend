@@ -25,6 +25,7 @@ import {ValidateIccStartComponent} from './validate-flow/validate-icc-start/vali
 import {ValidateIccFinalComponent} from './validate-flow/validate-icc-final/validate-icc-final.component';
 import {ErrorInterceptor} from './helpers';
 import {ImageCarousselComponent} from './components/image-caroussel/image-caroussel.component';
+import { DateHelper } from './helpers/date.helper';
 
 import {APP_INITIALIZER} from '@angular/core';
 import {AppConfigService, IAppConfig} from './services/app-config.service';
@@ -89,7 +90,8 @@ const appInitializer = (appConfig: AppConfigService) => {
             useFactory: appInitializer,
             multi: true,
             deps: [AppConfigService]
-        }
+      },
+        DateHelper
     ],
     bootstrap: [AppComponent]
 })

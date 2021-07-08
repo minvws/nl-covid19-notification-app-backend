@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -16,22 +16,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private const int Start = Base;
         private const int TeksToPublish = Base + 1;
 
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
 
         public SnapshotLoggingExtensions(ILogger<SnapshotLoggingExtensions> logger)
         {
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void WriteStart()
         {
-            _Logger.LogDebug("[{name}/{id}] Snapshot publishable TEKs..",
+            _logger.LogDebug("[{name}/{id}] Snapshot publishable TEKs..",
                 Name, Start);
         }
 
         public void WriteTeksToPublish(int tekCount)
         {
-            _Logger.LogInformation("[{name}/{id}] TEKs to publish - Count:{Count}.",
+            _logger.LogInformation("[{name}/{id}] TEKs to publish - Count:{Count}.",
                 Name, TeksToPublish,
                 tekCount);
         }

@@ -1,4 +1,8 @@
-﻿using System;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,45 +14,53 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
     /// IHttpGetIksCommand which returns the provided results in order.
     /// Use for tests.
     /// </summary>
-    internal class FixedResultHttpGetIksCommand : IIHttpGetIksCommand
+    internal class FixedResultHttpGetIksCommand : IHttpGetIksCommand
     {
         private const string DateFormatString = "yyyyMMdd";
-        private readonly Dictionary<string, List<HttpGetIksSuccessResult>> _Responses;
-        private readonly Dictionary<string, int> _CallIndexes = new Dictionary<string, int>();
+        private readonly Dictionary<string, List<HttpGetIksSuccessResult>> _responses;
+        private readonly Dictionary<string, int> _callIndexes = new Dictionary<string, int>();
 
         public static FixedResultHttpGetIksCommand Create(List<HttpGetIksSuccessResult> responses)
         {
-            return Create(responses, DateTime.Now);
+
+            //TODO don't map response to dates, just map responses to batchTags
+
+            return Create(responses, DateTime.Now.Date.ToString("yyyyMMdd"));
         }
 
-        public static FixedResultHttpGetIksCommand Create(List<HttpGetIksSuccessResult> responses, DateTime date)
+        public static FixedResultHttpGetIksCommand Create(List<HttpGetIksSuccessResult> responses, string batchTag)
         {
             return new FixedResultHttpGetIksCommand(new Dictionary<string, List<HttpGetIksSuccessResult>>
             {
-                {date.ToString(DateFormatString), responses}
+                {batchTag, responses}
             });
         }
 
         private FixedResultHttpGetIksCommand(Dictionary<string, List<HttpGetIksSuccessResult>> responses)
         {
-            _Responses = responses;
-            foreach (var key in responses.Keys) _CallIndexes[key] = 0;
+            _responses = responses;
+            foreach (var key in responses.Keys)
+            {
+                _callIndexes[key] = 0;
+            }
         }
 
         public void AddItem(HttpGetIksSuccessResult item, DateTime date)
         {
             var dateString = date.ToString(DateFormatString);
 
-            if (!_Responses.ContainsKey(dateString))
+            if (!_responses.ContainsKey(dateString))
             {
-                _Responses[dateString] = new List<HttpGetIksSuccessResult>();
-                _CallIndexes[dateString] = 0;
+                _responses[dateString] = new List<HttpGetIksSuccessResult>();
+                _callIndexes[dateString] = 0;
             }
 
-            var dateResponses = _Responses[dateString];
+            var dateResponses = _responses[dateString];
 
             if (dateResponses.Count > 0)
+            {
                 dateResponses.Last().NextBatchTag = item.BatchTag;
+            }
 
             dateResponses.Add(item);
         }
@@ -58,14 +70,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             AddItem(item, DateTime.Now);
         }
 
-        public Task<HttpGetIksSuccessResult?> ExecuteAsync(string batchTag, DateTime date)
+        public Task<HttpGetIksSuccessResult> ExecuteAsync(DateTime date, string batchTag = null)
         {
-            HttpGetIksSuccessResult? result = null;
+            HttpGetIksSuccessResult result = null;
             var dateString = date.ToString(DateFormatString);
 
-            if (_CallIndexes.ContainsKey(dateString) && _CallIndexes[dateString] < _Responses[dateString].Count)
+            //TODO: If batchTag is null, return the first batch from date; otherwise get the batch matching batchTag
+
+            if (_callIndexes.ContainsKey(dateString) && _callIndexes[dateString] < _responses[dateString].Count)
             {
-                result = _Responses[dateString][_CallIndexes[dateString]++];
+                result = _responses[dateString][_callIndexes[dateString]++];
             }
 
             return Task.FromResult(result);

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -16,7 +16,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         [Fact]
         public void NewEksStuffingGeneratorTest()
         {
-            var rng = new StandardRandomNumberGenerator(); var eksConfigMock = new Mock<IEksConfig>(MockBehavior.Strict);
+            var rng = new StandardRandomNumberGenerator();
+            var eksConfigMock = new Mock<IEksConfig>(MockBehavior.Strict);
             eksConfigMock.Setup(x => x.LifetimeDays).Returns(14);
             var dtp = new StandardUtcDateTimeProvider();
 

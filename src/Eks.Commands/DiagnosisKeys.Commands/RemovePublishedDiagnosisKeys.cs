@@ -1,50 +1,50 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands
 {
     public class RemovePublishedDiagnosisKeys
     {
-        private RemovePublishedDiagnosisKeysResult _Result;
-        private readonly Func<DkSourceDbContext> _DiagnosticKeyDbContextProvider;
-        private readonly IUtcDateTimeProvider _UtcDateTimeProvider;
+        private RemovePublishedDiagnosisKeysResult _result;
+        private readonly DkSourceDbContext _diagnosticKeyDbContext;
+        private readonly IUtcDateTimeProvider _utcDateTimeProvider;
 
-        public RemovePublishedDiagnosisKeys(Func<DkSourceDbContext> diagnosticKeyDbContextProvider, IUtcDateTimeProvider utcDateTimeProvider)
+        public RemovePublishedDiagnosisKeys(DkSourceDbContext diagnosticKeyDbContext, IUtcDateTimeProvider utcDateTimeProvider)
         {
-            _DiagnosticKeyDbContextProvider = diagnosticKeyDbContextProvider ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContextProvider));
-            _UtcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
+            _diagnosticKeyDbContext = diagnosticKeyDbContext ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContext));
+            _utcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
         }
 
-        public RemovePublishedDiagnosisKeysResult Execute()
+        public async Task<RemovePublishedDiagnosisKeysResult> ExecuteAsync()
         {
-            if (_Result != null)
-                throw new InvalidOperationException("Object already used.");
-
-            _Result = new RemovePublishedDiagnosisKeysResult();
-
-            //TODO setting
-            var cutoff = _UtcDateTimeProvider.Snapshot.AddDays(-14).Date.ToRollingStartNumber();
-
-            using (var dbc = _DiagnosticKeyDbContextProvider())
+            if (_result != null)
             {
-                using (var tx = dbc.BeginTransaction())
-                {
-                    _Result.GivenMercy = dbc.Database.ExecuteSqlRaw($"DELETE FROM {TableNames.DiagnosisKeys} WHERE [PublishedLocally] = 1 AND [PublishedToEfgs] = 1 AND DailyKey_RollingStartNumber < {cutoff};");
-                    tx.Commit();
-                }
-
-                _Result.RemainingExpiredCount = dbc.DiagnosisKeys.Count(x => x.DailyKey.RollingStartNumber < cutoff);
+                throw new InvalidOperationException("Object already used.");
             }
 
-            return _Result;
+            _result = new RemovePublishedDiagnosisKeysResult();
+
+            //TODO setting
+            var cutoff = _utcDateTimeProvider.Snapshot.AddDays(-14).Date.ToRollingStartNumber();
+
+            var resultToDelete = _diagnosticKeyDbContext.DiagnosisKeys.AsNoTracking().Where(p =>
+                p.PublishedLocally && p.PublishedToEfgs && p.DailyKey.RollingStartNumber < cutoff).ToList();
+
+            _result.GivenMercy = resultToDelete.Count;
+            await _diagnosticKeyDbContext.BulkDeleteAsync(resultToDelete);
+
+            _result.RemainingExpiredCount = _diagnosticKeyDbContext.DiagnosisKeys.Count(x => x.DailyKey.RollingStartNumber < cutoff);
+
+            return _result;
         }
     }
 }

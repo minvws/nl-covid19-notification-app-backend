@@ -4,16 +4,29 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests</RootNamespace>
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\ProtobufHeaderTestFile.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\ProtobufHeaderTestFile.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="3.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="EFCore.BulkExtensions" Version="3.6.1" />
+    <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
     <PackageReference Include="Moq" Version="4.16.0" />
-    <PackageReference Include="NCrunch.Framework" Version="4.5.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
@@ -23,16 +36,25 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\Crypto.Tests\Crypto.Tests.csproj" />
     <ProjectReference Include="..\Manifest.Commands\Manifest.Commands.csproj" />
     <ProjectReference Include="..\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
     <ProjectReference Include="..\TestDataGeneration.Commands\TestDataGeneration.Commands.csproj" />
-    <ProjectReference Include="..\TestFramework\TestFramework.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="1a082a5e05cd791ef7fbabdf3b653d3d9363d1dfb791d026e81db519500b090c">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\Database\DiagnosisKeys\dbo\StoredProcedures\RemoveDuplicateDiagnosisKeysForIks.sql" Link="Resources\RemoveDuplicateDiagnosisKeysForIks.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Database\DiagnosisKeys\dbo\StoredProcedures\RemoveLocalDuplicateDiagnosisKeys.sql" Link="Resources\RemoveLocalDuplicateDiagnosisKeys.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

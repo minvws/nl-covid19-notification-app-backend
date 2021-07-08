@@ -16,13 +16,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
         public IActionResult Execute(HttpContext httpContext)
         {
             if (httpContext == null)
+            {
                 throw new ArgumentNullException(nameof(httpContext));
+            }
 
             var claimValue = httpContext.User?.Claims?.FirstOrDefault(c => c.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
 
             if (string.IsNullOrWhiteSpace(claimValue))
+            {
                 return new UnauthorizedResult();
-            
+            }
+
             return new OkObjectResult(new ClaimInfoResponse { User = new ClaimInfo { Id = claimValue } });
         }
     }

@@ -16,16 +16,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
 {
     public class AuthCodeServiceTests
     {
-        private IAuthCodeService _AuthCodeService;
-        private IAuthCodeGenerator _AuthCodeGenerator;
+        private readonly IAuthCodeService _authCodeService;
+        private readonly IAuthCodeGenerator _authCodeGenerator;
 
         public AuthCodeServiceTests()
         {
             var randomNumberGenerator = new StandardRandomNumberGenerator();
-            _AuthCodeGenerator = new AuthCodeGenerator(randomNumberGenerator);
+            _authCodeGenerator = new AuthCodeGenerator(randomNumberGenerator);
             var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
 
-            _AuthCodeService = new AuthCodeService(cache, _AuthCodeGenerator);
+            _authCodeService = new AuthCodeService(cache, _authCodeGenerator);
         }
 
         [InlineData(32)]
@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         [Theory]
         public void GeneratorGeneratesXLengthString(int expectedLength)
         {
-            var authCode = _AuthCodeGenerator.Next(expectedLength);
+            var authCode = _authCodeGenerator.Next(expectedLength);
 
             Assert.NotNull(authCode);
             Assert.True(authCode.Length == expectedLength);
@@ -44,9 +44,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         [Fact]
         public async void ValidateIfGeneratedAuthCodeIsStored()
         {
-            var authCode = await _AuthCodeService.GenerateAuthCodeAsync(new ClaimsPrincipal());
+            var authCode = await _authCodeService.GenerateAuthCodeAsync(new ClaimsPrincipal());
 
-            var result = await _AuthCodeService.GetClaimsByAuthCodeAsync(authCode);
+            var result = await _authCodeService.GetClaimsByAuthCodeAsync(authCode);
 
             Assert.NotNull(result);
         }
@@ -56,13 +56,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         public async void ValidateIfClaimsPrincipalIsStored()
         {
             var testClaim = new Claim("testType", "testValue", "string");
-            var identity = new ClaimsIdentity(new List<Claim>() {testClaim}, "test");
+            var identity = new ClaimsIdentity(new List<Claim>() { testClaim }, "test");
 
             var expectedClaimsPrincipal = new ClaimsPrincipal(identity);
 
-            var authCode = await _AuthCodeService.GenerateAuthCodeAsync(expectedClaimsPrincipal);
+            var authCode = await _authCodeService.GenerateAuthCodeAsync(expectedClaimsPrincipal);
 
-            var outputClaims = await _AuthCodeService.GetClaimsByAuthCodeAsync(authCode);
+            var outputClaims = await _authCodeService.GetClaimsByAuthCodeAsync(authCode);
 
             Assert.Equal(testClaim.Type, outputClaims?[0].Type);
             Assert.Equal(testClaim.Value, outputClaims?[0].Value);
@@ -71,11 +71,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         [Fact]
         public async Task ValidateIfAuthCodeIsRevokedCorrectly()
         {
-            var authCode = await _AuthCodeService.GenerateAuthCodeAsync(new ClaimsPrincipal());
+            var authCode = await _authCodeService.GenerateAuthCodeAsync(new ClaimsPrincipal());
 
-            await _AuthCodeService.RevokeAuthCodeAsync(authCode);
+            await _authCodeService.RevokeAuthCodeAsync(authCode);
 
-            var result = await _AuthCodeService.GetClaimsByAuthCodeAsync(authCode);
+            var result = await _authCodeService.GetClaimsByAuthCodeAsync(authCode);
 
             Assert.Null(result);
         }

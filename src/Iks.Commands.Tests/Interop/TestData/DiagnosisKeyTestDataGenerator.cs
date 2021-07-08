@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -8,25 +8,23 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop.TestData
 {
     public class DiagnosisKeyTestDataGenerator
     {
-        private readonly IDbProvider<DkSourceDbContext> _DkSourceDbProvider;
+        private readonly DkSourceDbContext _dkSourceDbContext;
         public DateTime BaseDate { get; set; } = DateTime.UtcNow.Date;
 
-        public DiagnosisKeyTestDataGenerator(IDbProvider<DkSourceDbContext> dkSourceDbProvider)
+        public DiagnosisKeyTestDataGenerator(DkSourceDbContext dkSourceDbContext)
         {
-            _DkSourceDbProvider = dkSourceDbProvider;
+            _dkSourceDbContext = dkSourceDbContext;
         }
 
         public long[] Write(DiagnosisKeyEntity[] items)
         {
-            var db = _DkSourceDbProvider.CreateNew();
-            db.DiagnosisKeys.AddRange(items);
-            db.SaveChanges();
+            _dkSourceDbContext.DiagnosisKeys.AddRange(items);
+            _dkSourceDbContext.SaveChanges();
             return items.Select(x => x.Id).ToArray();
         }
 

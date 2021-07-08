@@ -1,6 +1,6 @@
-﻿// // Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
-// // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
-// // SPDX-License-Identifier: EUPL-1.2
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
 
 using System;
 using System.Threading.Tasks;
@@ -10,21 +10,19 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramewor
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 {
-    public class RemoveDuplicateDiagnosisKeysForIksWithSpCommand : IRemoveDuplicateDiagnosisKeysForIksCommand
+    public class RemoveDuplicateDiagnosisKeysForIksWithSpCommand : IRemoveDuplicateDiagnosisKeysCommand
     {
-        private readonly Func<DkSourceDbContext> _DkSourceDbProvider;
+        private readonly DkSourceDbContext _dkSourceDbContext;
 
-        public RemoveDuplicateDiagnosisKeysForIksWithSpCommand(Func<DkSourceDbContext> dkSourceDbProvider)
+        public RemoveDuplicateDiagnosisKeysForIksWithSpCommand(DkSourceDbContext dkSourceDbContext)
         {
-            _DkSourceDbProvider = dkSourceDbProvider ?? throw new ArgumentNullException(nameof(dkSourceDbProvider));
-            
+            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
         }
 
         public async Task ExecuteAsync()
         {
-            await using var context = _DkSourceDbProvider.Invoke();
-            await using var transaction = context.BeginTransaction();
-            context.Database.ExecuteSqlRaw("EXEC dbo.RemoveDuplicateDiagnosisKeysForIks");
+            await using var transaction = _dkSourceDbContext.BeginTransaction();
+            await _dkSourceDbContext.Database.ExecuteSqlRawAsync("EXEC dbo.RemoveDuplicateDiagnosisKeysForIks");
             await transaction.CommitAsync();
         }
     }

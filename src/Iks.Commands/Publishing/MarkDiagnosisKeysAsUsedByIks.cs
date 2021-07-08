@@ -1,10 +1,11 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
@@ -16,18 +17,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 {
     public class MarkDiagnosisKeysAsUsedByIks
     {
-        private readonly Func<DkSourceDbContext> _DkDbContextFactory;
-        private readonly IIksConfig _IksConfig;
-        private readonly Func<IksPublishingJobDbContext> _PublishingDbContextFac;
-        private readonly ILogger<MarkDiagnosisKeysAsUsedByIks> _Logger;
-        private int _Index;
+        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly IksPublishingJobDbContext _iksPublishingJobDbContext;
+        private readonly IIksConfig _iksConfig;
+        private readonly ILogger<MarkDiagnosisKeysAsUsedByIks> _logger;
+        private int _index;
 
-        public MarkDiagnosisKeysAsUsedByIks(Func<DkSourceDbContext> dkDbContextFactory, IIksConfig config, Func<IksPublishingJobDbContext> publishingDbContextFac, ILogger<MarkDiagnosisKeysAsUsedByIks> logger)
+        public MarkDiagnosisKeysAsUsedByIks(DkSourceDbContext dkSourceDbContext, IIksConfig config, IksPublishingJobDbContext iksPublishingJobDbContext, ILogger<MarkDiagnosisKeysAsUsedByIks> logger)
         {
-            _DkDbContextFactory = dkDbContextFactory ?? throw new ArgumentNullException(nameof(dkDbContextFactory));
-            _IksConfig = config ?? throw new ArgumentNullException(nameof(config));
-            _PublishingDbContextFac = publishingDbContextFac ?? throw new ArgumentNullException(nameof(publishingDbContextFac));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
+            _iksConfig = config ?? throw new ArgumentNullException(nameof(config));
+            _iksPublishingJobDbContext = iksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(iksPublishingJobDbContext));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<MarkDksAsUsedResult> ExecuteAsync()
@@ -38,45 +39,46 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                 await Zap(used);
                 used = ReadPage();
             }
-            return new MarkDksAsUsedResult { Count = _Index };
+            return new MarkDksAsUsedResult { Count = _index };
         }
 
         private async Task Zap(long[] used)
         {
-            await using var wfDb = _DkDbContextFactory();
-
-            var zap = wfDb.DiagnosisKeys
+            var diagnosisKeyEntities = _dkSourceDbContext.DiagnosisKeys
+                .AsNoTracking()
                 .Where(x => used.Contains(x.Id))
                 .ToList();
 
-            _Index += used.Length;
-            _Logger.LogInformation("Marking as Published - Count:{Count}, Running total:{RunningTotal}.", zap.Count, _Index);
+            _index += used.Length;
+            _logger.LogInformation("Marking as Published - Count:{Count}, Running total:{RunningTotal}.", diagnosisKeyEntities.Count, _index);
 
-            if (zap.Count == 0)
+            if (diagnosisKeyEntities.Count == 0)
+            {
                 return;
+            }
 
-            foreach (var i in zap)
+            foreach (var i in diagnosisKeyEntities)
             {
                 i.PublishedToEfgs = true;
             }
 
-            var bargs = new SubsetBulkArgs
+            var bulkArgs = new SubsetBulkArgs
             {
                 PropertiesToInclude = new[] { $"{nameof(DiagnosisKeyEntity.PublishedToEfgs)}" }
             };
 
-            await wfDb.BulkUpdateAsync2(zap, bargs); //TX
+            await _dkSourceDbContext.BulkUpdateAsync2(diagnosisKeyEntities, bulkArgs);
         }
 
         private long[] ReadPage()
         {
-            //No tx cos nothing else is touching this context.
             //New context each time
-            return _PublishingDbContextFac().Input
+            return _iksPublishingJobDbContext.Input
+                .AsNoTracking()
                 .Where(x => x.Used)
                 .OrderBy(x => x.DkId)
-                .Skip(_Index)
-                .Take(_IksConfig.PageSize)
+                .Skip(_index)
+                .Take(10000)
                 .Select(x => x.DkId)
                 .ToArray();
         }

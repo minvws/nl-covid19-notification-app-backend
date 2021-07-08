@@ -1,4 +1,8 @@
-﻿using System;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using System.Collections.Generic;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
@@ -10,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
     /// </summary>
     public class DosViaTrlDayRangeMidPointCalculation
     {
-        private static readonly Dictionary<int, int> _Mapping = new Dictionary<int, int>
+        private static readonly Dictionary<int, int> mapping = new Dictionary<int, int>
         {
             {-2, -2}, //Mid point (only)
             {-1,  0},
@@ -30,9 +34,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 
         public int Calculate(int actualDaysSinceOnsetSymptoms)
         {
-            if (_Mapping.TryGetValue(actualDaysSinceOnsetSymptoms, out var result))
+            if (mapping.TryGetValue(actualDaysSinceOnsetSymptoms, out var result))
+            {
                 return result;
-            
+            }
+
             throw new ArgumentOutOfRangeException(nameof(actualDaysSinceOnsetSymptoms), "Trl calculation and removal of TRL.None items must precede this calculation.");
         }
     }

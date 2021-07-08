@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public class ByteArrayEqualityComparer : IEqualityComparer<byte[]>
     {
-        private static readonly EqualityComparer<byte> ElementComparer = EqualityComparer<byte>.Default;
+        private static readonly EqualityComparer<byte> elementComparer = EqualityComparer<byte>.Default;
 
         private static bool ByteArrayCompare(ReadOnlySpan<byte> a1, ReadOnlySpan<byte> a2)
         {
@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
                     ? 0
                     : obj.Aggregate(
                         17,
-                        (current, element) => current * 31 + ElementComparer.GetHashCode(element));
+                        (current, element) => current * 31 + elementComparer.GetHashCode(element));
             }
         }
     }

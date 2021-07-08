@@ -1,25 +1,43 @@
-﻿using System;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
+using System.Data.Common;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOutbound
 {
-    public class RemoveExpiredIksOutCommandTests
+    public class RemoveExpiredIksOutCommandTests : IDisposable
     {
-        private readonly IDbProvider<IksOutDbContext> _IksOutDbProvider;
+        private readonly IksOutDbContext _iksOutDbContext;
+        private static DbConnection connection;
 
         public RemoveExpiredIksOutCommandTests()
         {
-            _IksOutDbProvider = new SqliteInMemoryDbProvider<IksOutDbContext>();
+            _iksOutDbContext = new IksOutDbContext(new DbContextOptionsBuilder<IksOutDbContext>().UseSqlite(CreateInMemoryDatabase()).Options);
+            _iksOutDbContext.Database.EnsureCreated();
         }
+
+        private static DbConnection CreateInMemoryDatabase()
+        {
+            connection = new SqliteConnection("Filename=:memory:");
+
+            connection.Open();
+
+            return connection;
+        }
+
+        public void Dispose() => connection.Dispose();
 
         [Fact]
         public void Tests_that_all_and_only_rows_older_than_14_FULL_days_are_removed()
@@ -31,37 +49,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
             var configurationMock = new Mock<IIksCleaningConfig>();
             configurationMock.Setup(p => p.LifetimeDays).Returns(14);
             var logger = new Mock<ILogger<RemoveExpiredIksLoggingExtensions>>();
-            var contextFunc = _IksOutDbProvider.CreateNew;
-            var context = contextFunc();
 
             // Assemble - add data up to "now"
             var firstDate = DateTime.Parse("2020-12-01T20:00:00Z");
             for (var day = 0; day < 26; day++)
             {
-                context.Iks.Add(new IksOutEntity
+                _iksOutDbContext.Iks.Add(new IksOutEntity
                 {
                     Created = firstDate.AddDays(day),
                     ValidFor = firstDate.AddDays(day),
                     Sent = false,
-                    Content = new byte[] {0x0}
+                    Content = new byte[] { 0x0 }
                 });
             }
-            context.SaveChanges();
+            _iksOutDbContext.SaveChanges();
 
-            Assert.Equal(26, context.Iks.Count());
+            Assert.Equal(26, _iksOutDbContext.Iks.Count());
 
             // Act
             var command = new RemoveExpiredIksOutCommand(
-                contextFunc,
+                _iksOutDbContext,
                 new RemoveExpiredIksLoggingExtensions(logger.Object),
                 dateTimeProvider.Object,
                 configurationMock.Object
             );
-            command.ExecuteAsync();
+            command.ExecuteAsync().GetAwaiter().GetResult();
 
             // Assert
-            Assert.Empty(context.Iks.Where(x => x.Created < DateTime.Parse("2020-12-12T00:00:00Z")));
-            Assert.Equal(15, context.Iks.Count());
+            Assert.Empty(_iksOutDbContext.Iks.Where(x => x.Created < DateTime.Parse("2020-12-12T00:00:00Z")));
+            Assert.Equal(15, _iksOutDbContext.Iks.Count());
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -14,13 +14,9 @@ namespace SigTestFileCreator
 {
     public sealed class SigTesterService
     {
-        private readonly IEksBuilder _EksZipBuilder;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
-        private readonly SigTestFileCreatorLoggingExtensions _Logger;
-
-        private byte[] _fileContents;
-        private string _fileInputLocation;
-        private string _eksFileOutputLocation;
+        private readonly IEksBuilder _eksZipBuilder;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly SigTestFileCreatorLoggingExtensions _logger;
 
         public SigTesterService(
             IEksBuilder eksZipBuilder,
@@ -28,82 +24,57 @@ namespace SigTestFileCreator
             SigTestFileCreatorLoggingExtensions logger
             )
         {
-            _EksZipBuilder = eksZipBuilder ?? throw new ArgumentNullException(nameof(eksZipBuilder));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            
-            _fileInputLocation = @"H:\test.txt";
-            _eksFileOutputLocation = @"H:\testresult-eks.zip";
+            _eksZipBuilder = eksZipBuilder ?? throw new ArgumentNullException(nameof(eksZipBuilder));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task ExecuteAsync(string[] args)
         {
-            _Logger.WriteStart(_DateTimeProvider.Snapshot);
+            _logger.WriteStart(_dateTimeProvider.Snapshot);
 
-            if (args.Length > 1)
+            if (args.Length != 1)
             {
-                throw new ArgumentException("The tester was started with more than one argument: ", String.Join(";", args));
-            }
-            else if (args.Length == 1)
-            {
-                var CleanedInput = args[0].Trim();
-                var FilePathWithoutExtension = CleanedInput.Substring(0, CleanedInput.LastIndexOf('.'));
-
-                _fileInputLocation = CleanedInput;
-                _eksFileOutputLocation = FilePathWithoutExtension + "-eks" + ".Zip";
+                throw new ArgumentException("The SigTestFileCreator requires one file as a command-line argument.");
             }
 
             if (Environment.UserInteractive && !WindowsIdentityQueries.CurrentUserIsAdministrator())
-                _Logger.WriteNoElevatedPrivs();
+            {
+                _logger.WriteNoElevatedPrivs();
+            }
 
-            LoadFile(_fileInputLocation);
-            var eksZipOutput = await BuildEksOutputAsync();
-            
-            _Logger.WriteSavingResultfile();
-            ExportOutput(_eksFileOutputLocation, eksZipOutput);
+            var fullPath = Path.GetFullPath(args[0].Trim());
+            var fileDirectory = Path.GetDirectoryName(fullPath);
+            var fileName = Path.GetFileNameWithoutExtension(fullPath);
 
-            _Logger.WriteFinished(_eksFileOutputLocation);
+            var fileContents = File.ReadAllBytes(fullPath);
+
+            var signedFileContents = await BuildEksOutputAsync(fileContents);
+
+            _logger.WriteSavingResultfile();
+            using (var outputFile = File.Create($"{fileDirectory}\\{fileName}-signed.zip", 1024, FileOptions.None))
+            {
+                outputFile.Write(signedFileContents);
+            }
+
+            _logger.WriteFinished(fileDirectory);
         }
 
-        private void LoadFile(string filename)
+        private async Task<byte[]> BuildEksOutputAsync(byte[] fileData)
         {
-            try
-            {
-                _fileContents = File.ReadAllBytes(filename);
-            }
-            catch (Exception e)
-            {
-                throw new IOException("Something went wrong with reading the test file: ", e);
-            }
-        }
-
-        private void ExportOutput(string filename, byte[] output)
-        {
-            try
-            {
-                File.WriteAllBytes(filename, output);
-            }
-            catch (Exception e)
-            {
-                throw new IOException("Something went wrong with writing the result file: ", e);
-            }
-        }
-
-        private async Task<byte[]> BuildEksOutputAsync()
-        {
-            _Logger.WriteBuildingResultFile();
+            _logger.WriteBuildingResultFile();
 
             var args = new TemporaryExposureKeyArgs[]
             {
                 new TemporaryExposureKeyArgs{
                     RollingPeriod = default(int),
                     TransmissionRiskLevel = default(TransmissionRiskLevel),
-                    KeyData = _fileContents,
+                    KeyData = fileData,
                     RollingStartNumber = default(int)
                 }
             };
-            
-            return await _EksZipBuilder.BuildAsync(args);
+
+            return await _eksZipBuilder.BuildAsync(args);
         }
     }
 }

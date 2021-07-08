@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -16,7 +16,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public static int ToRollingStartNumber(this DateTime value)
         {
             if (value.Kind != DateTimeKind.Utc || value.Date != value)
+            {
                 throw new ArgumentException("Not UTC or not a date.");
+            }
 
             return value.ToUnixTime() / RollingPeriodFactor;
         }
@@ -29,9 +31,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         {
             var epoch = (long)value * RollingPeriodFactor;
 
-            return  DateTimeOffset.FromUnixTimeSeconds(epoch).UtcDateTime;
+            return DateTimeOffset.FromUnixTimeSeconds(epoch).UtcDateTime;
         }
-        
+
         public static ulong ToUnixTimeU64(this DateTime value)
         {
             return Convert.ToUInt64(value.ToUnixTime());

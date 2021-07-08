@@ -14,21 +14,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
 {
     public class TheIdentityHubServiceTests
     {
-        private ITheIdentityHubService _TheIdentityHubService;
-        
-        private WireMockServer _Server;
+        private readonly ITheIdentityHubService _theIdentityHubService;
+
+        private readonly WireMockServer _server;
 
         public TheIdentityHubServiceTests()
         {
-            _Server = WireMockServer.Start();
-            Assert.False(_Server.Urls.Length < 1, "WireMockServer not started correctly");
-            _TheIdentityHubService =  TestTheIdentityHubServiceCreator.CreateInstance(_Server);
+            _server = WireMockServer.Start();
+            Assert.False(_server.Urls.Length < 1, "WireMockServer not started correctly");
+            _theIdentityHubService = TestTheIdentityHubServiceCreator.CreateInstance(_server);
         }
 
         [Fact]
         public void Validate_If_Service_Is_Initialized()
         {
-            Assert.NotNull(_TheIdentityHubService);
+            Assert.NotNull(_theIdentityHubService);
         }
 
 
@@ -37,8 +37,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         {
             var validToken = "valid_access_token";
 
-            _Server.Reset();
-            _Server.Given(
+            _server.Reset();
+            _server.Given(
                     Request.Create()
                         .WithHeader("Authorization", "Bearer " + validToken)
                         .WithPath("/ggdghornl_test/oauth2/v1/verify").UsingGet()
@@ -50,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.True(_TheIdentityHubService.VerifyTokenAsync(validToken).Result);
+            Assert.True(_theIdentityHubService.VerifyTokenAsync(validToken).Result);
         }
 
         [Fact]
@@ -58,8 +58,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         {
             var validToken = "invalid_access_token";
 
-            _Server.Reset();
-            _Server.Given(
+            _server.Reset();
+            _server.Given(
                     Request.Create()
                         .WithHeader("Authorization", "Bearer " + validToken)
                         .WithPath("/ggdghornl_test/oauth2/v1/verify").UsingGet()
@@ -71,7 +71,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
                         .WithBody("{\"error\":\"Invalid Access Token\"}")
                 );
 
-            Assert.False(_TheIdentityHubService.VerifyTokenAsync(validToken).Result);
+            Assert.False(_theIdentityHubService.VerifyTokenAsync(validToken).Result);
         }
 
 
@@ -80,8 +80,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         {
             var validToken = "valid_access_token";
 
-            _Server.Reset();
-            _Server.Given(
+            _server.Reset();
+            _server.Given(
                     Request.Create().UsingPost()
                         .WithHeader("Authorization", "Bearer " + validToken)
                         .WithPath("/ggdghornl_test/oauth2/v1/revoke")
@@ -92,7 +92,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
                         .WithHeader("Content-Type", "application/json")
                         .WithBody("{\"msg\":\"Access Token revoked\"}")
                 );
-            Assert.True(_TheIdentityHubService.RevokeAccessTokenAsync(validToken).Result);
+            Assert.True(_theIdentityHubService.RevokeAccessTokenAsync(validToken).Result);
         }
 
         [Fact]
@@ -100,8 +100,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         {
             var invalidAccessToken = "invalid_access_token";
 
-            _Server.Reset();
-            _Server.Given(
+            _server.Reset();
+            _server.Given(
                     Request.Create().UsingPost()
                         .WithHeader("Authorization", "Bearer " + invalidAccessToken)
                         .WithPath("/ggdghornl_test/oauth2/v1/revoke")
@@ -112,7 +112,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
                         .WithHeader("Content-Type", "application/json")
                         .WithBody("{\"error\":\"Invalid AccessToken\"}")
                 );
-            Assert.False(_TheIdentityHubService.RevokeAccessTokenAsync(invalidAccessToken).Result);
+            Assert.False(_theIdentityHubService.RevokeAccessTokenAsync(invalidAccessToken).Result);
         }
 
 
@@ -121,10 +121,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         {
             var validToken = "valid_access_token";
             var testClaim = new Claim("http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken", validToken, "string");
-            var identity = new ClaimsIdentity(new List<Claim>() {testClaim}, "test");
+            var identity = new ClaimsIdentity(new List<Claim>() { testClaim }, "test");
 
-            _Server.Reset();
-            _Server.Given(
+            _server.Reset();
+            _server.Given(
                     Request.Create()
                         .WithHeader("Authorization", "Bearer " + validToken)
                         .WithPath("/ggdghornl_test/oauth2/v1/verify").UsingGet()
@@ -136,18 +136,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.True(_TheIdentityHubService.VerifyClaimTokenAsync(identity.Claims).Result);
-        }        
-        
+            Assert.True(_theIdentityHubService.VerifyClaimTokenAsync(identity.Claims).Result);
+        }
+
         [Fact]
         public void ValidateInValidAccessTokenWithUserClaims()
         {
             var validToken = "valid_access_token";
             var testClaim = new Claim("http://schemas.u2uconsult.com/ws/2014/03/identity/claims/accesstoken", validToken, "string");
-            var identity = new ClaimsIdentity(new List<Claim>() {testClaim}, "test");
+            var identity = new ClaimsIdentity(new List<Claim>() { testClaim }, "test");
 
-            _Server.Reset();
-            _Server.Given(
+            _server.Reset();
+            _server.Given(
                     Request.Create()
                         .WithHeader("Authorization", "Bearer " + "invalid_" + validToken)
                         .WithPath("/ggdghornl_test/oauth2/v1/verify").UsingGet()
@@ -159,8 +159,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
                         .WithBody("{\"audience\":1234}")
                 );
 
-            Assert.False(_TheIdentityHubService.VerifyClaimTokenAsync(identity.Claims).Result);
+            Assert.False(_theIdentityHubService.VerifyClaimTokenAsync(identity.Claims).Result);
         }
-        
+
     }
 }

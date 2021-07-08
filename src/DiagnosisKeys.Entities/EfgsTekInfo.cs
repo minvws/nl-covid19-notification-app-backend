@@ -17,12 +17,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities
         /// <summary>
         /// Comma-seperated list of 2 character country codes
         /// </summary>
-        public string? CountriesOfInterest { get; set; }
+        public string CountriesOfInterest { get; set; }
         public int? DaysSinceSymptomsOnset { get; set; }
 
         public ReportType? ReportType { get; set; } = Domain.ReportType.ConfirmedTest;
-        
+
         //TODO length 2
-        public string? CountryOfOrigin { get; set; }
+        public string CountryOfOrigin { get; set; }
     }
 }

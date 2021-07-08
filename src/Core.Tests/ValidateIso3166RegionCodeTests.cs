@@ -1,10 +1,14 @@
-﻿using Xunit;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Tests
 {
     public class ValidateIso3166RegionCodeTests
     {
-        private readonly Iso3166RegionCodeValidator _Validator = new Iso3166RegionCodeValidator();
+        private readonly Iso3166RegionCodeValidator _validator = new Iso3166RegionCodeValidator();
 
         [InlineData("GB")] //We live in hope.
         [InlineData("BE")]
@@ -41,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Tests
         [Theory]
         public void Valid(string value)
         {
-            Assert.True(_Validator.IsValid(value));
+            Assert.True(_validator.IsValid(value));
         }
 
         [InlineData("XX")]
@@ -60,7 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Tests
         [Theory]
         public void Invalid(string value)
         {
-            Assert.False(_Validator.IsValid(value));
+            Assert.False(_validator.IsValid(value));
         }
     }
 }

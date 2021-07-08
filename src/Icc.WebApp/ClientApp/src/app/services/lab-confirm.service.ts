@@ -17,18 +17,19 @@ export class LabConfirmService {
     private readonly appConfigService: AppConfigService) {
     }
 
-  private data: { GGDKey: string; DateOfSymptomsOnset: string; };
+  private data: { GGDKey: string; SelectedDate: string; Symptomatic: boolean; };
 
   private static errorHandler(error: HttpErrorResponse, caught: Observable<any>): Observable<any> {
     // TODO error handling
     throw error;
   }
 
-  confirmLabId(labConfirmationIds: Array<string>, dateOfSymptomsOnset: string): Observable<any> {
+  confirmLabId(GGDKeys: Array<string>, selectedDate: string, symptomatic: boolean): Observable<any> {
     const serviceUrl = location.origin + '/pubtek';
     this.data = {
-      'GGDKey': labConfirmationIds.join(''),
-      'DateOfSymptomsOnset': dateOfSymptomsOnset
+      'GGDKey': GGDKeys.join(''),
+      'SelectedDate': selectedDate,
+      'Symptomatic': symptomatic
     };
     const headers = {
     };

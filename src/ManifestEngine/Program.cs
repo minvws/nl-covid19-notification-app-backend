@@ -1,8 +1,9 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
@@ -26,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
                 new ConsoleAppRunner().Execute(args, Configure, Start);
                 return 0;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return -1;
             }
@@ -35,42 +36,38 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
         private static void Start(IServiceProvider services, string[] args)
         {
             var job = services.GetRequiredService<ManifestUpdateCommand>();
-            job.ExecuteV1Async().GetAwaiter().GetResult();
-            job.ExecuteV3Async().GetAwaiter().GetResult();
-            job.ExecuteV4Async().GetAwaiter().GetResult();
-
-            var job2 = services.GetRequiredService<NlContentResignExistingV1ContentCommand>();
-            job2.ExecuteAsync().GetAwaiter().GetResult();
+            job.ExecuteAllAsync().GetAwaiter().GetResult();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddTransient(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content, false));
-            services.AddTransient<Func<ContentDbContext>>(x => x.GetRequiredService<ContentDbContext>);
-
+            // Db and basic functions
+            services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddScoped<HttpGetCdnManifestCommand>();
-            services.AddScoped<HttpGetCdnContentCommand>();
-
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IEksConfig, StandardEksConfig>();
-
-            services.AddTransient<ManifestUpdateCommand>();
-            services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
-            services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
-            services.AddTransient<ManifestBuilder>();
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
 
-            services.AddSingleton<GetCdnContentLoggingExtensions>();
-            services.AddSingleton<ResignerLoggingExtensions>();
+            // Orchestrating components
+            services.AddTransient<ManifestUpdateCommand>();
+            services.AddTransient<ManifestV2Builder>();
+            services.AddTransient<ManifestV3Builder>();
+            services.AddTransient<ManifestV4Builder>();
+
+            // Operating components
+            services.AddTransient<Func<IContentEntityFormatter>>(x => x.GetRequiredService<StandardContentEntityFormatter>);
+            services.AddTransient<StandardContentEntityFormatter>();
+            services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
+            services.AddTransient<ZippedSignedContentFormatter>();
+            services.AddTransient(x =>
+                SignerConfigStartup.BuildEvSigner(
+                    x.GetRequiredService<IConfiguration>(),
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<IUtcDateTimeProvider>()));
+
+            // Logging
             services.AddSingleton<ManifestUpdateCommandLoggingExtensions>();
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
-
-            services.NlResignerStartup();
-            services.DummySignerStartup();
-
-            services.ManifestForV4Startup();
         }
     }
 }

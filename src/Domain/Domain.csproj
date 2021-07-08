@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Domain</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Domain</RootNamespace>
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>

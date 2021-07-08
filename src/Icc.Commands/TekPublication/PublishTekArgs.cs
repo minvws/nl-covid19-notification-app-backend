@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -19,14 +19,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
         /// <summary>
         /// A boolean value which is set to true if the subject has symptoms (symptomatic), false otherwise (asymptomatic) 
         /// </summary>
-        public bool SubjectHasSymptoms { get; set; }
+        public bool Symptomatic { get; set; }
         /// <summary>
-        /// The given DateOfSymptomsOnset entered by the GGD user
+        /// The given StartOfInfectiousPeriod or Date of Test entered by the GGD user
         /// </summary>
-        public DateTime? DateOfSymptomsOnset { get; set; }
-        /// <summary>
-        /// The given DateOfTest entered by the GGD user
-        /// </summary>
-        public DateTime? DateOfTest { get; set; }
+        public DateTime? SelectedDate { get; set; }
     }
 }

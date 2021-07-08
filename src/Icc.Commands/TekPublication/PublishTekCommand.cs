@@ -1,15 +1,15 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Data.SqlClient;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
@@ -43,12 +43,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             {
                 throw new ArgumentNullException(nameof(args));
             }
-            
+
             // Retrieve the matching PubTEK value with all TEK's from the database
             var wf = await _workflowDb
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Teks)
-                .FirstOrDefaultAsync(x => x.GGDKey == args.GGDKey);
+                .FirstOrDefaultAsync(x => x.GGDKey == args.GGDKey || args.GGDKey.StartsWith(x.LabConfirmationId));
 
             // If no PubTEK value is found the process should be ended. The PubTEK key does not exist or is already processed/published.
             if (wf == null)
@@ -60,10 +60,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             wf.AuthorisedByCaregiver = _dateTimeProvider.Snapshot;
             wf.LabConfirmationId = null; //Clear from usable key range
             wf.GGDKey = null; //Clear from usable key range
-            wf.SubjectHasSymptoms = args.SubjectHasSymptoms;
-            wf.DateOfSymptomsOnset = args.DateOfSymptomsOnset;
-            wf.DateOfTest = args.DateOfTest;
-            
+            wf.StartDateOfTekInclusion = args.SelectedDate; // The date is currently a StartDateOfTekInclusion or Date of Test. The system lacks having 2 date variants so the existing StartDateOfTekInclusion will hold either
+            wf.IsSymptomatic = args.Symptomatic ? InfectiousPeriodType.Symptomatic : InfectiousPeriodType.Asymptomatic;
+
             var success = await PublishTek(wf);
 
             if (success)
@@ -97,7 +96,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             {
                 _logger.WriteDuplicatePollTokenFound(_attemptCount);
             }
-            
+
             try
             {
                 await _workflowDb.SaveChangesAsync();

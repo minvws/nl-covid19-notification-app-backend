@@ -1,8 +1,9 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.EntityFramework;
@@ -34,8 +35,11 @@ namespace DbProvision
         private static void Start(IServiceProvider services, string[] args)
         {
             services.GetRequiredService<DatabaseProvisioner>().ExecuteAsync(args).GetAwaiter().GetResult();
-            
-            if (args.Length < 2) return; // No ContentPublisher arguments given
+
+            if (args.Length < 2)
+            {
+                return; // No ContentPublisher arguments given
+            }
 
             for (var i = 0; i < args.Length; i++)
             {
@@ -51,20 +55,21 @@ namespace DbProvision
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
+            services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
+            services.AddDbContext<DkSourceDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.DkSource)));
+            services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
+            services.AddDbContext<IksInDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksIn)));
+            services.AddDbContext<IksOutDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksOut)));
+            services.AddDbContext<IksPublishingJobDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksPublishing)));
+            services.AddDbContext<EksPublishingJobDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.EksPublishing)));
+            services.AddDbContext<StatsDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Stats)));
+            services.AddDbContext<DataProtectionKeysDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.DataProtectionKeys)));
+
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<DbProvisionLoggingExtensions>();
             services.AddSingleton<PublishContentLoggingExtensions>();
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow, false));
-            services.AddScoped(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content, false));
-            services.AddScoped(x => x.CreateDbContext(y => new EksPublishingJobDbContext(y), DatabaseConnectionStringNames.EksPublishing, false));
-            services.AddScoped(x => x.CreateDbContext(y => new DataProtectionKeysDbContext(y), DatabaseConnectionStringNames.DataProtectionKeys, false));
-            services.AddScoped(x => x.CreateDbContext(y => new StatsDbContext(y), DatabaseConnectionStringNames.Stats, false));
-            services.AddScoped(x => x.CreateDbContext(y => new DkSourceDbContext(y), DatabaseConnectionStringNames.DkSource, false));
-            services.AddScoped(x => x.CreateDbContext(y => new IksInDbContext(y), DatabaseConnectionStringNames.IksIn, false));
-            services.AddScoped(x => x.CreateDbContext(y => new IksOutDbContext(y), DatabaseConnectionStringNames.IksOut, false));
-            services.AddScoped(x => x.CreateDbContext(y => new IksPublishingJobDbContext(y), DatabaseConnectionStringNames.IksPublishing, false));
 
             services.AddTransient<DatabaseProvisioner>();
             services.AddTransient<ContentPublisher>();

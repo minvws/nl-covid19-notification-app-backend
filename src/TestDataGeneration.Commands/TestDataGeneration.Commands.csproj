@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Commands</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Commands</RootNamespace>
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
 
   </PropertyGroup>
 
@@ -16,7 +18,6 @@
     <ProjectReference Include="..\DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj" />
     <ProjectReference Include="..\Eks.Commands\Eks.Commands.csproj" />
     <ProjectReference Include="..\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
-    <ProjectReference Include="..\TestFramework\TestFramework.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -17,52 +17,55 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
     /// </summary>
     public class HttpGetCdnContentCommand
     {
-        private readonly ContentDbContext _DbContext;
-        private readonly IPublishingIdService _PublishingIdService;
-        private readonly GetCdnContentLoggingExtensions _Logger;
-        private readonly IUtcDateTimeProvider _DateTimeProvider;
+        private readonly ContentDbContext _dbContext;
+        private readonly IPublishingIdService _publishingIdService;
+        private readonly GetCdnContentLoggingExtensions _logger;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
 
         public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, GetCdnContentLoggingExtensions logger, IUtcDateTimeProvider dateTimeProvider)
         {
-            _DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _PublishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
-            _Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _publishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
 
         /// <summary>
         /// Immutable content
         /// </summary>
-        public async Task<ContentEntity?> ExecuteAsync(HttpContext httpContext, string type, string id)
+        public async Task<ContentEntity> ExecuteAsync(HttpContext httpContext, string type, string id)
         {
-            if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
-
-            if (!ContentTypes.IsValid(type))
+            if (httpContext == null)
             {
-                _Logger.WriteInvalidType(id);
+                throw new ArgumentNullException(nameof(httpContext));
+            }
+
+            if (!_publishingIdService.Validate(id))
+            {
+                _logger.WriteInvalidId(id);
                 httpContext.Response.StatusCode = 400;
                 httpContext.Response.ContentLength = 0;
             }
 
-            if (!_PublishingIdService.Validate(id))
+            if (!ContentTypes.IsValid(type))
             {
-                _Logger.WriteInvalidId(id);
+                _logger.WriteInvalidType(id);
                 httpContext.Response.StatusCode = 400;
                 httpContext.Response.ContentLength = 0;
             }
 
             if (!httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
             {
-                _Logger.WriteHeaderMissing();
+                _logger.WriteHeaderMissing();
                 httpContext.Response.ContentLength = 0;
                 httpContext.Response.StatusCode = 400;
             }
 
-            var content = await _DbContext.SafeGetContentAsync(type, id, _DateTimeProvider.Snapshot);
-            
+            var content = await _dbContext.SafeGetContentAsync(type, id, _dateTimeProvider.Snapshot);
+
             if (content == null)
             {
-                _Logger.WriteNotFound(id);
+                _logger.WriteNotFound(id);
                 httpContext.Response.StatusCode = 404;
                 httpContext.Response.ContentLength = 0;
                 return null;
@@ -70,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
             if (etagValue == content.PublishingId)
             {
-                _Logger.WriteEtagFound(id);
+                _logger.WriteEtagFound(id);
                 httpContext.Response.StatusCode = 304;
                 httpContext.Response.ContentLength = 0;
                 return null;

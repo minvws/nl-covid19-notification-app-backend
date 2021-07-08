@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -12,23 +12,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
     public class EfgsCmsSigner : IIksSigner
     {
-        private readonly ICertificateProvider _CertificateProvider;
+        private readonly ICertificateProvider _certificateProvider;
 
         public EfgsCmsSigner(ICertificateProvider certificateProvider)
         {
-            _CertificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
+            _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
         }
 
         public string SignatureOid => "2.16.840.1.101.3.4.2.1";
 
         public byte[] GetSignature(byte[] content)
         {
-            if (content == null) throw new ArgumentNullException(nameof(content));
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
 
-            var certificate = _CertificateProvider.GetCertificate();
+            var certificate = _certificateProvider.GetCertificate();
 
             if (!certificate.HasPrivateKey)
+            {
                 throw new InvalidOperationException($"Certificate does not have a private key - Subject:{certificate.Subject} Thumbprint:{certificate.Thumbprint}.");
+            }
 
             var contentInfo = new ContentInfo(content);
             var signedCms = new SignedCms(contentInfo, true);

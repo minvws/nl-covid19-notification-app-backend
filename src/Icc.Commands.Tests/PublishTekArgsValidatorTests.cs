@@ -1,9 +1,8 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
@@ -31,18 +30,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         public void Input_With_Correct7FigureCode_ReturnsValid_For_LuhnModN_Check(string pubTek)
         {
             // Arrange
-            var validator = new PublishTekArgsValidator(new LuhnModNValidator(new LuhnModNConfig()), new  StandardUtcDateTimeProvider());
+            var validator = new PublishTekArgsValidator(new LuhnModNValidator(new LuhnModNConfig()), new StandardUtcDateTimeProvider());
             var args = new PublishTekArgs
             {
                 GGDKey = pubTek,
-                DateOfSymptomsOnset = DateTime.Today,
-                DateOfTest = null,
-                SubjectHasSymptoms = true
+                SelectedDate = DateTime.Today,
+                Symptomatic = true
             };
 
             // Act
             var errorMessages = validator.Validate(args);
-            
+
             // Assert
             Assert.True(errorMessages.Length == 0);
         }
@@ -58,9 +56,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
             var args = new PublishTekArgs
             {
                 GGDKey = pubTek,
-                DateOfSymptomsOnset = DateTime.Today,
-                DateOfTest = null,
-                SubjectHasSymptoms = true
+                SelectedDate = DateTime.Today,
+                Symptomatic = true
             };
 
             // Act

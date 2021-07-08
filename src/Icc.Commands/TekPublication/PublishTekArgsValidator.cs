@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
     {
         private readonly ILuhnModNValidator _luhnModNValidator;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
-        
+
         public PublishTekArgsValidator(ILuhnModNValidator luhnModNValidator, IUtcDateTimeProvider dateTimeProvider)
         {
             _luhnModNValidator = luhnModNValidator ?? throw new ArgumentNullException(nameof(luhnModNValidator));
@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
         {
             if (args == null)
             {
-                return new[] {"Args is null."};
+                return new[] { "Args is null." };
             }
 
             var errors = new List<string>();
@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             // The PubTEK key cannot be empty
             if (string.IsNullOrWhiteSpace(args.GGDKey))
             {
-                return new[] {"PubTEK key is null or empty."};
+                return new[] { "PubTEK key is null or empty." };
             }
 
             // The PubTEK key should be 6 or 7 characters in length
@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             {
                 return new[] { "PubTEK key has incorrect length." };
             }
-            
+
             // The PubTEK key should only have character from the given set
             if (args.GGDKey.Any(x => !_luhnModNValidator.Config.CharacterSet.Contains(x)))
             {
@@ -53,25 +53,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             {
                 return new[] { "PubTEK key validation for LuhnModN failed." };
             }
-            
-            // If subjectHasSymptoms is true, then dateOfSymptomsOnset must be completed
-            if (args.SubjectHasSymptoms && !args.DateOfSymptomsOnset.HasValue)
-            {
-                errors.Add($"SubjectHasSymptoms is true, then dateOfTest must be completed.");
-            }
 
             //Should be a date only without time.
-            args.DateOfSymptomsOnset = args.DateOfSymptomsOnset?.Date;
-            if (!args.SubjectHasSymptoms && (_dateTimeProvider.Snapshot.Date.AddDays(-30) > args.DateOfSymptomsOnset?.Date || args.DateOfSymptomsOnset?.Date > _dateTimeProvider.Snapshot.Date))
+            args.SelectedDate = args.SelectedDate?.Date;
+            if (!args.Symptomatic && (_dateTimeProvider.Snapshot.Date.AddDays(-30) > args.SelectedDate?.Date || args.SelectedDate?.Date > _dateTimeProvider.Snapshot.Date))
             {
-                errors.Add($"Date of symptoms onset out of range - {args.DateOfSymptomsOnset}.");
+                errors.Add($"Selected date out of range - {args.SelectedDate}.");
             }
-
-            // TODO: If subjectHasSymptoms is false, then dateOfTest must be completed. 
-            //if (!args.SubjectHasSymptoms && !args.DateOfTest.HasValue)
-            //{
-            //    errors.Add($"SubjectHasSymptoms is false, then dateOfTest must be completed.");
-            //}
 
             return errors.ToArray();
         }

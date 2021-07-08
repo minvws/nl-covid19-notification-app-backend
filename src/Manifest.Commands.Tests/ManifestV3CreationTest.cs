@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -6,35 +6,32 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 {
-    public abstract class ManifestV3CreationTest : IDisposable
+    public abstract class ManifestV3CreationTest
     {
+        private readonly ContentDbContext _contentDbContext;
 
-        private readonly IDbProvider<ContentDbContext> _ContentDbProvider;
-
-        protected ManifestV3CreationTest(IDbProvider<ContentDbContext> contentDbProvider)
+        protected ManifestV3CreationTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _ContentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
+            _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
+            _contentDbContext.Database.EnsureCreated();
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(ManifestV3CreationTest))]
-        public void ManifestUpdateCommand_ExecuteForV3()
+        public async Task ManifestUpdateCommand_ExecuteForV3()
         {
             //Arrange
             PopulateContentDb();
@@ -42,24 +39,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var sut = CompileManifestUpdateCommand();
 
             //Act
-            sut.ExecuteV3Async().GetAwaiter().GetResult();
+            await sut.ExecuteV3Async();
 
-            var database = _ContentDbProvider.CreateNew();
-            var result = database.SafeGetLatestContentAsync(ContentTypes.ManifestV3, DateTime.Now).GetAwaiter().GetResult();
+            var result = _contentDbContext.SafeGetLatestContentAsync(ContentTypes.ManifestV3, DateTime.Now).GetAwaiter().GetResult();
 
             //Assert
             Assert.NotNull(result);
 
-            using var zipFileInMemory = new MemoryStream();
+            await using var zipFileInMemory = new MemoryStream();
             zipFileInMemory.Write(result.Content, 0, result.Content.Length);
-            using (var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false))
-            {
-                var manifestContent = Encoding.ASCII.GetString(zipFileContent.ReadEntry(ZippedContentEntryNames.Content));
-                var correctResLocation = manifestContent.IndexOf("TheV3ResourceBundleId");
-                var wrongResLocation = manifestContent.IndexOf("TheWrongResourceBundleId");
-                Assert.True(correctResLocation > 0);
-                Assert.True(wrongResLocation == -1);
-            }
+            using var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false);
+            var manifestContent = Encoding.ASCII.GetString(zipFileContent.ReadEntry(ZippedContentEntryNames.Content));
+            var correctResLocation = manifestContent.IndexOf("TheV3ResourceBundleId", StringComparison.Ordinal);
+            var wrongResLocation = manifestContent.IndexOf("TheWrongResourceBundleId", StringComparison.Ordinal);
+            Assert.True(correctResLocation > 0);
+            Assert.True(wrongResLocation == -1);
         }
 
         private ManifestUpdateCommand CompileManifestUpdateCommand()
@@ -68,7 +62,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var lf = new LoggerFactory();
             var dateTimeProvider = new StandardUtcDateTimeProvider();
             var jsonSerialiser = new StandardJsonSerializer();
-            var entityFormatterMock = new Mock<IContentEntityFormatter>();
 
             Func<IContentEntityFormatter> formatterForV3 = () =>
                 new StandardContentEntityFormatter(
@@ -79,19 +72,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
                         );
 
             var result = new ManifestUpdateCommand(
-                new ManifestBuilder(
-                    _ContentDbProvider.CreateNew(),
+                new ManifestV2Builder(
+                    _contentDbContext,
                     eksConfigMock.Object,
                     dateTimeProvider),
-                new ManifestBuilderV3(
-                    _ContentDbProvider.CreateNew(),
+                new ManifestV3Builder(
+                    _contentDbContext,
                     eksConfigMock.Object,
                     dateTimeProvider),
-                new ManifestBuilderV4(
-                    _ContentDbProvider.CreateNew(),
+                new ManifestV4Builder(
+                    _contentDbContext,
                     eksConfigMock.Object,
                     dateTimeProvider),
-                _ContentDbProvider.CreateNew,
+                _contentDbContext,
                 new ManifestUpdateCommandLoggingExtensions(lf.CreateLogger<ManifestUpdateCommandLoggingExtensions>()),
                 dateTimeProvider,
                 jsonSerialiser,
@@ -103,11 +96,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
         private void PopulateContentDb()
         {
-            var database = _ContentDbProvider.CreateNew();
             var yesterday = DateTime.Now.AddDays(-1);
-            string content = "This is a ResourceBundleV3";
+            var content = "This is a ResourceBundleV3";
 
-            database.Content.AddRange(new[]
+            _contentDbContext.Content.AddRange(new[]
             {
                 new ContentEntity{
                     Content = Encoding.ASCII.GetBytes(content),
@@ -129,12 +121,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
                 }
             });
 
-            database.SaveChanges();
-        }
-
-        public void Dispose()
-        {
-            _ContentDbProvider.Dispose();
+            _contentDbContext.SaveChanges();
         }
     }
 }

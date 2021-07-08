@@ -1,11 +1,11 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -26,78 +26,82 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private readonly IWorkflowTime _workflowTime;
         private readonly RegisterSecretLoggingExtensionsV2 _logger;
 
-        private const int AttemptCountMax = 10;
-        private int _AttemptCount;
-
         public TekReleaseWorkflowStateCreateV2(
-            WorkflowDbContext dbContextProvider,
+            WorkflowDbContext workflowDbContext,
             IUtcDateTimeProvider dateTimeProvider,
             IRandomNumberGenerator numberGenerator,
             IWorkflowTime workflowTime,
-            RegisterSecretLoggingExtensionsV2 logger,
             ILuhnModNConfig luhnModNConfig,
-            ILuhnModNGenerator luhnModNGenerator)
+            ILuhnModNGenerator luhnModNGenerator,
+            RegisterSecretLoggingExtensionsV2 logger)
         {
-            _workflowDbContext = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
+            _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _numberGenerator = numberGenerator ?? throw new ArgumentNullException(nameof(numberGenerator));
             _workflowTime = workflowTime ?? throw new ArgumentNullException(nameof(workflowTime));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _luhnModNConfig = luhnModNConfig ?? throw new ArgumentNullException(nameof(luhnModNConfig));
             _luhnModNGenerator = luhnModNGenerator ?? throw new ArgumentNullException(nameof(luhnModNGenerator));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
+
+        private const int AttemptCountMax = 10;
+        private int _attemptCount;
 
         public async Task<TekReleaseWorkflowStateEntity> ExecuteAsync()
         {
-            var entity = await BuildEntityAndAddToContextAsync();
+            var entity = new TekReleaseWorkflowStateEntity
+            {
+                Created = _dateTimeProvider.Snapshot.Date,
+                ValidUntil = _workflowTime.Expiry(_dateTimeProvider.Snapshot),
+                GGDKey = _luhnModNGenerator.Next(_luhnModNConfig.ValueLength),
+                BucketId = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount),
+            };
 
             _logger.WriteWritingStart();
 
-            var success = TryGenerateRemainingFieldsAndWriteToDb(entity);
+            var success = await BuildEntityAndAddToContextAsync(entity);
             while (!success)
             {
-                _workflowDbContext.BeginTransaction();
-                entity = await BuildEntityAndAddToContextAsync();
-                success = TryGenerateRemainingFieldsAndWriteToDb(entity);
+                success = await BuildEntityAndAddToContextAsync(entity);
             }
 
             return entity;
         }
 
-        private bool TryGenerateRemainingFieldsAndWriteToDb(TekReleaseWorkflowStateEntity item)
+        private async Task<bool> BuildEntityAndAddToContextAsync(TekReleaseWorkflowStateEntity entity)
         {
-            if (++_AttemptCount > AttemptCountMax)
+            if (++_attemptCount > AttemptCountMax)
             {
                 _logger.WriteMaximumCreateAttemptsReached();
                 throw new InvalidOperationException("Maximum create attempts reached.");
             }
 
-            if (_AttemptCount > 1)
+            if (_attemptCount > 1)
             {
-                _logger.WriteDuplicatesFound(_AttemptCount);
+                _logger.WriteDuplicatesFound(_attemptCount);
             }
 
-            item.GGDKey = _luhnModNGenerator.Next(_luhnModNConfig.ValueLength);
-            item.BucketId = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount);
-            item.ConfirmationKey = _numberGenerator.NextByteArray(UniversalConstants.ConfirmationKeyByteCount);
+            _workflowDbContext.BeginTransaction();
 
             try
             {
+                await _workflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
+
                 _workflowDbContext.SaveAndCommit();
                 _logger.WriteCommitted();
                 return true;
             }
             catch (DbUpdateException ex)
             {
-                _workflowDbContext.Database.CurrentTransaction.RollbackAsync();
-                _workflowDbContext.Remove(item);
+                await _workflowDbContext.Database.CurrentTransaction.RollbackAsync();
+                _workflowDbContext.KeyReleaseWorkflowStates.Remove(entity);
 
                 if (CanRetry(ex))
                 {
                     return false;
                 }
-
-                throw;
+                return false;
+                //throw;
             }
         }
 
@@ -107,7 +111,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private bool CanRetry(DbUpdateException ex)
         {
             if (!(ex.InnerException is SqlException sqlEx))
+            {
                 return false;
+            }
 
             var errors = new SqlError[sqlEx.Errors.Count];
             sqlEx.Errors.CopyTo(errors, 0);
@@ -115,24 +121,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             return errors.Any(x =>
                 x.Number == 2601
                 && x.Message.Contains("TekReleaseWorkflowState")
-                && (x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.GGDKey))
+                && (x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.LabConfirmationId))
                     || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.ConfirmationKey))
                     || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.BucketId)))
             );
-
-        }
-
-        private async Task<TekReleaseWorkflowStateEntity> BuildEntityAndAddToContextAsync()
-        {
-            var entity = new TekReleaseWorkflowStateEntity
-            {
-                Created = _dateTimeProvider.Snapshot.Date,
-                ValidUntil = _workflowTime.Expiry(_dateTimeProvider.Snapshot)
-            };
-
-            await _workflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
-
-            return entity;
         }
     }
 }

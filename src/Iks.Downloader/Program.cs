@@ -1,11 +1,12 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -25,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
                 new ConsoleAppRunner().Execute(args, Configure, Start);
                 return 0;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return -1;
             }
@@ -52,12 +53,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
-            services.AddTransient(x => x.CreateDbContext(y => new IksInDbContext(y), DatabaseConnectionStringNames.IksIn, false));
+            services.AddDbContext<IksInDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksIn)));
 
             services.AddSingleton<IEfgsConfig, EfgsConfig>();
-            services.AddTransient<IIHttpGetIksCommand, HttpGetIksCommand>();
+            services.AddTransient<IHttpGetIksCommand, HttpGetIksCommand>();
             services.AddTransient<IIksWriterCommand, IksWriterCommand>();
-            services.AddTransient<Func<IIHttpGetIksCommand>>(x => x.GetService<IIHttpGetIksCommand>);
+            services.AddTransient<Func<IHttpGetIksCommand>>(x => x.GetService<IHttpGetIksCommand>);
             services.AddTransient<Func<IIksWriterCommand>>(x => x.GetService<IIksWriterCommand>);
             services.AddTransient<IksPollingBatchJob>();
 
@@ -66,7 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
                 .AddCertificate();
 
             services.AddSingleton<IThumbprintConfig, LocalMachineStoreCertificateProviderConfig>();
-            
+
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
             services.AddSingleton<IksDownloaderLoggingExtensions>();
 

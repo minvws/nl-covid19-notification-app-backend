@@ -1,69 +1,69 @@
-﻿using System;
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySetsEngine
 {
-    public abstract class TekToDkSnapshotTests : IDisposable
+    public abstract class TekToDkSnapshotTests
     {
-        #region Implementation
+        private readonly WorkflowDbContext _workflowDbContext;
+        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly LoggerFactory _lf;
+        private readonly Mock<IUtcDateTimeProvider> _dateTimeProvider;
+        private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _outboundCountries;
 
-        private readonly IDbProvider<WorkflowDbContext> _WorkflowDbProvider;
-        private readonly IDbProvider<DkSourceDbContext> _DkSourceDbProvider;
-        private readonly IWrappedEfExtensions _EfExtensions;
-        private readonly LoggerFactory _Lf;
-        private readonly Mock<IUtcDateTimeProvider> _DateTimeProvider;
-        private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _OutboundCountries;
-        protected TekToDkSnapshotTests(IDbProvider<WorkflowDbContext> workflowFac, IDbProvider<DkSourceDbContext> dkSourceFac, IWrappedEfExtensions efExtensions)
+        protected TekToDkSnapshotTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions, DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions)
         {
-            _WorkflowDbProvider = workflowFac ?? throw new ArgumentNullException(nameof(workflowFac));
-            _DkSourceDbProvider = dkSourceFac ?? throw new ArgumentNullException(nameof(dkSourceFac));
-            _EfExtensions = efExtensions ?? throw new ArgumentNullException(nameof(efExtensions));
-            _DateTimeProvider = new Mock<IUtcDateTimeProvider>();
-            _OutboundCountries = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
-            _Lf = new LoggerFactory();
+            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions ?? throw new ArgumentNullException(nameof(workflowDbContextOptions)));
+            _workflowDbContext.Database.EnsureCreated();
+            _dkSourceDbContext = new DkSourceDbContext(dkSourceDbContextOptions ?? throw new ArgumentNullException(nameof(dkSourceDbContextOptions)));
+            _dkSourceDbContext.Database.EnsureCreated();
+
+            _dateTimeProvider = new Mock<IUtcDateTimeProvider>();
+            _outboundCountries = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
+            _lf = new LoggerFactory();
         }
 
         private SnapshotWorkflowTeksToDksCommand Create()
         {
-            _OutboundCountries.Setup(x => x.CountriesOfInterest).Returns(new[] { "GB" });
+            _outboundCountries.Setup(x => x.CountriesOfInterest).Returns(new[] { "GB" });
 
-            return new SnapshotWorkflowTeksToDksCommand(_Lf.CreateLogger<SnapshotWorkflowTeksToDksCommand>(),
-                _DateTimeProvider.Object,
+            return new SnapshotWorkflowTeksToDksCommand(_lf.CreateLogger<SnapshotWorkflowTeksToDksCommand>(),
+                _dateTimeProvider.Object,
                 new TransmissionRiskLevelCalculationMk2(),
-                _WorkflowDbProvider.CreateNew(),
-                _WorkflowDbProvider.CreateNew,
-                _DkSourceDbProvider.CreateNew,
-                _EfExtensions,
+                _workflowDbContext,
+                _dkSourceDbContext,
                 new IDiagnosticKeyProcessor[] {
                     new ExcludeTrlNoneDiagnosticKeyProcessor(),
-                    new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_OutboundCountries.Object),
+                    new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_outboundCountries.Object),
                     new NlToEfgsDsosDiagnosticKeyProcessorMk1()
-                }
-            );
+                });
         }
 
         private void Write(TekReleaseWorkflowStateEntity[] workflows)
         {
-            var db = _WorkflowDbProvider.CreateNew();
-            db.KeyReleaseWorkflowStates.AddRange(workflows);
-            db.TemporaryExposureKeys.AddRange(workflows.SelectMany(x => x.Teks));
-            db.SaveChanges();
-            Assert.Equal(workflows.Length, db.KeyReleaseWorkflowStates.Count());
-            Assert.Equal(workflows.Sum(x => x.Teks.Count) , db.TemporaryExposureKeys.Count());
+            _workflowDbContext.KeyReleaseWorkflowStates.AddRange(workflows);
+            _workflowDbContext.TemporaryExposureKeys.AddRange(workflows.SelectMany(x => x.Teks));
+            _workflowDbContext.SaveChanges();
+            Assert.Equal(workflows.Length, _workflowDbContext.KeyReleaseWorkflowStates.Count());
+            Assert.Equal(workflows.Sum(x => x.Teks.Count), _workflowDbContext.TemporaryExposureKeys.Count());
         }
 
         private void GenerateWorkflowTeks(int wfCount, int tekPerWfCount)
@@ -73,20 +73,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         private TekEntity[] GenTeks(int tekPerWfCount)
         {
-            var t = _DateTimeProvider.Object.Snapshot;
+            var t = _dateTimeProvider.Object.Snapshot;
             return Enumerable.Range(0, tekPerWfCount).Select(x =>
-                new TekEntity { 
+                new TekEntity
+                {
                     RollingStartNumber = t.AddDays(-x).ToUniversalTime().Date.ToRollingStartNumber(),
                     RollingPeriod = 2, //Corrected by a processor.
-                    KeyData = new byte[UniversalConstants.DailyKeyDataByteCount], 
-                    PublishAfter = t.AddHours(2) 
+                    KeyData = new byte[UniversalConstants.DailyKeyDataByteCount],
+                    PublishAfter = t.AddHours(2)
                 }
             ).ToArray();
         }
 
         private TekReleaseWorkflowStateEntity GenWorkflow(int key, params TekEntity[] items)
         {
-            var now = _DateTimeProvider.Object.Snapshot;
+            var now = _dateTimeProvider.Object.Snapshot;
 
             var b = BitConverter.GetBytes(key);
 
@@ -98,75 +99,78 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 AuthorisedByCaregiver = now,
                 Created = now,
                 ValidUntil = now.AddDays(1),
-                DateOfSymptomsOnset = now.AddDays(-1).Date, //Yesterday
+                StartDateOfTekInclusion = now.AddDays(-1).Date, //Yesterday
+                IsSymptomatic = InfectiousPeriodType.Symptomatic,
                 Teks = items
             };
         }
 
-        public void Dispose()
-        {
-            _WorkflowDbProvider.Dispose();
-            _DkSourceDbProvider.Dispose();
-            _Lf.Dispose();
-        }
-
-        #endregion
-
-        [InlineData(0, 0, 120, 0, 0)] //Null case
-        [InlineData(1, 10, 119, 0, 0)] //Just before
-        [InlineData(1, 10, 120, 10, 4)] //Exactly - was 10 - 6 are now filtered out as they have TRL None
-        [InlineData(1, 10, 121, 10, 4)] //After- was 10 - 6 are now filtered out as they have TRL None
+        [InlineData(0, 0, 120, 0)] //Null case
+        [InlineData(1, 10, 119, 0)] //Just before
+        [InlineData(1, 10, 120, 10)] //Exactly
+        [InlineData(1, 10, 121, 10)] //After
         [Theory]
-        [ExclusivelyUses(nameof(TekToDkSnapshotTests))]
-        public async Task PublishAfter(int wfCount, int tekPerWfCount, int addMins, int resultCount, int writtenCount)
+        public async Task PublishAfter(int wfCount, int tekPerWfCount, int addMins, int resultCount)
         {
+            // Arrange
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            await _dkSourceDbContext.BulkDeleteAsync(_dkSourceDbContext.DiagnosisKeys.ToList());
 
             var t = new DateTime(2020, 11, 5, 12, 0, 0, DateTimeKind.Utc);
-            _DateTimeProvider.Setup(x => x.Snapshot).Returns(t);
+            _dateTimeProvider.Setup(x => x.Snapshot).Returns(t);
             var tekCount = wfCount * tekPerWfCount;
             GenerateWorkflowTeks(wfCount, tekPerWfCount);
 
-            Assert.Equal(tekCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Unpublished));
-            Assert.Equal(0, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
+            Assert.Equal(tekCount, _workflowDbContext.TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Unpublished));
+            Assert.Equal(0, _dkSourceDbContext.DiagnosisKeys.Count());
 
-            _DateTimeProvider.Setup(x => x.Snapshot).Returns(t.AddMinutes(addMins));
+            _dateTimeProvider.Setup(x => x.Snapshot).Returns(t.AddMinutes(addMins));
             var c = Create();
+
+            // Act
             var result = await c.ExecuteAsync();
 
+            // Assert
             Assert.Equal(resultCount, result.TekReadCount);
-            Assert.Equal(tekCount - resultCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Unpublished));
-            Assert.Equal(writtenCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count(x => x.Local.TransmissionRiskLevel != TransmissionRiskLevel.None));
+            Assert.Equal(tekCount - resultCount, _workflowDbContext.TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Unpublished));
+            Assert.Equal(result.DkCount, _dkSourceDbContext.DiagnosisKeys.Count(x => x.Local.TransmissionRiskLevel != TransmissionRiskLevel.None));
         }
 
         [InlineData(0, 0)] //Null case
         [InlineData(1, 1)]
         [InlineData(1, 4)] //was 10 - 6 are now filtered out as they have TRL None
         [Theory]
-        [ExclusivelyUses(nameof(TekToDkSnapshotTests))]
         public async Task SecondRunShouldChangeNothing(int wfCount, int tekPerWfCount)
         {
-            _DateTimeProvider.Setup(x => x.Snapshot).Returns(new DateTime(2020, 11, 5, 14, 00, 0, DateTimeKind.Utc));
+            // Arrange
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            await _dkSourceDbContext.BulkDeleteAsync(_dkSourceDbContext.DiagnosisKeys.ToList());
+
+            _dateTimeProvider.Setup(x => x.Snapshot).Returns(new DateTime(2020, 11, 5, 14, 00, 0, DateTimeKind.Utc));
             GenerateWorkflowTeks(wfCount, tekPerWfCount);
 
             //Two hours later
-            _DateTimeProvider.Setup(x => x.Snapshot).Returns(new DateTime(2020, 11, 5, 16, 00, 0, DateTimeKind.Utc));
+            _dateTimeProvider.Setup(x => x.Snapshot).Returns(new DateTime(2020, 11, 5, 16, 00, 0, DateTimeKind.Utc));
             var tekCount = wfCount * tekPerWfCount;
-            Assert.Equal(tekCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Unpublished));
-            Assert.Equal(0, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
-            Assert.True(_DkSourceDbProvider.CreateNew().DiagnosisKeys.All(x => x.DailyKey.RollingPeriod == UniversalConstants.RollingPeriodRange.Hi)); //Compatible with Apple API
+            Assert.Equal(tekCount, _workflowDbContext.TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Unpublished));
+            Assert.Equal(0, _dkSourceDbContext.DiagnosisKeys.Count());
+            Assert.True(_dkSourceDbContext.DiagnosisKeys.All(x => x.DailyKey.RollingPeriod == UniversalConstants.RollingPeriodRange.Hi)); //Compatible with Apple API
 
+            // Act
             var result = await Create().ExecuteAsync();
-            Assert.Equal(tekCount, result.TekReadCount);
-            Assert.Equal(tekCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState != PublishingState.Unpublished));
-            Assert.Equal(tekCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
 
-            //Second run
+            // Assert
+            Assert.Equal(tekCount, result.TekReadCount);
+            Assert.Equal(tekCount, _workflowDbContext.TemporaryExposureKeys.Count(x => x.PublishingState != PublishingState.Unpublished));
+            Assert.Equal(tekCount, _dkSourceDbContext.DiagnosisKeys.Count());
+
+            //Second Act
             result = await Create().ExecuteAsync();
 
-            //No changes
+            //  Assert No changes
             Assert.Equal(0, result.TekReadCount);
-            Assert.Equal(tekCount, _WorkflowDbProvider.CreateNew().TemporaryExposureKeys.Count(x => x.PublishingState != PublishingState.Unpublished));
-            Assert.Equal(tekCount, _DkSourceDbProvider.CreateNew().DiagnosisKeys.Count());
+            Assert.Equal(tekCount, _workflowDbContext.TemporaryExposureKeys.Count(x => x.PublishingState != PublishingState.Unpublished));
+            Assert.Equal(tekCount, _dkSourceDbContext.DiagnosisKeys.Count());
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -40,8 +40,15 @@ namespace SigTestFileCreator
             services.AddSingleton<SigTestFileCreatorLoggingExtensions>();
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
 
-            services.NlSignerStartup();
-            services.GaSignerStartup();
+            services.AddTransient(x =>
+                SignerConfigStartup.BuildEvSigner(
+                    x.GetRequiredService<IConfiguration>(),
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<IUtcDateTimeProvider>()));
+            services.AddTransient(x =>
+                SignerConfigStartup.BuildGaSigner(
+                    x.GetRequiredService<IConfiguration>(),
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));
         }
     }
 }

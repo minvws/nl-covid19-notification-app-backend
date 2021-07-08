@@ -1,4 +1,4 @@
-﻿// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
     public class StandardTaskSchedulingConfig : AppSettingsReader, ITaskSchedulingConfig
     {
 
-        private static readonly ProductionDefaultValuesTaskSchedulingConfig _ProductionDefaultValues = new ProductionDefaultValuesTaskSchedulingConfig();
+        private static readonly ProductionDefaultValuesTaskSchedulingConfig productionDefaultValues = new ProductionDefaultValuesTaskSchedulingConfig();
 
         public StandardTaskSchedulingConfig(IConfiguration config, string prefix = "TaskScheduling") : base(config, prefix)
         {
@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 }
                 catch (FormatException)
                 {
-                    return _ProductionDefaultValues.DailyCleanupHoursAfterMidnight;
+                    return productionDefaultValues.DailyCleanupHoursAfterMidnight;
                 }
             }
         }

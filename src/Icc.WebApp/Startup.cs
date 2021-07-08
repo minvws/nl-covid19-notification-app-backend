@@ -4,14 +4,17 @@
 
 using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.Extensions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
@@ -33,6 +36,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+            });
+
             services.AddControllersWithViews();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -55,7 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
             services.AddTransient<ILuhnModNGenerator, LuhnModNGenerator>();
 
             services.AddTransient<IJwtService, JwtService>();
-            
+
             services.AddSingleton<IAuthCodeService, AuthCodeService>();
             services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
             services.AddCors();
@@ -67,19 +76,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
                 options.TableName = "Cache";
             });
 
-            services.AddTransient(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
+            services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(_configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
+
             services.AddTransient<WriteNewPollTokenWriter>();
             services.AddTransient<IPollTokenService, PollTokenService>();
 
-            services.AddMvc(config =>
+            services.Configure<CookiePolicyOptions>(options =>
             {
-                config.EnableEndpointRouting = false;
+                options.HttpOnly = HttpOnlyPolicy.Always;
+                options.Secure = CookieSecurePolicy.Always;
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseForwardedHeaders();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -90,6 +103,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.Use((context, next) =>
+            {
+                if (context.Request.Headers.TryGetValue("X-Forwarded-Proto", out var protoHeaderValue))
+                {
+                    context.Request.Scheme = protoHeaderValue;
+                }
+
+                if (context.Request.Headers.TryGetValue("X-FORWARDED-HOST", out var hostHeaderValue))
+                {
+                    context.Request.Host = new HostString(hostHeaderValue);
+                }
+
+                return next();
+            });
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
