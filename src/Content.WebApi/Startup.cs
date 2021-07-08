@@ -15,7 +15,6 @@ using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using Serilog;
 
@@ -36,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
             _isDev = env.IsDevelopment();
         }
 
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        public void ConfigureServices(IServiceCollection services)
         {
             if (services == null)
             {
@@ -46,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
             services.AddControllers(options => { options.RespectBrowserAcceptHeader = true; });
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
+            services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(_configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
 
             services.AddScoped<HttpGetCdnManifestCommand>();
             services.AddScoped<HttpGetCdnEksCommand>();
