@@ -21,14 +21,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     [Trait("db", "ss")]
     public class RemoveLocalDuplicateDiagnosisKeysCommandTests : IDisposable
     {
-        private static DbConnection _connection;
+        private static DbConnection connection;
         private readonly DkSourceDbContext _dkSourceContext;
 
         public RemoveLocalDuplicateDiagnosisKeysCommandTests()
         {
-            var dkSourceDbProvider = new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlServer(CreateSqlDatabase()).Options;
+            var dkSourceDbContextOptions = new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlServer(CreateSqlDatabase()).Options;
             var sp = File.ReadAllText(@"Resources\RemoveLocalDuplicateDiagnosisKeys.sql");
-            _dkSourceContext = new DkSourceDbContext(dkSourceDbProvider);
+            _dkSourceContext = new DkSourceDbContext(dkSourceDbContextOptions);
             _dkSourceContext.Database.EnsureDeleted(); // Delete database first because the sp cannot be added twice.
             _dkSourceContext.Database.EnsureCreated();
             _dkSourceContext.Database.ExecuteSqlRaw(sp);
@@ -41,11 +41,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 MultipleActiveResultSets = true
             };
 
-            _connection = new SqlConnection(csb.ConnectionString);
-            return _connection;
+            connection = new SqlConnection(csb.ConnectionString);
+            return connection;
         }
 
-        public void Dispose() => _connection.Dispose();
+        public void Dispose() => connection.Dispose();
 
         [Fact]
         public async Task No_Action_Taken_For_Published_Duplicates()

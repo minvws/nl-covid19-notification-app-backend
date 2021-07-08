@@ -45,13 +45,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         protected EksBatchJobMk3Tests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions, DbContextOptions<EksPublishingJobDbContext> eksPublishingJobDbContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _workflowContext = new WorkflowDbContext(workflowContextOptions);
+            _workflowContext = new WorkflowDbContext(workflowContextOptions ?? throw new ArgumentNullException(nameof(workflowContextOptions)));
             _workflowContext.Database.EnsureCreated();
-            _dkSourceContext = new DkSourceDbContext(dkSourceDbContextOptions);
+            _dkSourceContext = new DkSourceDbContext(dkSourceDbContextOptions ?? throw new ArgumentNullException(nameof(dkSourceDbContextOptions)));
             _dkSourceContext.Database.EnsureCreated();
-            _eksPublishingJobDbContext = new EksPublishingJobDbContext(eksPublishingJobDbContextOptions);
+            _eksPublishingJobDbContext = new EksPublishingJobDbContext(eksPublishingJobDbContextOptions ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContextOptions)));
             _eksPublishingJobDbContext.Database.EnsureCreated();
-            _contentDbContext = new ContentDbContext(contentDbContextOptions);
+            _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
             _contentDbContext.Database.EnsureCreated();
 
             _dateTimeProvider = new StandardUtcDateTimeProvider();

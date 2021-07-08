@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
 
         protected WorkflowControllerPostKeysTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions)
         {
-            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions);
+            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions ?? throw new ArgumentNullException(nameof(workflowDbContextOptions)));
             _workflowDbContext.Database.EnsureCreated();
 
             _factory = WithWebHostBuilder(builder =>

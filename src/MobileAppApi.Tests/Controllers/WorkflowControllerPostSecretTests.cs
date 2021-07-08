@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -29,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
 
         protected WorkflowControllerPostSecretTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions)
         {
-            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions);
+            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions ?? throw new ArgumentNullException(nameof(workflowDbContextOptions)));
             _workflowDbContext.Database.EnsureCreated();
 
             _factory = WithWebHostBuilder(

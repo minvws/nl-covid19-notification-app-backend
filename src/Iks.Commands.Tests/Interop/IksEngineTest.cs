@@ -49,18 +49,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 
         protected IksEngineTest(DbContextOptions<WorkflowDbContext> workflowDbContextOptions, DbContextOptions<IksInDbContext> iksInDbContextOptions, DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions, DbContextOptions<IksPublishingJobDbContext> iksPublishingJobDbContextOptions, DbContextOptions<IksOutDbContext> iksOutDbContextOptions)
         {
-            _iksInDbContext = new IksInDbContext(iksInDbContextOptions);
+            _iksInDbContext = new IksInDbContext(iksInDbContextOptions ?? throw new ArgumentNullException(nameof(iksInDbContextOptions)));
             _iksInDbContext.Database.EnsureCreated();
-            _dkSourceDbContext = new DkSourceDbContext(dkSourceDbContextOptions);
+            _dkSourceDbContext = new DkSourceDbContext(dkSourceDbContextOptions ?? throw new ArgumentNullException(nameof(dkSourceDbContextOptions)));
             _dkSourceDbContext.Database.EnsureCreated();
-            _iksPublishingJobDbContext = new IksPublishingJobDbContext(iksPublishingJobDbContextOptions);
+            _iksPublishingJobDbContext = new IksPublishingJobDbContext(iksPublishingJobDbContextOptions ?? throw new ArgumentNullException(nameof(iksPublishingJobDbContextOptions)));
             _iksPublishingJobDbContext.Database.EnsureCreated();
-            _iksOutDbContext = new IksOutDbContext(iksOutDbContextOptions);
+            _iksOutDbContext = new IksOutDbContext(iksOutDbContextOptions ?? throw new ArgumentNullException(nameof(iksOutDbContextOptions)));
             _iksOutDbContext.Database.EnsureCreated();
-            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions);
+            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions ?? throw new ArgumentNullException(nameof(workflowDbContextOptions)));
             _workflowDbContext.Database.EnsureCreated();
         }
-        
+
         private IksEngine Create()
         {
             _iksConfigMock.Setup(x => x.ItemCountMax).Returns(750);

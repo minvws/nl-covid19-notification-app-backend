@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         protected ExposureKeySetCleanerTests(DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _contentDbContext = new ContentDbContext(contentDbContextOptions);
+            _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
             _contentDbContext.Database.EnsureCreated();
         }
 

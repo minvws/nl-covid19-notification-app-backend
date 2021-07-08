@@ -31,9 +31,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         protected TekToDkSnapshotTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions, DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions)
         {
-            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions);
+            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions ?? throw new ArgumentNullException(nameof(workflowDbContextOptions)));
             _workflowDbContext.Database.EnsureCreated();
-            _dkSourceDbContext = new DkSourceDbContext(dkSourceDbContextOptions);
+            _dkSourceDbContext = new DkSourceDbContext(dkSourceDbContextOptions ?? throw new ArgumentNullException(nameof(dkSourceDbContextOptions)));
             _dkSourceDbContext.Database.EnsureCreated();
 
             _dateTimeProvider = new Mock<IUtcDateTimeProvider>();

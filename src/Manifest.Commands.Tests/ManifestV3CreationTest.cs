@@ -22,12 +22,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 {
     public abstract class ManifestV3CreationTest
     {
-
         private readonly ContentDbContext _contentDbContext;
 
         protected ManifestV3CreationTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _contentDbContext = new ContentDbContext(contentDbContextOptions);
+            _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
             _contentDbContext.Database.EnsureCreated();
         }
 

@@ -25,9 +25,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         private readonly Mock<IUtcDateTimeProvider> _dateTimeProviderMock;
         private readonly DateTime _mockedTime = DateTime.UtcNow;
 
-        public ManifestUpdateCommandTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
+        protected ManifestUpdateCommandTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _contentDbContext = new ContentDbContext(contentDbContextOptions);
+            _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
             _contentDbContext.Database.EnsureCreated();
 
             var nlSignerMock = new Mock<IContentSigner>();

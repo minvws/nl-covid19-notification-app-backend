@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 
         public IksTestDataGenerator(DbContextOptions<IksInDbContext> iksInDbContextOptions)
         {
-            _iksInDbContext = new IksInDbContext(iksInDbContextOptions);
+            _iksInDbContext = new IksInDbContext(iksInDbContextOptions ?? throw new ArgumentNullException(nameof(iksInDbContextOptions)));
             _iksInDbContext.Database.EnsureCreated();
         }
 

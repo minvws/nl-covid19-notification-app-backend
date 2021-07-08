@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -57,13 +58,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
         {
             _lf = new LoggerFactory();
 
-            _workflowContext = new WorkflowDbContext(workflowContextOptions);
+            _workflowContext = new WorkflowDbContext(workflowContextOptions ?? throw new ArgumentNullException(nameof(workflowContextOptions)));
             _workflowContext.Database.EnsureCreated();
-            _dkSourceContext = new DkSourceDbContext(dkSourceContextOptions);
+            _dkSourceContext = new DkSourceDbContext(dkSourceContextOptions ?? throw new ArgumentNullException(nameof(dkSourceContextOptions)));
             _dkSourceContext.Database.EnsureCreated();
-            _eksPublishingJobContext = new EksPublishingJobDbContext(eksPublishingJobDbContextOptions);
+            _eksPublishingJobContext = new EksPublishingJobDbContext(eksPublishingJobDbContextOptions ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContextOptions)));
             _eksPublishingJobContext.Database.EnsureCreated();
-            _contentDbContext = new ContentDbContext(contentDbContextOptions);
+            _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
             _contentDbContext.Database.EnsureCreated();
 
             // Configuration

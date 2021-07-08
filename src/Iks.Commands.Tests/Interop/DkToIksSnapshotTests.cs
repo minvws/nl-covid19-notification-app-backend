@@ -29,9 +29,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 
         protected DkToIksSnapshotTests(DbContextOptions<DkSourceDbContext> dkSourceDbOptions, DbContextOptions<IksPublishingJobDbContext> iksPublishingDbOptions)
         {
-            _dkSourceDbContext = new DkSourceDbContext(dkSourceDbOptions);
+            _dkSourceDbContext = new DkSourceDbContext(dkSourceDbOptions ?? throw new ArgumentNullException(nameof(dkSourceDbOptions)));
             _dkSourceDbContext.Database.EnsureCreated();
-            _iksPublishingDbContext = new IksPublishingJobDbContext(iksPublishingDbOptions);
+            _iksPublishingDbContext = new IksPublishingJobDbContext(iksPublishingDbOptions ?? throw new ArgumentNullException(nameof(iksPublishingDbOptions)));
             _iksPublishingDbContext.Database.EnsureCreated();
         }
 

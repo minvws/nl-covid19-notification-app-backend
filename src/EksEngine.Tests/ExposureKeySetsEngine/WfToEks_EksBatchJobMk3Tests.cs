@@ -52,15 +52,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         private readonly SnapshotWorkflowTeksToDksCommand _snapshot;
         private Mock<IOutboundFixedCountriesOfInterestSetting> _countriesOut;
 
-        protected WfToEksEksBatchJobMk3Tests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions, DbContextOptions<EksPublishingJobDbContext> publishingContextOptions, DbContextOptions<ContentDbContext> contentContextOptions)
+        protected WfToEksEksBatchJobMk3Tests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions, DbContextOptions<EksPublishingJobDbContext> publishingContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _workflowContext = new WorkflowDbContext(workflowContextOptions);
+            _workflowContext = new WorkflowDbContext(workflowContextOptions ?? throw new ArgumentNullException(nameof(workflowContextOptions)));
             _workflowContext.Database.EnsureCreated();
-            _dkSourceContext = new DkSourceDbContext(dkSourceContextOptions);
+            _dkSourceContext = new DkSourceDbContext(dkSourceContextOptions ?? throw new ArgumentNullException(nameof(dkSourceContextOptions)));
             _dkSourceContext.Database.EnsureCreated();
-            _eksPublishingJobContext = new EksPublishingJobDbContext(publishingContextOptions);
+            _eksPublishingJobContext = new EksPublishingJobDbContext(publishingContextOptions ?? throw new ArgumentNullException(nameof(publishingContextOptions)));
             _eksPublishingJobContext.Database.EnsureCreated();
-            _contentContext = new ContentDbContext(contentContextOptions);
+            _contentContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
             _contentContext.Database.EnsureCreated();
 
             _dateTimeProvider = new StandardUtcDateTimeProvider();

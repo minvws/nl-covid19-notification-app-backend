@@ -29,10 +29,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 
         protected MarkDiagnosisKeysAsUsedByIksTests(DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions, DbContextOptions<IksPublishingJobDbContext> iksPublishingJobDbContextOptions)
         {
-            _dkSourceDbContext = new DkSourceDbContext(dkSourceDbContextOptions);
+            _dkSourceDbContext = new DkSourceDbContext(dkSourceDbContextOptions ?? throw new ArgumentNullException(nameof(dkSourceDbContextOptions)));
             _dkSourceDbContext.Database.EnsureCreated();
 
-            _iksPublishingDbContext = new IksPublishingJobDbContext(iksPublishingJobDbContextOptions);
+            _iksPublishingDbContext = new IksPublishingJobDbContext(iksPublishingJobDbContextOptions ?? throw new ArgumentNullException(nameof(iksPublishingJobDbContextOptions)));
             _iksPublishingDbContext.Database.EnsureCreated();
         }
 

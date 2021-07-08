@@ -34,7 +34,7 @@ namespace Icc.WebApp.Tests
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddScoped(p => new WorkflowDbContext(workflowDbContextOptions));
+                    services.AddScoped(p => new WorkflowDbContext(workflowDbContextOptions ?? throw new ArgumentNullException(nameof(workflowDbContextOptions))));
                     services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
                     services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
                 });

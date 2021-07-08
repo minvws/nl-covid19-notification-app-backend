@@ -37,9 +37,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             _dateTimeProvider = new Mock<IUtcDateTimeProvider>();
             _lf = new LoggerFactory();
 
-            _workflowContext = new WorkflowDbContext(workflowContextOptions);
+            _workflowContext = new WorkflowDbContext(workflowContextOptions ?? throw new ArgumentNullException(nameof(workflowContextOptions)));
             _workflowContext.Database.EnsureCreated();
-            _dkSourceContext = new DkSourceDbContext(dkSourceContextOptions);
+            _dkSourceContext = new DkSourceDbContext(dkSourceContextOptions ?? throw new ArgumentNullException(nameof(dkSourceContextOptions)));
             _dkSourceContext.Database.EnsureCreated();
         }
 

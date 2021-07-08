@@ -31,7 +31,7 @@ namespace Icc.V2.WebApi.Tests
 
         protected WorkflowControllerTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions)
         {
-            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions);
+            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions ?? throw new ArgumentNullException(nameof(workflowDbContextOptions)));
             _workflowDbContext.Database.EnsureCreated();
 
             _factory = WithWebHostBuilder(

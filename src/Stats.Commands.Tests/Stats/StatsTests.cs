@@ -24,9 +24,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Sta
 
         protected StatsTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions, DbContextOptions<StatsDbContext> statsDbContextOptions)
         {
-            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions);
+            _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions ?? throw new ArgumentNullException(nameof(workflowDbContextOptions)));
             _workflowDbContext.Database.EnsureCreated();
-            _statsDbContext = new StatsDbContext(statsDbContextOptions);
+            _statsDbContext = new StatsDbContext(statsDbContextOptions ?? throw new ArgumentNullException(nameof(statsDbContextOptions)));
             _statsDbContext.Database.EnsureCreated();
 
             var snapshot = DateTime.UtcNow;
