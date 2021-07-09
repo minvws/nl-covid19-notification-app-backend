@@ -8,8 +8,6 @@ import {AppConfigService} from './app-config.service';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {AppConfigTestService} from './app-config.test.service';
-import {AuthenticationService} from './authentication.service';
-import {AuthenticationTestService} from './authentication_test.service';
 
 describe('LabConfirmServiceService', () => {
     let service: LabConfirmService;
@@ -21,7 +19,7 @@ describe('LabConfirmServiceService', () => {
             providers: [LabConfirmService, {
                 provide: AppConfigService,
                 useClass: AppConfigTestService,
-            }, {provide: AuthenticationService, useClass: AuthenticationTestService}]
+            }]
         });
         const appConfigService = TestBed.inject(AppConfigService);
         appConfigService.loadAppConfig();
