@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
@@ -22,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         private readonly ResignerLoggingExtensions _logger;
 
         private string _contentEntryName;
-        private string _toType;
+        private ContentTypes _toType;
 
         /// <summary>
         /// Comparer ensures content is equivalent so that items are not re-signed more than once
@@ -47,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         /// <summary>
         /// Copy and sign all content of 'fromType' that has not already been re-signed.
         /// </summary>
-        public async Task ExecuteAsync(string fromType, string toType, string contentEntryName)
+        public async Task ExecuteAsync(ContentTypes fromType, ContentTypes toType, string contentEntryName)
         {
             _toType = toType;
             _contentEntryName = contentEntryName;

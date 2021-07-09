@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -37,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<RemoveExpiredManifestsCommandResult> RemoveManifestsAsync(string manifestType, int loggingBaseNumber)
+        public async Task<RemoveExpiredManifestsCommandResult> RemoveManifestsAsync(ContentTypes manifestType, int loggingBaseNumber)
         {
             var result = new RemoveExpiredManifestsCommandResult();
 

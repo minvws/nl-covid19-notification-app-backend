@@ -28,6 +28,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityF
             modelBuilder.Entity<ContentEntity>().HasIndex(u => u.Type);
             modelBuilder.Entity<ContentEntity>().HasIndex(u => u.Release);
             modelBuilder.Entity<ContentEntity>().HasIndex(u => u.ContentTypeName);
+
+            modelBuilder
+                .Entity<ContentEntity>()
+                .Property(e => e.Type)
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (ContentTypes)Enum.Parse(typeof(ContentTypes), v));
+
         }
     }
 }

@@ -4,6 +4,7 @@
 
 using System;
 using Microsoft.Extensions.Logging;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
@@ -23,14 +24,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public void WriteStartWriting(string contentType)
+        public void WriteStartWriting(ContentTypes contentType)
         {
             _logger.LogDebug("[{name}/{id}] Writing {ContentType} to database.",
                 Name, StartWriting,
                 contentType);
         }
 
-        public void WriteFinishedWriting(string contentType)
+        public void WriteFinishedWriting(ContentTypes contentType)
         {
             _logger.LogDebug("[{name}/{id}] Done writing {ContentType} to database.",
                 Name, FinishedWriting,

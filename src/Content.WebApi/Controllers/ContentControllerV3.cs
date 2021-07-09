@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi.Controllers
 {

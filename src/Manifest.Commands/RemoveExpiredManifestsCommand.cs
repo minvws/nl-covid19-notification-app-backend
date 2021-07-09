@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
@@ -14,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
     {
         private readonly RemoveExpiredManifestsReceiver _receiver;
 
-        private readonly List<(string, int)> _manifestTypesAndLoggingCodexNumber = new List<(string, int)>
+        private readonly List<(ContentTypes, int)> _manifestTypesAndLoggingCodexNumber = new List<(ContentTypes, int)>
         {
             ( ContentTypes.Manifest, LoggingCodex.RemoveExpiredManifest ),
             ( ContentTypes.ManifestV2, LoggingCodex.RemoveExpiredManifestV2 ),

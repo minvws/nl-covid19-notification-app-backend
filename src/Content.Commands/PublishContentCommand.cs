@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -74,7 +75,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             _logger.WriteFinishedWriting(contentArgs.ContentType);
         }
 
-        private string ParseContentType(string arg)
+        private ContentTypes ParseContentType(string arg)
         {
             if (arg.Equals("-a", StringComparison.InvariantCultureIgnoreCase))
             {

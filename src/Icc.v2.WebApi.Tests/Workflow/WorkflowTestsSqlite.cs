@@ -4,7 +4,6 @@
 
 using System;
 using System.Data.Common;
-using Icc.V2.WebApi.Tests;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
