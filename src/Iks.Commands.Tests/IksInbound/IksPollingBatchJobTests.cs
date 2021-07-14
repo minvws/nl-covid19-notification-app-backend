@@ -213,8 +213,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             // Assemble: configure receiver to return batches for the FIRST day
             var responses = new List<HttpGetIksSuccessResult>()
             {
-                new HttpGetIksSuccessResult {BatchTag = "1", Content = new byte[] {0x0, 0x0}, NextBatchTag = "2"},
-                new HttpGetIksSuccessResult {BatchTag = "2", Content = new byte[] {0x0, 0x0}, NextBatchTag = null},
+                new HttpGetIksSuccessResult {BatchTag = "firstday-1", Content = new byte[] {0x0, 0x0}, NextBatchTag = "firstday-2"},
+                new HttpGetIksSuccessResult {BatchTag = "firstday-2", Content = new byte[] {0x0, 0x0}, NextBatchTag = null},
             };
             var receiver = FixedResultHttpGetIksCommand.Create(responses, now.AddDays(-1));
 
@@ -230,19 +230,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             // Assemble: add the batches for the SECOND day to the receiver
             receiver.AddItem(new HttpGetIksSuccessResult
-            { BatchTag = "1", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = "2" }, now);
+            { BatchTag = "secondday-1", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = "secondday-2" }, now);
             receiver.AddItem(new HttpGetIksSuccessResult
-            { BatchTag = "2", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = null }, now);
+            { BatchTag = "secondday-2", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = null }, now);
 
             // Act - process files for SECOND day
             await sut.ExecuteAsync();
 
             // Assert
             Assert.Equal(4, downloadedBatches.Count);
-            Assert.Equal("1", downloadedBatches[0].BatchTag);
-            Assert.Equal("2", downloadedBatches[1].BatchTag);
-            Assert.Equal("1", downloadedBatches[2].BatchTag);
-            Assert.Equal("2", downloadedBatches[3].BatchTag);
+            Assert.Equal("firstday-1", downloadedBatches[0].BatchTag);
+            Assert.Equal("firstday-2", downloadedBatches[1].BatchTag);
+            Assert.Equal("secondday-1", downloadedBatches[2].BatchTag);
+            Assert.Equal("secondday-2", downloadedBatches[3].BatchTag);
         }
     }
 }
