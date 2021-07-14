@@ -100,6 +100,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                         daysLeft = false;
                     }
                 }
+
+                // Log this for informational purposes
+                if (downloadCount > _efgsConfig.MaxBatchesPerRun)
+                {
+                    _logger.WriteBatchMaximumReached(_efgsConfig.MaxBatchesPerRun);
+                }
             }
         }
 
