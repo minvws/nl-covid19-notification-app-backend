@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityF
 {
     public class ContentDbContext : DbContext
     {
-        public ContentDbContext(DbContextOptions options)
+        public ContentDbContext(DbContextOptions<ContentDbContext> options)
             : base(options)
         {
         }

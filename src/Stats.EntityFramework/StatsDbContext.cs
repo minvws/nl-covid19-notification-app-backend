@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.EntityFramework
 {
     public class StatsDbContext : DbContext
     {
-        public StatsDbContext(DbContextOptions options)
+        public StatsDbContext(DbContextOptions<StatsDbContext> options)
             : base(options)
         {
         }

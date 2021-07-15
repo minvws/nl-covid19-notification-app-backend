@@ -14,6 +14,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         }
 
         public int ItemCountMax => GetConfigValue(nameof(ItemCountMax), 750000);
-        public int PageSize => GetConfigValue(nameof(PageSize), 10000);
+        public int PageSize => GetConfigValue(nameof(PageSize), 100000);
     }
 }

@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -25,23 +27,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly ITransmissionRiskLevelCalculationMk2 _transmissionRiskLevelCalculation;
         private readonly WorkflowDbContext _workflowDbContext;
-        private readonly Func<WorkflowDbContext> _workflowDbContextFactory;
-        private readonly Func<DkSourceDbContext> _dkSourceDbContextFactory;
-        private readonly IWrappedEfExtensions _sqlCommands;
+        private readonly DkSourceDbContext _dkSourceDbContext;
         private readonly IDiagnosticKeyProcessor[] _orderedProcessorList;
 
         private int _commitIndex;
         private SnapshotWorkflowTeksToDksResult _result;
 
-        public SnapshotWorkflowTeksToDksCommand(ILogger<SnapshotWorkflowTeksToDksCommand> logger, IUtcDateTimeProvider dateTimeProvider, ITransmissionRiskLevelCalculationMk2 transmissionRiskLevelCalculation, WorkflowDbContext workflowDbContext, Func<WorkflowDbContext> workflowDbContextFactory, Func<DkSourceDbContext> dkSourceDbContextFactory, IWrappedEfExtensions sqlCommands, IDiagnosticKeyProcessor[] orderedProcessorList)
+        public SnapshotWorkflowTeksToDksCommand(ILogger<SnapshotWorkflowTeksToDksCommand> logger, IUtcDateTimeProvider dateTimeProvider, ITransmissionRiskLevelCalculationMk2 transmissionRiskLevelCalculation, WorkflowDbContext workflowDbContext, DkSourceDbContext dkSourceDbContext, IDiagnosticKeyProcessor[] orderedProcessorList)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _transmissionRiskLevelCalculation = transmissionRiskLevelCalculation ?? throw new ArgumentNullException(nameof(transmissionRiskLevelCalculation));
             _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
-            _workflowDbContextFactory = workflowDbContextFactory ?? throw new ArgumentNullException(nameof(workflowDbContextFactory));
-            _dkSourceDbContextFactory = dkSourceDbContextFactory ?? throw new ArgumentNullException(nameof(dkSourceDbContextFactory));
-            _sqlCommands = sqlCommands ?? throw new ArgumentNullException(nameof(sqlCommands));
+            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
             _orderedProcessorList = orderedProcessorList ?? throw new ArgumentNullException(nameof(orderedProcessorList));
         }
 
@@ -61,8 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
         private async Task ClearJobTablesAsync()
         {
-            var dbc = _dkSourceDbContextFactory();
-            await _sqlCommands.TruncateTableAsync(dbc, TableNames.DiagnosisKeysInput);
+            await _dkSourceDbContext.TruncateAsync<DiagnosisKeyInputEntity>();
         }
 
         private async Task SnapshotTeks()
@@ -75,13 +72,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             const int PageSize = 10000;
             var index = 0;
 
-            await using var tx = _workflowDbContext.BeginTransaction();
             var page = ReadFromWorkflow(index, PageSize);
 
             while (page.Count > 0)
             {
-                var db = _dkSourceDbContextFactory();
-                await db.BulkInsertAsync2(page.ToList(), new SubsetBulkArgs());
+                await _dkSourceDbContext.BulkInsertWithTransactionAsync(page.ToList(), new SubsetBulkArgs());
 
                 index += page.Count;
                 page = ReadFromWorkflow(index, PageSize);
@@ -96,6 +91,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             // Select TemporaryExposureKeys from Workflow table which are ready to be processed (TEK is: AuthorisedByCaregiver, StartDateOfTekInclusion and IsSymptomatic are set, Unpublished PublishAfter not in the future)
             var selectTeksFromWorkflowQuery = _workflowDbContext.TemporaryExposureKeys
+                .AsNoTracking()
                 .Where(x => x.Owner.AuthorisedByCaregiver != null
                             && x.Owner.StartDateOfTekInclusion != null
                             && x.PublishingState == PublishingState.Unpublished
@@ -131,7 +127,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                     return result;
                 }).ToList();
 
-
             return diagnosisKeyInputEntities;
         }
 
@@ -148,8 +143,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
         private async Task WriteToDksAsync(DiagnosisKeyInputEntity[] used)
         {
-            await using var db = _dkSourceDbContextFactory();
-
             var q3 = used.Select(x => (DkProcessingItem)new DkProcessingItem
             {
                 DiagnosisKey = new DiagnosisKeyEntity
@@ -157,6 +150,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                     DailyKey = x.DailyKey,
                     Local = x.Local,
                     Origin = TekOrigin.Local,
+                    Created = DateTime.Now
                 },
                 Metadata = new Dictionary<string, object>
                 {
@@ -168,16 +162,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             var items = q4.Select(x => x.DiagnosisKey).ToList();
             _result.DkCount += items.Count;
 
-            await db.BulkInsertAsync2(items, new SubsetBulkArgs());
+            await _dkSourceDbContext.BulkInsertWithTransactionAsync(items, new SubsetBulkArgs());
         }
 
         private async Task MarkTeksAsPublishedAsync(long[] used)
         {
-            await using var wfDb = _workflowDbContextFactory();
-
-            var zap = wfDb.TemporaryExposureKeys
-                .Where(x => used.Contains(x.Id))
-                .ToList();
+            var zap = _workflowDbContext.TemporaryExposureKeys
+                .AsNoTracking()
+                .Where(x => x.PublishingState == PublishingState.Unpublished && used.Contains(x.Id)).ToList();
 
             _commitIndex += used.Length;
             _logger.LogInformation("Marking TEKs as Published - Count:{Count}, Running total:{RunningTotal}.", zap.Count, _commitIndex);
@@ -187,20 +179,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 i.PublishingState = PublishingState.Published;
             }
 
-            var bargs = new SubsetBulkArgs
-            {
-                PropertiesToInclude = new[] { $"{nameof(TekEntity.PublishingState)}" }
-            };
-
-            await wfDb.BulkUpdateAsync2(zap, bargs); //TX
+            await _workflowDbContext.BulkUpdateWithTransactionAsync(zap, new SubsetBulkArgs());
         }
 
         private DiagnosisKeyInputEntity[] ReadDkPage()
         {
-            var q = _dkSourceDbContextFactory().DiagnosisKeysInput
+            var q = _dkSourceDbContext.DiagnosisKeysInput
+                .AsNoTracking()
                 .OrderBy(x => x.TekId)
                 .Skip(_commitIndex)
-                .Take(1000)
+                .Take(10000)
                 .ToArray();
 
             return q.ToArray();

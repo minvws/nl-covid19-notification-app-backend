@@ -3,11 +3,14 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
@@ -17,17 +20,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
 {
     public class GenerateTeksCommand
     {
-        private readonly IRandomNumberGenerator _rng;
-        private readonly Func<TekReleaseWorkflowStateCreateV2> _registerWriter;
+        private readonly WorkflowDbContext _workflowDb;
+        private readonly IRandomNumberGenerator _numberGenerator;
+        private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly ILuhnModNGenerator _luhnModNGenerator;
+        private readonly ILuhnModNConfig _luhnModNConfig;
+        private readonly IWorkflowTime _workflowTime;
+        private readonly ILogger _logger;
 
         private GenerateTeksCommandArgs _args;
-        private readonly Func<WorkflowDbContext> _workflowDb;
 
-        public GenerateTeksCommand(IRandomNumberGenerator rng, Func<WorkflowDbContext> workflowDb, Func<TekReleaseWorkflowStateCreateV2> registerWriter)
+        public GenerateTeksCommand(
+            WorkflowDbContext workflowDb,
+            IRandomNumberGenerator numberGenerator,
+            IUtcDateTimeProvider dateTimeProvider,
+            IWorkflowTime workflowTime,
+            ILuhnModNConfig luhnModNConfig,
+            ILuhnModNGenerator luhnModNGenerator,
+            ILogger<GenerateTeksCommand> logger)
         {
-            _rng = rng ?? throw new ArgumentNullException(nameof(rng));
             _workflowDb = workflowDb ?? throw new ArgumentNullException(nameof(workflowDb));
-            _registerWriter = registerWriter ?? throw new ArgumentNullException(nameof(registerWriter));
+            _numberGenerator = numberGenerator ?? throw new ArgumentNullException(nameof(numberGenerator));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _workflowTime = workflowTime ?? throw new ArgumentNullException(nameof(workflowTime));
+            _luhnModNConfig = luhnModNConfig ?? throw new ArgumentNullException(nameof(luhnModNConfig));
+            _luhnModNGenerator = luhnModNGenerator ?? throw new ArgumentNullException(nameof(luhnModNGenerator));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task ExecuteAsync(GenerateTeksCommandArgs args)
@@ -38,22 +56,96 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
 
         private async Task GenWorkflowsAsync()
         {
+            await _workflowDb.BulkDeleteAsync(_workflowDb.KeyReleaseWorkflowStates.ToList());
+
+            var workflowList = new List<TekReleaseWorkflowStateEntity>();
+            var tekList = new List<TekEntity>();
+
+            _logger.LogDebug("Writing TekReleaseWorkflowStateEntities");
             for (var i = 0; i < _args.WorkflowCount; i++)
             {
-                var w = await _registerWriter().ExecuteAsync();
-                GenTeks(w.Id);
+                var workflowStateEntity = new TekReleaseWorkflowStateEntity
+                {
+                    Created = _dateTimeProvider.Snapshot.Date,
+                    ValidUntil = _workflowTime.Expiry(_dateTimeProvider.Snapshot),
+                    GGDKey = GenerateUniqueGGDKey(workflowList),
+                    BucketId = GenerateUniqueBucketId(workflowList),
+                    ConfirmationKey = GenerateUniqueConfirmationKey(workflowList),
+                    AuthorisedByCaregiver = DateTime.UtcNow,
+                    StartDateOfTekInclusion = DateTime.UtcNow.AddDays(-1),
+                    IsSymptomatic = InfectiousPeriodType.Symptomatic,
+                };
+
+                _logger.LogDebug($"Adding workflowStateEntity # {i}");
+
+                workflowList.Add(workflowStateEntity);
             }
+
+            var bulkConfig = new BulkConfig { SetOutputIdentity = true, BatchSize = 100};
+
+            _logger.LogDebug($"BeginTransactionAsync:");
+            await using var transaction = await _workflowDb.Database.BeginTransactionAsync();
+
+            _logger.LogDebug($"BulkInsertAsync [workflowList]");
+            await _workflowDb.BulkInsertAsync(workflowList, bulkConfig);
+
+            foreach (var entity in workflowList)
+            {
+                _logger.LogDebug($"Generate Teks for TekReleaseWorkflowStateEntity");
+                GenTeks(entity);
+
+                foreach (var tek in entity.Teks)
+                {
+                    tek.OwnerId = entity.Id; // setting FK to match its linked PK that was generated in DB
+                }
+                tekList.AddRange(entity.Teks);
+            }
+
+            _logger.LogDebug($"BulkInsertAsync [tekList]");
+            await _workflowDb.BulkInsertAsync(tekList);
+
+            _logger.LogDebug($"CommitAsync");
+            await transaction.CommitAsync();
         }
 
-        private void GenTeks(long workflowId)
+        private string GenerateUniqueGGDKey(List<TekReleaseWorkflowStateEntity> workflowList)
         {
-            using var dbc = _workflowDb();
-            //Have to load referenced object into new context
-            var owner = dbc.KeyReleaseWorkflowStates.Single(x => x.Id == workflowId);
-            owner.AuthorisedByCaregiver = DateTime.UtcNow;
-            owner.StartDateOfTekInclusion = DateTime.UtcNow.AddDays(-1);
-            owner.IsSymptomatic = InfectiousPeriodType.Symptomatic;
+            var ggdKey = _luhnModNGenerator.Next(_luhnModNConfig.ValueLength);
 
+            if (workflowList.Any(p => p.GGDKey == ggdKey))
+            {
+                return GenerateUniqueGGDKey(workflowList);
+            }
+
+            return ggdKey;
+        }
+
+        private byte[] GenerateUniqueBucketId(List<TekReleaseWorkflowStateEntity> workflowList)
+        {
+            var bucketId = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount);
+
+            if (workflowList.Any(p => p.BucketId == bucketId))
+            {
+                return GenerateUniqueBucketId(workflowList);
+            }
+
+            return bucketId;
+        }
+
+        private byte[] GenerateUniqueConfirmationKey(List<TekReleaseWorkflowStateEntity> workflowList)
+        {
+            var confirmationKey = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount);
+
+            if (workflowList.Any(p => p.ConfirmationKey == confirmationKey))
+            {
+                return GenerateUniqueConfirmationKey(workflowList);
+            }
+
+            return confirmationKey;
+        }
+
+        private void GenTeks(TekReleaseWorkflowStateEntity owner)
+        {
             for (var i = 0; i < _args.TekCountPerWorkflow; i++)
             {
                 var k = new TekEntity
@@ -61,14 +153,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                     Owner = owner,
                     PublishingState = PublishingState.Unpublished,
                     RollingStartNumber = DateTime.UtcNow.Date.ToRollingStartNumber(),
-                    RollingPeriod = _rng.Next(1, UniversalConstants.RollingPeriodRange.Hi),
-                    KeyData = _rng.NextByteArray(UniversalConstants.DailyKeyDataByteCount),
+                    RollingPeriod = _numberGenerator.Next(1, UniversalConstants.RollingPeriodRange.Hi),
+                    KeyData = _numberGenerator.NextByteArray(UniversalConstants.DailyKeyDataByteCount),
                     PublishAfter = DateTime.UtcNow,
                 };
                 owner.Teks.Add(k);
-                dbc.TemporaryExposureKeys.Add(k);
             }
-            dbc.SaveAndCommit();
         }
     }
 }

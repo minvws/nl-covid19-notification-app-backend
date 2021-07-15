@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFra
 {
     public class IksInDbContext : DbContext
     {
-        public IksInDbContext(DbContextOptions options)
+        public IksInDbContext(DbContextOptions<IksInDbContext> options)
             : base(options)
         {
         }
@@ -26,7 +26,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFra
             }
 
             base.OnModelCreating(modelBuilder);
-
         }
     }
 }

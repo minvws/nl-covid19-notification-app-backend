@@ -13,16 +13,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 {
     public class IksImportBatchJob
     {
-
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly IksInDbContext _iksInDbContext;
-        private readonly Func<IksImportCommand> _inboundIksReaderFunc;
+        private readonly IksImportCommand _iksImportCommand;
 
-        public IksImportBatchJob(IUtcDateTimeProvider dateTimeProvider, IksInDbContext iksInDbContext, Func<IksImportCommand> inboundIksReaderFunc)
+        public IksImportBatchJob(IUtcDateTimeProvider dateTimeProvider, IksInDbContext iksInDbContext, IksImportCommand iksImportCommand)
         {
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _iksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
-            _inboundIksReaderFunc = inboundIksReaderFunc ?? throw new ArgumentNullException(nameof(inboundIksReaderFunc));
+            _iksImportCommand = iksImportCommand ?? throw new ArgumentNullException(nameof(iksImportCommand));
         }
 
         public async Task ExecuteAsync()
@@ -39,8 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
         {
             try
             {
-                var processor = _inboundIksReaderFunc();
-                await processor.Execute(item);
+                await _iksImportCommand.Execute(item);
 
                 if (!item.Error)
                 {
@@ -48,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                 }
 
                 _iksInDbContext.Update(item);
-                _iksInDbContext.SaveChanges();
+                await _iksInDbContext.SaveChangesAsync();
             }
             catch (Exception e)
             {

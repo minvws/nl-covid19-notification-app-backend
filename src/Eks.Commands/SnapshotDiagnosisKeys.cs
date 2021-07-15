@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -23,14 +24,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     {
         private readonly SnapshotLoggingExtensions _logger;
         private readonly DkSourceDbContext _dkSourceDbContext;
-        private readonly Func<EksPublishingJobDbContext> _publishingDbContextFactory;
+        private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
         private readonly IInfectiousness _infectiousness;
 
-        public SnapshotDiagnosisKeys(SnapshotLoggingExtensions logger, DkSourceDbContext dkSourceDbContext, Func<EksPublishingJobDbContext> publishingDbContextFactory, IInfectiousness infectiousness)
+        public SnapshotDiagnosisKeys(SnapshotLoggingExtensions logger, DkSourceDbContext dkSourceDbContext, EksPublishingJobDbContext eksPublishingJobDbContext, IInfectiousness infectiousness)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
-            _publishingDbContextFactory = publishingDbContextFactory ?? throw new ArgumentNullException(nameof(publishingDbContextFactory));
+            _eksPublishingJobDbContext = eksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContext));
             _infectiousness = infectiousness ?? throw new ArgumentNullException(nameof(infectiousness));
         }
 
@@ -45,25 +46,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             var index = 0;
             var filteredTekInputCount = 0;
 
-            await using var tx = _dkSourceDbContext.BeginTransaction();
             var (page, filteredResult) = ReadAndFilter(index, PageSize);
 
             while (page.Length > 0)
             {
-                MarkFilteredEntitiesForCleanup(page, filteredResult);
+                await MarkFilteredEntitiesForCleanupAsync(page, filteredResult);
 
-                var db = _publishingDbContextFactory();
                 if (filteredResult.Length > 0)
                 {
-                    await db.BulkInsertAsync2(filteredResult, new SubsetBulkArgs());
+                    await _eksPublishingJobDbContext.BulkInsertWithTransactionAsync(filteredResult, new SubsetBulkArgs());
                 }
 
                 index += page.Length;
                 filteredTekInputCount += filteredResult.Length;
                 (page, filteredResult) = ReadAndFilter(index, PageSize);
             }
-
-            _dkSourceDbContext.SaveAndCommit();
 
             var snapshotEksInputResult = new SnapshotEksInputResult
             {
@@ -77,25 +74,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             return snapshotEksInputResult;
         }
 
-        private void MarkFilteredEntitiesForCleanup(EksCreateJobInputEntity[] allEntities, EksCreateJobInputEntity[] filteredResult)
+        private async Task MarkFilteredEntitiesForCleanupAsync(EksCreateJobInputEntity[] allEntities, EksCreateJobInputEntity[] filteredResult)
         {
-            var leftoverDKIds = allEntities.Except(filteredResult).Select(x => x.TekId).ToArray();
-            if(leftoverDKIds.Any())
+            var leftoverDkIds = allEntities.Except(filteredResult).Select(x => x.TekId).ToArray();
+            if(leftoverDkIds.Any())
             {
-                var dksToMarkForCleanup = _dkSourceDbContext.DiagnosisKeys.Where(x => leftoverDKIds.Contains(x.Id)).ToList();
+                var dksToMarkForCleanup = _dkSourceDbContext.DiagnosisKeys.AsNoTracking().Where(x => leftoverDkIds.Contains(x.Id)).ToList();
                 foreach (var diagnosisKeyEntity in dksToMarkForCleanup)
                 {
                     diagnosisKeyEntity.ReadyForCleanup = true;
                 }
+
+                await _dkSourceDbContext.BulkUpdateAsync(dksToMarkForCleanup);
             }
         }
 
         private (EksCreateJobInputEntity[], EksCreateJobInputEntity[]) ReadAndFilter(int index, int pageSize)
         {
             var page = _dkSourceDbContext.DiagnosisKeys
+                .AsNoTracking()
                 .Where(x => !x.PublishedLocally && (!x.ReadyForCleanup.HasValue || !x.ReadyForCleanup.Value))
                 .OrderBy(x => x.Id)
-                .AsNoTracking()
                 .Skip(index)
                 .Take(pageSize)
                 .Select(x => new EksCreateJobInputEntity

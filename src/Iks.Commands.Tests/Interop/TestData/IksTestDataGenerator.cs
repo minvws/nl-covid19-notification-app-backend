@@ -4,25 +4,26 @@
 
 using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using EfgsReportType = Iks.Protobuf.EfgsReportType;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop.TestData
 {
     public class IksTestDataGenerator
     {
-        private readonly IDbProvider<IksInDbContext> _iksInDbContextProvider;
+        private readonly IksInDbContext _iksInDbContext;
 
         public DateTime BaseTime { get; set; } = DateTime.UtcNow.Date;
 
-        public IksTestDataGenerator(IDbProvider<IksInDbContext> iksInDbContextProvider)
+        public IksTestDataGenerator(DbContextOptions<IksInDbContext> iksInDbContextOptions)
         {
-            _iksInDbContextProvider = iksInDbContextProvider ?? throw new ArgumentNullException(nameof(iksInDbContextProvider));
+            _iksInDbContext = new IksInDbContext(iksInDbContextOptions ?? throw new ArgumentNullException(nameof(iksInDbContextOptions)));
+            _iksInDbContext.Database.EnsureCreated();
         }
 
         public int CreateIks(int iksCount)
@@ -52,9 +53,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
                     //Accepted = 
                 }).ToArray();
 
-            var iksInDb = _iksInDbContextProvider.CreateNew();
-            iksInDb.Received.AddRange(input);
-            iksInDb.SaveChanges();
+            _iksInDbContext.Received.AddRange(input);
+            _iksInDbContext.SaveChanges();
 
             return iksCount;
         }

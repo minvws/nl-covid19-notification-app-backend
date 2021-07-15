@@ -4,24 +4,39 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksInbound
 {
-    public class IksPollingBatchJobTests
+    public class IksPollingBatchJobTests : IDisposable
     {
-        private readonly IDbProvider<IksInDbContext> _iksInDbProvider;
+        private readonly IksInDbContext _iksInDbContext;
+        private static DbConnection connection;
 
         public IksPollingBatchJobTests()
         {
-            _iksInDbProvider = new SqliteInMemoryDbProvider<IksInDbContext>();
+            _iksInDbContext = new IksInDbContext(new DbContextOptionsBuilder<IksInDbContext>().UseSqlite(CreateInMemoryDatabase()).Options);
+            _iksInDbContext.Database.EnsureCreated();
         }
+        private static DbConnection CreateInMemoryDatabase()
+        {
+            connection = new SqliteConnection("Filename=:memory:");
+
+            connection.Open();
+
+            return connection;
+        }
+
+        public void Dispose() => connection.Dispose();
 
         [Fact]
         public async void Tests_that_entire_sequence_of_batches_are_downloaded()
@@ -30,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var downloadedBatches = new List<IksWriteArgs>();
 
             // Assemble: other object
-            var logger = new IksDownloaderLoggingExtensions(new TestLogger<IksDownloaderLoggingExtensions>());
+            var logger = new IksDownloaderLoggingExtensions(new NullLogger<IksDownloaderLoggingExtensions>());
             var now = DateTime.UtcNow;
             var dtp = new Mock<IUtcDateTimeProvider>();
             dtp.Setup(_ => _.Snapshot).Returns(now);
@@ -51,7 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             // Assemble: create the job to be tested
             var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _iksInDbProvider.CreateNew(), new EfgsConfigMock(), logger);
+                _iksInDbContext, new EfgsConfigMock(), logger);
 
             // Act
             await sut.ExecuteAsync();
@@ -70,7 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var downloadedBatches = new List<IksWriteArgs>();
 
             // Assemble: other object
-            var logger = new IksDownloaderLoggingExtensions(new TestLogger<IksDownloaderLoggingExtensions>());
+            var logger = new IksDownloaderLoggingExtensions(new NullLogger<IksDownloaderLoggingExtensions>());
             var now = DateTime.UtcNow;
             var dtp = new Mock<IUtcDateTimeProvider>();
             dtp.Setup(_ => _.Snapshot).Returns(now);
@@ -89,7 +104,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             // Assemble: create the job to be tested
             var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _iksInDbProvider.CreateNew(), new EfgsConfigMock(), logger);
+                _iksInDbContext, new EfgsConfigMock(), logger);
 
             // Act
             await sut.ExecuteAsync();
@@ -107,7 +122,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var downloadedBatches = new List<IksWriteArgs>();
 
             // Assemble: other object
-            var logger = new IksDownloaderLoggingExtensions(new TestLogger<IksDownloaderLoggingExtensions>());
+            var logger = new IksDownloaderLoggingExtensions(new NullLogger<IksDownloaderLoggingExtensions>());
 
             var now = DateTime.UtcNow;
             var dtp = new Mock<IUtcDateTimeProvider>();
@@ -127,7 +142,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             // Assemble: create the job to be tested
             var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _iksInDbProvider.CreateNew(), new EfgsConfigMock(), logger);
+                _iksInDbContext, new EfgsConfigMock(), logger);
 
             // Act
             await sut.ExecuteAsync();
@@ -155,7 +170,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var downloadedBatches = new List<IksWriteArgs>();
 
             // Assemble: other object
-            var logger = new IksDownloaderLoggingExtensions(new TestLogger<IksDownloaderLoggingExtensions>());
+            var logger = new IksDownloaderLoggingExtensions(new NullLogger<IksDownloaderLoggingExtensions>());
             var now = DateTime.UtcNow;
             var dtp = new Mock<IUtcDateTimeProvider>();
             dtp.Setup(_ => _.Snapshot).Returns(now);
@@ -164,14 +179,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 .Callback((IksWriteArgs args) =>
                 {
                     downloadedBatches.Add(args);
-                    using var iksInCtx = _iksInDbProvider.CreateNew();
-                    iksInCtx.Received.Add(new IksInEntity
+                    _iksInDbContext.Received.Add(new IksInEntity
                     {
                         BatchTag = args.BatchTag,
                         Content = args.Content,
                         Created = now
                     });
-                    iksInCtx.SaveChanges();
+                    _iksInDbContext.SaveChanges();
                 });
 
             var datePart = dtp.Object.Snapshot.Date.ToString("yyyyMMdd");
@@ -190,7 +204,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             // Assemble: create the job to be tested
             var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _iksInDbProvider.CreateNew(), new EfgsConfigMock(), logger);
+                _iksInDbContext, new EfgsConfigMock(), logger);
 
             // Act
             await sut.ExecuteAsync();
@@ -209,7 +223,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var downloadedBatches = new List<IksWriteArgs>();
 
             // Assemble: other object
-            var logger = new IksDownloaderLoggingExtensions(new TestLogger<IksDownloaderLoggingExtensions>());
+            var logger = new IksDownloaderLoggingExtensions(new NullLogger<IksDownloaderLoggingExtensions>());
 
             var now = DateTime.UtcNow;
             var dtp = new Mock<IUtcDateTimeProvider>();
@@ -230,7 +244,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             // Assemble: create the job to be tested
             var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
-                _iksInDbProvider.CreateNew(), new EfgsConfigMock(), logger);
+                _iksInDbContext, new EfgsConfigMock(), logger);
 
             // Act - process files for FIRST day
             await sut.ExecuteAsync();

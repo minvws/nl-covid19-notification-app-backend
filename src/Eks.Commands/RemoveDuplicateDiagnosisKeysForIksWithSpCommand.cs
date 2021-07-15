@@ -12,19 +12,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 {
     public class RemoveDuplicateDiagnosisKeysForIksWithSpCommand : IRemoveDuplicateDiagnosisKeysCommand
     {
-        private readonly Func<DkSourceDbContext> _dkSourceDbProvider;
+        private readonly DkSourceDbContext _dkSourceDbContext;
 
-        public RemoveDuplicateDiagnosisKeysForIksWithSpCommand(Func<DkSourceDbContext> dkSourceDbProvider)
+        public RemoveDuplicateDiagnosisKeysForIksWithSpCommand(DkSourceDbContext dkSourceDbContext)
         {
-            _dkSourceDbProvider = dkSourceDbProvider ?? throw new ArgumentNullException(nameof(dkSourceDbProvider));
-
+            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
         }
 
         public async Task ExecuteAsync()
         {
-            await using var context = _dkSourceDbProvider.Invoke();
-            await using var transaction = context.BeginTransaction();
-            context.Database.ExecuteSqlRaw("EXEC dbo.RemoveDuplicateDiagnosisKeysForIks");
+            await using var transaction = _dkSourceDbContext.BeginTransaction();
+            await _dkSourceDbContext.Database.ExecuteSqlRawAsync("EXEC dbo.RemoveDuplicateDiagnosisKeysForIks");
             await transaction.CommitAsync();
         }
     }
