@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Linq;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -131,7 +132,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         public void MoreRealistic()
         {
             // Arrange
-            _contentDbContext.Truncate<ContentEntity>();
+            _contentDbContext.BulkDelete(_contentDbContext.Content.ToList());
 
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());

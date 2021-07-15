@@ -4,8 +4,10 @@
 
 using System;
 using System.Linq;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -61,9 +63,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     return result;
                 }
 
-                result.GivenMercy = _dbContext.Database.ExecuteSqlInterpolated($"DELETE FROM [Content] WHERE [Type] = {ContentTypes.ExposureKeySet} AND [Release] < {cutoff}");
+                result.GivenMercy = zombies.Count;
+                _dbContext.BulkDelete(_dbContext.Content.Where(p=>p.Type == ContentTypes.ExposureKeySet && p.Release < cutoff).ToList());
                 tx.Commit();
-                //Implicit tx
+
                 result.Remaining = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet);
             }
 

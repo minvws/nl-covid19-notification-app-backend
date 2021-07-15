@@ -10,7 +10,6 @@ using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -23,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         private readonly ContentDbContext _contentDbContext;
         private Mock<IManifestConfig> _manifestConfigMock;
 
-        private readonly List<string> _manifestTypes = new List<string>
+        private readonly List<ContentTypes> _manifestTypes = new List<ContentTypes>
         {
             ContentTypes.Manifest,
             ContentTypes.ManifestV2,
@@ -41,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         [InlineData(ContentTypes.ManifestV2)]
         [InlineData(ContentTypes.ManifestV3)]
         [InlineData(ContentTypes.ManifestV4)]
-        public void Remove_Expired_Manifest_By_Type_Should_Leave_One(string manifestTypeName)
+        public void Remove_Expired_Manifest_By_Type_Should_Leave_One(ContentTypes manifestTypeName)
         {
             //Arrange
             _contentDbContext.BulkDelete(_contentDbContext.Content.ToList());
@@ -107,7 +106,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         [InlineData(ContentTypes.ManifestV2)]
         [InlineData(ContentTypes.ManifestV3)]
         [InlineData(ContentTypes.ManifestV4)]
-        public void Remove_Zero_Manifest_By_Type_Should_Not_Crash(string manifestTypeName)
+        public void Remove_Zero_Manifest_By_Type_Should_Not_Crash(ContentTypes manifestTypeName)
         {
             //Arrange
             _contentDbContext.BulkDelete(_contentDbContext.Content.ToList());
@@ -138,7 +137,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             return result;
         }
 
-        private void CreateManifestsForManifestType(string manifestTypeName)
+        private void CreateManifestsForManifestType(ContentTypes manifestTypeName)
         {
             var manifestContent = "This is a Manifest";
             var appConfigContent = "This is an AppConfig";

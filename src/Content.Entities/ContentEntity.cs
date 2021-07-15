@@ -22,6 +22,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entitie
         public byte[] Content { get; set; }
 
         public string ContentTypeName { get; set; } = MediaTypeNames.Application.Zip;
-        public string Type { get; set; }
+        public ContentTypes Type { get; set; }
     }
 }

@@ -22,7 +22,7 @@ using NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi;
 using Xunit;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace Icc.V2.WebApi.Tests
+namespace Icc.v2.WebApi.Tests
 {
     public abstract class WorkflowControllerTests : WebApplicationFactory<Startup>
     {

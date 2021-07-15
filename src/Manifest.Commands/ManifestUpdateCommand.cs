@@ -59,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             await ExecuteV4Async();
         }
 
-        private async Task Execute<T>(Func<Task<T>> build, string contentType) where T : IEquatable<T>
+        private async Task Execute<T>(Func<Task<T>> build, ContentTypes contentType) where T : IEquatable<T>
         {
             var snapshot = _dateTimeProvider.Snapshot;
 
