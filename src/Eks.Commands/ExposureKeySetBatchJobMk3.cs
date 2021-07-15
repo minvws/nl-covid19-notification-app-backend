@@ -241,7 +241,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             {
                 PropertiesToInclude = new[] { nameof(EksCreateJobInputEntity.Used) }
             };
-            await _eksPublishingJobDbContext.BulkUpdateAsync2(_output, bulkArgs);
+            await _eksPublishingJobDbContext.BulkUpdateWithTransactionAsync(_output, bulkArgs);
 
             _eksEngineResult.OutputCount += _output.Count;
 

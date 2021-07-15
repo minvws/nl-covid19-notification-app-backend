@@ -76,7 +76,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             while (page.Count > 0)
             {
-                await _dkSourceDbContext.BulkInsertAsync2(page.ToList(), new SubsetBulkArgs());
+                await _dkSourceDbContext.BulkInsertWithTransactionAsync(page.ToList(), new SubsetBulkArgs());
 
                 index += page.Count;
                 page = ReadFromWorkflow(index, PageSize);
@@ -162,7 +162,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             var items = q4.Select(x => x.DiagnosisKey).ToList();
             _result.DkCount += items.Count;
 
-            await _dkSourceDbContext.BulkInsertAsync2(items, new SubsetBulkArgs());
+            await _dkSourceDbContext.BulkInsertWithTransactionAsync(items, new SubsetBulkArgs());
         }
 
         private async Task MarkTeksAsPublishedAsync(long[] used)
@@ -179,7 +179,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 i.PublishingState = PublishingState.Published;
             }
 
-            await _workflowDbContext.BulkUpdateAsync2(zap, new SubsetBulkArgs());
+            await _workflowDbContext.BulkUpdateWithTransactionAsync(zap, new SubsetBulkArgs());
         }
 
         private DiagnosisKeyInputEntity[] ReadDkPage()

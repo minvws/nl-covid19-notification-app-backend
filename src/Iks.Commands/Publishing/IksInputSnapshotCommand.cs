@@ -41,12 +41,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 
             const int PageSize = 10000;
             var index = 0;
-            
+
             var page = Read(index, PageSize);
 
             while (page.Count > 0)
             {
-                await _iksPublishingJobDbContext.BulkInsertAsync2(page, new SubsetBulkArgs());
+                await _iksPublishingJobDbContext.BulkInsertWithTransactionAsync(page, new SubsetBulkArgs());
 
                 index += page.Count;
                 page = Read(index, PageSize);
@@ -88,7 +88,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             {
                 DkId = x.Dkid,
                 DaysSinceSymptomsOnset = x.DaysSinceSymptomsOnset.Value,
-                TransmissionRiskLevel = TransmissionRiskLevel.None, //Remove this isn't in used in any calculations
+                TransmissionRiskLevel = TransmissionRiskLevel.None, //Remove; this isn't in used in any calculations
                 ReportType = ReportType.ConfirmedTest, //TODO move setting this to a DK Processors later.
                 DailyKey = x.DailyKey,
                 CountriesOfInterest = string.Join(",", _config.CountriesOfInterest)

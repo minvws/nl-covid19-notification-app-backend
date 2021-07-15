@@ -68,9 +68,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                 {
                     Created = _dateTimeProvider.Snapshot.Date,
                     ValidUntil = _workflowTime.Expiry(_dateTimeProvider.Snapshot),
-                    GGDKey = _luhnModNGenerator.Next(_luhnModNConfig.ValueLength),
-                    BucketId = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount),
-                    ConfirmationKey = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount),
+                    GGDKey = GenerateUniqueGGDKey(workflowList),
+                    BucketId = GenerateUniqueBucketId(workflowList),
+                    ConfirmationKey = GenerateUniqueConfirmationKey(workflowList),
                     AuthorisedByCaregiver = DateTime.UtcNow,
                     StartDateOfTekInclusion = DateTime.UtcNow.AddDays(-1),
                     IsSymptomatic = InfectiousPeriodType.Symptomatic,
@@ -106,6 +106,42 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
 
             _logger.LogDebug($"CommitAsync");
             await transaction.CommitAsync();
+        }
+
+        private string GenerateUniqueGGDKey(List<TekReleaseWorkflowStateEntity> workflowList)
+        {
+            var ggdKey = _luhnModNGenerator.Next(_luhnModNConfig.ValueLength);
+
+            if (workflowList.Any(p => p.GGDKey == ggdKey))
+            {
+                return GenerateUniqueGGDKey(workflowList);
+            }
+
+            return ggdKey;
+        }
+
+        private byte[] GenerateUniqueBucketId(List<TekReleaseWorkflowStateEntity> workflowList)
+        {
+            var bucketId = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount);
+
+            if (workflowList.Any(p => p.BucketId == bucketId))
+            {
+                return GenerateUniqueBucketId(workflowList);
+            }
+
+            return bucketId;
+        }
+
+        private byte[] GenerateUniqueConfirmationKey(List<TekReleaseWorkflowStateEntity> workflowList)
+        {
+            var confirmationKey = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount);
+
+            if (workflowList.Any(p => p.ConfirmationKey == confirmationKey))
+            {
+                return GenerateUniqueConfirmationKey(workflowList);
+            }
+
+            return confirmationKey;
         }
 
         private void GenTeks(TekReleaseWorkflowStateEntity owner)

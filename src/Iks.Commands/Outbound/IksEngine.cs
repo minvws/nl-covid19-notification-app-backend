@@ -190,7 +190,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             {
                 PropertiesToInclude = new[] { nameof(IksCreateJobInputEntity.Used) }
             };
-            await _publishingDbContext.BulkUpdateAsync2(_output, bulkArgs);
+            await _publishingDbContext.BulkUpdateWithTransactionAsync(_output, bulkArgs);
 
             _engineResult.OutputCount += _output.Count;
 
