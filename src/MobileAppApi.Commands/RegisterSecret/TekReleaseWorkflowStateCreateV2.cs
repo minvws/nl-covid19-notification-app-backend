@@ -120,7 +120,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             return errors.Any(x =>
                 x.Number == 2601
                 && x.Message.Contains("TekReleaseWorkflowState")
-                && (x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.LabConfirmationId))
+                && (x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.GGDKey))
                     || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.ConfirmationKey))
                     || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.BucketId)))
             );
