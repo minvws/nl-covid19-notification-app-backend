@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFrame
 {
     public class IksOutDbContext : DbContext
     {
-        public IksOutDbContext(DbContextOptions options)
+        public IksOutDbContext(DbContextOptions<IksOutDbContext> options)
             : base(options)
         {
         }

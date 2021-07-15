@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -79,9 +79,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var c50 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
             run.Add(() => c50.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c55 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
-            run.Add(() => c55.Execute());
-
             var c56 = serviceProvider.GetRequiredService<RemoveDiagnosisKeysReadyForCleanup>();
             run.Add(() => c56.ExecuteAsync().GetAwaiter().GetResult());
 
@@ -91,7 +88,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var c35 = serviceProvider.GetRequiredService<IksEngine>();
             run.Add(() => c35.ExecuteAsync().GetAwaiter().GetResult());
 
-            //TODO write EFGS run.
+            var c55 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
+            run.Add(() => c55.ExecuteAsync().GetAwaiter().GetResult());
 
             foreach (var i in run)
             {
@@ -102,26 +100,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
             //Databases
-            services.AddTransient(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow, false));
-            services.AddTransient(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content, false));
-            services.AddTransient(x => x.CreateDbContext(y => new EksPublishingJobDbContext(y), DatabaseConnectionStringNames.EksPublishing, false));
-            services.AddTransient(x => x.CreateDbContext(y => new StatsDbContext(y), DatabaseConnectionStringNames.Stats, false));
-            services.AddTransient(x => x.CreateDbContext(y => new DkSourceDbContext(y), DatabaseConnectionStringNames.DkSource, false));
-            services.AddTransient(x => x.CreateDbContext(y => new IksInDbContext(y), DatabaseConnectionStringNames.IksIn, false));
-            services.AddTransient(x => x.CreateDbContext(y => new IksPublishingJobDbContext(y), DatabaseConnectionStringNames.IksPublishing, false));
-            services.AddTransient(x => x.CreateDbContext(y => new IksOutDbContext(y), DatabaseConnectionStringNames.IksOut, false));
-
-            services.AddTransient<Func<WorkflowDbContext>>(x => x.GetService<WorkflowDbContext>);
-            services.AddTransient<Func<ContentDbContext>>(x => x.GetService<ContentDbContext>);
-            services.AddTransient<Func<EksPublishingJobDbContext>>(x => x.GetService<EksPublishingJobDbContext>);
-            services.AddTransient<Func<StatsDbContext>>(x => x.GetService<StatsDbContext>);
-            services.AddTransient<Func<DkSourceDbContext>>(x => x.GetService<DkSourceDbContext>);
-            services.AddTransient<Func<IksInDbContext>>(x => x.GetService<IksInDbContext>);
-            services.AddTransient<Func<IksOutDbContext>>(x => x.GetService<IksOutDbContext>);
-            services.AddTransient<Func<IksPublishingJobDbContext>>(x => x.GetService<IksPublishingJobDbContext>);
-
-            services.AddSingleton<IWrappedEfExtensions, SqlServerWrappedEfExtensions>();
-
+            services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
+            services.AddDbContext<DkSourceDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.DkSource)));
+            services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
+            services.AddDbContext<IksInDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksIn)));
+            services.AddDbContext<IksOutDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksOut)));
+            services.AddDbContext<IksPublishingJobDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksPublishing)));
+            services.AddDbContext<EksPublishingJobDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.EksPublishing)));
+            services.AddDbContext<StatsDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Stats)));
 
             //Services
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();

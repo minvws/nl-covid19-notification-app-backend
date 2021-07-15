@@ -55,6 +55,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Tests
             const int maxValue = 5;
 
             Assert.Throws<ArgumentOutOfRangeException>(() => random.Next(minValue, maxValue));
-        } //ncrunch: no coverage
+        }
     }
 }

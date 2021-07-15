@@ -6,62 +6,64 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading.Tasks;
+using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 {
-    public abstract class ReSignerTest : IDisposable
+    public abstract class ReSignerTest
     {
+        private readonly ContentDbContext _contentDbContext;
 
-        private readonly IDbProvider<ContentDbContext> _contentDbProvider;
-
-        protected ReSignerTest(IDbProvider<ContentDbContext> contentDbProvider)
+        protected ReSignerTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _contentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
+            _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
+            _contentDbContext.Database.EnsureCreated();
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(ReSignerTest))]
-        public void ResignManifest()
+        public async Task ResignManifest()
         {
+            // Arrange
+            await _contentDbContext.BulkDeleteAsync(_contentDbContext.Content.ToList());
+
             var lf = new LoggerFactory();
             var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
 
             var d = DateTime.Now;
 
-            using var testContentStream = ResourcesHook.GetManifestResourceStream("Resources.ResignTestManifest.zip");
+            await using var testContentStream = ResourcesHook.GetManifestResourceStream("Resources.ResignTestManifest.zip");
 
-            using var m = new MemoryStream();
-            testContentStream.CopyTo(m);
+            await using var m = new MemoryStream();
+            await testContentStream.CopyToAsync(m);
             var zipContent = m.ToArray();
 
             var m1 = new ContentEntity { Content = zipContent, PublishingId = "1", ContentTypeName = "Meh", Type = ContentTypes.Manifest, Created = d, Release = d };
 
-            var dbc = _contentDbProvider.CreateNew();
-            dbc.Content.AddRange(new[] {
+            await _contentDbContext.Content.AddRangeAsync(new[] {
                 m1,
                 new ContentEntity { Content = new byte[0], PublishingId = "2", ContentTypeName = "Meh", Type = ContentTypes.AppConfig, Created = d, Release = d },
                 new ContentEntity { Content = new byte[0], PublishingId = "3", ContentTypeName = "Meh", Type = ContentTypes.AppConfigV2, Created = d, Release = d },
                 new ContentEntity { Content = new byte[0], PublishingId = "4", ContentTypeName = "Meh", Type = ContentTypes.ExposureKeySet, Created = d, Release = d },
                 new ContentEntity { Content = new byte[0], PublishingId = "5", ContentTypeName = "Meh", Type = ContentTypes.ExposureKeySetV2, Created = d, Release = d },
-                });
+            });
 
-            dbc.SaveChanges();
+            await _contentDbContext.SaveChangesAsync();
 
-            var resigner = new NlContentResignCommand(_contentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
-            resigner.ExecuteAsync(ContentTypes.Manifest, ContentTypes.ManifestV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
+            var resigner = new NlContentResignCommand(_contentDbContext, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
+            await resigner.ExecuteAsync(ContentTypes.Manifest, ContentTypes.ManifestV2, ZippedContentEntryNames.Content);
 
             //check the numbers
-            Assert.Equal(6, dbc.Content.Count());
+            Assert.Equal(6, _contentDbContext.Content.Count());
 
-            var m2 = dbc.Content.Single(x => x.PublishingId == "1" && x.Type == ContentTypes.ManifestV2);
+            var m2 = _contentDbContext.Content.Single(x => x.PublishingId == "1" && x.Type == ContentTypes.ManifestV2);
 
             Assert.Equal(m1.Created, m2.Created);
             Assert.Equal(m1.Release, m2.Release);
@@ -77,22 +79,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(ReSignerTest))]
-        public void Re_sign_all_existing_earlier_content()
+        public async Task Re_sign_all_existing_earlier_content()
         {
+            // Arrange
+            await _contentDbContext.BulkDeleteAsync(_contentDbContext.Content.ToList());
+
             var lf = new LoggerFactory();
             var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
 
             //Add some db rows to Content
-            var dbc = _contentDbProvider.CreateNew();
-
             var d = DateTime.Now;
             var laterDate = d.AddDays(1);
             var publishingId = "1";
 
-            using var testContentStream = ResourcesHook.GetManifestResourceStream("Resources.ResignAppConfig.zip");
-            using var m = new MemoryStream();
-            testContentStream.CopyTo(m);
+            await using var testContentStream = ResourcesHook.GetManifestResourceStream("Resources.ResignAppConfig.zip");
+            await using var m = new MemoryStream();
+            await testContentStream.CopyToAsync(m);
             var zipContent = m.ToArray();
 
             //Adding identical content items
@@ -100,23 +102,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             var sourceAppConfigContent2 = new ContentEntity { Content = zipContent, PublishingId = publishingId, ContentTypeName = ".", Type = ContentTypes.AppConfig, Created = d.AddMilliseconds(2), Release = laterDate };
             var sourceAppConfigContent3 = new ContentEntity { Content = zipContent, PublishingId = publishingId, ContentTypeName = ".", Type = ContentTypes.AppConfig, Created = d.AddMilliseconds(3), Release = laterDate };
 
-            dbc.Content.AddRange(
+            await _contentDbContext.Content.AddRangeAsync(
                 sourceAppConfigContent1,
                 sourceAppConfigContent2,
                 sourceAppConfigContent3
-                );
+            );
 
-            dbc.SaveChanges();
+            await _contentDbContext.SaveChangesAsync();
 
-            Assert.Equal(3, dbc.Content.Count());
+            Assert.Equal(3, _contentDbContext.Content.Count());
 
-            var resigner = new NlContentResignCommand(_contentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
-            resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
+            var resigner = new NlContentResignCommand(_contentDbContext, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
+            await resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content);
 
             //check the numbers
-            Assert.Equal(6, dbc.Content.Count());
+            Assert.Equal(6, _contentDbContext.Content.Count());
 
-            var resignedAppConfigContent = dbc.Content.Where(x => x.PublishingId == publishingId && x.Type == ContentTypes.AppConfigV2);
+            var resignedAppConfigContent = _contentDbContext.Content.Where(x => x.PublishingId == publishingId && x.Type == ContentTypes.AppConfigV2);
 
             var originalContentStream = new MemoryStream(zipContent);
             using var originalZipArchive = new ZipArchive(originalContentStream);
@@ -133,28 +135,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             }
 
             //Repeating should have no effect
-            resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
-            Assert.Equal(6, dbc.Content.Count());
+            await resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content);
+            Assert.Equal(6, _contentDbContext.Content.Count());
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(ReSignerTest))]
-        public void Re_sign_content_that_does_not_already_have_an_equivalent_resigned_entry()
+        public async Task Re_sign_content_that_does_not_already_have_an_equivalent_resigned_entry()
         {
+            // Arrange
+            await _contentDbContext.BulkDeleteAsync(_contentDbContext.Content.ToList());
+
             var lf = new LoggerFactory();
             var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
             var resignerLogger = new ResignerLoggingExtensions(lf.CreateLogger<ResignerLoggingExtensions>());
 
             //Add some db rows to Content
-            var dbc = _contentDbProvider.CreateNew();
-
             var d = DateTime.Now;
             var laterDate = d.AddDays(1);
             var publishingId = "1";
 
-            using var testContentStream = ResourcesHook.GetManifestResourceStream("Resources.ResignAppConfig.zip");
-            using var m = new MemoryStream();
-            testContentStream.CopyTo(m);
+            await using var testContentStream = ResourcesHook.GetManifestResourceStream("Resources.ResignAppConfig.zip");
+            await using var m = new MemoryStream();
+            await testContentStream.CopyToAsync(m);
             var zipContent = m.ToArray();
 
             //Adding identical content items
@@ -162,23 +164,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             var sourceAppConfigContent2 = new ContentEntity { Content = zipContent, PublishingId = publishingId, ContentTypeName = ".", Type = ContentTypes.AppConfig, Created = d, Release = laterDate };
             var sourceAppConfigContent3 = new ContentEntity { Content = zipContent, PublishingId = publishingId, ContentTypeName = ".", Type = ContentTypes.AppConfig, Created = d, Release = laterDate };
 
-            dbc.Content.AddRange(
+            await _contentDbContext.Content.AddRangeAsync(
                 sourceAppConfigContent1,
                 sourceAppConfigContent2,
                 sourceAppConfigContent3
-                );
+            );
 
-            dbc.SaveChanges();
+            await _contentDbContext.SaveChangesAsync();
 
-            Assert.Equal(3, dbc.Content.Count());
+            Assert.Equal(3, _contentDbContext.Content.Count());
 
-            var resigner = new NlContentResignCommand(_contentDbProvider.CreateNew, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
-            resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
+            var resigner = new NlContentResignCommand(_contentDbContext, TestSignerHelpers.CreateCmsSignerEnhanced(lf), resignerLogger);
+            await resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content);
 
             //check the numbers
-            Assert.Equal(4, dbc.Content.Count());
+            Assert.Equal(4, _contentDbContext.Content.Count());
 
-            var resignedAppConfigContent = dbc.Content.Where(x => x.PublishingId == publishingId && x.Type == ContentTypes.AppConfigV2);
+            var resignedAppConfigContent = _contentDbContext.Content.Where(x => x.PublishingId == publishingId && x.Type == ContentTypes.AppConfigV2);
 
             var originalContentStream = new MemoryStream(zipContent);
             using var originalZipArchive = new ZipArchive(originalContentStream);
@@ -196,13 +198,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             }
 
             //Repeating should have no effect
-            resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content).GetAwaiter().GetResult();
-            Assert.Equal(4, dbc.Content.Count());
-        }
-
-        public void Dispose()
-        {
-            _contentDbProvider.Dispose();
+            await resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content);
+            Assert.Equal(4, _contentDbContext.Content.Count());
         }
     }
 }

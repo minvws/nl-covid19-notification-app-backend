@@ -6,33 +6,32 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NCrunch.Framework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 {
-    public abstract class ManifestV3CreationTest : IDisposable
+    public abstract class ManifestV3CreationTest
     {
+        private readonly ContentDbContext _contentDbContext;
 
-        private readonly IDbProvider<ContentDbContext> _contentDbProvider;
-
-        protected ManifestV3CreationTest(IDbProvider<ContentDbContext> contentDbProvider)
+        protected ManifestV3CreationTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _contentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
+            _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
+            _contentDbContext.Database.EnsureCreated();
         }
 
         [Fact]
-        [ExclusivelyUses(nameof(ManifestV3CreationTest))]
-        public void ManifestUpdateCommand_ExecuteForV3()
+        public async Task ManifestUpdateCommand_ExecuteForV3()
         {
             //Arrange
             PopulateContentDb();
@@ -40,24 +39,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var sut = CompileManifestUpdateCommand();
 
             //Act
-            sut.ExecuteV3Async().GetAwaiter().GetResult();
+            await sut.ExecuteV3Async();
 
-            var database = _contentDbProvider.CreateNew();
-            var result = database.SafeGetLatestContentAsync(ContentTypes.ManifestV3, DateTime.Now).GetAwaiter().GetResult();
+            var result = _contentDbContext.SafeGetLatestContentAsync(ContentTypes.ManifestV3, DateTime.Now).GetAwaiter().GetResult();
 
             //Assert
             Assert.NotNull(result);
 
-            using var zipFileInMemory = new MemoryStream();
+            await using var zipFileInMemory = new MemoryStream();
             zipFileInMemory.Write(result.Content, 0, result.Content.Length);
-            using (var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false))
-            {
-                var manifestContent = Encoding.ASCII.GetString(zipFileContent.ReadEntry(ZippedContentEntryNames.Content));
-                var correctResLocation = manifestContent.IndexOf("TheV3ResourceBundleId");
-                var wrongResLocation = manifestContent.IndexOf("TheWrongResourceBundleId");
-                Assert.True(correctResLocation > 0);
-                Assert.True(wrongResLocation == -1);
-            }
+            using var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false);
+            var manifestContent = Encoding.ASCII.GetString(zipFileContent.ReadEntry(ZippedContentEntryNames.Content));
+            var correctResLocation = manifestContent.IndexOf("TheV3ResourceBundleId", StringComparison.Ordinal);
+            var wrongResLocation = manifestContent.IndexOf("TheWrongResourceBundleId", StringComparison.Ordinal);
+            Assert.True(correctResLocation > 0);
+            Assert.True(wrongResLocation == -1);
         }
 
         private ManifestUpdateCommand CompileManifestUpdateCommand()
@@ -66,7 +62,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var lf = new LoggerFactory();
             var dateTimeProvider = new StandardUtcDateTimeProvider();
             var jsonSerialiser = new StandardJsonSerializer();
-            var entityFormatterMock = new Mock<IContentEntityFormatter>();
 
             Func<IContentEntityFormatter> formatterForV3 = () =>
                 new StandardContentEntityFormatter(
@@ -78,18 +73,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
             var result = new ManifestUpdateCommand(
                 new ManifestV2Builder(
-                    _contentDbProvider.CreateNew(),
+                    _contentDbContext,
                     eksConfigMock.Object,
                     dateTimeProvider),
                 new ManifestV3Builder(
-                    _contentDbProvider.CreateNew(),
+                    _contentDbContext,
                     eksConfigMock.Object,
                     dateTimeProvider),
                 new ManifestV4Builder(
-                    _contentDbProvider.CreateNew(),
+                    _contentDbContext,
                     eksConfigMock.Object,
                     dateTimeProvider),
-                _contentDbProvider.CreateNew,
+                _contentDbContext,
                 new ManifestUpdateCommandLoggingExtensions(lf.CreateLogger<ManifestUpdateCommandLoggingExtensions>()),
                 dateTimeProvider,
                 jsonSerialiser,
@@ -101,11 +96,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
         private void PopulateContentDb()
         {
-            var database = _contentDbProvider.CreateNew();
             var yesterday = DateTime.Now.AddDays(-1);
             var content = "This is a ResourceBundleV3";
 
-            database.Content.AddRange(new[]
+            _contentDbContext.Content.AddRange(new[]
             {
                 new ContentEntity{
                     Content = Encoding.ASCII.GetBytes(content),
@@ -127,12 +121,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
                 }
             });
 
-            database.SaveChanges();
-        }
-
-        public void Dispose()
-        {
-            _contentDbProvider.Dispose();
+            _contentDbContext.SaveChanges();
         }
     }
 }

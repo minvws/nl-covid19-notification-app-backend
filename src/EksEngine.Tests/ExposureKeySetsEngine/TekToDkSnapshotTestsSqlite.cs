@@ -2,9 +2,11 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Data.Common;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestFramework;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySetsEngine
@@ -12,11 +14,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     [Trait("db", "mem")]
     public class TekToDkSnapshotTestsSqlite : TekToDkSnapshotTests
     {
+        private static DbConnection _connection;
+
         public TekToDkSnapshotTestsSqlite() : base(
-            new SqliteInMemoryDbProvider<WorkflowDbContext>(),
-            new SqliteInMemoryDbProvider<DkSourceDbContext>(),
-            new SqliteWrappedEfExtensions()
+            new DbContextOptionsBuilder<WorkflowDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
+            new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlite(CreateInMemoryDatabase()).Options
         )
         { }
+
+        private static DbConnection CreateInMemoryDatabase()
+        {
+            _connection = new SqliteConnection("Filename=:memory:");
+            _connection.Open();
+            return _connection;
+        }
+
+        public void Dispose() => _connection.Dispose();
     }
 }

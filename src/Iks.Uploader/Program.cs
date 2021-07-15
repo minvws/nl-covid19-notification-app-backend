@@ -4,6 +4,7 @@
 
 using System;
 using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -50,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddTransient(x => x.CreateDbContext(y => new IksOutDbContext(y), DatabaseConnectionStringNames.IksOut, false));
+            services.AddDbContext<IksOutDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksOut)));
 
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IEfgsConfig, EfgsConfig>();

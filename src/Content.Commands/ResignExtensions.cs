@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
             services.AddTransient(x =>
                new NlContentResignCommand(
-                    x.GetRequiredService<Func<ContentDbContext>>(),
+                    x.GetRequiredService<ContentDbContext>(),
                     new CmsSignerEnhanced(
                         new LocalMachineStoreCertificateProvider(
                             new LocalMachineStoreCertificateProviderConfig(

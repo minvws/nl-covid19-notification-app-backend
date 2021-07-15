@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -26,7 +28,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     /// </summary>
     public sealed class ExposureKeySetBatchJobMk3
     {
-        private readonly IWrappedEfExtensions _sqlCommands;
         private readonly IEksConfig _eksConfig;
         private readonly IEksBuilder _setBuilder;
         private readonly IEksStuffingGeneratorMk2 _eksStuffingGenerator;
@@ -47,13 +48,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private bool _fired;
         private readonly Stopwatch _buildEksStopwatch = new Stopwatch();
-        private readonly Func<EksPublishingJobDbContext> _publishingDbContextFac;
+        private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
 
-        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, Func<EksPublishingJobDbContext> publishingDbContextFac, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys, IWrappedEfExtensions sqlCommands)
+        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, EksPublishingJobDbContext eksPublishingJobDbContext, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys)
         {
             _eksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
             _setBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
-            _publishingDbContextFac = publishingDbContextFac ?? throw new ArgumentNullException(nameof(publishingDbContextFac));
+            _eksPublishingJobDbContext = eksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContext));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _eksStuffingGenerator = eksStuffingGenerator ?? throw new ArgumentNullException(nameof(eksStuffingGenerator));
             _snapshotter = snapshotter;
@@ -63,7 +64,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _output = new List<EksCreateJobInputEntity>(_eksConfig.TekCountMax);
             _writeStuffingToDiagnosisKeys = writeStuffingToDiagnosisKeys ?? throw new ArgumentNullException(nameof(writeStuffingToDiagnosisKeys));
             _jobName = $"ExposureKeySetsJob_{_dateTimeProvider.Snapshot:u}".Replace(" ", "_").Replace(":", "_");
-            _sqlCommands = sqlCommands ?? throw new ArgumentNullException(nameof(sqlCommands));
         }
 
         public async Task<EksEngineResult> ExecuteAsync()
@@ -116,17 +116,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private async Task<int> GetTransmissionRiskNoneCountAsync()
         {
-            await using var dbc = _publishingDbContextFac();
-            return dbc.EksInput.Count(x => x.TransmissionRiskLevel == TransmissionRiskLevel.None);
+            return await _eksPublishingJobDbContext.EksInput.CountAsync(x => x.TransmissionRiskLevel == TransmissionRiskLevel.None);
         }
 
         private async Task ClearJobTablesAsync()
         {
             _logger.WriteCleartables();
 
-            var dbc = _publishingDbContextFac();
-            await _sqlCommands.TruncateTableAsync(dbc, TableNames.EksEngineInput);
-            await _sqlCommands.TruncateTableAsync(dbc, TableNames.EksEngineOutput);
+            await _eksPublishingJobDbContext.TruncateAsync<EksCreateJobInputEntity>();
+            await _eksPublishingJobDbContext.TruncateAsync<EksCreateJobOutputEntity>();
         }
 
         private async Task StuffAsync()
@@ -137,8 +135,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 return;
             }
 
-            await using var dbc = _publishingDbContextFac();
-            var tekCount = dbc.EksInput.Count(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None);
+            var tekCount = _eksPublishingJobDbContext.EksInput.Count(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None);
 
             var stuffingCount = tekCount < _eksConfig.TekCountMin ? _eksConfig.TekCountMin - tekCount : 0;
             if (stuffingCount == 0)
@@ -149,18 +146,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
             _eksEngineResult.StuffingCount = stuffingCount;
 
-
-            //TODO Flat distributions by default. If the default changes, delegate to interfaces.
-            //TODO Any weighting of these distributions with current data will be done here.
-            //TODO If there will never be a weighted version, move this inside the generator.
             var stuffing = _eksStuffingGenerator.Execute(stuffingCount);
-
             _logger.WriteStuffingRequired(stuffing.Length);
 
-            await using var tx = dbc.BeginTransaction();
-            await dbc.EksInput.AddRangeAsync(stuffing);
-            dbc.SaveAndCommit();
-
+            await _eksPublishingJobDbContext.BulkInsertAsync(stuffing);
             _logger.WriteStuffingAdded();
         }
 
@@ -226,7 +215,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
             var content = await _setBuilder.BuildAsync(args);
 
-            var e = new EksCreateJobOutputEntity
+            var eksCreateJobOutputEntity = new EksCreateJobOutputEntity
             {
                 Region = DefaultValues.Region,
                 Release = _eksEngineResult.Started,
@@ -234,15 +223,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 Content = content,
             };
 
-            _logger.WriteWritingCurrentEks(e.CreatingJobQualifier);
+            _logger.WriteWritingCurrentEks(eksCreateJobOutputEntity.CreatingJobQualifier);
 
-
-            await using (var dbc = _publishingDbContextFac())
-            {
-                await using var tx = dbc.BeginTransaction();
-                await dbc.AddAsync(e);
-                dbc.SaveAndCommit();
-            }
+            await using var tx = _eksPublishingJobDbContext.BeginTransaction();
+            await _eksPublishingJobDbContext.AddAsync(eksCreateJobOutputEntity);
+            _eksPublishingJobDbContext.SaveAndCommit();
 
             _logger.WriteMarkTekAsUsed();
 
@@ -252,14 +237,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             }
 
             //Could be 750k in this hit
-            await using (var dbc2 = _publishingDbContextFac())
+            var bulkArgs = new SubsetBulkArgs
             {
-                var bargs = new SubsetBulkArgs
-                {
-                    PropertiesToInclude = new[] { nameof(EksCreateJobInputEntity.Used) }
-                };
-                await dbc2.BulkUpdateAsync2(_output, bargs); //TX
-            }
+                PropertiesToInclude = new[] { nameof(EksCreateJobInputEntity.Used) }
+            };
+            await _eksPublishingJobDbContext.BulkUpdateWithTransactionAsync(_output, bulkArgs);
 
             _eksEngineResult.OutputCount += _output.Count;
 
@@ -271,8 +253,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         {
             _logger.WriteStartReadPage(skip, take);
 
-            using var dbc = _publishingDbContextFac();
-            var unFilteredResult = dbc.EksInput
+            var unFilteredResult = _eksPublishingJobDbContext.EksInput
+                .AsNoTracking()
                 .OrderBy(x => x.KeyData)
                 .ThenBy(x => x.Id)
                 .Skip(skip)
