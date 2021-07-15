@@ -6,9 +6,6 @@
             <p class="text-gray-700 mt-4 mb-8">Help de index anderen te waarschuwen met
                 de {{titleService.getAppTitle()}}
                 app</p>
-            <a (click)="authorize()" title="Login met uw GGD account" class="btn btn-primary w-full">
-                Inloggen
-            </a>
             <div class="bg-red-300 px-5 py-4 rounded mt-8 text-center w-full" *ngIf="error_code > 0">
                 Uw account heeft momenteel geen toegang tot het CoronaMelder Portaal. Neem contact op met uw technisch beheerder.
             </div>
