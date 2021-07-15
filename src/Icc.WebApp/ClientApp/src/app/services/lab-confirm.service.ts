@@ -6,7 +6,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { AuthenticationService } from './authentication.service';
 import { AppConfigService} from './app-config.service';
 
 
@@ -15,7 +14,6 @@ import { AppConfigService} from './app-config.service';
 })
 export class LabConfirmService {
   constructor(private readonly http: HttpClient,
-    private readonly authenticationService: AuthenticationService,
     private readonly appConfigService: AppConfigService) {
     }
 
@@ -34,9 +32,6 @@ export class LabConfirmService {
       'Symptomatic': symptomatic
     };
     const headers = {
-      headers: {
-        'Authorization': 'Bearer ' + this.authenticationService.currentUserValue.authData
-      }
     };
 
     return this.http.put(serviceUrl, this.data, headers).pipe(catchError(LabConfirmService.errorHandler));

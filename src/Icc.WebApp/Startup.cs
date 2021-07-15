@@ -3,15 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,33 +17,22 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.Exte
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Code;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Handlers;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Validators;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Config;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
-using TheIdentityHub.AspNetCore.Authentication;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
 {
     public class Startup
     {
-        private readonly bool _isDev;
-        private readonly bool _useTestJwtClaims;
         private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public Startup(IConfiguration configuration, IWebHostEnvironment env)
+        public Startup(IConfiguration configuration)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _webHostEnvironment = env;
-            _isDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
-            _useTestJwtClaims = !env.IsProduction();
         }
-
-
+        
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -72,12 +57,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
             services.AddTransient<IAuthCodeGenerator, AuthCodeGenerator>();
             services.AddSingleton<IAuthCodeService, AuthCodeService>();
 
-            services.AddScoped<HttpGetLogoutCommand>();
-            services.AddScoped<HttpGetUserClaimCommand>();
-            services.AddScoped<HttpPostAuthorizationTokenCommand>();
-            services.AddScoped<HttpGetAuthorisationRedirectCommand>();
-            services.AddScoped<HttpGetAccessDeniedCommand>();
-
             services.AddSingleton<IIccPortalConfig, IccPortalConfig>();
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
             services.AddTransient<ILuhnModNConfig, LuhnModNConfig>();
@@ -89,17 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
             services.AddSingleton<IAuthCodeService, AuthCodeService>();
             services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
             services.AddCors();
-
-            if (_useTestJwtClaims)
-            {
-                services.AddTransient<IJwtClaimValidator, TestJwtClaimValidator>();
-                services.AddSingleton<TestJwtGeneratorService>();
-            }
-            else
-            {
-                services.AddTransient<IJwtClaimValidator, JwtClaimValidator>();
-            }
-
+            
             services.AddDistributedSqlServerCache(options =>
             {
                 options.ConnectionString = _configuration.GetConnectionString(DatabaseConnectionStringNames.IccDistMemCache);
@@ -117,9 +86,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
                 options.HttpOnly = HttpOnlyPolicy.Always;
                 options.Secure = CookieSecurePolicy.Always;
             });
-
-            StartupIdentityHub(services);
-            StartupAuthenticationScheme(services.AddAuthentication(JwtAuthenticationHandler.SchemeName));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -161,8 +127,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
             }
 
             app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -181,50 +145,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
                 {
                     spa.UseAngularCliServer(npmScript: "start");
                 }
-            });
-        }
-
-        private void StartupAuthenticationScheme(AuthenticationBuilder authBuilder)
-        {
-            authBuilder.AddScheme<AuthenticationSchemeOptions, JwtAuthenticationHandler>(
-                JwtAuthenticationHandler.SchemeName, null);
-        }
-        private void StartupIdentityHub(IServiceCollection services)
-        {
-            var iccIdentityHubConfig = new IccIdentityHubConfig(_configuration);
-
-            services.AddAuthentication(auth =>
-                {
-                    auth.DefaultChallengeScheme = TheIdentityHubDefaults.AuthenticationScheme;
-                    auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                })
-                .AddCookie()
-                .AddTheIdentityHubAuthentication(options =>
-                {
-                    options.TheIdentityHubUrl = new Uri(iccIdentityHubConfig.BaseUrl);
-                    options.Tenant = iccIdentityHubConfig.Tenant;
-                    options.ClientId = iccIdentityHubConfig.ClientId;
-                    options.ClientSecret = iccIdentityHubConfig.ClientSecret;
-                    options.CallbackPath = iccIdentityHubConfig.CallbackPath;
-                });
-
-
-            var iccPortalConfig = new IccPortalConfig(_configuration);
-
-            var policyAuthorizationOptions = new PolicyAuthorizationOptions(_webHostEnvironment, iccPortalConfig);
-            services.AddAuthorization(policyAuthorizationOptions.Build);
-
-            services.AddTransient<ITheIdentityHubService, TheIdentityHubService>();
-
-            services.AddMvc(config =>
-            {
-                config.EnableEndpointRouting = false;
-                var policy = new AuthorizationPolicyBuilder()
-                    .AddAuthenticationSchemes(TheIdentityHubDefaults.AuthenticationScheme)
-                    .RequireAuthenticatedUser()
-                    .Build();
-                config.Filters.Add(new AuthorizeFilter(policy));
             });
         }
     }

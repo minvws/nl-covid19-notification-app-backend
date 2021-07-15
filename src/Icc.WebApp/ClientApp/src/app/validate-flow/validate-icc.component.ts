@@ -3,9 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 import { Component, HostListener, OnInit } from '@angular/core';
-import {TitleService} from '../services/title.service';
-import {ActivatedRoute} from '@angular/router';
-import {AuthenticationService} from '../services';
 
 @Component({
     selector: 'app-validate-icc',
@@ -19,7 +16,7 @@ export class ValidateIccComponent implements OnInit {
     public IndexIsSubmitted = false;
     public scrollDown = false;
 
-    constructor(public authenticationService: AuthenticationService) {
+    constructor() {
         window.addEventListener('beforeunload', (event) => {
             event.preventDefault();
             event.returnValue =  'Weet je zeker dat je wilt herladen? De ingevoerde sleutel gaat verloren.';

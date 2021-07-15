@@ -15,12 +15,10 @@ using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Handlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtAuthenticationHandler.SchemeName)]
     public class WorkflowController : Controller
     {
         private const int OldGGDKeyLength = 6;
