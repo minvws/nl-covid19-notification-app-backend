@@ -73,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 PropertiesToInclude = new[] { $"{nameof(DiagnosisKeyEntity.PublishedLocally)}" }
             };
 
-            await _dkSourceDbContext.BulkUpdateAsync2(zap, bargs);
+            await _dkSourceDbContext.BulkUpdateWithTransactionAsync(zap, bargs);
         }
 
         private long[] ReadPage()

@@ -67,7 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                 PropertiesToInclude = new[] { $"{nameof(DiagnosisKeyEntity.PublishedToEfgs)}" }
             };
 
-            await _dkSourceDbContext.BulkUpdateAsync2(diagnosisKeyEntities, bulkArgs);
+            await _dkSourceDbContext.BulkUpdateWithTransactionAsync(diagnosisKeyEntities, bulkArgs);
         }
 
         private long[] ReadPage()

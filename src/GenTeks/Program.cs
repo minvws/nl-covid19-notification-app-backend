@@ -48,9 +48,6 @@ namespace GenTeks
             services.AddTransient<ILuhnModNGenerator, LuhnModNGenerator>();
 
             services.AddTransient<GenerateTeksCommand>();
-            services.AddTransient<TekReleaseWorkflowStateCreateV2>();
-
-            services.AddTransient<Func<TekReleaseWorkflowStateCreateV2>>(x => x.GetRequiredService<TekReleaseWorkflowStateCreateV2>);
             services.AddTransient<IWorkflowTime, TekReleaseWorkflowTime>();
 
             services.AddSingleton<RegisterSecretLoggingExtensionsV2>();

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities;
@@ -47,24 +46,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             var index = 0;
             var filteredTekInputCount = 0;
 
-            //await using var tx = _dkSourceDbContext.BeginTransaction();
             var (page, filteredResult) = ReadAndFilter(index, PageSize);
 
             while (page.Length > 0)
             {
-                await MarkFilteredEntitiesForCleanup(page, filteredResult);
+                await MarkFilteredEntitiesForCleanupAsync(page, filteredResult);
 
                 if (filteredResult.Length > 0)
                 {
-                    await _eksPublishingJobDbContext.BulkInsertAsync2(filteredResult, new SubsetBulkArgs());
+                    await _eksPublishingJobDbContext.BulkInsertWithTransactionAsync(filteredResult, new SubsetBulkArgs());
                 }
 
                 index += page.Length;
                 filteredTekInputCount += filteredResult.Length;
                 (page, filteredResult) = ReadAndFilter(index, PageSize);
             }
-
-            //_dkSourceDbContext.SaveAndCommit();
 
             var snapshotEksInputResult = new SnapshotEksInputResult
             {
@@ -78,7 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             return snapshotEksInputResult;
         }
 
-        private async Task MarkFilteredEntitiesForCleanup(EksCreateJobInputEntity[] allEntities, EksCreateJobInputEntity[] filteredResult)
+        private async Task MarkFilteredEntitiesForCleanupAsync(EksCreateJobInputEntity[] allEntities, EksCreateJobInputEntity[] filteredResult)
         {
             var leftoverDkIds = allEntities.Except(filteredResult).Select(x => x.TekId).ToArray();
             if(leftoverDkIds.Any())

@@ -101,7 +101,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
                     return false;
                 }
                 return false;
-                //throw;
             }
         }
 

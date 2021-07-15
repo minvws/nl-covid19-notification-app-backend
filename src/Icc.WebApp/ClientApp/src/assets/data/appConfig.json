@@ -1,6 +1,6 @@
 {
   "appName": "CoronaMelder",
-  "authHost": "#{Deploy.ICCBackend.Hostname.External_Hostname}#",
+  "authHost": "localhost:5011",
   "aSymptomaticIndexDayOffset": "0",
   "symptomaticIndexDayOffset": "2"
 }

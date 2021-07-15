@@ -39,16 +39,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             Configuration = configuration;
             _isDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
         }
-
+        
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddScoped<IJsonSerializer, StandardJsonSerializer>();
 
             services.AddControllers();
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            //services.AddScoped(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow));
             services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
 
             services.AddScoped<HttpPostReleaseTeksCommand2>();
