@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             var jsonSerializer = new StandardJsonSerializer();
             var loggingExtensionsMock = new ManifestUpdateCommandLoggingExtensions(
                 loggerFactory.CreateLogger<ManifestUpdateCommandLoggingExtensions>());
-            
+
             Func<IContentEntityFormatter> contentFormatterInjector = () =>
                 new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(nlSignerMock.Object),
@@ -70,8 +70,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         public async Task NoManifestInDb_ExecuteAll_ThreeManifestsInDb()
         {
             // Arrange
-            
-
             //Act
             await _sut.ExecuteAllAsync();
 
@@ -86,8 +84,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         public async Task NoManifestInDb_ExecuteAllTwice_ThreeManifestsInDb()
         {
             // Arrange
-            
-
             //Act
             await _sut.ExecuteAllAsync();
 

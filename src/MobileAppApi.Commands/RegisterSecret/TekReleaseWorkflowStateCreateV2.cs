@@ -49,12 +49,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 
         public async Task<TekReleaseWorkflowStateEntity> ExecuteAsync()
         {
+            // Create entity with only Created and ValidUntil dates.
             var entity = new TekReleaseWorkflowStateEntity
             {
                 Created = _dateTimeProvider.Snapshot.Date,
-                ValidUntil = _workflowTime.Expiry(_dateTimeProvider.Snapshot),
-                GGDKey = _luhnModNGenerator.Next(_luhnModNConfig.ValueLength),
-                BucketId = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount),
+                ValidUntil = _workflowTime.Expiry(_dateTimeProvider.Snapshot)
             };
 
             _logger.WriteWritingStart();
@@ -85,6 +84,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 
             try
             {
+                // Generate GGDKey, BucketId and ConfirmationKey. When the commit result in an collision caused by a duplicated value of GGDKey and BucketId these will be generated in a second attempt.
+                entity.GGDKey = GenerateUniqueGGDKey(); // Generate GGDKey including peek in database
+                entity.BucketId = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount);
+                entity.ConfirmationKey = _numberGenerator.NextByteArray(UniversalConstants.ConfirmationKeyByteCount);
+
                 await _workflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
 
                 _workflowDbContext.SaveAndCommit();
@@ -101,8 +105,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
                     return false;
                 }
                 return false;
-                //throw;
             }
+        }
+
+        private string GenerateUniqueGGDKey()
+        {
+            var ggdKey = _luhnModNGenerator.Next(_luhnModNConfig.ValueLength);
+
+            if (_workflowDbContext.KeyReleaseWorkflowStates.AsNoTracking().Any(p => p.GGDKey == ggdKey))
+            {
+                return GenerateUniqueGGDKey();
+            }
+
+            return ggdKey;
         }
 
         //E.g. Microsoft.Data.SqlClient.SqlException(0x80131904):
@@ -121,7 +136,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             return errors.Any(x =>
                 x.Number == 2601
                 && x.Message.Contains("TekReleaseWorkflowState")
-                && (x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.LabConfirmationId))
+                && (x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.GGDKey))
                     || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.ConfirmationKey))
                     || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.BucketId)))
             );
