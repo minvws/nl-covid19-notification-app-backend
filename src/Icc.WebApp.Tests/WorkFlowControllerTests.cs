@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using App.IccPortal.Tests;
+using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -26,16 +28,52 @@ namespace Icc.WebApp.Tests
     {
         private readonly WebApplicationFactory<Startup> _factory;
 
-        public WorkflowControllerTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions)
+        protected WorkflowControllerTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions)
         {
             _factory = WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddScoped(p => new WorkflowDbContext(workflowDbContextOptions ?? throw new ArgumentNullException(nameof(workflowDbContextOptions))));
+                    services.AddScoped(p => new WorkflowDbContext(workflowDbContextOptions));
                     services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
+                    services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
                 });
             });
+        }
+
+        [Fact]
+        public async Task PutPubTek_ReturnsUnauthorized_When_NotAuthorized()
+        {
+            // Arrange
+            var args = new PublishTekArgs
+            {
+                GGDKey = "L8T6LJ",
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
+            };
+
+            // Create factory without PolicyEvaluator
+            var factory = WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                });
+            });
+            var client = factory.CreateClient();
+
+            var source = new CancellationTokenSource();
+            var token = source.Token;
+
+            var content = new StringContent(JsonSerializer.Serialize(args))
+            {
+                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
+            };
+
+            // Act
+            var result = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
         }
 
         [Fact]
@@ -45,11 +83,11 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6L",
-                SelectedDate = DateTime.Today
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
             var client = _factory.CreateClient();
-
 
             var source = new CancellationTokenSource();
             var token = source.Token;
@@ -76,11 +114,11 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJ",
-                SelectedDate = DateTime.Today
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
             var client = _factory.CreateClient();
-
 
             var source = new CancellationTokenSource();
             var token = source.Token;
@@ -107,11 +145,11 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                SelectedDate = DateTime.Today
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
             var client = _factory.CreateClient();
-
 
             var source = new CancellationTokenSource();
             var token = source.Token;
@@ -138,7 +176,8 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJR",
-                SelectedDate = DateTime.Today
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
             var client = _factory.CreateClient();

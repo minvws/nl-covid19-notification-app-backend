@@ -52,15 +52,15 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "222222",
-                SelectedDate = DateTime.Today,
-                Symptomatic = true
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
             await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
             _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
                 GGDKey = args.GGDKey,
-                StartDateOfTekInclusion = args.SelectedDate,
+                StartDateOfTekInclusion = args.DateOfSymptomsOnset
 
             });
             await _workflowDbContext.SaveChangesAsync();
@@ -92,15 +92,15 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "111111",
-                SelectedDate = DateTime.Today,
-                Symptomatic = true
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
             await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
             _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
                 GGDKey = args.GGDKey,
-                StartDateOfTekInclusion = args.SelectedDate,
+                StartDateOfTekInclusion = args.DateOfSymptomsOnset
 
             });
             await _workflowDbContext.SaveChangesAsync();
@@ -134,15 +134,15 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                SelectedDate = DateTime.Today,
-                Symptomatic = true
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
             await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
             _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
                 GGDKey = args.GGDKey,
-                StartDateOfTekInclusion = args.SelectedDate,
+                StartDateOfTekInclusion = args.DateOfSymptomsOnset
 
             });
             await _workflowDbContext.SaveChangesAsync();
@@ -174,15 +174,15 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "18T6LJQ",
-                SelectedDate = DateTime.Today,
-                Symptomatic = true
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
             await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
             _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
                 GGDKey = args.GGDKey,
-                StartDateOfTekInclusion = args.SelectedDate,
+                StartDateOfTekInclusion = args.DateOfSymptomsOnset,
 
             });
             await _workflowDbContext.SaveChangesAsync();
@@ -214,15 +214,15 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJR",
-                SelectedDate = DateTime.Today,
-                Symptomatic = true,
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
             await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
             _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
                 GGDKey = args.GGDKey,
-                StartDateOfTekInclusion = args.SelectedDate,
+                StartDateOfTekInclusion = args.DateOfSymptomsOnset,
 
             });
             await _workflowDbContext.SaveChangesAsync();
@@ -254,15 +254,15 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                SelectedDate = null,
-                Symptomatic = false
+                DateOfTest = null,
+                SubjectHasSymptoms = false
             };
 
             await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
             _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
                 GGDKey = args.GGDKey,
-                StartDateOfTekInclusion = args.SelectedDate,
+                StartDateOfTekInclusion = args.DateOfTest
 
             });
             await _workflowDbContext.SaveChangesAsync();
@@ -295,15 +295,15 @@ namespace Icc.v2.WebApi.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                SelectedDate = DateTime.Today,
-                Symptomatic = true
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
             await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
             _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
             {
                 GGDKey = args.GGDKey,
-                StartDateOfTekInclusion = args.SelectedDate,
+                StartDateOfTekInclusion = args.DateOfSymptomsOnset,
 
             });
             await _workflowDbContext.SaveChangesAsync();
