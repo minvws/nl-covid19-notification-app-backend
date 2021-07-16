@@ -32,7 +32,7 @@ namespace Icc.WebApp.Tests
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddScoped(p => new WorkflowDbContext(workflowDbContextOptions ?? throw new ArgumentNullException(nameof(workflowDbContextOptions))));
+                    services.AddScoped(p => new WorkflowDbContext(workflowDbContextOptions));
                     services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
                 });
             });
@@ -45,7 +45,8 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6L",
-                SelectedDate = DateTime.Today
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
             var client = _factory.CreateClient();
@@ -76,7 +77,8 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJ",
-                SelectedDate = DateTime.Today
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
             var client = _factory.CreateClient();
@@ -107,7 +109,8 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                SelectedDate = DateTime.Today
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
             var client = _factory.CreateClient();
@@ -138,7 +141,8 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJR",
-                SelectedDate = DateTime.Today
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
             var client = _factory.CreateClient();

@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { AuthenticationService } from './authentication.service';
 import { AppConfigService} from './app-config.service';
 
 
@@ -14,26 +15,32 @@ import { AppConfigService} from './app-config.service';
 })
 export class LabConfirmService {
   constructor(private readonly http: HttpClient,
+    private readonly authenticationService: AuthenticationService,
     private readonly appConfigService: AppConfigService) {
     }
 
-  private data: { GGDKey: string; SelectedDate: string; Symptomatic: boolean; };
+  private data: { ggdKey: string; subjectHasSymptoms: boolean; dateOfSymptomsOnset: Date; dateOfTest: Date };
 
   private static errorHandler(error: HttpErrorResponse, caught: Observable<any>): Observable<any> {
-    // TODO error handling
-    throw error;
+      // TODO error handling
+      throw error;
   }
 
-  confirmLabId(GGDKeys: Array<string>, selectedDate: string, symptomatic: boolean): Observable<any> {
-    const serviceUrl = location.origin + '/pubtek';
-    this.data = {
-      'GGDKey': GGDKeys.join(''),
-      'SelectedDate': selectedDate,
-      'Symptomatic': symptomatic
-    };
-    const headers = {
-    };
+  confirmLabId(GGDKeys: Array<string>, selectedDate: Date, symptomatic: boolean): Observable<any> {
+      const serviceUrl = location.origin + '/pubtek';
+      this.data = {
+          'ggdKey': GGDKeys.join(''),
+          'subjectHasSymptoms': symptomatic,
+          'dateOfSymptomsOnset': symptomatic ? selectedDate : null,
+          'dateOfTest': !symptomatic ? selectedDate : null
+      };
 
-    return this.http.put(serviceUrl, this.data, headers).pipe(catchError(LabConfirmService.errorHandler));
+      const headers = {
+          headers: {
+              'Authorization': 'Bearer ' + this.authenticationService.currentUserValue.authData
+          }
+      };
+
+      return this.http.put(serviceUrl, this.data, headers).pipe(catchError(LabConfirmService.errorHandler));
   }
 }

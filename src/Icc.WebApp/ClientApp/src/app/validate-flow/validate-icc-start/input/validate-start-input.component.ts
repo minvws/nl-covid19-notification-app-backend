@@ -166,7 +166,7 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
 
       this.reportService.confirmLabId(
         this.indexData.GGDKey,
-        this.indexData.selectedDate.toISOString(),
+        this.indexData.startDateOfTekInclusion,
         this.indexData.symptomatic
       )
         .pipe(catchError((e) => {

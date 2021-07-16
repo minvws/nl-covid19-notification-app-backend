@@ -54,11 +54,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
                 return new[] { "PubTEK key validation for LuhnModN failed." };
             }
 
-            //Should be a date only without time.
-            args.SelectedDate = args.SelectedDate?.Date;
-            if (!args.Symptomatic && (_dateTimeProvider.Snapshot.Date.AddDays(-30) > args.SelectedDate?.Date || args.SelectedDate?.Date > _dateTimeProvider.Snapshot.Date))
+            // if SubjectHasSymptoms, DateOfSymptomsOnset must be filled
+            if (args.SubjectHasSymptoms && !args.DateOfSymptomsOnset.HasValue)
             {
-                errors.Add($"Selected date out of range - {args.SelectedDate}.");
+                errors.Add("DateOfSymptomsOnset must have a value.");
+            }
+
+            // Should be a date only without time.
+            args.DateOfSymptomsOnset = args.DateOfSymptomsOnset?.Date;
+            if (args.SubjectHasSymptoms && (_dateTimeProvider.Snapshot.Date.AddDays(-30) > args.DateOfSymptomsOnset?.Date || args.DateOfSymptomsOnset?.Date > _dateTimeProvider.Snapshot.Date))
+            {
+                errors.Add($"Selected date out of range - {args.DateOfSymptomsOnset}.");
+            }
+
+            //Should be a date only without time.
+            args.DateOfTest = args.DateOfTest?.Date;
+            if (!args.SubjectHasSymptoms && (_dateTimeProvider.Snapshot.Date.AddDays(-30) > args.DateOfTest?.Date || args.DateOfTest?.Date > _dateTimeProvider.Snapshot.Date))
+            {
+                errors.Add($"Selected date out of range - {args.DateOfTest}.");
             }
 
             return errors.ToArray();

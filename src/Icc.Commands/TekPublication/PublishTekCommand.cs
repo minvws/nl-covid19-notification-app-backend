@@ -60,8 +60,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             wf.AuthorisedByCaregiver = _dateTimeProvider.Snapshot;
             wf.LabConfirmationId = null; //Clear from usable key range
             wf.GGDKey = null; //Clear from usable key range
-            wf.StartDateOfTekInclusion = args.SelectedDate; // The date is currently a StartDateOfTekInclusion or Date of Test. The system lacks having 2 date variants so the existing StartDateOfTekInclusion will hold either
-            wf.IsSymptomatic = args.Symptomatic ? InfectiousPeriodType.Symptomatic : InfectiousPeriodType.Asymptomatic;
+            wf.StartDateOfTekInclusion = args.SubjectHasSymptoms ? args.DateOfSymptomsOnset : args.DateOfTest; // The date is currently a StartDateOfTekInclusion or Date of Test. The system lacks having 2 date variants so the existing StartDateOfTekInclusion will hold either
+            wf.IsSymptomatic = args.SubjectHasSymptoms ? InfectiousPeriodType.Symptomatic : InfectiousPeriodType.Asymptomatic;
 
             var success = await PublishTek(wf);
 
