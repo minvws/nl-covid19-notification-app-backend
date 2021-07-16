@@ -7,40 +7,40 @@ import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AuthenticationService } from './authentication.service';
-import { AppConfigService} from './app-config.service';
+import { AppConfigService } from './app-config.service';
 
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class LabConfirmService {
-  constructor(private readonly http: HttpClient,
-    private readonly authenticationService: AuthenticationService,
-    private readonly appConfigService: AppConfigService) {
+    constructor(private readonly http: HttpClient,
+        private readonly authenticationService: AuthenticationService,
+        private readonly appConfigService: AppConfigService) {
     }
 
-  private data: { ggdKey: string; subjectHasSymptoms: boolean; dateOfSymptomsOnset: Date; dateOfTest: Date };
+    private data: { ggdKey: string; subjectHasSymptoms: boolean; dateOfSymptomsOnset: Date; dateOfTest: Date };
 
-  private static errorHandler(error: HttpErrorResponse, caught: Observable<any>): Observable<any> {
-      // TODO error handling
-      throw error;
-  }
+    private static errorHandler(error: HttpErrorResponse, caught: Observable<any>): Observable<any> {
+        // TODO error handling
+        throw error;
+    }
 
-  confirmLabId(GGDKeys: Array<string>, selectedDate: Date, symptomatic: boolean): Observable<any> {
-      const serviceUrl = location.origin + '/pubtek';
-      this.data = {
-          'ggdKey': GGDKeys.join(''),
-          'subjectHasSymptoms': symptomatic,
-          'dateOfSymptomsOnset': symptomatic ? selectedDate : null,
-          'dateOfTest': !symptomatic ? selectedDate : null
-      };
+    confirmLabId(GGDKeys: Array<string>, selectedDate: Date, symptomatic: boolean): Observable<any> {
+        const serviceUrl = location.origin + '/pubtek';
+        this.data = {
+            'ggdKey': GGDKeys.join(''),
+            'subjectHasSymptoms': symptomatic,
+            'dateOfSymptomsOnset': symptomatic ? selectedDate : null,
+            'dateOfTest': !symptomatic ? selectedDate : null,
 
-      const headers = {
-          headers: {
-              'Authorization': 'Bearer ' + this.authenticationService.currentUserValue.authData
-          }
-      };
+        };
+        const headers = {
+            headers: {
+                'Authorization': 'Bearer ' + this.authenticationService.currentUserValue.authData
+            }
+        };
 
-      return this.http.put(serviceUrl, this.data, headers).pipe(catchError(LabConfirmService.errorHandler));
-  }
+        return this.http.put(serviceUrl, this.data, headers).pipe(catchError(LabConfirmService.errorHandler));
+    }
 }
