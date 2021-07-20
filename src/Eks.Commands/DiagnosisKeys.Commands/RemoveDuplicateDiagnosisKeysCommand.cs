@@ -127,7 +127,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         {
             public bool Equals(DiagnosisKeyEntity x, DiagnosisKeyEntity y)
             {
-                return x.DailyKey.KeyData.SequenceEqual(y.DailyKey.KeyData) && x.DailyKey.RollingPeriod == y.DailyKey.RollingPeriod && x.DailyKey.RollingStartNumber == y.DailyKey.RollingStartNumber;
+                return y != null && x != null && x.DailyKey.KeyData.SequenceEqual(y.DailyKey.KeyData) && x.DailyKey.RollingPeriod == y.DailyKey.RollingPeriod && x.DailyKey.RollingStartNumber == y.DailyKey.RollingStartNumber;
             }
             public int GetHashCode(DiagnosisKeyEntity obj)
             {
