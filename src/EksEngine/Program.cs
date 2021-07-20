@@ -82,7 +82,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             var c56 = serviceProvider.GetRequiredService<RemoveDiagnosisKeysReadyForCleanup>();
             run.Add(() => c56.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c60 = serviceProvider.GetService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
+            var c60 = serviceProvider.GetService<RemoveDuplicateDiagnosisKeysCommand>();
             run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());
 
             var c35 = serviceProvider.GetRequiredService<IksEngine>();
@@ -125,8 +125,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             //EKS Engine
             services.EksEngine();
 
-            services.AddTransient<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
-            services.AddTransient<RemoveLocalDuplicateDiagnosisKeysCommand>();
+            services.AddTransient<RemoveDuplicateDiagnosisKeysCommand>();
             services.AddTransient<RemovePublishedDiagnosisKeys>();
             services.AddTransient<RemoveDiagnosisKeysReadyForCleanup>();
 

@@ -113,7 +113,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             var c126 = serviceProvider.GetRequiredService<RemoveDiagnosisKeysReadyForCleanup>();
             run.Add(() => c126.ExecuteAsync().GetAwaiter().GetResult());
 
-            var c130 = serviceProvider.GetRequiredService<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
+            var c130 = serviceProvider.GetRequiredService<RemoveDuplicateDiagnosisKeysCommand>();
             run.Add(() => c130.ExecuteAsync().GetAwaiter().GetResult());
 
             var c140 = serviceProvider.GetRequiredService<RemoveExpiredIksInCommand>();
@@ -160,7 +160,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddTransient<RemoveExpiredEksCommand>();
             services.AddTransient<RemoveExpiredEksV2Command>();
             services.AddTransient<RemoveExpiredWorkflowsCommand>();
-            services.AddTransient<RemoveDuplicateDiagnosisKeysForIksWithSpCommand>();
+            services.AddTransient<RemoveDuplicateDiagnosisKeysCommand>();
             services.AddTransient<RemovePublishedDiagnosisKeys>();
             services.AddTransient<RemoveDiagnosisKeysReadyForCleanup>();
 
