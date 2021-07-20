@@ -69,6 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 {
                     diagnosisKeyEntity.PublishedToEfgs = true;
 
+                    // Add diagnosisKeyEntity in affectedEntityList if it isn't in there already
                     if (affectedEntityList.All(p => p.Id != diagnosisKeyEntity.Id))
                     {
                         affectedEntityList.Add(diagnosisKeyEntity);
@@ -105,6 +106,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 {
                     diagnosisKeyEntity.PublishedLocally = true;
 
+                    // Add diagnosisKeyEntity in affectedEntityList if it isn't in there already
                     if (affectedEntityList.All(p => p.Id != diagnosisKeyEntity.Id))
                     {
                         affectedEntityList.Add(diagnosisKeyEntity);
@@ -121,6 +123,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
                     diagnosisKeyEntity.PublishedLocally = true;
 
+                    // Add diagnosisKeyEntity in affectedEntityList if it isn't in there already
                     if (affectedEntityList.All(p => p.Id != diagnosisKeyEntity.Id))
                     {
                         affectedEntityList.Add(diagnosisKeyEntity);
