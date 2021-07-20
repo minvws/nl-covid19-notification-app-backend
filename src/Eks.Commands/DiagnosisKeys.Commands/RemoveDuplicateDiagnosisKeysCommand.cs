@@ -24,7 +24,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
         public async Task ExecuteAsync()
         {
-            var iksDuplicates = (await _dkSourceDbContext.DiagnosisKeys.AsNoTracking().Where(p => !p.ReadyForCleanup.HasValue || !p.ReadyForCleanup.Value).ToListAsync())
+            var iksDuplicates = (
+                    await _dkSourceDbContext.DiagnosisKeys
+                        .AsNoTracking()
+                        .Where(p => !p.ReadyForCleanup.HasValue || !p.ReadyForCleanup.Value)
+                        .ToListAsync())
                 .GroupBy(p => p, new DiagnosisKeysEntityComparer())
                 .Where(group => group.Count() > 1)
                 .ToDictionary(p => p.Key, y => y.Select(entity => entity));
@@ -82,6 +86,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
                     diagnosisKeyEntity.PublishedToEfgs = true;
 
+                    // Add diagnosisKeyEntity in affectedEntityList if it isn't in there already
                     if (affectedEntityList.All(p => p.Id != diagnosisKeyEntity.Id))
                     {
                         affectedEntityList.Add(diagnosisKeyEntity);
@@ -89,6 +94,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 }
             }
         }
+
         private static void MarkLocalDuplicates(IReadOnlyCollection<DiagnosisKeyEntity> iks, ICollection<DiagnosisKeyEntity> affectedEntityList)
         {
             // Mark ALL as Published if any has been published
