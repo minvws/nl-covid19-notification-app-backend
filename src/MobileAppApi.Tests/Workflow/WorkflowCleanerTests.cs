@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -56,11 +57,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         }
 
         [Fact]
-        public void Cleaner()
+        public async Task Cleaner()
         {
-            _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
 
-            var result = _command.Execute();
+            var result = (RemoveExpiredWorkflowsResult)await _command.ExecuteAsync();
 
             Assert.Equal(0, result.Before.Count);
             Assert.Equal(0, result.Before.Expired);
@@ -84,15 +85,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         }
 
         [Fact]
-        public void NoKill()
+        public async Task NoKill()
         {
-            _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
 
             _dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
             Add(1, 0, null);
-            _workflowDbContext.SaveChanges();
+            await _workflowDbContext.SaveChangesAsync();
 
-            var result = _command.Execute();
+            var result = (RemoveExpiredWorkflowsResult)await _command.ExecuteAsync();
 
             Assert.Equal(1, result.Before.Count);
             Assert.Equal(1, result.Before.Expired);
@@ -116,16 +117,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         }
 
         [Fact]
-        public void Kill()
+        public async Task Kill()
         {
-            _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
 
             _dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
             _fakeConfig.CleanupDeletesData = true;
             Add(1, 0, null);
-            _workflowDbContext.SaveChanges();
+            await _workflowDbContext.SaveChangesAsync();
 
-            var result = _command.Execute();
+            var result = (RemoveExpiredWorkflowsResult)await _command.ExecuteAsync();
 
             Assert.Equal(1, result.Before.Count);
             Assert.Equal(1, result.Before.Expired);
@@ -149,9 +150,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         }
 
         [Fact]
-        public void Abort()
+        public async Task Abort()
         {
-            _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
 
             _dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
             _fakeConfig.CleanupDeletesData = true;
@@ -160,15 +161,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
             Add(1, 14, 14);
             Add(1, 10, 5);
             Add(-10, 10, 5);
-            _workflowDbContext.SaveChanges();
+            await _workflowDbContext.SaveChangesAsync();
 
-            Assert.Throws<InvalidOperationException>(() => _command.Execute());
+            // Act
+            var result = (RemoveExpiredWorkflowsResult)await _command.ExecuteAsync();
+            //Assert
+            Assert.True(result.HasErrors);
         }
 
         [Fact]
-        public void MoreRealistic()
+        public async Task MoreRealistic()
         {
-            _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
 
             _dtp.Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc);
             _fakeConfig.CleanupDeletesData = true;
@@ -177,9 +181,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
             Add(1, 14, 14);
             Add(1, 10, 10);
             Add(-10, 10, 0);
-            _workflowDbContext.SaveChanges();
+            await _workflowDbContext.SaveChangesAsync();
 
-            var result = _command.Execute();
+            var result = (RemoveExpiredWorkflowsResult)await _command.ExecuteAsync();
 
             Assert.Equal(_workflowCount, result.Before.Count);
             Assert.Equal(4, result.Before.Expired);

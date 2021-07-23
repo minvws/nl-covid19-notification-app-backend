@@ -5,17 +5,19 @@
 using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
 {
-    public class RemoveExpiredWorkflowsCommand
+    public class RemoveExpiredWorkflowsCommand : ICommand
     {
         private readonly WorkflowDbContext _workflowDbContext;
         private readonly ExpiredWorkflowLoggingExtensions _logger;
@@ -29,6 +31,60 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dtp = dtp ?? throw new ArgumentNullException(nameof(dtp));
             _config = config ?? throw new ArgumentNullException(nameof(config));
+        }
+
+        /// <summary>
+        /// Delete all Workflows and their associated TEKs that are over 2 days old
+        /// Cascading delete kills the TEKs.
+        /// </summary>
+        public async Task<ICommandResult> ExecuteAsync()
+        {
+            if (_result != null)
+            {
+                throw new InvalidOperationException("Object already used.");
+            }
+
+            _result = new RemoveExpiredWorkflowsResult
+            {
+                DeletionsOn = _config.CleanupDeletesData
+            };
+
+            _logger.WriteStart();
+
+            await using (var tx = _workflowDbContext.BeginTransaction())
+            {
+                ReadStats(_result.Before, _workflowDbContext);
+                LogReport(_result.Before, "Workflow stats before cleanup:");
+
+                if (!_result.DeletionsOn)
+                {
+                    _logger.WriteFinishedNothingRemoved();
+                    return _result;
+                }
+
+                if (_result.Before.Authorised != _result.Before.AuthorisedAndFullyPublished)
+                {
+                    _logger.WriteUnpublishedTekFound(); // Authorised unpublished TEKs exist.
+                    _result.HasErrors = true;
+                }
+                else
+                {
+                    var workflowsToDelete = _workflowDbContext.KeyReleaseWorkflowStates.AsNoTracking().Where(p => p.ValidUntil < _dtp.Snapshot).ToList();
+                    _result.GivenMercy = workflowsToDelete.Count;
+                    await _workflowDbContext.BulkDeleteAsync(workflowsToDelete);
+                    _logger.WriteRemovedAmount(_result.GivenMercy);
+                    await tx.CommitAsync();
+                }
+            }
+
+            await using (_workflowDbContext.BeginTransaction())
+            {
+                ReadStats(_result.After, _workflowDbContext);
+            }
+
+            LogReport(_result.Before, "Workflow stats after cleanup:");
+            _logger.WriteFinished();
+            return _result;
         }
 
         private void ReadStats(WorkflowStats stats, WorkflowDbContext dbc)
@@ -69,60 +125,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
             sb.AppendLine($"   Unpublished:{stats.TekUnpublished}");
 
             _logger.WriteReport(sb.ToString());
-        }
-
-
-        /// <summary>
-        /// Delete all Workflows and their associated TEKs that are over 2 days old
-        /// Cascading delete kills the TEKs.
-        /// </summary>
-        public RemoveExpiredWorkflowsResult Execute()
-        {
-            if (_result != null)
-            {
-                throw new InvalidOperationException("Object already used.");
-            }
-
-            _result = new RemoveExpiredWorkflowsResult
-            {
-                DeletionsOn = _config.CleanupDeletesData
-            };
-
-            _logger.WriteStart();
-
-            using (var tx = _workflowDbContext.BeginTransaction())
-            {
-                ReadStats(_result.Before, _workflowDbContext);
-                LogReport(_result.Before, "Workflow stats before cleanup:");
-
-                if (!_result.DeletionsOn)
-                {
-                    _logger.WriteFinishedNothingRemoved();
-                    return _result;
-                }
-
-                if (_result.Before.Authorised != _result.Before.AuthorisedAndFullyPublished)
-                {
-                    _logger.WriteUnpublishedTekFound(); // Authorised unpublished TEKs exist.
-                }
-                else
-                {
-                    var workflowsToDelete = _workflowDbContext.KeyReleaseWorkflowStates.AsNoTracking().Where(p => p.ValidUntil < _dtp.Snapshot).ToList();
-                    _result.GivenMercy = workflowsToDelete.Count;
-                    _workflowDbContext.BulkDelete(workflowsToDelete);
-                    _logger.WriteRemovedAmount(_result.GivenMercy);
-                    tx.Commit();
-                }
-            }
-
-            using (_workflowDbContext.BeginTransaction())
-            {
-                ReadStats(_result.After, _workflowDbContext);
-            }
-
-            LogReport(_result.Before, "Workflow stats after cleanup:");
-            _logger.WriteFinished();
-            return _result;
         }
     }
 }

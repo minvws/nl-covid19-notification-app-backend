@@ -4,6 +4,8 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
@@ -18,12 +20,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
         }
 
         public const string Name = "WorkflowsWithTeksCount";
-        public StatisticArgs Execute()
+        public async Task<StatisticArgs> ExecuteAsync()
         {
             return new StatisticArgs
             {
                 Name = "WorkflowsWithTeksCount",
-                Value = _dbContext.KeyReleaseWorkflowStates.Count(x => x.Teks.Any())
+                Value = await _dbContext.KeyReleaseWorkflowStates.CountAsync(x => x.Teks.Any())
             };
         }
     }

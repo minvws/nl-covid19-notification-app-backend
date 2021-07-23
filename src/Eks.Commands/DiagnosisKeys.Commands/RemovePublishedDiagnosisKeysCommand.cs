@@ -8,23 +8,24 @@ using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands
 {
-    public class RemovePublishedDiagnosisKeys
+    public class RemovePublishedDiagnosisKeysCommand : ICommand
     {
         private RemovePublishedDiagnosisKeysResult _result;
         private readonly DkSourceDbContext _diagnosticKeyDbContext;
         private readonly IUtcDateTimeProvider _utcDateTimeProvider;
 
-        public RemovePublishedDiagnosisKeys(DkSourceDbContext diagnosticKeyDbContext, IUtcDateTimeProvider utcDateTimeProvider)
+        public RemovePublishedDiagnosisKeysCommand(DkSourceDbContext diagnosticKeyDbContext, IUtcDateTimeProvider utcDateTimeProvider)
         {
             _diagnosticKeyDbContext = diagnosticKeyDbContext ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContext));
             _utcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
         }
 
-        public async Task<RemovePublishedDiagnosisKeysResult> ExecuteAsync()
+        public async Task<ICommandResult> ExecuteAsync()
         {
             if (_result != null)
             {

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -52,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
             //Act
             var sut = CompileRemoveExpiredManifestsCommand();
-            sut.Execute();
+            sut.ExecuteAsync();
 
             var content = GetAllContent();
 
@@ -68,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         }
 
         [Fact]
-        public void Remove_Expired_Manifests_Should_Leave_One_Per_Type()
+        public async Task Remove_Expired_Manifests_Should_Leave_One_Per_Type()
         {
             //Arrange
             _contentDbContext.BulkDelete(_contentDbContext.Content.ToList());
@@ -83,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
             //Act
             var sut = CompileRemoveExpiredManifestsCommand();
-            sut.Execute();
+            await sut.ExecuteAsync();
 
             var content = GetAllContent();
 
@@ -106,7 +107,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         [InlineData(ContentTypes.ManifestV2)]
         [InlineData(ContentTypes.ManifestV3)]
         [InlineData(ContentTypes.ManifestV4)]
-        public void Remove_Zero_Manifest_By_Type_Should_Not_Crash(ContentTypes manifestTypeName)
+        public async Task Remove_Zero_Manifest_By_Type_Should_Not_Crash(ContentTypes manifestTypeName)
         {
             //Arrange
             _contentDbContext.BulkDelete(_contentDbContext.Content.ToList());
@@ -116,7 +117,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
             //Act
             var sut = CompileRemoveExpiredManifestsCommand();
-            sut.Execute();
+            await sut.ExecuteAsync();
 
             var content = GetAllContent();
 

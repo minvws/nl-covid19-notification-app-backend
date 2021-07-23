@@ -120,8 +120,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.EksEngine();
 
             services.AddTransient<RemoveDuplicateDiagnosisKeysCommand>();
-            services.AddTransient<RemovePublishedDiagnosisKeys>();
-            services.AddTransient<RemoveDiagnosisKeysReadyForCleanup>();
+            services.AddTransient<RemovePublishedDiagnosisKeysCommand>();
+            services.AddTransient<RemoveDiagnosisKeysReadyForCleanupCommand>();
 
             services.AddSingleton<EksBuilderV1LoggingExtensions>();
             services.AddSingleton<ResignerLoggingExtensions>();

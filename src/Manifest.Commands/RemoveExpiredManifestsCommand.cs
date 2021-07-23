@@ -5,13 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
-    public class RemoveExpiredManifestsCommand
+    public class RemoveExpiredManifestsCommand : ICommand
     {
         private readonly RemoveExpiredManifestsReceiver _receiver;
 
@@ -31,12 +31,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         /// <summary>
         /// Manifests are updated regularly.
         /// </summary>
-        public void Execute()
+        public async Task<ICommandResult> ExecuteAsync()
         {
             foreach (var item in _manifestTypesAndLoggingCodexNumber)
             {
                 _ = _receiver.RemoveManifestsAsync(manifestType: item.Item1, loggingBaseNumber: item.Item2).GetAwaiter().GetResult();
             }
+
+            return null;
         }
     }
 }

@@ -4,10 +4,13 @@
 
 using System.Threading.Tasks;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces
 {
-    public interface IStatsQueryCommand
+    /// <summary>
+    /// Command pattern interface
+    /// </summary>
+    public interface ICommand
     {
-        Task<StatisticArgs> ExecuteAsync();
+        Task<ICommandResult> ExecuteAsync();
     }
 }

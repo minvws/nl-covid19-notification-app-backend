@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
             services.AddScoped<PublishedTekCountStatsQueryCommand>();
             services.AddScoped<TotalTekCountStatsQueryCommand>();
             services.AddScoped<IStatisticsWriter, StatisticsDbWriter>();
-            services.AddScoped<IStatisticsCommand>(x =>
+            services.AddScoped<StatisticsCommand>(x =>
                 new StatisticsCommand(x.GetRequiredService<IStatisticsWriter>(),
                     new IStatsQueryCommand[] {
                         x.GetRequiredService<TotalWorkflowCountStatsQueryCommand>(),

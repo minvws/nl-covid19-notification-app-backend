@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -36,10 +37,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Sta
         }
 
         [Fact]
-        public void NothingToSeeHere()
+        public async Task NothingToSeeHere()
         {
-            _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
-            _statsDbContext.BulkDelete(_statsDbContext.StatisticsEntries.ToList());
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            await _statsDbContext.BulkDeleteAsync(_statsDbContext.StatisticsEntries.ToList());
 
             var cmd = new StatisticsCommand(new StatisticsDbWriter(_statsDbContext, _fakeDtp),
                 new IStatsQueryCommand[]
@@ -50,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Sta
                     new PublishedTekCountStatsQueryCommand(_workflowDbContext),
                     new TotalTekCountStatsQueryCommand(_workflowDbContext),
                 });
-            cmd.Execute();
+            await cmd.ExecuteAsync();
 
             Assert.Equal(0, _statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowCountStatsQueryCommand.Name).Value);
             Assert.Equal(0, _statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowsWithTeksQueryCommand.Name).Value);
@@ -60,10 +61,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Sta
         }
 
         [Fact]
-        public void WithData()
+        public async Task WithData()
         {
-            _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
-            _statsDbContext.BulkDelete(_statsDbContext.StatisticsEntries.ToList());
+            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
+            await _statsDbContext.BulkDeleteAsync(_statsDbContext.StatisticsEntries.ToList());
 
             var workflows = new[] {
                 new TekReleaseWorkflowStateEntity { BucketId = new byte[]{1}, ConfirmationKey = new byte[]{1}, LabConfirmationId = "1", Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>()},
@@ -93,8 +94,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Sta
                 new TekEntity { KeyData = new byte[0], PublishingState = PublishingState.Unpublished, PublishAfter = DateTime.MinValue }
             });
 
-            _workflowDbContext.KeyReleaseWorkflowStates.AddRange(workflows);
-            _workflowDbContext.SaveChanges();
+            await _workflowDbContext.KeyReleaseWorkflowStates.AddRangeAsync(workflows);
+            await _workflowDbContext.SaveChangesAsync();
 
             var cmd = new StatisticsCommand(new StatisticsDbWriter(_statsDbContext, _fakeDtp),
                 new IStatsQueryCommand[]
@@ -105,7 +106,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Sta
                     new PublishedTekCountStatsQueryCommand(_workflowDbContext),
                     new TotalTekCountStatsQueryCommand(_workflowDbContext),
                 });
-            cmd.Execute();
+            await cmd.ExecuteAsync();
 
             Assert.Equal(8, _statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowCountStatsQueryCommand.Name).Value);
             Assert.Equal(3, _statsDbContext.StatisticsEntries.Single(x => x.Created.Date == _fakeDtp.Snapshot.Date && x.Name == TotalWorkflowsWithTeksQueryCommand.Name).Value);

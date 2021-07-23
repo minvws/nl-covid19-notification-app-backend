@@ -3,11 +3,13 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
 {
-    public class StatisticsCommand : IStatisticsCommand
+    public class StatisticsCommand : ICommand
     {
         private readonly IStatisticsWriter _writer;
         private readonly IStatsQueryCommand[] _statsQueries;
@@ -18,10 +20,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
             _statsQueries = statsQueries ?? throw new ArgumentNullException(nameof(statsQueries));
         }
 
-        public void Execute()
+        public async Task<ICommandResult> ExecuteAsync()
         {
-            var stats = _statsQueries.Select(x => x.Execute()).ToArray();
-            _writer.Write(stats);
+            var results = new List<StatisticArgs>();
+            foreach (var iStatsQueryCommand in _statsQueries)
+            {
+                var result = await iStatsQueryCommand.ExecuteAsync();
+                results.Add(result);
+            }
+
+            await _writer.WriteAsync(results.ToArray());
+
+            return null;
         }
     }
 }

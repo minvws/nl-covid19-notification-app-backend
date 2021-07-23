@@ -4,18 +4,18 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using EFCore.BulkExtensions;
-using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 {
-    public class RemoveExpiredEksCommand
+    public class RemoveExpiredEksCommand : ICommand
     {
         private readonly ContentDbContext _dbContext;
         private readonly IEksConfig _config;
@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public RemoveExpiredEksCommandResult Execute()
+        public async Task<ICommandResult> ExecuteAsync()
         {
             var result = new RemoveExpiredEksCommandResult();
 
@@ -38,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
             var cutoff = (_dtp.Snapshot - TimeSpan.FromDays(_config.LifetimeDays)).Date;
 
-            using (var tx = _dbContext.BeginTransaction())
+            await using (var tx = _dbContext.BeginTransaction())
             {
                 result.Found = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet);
                 _logger.WriteCurrentEksFound(result.Found);
@@ -64,8 +64,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 }
 
                 result.GivenMercy = zombies.Count;
-                _dbContext.BulkDelete(_dbContext.Content.Where(p=>p.Type == ContentTypes.ExposureKeySet && p.Release < cutoff).ToList());
-                tx.Commit();
+                await _dbContext.BulkDeleteAsync(_dbContext.Content.Where(p=>p.Type == ContentTypes.ExposureKeySet && p.Release < cutoff).ToList());
+                await tx.CommitAsync();
 
                 result.Remaining = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet);
             }

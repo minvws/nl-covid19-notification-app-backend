@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
 {
-    public class RemoveExpiredIksOutCommand
+    public class RemoveExpiredIksOutCommand : ICommand
     {
         private readonly IksOutDbContext _iksOutDbContext;
         private readonly RemoveExpiredIksLoggingExtensions _logger;
@@ -32,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
         /// <summary>
         /// Manifests are updated regularly.
         /// </summary>
-        public async Task<RemoveExpiredIksCommandResult> ExecuteAsync()
+        public async Task<ICommandResult> ExecuteAsync()
         {
             if (_result != null)
             {
@@ -45,8 +46,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
 
             var lifetimeDays = _iksCleaningConfig.LifetimeDays;
             var cutoff = (_utcDateTimeProvider.Snapshot - TimeSpan.FromDays(lifetimeDays)).Date;
-            
-            using (var tx = _iksOutDbContext.BeginTransaction())
+
+            await using (var tx = _iksOutDbContext.BeginTransaction())
             {
                 _result.Found = _iksOutDbContext.Iks.Count();
                 _logger.WriteCurrentIksFound(_result.Found);
