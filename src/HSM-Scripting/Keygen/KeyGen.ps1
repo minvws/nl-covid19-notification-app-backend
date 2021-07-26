@@ -148,6 +148,8 @@ function SetKeyFilenames ()
 	$script:date = Get-Date -Format "MM_dd_HH-mm-ss"
 	
 	$script:keynameCert = read-host "Enter the preferred name of the keyfiles"
+	$Host.UI.RawUI.FlushInputBuffer() #clears any annoying newlines that were accidentally copied in
+	
 	$script:selfsigncertname = ".\Temp$script:date\$script:keynameCert-Root"
 	
 	$script:keynameRSA = "$script:keynameCert-RSA"
