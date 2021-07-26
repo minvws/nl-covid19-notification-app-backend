@@ -44,23 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
         private static void Start(IServiceProvider serviceProvider, string[] args)
         {
-            var logger = serviceProvider.GetRequiredService<DailyCleanupLoggingExtensions>();
-            logger.WriteStart();
-
-            var commandInvoker = new CommandInvoker();
-            commandInvoker.SetCommand(serviceProvider.GetRequiredService<StatisticsCommand>());
-            commandInvoker.SetCommand(serviceProvider.GetRequiredService<RemoveExpiredWorkflowsCommand>());
-            commandInvoker.SetCommand(serviceProvider.GetRequiredService<RemoveDiagnosisKeysReadyForCleanupCommand>());
-            commandInvoker.SetCommand(serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeysCommand>());
-            commandInvoker.SetCommand(serviceProvider.GetRequiredService<RemoveExpiredEksCommand>());
-            commandInvoker.SetCommand(serviceProvider.GetRequiredService<RemoveExpiredEksV2Command>());
-            commandInvoker.SetCommand(serviceProvider.GetRequiredService<RemoveExpiredManifestsCommand>());
-            commandInvoker.SetCommand(serviceProvider.GetRequiredService<RemoveExpiredIksInCommand>());
-            commandInvoker.SetCommand(serviceProvider.GetRequiredService<RemoveExpiredIksOutCommand>());
-            commandInvoker.RunAsync().GetAwaiter().GetResult();
-
-            logger.WriteFinished();
-
+            serviceProvider.GetRequiredService<DailyCleanupJob>().Run();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
@@ -83,6 +67,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<IWorkflowConfig, WorkflowConfig>();
             services.AddSingleton<IAcceptableCountriesSetting, EfgsInteropConfig>();
             services.AddSingleton<IOutboundFixedCountriesOfInterestSetting, EfgsInteropConfig>();
+
+            services.AddTransient<DailyCleanupJob>();
 
             services.AddTransient<RemoveExpiredWorkflowsCommand>();
             services.AddTransient<RemoveDiagnosisKeysReadyForCleanupCommand>();

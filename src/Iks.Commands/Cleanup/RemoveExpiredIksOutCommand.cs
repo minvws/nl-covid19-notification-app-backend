@@ -13,7 +13,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
 {
-    public class RemoveExpiredIksOutCommand : ICommand
+    public class RemoveExpiredIksOutCommand : BaseCommand
     {
         private readonly IksOutDbContext _iksOutDbContext;
         private readonly RemoveExpiredIksLoggingExtensions _logger;
@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
         /// <summary>
         /// Manifests are updated regularly.
         /// </summary>
-        public async Task<ICommandResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             if (_result != null)
             {

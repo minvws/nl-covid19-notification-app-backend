@@ -51,24 +51,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
         private static void Start(IServiceProvider serviceProvider, string[] args)
         {
-            var run = new List<Action>();
 
-            //TODO read EFGS run.
+            serviceProvider.GetRequiredService<IksImportBatchJob>().Run();
+            serviceProvider.GetRequiredService<EksBatchJob>().Run();
+
+
+
+
+            var run = new List<Action>();
 
             var c10 = serviceProvider.GetRequiredService<SnapshotWorkflowTeksToDksCommand>();
             run.Add(() => c10.ExecuteAsync().GetAwaiter().GetResult());
 
-            var eksEngineSettings = serviceProvider.GetRequiredService<IEksEngineConfig>();
-            if (eksEngineSettings.IksImportEnabled)
-            {
-                var c20 = serviceProvider.GetRequiredService<IksImportBatchJob>();
-                run.Add(() => c20.ExecuteAsync().GetAwaiter().GetResult());
-            }
-            else
-            {
-                var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
-                logger.LogInformation("IksImport is disabled; Iks files will not be processed.");
-            }
+            //var eksEngineSettings = serviceProvider.GetRequiredService<IEksEngineConfig>();
+            //if (eksEngineSettings.IksImportEnabled)
+            //{
+            //    var c20 = serviceProvider.GetRequiredService<IksImportBatchJob>();
+            //    run.Add(() => c20.ExecuteAsync().GetAwaiter().GetResult());
+            //}
+            //else
+            //{
+            //    var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+            //    logger.LogInformation("IksImport is disabled; Iks files will not be processed.");
+            //}
 
             var c60 = serviceProvider.GetService<RemoveDuplicateDiagnosisKeysCommand>();
             run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());

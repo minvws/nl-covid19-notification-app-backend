@@ -4,11 +4,7 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces
 {
-    /// <summary>
-    /// Command pattern result interface
-    /// </summary>
-    public interface ICommandResult
+    public interface IParameters
     {
-        bool HasErrors { get; set; }
     }
 }

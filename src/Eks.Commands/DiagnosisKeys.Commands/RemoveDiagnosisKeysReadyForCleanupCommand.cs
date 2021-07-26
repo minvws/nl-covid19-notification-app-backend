@@ -7,12 +7,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands
 {
-    public class RemoveDiagnosisKeysReadyForCleanupCommand : ICommand
+    public class RemoveDiagnosisKeysReadyForCleanupCommand : BaseCommand
     {
         private readonly DkSourceDbContext _diagnosticKeyDbContext;
 
@@ -21,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             _diagnosticKeyDbContext = diagnosticKeyDbContext ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContext));
         }
 
-        public async Task<ICommandResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             await _diagnosticKeyDbContext.BulkDeleteAsync(_diagnosticKeyDbContext.DiagnosisKeys.AsNoTracking().Where(p => p.ReadyForCleanup.Value).ToList());
             return null;

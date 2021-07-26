@@ -9,8 +9,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces
     /// <summary>
     /// Command pattern interface
     /// </summary>
-    public interface ICommand
+    public interface ICommand<in T>
     {
+        Task<ICommandResult> ExecuteAsync(T parameters);
         Task<ICommandResult> ExecuteAsync();
     }
 }

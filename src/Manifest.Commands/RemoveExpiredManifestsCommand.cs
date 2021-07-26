@@ -11,7 +11,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
-    public class RemoveExpiredManifestsCommand : ICommand
+    public class RemoveExpiredManifestsCommand : BaseCommand
     {
         private readonly RemoveExpiredManifestsReceiver _receiver;
 
@@ -31,11 +31,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         /// <summary>
         /// Manifests are updated regularly.
         /// </summary>
-        public async Task<ICommandResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             foreach (var item in _manifestTypesAndLoggingCodexNumber)
             {
-                _ = _receiver.RemoveManifestsAsync(manifestType: item.Item1, loggingBaseNumber: item.Item2).GetAwaiter().GetResult();
+                _ = await _receiver.RemoveManifestsAsync(manifestType: item.Item1, loggingBaseNumber: item.Item2);
             }
 
             return null;

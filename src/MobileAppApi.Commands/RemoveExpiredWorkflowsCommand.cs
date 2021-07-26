@@ -17,7 +17,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entity
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
 {
-    public class RemoveExpiredWorkflowsCommand : ICommand
+    public class RemoveExpiredWorkflowsCommand : BaseCommand
     {
         private readonly WorkflowDbContext _workflowDbContext;
         private readonly ExpiredWorkflowLoggingExtensions _logger;
@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
         /// Delete all Workflows and their associated TEKs that are over 2 days old
         /// Cascading delete kills the TEKs.
         /// </summary>
-        public async Task<ICommandResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             if (_result != null)
             {

@@ -5,11 +5,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
 {
-    public class StatisticsCommand : ICommand
+    public class StatisticsCommand : BaseCommand
     {
         private readonly IStatisticsWriter _writer;
         private readonly IStatsQueryCommand[] _statsQueries;
@@ -20,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
             _statsQueries = statsQueries ?? throw new ArgumentNullException(nameof(statsQueries));
         }
 
-        public async Task<ICommandResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             var results = new List<StatisticArgs>();
             foreach (var iStatsQueryCommand in _statsQueries)

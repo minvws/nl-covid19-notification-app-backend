@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
@@ -21,7 +22,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entity
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands
 {
-    public class SnapshotWorkflowTeksToDksCommand
+    public class SnapshotWorkflowTeksToDksCommand : BaseCommand
     {
         private readonly ILogger<SnapshotWorkflowTeksToDksCommand> _logger;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
@@ -43,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             _orderedProcessorList = orderedProcessorList ?? throw new ArgumentNullException(nameof(orderedProcessorList));
         }
 
-        public async Task<SnapshotWorkflowTeksToDksResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             if (_result != null)
             {
@@ -55,6 +56,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             await SnapshotTeks();
             await CommitSnapshotAsync();
             return _result;
+        }
+
+        public async Task<ICommandResult> ExecuteAsync<T>(T _)
+        {
+            return await ExecuteAsync();
         }
 
         private async Task ClearJobTablesAsync()

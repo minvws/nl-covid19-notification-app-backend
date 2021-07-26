@@ -5,22 +5,31 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 {
-    public class IksImportBatchJob
+    public class IksImportBatchJob : IJob
     {
+        private readonly ILogger<IksImportBatchJob> _logger;
+        private readonly IEksEngineConfig _eksEngineConfig;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly IksInDbContext _iksInDbContext;
+        private readonly CommandInvoker _commandInvoker;
         private readonly IksImportCommand _iksImportCommand;
 
-        public IksImportBatchJob(IUtcDateTimeProvider dateTimeProvider, IksInDbContext iksInDbContext, IksImportCommand iksImportCommand)
+        public IksImportBatchJob(ILogger<IksImportBatchJob> logger, IEksEngineConfig eksEngineConfig, IUtcDateTimeProvider dateTimeProvider, IksInDbContext iksInDbContext, CommandInvoker commandInvoker, IksImportCommand iksImportCommand)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _eksEngineConfig = eksEngineConfig ?? throw new ArgumentNullException(nameof(eksEngineConfig));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _iksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
+            _commandInvoker = commandInvoker ?? throw new ArgumentNullException(nameof(commandInvoker));
             _iksImportCommand = iksImportCommand ?? throw new ArgumentNullException(nameof(iksImportCommand));
         }
 
@@ -38,7 +47,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
         {
             try
             {
-                await _iksImportCommand.Execute(item);
+                _commandInvoker.SetCommand(_iksImportCommand, new IksImportCommand.Parameters { IksInEntity = item });
+                await _commandInvoker.RunAsync();
 
                 if (!item.Error)
                 {
@@ -50,9 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             }
             catch (Exception e)
             {
-                //TODO mark as having issues - retry x times? Don't want to repeat
-                //TODO log...
-                throw;
+                _logger.LogCritical(e.Message);
             }
         }
 
@@ -63,6 +71,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                 .OrderBy(x => x.Created)
                 .Take(1)
                 .SingleOrDefault();
+        }
+
+        public void Run()
+        {
+            if (_eksEngineConfig.IksImportEnabled)
+            {
+                ExecuteAsync().GetAwaiter().GetResult();
+            }
+            else
+            {
+                _logger.LogInformation("IksImport is disabled; Iks files will not be processed.");
+            }
         }
     }
 }

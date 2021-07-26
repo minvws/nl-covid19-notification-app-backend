@@ -13,7 +13,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramewor
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands
 {
-    public class RemovePublishedDiagnosisKeysCommand : ICommand
+    public class RemovePublishedDiagnosisKeysCommand : BaseCommand
     {
         private RemovePublishedDiagnosisKeysResult _result;
         private readonly DkSourceDbContext _diagnosticKeyDbContext;
@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             _utcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
         }
 
-        public async Task<ICommandResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             if (_result != null)
             {
