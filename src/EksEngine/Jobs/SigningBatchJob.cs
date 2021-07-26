@@ -12,11 +12,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Jobs
 {
     public class SigningBatchJob : IJob
     {
-        private readonly ILogger<ManifestBatchJob> _logger;
+        private readonly ILogger<SigningBatchJob> _logger;
         private readonly CommandInvoker _commandInvoker;
         private readonly NlContentResignExistingV1ContentCommand _nlContentResignExistingV1ContentCommand;
 
-        public SigningBatchJob(ILogger<ManifestBatchJob> logger,
+        public SigningBatchJob(ILogger<SigningBatchJob> logger,
             CommandInvoker commandInvoker,
             NlContentResignExistingV1ContentCommand nlContentResignExistingV1ContentCommand
         )

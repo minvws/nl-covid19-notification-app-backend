@@ -156,7 +156,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             // Act
             await _snapshot.ExecuteAsync();
             await _eksJob.ExecuteAsync();
-            await _manifestJob.ExecuteAllAsync();
+            await _manifestJob.ExecuteAsync();
             await _resign.ExecuteAsync();
 
             // Assert
@@ -192,7 +192,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             // Act
             await _snapshot.ExecuteAsync(); //Too soon to publish TEKs
             await _eksJob.ExecuteAsync();
-            await _manifestJob.ExecuteAllAsync();
+            await _manifestJob.ExecuteAsync();
             await _resign.ExecuteAsync();
 
             // Assert

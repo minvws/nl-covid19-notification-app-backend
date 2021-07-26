@@ -10,11 +10,11 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Jobs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
 {
@@ -33,10 +33,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             }
         }
 
-        private static void Start(IServiceProvider services, string[] args)
+        private static void Start(IServiceProvider serviceProvider, string[] args)
         {
-            var job = services.GetRequiredService<ManifestUpdateCommand>();
-            job.ExecuteAllAsync().GetAwaiter().GetResult();
+            serviceProvider.GetRequiredService<ManifestBatchJob>().Run();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
@@ -49,6 +48,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
 
             // Orchestrating components
+            services.AddTransient<ManifestBatchJob>();
+
             services.AddTransient<ManifestUpdateCommand>();
             services.AddTransient<ManifestV2Builder>();
             services.AddTransient<ManifestV3Builder>();
