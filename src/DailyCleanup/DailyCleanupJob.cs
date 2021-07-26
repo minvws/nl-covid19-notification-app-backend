@@ -66,7 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
                 .SetCommand(_removeExpiredManifestsCommand).WithPreExecuteAction(_logger.WriteManiFestCleanupStarting)
                 .SetCommand(_removeExpiredIksInCommand).WithPreExecuteAction(_logger.WriteExpiredIksInCleanupStarting)
                 .SetCommand(_removeExpiredIksOutCommand).WithPreExecuteAction(_logger.WriteExpiredIksOutCleanupStarting)
-                .Run();
+                .Execute();
 
             _logger.WriteFinished();
         }

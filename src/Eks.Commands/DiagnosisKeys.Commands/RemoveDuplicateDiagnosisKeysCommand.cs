@@ -8,12 +8,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands
 {
-    public class RemoveDuplicateDiagnosisKeysCommand
+    public class RemoveDuplicateDiagnosisKeysCommand : BaseCommand
     {
         private readonly DkSourceDbContext _dkSourceDbContext;
 
@@ -22,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
         }
 
-        public async Task ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             var duplicates = (
                     await _dkSourceDbContext.DiagnosisKeys
@@ -41,6 +43,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             }
 
             await _dkSourceDbContext.BulkUpdateAsync(affectedEntities);
+
+            return null;
         }
 
         private static List<DiagnosisKeyEntity> MarkDuplicatesPublished(Dictionary<DiagnosisKeyEntity, IEnumerable<DiagnosisKeyEntity>> duplicateEntities)

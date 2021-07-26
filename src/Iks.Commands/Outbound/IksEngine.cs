@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
@@ -21,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
     /// <summary>
     /// Build content
     /// </summary>
-    public class IksEngine
+    public class IksEngine : BaseCommand
     {
         private readonly ILogger<IksEngine> _logger;
         private readonly IksInputSnapshotCommand _snapshotter;
@@ -59,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             _jobName = "IksEngine";
         }
 
-        public async Task<IksEngineResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             if (_fired)
             {

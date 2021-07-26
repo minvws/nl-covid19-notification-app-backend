@@ -77,12 +77,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
             _commandExecuter.AfterAction = action;
             return this;
         }
-        
+
         /// <summary>
         /// Execute all commands in the set of commands
         /// </summary>
         /// <returns></returns>
-        public async Task RunAsync()
+        public async Task ExecuteAsync()
         {
             foreach (var commandExecuter in _commands)
             {
@@ -94,9 +94,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         /// Execute all commands in the set of commands
         /// All commands will run async internally
         /// </summary>
-        public void Run()
+        public void Execute()
         {
-            RunAsync().GetAwaiter().GetResult();
+            ExecuteAsync().GetAwaiter().GetResult();
         }
 
         private class CommandExecuter

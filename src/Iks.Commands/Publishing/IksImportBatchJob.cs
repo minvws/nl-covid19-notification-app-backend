@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             try
             {
                 _commandInvoker.SetCommand(_iksImportCommand, new IksImportCommand.Parameters { IksInEntity = item });
-                await _commandInvoker.RunAsync();
+                await _commandInvoker.ExecuteAsync();
 
                 if (!item.Error)
                 {
