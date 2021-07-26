@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
         public async Task ExecuteAsync()
         {
-            var iksDuplicates = (
+            var duplicates = (
                     await _dkSourceDbContext.DiagnosisKeys
                         .AsNoTracking()
                         .Where(p => !p.ReadyForCleanup.HasValue || !p.ReadyForCleanup.Value)
@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 .Where(group => group.Count() > 1)
                 .ToDictionary(p => p.Key, y => y.Select(entity => entity));
 
-            var affectedEntities = MarkDuplicatesPublished(iksDuplicates);
+            var affectedEntities = MarkDuplicatesPublished(duplicates);
             foreach (var diagnosisKeyEntity in affectedEntities)
             {
                 // Mark duplicates ReadyForCleanup
@@ -136,7 +136,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         {
             public bool Equals(DiagnosisKeyEntity x, DiagnosisKeyEntity y)
             {
-                return y != null && x != null && x.DailyKey.KeyData.SequenceEqual(y.DailyKey.KeyData) && x.DailyKey.RollingPeriod == y.DailyKey.RollingPeriod && x.DailyKey.RollingStartNumber == y.DailyKey.RollingStartNumber;
+                return y != null && x != null &&
+                       x.DailyKey.KeyData.SequenceEqual(y.DailyKey.KeyData) &&
+                       x.DailyKey.RollingPeriod == y.DailyKey.RollingPeriod &&
+                       x.DailyKey.RollingStartNumber == y.DailyKey.RollingStartNumber;
             }
             public int GetHashCode(DiagnosisKeyEntity obj)
             {
