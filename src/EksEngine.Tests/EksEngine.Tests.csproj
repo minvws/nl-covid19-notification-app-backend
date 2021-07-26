@@ -48,13 +48,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="..\Database\DiagnosisKeys\dbo\StoredProcedures\RemoveDuplicateDiagnosisKeysForIks.sql" Link="Resources\RemoveDuplicateDiagnosisKeysForIks.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\Database\DiagnosisKeys\dbo\StoredProcedures\RemoveLocalDuplicateDiagnosisKeys.sql" Link="Resources\RemoveLocalDuplicateDiagnosisKeys.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
 </Project>

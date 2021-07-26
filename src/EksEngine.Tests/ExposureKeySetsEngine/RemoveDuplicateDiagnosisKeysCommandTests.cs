@@ -4,44 +4,36 @@
 
 using System;
 using System.Data.Common;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
-using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySetsEngine
 {
-    [Trait("db", "ss")]
-    public class RemoveLocalDuplicateDiagnosisKeysCommandTests : IDisposable
+    [Trait("db", "mem")]
+    public class RemoveDuplicateDiagnosisKeysCommandTests : IDisposable
     {
         private static DbConnection connection;
         private readonly DkSourceDbContext _dkSourceContext;
 
-        public RemoveLocalDuplicateDiagnosisKeysCommandTests()
+        public RemoveDuplicateDiagnosisKeysCommandTests()
         {
-            var dkSourceDbContextOptions = new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlServer(CreateSqlDatabase()).Options;
-            var sp = File.ReadAllText(@"Resources\RemoveLocalDuplicateDiagnosisKeys.sql");
+            var dkSourceDbContextOptions = new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlite(CreateSqlDatabase()).Options;
             _dkSourceContext = new DkSourceDbContext(dkSourceDbContextOptions);
-            _dkSourceContext.Database.EnsureDeleted(); // Delete database first because the sp cannot be added twice.
             _dkSourceContext.Database.EnsureCreated();
-            _dkSourceContext.Database.ExecuteSqlRaw(sp);
-
         }
+
         private static DbConnection CreateSqlDatabase()
         {
-            var csb = new SqlConnectionStringBuilder($"Data Source=.;Initial Catalog={nameof(RemoveLocalDuplicateDiagnosisKeysCommandTests) + "_D"};Integrated Security=True")
-            {
-                MultipleActiveResultSets = true
-            };
-
-            connection = new SqlConnection(csb.ConnectionString);
+            connection = new SqliteConnection("Filename=:memory:");
+            connection.Open();
             return connection;
         }
 
@@ -162,9 +154,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             };
         }
 
-        private IRemoveDuplicateDiagnosisKeysCommand CreateCommand()
+        private RemoveDuplicateDiagnosisKeysCommand CreateCommand()
         {
-            return new RemoveLocalDuplicateDiagnosisKeysCommand(_dkSourceContext);
+            return new RemoveDuplicateDiagnosisKeysCommand(_dkSourceContext);
         }
     }
 }
