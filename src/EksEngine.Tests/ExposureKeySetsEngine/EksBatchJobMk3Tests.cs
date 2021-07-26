@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -36,7 +35,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         private readonly FakeEksConfig _fakeEksConfig;
         private readonly WorkflowDbContext _workflowContext;
         private readonly DkSourceDbContext _dkSourceContext;
-        private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
+        private readonly DbContextOptions<WorkflowDbContext> _workflowContextOptions;
+        private readonly DbContextOptions<DkSourceDbContext> _dkSourceDbContextOptions;
+        private readonly DbContextOptions<EksPublishingJobDbContext> _publishingContextOptions;
         private readonly ContentDbContext _contentDbContext;
         private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _outboundCountriesMock;
         private readonly LoggerFactory _lf;
@@ -46,12 +47,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         protected EksBatchJobMk3Tests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions, DbContextOptions<EksPublishingJobDbContext> eksPublishingJobDbContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _workflowContext = new WorkflowDbContext(workflowContextOptions ?? throw new ArgumentNullException(nameof(workflowContextOptions)));
+            _workflowContextOptions = workflowContextOptions ?? throw new ArgumentNullException(nameof(workflowContextOptions));
+            _dkSourceDbContextOptions = dkSourceDbContextOptions ?? throw new ArgumentNullException(nameof(dkSourceDbContextOptions));
+            _publishingContextOptions = eksPublishingJobDbContextOptions ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContextOptions));
+
+            _workflowContext = new WorkflowDbContext(_workflowContextOptions);
             _workflowContext.Database.EnsureCreated();
-            _dkSourceContext = new DkSourceDbContext(dkSourceDbContextOptions ?? throw new ArgumentNullException(nameof(dkSourceDbContextOptions)));
+            _dkSourceContext = new DkSourceDbContext(_dkSourceDbContextOptions);
             _dkSourceContext.Database.EnsureCreated();
-            _eksPublishingJobDbContext = new EksPublishingJobDbContext(eksPublishingJobDbContextOptions ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContextOptions)));
-            _eksPublishingJobDbContext.Database.EnsureCreated();
             _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
             _contentDbContext.Database.EnsureCreated();
 
@@ -104,14 +107,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
         private async Task<EksEngineResult> RunEngine()
         {
+            var dkSourceContext = new DkSourceDbContext(_dkSourceDbContextOptions);
+            await dkSourceContext.Database.EnsureCreatedAsync();
+
+            var eksPublishingJobContext = new EksPublishingJobDbContext(_publishingContextOptions);
+            await eksPublishingJobContext.Database.EnsureCreatedAsync();
+
             _engine = new ExposureKeySetBatchJobMk3(
                 _fakeEksConfig,
                 new FakeEksBuilder(),
-                _eksPublishingJobDbContext,
+                eksPublishingJobContext,
                 new StandardUtcDateTimeProvider(),
                 new EksEngineLoggingExtensions(_lf.CreateLogger<EksEngineLoggingExtensions>()),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(), new StandardRandomNumberGenerator(), _dateTimeProvider, _fakeEksConfig),
-                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new NullLogger<SnapshotLoggingExtensions>()), _dkSourceContext, _eksPublishingJobDbContext,
+                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new NullLogger<SnapshotLoggingExtensions>()), dkSourceContext, eksPublishingJobContext,
                     new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
                         {
                             InfectiousPeriodType.Symptomatic,
@@ -122,10 +131,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                             new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
                         }
                     })),
-                new MarkDiagnosisKeysAsUsedLocally(_dkSourceContext, _fakeEksConfig, _eksPublishingJobDbContext, _lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
-                new EksJobContentWriter(_contentDbContext, _eksPublishingJobDbContext, new Sha256HexPublishingIdService(),
+                new MarkDiagnosisKeysAsUsedLocally(dkSourceContext, _fakeEksConfig, eksPublishingJobContext, _lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
+                new EksJobContentWriter(_contentDbContext, eksPublishingJobContext, new Sha256HexPublishingIdService(),
                     new EksJobContentWriterLoggingExtensions(_lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
-                new WriteStuffingToDiagnosisKeys(_dkSourceContext, _eksPublishingJobDbContext,
+                new WriteStuffingToDiagnosisKeys(dkSourceContext, eksPublishingJobContext,
                     new IDiagnosticKeyProcessor[] {
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_outboundCountriesMock.Object),
                     new NlToEfgsDsosDiagnosticKeyProcessorMk1()
@@ -196,16 +205,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             result = await RunEngine();
 
             Assert.Equal(0, result.InputCount);
-            Assert.Equal(0, result.StuffingCount);
-            Assert.Equal(0, result.OutputCount);
+            Assert.Equal(5, result.StuffingCount);
+            Assert.Equal(5, result.OutputCount);
             Assert.Equal(0, result.TransmissionRiskNoneCount);
-            Assert.Empty(result.EksInfo);
+            Assert.NotEmpty(result.EksInfo);
 
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet));
-            Assert.Equal(5, _dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally));
+            Assert.Equal(2, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet));
+            Assert.Equal(10, _dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally)); // Another extra of 5 stuffing records added
 
             Assert.True(result.TotalSeconds > 0);
         }
@@ -223,9 +232,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.True(result.Started > new DateTime(2020, 8, 1, 0, 0, 0, DateTimeKind.Utc));
             Assert.Equal(0, result.InputCount);
             Assert.Equal(0, result.FilteredInputCount);
-            Assert.Equal(0, result.StuffingCount);
-            Assert.Equal(0, result.OutputCount);
-            Assert.Empty(result.EksInfo);
+            Assert.Equal(5, result.StuffingCount);
+            Assert.Equal(5, result.OutputCount);
+            Assert.NotEmpty(result.EksInfo);
             Assert.Equal(0, result.TransmissionRiskNoneCount);
 
             Assert.Equal(0, result.ReconcileOutputCount);
@@ -514,8 +523,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             await _contentDbContext.BulkDeleteAsync(_contentDbContext.Content.ToList());
             await _dkSourceContext.BulkDeleteAsync(_dkSourceContext.DiagnosisKeys.ToList());
             await _dkSourceContext.BulkDeleteAsync(_dkSourceContext.DiagnosisKeysInput.ToList());
-            await _eksPublishingJobDbContext.BulkDeleteAsync(_eksPublishingJobDbContext.EksInput.ToList());
-            await _eksPublishingJobDbContext.BulkDeleteAsync(_eksPublishingJobDbContext.EksOutput.ToList());
         }
     }
 }
