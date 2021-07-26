@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
         public async Task ExecuteAsync()
         {
-            var iksDuplicates = (
+            var duplicates = (
                     await _dkSourceDbContext.DiagnosisKeys
                         .AsNoTracking()
                         .Where(p => !p.ReadyForCleanup.HasValue || !p.ReadyForCleanup.Value)
@@ -33,39 +33,39 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 .Where(group => group.Count() > 1)
                 .ToDictionary(p => p.Key, y => y.Select(entity => entity));
 
-            var affectedEntities = MarkDuplicatesPublished(iksDuplicates);
+            var affectedEntities = MarkDuplicatesPublished(duplicates);
             foreach (var diagnosisKeyEntity in affectedEntities)
             {
-                // Mark duplicates ReadyForCleanup
+                // Mark duplicateEntities ReadyForCleanup
                 diagnosisKeyEntity.ReadyForCleanup = diagnosisKeyEntity.PublishedLocally && diagnosisKeyEntity.PublishedToEfgs;
             }
 
             await _dkSourceDbContext.BulkUpdateAsync(affectedEntities);
         }
 
-        private static List<DiagnosisKeyEntity> MarkDuplicatesPublished(Dictionary<DiagnosisKeyEntity, IEnumerable<DiagnosisKeyEntity>> iksDuplicates)
+        private static List<DiagnosisKeyEntity> MarkDuplicatesPublished(Dictionary<DiagnosisKeyEntity, IEnumerable<DiagnosisKeyEntity>> duplicateEntities)
         {
             var affectedEntityList = new List<DiagnosisKeyEntity>();
 
-            foreach (var iksDuplicateList in iksDuplicates)
+            foreach (var duplicateList in duplicateEntities)
             {
-                // Get all duplicates ordered by TransmissionRiskLevel; Highest first
-                var iks = iksDuplicateList.Value.OrderByDescending(p => p.Local.TransmissionRiskLevel).ToList();
+                // Get all duplicateEntities ordered by TransmissionRiskLevel; Highest first
+                var duplicates = duplicateList.Value.OrderByDescending(p => p.Local.TransmissionRiskLevel).ToList();
 
-                MarkEfgsDuplicates(iks, affectedEntityList);
-                MarkLocalDuplicates(iks, affectedEntityList);
+                MarkEfgsDuplicates(duplicates, affectedEntityList);
+                MarkLocalDuplicates(duplicates, affectedEntityList);
             }
 
             return affectedEntityList;
         }
 
-        private static void MarkEfgsDuplicates(IReadOnlyCollection<DiagnosisKeyEntity> iks, ICollection<DiagnosisKeyEntity> affectedEntityList)
+        private static void MarkEfgsDuplicates(IReadOnlyCollection<DiagnosisKeyEntity> duplicateEntityList, ICollection<DiagnosisKeyEntity> affectedEntityList)
         {
             // Mark ALL as Published if any has been published
-            if (iks.Any(p => p.PublishedToEfgs))
+            if (duplicateEntityList.Any(p => p.PublishedToEfgs))
             {
                 // Iterate through all unmarked as published
-                foreach (var diagnosisKeyEntity in iks.Where(diagnosisKeyEntity => !diagnosisKeyEntity.PublishedToEfgs))
+                foreach (var diagnosisKeyEntity in duplicateEntityList.Where(diagnosisKeyEntity => !diagnosisKeyEntity.PublishedToEfgs))
                 {
                     diagnosisKeyEntity.PublishedToEfgs = true;
 
@@ -79,7 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             // Mark all except the row with the highest TRL if non are published
             else
             {
-                foreach (var diagnosisKeyEntity in iks.Skip(1))
+                foreach (var diagnosisKeyEntity in duplicateEntityList.Skip(1))
                 {
                     // If already marked published, do nothing
                     if (diagnosisKeyEntity.PublishedToEfgs)
@@ -96,13 +96,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             }
         }
 
-        private static void MarkLocalDuplicates(IReadOnlyCollection<DiagnosisKeyEntity> iks, ICollection<DiagnosisKeyEntity> affectedEntityList)
+        private static void MarkLocalDuplicates(IReadOnlyCollection<DiagnosisKeyEntity> duplicateEntityList, ICollection<DiagnosisKeyEntity> affectedEntityList)
         {
             // Mark ALL as Published if any has been published
-            if (iks.Any(p => p.PublishedLocally))
+            if (duplicateEntityList.Any(p => p.PublishedLocally))
             {
                 // Iterate through all unmarked as published
-                foreach (var diagnosisKeyEntity in iks.Where(diagnosisKeyEntity => !diagnosisKeyEntity.PublishedLocally))
+                foreach (var diagnosisKeyEntity in duplicateEntityList.Where(diagnosisKeyEntity => !diagnosisKeyEntity.PublishedLocally))
                 {
                     diagnosisKeyEntity.PublishedLocally = true;
 
@@ -116,7 +116,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             // Mark all except the row with the highest TRL if non are published
             else
             {
-                foreach (var diagnosisKeyEntity in iks.Skip(1))
+                foreach (var diagnosisKeyEntity in duplicateEntityList.Skip(1))
                 {
                     if (diagnosisKeyEntity.PublishedLocally)
                     { continue; }
@@ -136,7 +136,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         {
             public bool Equals(DiagnosisKeyEntity x, DiagnosisKeyEntity y)
             {
-                return y != null && x != null && x.DailyKey.KeyData.SequenceEqual(y.DailyKey.KeyData) && x.DailyKey.RollingPeriod == y.DailyKey.RollingPeriod && x.DailyKey.RollingStartNumber == y.DailyKey.RollingStartNumber;
+                return y != null && x != null &&
+                       x.DailyKey.KeyData.SequenceEqual(y.DailyKey.KeyData) &&
+                       x.DailyKey.RollingPeriod == y.DailyKey.RollingPeriod &&
+                       x.DailyKey.RollingStartNumber == y.DailyKey.RollingStartNumber;
             }
             public int GetHashCode(DiagnosisKeyEntity obj)
             {
