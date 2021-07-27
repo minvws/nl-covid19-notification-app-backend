@@ -103,13 +103,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
 
                 if (_result.Before.Authorised != _result.Before.AuthorisedAndFullyPublished)
                 {
-                    _logger.WriteUnpublishedTekFound();
-                    throw new InvalidOperationException("Authorised unpublished TEKs exist. Aborting workflow cleanup.");
+                    _logger.WriteUnpublishedTekFound(); // Authorised unpublished TEKs exist.
                 }
-
-                _result.GivenMercy = _workflowDbContext.Database.ExecuteSqlInterpolated($"DELETE FROM TekReleaseWorkflowState WHERE [ValidUntil] < {_dtp.Snapshot}");
-                _logger.WriteRemovedAmount(_result.GivenMercy);
-                tx.Commit();
+                else
+                {
+                    var workflowsToDelete = _workflowDbContext.KeyReleaseWorkflowStates.AsNoTracking().Where(p => p.ValidUntil < _dtp.Snapshot).ToList();
+                    _result.GivenMercy = workflowsToDelete.Count;
+                    _workflowDbContext.BulkDelete(workflowsToDelete);
+                    _logger.WriteRemovedAmount(_result.GivenMercy);
+                    tx.Commit();
+                }
             }
 
             using (_workflowDbContext.BeginTransaction())
