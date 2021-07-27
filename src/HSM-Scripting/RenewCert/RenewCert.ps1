@@ -7,6 +7,7 @@
 # 2. Create request inf
 # 3. Opsturen naar PKIO. Dev: sign with root
 # 4. Dev: certreq accept.
+$VariablesSource = "Development"
 
 if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
 {
@@ -16,6 +17,7 @@ if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*"
 
     $IsOnDevEnvironment = $True #When set to $False: skips signing and accepting of the RSA request
     $CnValue = "ontw.coronamelder-api.nl" #should be [test.signing|acceptatie.signing|signing].coronamelder-api.nl
+	$CertLifeTimeDays = 3650
 }
 else
 {
@@ -182,11 +184,17 @@ Pause
 
 RunWithErrorCheck "certreq -new $requestRSAname.inf $requestRSAname.csr"
 
-if($IsOnDevEnvironment -eq $True)
-{
-	write-host "`nSigning new request with self-signed root certificate"
+if($IsOnDevEnvironment)
+{	
+	write-host "`nYou need to sign the request with the self-signed root-certificate from the keygen-folder."
+	$RootCertLocation = read-host "`nPlease enter the location and name of the files, without extension"
+	$Host.UI.RawUI.FlushInputBuffer()
 	
-	RunWithErrorCheck "$openSslLoc x509 -req -in $requestRSAname.csr -set_serial $(Get-Random) -days $RootDays -CA $selfsigncertname.pem -CAkey $selfsigncertname.key -out $signedrequestRSAname.pem"
+	RunWithErrorCheck "$openSslLoc x509 -req -in $requestRSAname.csr -set_serial $(Get-Random) -days $CertLifeTimeDays -CA $RootCertLocation.pem -CAkey $RootCertLocation.key -out $signedrequestRSAname.pem"
+	
+	write-host "`nSending signed request to HSM"
+	Pause
+	
 	RunWithErrorCheck "certreq -accept -machine $signedrequestRSAname.pem"
 }
 
@@ -196,12 +204,16 @@ Pause
 RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool`" listkeys"
 Pause
 
+write-host "`nDone!"
+
 if($IsOnDevEnvironment -eq $False)
-{	
-	write-host "`nDone! The RSA request-file for PKIO is $requestRSAname."
+{
+	write-host "`nThe RSA request-file for PKIO is $requestRSAname."
 }
 
-write-host "`nOpening the local machine store.`nCerts should be present under personal certificates and root certificates."
+write-host "`nOpening the local machine store.`nThe renewed cert should be present under personal certificates."
 Pause
 
 RunWithErrorCheck "certlm.msc"
+
+# C:\Work\Sources\MinVWS.CoronaMelderBackend\src\HSM-Scripting\Keygen\Temp07_27_10-40-50\LocalTest1-Root
