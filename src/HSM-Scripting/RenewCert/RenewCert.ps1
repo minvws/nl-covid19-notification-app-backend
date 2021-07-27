@@ -1,12 +1,6 @@
 # Not designed for Powershell ISE
 # Double-check you are allowed to run custom scripts.
 
-# Renew certificate.
-
-# 1. Generate new keypair in HSM
-# 2. Create request inf
-# 3. Opsturen naar PKIO. Dev: sign with root
-# 4. Dev: certreq accept.
 $VariablesSource = "Development"
 
 if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
@@ -215,5 +209,3 @@ write-host "`nOpening the local machine store.`nThe renewed cert should be prese
 Pause
 
 RunWithErrorCheck "certlm.msc"
-
-# C:\Work\Sources\MinVWS.CoronaMelderBackend\src\HSM-Scripting\Keygen\Temp07_27_10-40-50\LocalTest1-Root
