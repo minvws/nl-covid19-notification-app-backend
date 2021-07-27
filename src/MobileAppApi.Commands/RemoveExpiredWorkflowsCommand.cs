@@ -69,8 +69,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
                 }
                 else
                 {
-                    var workflowsToDelete = _workflowDbContext.KeyReleaseWorkflowStates.AsNoTracking().Where(p => p.ValidUntil < _dtp.Snapshot).ToList();
-                    _result.GivenMercy = workflowsToDelete.Count;
+                    var workflowsToDelete = await _workflowDbContext.KeyReleaseWorkflowStates.AsNoTracking().Where(p => p.ValidUntil < _dtp.Snapshot).ToArrayAsync();
+                    _result.GivenMercy = workflowsToDelete.Length;
                     await _workflowDbContext.BulkDeleteAsync(workflowsToDelete);
                     _logger.WriteRemovedAmount(_result.GivenMercy);
                     await tx.CommitAsync();

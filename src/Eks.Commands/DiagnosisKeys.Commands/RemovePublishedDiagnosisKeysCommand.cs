@@ -37,10 +37,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             //TODO setting
             var cutoff = _utcDateTimeProvider.Snapshot.AddDays(-14).Date.ToRollingStartNumber();
 
-            var resultToDelete = _diagnosticKeyDbContext.DiagnosisKeys.AsNoTracking().Where(p =>
-                p.PublishedLocally && p.PublishedToEfgs && p.DailyKey.RollingStartNumber < cutoff).ToList();
+            var resultToDelete = await _diagnosticKeyDbContext.DiagnosisKeys.AsNoTracking().Where(p =>
+                p.PublishedLocally && p.PublishedToEfgs && p.DailyKey.RollingStartNumber < cutoff).ToArrayAsync();
 
-            _result.GivenMercy = resultToDelete.Count;
+            _result.GivenMercy = resultToDelete.Length;
             await _diagnosticKeyDbContext.BulkDeleteAsync(resultToDelete);
 
             _result.RemainingExpiredCount = _diagnosticKeyDbContext.DiagnosisKeys.Count(x => x.DailyKey.RollingStartNumber < cutoff);

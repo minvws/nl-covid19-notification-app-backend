@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         [InlineData(ContentTypes.ManifestV2)]
         [InlineData(ContentTypes.ManifestV3)]
         [InlineData(ContentTypes.ManifestV4)]
-        public void Remove_Expired_Manifest_By_Type_Should_Leave_One(ContentTypes manifestTypeName)
+        public async Task Remove_Expired_Manifest_By_Type_Should_Leave_One(ContentTypes manifestTypeName)
         {
             //Arrange
             _contentDbContext.BulkDelete(_contentDbContext.Content.ToList());
@@ -53,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
             //Act
             var sut = CompileRemoveExpiredManifestsCommand();
-            sut.ExecuteAsync();
+            await sut.ExecuteAsync();
 
             var content = GetAllContent();
 
@@ -110,7 +110,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
         public async Task Remove_Zero_Manifest_By_Type_Should_Not_Crash(ContentTypes manifestTypeName)
         {
             //Arrange
-            _contentDbContext.BulkDelete(_contentDbContext.Content.ToList());
+            await _contentDbContext.BulkDeleteAsync(_contentDbContext.Content.ToList());
 
             _manifestConfigMock = new Mock<IManifestConfig>();
             _manifestConfigMock.Setup(x => x.KeepAliveCount).Returns(1);
@@ -125,7 +125,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
 
             //Assert
             Assert.NotNull(manifests);
-            Assert.True(manifests.Count() == 0, $"More than 0 {manifestTypeName} remains after deletion.");
+            Assert.True(!manifests.Any(), $"More than 0 {manifestTypeName} remains after deletion.");
         }
 
         private RemoveExpiredManifestsCommand CompileRemoveExpiredManifestsCommand()

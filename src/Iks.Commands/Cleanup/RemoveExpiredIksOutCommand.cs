@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -52,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
                 _result.Found = _iksOutDbContext.Iks.Count();
                 _logger.WriteCurrentIksFound(_result.Found);
 
-                var zombies = _iksOutDbContext.Iks
+                var zombies = _iksOutDbContext.Iks.AsNoTracking()
                     .Where(x => x.Created < cutoff)
                     .Select(x => new { x.Id, x.Created })
                     .ToList();
@@ -62,7 +63,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
                 _logger.WriteTotalIksFound(cutoff, _result.Zombies);
 
                 // DELETE FROM IksIn.dbo.IksIn WHERE Created < (today - 14-days)
-                _result.GivenMercy = await _iksOutDbContext.Database.ExecuteSqlRawAsync($"DELETE FROM {TableNames.IksOut} WHERE [Created] < '{cutoff:yyyy-MM-dd HH:mm:ss.fff}';");
+                var iksToBeCleaned = await _iksOutDbContext.Iks.AsNoTracking().Where(p => p.Created < cutoff).ToArrayAsync();
+                _result.GivenMercy = iksToBeCleaned.Length;
+                await _iksOutDbContext.BulkDeleteAsync(iksToBeCleaned);
                 await tx.CommitAsync();
 
                 _result.Remaining = _iksOutDbContext.Iks.Count();

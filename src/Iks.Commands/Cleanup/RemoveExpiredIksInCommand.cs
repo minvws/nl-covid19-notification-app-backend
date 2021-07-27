@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -61,8 +62,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
 
                 _logger.WriteTotalIksFound(cutoff, _result.Zombies);
 
-                // DELETE FROM IksIn.dbo.IksIn WHERE Created < (today - 14-days)                    
-                _result.GivenMercy = await _iksInDbContext.Database.ExecuteSqlRawAsync($"DELETE FROM {TableNames.IksIn} WHERE [Created] < '{cutoff:yyyy-MM-dd HH:mm:ss.fff}';");
+                // DELETE FROM IksIn.dbo.IksIn WHERE Created < (today - 14-days)
+                var iksToBeCleaned = await _iksInDbContext.Received.AsNoTracking().Where(p => p.Created < cutoff).ToArrayAsync();
+                _result.GivenMercy = iksToBeCleaned.Length;
+                await _iksInDbContext.BulkDeleteAsync(iksToBeCleaned);
                 await tx.CommitAsync();
 
                 _result.Remaining = _iksInDbContext.Received.Count();

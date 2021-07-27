@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -43,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 result.Found = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet);
                 _logger.WriteCurrentEksFound(result.Found);
 
-                var zombies = _dbContext.Content
+                var zombies = _dbContext.Content.AsNoTracking()
                     .Where(x => x.Type == ContentTypes.ExposureKeySet && x.Release < cutoff)
                     .Select(x => new { x.PublishingId, x.Release })
                     .ToList();
@@ -64,7 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 }
 
                 result.GivenMercy = zombies.Count;
-                await _dbContext.BulkDeleteAsync(_dbContext.Content.Where(p=>p.Type == ContentTypes.ExposureKeySet && p.Release < cutoff).ToList());
+                await _dbContext.BulkDeleteAsync(await _dbContext.Content.AsNoTracking().Where(p=> p.Type == ContentTypes.ExposureKeySet && p.Release < cutoff).ToArrayAsync());
                 await tx.CommitAsync();
 
                 result.Remaining = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet);

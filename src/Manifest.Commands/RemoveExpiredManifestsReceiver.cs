@@ -75,14 +75,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                 }
 
                 _contentDbContext.RemoveRange(zombies);
-                result.GivenMercy = _contentDbContext.SaveChanges();
+                result.GivenMercy = await _contentDbContext.SaveChangesAsync();
 
                 var futureZombies = _contentDbContext.Content
                     .Where(x => x.Type == manifestType && x.Release > _dateTimeProvider.Snapshot)
                     .ToList();
 
                 _contentDbContext.RemoveRange(futureZombies);
-                result.GivenMercy += _contentDbContext.SaveChanges();
+                result.GivenMercy += await _contentDbContext.SaveChangesAsync();
 
                 result.Remaining = _contentDbContext.Content.Count();
 
