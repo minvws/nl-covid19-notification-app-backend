@@ -85,7 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     diagnosisKeyEntity.ReadyForCleanup = true;
                 }
 
-                await _dkSourceDbContext.BulkUpdateAsync(dksToMarkForCleanup);
+                await _dkSourceDbContext.BulkUpdateWithTransactionAsync(dksToMarkForCleanup, new SubsetBulkArgs());
             }
         }
 
