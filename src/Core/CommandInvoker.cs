@@ -101,10 +101,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         private class CommandExecutor
         {
             public ICommand<IParameters> Command { get; set; }
-            public ICommand<IParameters> DependsOnCommand { get; set; }
             public Action BeforeAction { get; set; }
             public Action AfterAction { get; set; }
-            public dynamic Parameters { get; set; }
+            public IParameters Parameters { get; set; }
 
             public async Task ExecuteAsync()
             {
