@@ -5,7 +5,6 @@
 using System;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Jobs

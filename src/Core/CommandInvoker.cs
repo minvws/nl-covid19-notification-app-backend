@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
@@ -14,12 +13,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
     /// </summary>
     public class CommandInvoker
     {
-        private readonly List<CommandExecuter> _commands;
-        private CommandExecuter _commandExecuter;
+        private readonly List<CommandExecutor> _commands;
+        private CommandExecutor _commandExecutor;
 
         public CommandInvoker()
         {
-            _commands = new List<CommandExecuter>();
+            _commands = new List<CommandExecutor>();
         }
         /// <summary>
         /// Set a command to be executed
@@ -28,12 +27,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         /// <param name="parameters"></param>
         public CommandInvoker SetCommand(ICommand<IParameters> command)
         {
-            _commandExecuter = new CommandExecuter
+            _commandExecutor = new CommandExecutor
             {
                 Command = command
             };
 
-            _commands.Add(_commandExecuter);
+            _commands.Add(_commandExecutor);
 
             return this;
         }
@@ -45,13 +44,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         /// <param name="parameters"></param>
         public CommandInvoker SetCommand(ICommand<IParameters> command, IParameters parameters)
         {
-            _commandExecuter = new CommandExecuter
+            _commandExecutor = new CommandExecutor
             {
                 Command = command,
                 Parameters = parameters
             };
 
-            _commands.Add(_commandExecuter);
+            _commands.Add(_commandExecutor);
 
             return this;
         }
@@ -63,7 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         /// <returns></returns>
         public CommandInvoker WithPreExecuteAction(Action action)
         {
-            _commandExecuter.BeforeAction = action;
+            _commandExecutor.BeforeAction = action;
             return this;
         }
 
@@ -74,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         /// <returns></returns>
         public CommandInvoker WithPostExecuteAction(Action action)
         {
-            _commandExecuter.AfterAction = action;
+            _commandExecutor.AfterAction = action;
             return this;
         }
 
@@ -84,9 +83,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         /// <returns></returns>
         public async Task ExecuteAsync()
         {
-            foreach (var commandExecuter in _commands)
+            foreach (var commandExecutor in _commands)
             {
-                await commandExecuter.ExecuteAsync();
+                await commandExecutor.ExecuteAsync();
             }
         }
 
@@ -99,7 +98,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
             ExecuteAsync().GetAwaiter().GetResult();
         }
 
-        private class CommandExecuter
+        private class CommandExecutor
         {
             public ICommand<IParameters> Command { get; set; }
             public ICommand<IParameters> DependsOnCommand { get; set; }

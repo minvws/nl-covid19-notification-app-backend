@@ -4,7 +4,7 @@
 
 using System.Threading.Tasks;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.Interfaces
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     /// <summary>
     /// Command pattern interface
