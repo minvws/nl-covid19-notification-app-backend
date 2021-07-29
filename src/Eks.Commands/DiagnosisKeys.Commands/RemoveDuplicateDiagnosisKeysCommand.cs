@@ -6,9 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 
@@ -41,7 +40,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 diagnosisKeyEntity.ReadyForCleanup = diagnosisKeyEntity.PublishedLocally && diagnosisKeyEntity.PublishedToEfgs;
             }
 
-            await _dkSourceDbContext.BulkUpdateAsync(affectedEntities);
+            await _dkSourceDbContext.BulkUpdateWithTransactionAsync(affectedEntities, new SubsetBulkArgs());
+           
 
             return null;
         }
