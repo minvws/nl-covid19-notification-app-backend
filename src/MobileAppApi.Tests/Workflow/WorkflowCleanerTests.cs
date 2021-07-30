@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -56,11 +57,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         }
 
         [Fact]
-        public void Cleaner()
+        public async Task Cleaner()
         {
             _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
 
-            var result = _command.Execute();
+            var result = await _command.ExecuteAsync();
 
             Assert.Equal(0, result.Before.Count);
             Assert.Equal(0, result.Before.Expired);
@@ -84,7 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         }
 
         [Fact]
-        public void NoKill()
+        public async Task NoKill()
         {
             _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
 
@@ -92,7 +93,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
             Add(1, 0, null);
             _workflowDbContext.SaveChanges();
 
-            var result = _command.Execute();
+            var result = await _command.ExecuteAsync();
 
             Assert.Equal(1, result.Before.Count);
             Assert.Equal(1, result.Before.Expired);
@@ -116,7 +117,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
         }
 
         [Fact]
-        public void Kill()
+        public async Task Kill()
         {
             _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
 
@@ -125,7 +126,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
             Add(1, 0, null);
             _workflowDbContext.SaveChanges();
 
-            var result = _command.Execute();
+            var result = await _command.ExecuteAsync();
 
             Assert.Equal(1, result.Before.Count);
             Assert.Equal(1, result.Before.Expired);
@@ -163,11 +164,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
             _workflowDbContext.SaveChanges();
 
             // TODO: unittest will be updated in next feature
-            //Assert.Throws<InvalidOperationException>(() => _command.Execute());
+            //Assert.Throws<InvalidOperationException>(() => _command.ExecuteAsync());
         }
 
         [Fact]
-        public void MoreRealistic()
+        public async Task MoreRealistic()
         {
             _workflowDbContext.BulkDelete(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
 
@@ -180,7 +181,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Workf
             Add(-10, 10, 0);
             _workflowDbContext.SaveChanges();
 
-            var result = _command.Execute();
+            var result = await _command.ExecuteAsync();
 
             Assert.Equal(_workflowCount, result.Before.Count);
             Assert.Equal(4, result.Before.Expired);

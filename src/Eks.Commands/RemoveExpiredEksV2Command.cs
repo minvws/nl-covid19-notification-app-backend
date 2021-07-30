@@ -4,8 +4,8 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public RemoveExpiredEksCommandResult Execute()
+        public async Task<RemoveExpiredEksCommandResult> ExecuteAsync()
         {
             var result = new RemoveExpiredEksCommandResult();
 
@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
             var cutoff = (_dtp.Snapshot - TimeSpan.FromDays(_config.LifetimeDays)).Date;
 
-            using (var tx = _dbContext.BeginTransaction())
+            await using (var tx = _dbContext.BeginTransaction())
             {
                 result.Found = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2);
                 _logger.WriteCurrentEksFound(result.Found);
@@ -62,8 +62,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     return result;
                 }
 
-                result.GivenMercy = _dbContext.Database.ExecuteSqlInterpolated($"DELETE FROM [Content] WHERE [Type] = {ContentTypes.ExposureKeySetV2} AND [Release] < {cutoff}");
-                tx.Commit();
+                result.GivenMercy = await _dbContext.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM [Content] WHERE [Type] = {ContentTypes.ExposureKeySetV2.ToString()} AND [Release] < {cutoff}");
+                await tx.CommitAsync();
                 //Implicit tx
                 result.Remaining = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2);
             }
