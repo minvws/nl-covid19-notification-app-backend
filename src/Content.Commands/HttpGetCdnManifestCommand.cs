@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
@@ -26,10 +27,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             _contentDb = contentDb ?? throw new ArgumentNullException(nameof(contentDb));
         }
 
-        public async Task ExecuteAsync(HttpContext httpContext, string version)
+        public async Task ExecuteAsync(HttpContext httpContext, ContentTypes type)
         {
 
-            var e = await _contentDb.SafeGetLatestContentAsync(version, _dateTimeProvider.Snapshot);
+            var e = await _contentDb.SafeGetLatestContentAsync(type, _dateTimeProvider.Snapshot);
             if (e == null)
             {
                 httpContext.Response.StatusCode = 404;

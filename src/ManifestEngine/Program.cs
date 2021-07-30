@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
@@ -41,8 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
             // Db and basic functions
-            services.AddTransient(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content, false));
-            services.AddTransient<Func<ContentDbContext>>(x => x.GetRequiredService<ContentDbContext>);
+            services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IEksConfig, StandardEksConfig>();

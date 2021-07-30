@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -13,23 +12,33 @@ using App.IccPortal.Tests;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using Xunit;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Icc.WebApp.Tests
 {
-    public class WorkflowControllerTests
+    public abstract class WorkflowControllerTests : WebApplicationFactory<Startup>
     {
         private readonly WebApplicationFactory<Startup> _factory;
 
-        public WorkflowControllerTests()
+        protected WorkflowControllerTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions)
         {
-            _factory = new WebApplicationFactory<Startup>();
+            _factory = WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    services.AddScoped(p => new WorkflowDbContext(workflowDbContextOptions));
+                    services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
+                    services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
+                });
+            });
         }
 
         [Fact]
@@ -39,11 +48,18 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJ",
-                SelectedDate = DateTime.Today
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
-            var client = _factory.CreateClient();
-
+            // Create factory without PolicyEvaluator
+            var factory = WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                });
+            });
+            var client = factory.CreateClient();
 
             var source = new CancellationTokenSource();
             var token = source.Token;
@@ -67,23 +83,11 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6L",
-                SelectedDate = DateTime.Today
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
-            var client = _factory.WithWebHostBuilder(builder =>
-                {
-                    builder.ConfigureTestServices(services =>
-                    {
-                        var descriptor = services.SingleOrDefault(d => d.ServiceType.Name == nameof(RestApiClient));
-                        services.Remove(descriptor);
-
-                        services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
-                        services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
-
-                    });
-                })
-                .CreateClient();
-
+            var client = _factory.CreateClient();
 
             var source = new CancellationTokenSource();
             var token = source.Token;
@@ -110,23 +114,11 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJ",
-                SelectedDate = DateTime.Today
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
-            var client = _factory.WithWebHostBuilder(builder =>
-                {
-                    builder.ConfigureTestServices(services =>
-                    {
-                        var descriptor = services.SingleOrDefault(d => d.ServiceType.Name == nameof(RestApiClient));
-                        services.Remove(descriptor);
-
-                        services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
-                        services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
-
-                    });
-                })
-                .CreateClient();
-
+            var client = _factory.CreateClient();
 
             var source = new CancellationTokenSource();
             var token = source.Token;
@@ -153,23 +145,11 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJQ",
-                SelectedDate = DateTime.Today
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
-            var client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                    var descriptor = services.SingleOrDefault(d => d.ServiceType.Name == nameof(RestApiClient));
-                    services.Remove(descriptor);
-
-                    services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
-                    services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
-
-                });
-            })
-                .CreateClient();
-
+            var client = _factory.CreateClient();
 
             var source = new CancellationTokenSource();
             var token = source.Token;
@@ -196,22 +176,11 @@ namespace Icc.WebApp.Tests
             var args = new PublishTekArgs
             {
                 GGDKey = "L8T6LJR",
-                SelectedDate = DateTime.Today
+                DateOfSymptomsOnset = DateTime.Today,
+                SubjectHasSymptoms = true
             };
 
-            var client = _factory.WithWebHostBuilder(builder =>
-                {
-                    builder.ConfigureTestServices(services =>
-                    {
-                        var descriptor = services.SingleOrDefault(d => d.ServiceType.Name == nameof(RestApiClient));
-
-                        services.Remove(descriptor);
-
-                        services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
-                        services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
-                    });
-                })
-                .CreateClient();
+            var client = _factory.CreateClient();
 
 
             var source = new CancellationTokenSource();

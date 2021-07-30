@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         /// e.g. GET Immutable content
         /// NB - content can be repeated with a different Publishing date.
         /// </summary>
-        public static async Task<ContentEntity> SafeGetContentAsync(this DbContext dbContextProvider, string type, string id, DateTime now)
+        public static async Task<ContentEntity> SafeGetContentAsync(this DbContext dbContextProvider, ContentTypes type, string id, DateTime now)
         {
             if (dbContextProvider == null)
             {
@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         /// <summary>
         /// e.g. GET Manifest
         /// </summary>
-        public static async Task<ContentEntity> SafeGetLatestContentAsync(this DbContext dbContextProvider, string type, DateTime now)
+        public static async Task<ContentEntity> SafeGetLatestContentAsync(this DbContext dbContextProvider, ContentTypes type, DateTime now)
         {
             if (dbContextProvider == null)
             {
@@ -51,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         /// <summary>
         /// Build manifest - non-EKS
         /// </summary>
-        public static async Task<string> SafeGetLatestContentIdAsync(this DbContext dbContextProvider, string type, DateTime now)
+        public static async Task<string> SafeGetLatestContentIdAsync(this DbContext dbContextProvider, ContentTypes type, DateTime now)
         {
             if (dbContextProvider == null)
             {
@@ -69,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         /// <summary>
         /// Build manifest - EKS
         /// </summary>
-        public static async Task<string[]> SafeGetActiveContentIdListAsync(this DbContext dbContextProvider, string type, DateTime from, DateTime to)
+        public static async Task<string[]> SafeGetActiveContentIdListAsync(this DbContext dbContextProvider, ContentTypes type, DateTime from, DateTime to)
         {
             var result = await dbContextProvider.Set<ContentEntity>()
                 .Where(x => x.Release >= from && x.Release <= to && x.Type == type)

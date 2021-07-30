@@ -22,17 +22,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
         public static FixedResultHttpGetIksCommand Create(List<HttpGetIksSuccessResult> responses)
         {
-
-            //TODO don't map response to dates, just map responses to batchTags
-
-            return Create(responses, DateTime.Now.Date.ToString("yyyyMMdd"));
+            return Create(responses, DateTime.Now);
         }
 
-        public static FixedResultHttpGetIksCommand Create(List<HttpGetIksSuccessResult> responses, string batchTag)
+        public static FixedResultHttpGetIksCommand Create(List<HttpGetIksSuccessResult> responses, DateTime date)
         {
             return new FixedResultHttpGetIksCommand(new Dictionary<string, List<HttpGetIksSuccessResult>>
             {
-                {batchTag, responses}
+                {date.ToString(DateFormatString), responses}
             });
         }
 

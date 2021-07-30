@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         {
             if (buffer == null)
             {
-                throw new ArgumentException(nameof(buffer)); //ncrunch: no coverage
+                throw new ArgumentException(nameof(buffer));
             }
 
             var i = 0;
@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         {
             if (buffer == null || buffer.Length > 32)
             {
-                throw new ArgumentException(nameof(buffer)); //ncrunch: no coverage
+                throw new ArgumentException(nameof(buffer));
             }
 
             var clean = buffer.StripLeadingZeros();

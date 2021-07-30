@@ -24,10 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
                 _fixed = @fixed;
             }
             public DateTime Snapshot => _fixed;
-            //ncrunch: no coverage start
             public DateTime Now() => _fixed;
-
-            //ncrunch: no coverage end
         }
 
         private readonly List<TekReleaseWorkflowStateEntity> _workflows;

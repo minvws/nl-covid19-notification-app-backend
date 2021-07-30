@@ -5,30 +5,24 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands
 {
     public class RemoveDiagnosisKeysReadyForCleanup
     {
-        private readonly Func<DkSourceDbContext> _diagnosticKeyDbContextProvider;
+        private readonly DkSourceDbContext _diagnosticKeyDbContext;
 
-
-        public RemoveDiagnosisKeysReadyForCleanup(Func<DkSourceDbContext> diagnosticKeyDbContextProvider)
+        public RemoveDiagnosisKeysReadyForCleanup(DkSourceDbContext diagnosticKeyDbContext)
         {
-            _diagnosticKeyDbContextProvider = diagnosticKeyDbContextProvider ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContextProvider));
+            _diagnosticKeyDbContext = diagnosticKeyDbContext ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContext));
         }
 
         public async Task ExecuteAsync()
         {
-            await using var dbc = _diagnosticKeyDbContextProvider();
-            await using var tx = dbc.BeginTransaction();
-
-            await dbc.Database.ExecuteSqlRawAsync($"DELETE FROM {TableNames.DiagnosisKeys} WHERE [ReadyForCleanup] = 1;");
-            await tx.CommitAsync();
+            await _diagnosticKeyDbContext.BulkDeleteAsync(_diagnosticKeyDbContext.DiagnosisKeys.AsNoTracking().Where(p => p.ReadyForCleanup.Value).ToList());
         }
     }
 }

@@ -63,7 +63,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
 
         private class DecoyTimeTestData : IEnumerable<object[]>
         {
-            //ncrunch: no coverage start
             public IEnumerator<object[]> GetEnumerator()
             {
                 yield return new object[] { new double[] { 10.0 }, 10.0, 0 };
@@ -74,7 +73,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-            //ncrunch: no coverage end
         }
     }
 }

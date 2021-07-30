@@ -160,8 +160,6 @@
     <Build Include="Security\Roles\Dbr_Users.sql" />
     <Build Include="Security\Roles\Subroles.sql" />
     <Build Include="dbo\Tables\DiagnosisKeysInput.sql" />
-    <Build Include="dbo\StoredProcedures\RemoveDuplicateDiagnosisKeysForIks.sql" />
-    <Build Include="dbo\StoredProcedures\RemoveLocalDuplicateDiagnosisKeys.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\DiagnosisKeys.sql" />

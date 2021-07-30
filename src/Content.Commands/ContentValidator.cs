@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Text.Json;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
@@ -14,12 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             {
                 return false;
             }
-
-            if (!ContentTypes.IsValid(args.ContentType))
-            {
-                return false;
-            }
-
+            
             if (!IsValidJson(args.Json))
             {
                 return false;

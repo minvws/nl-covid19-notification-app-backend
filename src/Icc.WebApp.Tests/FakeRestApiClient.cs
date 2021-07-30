@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
 
-namespace App.IccPortal.Tests
+namespace Icc.WebApp.Tests
 {
     public class FakeRestApiClient : IRestApiClient
     {

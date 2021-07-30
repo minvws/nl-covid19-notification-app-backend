@@ -4,9 +4,10 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands
@@ -14,16 +15,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
     public class RemovePublishedDiagnosisKeys
     {
         private RemovePublishedDiagnosisKeysResult _result;
-        private readonly Func<DkSourceDbContext> _diagnosticKeyDbContextProvider;
+        private readonly DkSourceDbContext _diagnosticKeyDbContext;
         private readonly IUtcDateTimeProvider _utcDateTimeProvider;
 
-        public RemovePublishedDiagnosisKeys(Func<DkSourceDbContext> diagnosticKeyDbContextProvider, IUtcDateTimeProvider utcDateTimeProvider)
+        public RemovePublishedDiagnosisKeys(DkSourceDbContext diagnosticKeyDbContext, IUtcDateTimeProvider utcDateTimeProvider)
         {
-            _diagnosticKeyDbContextProvider = diagnosticKeyDbContextProvider ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContextProvider));
+            _diagnosticKeyDbContext = diagnosticKeyDbContext ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContext));
             _utcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
         }
 
-        public RemovePublishedDiagnosisKeysResult Execute()
+        public async Task<RemovePublishedDiagnosisKeysResult> ExecuteAsync()
         {
             if (_result != null)
             {
@@ -35,16 +36,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             //TODO setting
             var cutoff = _utcDateTimeProvider.Snapshot.AddDays(-14).Date.ToRollingStartNumber();
 
-            using (var dbc = _diagnosticKeyDbContextProvider())
-            {
-                using (var tx = dbc.BeginTransaction())
-                {
-                    _result.GivenMercy = dbc.Database.ExecuteSqlRaw($"DELETE FROM {TableNames.DiagnosisKeys} WHERE [PublishedLocally] = 1 AND [PublishedToEfgs] = 1 AND DailyKey_RollingStartNumber < {cutoff};");
-                    tx.Commit();
-                }
+            var resultToDelete = _diagnosticKeyDbContext.DiagnosisKeys.AsNoTracking().Where(p =>
+                p.PublishedLocally && p.PublishedToEfgs && p.DailyKey.RollingStartNumber < cutoff).ToList();
 
-                _result.RemainingExpiredCount = dbc.DiagnosisKeys.Count(x => x.DailyKey.RollingStartNumber < cutoff);
-            }
+            _result.GivenMercy = resultToDelete.Count;
+            await _diagnosticKeyDbContext.BulkDeleteAsync(resultToDelete);
+
+            _result.RemainingExpiredCount = _diagnosticKeyDbContext.DiagnosisKeys.Count(x => x.DailyKey.RollingStartNumber < cutoff);
 
             return _result;
         }

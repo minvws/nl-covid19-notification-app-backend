@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Text.Json.Serialization;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp
 {
     public class RiskCalculationParametersSubset
     {

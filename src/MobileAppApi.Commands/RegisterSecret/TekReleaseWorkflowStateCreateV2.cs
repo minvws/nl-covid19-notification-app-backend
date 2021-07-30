@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -26,45 +26,48 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private readonly IWorkflowTime _workflowTime;
         private readonly RegisterSecretLoggingExtensionsV2 _logger;
 
-        private const int AttemptCountMax = 10;
-        private int _attemptCount;
-
         public TekReleaseWorkflowStateCreateV2(
-            WorkflowDbContext dbContextProvider,
+            WorkflowDbContext workflowDbContext,
             IUtcDateTimeProvider dateTimeProvider,
             IRandomNumberGenerator numberGenerator,
             IWorkflowTime workflowTime,
-            RegisterSecretLoggingExtensionsV2 logger,
             ILuhnModNConfig luhnModNConfig,
-            ILuhnModNGenerator luhnModNGenerator)
+            ILuhnModNGenerator luhnModNGenerator,
+            RegisterSecretLoggingExtensionsV2 logger)
         {
-            _workflowDbContext = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
+            _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _numberGenerator = numberGenerator ?? throw new ArgumentNullException(nameof(numberGenerator));
             _workflowTime = workflowTime ?? throw new ArgumentNullException(nameof(workflowTime));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _luhnModNConfig = luhnModNConfig ?? throw new ArgumentNullException(nameof(luhnModNConfig));
             _luhnModNGenerator = luhnModNGenerator ?? throw new ArgumentNullException(nameof(luhnModNGenerator));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
+
+        private const int AttemptCountMax = 10;
+        private int _attemptCount;
 
         public async Task<TekReleaseWorkflowStateEntity> ExecuteAsync()
         {
-            var entity = await BuildEntityAndAddToContextAsync();
+            // Create entity with only Created and ValidUntil dates.
+            var entity = new TekReleaseWorkflowStateEntity
+            {
+                Created = _dateTimeProvider.Snapshot.Date,
+                ValidUntil = _workflowTime.Expiry(_dateTimeProvider.Snapshot)
+            };
 
             _logger.WriteWritingStart();
 
-            var success = TryGenerateRemainingFieldsAndWriteToDb(entity);
+            var success = await BuildEntityAndAddToContextAsync(entity);
             while (!success)
             {
-                _workflowDbContext.BeginTransaction();
-                entity = await BuildEntityAndAddToContextAsync();
-                success = TryGenerateRemainingFieldsAndWriteToDb(entity);
+                success = await BuildEntityAndAddToContextAsync(entity);
             }
 
             return entity;
         }
 
-        private bool TryGenerateRemainingFieldsAndWriteToDb(TekReleaseWorkflowStateEntity item)
+        private async Task<bool> BuildEntityAndAddToContextAsync(TekReleaseWorkflowStateEntity entity)
         {
             if (++_attemptCount > AttemptCountMax)
             {
@@ -77,28 +80,44 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
                 _logger.WriteDuplicatesFound(_attemptCount);
             }
 
-            item.GGDKey = _luhnModNGenerator.Next(_luhnModNConfig.ValueLength);
-            item.BucketId = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount);
-            item.ConfirmationKey = _numberGenerator.NextByteArray(UniversalConstants.ConfirmationKeyByteCount);
+            _workflowDbContext.BeginTransaction();
 
             try
             {
+                // Generate GGDKey, BucketId and ConfirmationKey. When the commit result in an collision caused by a duplicated value of GGDKey and BucketId these will be generated in a second attempt.
+                entity.GGDKey = GenerateUniqueGGDKey(); // Generate GGDKey including peek in database
+                entity.BucketId = _numberGenerator.NextByteArray(UniversalConstants.BucketIdByteCount);
+                entity.ConfirmationKey = _numberGenerator.NextByteArray(UniversalConstants.ConfirmationKeyByteCount);
+
+                await _workflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
+
                 _workflowDbContext.SaveAndCommit();
                 _logger.WriteCommitted();
                 return true;
             }
             catch (DbUpdateException ex)
             {
-                _workflowDbContext.Database.CurrentTransaction.RollbackAsync();
-                _workflowDbContext.Remove(item);
+                await _workflowDbContext.Database.CurrentTransaction.RollbackAsync();
+                _workflowDbContext.KeyReleaseWorkflowStates.Remove(entity);
 
                 if (CanRetry(ex))
                 {
                     return false;
                 }
-
-                throw;
+                return false;
             }
+        }
+
+        private string GenerateUniqueGGDKey()
+        {
+            var ggdKey = _luhnModNGenerator.Next(_luhnModNConfig.ValueLength);
+
+            if (_workflowDbContext.KeyReleaseWorkflowStates.AsNoTracking().Any(p => p.GGDKey == ggdKey))
+            {
+                return GenerateUniqueGGDKey();
+            }
+
+            return ggdKey;
         }
 
         //E.g. Microsoft.Data.SqlClient.SqlException(0x80131904):
@@ -121,20 +140,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
                     || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.ConfirmationKey))
                     || x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.BucketId)))
             );
-
-        }
-
-        private async Task<TekReleaseWorkflowStateEntity> BuildEntityAndAddToContextAsync()
-        {
-            var entity = new TekReleaseWorkflowStateEntity
-            {
-                Created = _dateTimeProvider.Snapshot.Date,
-                ValidUntil = _workflowTime.Expiry(_dateTimeProvider.Snapshot)
-            };
-
-            await _workflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
-
-            return entity;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
 {
     public class WorkflowDbContext : DbContext
     {
-        public WorkflowDbContext(DbContextOptions options)
+        public WorkflowDbContext(DbContextOptions<WorkflowDbContext> options)
             : base(options)
         {
         }

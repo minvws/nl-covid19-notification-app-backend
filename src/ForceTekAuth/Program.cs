@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
 namespace ForceTekAuth
@@ -27,9 +27,10 @@ namespace ForceTekAuth
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
+            services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
+
             services.AddSingleton<IConfiguration>(configuration);
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddTransient(x => x.CreateDbContext(y => new WorkflowDbContext(y), DatabaseConnectionStringNames.Workflow, false));
             services.AddTransient<ForceTekAuthCommand>();
         }
     }
