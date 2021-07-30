@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -57,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        public void Cleaner()
+        public async Task Cleaner()
         {
             // Arrange
             _contentDbContext.Truncate<ContentEntity>();
@@ -67,7 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var command = new RemoveExpiredEksCommand(_contentDbContext, new FakeEksConfig(), new StandardUtcDateTimeProvider(), expEksLogger);
 
             // Act
-            var result = command.Execute();
+            var result = await command.ExecuteAsync();
 
             // Assert
             Assert.Equal(0, result.Found);
@@ -78,7 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         }
 
         [Fact]
-        public void NoKill()
+        public async Task NoKill()
         {
             // Arrange
             _contentDbContext.Truncate<ContentEntity>();
@@ -91,7 +92,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Add(15);
  
             // Act
-            var result = command.Execute();
+            var result = await command.ExecuteAsync();
 
             // Assert
             Assert.Equal(1, result.Found);
@@ -103,7 +104,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
 
         [Fact]
-        public void Kill()
+        public async Task Kill()
         {
             // Arrange
             _contentDbContext.Truncate<ContentEntity>();
@@ -117,7 +118,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Add(15);
 
             // Act
-            var result = command.Execute();
+            var result = await command.ExecuteAsync();
 
             // Assert
             Assert.Equal(1, result.Found);
@@ -129,7 +130,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
 
         [Fact]
-        public void MoreRealistic()
+        public async Task MoreRealistic()
         {
             // Arrange
             _contentDbContext.BulkDelete(_contentDbContext.Content.ToList());
@@ -146,7 +147,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             }
 
             // Act
-            var result = command.Execute();
+            var result = await command.ExecuteAsync();
 
             // Assert
             Assert.Equal(20, result.Found);

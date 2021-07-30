@@ -56,7 +56,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
             var c80 = serviceProvider.GetRequiredService<RemoveExpiredWorkflowsCommand>();
             run.Add(() => logger.WriteWorkflowCleanupStarting());
-            run.Add(() => c80.Execute());
+            run.Add(() => c80.ExecuteAsync().GetAwaiter().GetResult());
 
             var c126 = serviceProvider.GetRequiredService<RemoveDiagnosisKeysReadyForCleanup>();
             run.Add(() => c126.ExecuteAsync().GetAwaiter().GetResult());
@@ -67,11 +67,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             logger.WriteEksCleanupStarting();
             var c70 = serviceProvider.GetRequiredService<RemoveExpiredEksCommand>();
             run.Add(() => logger.WriteEksCleanupStarting());
-            run.Add(() => c70.Execute());
+            run.Add(() => c70.ExecuteAsync().GetAwaiter().GetResult());
 
             var c110 = serviceProvider.GetRequiredService<RemoveExpiredEksV2Command>();
             run.Add(() => logger.WriteEksV2CleanupStarting());
-            run.Add(() => c110.Execute());
+            run.Add(() => c110.ExecuteAsync().GetAwaiter().GetResult());
 
             var c60 = serviceProvider.GetRequiredService<RemoveExpiredManifestsCommand>();
             run.Add(() => logger.WriteManiFestCleanupStarting());

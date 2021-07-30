@@ -4,9 +4,7 @@
 
 using System;
 using System.Linq;
-using EFCore.BulkExtensions;
-using Microsoft.EntityFrameworkCore;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
+using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -30,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public RemoveExpiredEksCommandResult Execute()
+        public async Task<RemoveExpiredEksCommandResult> ExecuteAsync()
         {
             var result = new RemoveExpiredEksCommandResult();
 
@@ -38,37 +36,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
             var cutoff = (_dtp.Snapshot - TimeSpan.FromDays(_config.LifetimeDays)).Date;
 
-            using (var tx = _dbContext.BeginTransaction())
+            result.Found = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet);
+            _logger.WriteCurrentEksFound(result.Found);
+
+            var zombies = _dbContext.Content
+                .Where(x => x.Type == ContentTypes.ExposureKeySet && x.Release < cutoff)
+                .Select(x => new { x.PublishingId, x.Release })
+                .ToList();
+
+            result.Zombies = zombies.Count;
+
+            _logger.WriteTotalEksFound(cutoff, result.Zombies);
+            foreach (var i in zombies)
             {
-                result.Found = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet);
-                _logger.WriteCurrentEksFound(result.Found);
-
-                var zombies = _dbContext.Content
-                    .Where(x => x.Type == ContentTypes.ExposureKeySet && x.Release < cutoff)
-                    .Select(x => new { x.PublishingId, x.Release })
-                    .ToList();
-
-                result.Zombies = zombies.Count;
-
-                _logger.WriteTotalEksFound(cutoff, result.Zombies);
-                foreach (var i in zombies)
-                {
-                    _logger.WriteEntryFound(i.PublishingId, i.Release);
-                }
-
-                if (!_config.CleanupDeletesData)
-                {
-                    _logger.WriteFinishedNothingRemoved();
-                    result.Remaining = result.Found;
-                    return result;
-                }
-
-                result.GivenMercy = zombies.Count;
-                _dbContext.BulkDelete(_dbContext.Content.Where(p=>p.Type == ContentTypes.ExposureKeySet && p.Release < cutoff).ToList());
-                tx.Commit();
-
-                result.Remaining = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet);
+                _logger.WriteEntryFound(i.PublishingId, i.Release);
             }
+
+            if (!_config.CleanupDeletesData)
+            {
+                _logger.WriteFinishedNothingRemoved();
+                result.Remaining = result.Found;
+                return result;
+            }
+
+            result.GivenMercy = zombies.Count;
+            await _dbContext.BulkDeleteWithTransactionAsync(_dbContext.Content.Where(p => p.Type == ContentTypes.ExposureKeySet && p.Release < cutoff).ToList(), new SubsetBulkArgs());
+
+            result.Remaining = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet);
 
             _logger.WriteRemovedAmount(result.GivenMercy, result.Remaining);
 
