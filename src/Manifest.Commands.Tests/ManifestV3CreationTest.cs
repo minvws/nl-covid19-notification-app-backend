@@ -63,8 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands.Tests
             var dateTimeProvider = new StandardUtcDateTimeProvider();
             var jsonSerialiser = new StandardJsonSerializer();
 
-            Func<IContentEntityFormatter> formatterForV3 = () =>
-                new StandardContentEntityFormatter(
+            IContentEntityFormatter formatterForV3 = new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(
                     TestSignerHelpers.CreateCmsSignerEnhanced(lf)),
                     new Sha256HexPublishingIdService(),
