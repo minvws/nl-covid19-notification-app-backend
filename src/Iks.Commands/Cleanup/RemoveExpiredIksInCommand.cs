@@ -64,7 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
                 // DELETE FROM IksIn.dbo.IksIn WHERE Created < (today - 14-days)
                 var iksToBeCleaned = await _iksInDbContext.Received.AsNoTracking().Where(p => p.Created < cutoff).ToArrayAsync();
                 _result.GivenMercy = iksToBeCleaned.Length;
-                await _iksInDbContext.BulkDeleteAsync(iksToBeCleaned);
+                await _iksInDbContext.BulkDeleteWithTransactionAsync(iksToBeCleaned, new SubsetBulkArgs());
                 await tx.CommitAsync();
 
                 _result.Remaining = _iksInDbContext.Received.Count();

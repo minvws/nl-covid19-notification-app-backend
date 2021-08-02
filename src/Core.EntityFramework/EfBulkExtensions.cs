@@ -28,5 +28,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
                 db.SaveAndCommit();
             }
         }
+
+        public static async Task BulkDeleteWithTransactionAsync<T>(this DbContext db, IList<T> page, SubsetBulkArgs args) where T : class
+        {
+            await using (db.BeginTransaction())
+            {
+                await db.BulkDeleteAsync(page, args.ToBulkConfig());
+                db.SaveAndCommit();
+            }
+        }
     }
 }
