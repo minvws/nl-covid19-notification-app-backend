@@ -1,15 +1,6 @@
 # Not designed for Powershell ISE
 # Double-check you are allowed to run custom scripts.
 
-$date
-$keynameCert
-$keynameRSA
-$keynameECDSA
-$selfsigncertname
-$requestRSAname
-$signedrequestRSAname
-$requestECDSAname
-$signedrequestECDSAname
 $VariablesSource = "Development"
 
 if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*")
@@ -18,10 +9,9 @@ if("#{Deploy.HSMScripting.OpenSslLoc}#" -like "*Deploy.HSMScripting.OpenSslLoc*"
     $HSMAdminToolsDir = "C:\Program Files\Utimaco\CryptoServer\Administration"
     $openSslLoc = "`"C:\Program Files\OpenSSL-Win64\bin\openssl.exe`""
 
-    $IsOnDevEnvironment = $True #When set to $False: skips sending, signing and accepting of the RSA request
+    $IsOnDevEnvironment = $True #When set to $False: skips signing and accepting of the RSA request
     $CnValue = "ontw.coronamelder-api.nl" #should be [test.signing|acceptatie.signing|signing].coronamelder-api.nl
-    $RootDays = 3650 #the dummy root is valid for 10 years.
-    $RootSubject = "/C=NL/ST=Zuid-Holland/L=Den Haag/O=CIBG/OU=CIBG/serialNumber=00000002006756402002/CN=$CnValue"    
+	$CertLifeTimeDays = 3650
 }
 else
 {
@@ -30,10 +20,8 @@ else
     $HSMAdminToolsDir = "#{Deploy.HSMScripting.HSMAdminToolsDir}#"
     $openSslLoc = "`"#{Deploy.HSMScripting.OpenSslLoc}#`""
 
-    $IsOnDevEnvironment = $False #When set to $False: skips sending, signing and accepting of the RSA request
+    $IsOnDevEnvironment = $False #When set to $False: skips signing and accepting of the RSA request
     $CnValue = "#{Deploy.HSMScripting.CnValue}#" #should be [test.signing|acceptatie.signing|signing].coronamelder-api.nl
-    $RootDays = 3650 #the dummy root is valid for 10 years.
-    $RootSubject = "/C=NL/ST=Zuid-Holland/L=Den Haag/O=CIBG/OU=CIBG/serialNumber=00000002006756402002/CN=$CnValue"
 }
 
 function RunWithErrorCheck ([string]$command) 
@@ -143,45 +131,13 @@ if($AddOIDs -eq $true)
 	New-Item -force -name ($filename + ".inf") -path "." -ItemType File -Value $fileContent -ErrorAction Stop
 }
 
-function SetKeyFilenames ()
-{
-	$script:date = Get-Date -Format "MM_dd_HH-mm-ss"
-	
-	$script:keynameCert = read-host "Enter the preferred name of the keyfiles"
-	$Host.UI.RawUI.FlushInputBuffer() #clears any annoying newlines that were accidentally copied in
-	
-	$script:selfsigncertname = ".\Temp$script:date\$script:keynameCert-Root"
-	
-	$script:keynameRSA = "$script:keynameCert-RSA"
-	$script:requestRSAname = ".\Temp$script:date\$script:keynameRSA-Req"
-	$script:signedrequestRSAname = ".\Temp$script:date\$script:keynameRSA-Signed"
-	
-	$script:keynameECDSA = "$script:keynameCert-ECDSA"
-	$script:requestECDSAname = ".\Temp$script:date\$script:keynameECDSA-Req"
-	$script:signedrequestECDSAname = ".\Temp$script:date\$script:keynameECDSA-Signed"
-}
-
-function GenRequests
-{
-	$FriendlyName = read-host "`nPlease enter a `'Friendly name`' for the certificates.`n Make sure the name is not already in use! (look inside the machine personal keystore)"
-	$Host.UI.RawUI.FlushInputBuffer() #clears any annoying newlines that were accidentally copied in
-	
-	GenerateRequestInf -filename $requestRSAname -hashAlgorithm "SHA256" -keyAlgorithm "RSA" -keyLength "2048" -friendlyName "$FriendlyName-RSA"
-	GenerateRequestInf -filename $requestECDSAname -hashAlgorithm "SHA256" -keyAlgorithm "ECDSA_P256" -keyLength "256" -friendlyName "$FriendlyName-ECDSA" -AddOIDs $false
-	
-	if($IsOnDevEnvironment -eq $False) #generate extra RSA-cert for EV-root on test/accp/prod
-	{
-		GenerateRequestInf -filename $requestRSAname-V2 -hashAlgorithm "SHA256" -keyAlgorithm "RSA" -keyLength "2048" -friendlyName "$FriendlyName-V2-RSA"
-	}
-}
-
 
 #
 # Start
 #
 
 
-write-host "Keygenerator script for Utimaco HSM"
+write-host "RSA-certificate renewal script for Utimaco HSM"
 write-host "Location and date: $env:computername. $(Get-Date -Format `"dd MMM, HH:mm:ss`")."
 CheckNotIse
 
@@ -201,54 +157,40 @@ Pause
 
 RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool`" listkeys"
 
-write-host "`nGenerate self-signed certificate"
+write-host "`nGenerate requestfile"
 Pause
 
-SetKeyFileNames
+$date = Get-Date -Format "MM_dd_HH-mm-ss"
+	
+$requestFileName = read-host "Enter a preferred name for the request files to be generated"
+$Host.UI.RawUI.FlushInputBuffer() #clears any annoying newlines that were accidentally copied in
 
-New-Item -force -name "Temp$date" -path "." -ItemType Directory -ErrorAction Stop
-RunWithErrorCheck "$openSslLoc req -new -x509 -nodes -days $RootDays -subj `"$RootSubject`" -keyout $selfsigncertname.key -out $selfsigncertname.pem"
+$requestRSAname = ".\Temp$script:date\$requestFileName-Req"
+$signedrequestRSAname = ".\Temp$script:date\$requestFileName-Signed"
 
-write-host "`nStoring certificate in machine root store"
-Pause
-
-RunWithErrorCheck "certutil -addstore -f `"root`" $selfsigncertname.pem"
-
-write-host "`nGenerate requestfiles for both keys"
-Pause
-
-GenRequests
-
-write-host "`nSend requests to HSM to generate key"
+$FriendlyName = read-host "`nPlease enter a `'Friendly name`' for the certificates.`n Make sure the name is not already in use! (look inside the machine personal keystore)"
+$Host.UI.RawUI.FlushInputBuffer() #clears any annoying newlines that were accidentally copied in
+	
+GenerateRequestInf -filename $requestRSAname -hashAlgorithm "SHA256" -keyAlgorithm "RSA" -keyLength "2048" -friendlyName "$FriendlyName-RSA"
+	
+write-host "`nSend request to HSM to generate new keypair"
 Pause
 
 RunWithErrorCheck "certreq -new $requestRSAname.inf $requestRSAname.csr"
-RunWithErrorCheck "certreq -new $requestECDSAname.inf $requestECDSAname.csr"
 
-if($IsOnDevEnvironment -eq $False) #extra RSA-cert on test/accp/prod
-{
-	RunWithErrorCheck "certreq -new $requestRSAname-V2.inf $requestRSAname-V2.csr"
-}
-
-write-host "`nSign request files with certificate"
-Pause
-
-#on test/accp/prod the RSA request is signed by PKIO
-if($IsOnDevEnvironment -eq $True)
-{
-	RunWithErrorCheck "$openSslLoc x509 -req -in $requestRSAname.csr -set_serial $(Get-Random) -days $RootDays -CA $selfsigncertname.pem -CAkey $selfsigncertname.key -out $signedrequestRSAname.pem"
-}
-RunWithErrorCheck "$openSslLoc x509 -req -in $requestECDSAname.csr -set_serial $(Get-Random) -days $RootDays -CA $selfsigncertname.pem -CAkey $selfsigncertname.key -out $signedrequestECDSAname.pem"
-
-write-host "`nSending signed requests to HSM"
-Pause
-
-#on test/accp/prod the RSA request is accepted when PKIO retuns the signed version
-if($IsOnDevEnvironment -eq $True)
-{
+if($IsOnDevEnvironment)
+{	
+	write-host "`nYou need to sign the request with the self-signed root-certificate from the keygen-folder."
+	$RootCertLocation = read-host "`nPlease enter the location and name of the files, without extension"
+	$Host.UI.RawUI.FlushInputBuffer()
+	
+	RunWithErrorCheck "$openSslLoc x509 -req -in $requestRSAname.csr -set_serial $(Get-Random) -days $CertLifeTimeDays -CA $RootCertLocation.pem -CAkey $RootCertLocation.key -out $signedrequestRSAname.pem"
+	
+	write-host "`nSending signed request to HSM"
+	Pause
+	
 	RunWithErrorCheck "certreq -accept -machine $signedrequestRSAname.pem"
 }
-RunWithErrorCheck "certreq -accept -machine $signedrequestECDSAname.pem"
 
 write-host "`nPost-check for key presence"
 Pause
@@ -256,23 +198,14 @@ Pause
 RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool`" listkeys"
 Pause
 
+write-host "`nDone!"
+
 if($IsOnDevEnvironment -eq $False)
-{	
-	write-host "`nDone! The RSA request-files for PKIO are $requestRSAname and $requestRSAname-V2."
+{
+	write-host "`nThe RSA request-file for PKIO is $requestRSAname."
 }
 
-if([int](Get-WmiObject Win32_OperatingSystem).BuildNumber -lt 9000)
-{
-	#Windows 7 doesn't have certlm.msc
-	write-host "`nWindows 7 cannot automatically open the local machine keystore`nWe'll drop you off at the mmc. :)"
-	Pause
-	
-	RunWithErrorCheck "mmc"
-}
-else
-{
-	write-host "`nOpening the local machine store.`nCerts should be present under personal certificates and root certificates."
-	Pause
-	
-	RunWithErrorCheck "certlm.msc"
-}
+write-host "`nOpening the local machine store.`nThe renewed cert should be present under personal certificates."
+Pause
+
+RunWithErrorCheck "certlm.msc"
