@@ -50,36 +50,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
 
             _logger.WriteStart();
 
-            await using (var tx = _workflowDbContext.BeginTransaction())
+            ReadStats(_result.Before, _workflowDbContext);
+            LogReport(_result.Before, "Workflow stats before cleanup:");
+
+            if (!_result.DeletionsOn)
             {
-                ReadStats(_result.Before, _workflowDbContext);
-                LogReport(_result.Before, "Workflow stats before cleanup:");
-
-                if (!_result.DeletionsOn)
-                {
-                    _logger.WriteFinishedNothingRemoved();
-                    return _result;
-                }
-
-                if (_result.Before.Authorised != _result.Before.AuthorisedAndFullyPublished)
-                {
-                    _logger.WriteUnpublishedTekFound(); // Authorised unpublished TEKs exist.
-                    _result.HasErrors = true;
-                }
-                else
-                {
-                    var workflowsToDelete = await _workflowDbContext.KeyReleaseWorkflowStates.AsNoTracking().Where(p => p.ValidUntil < _dtp.Snapshot).ToArrayAsync();
-                    _result.GivenMercy = workflowsToDelete.Length;
-                    await _workflowDbContext.BulkDeleteAsync(workflowsToDelete);
-                    _logger.WriteRemovedAmount(_result.GivenMercy);
-                    await tx.CommitAsync();
-                }
+                _logger.WriteFinishedNothingRemoved();
+                return _result;
             }
 
-            await using (_workflowDbContext.BeginTransaction())
+            if (_result.Before.Authorised != _result.Before.AuthorisedAndFullyPublished)
             {
-                ReadStats(_result.After, _workflowDbContext);
+                _logger.WriteUnpublishedTekFound(); // Authorised unpublished TEKs exist.
+                _result.HasErrors = true;
             }
+            else
+            {
+                var workflowsToDelete = _workflowDbContext.KeyReleaseWorkflowStates.AsNoTracking().Where(p => p.ValidUntil < _dtp.Snapshot).ToList();
+                _result.GivenMercy = workflowsToDelete.Count;
+                await _workflowDbContext.BulkDeleteWithTransactionAsync(workflowsToDelete, new SubsetBulkArgs());
+                _logger.WriteRemovedAmount(_result.GivenMercy);
+            }
+
+            ReadStats(_result.After, _workflowDbContext);
 
             LogReport(_result.Before, "Workflow stats after cleanup:");
             _logger.WriteFinished();

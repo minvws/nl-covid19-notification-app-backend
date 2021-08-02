@@ -47,28 +47,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
             var lifetimeDays = _iksCleaningConfig.LifetimeDays;
             var cutoff = (_utcDateTimeProvider.Snapshot - TimeSpan.FromDays(lifetimeDays)).Date;
 
-            await using (var tx = _iksInDbContext.BeginTransaction())
-            {
-                _result.Found = _iksInDbContext.Received.Count();
-                _logger.WriteCurrentIksFound(_result.Found);
+            _result.Found = _iksInDbContext.Received.Count();
+            _logger.WriteCurrentIksFound(_result.Found);
 
-                var zombies = _iksInDbContext.Received
-                    .Where(x => x.Created < cutoff)
-                    .Select(x => new { x.Id, x.Created })
-                    .ToList();
+            var zombies = _iksInDbContext.Received
+                .Where(x => x.Created < cutoff)
+                .Select(x => new { x.Id, x.Created })
+                .ToList();
 
-                _result.Zombies = zombies.Count;
+            _result.Zombies = zombies.Count;
 
-                _logger.WriteTotalIksFound(cutoff, _result.Zombies);
+            _logger.WriteTotalIksFound(cutoff, _result.Zombies);
 
-                // DELETE FROM IksIn.dbo.IksIn WHERE Created < (today - 14-days)
-                var iksToBeCleaned = await _iksInDbContext.Received.AsNoTracking().Where(p => p.Created < cutoff).ToArrayAsync();
-                _result.GivenMercy = iksToBeCleaned.Length;
-                await _iksInDbContext.BulkDeleteAsync(iksToBeCleaned);
-                await tx.CommitAsync();
+            // DELETE FROM IksIn.dbo.IksIn WHERE Created < (today - 14-days)
+            var iksToBeCleaned = await _iksInDbContext.Received.AsNoTracking().Where(p => p.Created < cutoff).ToArrayAsync();
+            _result.GivenMercy = iksToBeCleaned.Length;
+            await _iksInDbContext.BulkDeleteWithTransactionAsync(iksToBeCleaned, new SubsetBulkArgs());
 
-                _result.Remaining = _iksInDbContext.Received.Count();
-            }
+            _result.Remaining = _iksInDbContext.Received.Count();
 
             _logger.WriteRemovedAmount(_result.GivenMercy, _result.Remaining);
 
