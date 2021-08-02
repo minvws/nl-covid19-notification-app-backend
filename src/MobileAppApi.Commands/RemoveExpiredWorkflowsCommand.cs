@@ -61,8 +61,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
 
             if (_result.Before.Authorised != _result.Before.AuthorisedAndFullyPublished)
             {
-                ReadStats(_result.After, _workflowDbContext);
                 _logger.WriteUnpublishedTekFound(); // Authorised unpublished TEKs exist.
+                _result.HasErrors = true;
             }
             else
             {
