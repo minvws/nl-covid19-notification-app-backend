@@ -20,6 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         {
             _commands = new List<CommandExecutor>();
         }
+
         /// <summary>
         /// Set a command to be executed
         /// </summary>
@@ -56,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         }
 
         /// <summary>
-        /// Adds an Action te be executed before the execution of the command
+        /// Adds an Action to be executed before the execution of the command
         /// </summary>
         /// <param name="action">The action to be invoked</param>
         /// <returns></returns>
@@ -67,7 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         }
 
         /// <summary>
-        /// Adds an Action te be executed after the execution of the command
+        /// Adds an Action to be executed after the execution of the command
         /// </summary>
         /// <param name="action">The action to be invoked</param>
         /// <returns></returns>
