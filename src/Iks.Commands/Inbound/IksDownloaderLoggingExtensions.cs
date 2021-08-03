@@ -28,10 +28,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         private const int ResponseNotAcceptable = Base + 10;
         private const int ResponseUndefined = Base + 11;
         private const int EfgsError = Base + 12;
-
         private const int BatchMaximumReached = Base + 13;
+        private const int BatchAlreadyProcessed = Base + 15;
+        private const int BatchProcessedInNextLoop = Base + 16;
         private const int MovingToNextDay = Base + 17;
         private const int NoNextBatch = Base + 18;
+        private const int NextBatchFound = Base + 19;
         private const int NoNextBatchNoNextDay = Base + 20;
         private const int RequestingData = Base + 21;
 
@@ -149,6 +151,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 maxBatchesPerRun);
         }
 
+        public void WriteBatchAlreadyProcessed(string batchTag)
+        {
+            _logger.LogInformation("[{name}/{id}] Batch {BatchTag} has already been processed.",
+                Name, BatchAlreadyProcessed,
+                batchTag);
+        }
+
+        public void WriteBatchProcessedInNextLoop(string nextBatchTag)
+        {
+            _logger.LogInformation("[{name}/{id}] New NextBatchTag {NextBatchTag}, it will be processed next loop.",
+                Name, BatchProcessedInNextLoop,
+                nextBatchTag);
+        }
+
         public void WriteMovingToNextDay()
         {
             _logger.LogInformation("[{name}/{id}] Moving to the next day!",
@@ -159,6 +175,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         {
             _logger.LogInformation("[{name}/{id}] No next batch, so: ending this day.",
                 Name, NoNextBatch);
+        }
+
+        public void WriteNextBatchFound(string nextBatchTag)
+        {
+            _logger.LogInformation("[{name}/{id}] We have a nextBatch with value {NextBatchTag} so we keep going.",
+                Name, NextBatchFound,
+                nextBatchTag);
         }
 
         public void WriteNoNextBatchNoMoreDays()

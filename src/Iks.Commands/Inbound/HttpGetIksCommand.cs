@@ -92,8 +92,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                         _logger.WriteResponseGone();
                         return null;
                     case HttpStatusCode.BadRequest:
+                        // A 400 response is returned by EFGS when for some reason a batchTag is requested
+                        // that has a different "created date" on their end, then the date we send along in the request.
+                        // This scenario shouldn't happen, but when it does, it is useful to not stop downloading keys altogether,
+                        // but rather to move on to the next day and request the first key of *that* day.
+                        // The IksPollingBatchJob will attempt to move on to a next day when the returned result is null.
                         _logger.WriteResponseBadRequest();
-                        throw new EfgsCommunicationException();
+                        return null;
                     case HttpStatusCode.Forbidden:
                         _logger.WriteResponseForbidden();
                         throw new EfgsCommunicationException();
