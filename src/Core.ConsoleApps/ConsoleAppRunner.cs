@@ -33,6 +33,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps
                 Log.Debug("Created the logger");
 
                 configure(serviceCollection, configuration);
+
+                serviceCollection.AddTransient<CommandInvoker>();
                 _serviceProvider = serviceCollection.BuildServiceProvider();
 
                 Log.Debug("About to start the console app");

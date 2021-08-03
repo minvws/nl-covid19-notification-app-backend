@@ -12,19 +12,19 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramewor
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands
 {
-    public class RemovePublishedDiagnosisKeys
+    public class RemovePublishedDiagnosisKeysCommand : BaseCommand
     {
         private RemovePublishedDiagnosisKeysResult _result;
         private readonly DkSourceDbContext _diagnosticKeyDbContext;
         private readonly IUtcDateTimeProvider _utcDateTimeProvider;
 
-        public RemovePublishedDiagnosisKeys(DkSourceDbContext diagnosticKeyDbContext, IUtcDateTimeProvider utcDateTimeProvider)
+        public RemovePublishedDiagnosisKeysCommand(DkSourceDbContext diagnosticKeyDbContext, IUtcDateTimeProvider utcDateTimeProvider)
         {
             _diagnosticKeyDbContext = diagnosticKeyDbContext ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContext));
             _utcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
         }
 
-        public async Task<RemovePublishedDiagnosisKeysResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             if (_result != null)
             {
@@ -36,10 +36,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             //TODO setting
             var cutoff = _utcDateTimeProvider.Snapshot.AddDays(-14).Date.ToRollingStartNumber();
 
-            var resultToDelete = _diagnosticKeyDbContext.DiagnosisKeys.AsNoTracking().Where(p =>
-                p.PublishedLocally && p.PublishedToEfgs && p.DailyKey.RollingStartNumber < cutoff).ToList();
+            var resultToDelete = await _diagnosticKeyDbContext.DiagnosisKeys.AsNoTracking().Where(p =>
+                p.PublishedLocally && p.PublishedToEfgs && p.DailyKey.RollingStartNumber < cutoff).ToArrayAsync();
 
-            _result.GivenMercy = resultToDelete.Count;
+            _result.GivenMercy = resultToDelete.Length;
             await _diagnosticKeyDbContext.BulkDeleteWithTransactionAsync(resultToDelete, new SubsetBulkArgs());
 
             _result.RemainingExpiredCount = _diagnosticKeyDbContext.DiagnosisKeys.Count(x => x.DailyKey.RollingStartNumber < cutoff);

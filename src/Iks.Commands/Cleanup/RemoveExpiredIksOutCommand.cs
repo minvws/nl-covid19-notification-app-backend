@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -12,7 +13,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
 {
-    public class RemoveExpiredIksOutCommand
+    public class RemoveExpiredIksOutCommand : BaseCommand
     {
         private readonly IksOutDbContext _iksOutDbContext;
         private readonly RemoveExpiredIksLoggingExtensions _logger;
@@ -32,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
         /// <summary>
         /// Manifests are updated regularly.
         /// </summary>
-        public async Task<RemoveExpiredIksCommandResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             if (_result != null)
             {
@@ -45,27 +46,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup
 
             var lifetimeDays = _iksCleaningConfig.LifetimeDays;
             var cutoff = (_utcDateTimeProvider.Snapshot - TimeSpan.FromDays(lifetimeDays)).Date;
-            
-            using (var tx = _iksOutDbContext.BeginTransaction())
-            {
-                _result.Found = _iksOutDbContext.Iks.Count();
-                _logger.WriteCurrentIksFound(_result.Found);
 
-                var zombies = _iksOutDbContext.Iks
-                    .Where(x => x.Created < cutoff)
-                    .Select(x => new { x.Id, x.Created })
-                    .ToList();
+            _result.Found = _iksOutDbContext.Iks.Count();
+            _logger.WriteCurrentIksFound(_result.Found);
 
-                _result.Zombies = zombies.Count;
+            var zombies = _iksOutDbContext.Iks.AsNoTracking()
+                .Where(x => x.Created < cutoff)
+                .Select(x => new { x.Id, x.Created })
+                .ToList();
 
-                _logger.WriteTotalIksFound(cutoff, _result.Zombies);
+            _result.Zombies = zombies.Count;
 
-                // DELETE FROM IksIn.dbo.IksIn WHERE Created < (today - 14-days)
-                _result.GivenMercy = await _iksOutDbContext.Database.ExecuteSqlRawAsync($"DELETE FROM {TableNames.IksOut} WHERE [Created] < '{cutoff:yyyy-MM-dd HH:mm:ss.fff}';");
-                await tx.CommitAsync();
+            _logger.WriteTotalIksFound(cutoff, _result.Zombies);
 
-                _result.Remaining = _iksOutDbContext.Iks.Count();
-            }
+            // DELETE FROM IksIn.dbo.IksIn WHERE Created < (today - 14-days)
+            var iksToBeCleaned = await _iksOutDbContext.Iks.AsNoTracking().Where(p => p.Created < cutoff).ToArrayAsync();
+            _result.GivenMercy = iksToBeCleaned.Length;
+            await _iksOutDbContext.BulkDeleteWithTransactionAsync(iksToBeCleaned, new SubsetBulkArgs());
+
+            _result.Remaining = _iksOutDbContext.Iks.Count();
 
             _logger.WriteRemovedAmount(_result.GivenMercy, _result.Remaining);
 

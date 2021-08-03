@@ -2,10 +2,10 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
-    public interface IStatisticsCommand
+    public class CommandResult : ICommandResult
     {
-        void Execute();
+        public bool HasErrors { get; set; }
     }
 }

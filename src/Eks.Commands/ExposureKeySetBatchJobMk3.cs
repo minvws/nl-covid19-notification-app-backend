@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     /// Stuffing is now written back to the DK table. NB this must occur BEFORE the DKS are built or stuffing can be inferred.
     /// NB With at least 2 strategy pattern type changes this is, strictly speaking, the Mk4.
     /// </summary>
-    public sealed class ExposureKeySetBatchJobMk3
+    public sealed class ExposureKeySetBatchJobMk3 : BaseCommand
     {
         private readonly IEksConfig _eksConfig;
         private readonly IEksBuilder _setBuilder;
@@ -96,12 +96,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _eksEngineResult.SnapshotSeconds = snapshotResult.SnapshotSeconds;
             _eksEngineResult.TransmissionRiskNoneCount = await GetTransmissionRiskNoneCountAsync();
 
-            if (snapshotResult.TekInputCount != 0)
-            {
-                await StuffAsync();
-                await BuildOutputAsync();
-                await CommitResultsAsync();
-            }
+            await StuffAsync();
+            await BuildOutputAsync();
+            await CommitResultsAsync();
 
             _eksEngineResult.TotalSeconds = stopwatch.Elapsed.TotalSeconds;
             _eksEngineResult.EksInfo = _eksResults.ToArray();
@@ -129,12 +126,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private async Task StuffAsync()
         {
-            if (_eksEngineResult.InputCount == 0)
-            {
-                _logger.WriteNoStuffingNoTeks();
-                return;
-            }
-
             var tekCount = _eksPublishingJobDbContext.EksInput.Count(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None);
 
             var stuffingCount = tekCount < _eksConfig.TekCountMin ? _eksConfig.TekCountMin - tekCount : 0;

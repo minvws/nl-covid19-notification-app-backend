@@ -16,7 +16,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
     //TODO add ticket - split up into explicit commands for each version.
-    public class ManifestUpdateCommand
+    public class ManifestUpdateCommand : BaseCommand
     {
         private readonly ManifestV2Builder _v2Builder; //Todo: rename classes to ManifestVxBuilder
         private readonly ManifestV3Builder _v3Builder;
@@ -52,11 +52,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         public async Task ExecuteV3Async() => await Execute(async () => await _v3Builder.ExecuteAsync(), ContentTypes.ManifestV3);
         public async Task ExecuteV4Async() => await Execute(async () => await _v4Builder.ExecuteAsync(), ContentTypes.ManifestV4);
 
-        public async Task ExecuteAllAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             await ExecuteV2Async();
             await ExecuteV3Async();
             await ExecuteV4Async();
+
+            return null;
         }
 
         private async Task Execute<T>(Func<Task<T>> build, ContentTypes contentType) where T : IEquatable<T>

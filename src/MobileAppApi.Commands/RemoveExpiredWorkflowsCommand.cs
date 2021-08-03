@@ -16,7 +16,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entity
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
 {
-    public class RemoveExpiredWorkflowsCommand
+    public class RemoveExpiredWorkflowsCommand : BaseCommand
     {
         private readonly WorkflowDbContext _workflowDbContext;
         private readonly ExpiredWorkflowLoggingExtensions _logger;
@@ -30,6 +30,53 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dtp = dtp ?? throw new ArgumentNullException(nameof(dtp));
             _config = config ?? throw new ArgumentNullException(nameof(config));
+        }
+
+        /// <summary>
+        /// Delete all Workflows and their associated TEKs that are over 2 days old
+        /// Cascading delete kills the TEKs.
+        /// </summary>
+        public override async Task<ICommandResult> ExecuteAsync()
+        {
+            if (_result != null)
+            {
+                throw new InvalidOperationException("Object already used.");
+            }
+
+            _result = new RemoveExpiredWorkflowsResult
+            {
+                DeletionsOn = _config.CleanupDeletesData
+            };
+
+            _logger.WriteStart();
+
+            ReadStats(_result.Before, _workflowDbContext);
+            LogReport(_result.Before, "Workflow stats before cleanup:");
+
+            if (!_result.DeletionsOn)
+            {
+                _logger.WriteFinishedNothingRemoved();
+                return _result;
+            }
+
+            if (_result.Before.Authorised != _result.Before.AuthorisedAndFullyPublished)
+            {
+                _logger.WriteUnpublishedTekFound(); // Authorised unpublished TEKs exist.
+                _result.HasErrors = true;
+            }
+            else
+            {
+                var workflowsToDelete = _workflowDbContext.KeyReleaseWorkflowStates.AsNoTracking().Where(p => p.ValidUntil < _dtp.Snapshot).ToList();
+                _result.GivenMercy = workflowsToDelete.Count;
+                await _workflowDbContext.BulkDeleteWithTransactionAsync(workflowsToDelete, new SubsetBulkArgs());
+                _logger.WriteRemovedAmount(_result.GivenMercy);
+            }
+
+            ReadStats(_result.After, _workflowDbContext);
+
+            LogReport(_result.Before, "Workflow stats after cleanup:");
+            _logger.WriteFinished();
+            return _result;
         }
 
         private void ReadStats(WorkflowStats stats, WorkflowDbContext dbc)
@@ -70,53 +117,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
             sb.AppendLine($"   Unpublished:{stats.TekUnpublished}");
 
             _logger.WriteReport(sb.ToString());
-        }
-
-
-        /// <summary>
-        /// Delete all Workflows and their associated TEKs that are over 2 days old
-        /// Cascading delete kills the TEKs.
-        /// </summary>
-        public async Task<RemoveExpiredWorkflowsResult> ExecuteAsync()
-        {
-            if (_result != null)
-            {
-                throw new InvalidOperationException("Object already used.");
-            }
-
-            _result = new RemoveExpiredWorkflowsResult
-            {
-                DeletionsOn = _config.CleanupDeletesData
-            };
-
-            _logger.WriteStart();
-
-            ReadStats(_result.Before, _workflowDbContext);
-            LogReport(_result.Before, "Workflow stats before cleanup:");
-
-            if (!_result.DeletionsOn)
-            {
-                _logger.WriteFinishedNothingRemoved();
-                return _result;
-            }
-
-            if (_result.Before.Authorised != _result.Before.AuthorisedAndFullyPublished)
-            {
-                _logger.WriteUnpublishedTekFound(); // Authorised unpublished TEKs exist.
-            }
-            else
-            {
-                var workflowsToDelete = _workflowDbContext.KeyReleaseWorkflowStates.AsNoTracking().Where(p => p.ValidUntil < _dtp.Snapshot).ToList();
-                _result.GivenMercy = workflowsToDelete.Count;
-                await _workflowDbContext.BulkDeleteWithTransactionAsync(workflowsToDelete, new SubsetBulkArgs());
-                _logger.WriteRemovedAmount(_result.GivenMercy);
-            }
-
-            ReadStats(_result.After, _workflowDbContext);
-
-            LogReport(_result.Before, "Workflow stats after cleanup:");
-            _logger.WriteFinished();
-            return _result;
         }
     }
 }

@@ -125,7 +125,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var sut = Create();
 
             // Act
-            var result = await sut.ExecuteAsync();
+            var result = (SnapshotWorkflowTeksToDksResult)await sut.ExecuteAsync();
 
             // Assert
             Assert.Equal(resultCount, result.TekReadCount);
@@ -154,7 +154,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.True(_dkSourceContext.DiagnosisKeys.All(x => x.DailyKey.RollingPeriod == UniversalConstants.RollingPeriodRange.Hi)); //Compatible with Apple API
 
             // Act
-            var result = await Create().ExecuteAsync();
+            var result = (SnapshotWorkflowTeksToDksResult)await Create().ExecuteAsync();
 
             // Assert
             Assert.Equal(resultCount, result.TekReadCount);
@@ -162,7 +162,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(resultCount, _dkSourceContext.DiagnosisKeys.Count());
 
             //Second Act
-            result = await Create().ExecuteAsync();
+            result = (SnapshotWorkflowTeksToDksResult)await Create().ExecuteAsync();
 
             //Assert No changes
             Assert.Equal(0, result.TekReadCount);

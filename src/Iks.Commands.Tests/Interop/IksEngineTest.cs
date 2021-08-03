@@ -99,7 +99,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             Assert.Equal(0, _iksOutDbContext.Iks.Count());
 
             //Act
-            var result = await Create().ExecuteAsync();
+            var result = (IksEngineResult)await Create().ExecuteAsync();
 
             //TODO Assert.Equal(tekCount, result.InputCount);
             Assert.Equal(0, result.OutputCount);
@@ -157,7 +157,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             Assert.Equal(0, _iksOutDbContext.Iks.Count());
 
             //Act
-            var result = await Create().ExecuteAsync();
+            var result = (IksEngineResult)await Create().ExecuteAsync();
 
             Assert.Equal(0, result.InputCount);
             Assert.Equal(0, result.OutputCount);
@@ -185,7 +185,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             ).GenerateAndAuthoriseWorkflowsAsync();
 
             //Act
-            var result = await Create().ExecuteAsync();
+            var result = (IksEngineResult)await Create().ExecuteAsync();
 
             Assert.Equal(usableDkCount, result.InputCount);
             Assert.Equal(usableDkCount, result.OutputCount); //No filters...
@@ -219,7 +219,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             ).GenerateAndAuthoriseWorkflowsAsync();
 
             //Act
-            var result = await Create().ExecuteAsync();
+            var result = (IksEngineResult)await Create().ExecuteAsync();
 
             Assert.Equal(usableDkCount, result.InputCount);
             Assert.Equal(usableDkCount, result.OutputCount); //No filters...
@@ -236,7 +236,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             Assert.Equal(1, _iksOutDbContext.Iks.Count());
 
             //Act
-            var result2 = await Create().ExecuteAsync();
+            var result2 = (IksEngineResult)await Create().ExecuteAsync();
             Assert.Equal(0, result2.InputCount);
             Assert.Equal(0, result2.OutputCount); //No filters...
             Assert.Empty(result2.Items);

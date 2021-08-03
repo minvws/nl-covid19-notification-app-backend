@@ -71,7 +71,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         {
             // Arrange
             //Act
-            await _sut.ExecuteAllAsync();
+            await _sut.ExecuteAsync();
 
             //Assert
             Assert.Equal(3, _contentDbContext.Content.Count());
@@ -85,13 +85,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         {
             // Arrange
             //Act
-            await _sut.ExecuteAllAsync();
+            await _sut.ExecuteAsync();
 
             //Advance the clock
             _dateTimeProviderMock.Setup(x => x.Snapshot)
                 .Returns(_mockedTime.AddMinutes(2));
 
-            await _sut.ExecuteAllAsync();
+            await _sut.ExecuteAsync();
 
             //Assert
             Assert.Equal(3, _contentDbContext.Content.Count());

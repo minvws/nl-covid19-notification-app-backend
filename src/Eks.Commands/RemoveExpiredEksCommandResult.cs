@@ -2,10 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 {
 
-    public class RemoveExpiredEksCommandResult
+    public class RemoveExpiredEksCommandResult : CommandResult
     {
         public int Found { get; set; }
         public int Zombies { get; set; }

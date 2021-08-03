@@ -69,11 +69,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 
             // Configuration
             var eksHeaderConfig = new Mock<IEksHeaderInfoConfig>(MockBehavior.Strict);
+            eksHeaderConfig.Setup(x => x.VerificationKeyId).Returns("unittest");
+            eksHeaderConfig.Setup(x => x.VerificationKeyVersion).Returns("unittest");
+            eksHeaderConfig.Setup(x => x.AppBundleId).Returns("unittest");
+
             var eksConfig = new Mock<IEksConfig>(MockBehavior.Strict);
             eksConfig.Setup(x => x.TekCountMax).Returns(750000);
+            eksConfig.Setup(x => x.TekCountMin).Returns(150);
+            eksConfig.Setup(x => x.PageSize).Returns(10000);
             eksConfig.Setup(x => x.LifetimeDays).Returns(14);
 
             var gaSigner = new Mock<IGaContentSigner>(MockBehavior.Strict);
+            gaSigner.Setup(x => x.SignatureOid).Returns("unittest");
             gaSigner.Setup(x => x.GetSignature(It.IsAny<byte[]>())).Returns(new byte[] { 1 });
 
             var nlSigner = new Mock<IContentSigner>(MockBehavior.Loose);
@@ -141,6 +148,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             // Arrange
             await _workflowContext.BulkDeleteAsync(_workflowContext.KeyReleaseWorkflowStates.ToList());
             await _dkSourceContext.TruncateAsync<DiagnosisKeyEntity>();
+            await _contentDbContext.TruncateAsync<ContentEntity>();
 
             Assert.Equal(0, _workflowContext.TemporaryExposureKeys.Count());
             Assert.Equal(0, _dkSourceContext.DiagnosisKeys.Count());
@@ -148,18 +156,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             // Act
             await _snapshot.ExecuteAsync();
             await _eksJob.ExecuteAsync();
-            await _manifestJob.ExecuteAllAsync();
+            await _manifestJob.ExecuteAsync();
             await _resign.ExecuteAsync();
 
             // Assert
             Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
-            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2));
-            //Obsolete - replace with raw content
-            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2)); // Stuffing added
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet)); // Stuffing added
             Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.Manifest));
 
             Assert.Equal(0, _workflowContext.TemporaryExposureKeys.Count());
-            Assert.Equal(0, _dkSourceContext.DiagnosisKeys.Count());
+            Assert.Equal(150, _dkSourceContext.DiagnosisKeys.Count()); // TekMinCount is set to 150. 
         }
 
         [Fact]
@@ -185,14 +192,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             // Act
             await _snapshot.ExecuteAsync(); //Too soon to publish TEKs
             await _eksJob.ExecuteAsync();
-            await _manifestJob.ExecuteAllAsync();
+            await _manifestJob.ExecuteAsync();
             await _resign.ExecuteAsync();
 
             // Assert
             Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
-            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2)); // Stuffing added
             //Obsolete - replace with raw content
-            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet)); // Stuffing added
             Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.Manifest));
         }
     }

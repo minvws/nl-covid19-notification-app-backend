@@ -13,7 +13,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 {
-    public class RemoveExpiredEksCommand
+    public class RemoveExpiredEksCommand : BaseCommand
     {
         private readonly ContentDbContext _dbContext;
         private readonly IEksConfig _config;
@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<RemoveExpiredEksCommandResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             var result = new RemoveExpiredEksCommandResult();
 

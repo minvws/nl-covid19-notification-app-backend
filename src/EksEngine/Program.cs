@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +22,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramewo
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Jobs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
@@ -51,44 +51,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
         private static void Start(IServiceProvider serviceProvider, string[] args)
         {
-            var run = new List<Action>();
-
-            //TODO read EFGS run.
-
-            var c10 = serviceProvider.GetRequiredService<SnapshotWorkflowTeksToDksCommand>();
-            run.Add(() => c10.ExecuteAsync().GetAwaiter().GetResult());
-
-            var eksEngineSettings = serviceProvider.GetRequiredService<IEksEngineConfig>();
-            if (eksEngineSettings.IksImportEnabled)
-            {
-                var c20 = serviceProvider.GetRequiredService<IksImportBatchJob>();
-                run.Add(() => c20.ExecuteAsync().GetAwaiter().GetResult());
-            }
-            else
-            {
-                var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
-                logger.LogInformation("IksImport is disabled; Iks files will not be processed.");
-            }
-
-            var c60 = serviceProvider.GetService<RemoveDuplicateDiagnosisKeysCommand>();
-            run.Add(() => c60.ExecuteAsync().GetAwaiter().GetResult());
-
-            var c30 = serviceProvider.GetRequiredService<ExposureKeySetBatchJobMk3>();
-            run.Add(() => c30.ExecuteAsync().GetAwaiter().GetResult());
-
-            var c40 = serviceProvider.GetRequiredService<ManifestUpdateCommand>();
-            run.Add(() => c40.ExecuteAllAsync().GetAwaiter().GetResult());
-
-            var c50 = serviceProvider.GetRequiredService<NlContentResignExistingV1ContentCommand>();
-            run.Add(() => c50.ExecuteAsync().GetAwaiter().GetResult());
-
-            var c35 = serviceProvider.GetRequiredService<IksEngine>();
-            run.Add(() => c35.ExecuteAsync().GetAwaiter().GetResult());
-
-            foreach (var i in run)
-            {
-                i();
-            }
+            serviceProvider.GetRequiredService<IksImportBatchJob>().Run();
+            serviceProvider.GetRequiredService<EksBatchJob>().Run();
+            serviceProvider.GetRequiredService<ManifestBatchJob>().Run();
+            serviceProvider.GetRequiredService<SigningBatchJob>().Run();
+            serviceProvider.GetRequiredService<IksBatchJob>().Run();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
@@ -120,8 +87,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.EksEngine();
 
             services.AddTransient<RemoveDuplicateDiagnosisKeysCommand>();
-            services.AddTransient<RemovePublishedDiagnosisKeys>();
-            services.AddTransient<RemoveDiagnosisKeysReadyForCleanup>();
+            services.AddTransient<RemovePublishedDiagnosisKeysCommand>();
+            services.AddTransient<RemoveDiagnosisKeysReadyForCleanupCommand>();
 
             services.AddSingleton<EksBuilderV1LoggingExtensions>();
             services.AddSingleton<ResignerLoggingExtensions>();
@@ -147,6 +114,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             services.DummySignerStartup();
 
             services.AddTransient<IksImportBatchJob>();
+            services.AddTransient<EksBatchJob>();
+            services.AddTransient<ManifestBatchJob>();
+            services.AddTransient<SigningBatchJob>();
+            services.AddTransient<IksBatchJob>();
+
+
+
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
             services.AddTransient(
                 x => new IksImportCommand(

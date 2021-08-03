@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,50 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
 
         private static void Start(IServiceProvider serviceProvider, string[] args)
         {
-            var logger = serviceProvider.GetRequiredService<DailyCleanupLoggingExtensions>();
-            logger.WriteStart();
-
-            var run = new List<Action>();
-
-            var c90 = serviceProvider.GetRequiredService<IStatisticsCommand>();
-            run.Add(() => logger.WriteDailyStatsCalcStarting());
-            run.Add(() => c90.Execute());
-
-            var c80 = serviceProvider.GetRequiredService<RemoveExpiredWorkflowsCommand>();
-            run.Add(() => logger.WriteWorkflowCleanupStarting());
-            run.Add(() => c80.ExecuteAsync().GetAwaiter().GetResult());
-
-            var c126 = serviceProvider.GetRequiredService<RemoveDiagnosisKeysReadyForCleanup>();
-            run.Add(() => c126.ExecuteAsync().GetAwaiter().GetResult());
-
-            var c125 = serviceProvider.GetRequiredService<RemovePublishedDiagnosisKeys>();
-            run.Add(() => c125.ExecuteAsync().GetAwaiter().GetResult());
-
-            logger.WriteEksCleanupStarting();
-            var c70 = serviceProvider.GetRequiredService<RemoveExpiredEksCommand>();
-            run.Add(() => logger.WriteEksCleanupStarting());
-            run.Add(() => c70.ExecuteAsync().GetAwaiter().GetResult());
-
-            var c110 = serviceProvider.GetRequiredService<RemoveExpiredEksV2Command>();
-            run.Add(() => logger.WriteEksV2CleanupStarting());
-            run.Add(() => c110.ExecuteAsync().GetAwaiter().GetResult());
-
-            var c60 = serviceProvider.GetRequiredService<RemoveExpiredManifestsCommand>();
-            run.Add(() => logger.WriteManiFestCleanupStarting());
-            run.Add(() => c60.Execute());
-
-            var c140 = serviceProvider.GetRequiredService<RemoveExpiredIksInCommand>();
-            run.Add(() => c140.ExecuteAsync().GetAwaiter().GetResult());
-
-            var c150 = serviceProvider.GetRequiredService<RemoveExpiredIksOutCommand>();
-            run.Add(() => c150.ExecuteAsync().GetAwaiter().GetResult());
-
-            run.Add(() => logger.WriteFinished());
-
-            foreach (var i in run)
-            {
-                i();
-            }
+            serviceProvider.GetRequiredService<DailyCleanupJob>().Run();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
@@ -112,23 +68,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<IAcceptableCountriesSetting, EfgsInteropConfig>();
             services.AddSingleton<IOutboundFixedCountriesOfInterestSetting, EfgsInteropConfig>();
 
-            services.AddTransient<RemoveExpiredIksInCommand>();
-            services.AddTransient<RemoveExpiredIksOutCommand>();
+            services.AddTransient<DailyCleanupJob>();
+
             services.AddTransient<RemoveExpiredWorkflowsCommand>();
-            services.AddTransient<RemoveDuplicateDiagnosisKeysCommand>();
-            services.AddTransient<RemovePublishedDiagnosisKeys>();
-            services.AddTransient<RemoveDiagnosisKeysReadyForCleanup>();
+            services.AddTransient<RemoveDiagnosisKeysReadyForCleanupCommand>();
+            services.AddTransient<RemovePublishedDiagnosisKeysCommand>();
             services.AddTransient<RemoveExpiredEksCommand>();
             services.AddTransient<RemoveExpiredEksV2Command>();
-            services.AddTransient<RemoveExpiredManifestsReceiver>();
             services.AddTransient<RemoveExpiredManifestsCommand>();
+            services.AddTransient<RemoveExpiredIksInCommand>();
+            services.AddTransient<RemoveExpiredIksOutCommand>();
+
+            services.AddTransient<RemoveExpiredManifestsReceiver>();
 
             services.AddSingleton<DailyCleanupLoggingExtensions>();
             services.AddSingleton<ExpiredEksLoggingExtensions>();
             services.AddSingleton<ExpiredWorkflowLoggingExtensions>();
             services.AddSingleton<ExpiredEksV2LoggingExtensions>();
             services.AddSingleton<RemoveExpiredIksLoggingExtensions>();
-            
+
             services.DailyStatsStartup();
         }
     }

@@ -14,7 +14,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 {
-    public class RemoveExpiredEksV2Command
+    public class RemoveExpiredEksV2Command : BaseCommand
     {
         private readonly ContentDbContext _dbContext;
         private readonly IEksConfig _config;
@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<RemoveExpiredEksCommandResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             var result = new RemoveExpiredEksCommandResult();
 
@@ -62,9 +62,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     return result;
                 }
 
-                result.GivenMercy = await _dbContext.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM [Content] WHERE [Type] = {ContentTypes.ExposureKeySetV2.ToString()} AND [Release] < {cutoff}");
+                var eksToBeCleaned = await _dbContext.Content.AsNoTracking().Where(p => p.Type == ContentTypes.ExposureKeySetV2 && p.Release < cutoff).ToArrayAsync();
+                result.GivenMercy = eksToBeCleaned.Length;
+                await _dbContext.BulkDeleteWithTransactionAsync(eksToBeCleaned, new SubsetBulkArgs());
                 await tx.CommitAsync();
-                //Implicit tx
                 result.Remaining = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2);
             }
 

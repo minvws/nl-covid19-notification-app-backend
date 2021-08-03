@@ -61,14 +61,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         public async Task Cleaner()
         {
             // Arrange
-            _contentDbContext.Truncate<ContentEntity>();
+            await _contentDbContext.TruncateAsync<ContentEntity>();
 
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
             var command = new RemoveExpiredEksCommand(_contentDbContext, new FakeEksConfig(), new StandardUtcDateTimeProvider(), expEksLogger);
 
             // Act
-            var result = await command.ExecuteAsync();
+            var result = (RemoveExpiredEksCommandResult)await command.ExecuteAsync();
 
             // Assert
             Assert.Equal(0, result.Found);
@@ -82,7 +82,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         public async Task NoKill()
         {
             // Arrange
-            _contentDbContext.Truncate<ContentEntity>();
+            await _contentDbContext.TruncateAsync<ContentEntity>();
 
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
@@ -90,9 +90,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var command = new RemoveExpiredEksCommand(_contentDbContext, new FakeEksConfig(), fakeDtp, expEksLogger);
 
             Add(15);
- 
+
             // Act
-            var result = await command.ExecuteAsync();
+            var result = (RemoveExpiredEksCommandResult)await command.ExecuteAsync();
 
             // Assert
             Assert.Equal(1, result.Found);
@@ -107,7 +107,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         public async Task Kill()
         {
             // Arrange
-            _contentDbContext.Truncate<ContentEntity>();
+            await _contentDbContext.TruncateAsync<ContentEntity>();
 
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
@@ -118,7 +118,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Add(15);
 
             // Act
-            var result = await command.ExecuteAsync();
+            var result = (RemoveExpiredEksCommandResult)await command.ExecuteAsync();
 
             // Assert
             Assert.Equal(1, result.Found);
@@ -133,7 +133,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         public async Task MoreRealistic()
         {
             // Arrange
-            _contentDbContext.BulkDelete(_contentDbContext.Content.ToList());
+            await _contentDbContext.BulkDeleteAsync(_contentDbContext.Content.ToList());
 
             var lf = new LoggerFactory();
             var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
@@ -147,7 +147,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             }
 
             // Act
-            var result = await command.ExecuteAsync();
+            var result = (RemoveExpiredEksCommandResult)await command.ExecuteAsync();
 
             // Assert
             Assert.Equal(20, result.Found);
