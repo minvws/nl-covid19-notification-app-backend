@@ -72,8 +72,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             HttpGetIksSuccessResult result = null;
             var dateString = date.ToString(DateFormatString);
 
-            //TODO: If batchTag is null, return the first batch from date; otherwise get the batch matching batchTag
-
             if (_callIndexes.ContainsKey(dateString) && _callIndexes[dateString] < _responses[dateString].Count)
             {
                 result = _responses[dateString][_callIndexes[dateString]++];
