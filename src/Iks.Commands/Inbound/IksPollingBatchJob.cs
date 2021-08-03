@@ -52,7 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 var result = await _receiverFactory().ExecuteAsync(dayToRequest, tagToRequest);
                 downloadCount++;
 
-                // If we haven't already received the current batchTag, process it
+                // If we have a success response and we haven't already received the current batchTag, process it
                 if (result != null && !_iksInDbContext.Received.AsNoTracking().Any(x => x.BatchTag == result.BatchTag))
                 {
                     _logger.WriteProcessingData(dayToRequest, result.BatchTag);
@@ -81,8 +81,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                     }
                 }
 
-                // Move on to the next batchTag if available;
-                // otherwise, move on to the next day.
+                if (result != null && _iksInDbContext.Received.AsNoTracking().Any(x => x.BatchTag == result.BatchTag))
+                {
+                    // Log this for informational purposes
+                    _logger.WriteBatchAlreadyProcessed(result.BatchTag);
+                }
+
+                // Move on to the next batchTag if available; otherwise, move on to the next day.
+                // If result was null because of an non-success response from EFGS,
+                // it will be dealt with here by moving on to a next day if possible.
                 tagToRequest = result?.NextBatchTag ?? string.Empty;
 
                 if (string.IsNullOrEmpty(tagToRequest))
@@ -93,12 +100,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                     {
                         _logger.WriteMovingToNextDay();
                         dayToRequest = dayToRequest.AddDays(1);
+
+                        // Update jobinfo to reflect the move
+                        jobInfo.LastRun = dayToRequest;
+
+                        // Persist updated jobinfo to database
+                        await _iksInDbContext.SaveChangesAsync();
                     }
                     else
                     {
                         _logger.WriteNoNextBatchNoMoreDays();
                         daysLeft = false;
                     }
+                }
+                else
+                {
+                    // Log this for informational purposes
+                    _logger.WriteNextBatchFound(tagToRequest);
+                    _logger.WriteBatchProcessedInNextLoop(tagToRequest);
                 }
 
                 // Log this for informational purposes
