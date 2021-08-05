@@ -1,14 +1,8 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.EntityFramework", "src\Core.EntityFramework\Core.EntityFramework.csproj", "{6142B884-72B0-4941-99BE-BBCCF0C24DA0}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{D5A96A79-CFC9-46F8-9719-9840D7F717A1}"
-	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eks.Protobuf", "src\Eks.Protobuf\Eks.Protobuf.csproj", "{4EE95C11-79EE-4ECB-940E-205AA3C4EAC8}"
 EndProject
