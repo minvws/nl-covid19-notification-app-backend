@@ -48,8 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             var loggingExtensionsMock = new ManifestUpdateCommandLoggingExtensions(
                 loggerFactory.CreateLogger<ManifestUpdateCommandLoggingExtensions>());
 
-            Func<IContentEntityFormatter> contentFormatterInjector = () =>
-                new StandardContentEntityFormatter(
+            IContentEntityFormatter contentFormatterInjector = new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(nlSignerMock.Object),
                     new Sha256HexPublishingIdService(),
                     jsonSerializer);

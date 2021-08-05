@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         private readonly ManifestUpdateCommandLoggingExtensions _logger;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly IJsonSerializer _jsonSerializer;
-        private readonly Func<IContentEntityFormatter> _formatter;
+        private readonly IContentEntityFormatter _formatter;
 
         public ManifestUpdateCommand(
             ManifestV2Builder v2Builder,
@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             ManifestUpdateCommandLoggingExtensions logger,
             IUtcDateTimeProvider dateTimeProvider,
             IJsonSerializer jsonSerializer,
-            Func<IContentEntityFormatter> formatter)
+            IContentEntityFormatter formatter)
         {
             _v2Builder = v2Builder ?? throw new ArgumentNullException(nameof(v2Builder));
             _v3Builder = v3Builder ?? throw new ArgumentNullException(nameof(v3Builder));
@@ -94,7 +94,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                 Release = snapshot,
                 Type = contentType
             };
-            await _formatter().FillAsync(contentEntity, candidateManifest);
+            await _formatter.FillAsync(contentEntity, candidateManifest);
 
             _contentDbContext.Add(contentEntity);
             _contentDbContext.SaveAndCommit();

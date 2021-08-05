@@ -3,12 +3,13 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.Extensions.DependencyInjection;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.ServiceRegistrations
 {
     public static class StatisticsSetup
     {
-        public static void DailyStatsStartup(this IServiceCollection services)
+        public static void DailyStatsRegistration(this IServiceCollection services)
         {
             services.AddScoped<TotalWorkflowCountStatsQueryCommand>();
             services.AddScoped<TotalWorkflowsWithTeksQueryCommand>();
