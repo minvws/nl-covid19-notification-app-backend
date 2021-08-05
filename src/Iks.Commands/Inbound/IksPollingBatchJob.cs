@@ -41,8 +41,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         public async Task ExecuteAsync()
         {
             var jobInfo = GetJobInfo();
-            var tagToRequest = jobInfo.LastBatchTag;
-            var dayToRequest = jobInfo.LastRun == DateTime.MinValue ? _dateTimeProvider.Snapshot.Date.AddDays(_efgsConfig.DaysToDownload * -1) : jobInfo.LastRun;
+            var lastWrittenBatchTag = jobInfo.LastBatchTag;
+            var tagToRequest = string.Empty;
+
+            // Set date to a default of today.
+            // Either we continue where we left off, or we grab as many batches as allowed
+            // (i.e., a few days worth back from today)
+            var dayToRequest = _dateTimeProvider.Snapshot.Date;
+
+            var batchTagDatePart = lastWrittenBatchTag.Split("-").FirstOrDefault();
+
+            if (!string.IsNullOrEmpty(batchTagDatePart))
+            {
+                // All is good, start requesting batch from where we left off.
+                // The date and the batchTag's creation date need to be the same,
+                // otherwise EFGS will return a HTTP status 404.
+                dayToRequest = DateTime.ParseExact(batchTagDatePart, "yyyyMMdd", null);
+                tagToRequest = lastWrittenBatchTag;
+            }
+            else
+            {
+                // If lastWrittenBatchTag is somehow unusable or unavailable,
+                // go as far back as allowed with the date and don't send a batchTag to EFGS
+                // (i.e., keep tagToRequest as an empty string)
+                dayToRequest = dayToRequest.AddDays(_efgsConfig.DaysToDownload * -1);
+            }
 
             var downloadCount = 0;
             var daysLeft = true;
@@ -68,9 +91,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                             Content = result.Content
                         });
 
-                        // Update jobinfo
+                        // Update jobinfo:
+                        // Keep track of the last batch we wrote to the database
                         jobInfo.LastBatchTag = result.BatchTag;
-                        jobInfo.LastRun = dayToRequest;
+                        // And keep track of the last time this job was run in a functionally meaningful way
+                        jobInfo.LastRun = _dateTimeProvider.Snapshot;
 
                         // Persist updated jobinfo to database
                         await _iksInDbContext.SaveChangesAsync();
@@ -80,8 +105,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                         _logger.WriteEfgsError(e);
                     }
                 }
-
-                if (result != null && _iksInDbContext.Received.AsNoTracking().Any(x => x.BatchTag == result.BatchTag))
+                else if (result != null)
                 {
                     // Log this for informational purposes
                     _logger.WriteBatchAlreadyProcessed(result.BatchTag);
@@ -100,12 +124,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                     {
                         _logger.WriteMovingToNextDay();
                         dayToRequest = dayToRequest.AddDays(1);
-
-                        // Update jobinfo to reflect the move
-                        jobInfo.LastRun = dayToRequest;
-
-                        // Persist updated jobinfo to database
-                        await _iksInDbContext.SaveChangesAsync();
                     }
                     else
                     {
