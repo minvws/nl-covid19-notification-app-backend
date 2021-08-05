@@ -20,8 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Crypto.Tests\Crypto.Tests.csproj" />
-    <ProjectReference Include="..\src\Manifest.Commands\Manifest.Commands.csproj" />
+    <ProjectReference Include="..\..\src\Manifest.Commands\Manifest.Commands.csproj" />
+    <ProjectReference Include="..\Crypto.Tests\Crypto.Tests.csproj" />
   </ItemGroup>
 
 </Project>

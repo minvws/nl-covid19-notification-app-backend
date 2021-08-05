@@ -40,8 +40,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\src\Content.EntityFramework\Content.EntityFramework.csproj" />
-      <ProjectReference Include="..\src\MobileAppApi.WebApi\MobileAppApi.WebApi.csproj" />
+      <ProjectReference Include="..\..\src\Content.EntityFramework\Content.EntityFramework.csproj" />
+      <ProjectReference Include="..\..\src\MobileAppApi.WebApi\MobileAppApi.WebApi.csproj" />
     </ItemGroup>
 
     <ItemGroup>

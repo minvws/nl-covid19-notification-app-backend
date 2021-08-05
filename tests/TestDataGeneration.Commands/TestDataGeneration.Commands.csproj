@@ -14,10 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Core.EntityFramework\Core.EntityFramework.csproj" />
-    <ProjectReference Include="..\src\DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj" />
-    <ProjectReference Include="..\src\Eks.Commands\Eks.Commands.csproj" />
-    <ProjectReference Include="..\src\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
+    <ProjectReference Include="..\..\src\Core.EntityFramework\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj" />
+    <ProjectReference Include="..\..\src\Eks.Commands\Eks.Commands.csproj" />
+    <ProjectReference Include="..\..\src\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
   </ItemGroup>
 
 </Project>

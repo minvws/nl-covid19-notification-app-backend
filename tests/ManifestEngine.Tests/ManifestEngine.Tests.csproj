@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\ManifestEngine\ManifestEngine.csproj" />
+    <ProjectReference Include="..\..\src\ManifestEngine\ManifestEngine.csproj" />
   </ItemGroup>
 
 </Project>
