@@ -20,11 +20,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.EntityFramework", "Core.EntityFramework\Core.EntityFramework.csproj", "{6142B884-72B0-4941-99BE-BBCCF0C24DA0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{D5A96A79-CFC9-46F8-9719-9840D7F717A1}"
-	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eks.Protobuf", "Eks.Protobuf\Eks.Protobuf.csproj", "{4EE95C11-79EE-4ECB-940E-205AA3C4EAC8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.WebApi", "MobileAppApi.WebApi\MobileAppApi.WebApi.csproj", "{95720B76-7BA9-4193-B0F5-DF37A5243C8E}"
