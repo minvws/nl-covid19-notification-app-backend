@@ -35,11 +35,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
-    <ProjectReference Include="..\Crypto.Tests\Crypto.Tests.csproj" />
-    <ProjectReference Include="..\Manifest.Commands\Manifest.Commands.csproj" />
-    <ProjectReference Include="..\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
-    <ProjectReference Include="..\TestDataGeneration.Commands\TestDataGeneration.Commands.csproj" />
+    <ProjectReference Include="..\src\Core.EntityFramework\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\src\Crypto.Tests\Crypto.Tests.csproj" />
+    <ProjectReference Include="..\src\Manifest.Commands\Manifest.Commands.csproj" />
+    <ProjectReference Include="..\src\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
+    <ProjectReference Include="TestDataGeneration.Commands\TestDataGeneration.Commands.csproj" />
   </ItemGroup>
 
   <ItemGroup>

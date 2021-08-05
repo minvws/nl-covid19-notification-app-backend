@@ -30,10 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Content.Commands\Content.Commands.csproj" />
-    <ProjectReference Include="..\Crypto.Tests\Crypto.Tests.csproj" />
-    <ProjectReference Include="..\Crypto\Crypto.csproj" />
-    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\src\Content.Commands\Content.Commands.csproj" />
+    <ProjectReference Include="..\src\Crypto.Tests\Crypto.Tests.csproj" />
+    <ProjectReference Include="..\src\Crypto\Crypto.csproj" />
+    <ProjectReference Include="..\src\Domain\Domain.csproj" />
   </ItemGroup>
 
 </Project>

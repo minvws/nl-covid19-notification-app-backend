@@ -47,7 +47,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenTeks", "GenTeks\GenTeks.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{3F8DB099-3B7E-4314-87AC-637EE6346FAF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Tests", "MobileAppApi.Tests\MobileAppApi.Tests.csproj", "{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Tests", "tests\MobileAppApi.Tests\MobileAppApi.Tests.csproj", "{80D5171E-9DFF-4B0A-AE25-DB149E9E81A8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ForceTekAuth", "ForceTekAuth\ForceTekAuth.csproj", "{6B733BF4-606C-437D-A26E-55ED2DA7D2E1}"
 EndProject
@@ -67,9 +67,9 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "WorkFlow", "Database\WorkFl
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DataProtectionKeys", "Database\DataProtectionKeys\DataProtectionKeys.sqlproj", "{CF8CB421-3554-4647-A9F0-55DBB8390BDE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManifestEngine.Tests", "ManifestEngine.Tests\ManifestEngine.Tests.csproj", "{0D0A4401-8F45-4A8A-942D-F0E98C47F10F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManifestEngine.Tests", "tests\ManifestEngine.Tests\ManifestEngine.Tests.csproj", "{0D0A4401-8F45-4A8A-942D-F0E98C47F10F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksEngine.Tests", "EksEngine.Tests\EksEngine.Tests.csproj", "{B1367247-E27B-481E-9EE3-28396FEA539C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EksEngine.Tests", "tests\EksEngine.Tests\EksEngine.Tests.csproj", "{B1367247-E27B-481E-9EE3-28396FEA539C}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DiagnosisKeys", "Database\DiagnosisKeys\DiagnosisKeys.sqlproj", "{AB93BB3F-A599-422A-A4A9-2E8C83013A51}"
 EndProject
@@ -121,7 +121,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.EntityFramework", "St
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.Commands", "Icc.Commands\Icc.Commands.csproj", "{201F23D3-CC4D-46F0-ADC5-259520BAA0E0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.Commands.Tests", "Icc.Commands.Tests\Icc.Commands.Tests.csproj", "{E62A3914-9A82-4CF3-9ECA-BE898FB84422}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.Commands.Tests", "tests\Icc.Commands.Tests\Icc.Commands.Tests.csproj", "{E62A3914-9A82-4CF3-9ECA-BE898FB84422}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{7EF3DC84-57C7-47D9-9DEC-E94558B1AFC0}"
 EndProject
@@ -131,11 +131,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDataGeneration.Commands
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manifest.Commands", "Manifest.Commands\Manifest.Commands.csproj", "{7337E1AF-88FB-4789-8498-7699044C958B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manifest.Commands.Tests", "Manifest.Commands.Tests\Manifest.Commands.Tests.csproj", "{983D17A4-31F5-4BA1-87BC-AA5225C69C0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manifest.Commands.Tests", "tests\Manifest.Commands.Tests\Manifest.Commands.Tests.csproj", "{983D17A4-31F5-4BA1-87BC-AA5225C69C0E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content.Commands", "Content.Commands\Content.Commands.csproj", "{3E8211EB-36FC-4CD1-BAF5-0BD4E9A05721}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content.Commands.Tests", "Content.Commands.Tests\Content.Commands.Tests.csproj", "{AA3BC0C5-9F40-4C1C-9F6F-0DD1AFC89480}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content.Commands.Tests", "tests\Content.Commands.Tests\Content.Commands.Tests.csproj", "{AA3BC0C5-9F40-4C1C-9F6F-0DD1AFC89480}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eks.Commands", "Eks.Commands\Eks.Commands.csproj", "{3F358EE4-A249-4FEA-BA6A-62D193CC0539}"
 EndProject
@@ -145,7 +145,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Commands", "Iks.Command
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypto", "Crypto\Crypto.csproj", "{3864B677-9901-4B02-B73D-74897ED75379}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Commands.Tests", "Iks.Commands.Tests\Iks.Commands.Tests.csproj", "{09E02122-6F5A-4854-9FD6-37F54464C4F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Commands.Tests", "tests\Iks.Commands.Tests\Iks.Commands.Tests.csproj", "{09E02122-6F5A-4854-9FD6-37F54464C4F0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.ConsoleApps", "Core.ConsoleApps\Core.ConsoleApps.csproj", "{E4106746-299D-4B93-92C2-97BC8DBA7C27}"
 EndProject
@@ -153,15 +153,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.AspNet", "Core.AspNet\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.Commands", "Stats.Commands\Stats.Commands.csproj", "{BBC8BCB6-8AF2-4CD2-A007-0D3A727568C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.Commands.Tests", "Stats.Commands.Tests\Stats.Commands.Tests.csproj", "{6A16A550-9562-49AD-97A8-0E45DE68B96B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.Commands.Tests", "tests\Stats.Commands.Tests\Stats.Commands.Tests.csproj", "{6A16A550-9562-49AD-97A8-0E45DE68B96B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypto.Tests", "Crypto.Tests\Crypto.Tests.csproj", "{C791F5C4-B226-49D8-B6EA-90F368DCB31F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypto.Tests", "tests\Crypto.Tests\Crypto.Tests.csproj", "{C791F5C4-B226-49D8-B6EA-90F368DCB31F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Tests", "Domain.Tests\Domain.Tests.csproj", "{F798B6DE-4CA5-4C06-9AB6-D94DFC7DF819}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Tests", "tests\Domain.Tests\Domain.Tests.csproj", "{F798B6DE-4CA5-4C06-9AB6-D94DFC7DF819}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Tests", "Core.Tests\Core.Tests.csproj", "{C572A7E5-F771-43A8-BDE4-3279E041D39F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Tests", "tests\Core.Tests\Core.Tests.csproj", "{C572A7E5-F771-43A8-BDE4-3279E041D39F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.AspNet.Tests", "Core.AspNet.Tests\Core.AspNet.Tests.csproj", "{534EC211-E342-4DDC-9C10-14331808E139}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.AspNet.Tests", "tests\Core.AspNet.Tests\Core.AspNet.Tests.csproj", "{534EC211-E342-4DDC-9C10-14331808E139}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{CF7C78F1-DA31-4F98-8C1B-525E8EED6F27}"
 EndProject
@@ -173,9 +173,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.v2.WebApi", "Icc.v2.Web
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.WebApp", "Icc.WebApp\Icc.WebApp.csproj", "{B701DAD1-CD0E-4E25-B47F-53211653D1EA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.WebApp.Tests", "Icc.WebApp.Tests\Icc.WebApp.Tests.csproj", "{48C49D2C-3123-4D03-84C1-DEB7B04C7175}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.WebApp.Tests", "tests\Icc.WebApp.Tests\Icc.WebApp.Tests.csproj", "{48C49D2C-3123-4D03-84C1-DEB7B04C7175}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.v2.WebApi.Tests", "Icc.v2.WebApi.Tests\Icc.v2.WebApi.Tests.csproj", "{10D67DE2-5BE7-43C2-8782-4611F3D4A8A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.v2.WebApi.Tests", "tests\Icc.v2.WebApi.Tests\Icc.v2.WebApi.Tests.csproj", "{10D67DE2-5BE7-43C2-8782-4611F3D4A8A6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManagementPortal", "ManagementPortal\ManagementPortal.csproj", "{275CFD7A-CFED-4729-BCA3-4F22430AF288}"
 EndProject
