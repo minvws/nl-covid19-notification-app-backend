@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-            <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet.Tests</AssemblyName>
-    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet.Tests</RootNamespace>
+  <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Tests</AssemblyName>
+    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Tests</RootNamespace>
 	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core.AspNet\Core.AspNet.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj" />
   </ItemGroup>
 
 </Project>
