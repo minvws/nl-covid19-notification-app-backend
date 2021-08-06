@@ -6,6 +6,7 @@ using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.ServiceRegistrations;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup

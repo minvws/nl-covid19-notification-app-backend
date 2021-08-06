@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\DailyCleanup.Commands\DailyCleanup.Commands.csproj" />
     <ProjectReference Include="..\..\src\Iks.Commands\Iks.Commands.csproj" />
     <ProjectReference Include="..\TestDataGeneration.Commands\TestDataGeneration.Commands.csproj" />
   </ItemGroup>
