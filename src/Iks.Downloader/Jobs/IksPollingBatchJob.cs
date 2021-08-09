@@ -4,42 +4,48 @@
 
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
 {
-    public class IksPollingBatchJob
+    public class IksPollingBatchJob : IJob
     {
         private readonly IUtcDateTimeProvider _dateTimeProvider;
-        private readonly Func<IHttpGetIksCommand> _receiverFactory;
-        private readonly Func<IIksWriterCommand> _writerFactory;
+        private readonly IHttpGetIksCommand _receiver;
+        private readonly IIksWriterCommand _writer;
         private readonly IksInDbContext _iksInDbContext;
         private readonly IEfgsConfig _efgsConfig;
         private readonly IksDownloaderLoggingExtensions _logger;
 
         public IksPollingBatchJob(
             IUtcDateTimeProvider dateTimeProvider,
-            Func<IHttpGetIksCommand> receiverFactory,
-            Func<IIksWriterCommand> writerFactory,
+            IHttpGetIksCommand receiver,
+            IIksWriterCommand writer,
             IksInDbContext iksInDbContext,
             IEfgsConfig efgsConfig,
             IksDownloaderLoggingExtensions logger)
         {
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _receiverFactory = receiverFactory ?? throw new ArgumentNullException(nameof(receiverFactory));
-            _writerFactory = writerFactory ?? throw new ArgumentNullException(nameof(writerFactory));
+            _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
+            _writer = writer ?? throw new ArgumentNullException(nameof(writer));
             _iksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
             _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task ExecuteAsync()
+        public void Run()
         {
+            if (!_efgsConfig.DownloaderEnabled)
+            {
+                _logger.WriteDisabledByConfig();
+                return;
+            }
+
             var jobInfo = GetJobInfo();
             var lastWrittenBatchTag = jobInfo.LastBatchTag;
             var tagToRequest = string.Empty;
@@ -72,7 +78,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
             while (daysLeft && downloadCount <= _efgsConfig.MaxBatchesPerRun)
             {
-                var result = await _receiverFactory().ExecuteAsync(dayToRequest, tagToRequest);
+                var result = _receiver.ExecuteAsync(dayToRequest, tagToRequest).GetAwaiter().GetResult();
                 downloadCount++;
 
                 // If we have a success response and we haven't already received the current batchTag, process it
@@ -82,10 +88,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
                     try
                     {
-                        var iksWriter = _writerFactory();
-
                         // Persists batch to database
-                        await iksWriter.Execute(new IksWriteArgs
+                        _writer.Execute(new IksWriteArgs
                         {
                             BatchTag = result.BatchTag,
                             Content = result.Content
@@ -98,7 +102,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                         jobInfo.LastRun = _dateTimeProvider.Snapshot;
 
                         // Persist updated jobinfo to database
-                        await _iksInDbContext.SaveChangesAsync();
+                        _iksInDbContext.SaveChanges();
                     }
                     catch (Exception e)
                     {
