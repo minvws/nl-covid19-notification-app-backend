@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
@@ -65,11 +66,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
             // Assemble: create the job to be tested
-            var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
+            var sut = new IksPollingBatchJob(dtp.Object, receiver, writer.Object,
                 _iksInDbContext, new EfgsConfigMock(), logger);
 
             // Act
-            await sut.ExecuteAsync();
+            sut.Run();
 
             // Assert
             Assert.Equal(3, downloadedBatches.Count);
@@ -103,13 +104,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
             // Assemble: create the job to be tested
-            var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
+            var sut = new IksPollingBatchJob(dtp.Object, receiver, writer.Object,
                 _iksInDbContext, new EfgsConfigMock(), logger);
 
             // Act
-            await sut.ExecuteAsync();
-            await sut.ExecuteAsync();
-            await sut.ExecuteAsync();
+            sut.Run();
+            sut.Run();
+            sut.Run();
 
             // Assert
             Assert.Single(downloadedBatches);
@@ -141,11 +142,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
             // Assemble: create the job to be tested
-            var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
+            var sut = new IksPollingBatchJob(dtp.Object, receiver, writer.Object,
                 _iksInDbContext, new EfgsConfigMock(), logger);
 
             // Act
-            await sut.ExecuteAsync();
+            sut.Run();
 
             // Assert
             Assert.Single(downloadedBatches);
@@ -155,7 +156,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             { BatchTag = $"{datePart}-2", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = null });
 
             // Act
-            await sut.ExecuteAsync();
+            sut.Run();
 
             // Assert
             Assert.Equal(2, downloadedBatches.Count);
@@ -203,11 +204,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
             // Assemble: create the job to be tested
-            var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
+            var sut = new IksPollingBatchJob(dtp.Object, receiver, writer.Object,
                 _iksInDbContext, new EfgsConfigMock(), logger);
 
             // Act
-            await sut.ExecuteAsync();
+            sut.Run();
 
             // Assert
             Assert.Equal(3, downloadedBatches.Count);
@@ -243,11 +244,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = FixedResultHttpGetIksCommand.Create(responses, now.AddDays(-1));
 
             // Assemble: create the job to be tested
-            var sut = new IksPollingBatchJob(dtp.Object, () => receiver, () => writer.Object,
+            var sut = new IksPollingBatchJob(dtp.Object, receiver, writer.Object,
                 _iksInDbContext, new EfgsConfigMock(), logger);
 
             // Act - process files for FIRST day
-            await sut.ExecuteAsync();
+            sut.Run();
 
             // Assert
             Assert.Equal(2, downloadedBatches.Count);
@@ -260,7 +261,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             { BatchTag = $"{secondDayDatePart}-2", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = null }, now);
 
             // Act - process files for SECOND day
-            await sut.ExecuteAsync();
+            sut.Run();
 
             // Assert
             Assert.Equal(4, downloadedBatches.Count);

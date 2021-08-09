@@ -36,7 +36,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Core.EntityFramework\Core.EntityFramework.csproj" />
-    <ProjectReference Include="..\..\src\DailyCleanup.Commands\DailyCleanup.Commands.csproj" />
     <ProjectReference Include="..\Crypto.Tests\Crypto.Tests.csproj" />
     <ProjectReference Include="..\..\src\Manifest.Commands\Manifest.Commands.csproj" />
     <ProjectReference Include="..\..\src\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
