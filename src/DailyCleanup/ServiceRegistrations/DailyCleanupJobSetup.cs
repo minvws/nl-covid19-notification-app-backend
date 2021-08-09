@@ -3,11 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.Extensions.DependencyInjection;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.DiagnosisKeys;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Eks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Iks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Manifest;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Workflow;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.ServiceRegistrations
 {

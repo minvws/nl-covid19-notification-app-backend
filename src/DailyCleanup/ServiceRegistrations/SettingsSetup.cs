@@ -4,10 +4,10 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Iks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Manifest;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Cleanup;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.ServiceRegistrations
 {
