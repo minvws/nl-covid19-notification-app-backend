@@ -8,18 +8,17 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Iks.Protobuf;
-using Microsoft.EntityFrameworkCore;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
-    // TODO: this class (together with HttpPostIksCommand) will be refactored soon!
-    public class IksSendBatchCommand
+    public class IksSendBatchCommand : BaseCommand
     {
-        private readonly Func<HttpPostIksCommand> _iksSendCommandFactory;
-        private readonly Func<IksOutDbContext> _iksOutboundDbContextFactory;
-        private List<int> _todo;
+        private readonly HttpPostIksCommand _httpPostIksCommand;
+        private readonly IksOutDbContext _iksOutboundDbContext;
+        private List<IksOutEntity> _todo;
         private readonly IIksSigner _signer;
         private readonly IBatchTagProvider _batchTagProvider;
         private readonly List<IksSendResult> _results = new List<IksSendResult>();
@@ -27,34 +26,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private readonly IksUploaderLoggingExtensions _logger;
 
         public IksSendBatchCommand(
-            Func<IksOutDbContext> iksOutboundDbContextFactory,
-            Func<HttpPostIksCommand> iksSendCommandFactory,
+            IksOutDbContext iksOutboundDbContext,
+            HttpPostIksCommand httpPostIksCommand,
             IIksSigner signer,
             IBatchTagProvider batchTagProvider,
             IksUploaderLoggingExtensions logger)
         {
-            _iksSendCommandFactory = iksSendCommandFactory ?? throw new ArgumentNullException(nameof(iksSendCommandFactory));
-            _iksOutboundDbContextFactory = iksOutboundDbContextFactory ?? throw new ArgumentNullException(nameof(iksOutboundDbContextFactory));
+            _httpPostIksCommand = httpPostIksCommand ?? throw new ArgumentNullException(nameof(httpPostIksCommand));
+            _iksOutboundDbContext = iksOutboundDbContext ?? throw new ArgumentNullException(nameof(iksOutboundDbContext));
             _signer = signer ?? throw new ArgumentNullException(nameof(signer));
             _batchTagProvider = batchTagProvider ?? throw new ArgumentNullException(nameof(batchTagProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<IksSendBatchResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
-            using (var dbc = _iksOutboundDbContextFactory())
-            {
-                _todo = dbc.Iks
-                    .Where(x => !x.Sent && !x.Error)
-                    .OrderBy(x => x.Created)
-                    .ThenBy(x => x.Qualifier)
-                    .Select(x => x.Id)
-                    .ToList();
-            }
+            _todo = _iksOutboundDbContext.Iks
+                .Where(x => !x.Sent && !x.Error)
+                .OrderBy(x => x.Created)
+                .ThenBy(x => x.Qualifier)
+                .Select(x => x)
+                .ToList();
 
-            foreach (var t in _todo)
+            foreach (var iksOutEntity in _todo)
             {
-                await ProcessOne(t);
+                await ProcessOne(iksOutEntity);
             }
 
             return new IksSendBatchResult
@@ -80,16 +76,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             return _signer.GetSignature(efgsSerializer.Serialize(batch));
         }
 
-        private async Task ProcessOne(int i)
+        private async Task ProcessOne(IksOutEntity item)
         {
-            using var dbc = _iksOutboundDbContextFactory();
-            var item = await dbc.Iks.SingleAsync(x => x.Id == i);
+            //var item = await _iksOutboundDbContext.Iks.f(x => x.Id == i);
 
             var args = new IksSendCommandArgs
             {
                 BatchTag = _batchTagProvider.Create(item.Content),
                 Content = item.Content,
-                Signature = SignDks(item),
+                Signature = SignDks(item)
             };
 
             await SendOne(args);
@@ -112,7 +107,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             // * Allow for manual fixing of data errors with a special retry state?
             //
 
-            await dbc.SaveChangesAsync();
+            await _iksOutboundDbContext.SaveChangesAsync();
         }
 
         /// <summary>
@@ -123,8 +118,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private async Task SendOne(IksSendCommandArgs args)
         {
             // NOTE: no retry here
-            var sender = _iksSendCommandFactory();
-            var result = await sender.ExecuteAsync(args);
+            var result = await _httpPostIksCommand.ExecuteAsync(args);
 
             _lastResult = result;
 

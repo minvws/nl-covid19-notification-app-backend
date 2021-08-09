@@ -37,37 +37,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
             var cutoff = (_dtp.Snapshot - TimeSpan.FromDays(_config.LifetimeDays)).Date;
 
-            await using (var tx = _dbContext.BeginTransaction())
+            result.Found = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2);
+            _logger.WriteCurrentEksFound(result.Found);
+
+            var zombies = _dbContext.Content
+                .Where(x => x.Type == ContentTypes.ExposureKeySetV2 && x.Release < cutoff)
+                .Select(x => new { x.PublishingId, x.Release })
+                .ToList();
+
+            result.Zombies = zombies.Count;
+
+            _logger.WriteTotalEksFound(cutoff, result.Zombies);
+            foreach (var i in zombies)
             {
-                result.Found = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2);
-                _logger.WriteCurrentEksFound(result.Found);
-
-                var zombies = _dbContext.Content
-                    .Where(x => x.Type == ContentTypes.ExposureKeySetV2 && x.Release < cutoff)
-                    .Select(x => new { x.PublishingId, x.Release })
-                    .ToList();
-
-                result.Zombies = zombies.Count;
-
-                _logger.WriteTotalEksFound(cutoff, result.Zombies);
-                foreach (var i in zombies)
-                {
-                    _logger.WriteEntryFound(i.PublishingId, i.Release);
-                }
-
-                if (!_config.CleanupDeletesData)
-                {
-                    _logger.WriteFinishedNothingRemoved();
-                    result.Remaining = result.Found;
-                    return result;
-                }
-
-                var eksToBeCleaned = await _dbContext.Content.AsNoTracking().Where(p => p.Type == ContentTypes.ExposureKeySetV2 && p.Release < cutoff).ToArrayAsync();
-                result.GivenMercy = eksToBeCleaned.Length;
-                await _dbContext.BulkDeleteWithTransactionAsync(eksToBeCleaned, new SubsetBulkArgs());
-                await tx.CommitAsync();
-                result.Remaining = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2);
+                _logger.WriteEntryFound(i.PublishingId, i.Release);
             }
+
+            if (!_config.CleanupDeletesData)
+            {
+                _logger.WriteFinishedNothingRemoved();
+                result.Remaining = result.Found;
+                return result;
+            }
+
+            var eksToBeCleaned = await _dbContext.Content.AsNoTracking().Where(p => p.Type == ContentTypes.ExposureKeySetV2 && p.Release < cutoff).ToArrayAsync();
+            result.GivenMercy = eksToBeCleaned.Length;
+            await _dbContext.BulkDeleteWithTransactionAsync(eksToBeCleaned, new SubsetBulkArgs());
+            result.Remaining = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2);
 
             _logger.WriteRemovedAmount(result.GivenMercy, result.Remaining);
 

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Commands</AssemblyName>
+    <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Commands</RootNamespace>
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="4.16.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Core.EntityFramework\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosisKeys.Processors\DiagnosisKeys.Processors.csproj" />
+    <ProjectReference Include="..\..\src\Eks.Commands\Eks.Commands.csproj" />
+    <ProjectReference Include="..\..\src\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
+  </ItemGroup>
+
+</Project>
