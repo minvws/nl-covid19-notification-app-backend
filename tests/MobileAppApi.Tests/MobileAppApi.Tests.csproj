@@ -41,7 +41,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\Content.EntityFramework\Content.EntityFramework.csproj" />
-      <ProjectReference Include="..\..\src\DailyCleanup.Commands\DailyCleanup.Commands.csproj" />
       <ProjectReference Include="..\..\src\MobileAppApi.WebApi\MobileAppApi.WebApi.csproj" />
     </ItemGroup>
 
