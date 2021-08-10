@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Iks
             var configurationMock = new Mock<IIksCleaningConfig>();
             configurationMock.Setup(p => p.LifetimeDays).Returns(14);
             var logger = new Mock<ILogger<RemoveExpiredIksLoggingExtensions>>();
-           
+
             // Assemble - add data up to "now"
             var firstDate = DateTime.Parse("2020-12-01T20:00:00Z");
             for (var day = 0; day < 26; day++)

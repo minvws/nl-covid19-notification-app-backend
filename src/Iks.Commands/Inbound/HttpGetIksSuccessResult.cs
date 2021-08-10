@@ -2,6 +2,8 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 {
     public class HttpGetIksSuccessResult
@@ -10,5 +12,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         public string BatchTag { get; set; }
         public string NextBatchTag { get; set; }
         public byte[] Content { get; set; }
+        public DateTime RequestedDay { get; set; }
     }
 }
