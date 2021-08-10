@@ -137,7 +137,7 @@ FriendlyName = $friendlyName"
 
 if($AddOIDs -eq $true)
 {
-	$fileContent = $fileContent + "`n[EnhancedKeyUsageExtension]`nOID = 1.3.6.1.5.5.7.3.2 ; Client Auth`nOID = 1.3.6.1.5.5.7.3.1 ; Server Auth"
+	$fileContent = $fileContent + "`r`n[EnhancedKeyUsageExtension]`r`nOID = 1.3.6.1.5.5.7.3.2 ; Client Auth`r`nOID = 1.3.6.1.5.5.7.3.1 ; Server Auth"
 }
 	
 	New-Item -force -name ($filename + ".inf") -path "." -ItemType File -Value $fileContent -ErrorAction Stop

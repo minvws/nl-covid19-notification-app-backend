@@ -125,7 +125,7 @@ FriendlyName = $friendlyName"
 
 if($AddOIDs -eq $true)
 {
-	$fileContent = $fileContent + "`n[EnhancedKeyUsageExtension]`nOID = 1.3.6.1.5.5.7.3.2 ; Client Auth`nOID = 1.3.6.1.5.5.7.3.1 ; Server Auth"
+	$fileContent = $fileContent + "`r`n[EnhancedKeyUsageExtension]`r`nOID = 1.3.6.1.5.5.7.3.2 ; Client Auth`r`nOID = 1.3.6.1.5.5.7.3.1 ; Server Auth"
 }
 	
 	New-Item -force -name ($filename + ".inf") -path "." -ItemType File -Value $fileContent -ErrorAction Stop
@@ -171,7 +171,7 @@ $signedrequestRSAname = ".\Temp$script:date\$requestFileName-Signed"
 $FriendlyName = read-host "`nPlease enter a `'Friendly name`' for the certificates.`n Make sure the name is not already in use! (look inside the machine personal keystore)"
 $Host.UI.RawUI.FlushInputBuffer() #clears any annoying newlines that were accidentally copied in
 	
-GenerateRequestInf -filename $requestRSAname -hashAlgorithm "SHA256" -keyAlgorithm "RSA" -keyLength "2048" -friendlyName "$FriendlyName-RSA"
+GenerateRequestInf -filename $requestRSAname -hashAlgorithm "SHA256" -keyAlgorithm "RSA" -keyLength "2048" -friendlyName "$FriendlyName"
 	
 write-host "`nSend request to HSM to generate new keypair"
 Pause
@@ -202,10 +202,12 @@ write-host "`nDone!"
 
 if($IsOnDevEnvironment -eq $False)
 {
-	write-host "`nThe RSA request-file for PKIO is $requestRSAname."
+	write-host "`nThe RSA request-file for PKIO is $requestRSAname.`nYou can find the request under `'Certificate Enrollment Requests`'"
 }
-
-write-host "`nOpening the local machine store.`nThe renewed cert should be present under personal certificates."
+else
+{
+	write-host "`nOpening the local machine store.`nThe renewed cert should be present under `'Personal Certificates`'."
+}
 Pause
 
 RunWithErrorCheck "certlm.msc"
