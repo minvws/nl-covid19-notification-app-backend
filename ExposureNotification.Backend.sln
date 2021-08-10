@@ -134,7 +134,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.AspNet", "src\Core.Asp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.Commands", "src\Stats.Commands\Stats.Commands.csproj", "{BBC8BCB6-8AF2-4CD2-A007-0D3A727568C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.Commands.Tests", "tests\Stats.Commands.Tests\Stats.Commands.Tests.csproj", "{6A16A550-9562-49AD-97A8-0E45DE68B96B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stats.Commands.Tests", "tests\integration\Stats.Commands.Tests\Stats.Commands.Tests.csproj", "{6A16A550-9562-49AD-97A8-0E45DE68B96B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypto.Tests", "tests\Crypto.Tests\Crypto.Tests.csproj", "{C791F5C4-B226-49D8-B6EA-90F368DCB31F}"
 EndProject
@@ -245,8 +245,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "e2e", "tests\e2e\e2e.csproj", "{579E8AE4-CEC2-4491-BFE9-8AF647D59979}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unit", "tests\unit\unit.csproj", "{057FF931-A96E-4549-870F-E08C273C4A4D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "integration", "tests\integration\integration.csproj", "{8A901129-5B4B-4911-8639-0E4325432E30}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
