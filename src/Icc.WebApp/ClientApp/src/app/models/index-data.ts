@@ -83,7 +83,7 @@ export class IndexData {
             date = new Date(this.selectedDate.valueOf());
             date.setDate(date.getDate() - (this.symptomatic ? this.symptomaticIndexDateOffset : this.asymptomaticIndexDateOffset));
         }
-        this.startDateOfTekInclusion = date;
+        this.startDateOfTekInclusion = this.selectedDate;
         return date;
     }
 
