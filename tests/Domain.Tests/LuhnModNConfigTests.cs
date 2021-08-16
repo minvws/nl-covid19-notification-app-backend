@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using Xunit;
 
@@ -14,11 +13,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Tests
         [Fact]
         public void GoodCustomValues()
         {
-            var argle = new LuhnModNConfig("BCFGJLQRSTUVXYZ23456789", 7);
-            Assert.Equal(7, argle.ValueLength);
-            Assert.Equal(23, argle.CharacterSet.Length);
-            Assert.True(argle.CharacterSet.Contains('R'));
-            Assert.True(!argle.CharacterSet.Contains('A'));
+            var config = new LuhnModNConfig("BCFGJLQRSTUVXYZ23456789", 7);
+            Assert.Equal(7, config.ValueLength);
+            Assert.Equal(23, config.CharacterSet.Length);
+            Assert.Contains('R', config.CharacterSet);
+            Assert.DoesNotContain('A', config.CharacterSet);
         }
 
         [Fact]
