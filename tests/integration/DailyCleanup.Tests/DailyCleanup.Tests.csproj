@@ -24,16 +24,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Content.EntityFramework\Content.EntityFramework.csproj" />
-    <ProjectReference Include="..\..\src\Core\Core.csproj" />
-    <ProjectReference Include="..\..\src\DailyCleanup.Commands\DailyCleanup.Commands.csproj" />
-    <ProjectReference Include="..\..\src\Domain\Domain.csproj" />
-    <ProjectReference Include="..\..\src\Iks.Downloader.Entities\Iks.Downloader.Entities.csproj" />
-    <ProjectReference Include="..\..\src\Iks.Downloader.EntityFramework\Iks.Downloader.EntityFramework.csproj" />
-    <ProjectReference Include="..\..\src\Iks.Uploader.Entities\Iks.Uploader.Entities.csproj" />
-    <ProjectReference Include="..\..\src\Iks.Uploader.EntityFramework\Iks.Uploader.EntityFramework.csproj" />
-    <ProjectReference Include="..\..\src\MobileAppApi.Entities\MobileAppApi.Entities.csproj" />
-    <ProjectReference Include="..\..\src\MobileAppApi.EntityFramework\MobileAppApi.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\..\src\Content.EntityFramework\Content.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\..\src\Core\Core.csproj" />
+    <ProjectReference Include="..\..\..\src\DailyCleanup.Commands\DailyCleanup.Commands.csproj" />
+    <ProjectReference Include="..\..\..\src\Domain\Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\Iks.Downloader.Entities\Iks.Downloader.Entities.csproj" />
+    <ProjectReference Include="..\..\..\src\Iks.Downloader.EntityFramework\Iks.Downloader.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\..\src\Iks.Uploader.Entities\Iks.Uploader.Entities.csproj" />
+    <ProjectReference Include="..\..\..\src\Iks.Uploader.EntityFramework\Iks.Uploader.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\..\src\MobileAppApi.Entities\MobileAppApi.Entities.csproj" />
+    <ProjectReference Include="..\..\..\src\MobileAppApi.EntityFramework\MobileAppApi.EntityFramework.csproj" />
   </ItemGroup>
 
 </Project>

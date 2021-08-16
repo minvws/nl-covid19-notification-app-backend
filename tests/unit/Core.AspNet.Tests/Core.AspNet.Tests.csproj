@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Core.AspNet\Core.AspNet.csproj" />
+    <ProjectReference Include="..\..\..\src\Core.AspNet\Core.AspNet.csproj" />
   </ItemGroup>
 
 </Project>
