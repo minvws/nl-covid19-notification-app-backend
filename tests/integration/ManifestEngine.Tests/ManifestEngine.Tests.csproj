@@ -25,8 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ManifestEngine\ManifestEngine.csproj" />
-    <ProjectReference Include="..\unit\Crypto.Tests\Crypto.Tests.csproj" />
+    <ProjectReference Include="..\..\..\src\ManifestEngine\ManifestEngine.csproj" />
+    <ProjectReference Include="..\..\unit\Crypto.Tests\Crypto.Tests.csproj" />
   </ItemGroup>
 
 </Project>
