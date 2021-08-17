@@ -67,9 +67,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             // Assemble: configure the receiver to return the first sequence of files
             var responses = new List<HttpGetIksSuccessResult>
             {
-                new HttpGetIksSuccessResult {BatchTag = "1", Content = new byte[] {0x0, 0x0}, NextBatchTag = "2", RequestedDay = now.AddDays(-1)},
-                new HttpGetIksSuccessResult {BatchTag = "2", Content = new byte[] {0x0, 0x0}, NextBatchTag = "3", RequestedDay = now.AddDays(-1)},
-                new HttpGetIksSuccessResult {BatchTag = "3", Content = new byte[] {0x0, 0x0}, NextBatchTag = null, RequestedDay = now.AddDays(-1)}
+                new HttpGetIksSuccessResult {BatchTag = $"{datePart}-1", Content = new byte[] {0x0, 0x0}, NextBatchTag = $"{datePart}-2", RequestedDay = now.AddDays(-1)},
+                new HttpGetIksSuccessResult {BatchTag = $"{datePart}-2", Content = new byte[] {0x0, 0x0}, NextBatchTag = $"{datePart}-3", RequestedDay = now.AddDays(-1)},
+                new HttpGetIksSuccessResult {BatchTag = $"{datePart}-3", Content = new byte[] {0x0, 0x0}, NextBatchTag = null, RequestedDay = now.AddDays(-1)}
             };
             var receiver = FixedResultHttpGetIksCommand.Create(responses, now.AddDays(-1));
 
@@ -202,12 +202,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             // Assemble: configure the receiver to return the first sequence of files
             var responses = new List<HttpGetIksSuccessResult>
             {
-                new HttpGetIksSuccessResult {BatchTag = "1", Content = new byte[] {0x0, 0x0}, NextBatchTag = "2", RequestedDay = now.Date},
-                new HttpGetIksSuccessResult {BatchTag = "2", Content = new byte[] {0x0, 0x0}, NextBatchTag = "3", RequestedDay = now.Date},
-                new HttpGetIksSuccessResult {BatchTag = "3", Content = new byte[] {0x0, 0x0}, NextBatchTag = "1", RequestedDay = now.Date},
-                new HttpGetIksSuccessResult {BatchTag = "1", Content = new byte[] {0x0, 0x0}, NextBatchTag = "3", RequestedDay = now.Date},
-                new HttpGetIksSuccessResult {BatchTag = "2", Content = new byte[] {0x0, 0x0}, NextBatchTag = "2", RequestedDay = now.Date},
-                new HttpGetIksSuccessResult {BatchTag = "3", Content = new byte[] {0x0, 0x0}, NextBatchTag = null, RequestedDay = now.Date}
+                new HttpGetIksSuccessResult {BatchTag = $"{datePart}-1", Content = new byte[] {0x0, 0x0}, NextBatchTag = $"{datePart}-2", RequestedDay = now.Date},
+                new HttpGetIksSuccessResult {BatchTag = $"{datePart}-2", Content = new byte[] {0x0, 0x0}, NextBatchTag = $"{datePart}-3", RequestedDay = now.Date},
+                new HttpGetIksSuccessResult {BatchTag = $"{datePart}-3", Content = new byte[] {0x0, 0x0}, NextBatchTag = $"{datePart}-1", RequestedDay = now.Date},
+                new HttpGetIksSuccessResult {BatchTag = $"{datePart}-1", Content = new byte[] {0x0, 0x0}, NextBatchTag = $"{datePart}-3", RequestedDay = now.Date},
+                new HttpGetIksSuccessResult {BatchTag = $"{datePart}-2", Content = new byte[] {0x0, 0x0}, NextBatchTag = $"{datePart}-2", RequestedDay = now.Date},
+                new HttpGetIksSuccessResult {BatchTag = $"{datePart}-3", Content = new byte[] {0x0, 0x0}, NextBatchTag = null, RequestedDay = now.Date}
             };
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
@@ -246,8 +246,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             // Assemble: configure receiver to return batches for the FIRST day
             var responses = new List<HttpGetIksSuccessResult>()
             {
-                new HttpGetIksSuccessResult {BatchTag = "firstday-1", Content = new byte[] {0x0, 0x0}, NextBatchTag = "firstday-2", RequestedDay = now.AddDays(-1)},
-                new HttpGetIksSuccessResult {BatchTag = "firstday-2", Content = new byte[] {0x0, 0x0}, NextBatchTag = null, RequestedDay = now.AddDays(-1)},
+                new HttpGetIksSuccessResult {BatchTag = $"{datePart}-1", Content = new byte[] {0x0, 0x0}, NextBatchTag = $"{datePart}-2", RequestedDay = now.AddDays(-1)},
+                new HttpGetIksSuccessResult {BatchTag = $"{datePart}-2", Content = new byte[] {0x0, 0x0}, NextBatchTag = null, RequestedDay = now.AddDays(-1)},
             };
             var receiver = FixedResultHttpGetIksCommand.Create(responses, now.AddDays(-1));
 
@@ -264,9 +264,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             // Assemble: add the batches for the SECOND day to the receiver
             var secondDayDatePart = dtp.Object.Snapshot.Date.AddDays(1).ToString("yyyyMMdd");
             receiver.AddItem(new HttpGetIksSuccessResult
-            { BatchTag = "secondday-1", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = "secondday-2" , RequestedDay = now}, now);
+            { BatchTag = $"{secondDayDatePart}-1", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = $"{secondDayDatePart}-2", RequestedDay = now }, now);
             receiver.AddItem(new HttpGetIksSuccessResult
-            { BatchTag = "secondday-2", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = null, RequestedDay = now}, now);
+            { BatchTag = $"{secondDayDatePart}-2", Content = new byte[] { 0x0, 0x0 }, NextBatchTag = null, RequestedDay = now }, now);
 
             // Act - process files for SECOND day
             sut.Run();
@@ -358,5 +358,142 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             Assert.Equal("today", downloadedBatches[0].BatchTag);
             Assert.Equal("tomorrow", downloadedBatches[1].BatchTag);
         }
+
+        [Fact]
+        public void EFGSReturns404_ExecuteAsync_DownloadHalted()
+        {
+            //Arrange
+            var efgsConfigMock = new EfgsConfigMock();
+            var mockHttpClientHandler = new Mock<HttpClientHandler>();
+            var mockCertProvider = new Mock<IAuthenticationCertificateProvider>();
+            var fakeX509Certificate2 = new Mock<X509Certificate2>();
+            var logger = new IksDownloaderLoggingExtensions(new NullLogger<IksDownloaderLoggingExtensions>());
+            var receiver = new HttpGetIksCommand(efgsConfigMock, mockCertProvider.Object, new IksDownloaderLoggingExtensions(new NullLogger<IksDownloaderLoggingExtensions>()), mockHttpClientHandler.Object);
+            var dtp = new Mock<IUtcDateTimeProvider>();
+            var writer = new Mock<IIksWriterCommand>();
+
+            var now = DateTime.UtcNow;
+            var downloadedBatches = new List<IksWriteArgs>();
+
+            var testUri = new Uri($"{efgsConfigMock.BaseUrl}/diagnosiskeys/download/{DateTime.Today.AddDays(-1):yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
+
+            var firstResponseMessage = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.NotFound
+            };
+
+            var secondResponseMessage = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new ByteArrayContent(new byte[] { 0x0, 0x0 })
+            };
+
+            secondResponseMessage.Headers.Add("batchTag", "today");
+
+            mockHttpClientHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(r => r.RequestUri == testUri),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(firstResponseMessage);
+
+            mockCertProvider.Setup<X509Certificate2>(p => p.GetCertificate())
+                .Returns(fakeX509Certificate2.Object);
+
+            dtp.Setup(_ => _.Snapshot).Returns(now);
+
+            writer.Setup(_ => _.Execute(It.IsAny<IksWriteArgs>()))
+                .Callback((IksWriteArgs args) => downloadedBatches.Add(args));
+
+            var sut = new IksPollingBatchJob(
+                dtp.Object,
+                receiver,
+                writer.Object,
+                _iksInDbContext,
+                new EfgsConfigMock(),
+                logger);
+
+            //Act
+            sut.Run();
+
+            //Assert
+            var jobResultState = _iksInDbContext.InJob.SingleOrDefaultAsync().GetAwaiter().GetResult();
+
+            Assert.Empty(downloadedBatches);
+            Assert.Equal($"{DateTime.Today.AddDays(-1):yyyy-MM-dd}", jobResultState.LastBatchTag);
+        }
+
+        [Fact]
+        public void EFGSReturns410_ExecuteAsync_NextBatchIsRequested()
+        {
+            //Arrange
+            var efgsConfigMock = new EfgsConfigMock();
+            var mockHttpClientHandler = new Mock<HttpClientHandler>();
+            var mockCertProvider = new Mock<IAuthenticationCertificateProvider>();
+            var fakeX509Certificate2 = new Mock<X509Certificate2>();
+            var logger = new IksDownloaderLoggingExtensions(new NullLogger<IksDownloaderLoggingExtensions>());
+            var receiver = new HttpGetIksCommand(efgsConfigMock, mockCertProvider.Object, new IksDownloaderLoggingExtensions(new NullLogger<IksDownloaderLoggingExtensions>()), mockHttpClientHandler.Object);
+            var dtp = new Mock<IUtcDateTimeProvider>();
+            var writer = new Mock<IIksWriterCommand>();
+
+            var now = DateTime.UtcNow;
+            var downloadedBatches = new List<IksWriteArgs>();
+
+            var testUri = new Uri($"{efgsConfigMock.BaseUrl}/diagnosiskeys/download/{DateTime.Today.AddDays(-1):yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
+            var nextBatchUri = new Uri($"{efgsConfigMock.BaseUrl}/diagnosiskeys/download/{DateTime.Today.AddDays(-1):yyyy-MM-dd}-1", UriKind.RelativeOrAbsolute);
+
+            var firstResponseMessage = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.NotFound
+            };
+
+            var secondResponseMessage = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new ByteArrayContent(new byte[] { 0x0, 0x0 })
+            };
+
+            secondResponseMessage.Headers.Add("batchTag", "today");
+
+            mockHttpClientHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(r => r.RequestUri == testUri),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(firstResponseMessage);
+
+            mockHttpClientHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(r => r.RequestUri == nextBatchUri),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(secondResponseMessage);
+
+            mockCertProvider.Setup<X509Certificate2>(p => p.GetCertificate())
+                .Returns(fakeX509Certificate2.Object);
+
+            dtp.Setup(_ => _.Snapshot).Returns(now);
+
+            writer.Setup(_ => _.Execute(It.IsAny<IksWriteArgs>()))
+                .Callback((IksWriteArgs args) => downloadedBatches.Add(args));
+
+            var sut = new IksPollingBatchJob(
+                dtp.Object,
+                receiver,
+                writer.Object,
+                _iksInDbContext,
+                new EfgsConfigMock(),
+                logger);
+
+            //Act
+            sut.Run();
+
+            //Assert
+            var jobResultState = _iksInDbContext.InJob.SingleOrDefaultAsync().GetAwaiter().GetResult();
+
+            Assert.Single(downloadedBatches);
+            Assert.Equal($"{DateTime.Today.AddDays(-1):yyyy-MM-dd}-2", jobResultState.LastBatchTag);
+        }
+
     }
 }
