@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Icc.Commands\Icc.Commands.csproj" />
+    <ProjectReference Include="..\..\..\src\Icc.Commands\Icc.Commands.csproj" />
   </ItemGroup>
 
 </Project>

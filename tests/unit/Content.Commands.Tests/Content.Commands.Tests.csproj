@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Content.Commands\Content.Commands.csproj" />
+    <ProjectReference Include="..\Crypto.Tests\Crypto.Tests.csproj" />
   </ItemGroup>
 
 </Project>
