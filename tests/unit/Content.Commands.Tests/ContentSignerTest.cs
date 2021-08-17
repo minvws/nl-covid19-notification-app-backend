@@ -30,12 +30,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
 
         internal static string CreateString(int stringLength)
         {
-            const string allowedChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789!@$?_-";
+            const string AllowedChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789!@$?_-";
             var chars = new char[stringLength];
 
             for (var i = 0; i < stringLength; i++)
             {
-                chars[i] = allowedChars[random.Next(0, allowedChars.Length)];
+                chars[i] = AllowedChars[random.Next(0, AllowedChars.Length)];
             }
 
             return new string(chars);

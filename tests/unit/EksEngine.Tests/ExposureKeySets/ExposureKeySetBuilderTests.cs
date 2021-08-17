@@ -57,10 +57,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             //Assert
             Assert.True(result.Length > 0);
 
-            using (var fs = new FileStream("EKS.zip", FileMode.Create, FileAccess.Write))
-            {
-                fs.Write(result, 0, result.Length);
-            }
+            using var fs = new FileStream("EKS.zip", FileMode.Create, FileAccess.Write);
+            fs.Write(result, 0, result.Length);
         }
 
         [Fact]
@@ -88,12 +86,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             using var zipFileInMemory = new MemoryStream();
             zipFileInMemory.Write(result, 0, result.Length);
 
-            using (var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false))
-            {
-                var nlSignature = zipFileContent.ReadEntry(ZippedContentEntryNames.NlSignature);
-                Assert.NotNull(nlSignature);
-                Assert.Equal(nlSignature, dummySigner.DummyContent);
-            }
+            using var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false);
+            var nlSignature = zipFileContent.ReadEntry(ZippedContentEntryNames.NlSignature);
+            Assert.NotNull(nlSignature);
+            Assert.Equal(nlSignature, dummySigner.DummyContent);
         }
 
         private TemporaryExposureKeyArgs[] GetRandomKeys(int workflowCount, int seed)
