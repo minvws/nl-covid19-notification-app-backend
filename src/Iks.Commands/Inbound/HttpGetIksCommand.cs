@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             _httpClient = new  HttpClient(httpClientHandler ?? throw new ArgumentNullException(nameof(httpClientHandler)));
         }
 
-        public async Task<HttpGetIksSuccessResult> ExecuteAsync(DateTime date, string batchTag)
+        public async Task<HttpGetIksResult> ExecuteAsync(DateTime date, string batchTag)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             }
         }
 
-        private async Task<HttpGetIksSuccessResult> HandleResponse(DateTime date, HttpResponseMessage response)
+        private async Task<HttpGetIksResult> HandleResponse(DateTime date, HttpResponseMessage response)
         {
             switch (response.StatusCode)
             {
@@ -63,51 +63,51 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                     var nextBatchTag = response.Headers.SafeGetValue("nextBatchTag");
                     nextBatchTag = nextBatchTag == "null" ? null : nextBatchTag;
 
-                    return new HttpGetIksSuccessResult
+                    return new HttpGetIksResult
                     {
                         //TODO errors if info not present
                         BatchTag = response.Headers.SafeGetValue("batchTag"),
                         NextBatchTag = nextBatchTag,
                         Content = await response.Content.ReadAsByteArrayAsync(),
-                        RequestedDay = date
+                        RequestedDay = date,
+                        ResultCode = response.StatusCode
                     };
 
                 case HttpStatusCode.NotFound:
                     _logger.WriteResponseNotFound();
-                    return null;
+                    return new HttpGetIksResult
+                    {
+                        BatchTag = string.Empty,
+                        NextBatchTag = null,
+                        ResultCode = response.StatusCode
+                    };
 
                 case HttpStatusCode.Gone:
                     _logger.WriteResponseGone();
-                    return null;
+                    return new HttpGetIksResult
+                    {
+                        BatchTag = string.Empty,
+                        NextBatchTag = null,
+                        ResultCode = response.StatusCode
+                    };
 
                 case HttpStatusCode.BadRequest:
                     _logger.WriteResponseBadRequest();
-                    // - This 400 response is returned by EFGS when for some reason a batchTag is requested that has a different "created date" on their end, then the date we send along in the request.
-                    // - This scenario shouldn't happen, but when it does, it is useful to not stop downloading keys altogether, but rather to move on to the next day and request the first key of *that* day.
-                    // - When requesting date from EFGS, if you do not provide a specific batchTag, but just a date, it will return the first batchTag for that date. This seems the right way to recover
-                    //   from a situation wherein somehow a requested batchTag/date combination leads to a 400 response.
-
-                    var nextDayDate = date.AddDays(1); // Request for next day
-                    var batchTag = $"{nextDayDate:yyyyMMdd}";
-                    var uri = new Uri($"{_efgsConfig.BaseUrl}/diagnosiskeys/download/{nextDayDate:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
-                    var request = BuildHttpRequest(batchTag, date);
-
-                    _logger.WriteRequest(request);
-
-                    response = await _httpClient.SendAsync(request);
-
-                    _logger.WriteResponse(response.StatusCode);
-                    _logger.WriteResponseHeaders(response.Headers);
-
-                    // Handle response
-                    return await HandleResponse(date, response);
+                    return new HttpGetIksResult
+                    {
+                        BatchTag = string.Empty,
+                        NextBatchTag = null,
+                        ResultCode = response.StatusCode
+                    };
 
                 case HttpStatusCode.Forbidden:
                     _logger.WriteResponseForbidden();
                     throw new EfgsCommunicationException();
+
                 case HttpStatusCode.NotAcceptable:
                     _logger.WriteResponseNotAcceptable();
                     throw new EfgsCommunicationException();
+
                 default:
                     _logger.WriteResponseUndefined(response.StatusCode);
                     throw new EfgsCommunicationException();

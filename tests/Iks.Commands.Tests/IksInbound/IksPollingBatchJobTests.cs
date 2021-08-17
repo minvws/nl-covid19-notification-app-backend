@@ -77,11 +77,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var secondBatchTag = $"{_dateString}-2";
             var thirdBatchTag = $"{_dateString}-3";
 
-            var responses = new List<HttpGetIksSuccessResult>
+            var responses = new List<HttpGetIksResult>
             {
-                new HttpGetIksSuccessResult { BatchTag = firstBatchTag, Content = _dummyContent, NextBatchTag = secondBatchTag, RequestedDay = yesterday },
-                new HttpGetIksSuccessResult { BatchTag = secondBatchTag, Content = _dummyContent, NextBatchTag = thirdBatchTag, RequestedDay = yesterday },
-                new HttpGetIksSuccessResult { BatchTag = thirdBatchTag, Content = _dummyContent, NextBatchTag = null, RequestedDay = yesterday }
+                new HttpGetIksResult { BatchTag = firstBatchTag, Content = _dummyContent, NextBatchTag = secondBatchTag, RequestedDay = yesterday },
+                new HttpGetIksResult { BatchTag = secondBatchTag, Content = _dummyContent, NextBatchTag = thirdBatchTag, RequestedDay = yesterday },
+                new HttpGetIksResult { BatchTag = thirdBatchTag, Content = _dummyContent, NextBatchTag = null, RequestedDay = yesterday }
             };
             var receiver = FixedResultHttpGetIksCommand.Create(responses, yesterday);
 
@@ -116,9 +116,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             writer.Setup(x => x.Execute(It.IsAny<IksWriteArgs>()))
                 .Callback((IksWriteArgs args) => downloadedBatches.Add(args));
 
-            var responses = new List<HttpGetIksSuccessResult>
+            var responses = new List<HttpGetIksResult>
             {
-                new HttpGetIksSuccessResult { BatchTag = $"{_dateString}-1", Content = _dummyContent, NextBatchTag = null }
+                new HttpGetIksResult { BatchTag = $"{_dateString}-1", Content = _dummyContent, NextBatchTag = null }
             };
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
@@ -148,9 +148,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             writer.Setup(_ => _.Execute(It.IsAny<IksWriteArgs>()))
                 .Callback((IksWriteArgs args) => downloadedBatches.Add(args));
 
-            var responses = new List<HttpGetIksSuccessResult>
+            var responses = new List<HttpGetIksResult>
             {
-                new HttpGetIksSuccessResult { BatchTag = $"{_dateString}-1", Content = _dummyContent, NextBatchTag = null }
+                new HttpGetIksResult { BatchTag = $"{_dateString}-1", Content = _dummyContent, NextBatchTag = null }
             };
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
@@ -167,7 +167,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var firstResult = downloadedBatches.Count;
 
             receiver.AddItem(
-                new HttpGetIksSuccessResult { BatchTag = $"{_dateString}-2", Content = _dummyContent, NextBatchTag = null });
+                new HttpGetIksResult { BatchTag = $"{_dateString}-2", Content = _dummyContent, NextBatchTag = null });
 
             sut.Run();
 
@@ -208,14 +208,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var secondBatchTag = $"{_dateString}-2";
             var thirdBatchTag = $"{_dateString}-3";
 
-            var responses = new List<HttpGetIksSuccessResult>
+            var responses = new List<HttpGetIksResult>
             {
-                new HttpGetIksSuccessResult {BatchTag = firstBatchTag, Content = new byte[] {0x0, 0x0}, NextBatchTag = secondBatchTag, RequestedDay = _now.Date},
-                new HttpGetIksSuccessResult {BatchTag = secondBatchTag, Content = new byte[] {0x0, 0x0}, NextBatchTag = thirdBatchTag, RequestedDay = _now.Date},
-                new HttpGetIksSuccessResult {BatchTag = thirdBatchTag, Content = new byte[] {0x0, 0x0}, NextBatchTag = firstBatchTag, RequestedDay = _now.Date},
-                new HttpGetIksSuccessResult {BatchTag = firstBatchTag, Content = new byte[] {0x0, 0x0}, NextBatchTag = thirdBatchTag, RequestedDay = _now.Date},
-                new HttpGetIksSuccessResult {BatchTag = secondBatchTag, Content = new byte[] {0x0, 0x0}, NextBatchTag = secondBatchTag, RequestedDay = _now.Date},
-                new HttpGetIksSuccessResult {BatchTag = thirdBatchTag, Content = new byte[] {0x0, 0x0}, NextBatchTag = null, RequestedDay = _now.Date}
+                new HttpGetIksResult {BatchTag = firstBatchTag, Content = new byte[] {0x0, 0x0}, NextBatchTag = secondBatchTag, RequestedDay = _now.Date},
+                new HttpGetIksResult {BatchTag = secondBatchTag, Content = new byte[] {0x0, 0x0}, NextBatchTag = thirdBatchTag, RequestedDay = _now.Date},
+                new HttpGetIksResult {BatchTag = thirdBatchTag, Content = new byte[] {0x0, 0x0}, NextBatchTag = firstBatchTag, RequestedDay = _now.Date},
+                new HttpGetIksResult {BatchTag = firstBatchTag, Content = new byte[] {0x0, 0x0}, NextBatchTag = thirdBatchTag, RequestedDay = _now.Date},
+                new HttpGetIksResult {BatchTag = secondBatchTag, Content = new byte[] {0x0, 0x0}, NextBatchTag = secondBatchTag, RequestedDay = _now.Date},
+                new HttpGetIksResult {BatchTag = thirdBatchTag, Content = new byte[] {0x0, 0x0}, NextBatchTag = null, RequestedDay = _now.Date}
             };
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
@@ -250,10 +250,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var yesterday = _now.AddDays(-1);
             var dateStringTomorrow = _dtp.Object.Snapshot.Date.AddDays(1).ToString("yyyyMMdd");
 
-            var responses = new List<HttpGetIksSuccessResult>()
+            var responses = new List<HttpGetIksResult>()
             {
-                new HttpGetIksSuccessResult {BatchTag = $"{_dateString}-1", Content = _dummyContent, NextBatchTag = $"{_dateString}-2", RequestedDay = yesterday},
-                new HttpGetIksSuccessResult {BatchTag = $"{_dateString}-2", Content = _dummyContent, NextBatchTag = null, RequestedDay = yesterday},
+                new HttpGetIksResult {BatchTag = $"{_dateString}-1", Content = _dummyContent, NextBatchTag = $"{_dateString}-2", RequestedDay = yesterday},
+                new HttpGetIksResult {BatchTag = $"{_dateString}-2", Content = _dummyContent, NextBatchTag = null, RequestedDay = yesterday},
             };
 
             var receiver = FixedResultHttpGetIksCommand.Create(responses, yesterday);
@@ -272,11 +272,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             // Add batches for second day to receiver and rerun downloader
             receiver.AddItem(
-                new HttpGetIksSuccessResult { BatchTag = $"{dateStringTomorrow}-1", Content = _dummyContent, NextBatchTag = $"{dateStringTomorrow}-2", RequestedDay = _now },
+                new HttpGetIksResult { BatchTag = $"{dateStringTomorrow}-1", Content = _dummyContent, NextBatchTag = $"{dateStringTomorrow}-2", RequestedDay = _now },
                 _now);
 
             receiver.AddItem(
-                new HttpGetIksSuccessResult { BatchTag = $"{dateStringTomorrow}-2", Content = _dummyContent, NextBatchTag = null, RequestedDay = _now },
+                new HttpGetIksResult { BatchTag = $"{dateStringTomorrow}-2", Content = _dummyContent, NextBatchTag = null, RequestedDay = _now },
                 _now);
 
             sut.Run();
@@ -358,7 +358,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
         }
 
         [Fact]
-        public void EFGSReturns404_ExecuteAsync_DownloadHalted()
+        public void EFGSReturns404_ExecuteAsync_NextDayIsRequested()
         {
             //Arrange
             var mockHttpClientHandler = new Mock<HttpClientHandler>();
@@ -373,6 +373,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             {
                 StatusCode = HttpStatusCode.NotFound
             };
+
+            var secondResponseMessage = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new ByteArrayContent(_dummyContent)
+            };
+            secondResponseMessage.Headers.Add("batchTag", "today");
+
 
             mockHttpClientHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>(
@@ -429,7 +437,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var secondResponseMessage = new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new ByteArrayContent(new byte[] { 0x0, 0x0 })
+                Content = new ByteArrayContent(_dummyContent)
             };
             secondResponseMessage.Headers.Add("batchTag", "today");
 
