@@ -219,9 +219,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "unit", "unit", "{D12DFECE-ADCC-4F37-953B-76A3CE920CF1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "e2e", "e2e", "{72259EEA-61F5-415E-B5D7-52F5B73EA3DE}"
-	ProjectSection(SolutionItems) = preProject
-		tests\e2e\placeholder.txt = tests\e2e\placeholder.txt
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content.Commands.Tests", "tests\unit\Content.Commands.Tests\Content.Commands.Tests.csproj", "{99D7EA8F-4C79-44F1-A342-D48733500BE4}"
 EndProject
@@ -261,7 +258,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Tests", "tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDataGeneration.Commands", "tests\integration\TestDataGeneration.Commands\TestDataGeneration.Commands.csproj", "{97D0D4FF-0FF7-4721-8349-AEF73447836C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateTeks.Commands", "src\GenerateTeks.Commands\GenerateTeks.Commands.csproj", "{65594ED1-A05A-427B-8D97-5C9486309731}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerateTeks.Commands", "src\GenerateTeks.Commands\GenerateTeks.Commands.csproj", "{65594ED1-A05A-427B-8D97-5C9486309731}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.E2ETests", "tests\e2e\Core.E2ETests\Core.E2ETests.csproj", "{8ECA3FDC-0732-41E9-A44A-B92216074552}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endpoint.Tests", "tests\e2e\Endpoint.Tests\Endpoint.Tests.csproj", "{93389D4D-3271-4FFA-9CE9-3C92A677281B}"
