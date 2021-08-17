@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Iks
             // Assemble
             var currentDate = DateTime.Parse("2020-12-26T03:30:00Z").ToUniversalTime();
             var dateTimeProvider = new Mock<IUtcDateTimeProvider>();
-            dateTimeProvider.Setup(_ => _.Snapshot).Returns(currentDate);
+            dateTimeProvider.Setup(x => x.Snapshot).Returns(currentDate);
             var configurationMock = new Mock<IIksCleaningConfig>();
             configurationMock.Setup(p => p.LifetimeDays).Returns(14);
             var logger = new Mock<ILogger<RemoveExpiredIksLoggingExtensions>>();

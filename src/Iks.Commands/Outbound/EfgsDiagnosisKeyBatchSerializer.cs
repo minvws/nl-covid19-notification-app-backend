@@ -50,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             }
 
             // Sort by the base64 representation of the entire row serialized to EFGS format
-            var s = batchArray.OrderBy(_ => Convert.ToBase64String(_.ToArray()), StringComparer.Ordinal);
+            var s = batchArray.OrderBy(x => Convert.ToBase64String(x.ToArray()), StringComparer.Ordinal);
             var resultArray = new List<byte>();
             foreach (var x in s)
             {
