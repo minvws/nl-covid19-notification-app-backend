@@ -2,7 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Commands
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GenerateTeks.Commands
 {
     public class GenerateTeksCommandArgs
     {

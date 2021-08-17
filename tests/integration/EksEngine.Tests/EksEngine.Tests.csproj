@@ -9,16 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\ProtobufHeaderTestFile.zip" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Resources\ProtobufHeaderTestFile.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="3.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -36,10 +26,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Core.EntityFramework\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\..\src\Eks.Commands\Eks.Commands.csproj" />
+    <ProjectReference Include="..\..\..\src\GenerateTeks.Commands\GenerateTeks.Commands.csproj" />
     <ProjectReference Include="..\..\..\src\Manifest.Commands\Manifest.Commands.csproj" />
     <ProjectReference Include="..\..\..\src\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
     <ProjectReference Include="..\..\unit\Crypto.Tests\Crypto.Tests.csproj" />
-    <ProjectReference Include="..\TestDataGeneration.Commands\TestDataGeneration.Commands.csproj" />
   </ItemGroup>
 
   <ItemGroup>

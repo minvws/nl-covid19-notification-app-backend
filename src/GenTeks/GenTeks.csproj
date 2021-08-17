@@ -28,10 +28,10 @@
   </ItemGroup>
 
     <ItemGroup>
-    <ProjectReference Include="..\..\tests\integration\TestDataGeneration.Commands\TestDataGeneration.Commands.csproj" />
     <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Core.ConsoleApps\Core.ConsoleApps.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\GenerateTeks.Commands\GenerateTeks.Commands.csproj" />
     <ProjectReference Include="..\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
   </ItemGroup>
 

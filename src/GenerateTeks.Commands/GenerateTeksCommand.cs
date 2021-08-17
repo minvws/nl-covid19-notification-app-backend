@@ -16,7 +16,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Regist
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Commands
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GenerateTeks.Commands
 {
     public class GenerateTeksCommand
     {
@@ -81,7 +81,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                 workflowList.Add(workflowStateEntity);
             }
 
-            var bulkConfig = new BulkConfig { SetOutputIdentity = true, BatchSize = 100};
+            var bulkConfig = new BulkConfig { SetOutputIdentity = true, BatchSize = 100 };
 
             _logger.LogDebug($"BeginTransactionAsync:");
             await using var transaction = await _workflowDb.Database.BeginTransactionAsync();
