@@ -21,4 +21,8 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Core\Core.csproj" />
+  </ItemGroup>
+
 </Project>

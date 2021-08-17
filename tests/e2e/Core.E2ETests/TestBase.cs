@@ -8,66 +8,16 @@ namespace Core.E2ETests
 {
     public class TestBase
     {
-        public IConfigurationRoot ConfigurationRoot { get; }
-        private string _environment = "dev";
-
+        public EndpointConfig Config { get; }
 
         public TestBase()
         {
-            ConfigurationRoot = new ConfigurationBuilder()
+            var configurationRoot = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables()  // <== this is important
                 .Build();
 
-            _environment = ConfigurationRoot["environment"];
-        }
-
-        public string CdnBaseUrl
-        {
-            get
-            {
-                return ConfigurationRoot[$"baseUrls:cdn:{_environment}"];
-            }
-        }
-
-        public string ManifestEndPoint
-        {
-            get
-            {
-                return ConfigurationRoot[$"endpoints:cdn:manifest"];
-            }
-        }
-
-        public string AppConfigEndPoint
-        {
-            get
-            {
-                return ConfigurationRoot[$"endpoints:cdn:appConfig"];
-            }
-        }
-
-        public string RiskCalculationParametersEndPoint
-        {
-            get
-            {
-                return ConfigurationRoot[$"endpoints:cdn:riskCalculationParameters"];
-            }
-        }
-
-        public string ExposureKeySetEndPoint
-        {
-            get
-            {
-                return ConfigurationRoot[$"endpoints:cdn:exposureKeySet"];
-            }
-        }
-
-        public string ResourceBundleEndPoint
-        {
-            get
-            {
-                return ConfigurationRoot[$"endpoints:cdn:resourceBundle"];
-            }
+            Config = new EndpointConfig(configurationRoot);
         }
     }
 }

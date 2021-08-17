@@ -21,7 +21,7 @@ namespace Endpoint.Tests
             var cdnClient = new CdnClient();
 
             // Act
-            var (responseMessage, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{CdnBaseUrl}"), $"{version}", $"{ManifestEndPoint}");
+            var (responseMessage, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.ManifestEndPoint}");
 
             // Assert
             Assert. Equal(HttpStatusCode.OK, responseMessage.StatusCode); // I should have received the manifest
@@ -41,8 +41,8 @@ namespace Endpoint.Tests
             var cdnClient = new CdnClient();
 
             // Act
-            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{CdnBaseUrl}"), $"{version}", $"{ManifestEndPoint}");
-            var (responseMessage, appConfig) = await cdnClient.GetCdnContent<AppConfig>(new Uri($"{CdnBaseUrl}"), $"{version}", $"{AppConfigEndPoint}/{manifest.AppConfig}");
+            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.ManifestEndPoint}");
+            var (responseMessage, appConfig) = await cdnClient.GetCdnContent<AppConfig>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.AppConfigEndPoint}/{manifest.AppConfig}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
@@ -72,8 +72,8 @@ namespace Endpoint.Tests
             var cdnClient = new CdnClient();
 
             // Act
-            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{CdnBaseUrl}"), $"{version}", $"{ManifestEndPoint}");
-            var (responseMessage, rcp) = await cdnClient.GetCdnContent<RiskCalculationParameters>(new Uri($"{CdnBaseUrl}"), $"{version}", $"{RiskCalculationParametersEndPoint}/{manifest.RiskCalculationParameters}");
+            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.ManifestEndPoint}");
+            var (responseMessage, rcp) = await cdnClient.GetCdnContent<RiskCalculationParameters>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.RiskCalculationParametersEndPoint}/{manifest.RiskCalculationParameters}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
@@ -101,8 +101,8 @@ namespace Endpoint.Tests
             var cdnClient = new CdnClient();
 
             // Act
-            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{CdnBaseUrl}"), $"{version}", $"{ManifestEndPoint}");
-            var (responseMessage, resourceBundle) = await cdnClient.GetCdnContent<ResourceBundle>(new Uri($"{CdnBaseUrl}"), $"{version}", $"{ResourceBundleEndPoint}/{manifest.ResourceBundle}");
+            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.ManifestEndPoint}");
+            var (responseMessage, resourceBundle) = await cdnClient.GetCdnContent<ResourceBundle>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.ResourceBundleEndPoint}/{manifest.ResourceBundle}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
@@ -154,8 +154,8 @@ namespace Endpoint.Tests
             var cdnClient = new CdnClient();
 
             // Act
-            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{CdnBaseUrl}"), $"{version}", $"{ManifestEndPoint}");
-            var (responseMessage, rcp) = await cdnClient.GetCdnContent<ExposureKeySet>(new Uri($"{CdnBaseUrl}"), $"{version}", $"{ExposureKeySetEndPoint}/{manifest.ExposureKeySets.First()}");
+            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.ManifestEndPoint}");
+            var (responseMessage, rcp) = await cdnClient.GetCdnContent<ExposureKeySet>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.ExposureKeySetEndPoint}/{manifest.ExposureKeySets.First()}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
