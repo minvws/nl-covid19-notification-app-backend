@@ -2,16 +2,15 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Core.e2e.Tests;
+using Core.Tests.e2e;
 using Endpoint.Tests.ContentModels;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
 using Xunit;
 
 namespace Endpoint.Tests
 {
-    public class ContentTests : BaseTests
+    public class ContentTests : TestBase
     {
         [Theory]
         [InlineData("v3")]

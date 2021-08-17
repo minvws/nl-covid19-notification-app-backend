@@ -20,7 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Content.Commands\Content.Commands.csproj" />
     <ProjectReference Include="..\..\..\src\Manifest.Commands\Manifest.Commands.csproj" />
-    <ProjectReference Include="..\..\Core.e2e.Tests\Core.e2e.Tests.csproj" />
+    <ProjectReference Include="..\Core.Tests.e2e\Core.Tests.e2e.csproj" />
   </ItemGroup>
 
 </Project>
