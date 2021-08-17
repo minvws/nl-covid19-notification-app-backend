@@ -220,7 +220,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "unit", "unit", "{D12DFECE-A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "e2e", "e2e", "{72259EEA-61F5-415E-B5D7-52F5B73EA3DE}"
 	ProjectSection(SolutionItems) = preProject
-		placeholder.txt = placeholder.txt
+		tests\e2e\placeholder.txt = tests\e2e\placeholder.txt
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content.Commands.Tests", "tests\unit\Content.Commands.Tests\Content.Commands.Tests.csproj", "{99D7EA8F-4C79-44F1-A342-D48733500BE4}"
