@@ -23,7 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Iks.Commands\Iks.Commands.csproj" />
     <ProjectReference Include="..\..\..\src\Iks.Downloader\Iks.Downloader.csproj" />
-    <ProjectReference Include="..\..\TestDataGeneration.Commands\TestDataGeneration.Commands.csproj" />
+    <ProjectReference Include="..\TestDataGeneration.Commands\TestDataGeneration.Commands.csproj" />
   </ItemGroup>
 
 </Project>
