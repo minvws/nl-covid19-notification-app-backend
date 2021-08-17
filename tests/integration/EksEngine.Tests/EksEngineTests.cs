@@ -29,10 +29,10 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuffing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.GenerateTeks.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Commands;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests

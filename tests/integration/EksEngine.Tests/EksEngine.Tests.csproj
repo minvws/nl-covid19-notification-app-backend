@@ -36,10 +36,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Core.EntityFramework\Core.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\..\src\Eks.Commands\Eks.Commands.csproj" />
+    <ProjectReference Include="..\..\..\src\GenerateTeks.Commands\GenerateTeks.Commands.csproj" />
     <ProjectReference Include="..\..\..\src\Manifest.Commands\Manifest.Commands.csproj" />
     <ProjectReference Include="..\..\..\src\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
     <ProjectReference Include="..\..\unit\Crypto.Tests\Crypto.Tests.csproj" />
-    <ProjectReference Include="..\TestDataGeneration.Commands\TestDataGeneration.Commands.csproj" />
   </ItemGroup>
 
   <ItemGroup>
