@@ -57,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             await sut.ExecuteAsync();
 
             // Assert
-            Assert.Equal(2, _dkSourceContext.DiagnosisKeys.Count(_ => _.PublishedLocally));
+            Assert.Equal(2, _dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally));
         }
 
         [Fact]
@@ -79,7 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             await sut.ExecuteAsync();
 
             // Assert
-            Assert.Equal(3, _dkSourceContext.DiagnosisKeys.Count(_ => _.PublishedLocally));
+            Assert.Equal(3, _dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally));
         }
 
         [Fact]

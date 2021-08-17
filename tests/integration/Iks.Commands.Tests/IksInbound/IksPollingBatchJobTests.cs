@@ -49,9 +49,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var logger = new IksDownloaderLoggingExtensions(new NullLogger<IksDownloaderLoggingExtensions>());
             var now = DateTime.UtcNow;
             var dtp = new Mock<IUtcDateTimeProvider>();
-            dtp.Setup(_ => _.Snapshot).Returns(now);
+            dtp.Setup(x => x.Snapshot).Returns(now);
             var writer = new Mock<IIksWriterCommand>();
-            writer.Setup(_ => _.Execute(It.IsAny<IksWriteArgs>()))
+            writer.Setup(x => x.Execute(It.IsAny<IksWriteArgs>()))
                 .Callback((IksWriteArgs args) => downloadedBatches.Add(args));
 
             var datePart = dtp.Object.Snapshot.Date.ToString("yyyyMMdd");
@@ -89,9 +89,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var logger = new IksDownloaderLoggingExtensions(new NullLogger<IksDownloaderLoggingExtensions>());
             var now = DateTime.UtcNow;
             var dtp = new Mock<IUtcDateTimeProvider>();
-            dtp.Setup(_ => _.Snapshot).Returns(now);
+            dtp.Setup(x => x.Snapshot).Returns(now);
             var writer = new Mock<IIksWriterCommand>();
-            writer.Setup(_ => _.Execute(It.IsAny<IksWriteArgs>()))
+            writer.Setup(x => x.Execute(It.IsAny<IksWriteArgs>()))
                 .Callback((IksWriteArgs args) => downloadedBatches.Add(args));
 
             var datePart = dtp.Object.Snapshot.Date.ToString("yyyyMMdd");
@@ -127,9 +127,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             var now = DateTime.UtcNow;
             var dtp = new Mock<IUtcDateTimeProvider>();
-            dtp.Setup(_ => _.Snapshot).Returns(now);
+            dtp.Setup(x => x.Snapshot).Returns(now);
             var writer = new Mock<IIksWriterCommand>();
-            writer.Setup(_ => _.Execute(It.IsAny<IksWriteArgs>()))
+            writer.Setup(x => x.Execute(It.IsAny<IksWriteArgs>()))
                 .Callback((IksWriteArgs args) => downloadedBatches.Add(args));
 
             var datePart = dtp.Object.Snapshot.Date.ToString("yyyyMMdd");
@@ -174,9 +174,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var logger = new IksDownloaderLoggingExtensions(new NullLogger<IksDownloaderLoggingExtensions>());
             var now = DateTime.UtcNow;
             var dtp = new Mock<IUtcDateTimeProvider>();
-            dtp.Setup(_ => _.Snapshot).Returns(now);
+            dtp.Setup(x => x.Snapshot).Returns(now);
             var writer = new Mock<IIksWriterCommand>();
-            writer.Setup(_ => _.Execute(It.IsAny<IksWriteArgs>()))
+            writer.Setup(x => x.Execute(It.IsAny<IksWriteArgs>()))
                 .Callback((IksWriteArgs args) =>
                 {
                     downloadedBatches.Add(args);
@@ -228,9 +228,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             var now = DateTime.UtcNow;
             var dtp = new Mock<IUtcDateTimeProvider>();
-            dtp.Setup(_ => _.Snapshot).Returns(now);
+            dtp.Setup(x => x.Snapshot).Returns(now);
             var writer = new Mock<IIksWriterCommand>();
-            writer.Setup(_ => _.Execute(It.IsAny<IksWriteArgs>()))
+            writer.Setup(x => x.Execute(It.IsAny<IksWriteArgs>()))
                 .Callback((IksWriteArgs args) => downloadedBatches.Add(args));
 
             var datePart = dtp.Object.Snapshot.Date.ToString("yyyyMMdd");
