@@ -4,11 +4,13 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Core.Tests.e2e
+namespace Core.E2ETests
 {
     public class TestBase
     {
         public IConfigurationRoot ConfigurationRoot { get; }
+        private string _environment = "dev";
+
 
         public TestBase()
         {
@@ -16,13 +18,15 @@ namespace Core.Tests.e2e
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables()  // <== this is important
                 .Build();
+
+            _environment = ConfigurationRoot["environment"];
         }
 
         public string CdnBaseUrl
         {
             get
             {
-                return ConfigurationRoot["baseUrls:cdn:test"];
+                return ConfigurationRoot[$"baseUrls:cdn:{_environment}"];
             }
         }
 
@@ -30,7 +34,7 @@ namespace Core.Tests.e2e
         {
             get
             {
-                return ConfigurationRoot["endpoints:cdn:manifest"];
+                return ConfigurationRoot[$"endpoints:cdn:manifest"];
             }
         }
 
@@ -38,7 +42,7 @@ namespace Core.Tests.e2e
         {
             get
             {
-                return ConfigurationRoot["endpoints:cdn:appConfig"];
+                return ConfigurationRoot[$"endpoints:cdn:appConfig"];
             }
         }
 
@@ -46,7 +50,7 @@ namespace Core.Tests.e2e
         {
             get
             {
-                return ConfigurationRoot["endpoints:cdn:riskCalculationParameters"];
+                return ConfigurationRoot[$"endpoints:cdn:riskCalculationParameters"];
             }
         }
 
@@ -54,7 +58,7 @@ namespace Core.Tests.e2e
         {
             get
             {
-                return ConfigurationRoot["endpoints:cdn:exposureKeySet"];
+                return ConfigurationRoot[$"endpoints:cdn:exposureKeySet"];
             }
         }
 
@@ -62,7 +66,7 @@ namespace Core.Tests.e2e
         {
             get
             {
-                return ConfigurationRoot["endpoints:cdn:resourceBundle"];
+                return ConfigurationRoot[$"endpoints:cdn:resourceBundle"];
             }
         }
     }

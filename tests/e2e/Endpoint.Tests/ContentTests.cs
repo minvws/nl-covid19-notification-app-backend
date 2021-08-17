@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Core.Tests.e2e;
+using Core.E2ETests;
 using Endpoint.Tests.ContentModels;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
 using Xunit;
