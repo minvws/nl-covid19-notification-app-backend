@@ -219,9 +219,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "unit", "unit", "{D12DFECE-ADCC-4F37-953B-76A3CE920CF1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "e2e", "e2e", "{72259EEA-61F5-415E-B5D7-52F5B73EA3DE}"
-	ProjectSection(SolutionItems) = preProject
-		tests\e2e\placeholder.txt = tests\e2e\placeholder.txt
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content.Commands.Tests", "tests\unit\Content.Commands.Tests\Content.Commands.Tests.csproj", "{99D7EA8F-4C79-44F1-A342-D48733500BE4}"
 EndProject
@@ -249,19 +246,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.v2.WebApi.Tests", "test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Icc.WebApp.Tests", "tests\integration\Icc.WebApp.Tests\Icc.WebApp.Tests.csproj", "{B28ED982-C11D-4E8E-A919-ADBF13686BFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iks.Commands.Tests", "tests\unit\Iks.Commands.Tests\Iks.Commands.Tests.csproj", "{C849970A-34DC-48DC-99AA-D63BF2D39C30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Commands.Tests", "tests\unit\Iks.Commands.Tests\Iks.Commands.Tests.csproj", "{C849970A-34DC-48DC-99AA-D63BF2D39C30}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iks.Commands.Tests", "tests\integration\Iks.Commands.Tests\Iks.Commands.Tests.csproj", "{16C65FC7-8B8D-40D4-9E49-5DC9408BCAE2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManifestEngine.Tests", "tests\integration\ManifestEngine.Tests\ManifestEngine.Tests.csproj", "{0A05E46C-75B6-4F70-A04F-0D4FAE29BCF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileAppApi.Tests", "tests\unit\MobileAppApi.Tests\MobileAppApi.Tests.csproj", "{89333C17-70CA-4A2C-A61B-DBBFB9F61CF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Tests", "tests\unit\MobileAppApi.Tests\MobileAppApi.Tests.csproj", "{89333C17-70CA-4A2C-A61B-DBBFB9F61CF0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAppApi.Tests", "tests\integration\MobileAppApi.Tests\MobileAppApi.Tests.csproj", "{C9D7E982-77A9-41D2-8C96-4AFF388B0D1A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDataGeneration.Commands", "tests\integration\TestDataGeneration.Commands\TestDataGeneration.Commands.csproj", "{97D0D4FF-0FF7-4721-8349-AEF73447836C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateTeks.Commands", "src\GenerateTeks.Commands\GenerateTeks.Commands.csproj", "{65594ED1-A05A-427B-8D97-5C9486309731}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerateTeks.Commands", "src\GenerateTeks.Commands\GenerateTeks.Commands.csproj", "{65594ED1-A05A-427B-8D97-5C9486309731}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.E2ETests", "tests\e2e\Core.E2ETests\Core.E2ETests.csproj", "{8ECA3FDC-0732-41E9-A44A-B92216074552}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endpoint.Tests", "tests\e2e\Endpoint.Tests\Endpoint.Tests.csproj", "{93389D4D-3271-4FFA-9CE9-3C92A677281B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -611,6 +612,14 @@ Global
 		{65594ED1-A05A-427B-8D97-5C9486309731}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65594ED1-A05A-427B-8D97-5C9486309731}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65594ED1-A05A-427B-8D97-5C9486309731}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8ECA3FDC-0732-41E9-A44A-B92216074552}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8ECA3FDC-0732-41E9-A44A-B92216074552}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8ECA3FDC-0732-41E9-A44A-B92216074552}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8ECA3FDC-0732-41E9-A44A-B92216074552}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93389D4D-3271-4FFA-9CE9-3C92A677281B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93389D4D-3271-4FFA-9CE9-3C92A677281B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93389D4D-3271-4FFA-9CE9-3C92A677281B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93389D4D-3271-4FFA-9CE9-3C92A677281B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -709,6 +718,8 @@ Global
 		{C9D7E982-77A9-41D2-8C96-4AFF388B0D1A} = {A811ADB0-5804-4034-A8D7-CBC2E8C66594}
 		{97D0D4FF-0FF7-4721-8349-AEF73447836C} = {A811ADB0-5804-4034-A8D7-CBC2E8C66594}
 		{65594ED1-A05A-427B-8D97-5C9486309731} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}
+		{8ECA3FDC-0732-41E9-A44A-B92216074552} = {72259EEA-61F5-415E-B5D7-52F5B73EA3DE}
+		{93389D4D-3271-4FFA-9CE9-3C92A677281B} = {72259EEA-61F5-415E-B5D7-52F5B73EA3DE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}
