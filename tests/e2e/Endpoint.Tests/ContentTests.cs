@@ -10,6 +10,7 @@ using Xunit;
 
 namespace Endpoint.Tests
 {
+    [Trait("test", "e2e")]
     public class ContentTests : TestBase
     {
         [Theory]
