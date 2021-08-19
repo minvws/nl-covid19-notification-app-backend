@@ -51,6 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
             // Fail fast -> If the code is not valid, return the response with false result. 
             if (!FixOrValidatePubTEK(args))
             {
+                _logger.WriteGgdKeyValidationFailed();
                 return new PublishTekResponse { Valid = false };
             }
 
@@ -76,6 +77,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
             if (args.GGDKey.Length == OldGGDKeyLength)
             {
                 args.GGDKey = _lLuhnModNGenerator.CalculateCheckCode(args.GGDKey);
+                _logger.FixedGgdKey();
                 return true;
             }
 

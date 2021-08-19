@@ -66,6 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi.Controllers
 
             if (!FixOrValidatePubTEK(args))
             {
+                _logger.WriteGgdKeyValidationFailed();
                 return new PublishTekResponse { Valid = false };
             }
 
@@ -89,6 +90,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi.Controllers
             if (args.GGDKey.Length == OldGGDKeyLength)
             {
                 args.GGDKey = _lLuhnModNGenerator.CalculateCheckCode(args.GGDKey);
+                _logger.FixedGgdKey();
                 return true;
             }
 
