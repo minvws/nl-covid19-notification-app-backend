@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
@@ -9,24 +10,32 @@ namespace Core.E2ETests
 {
     public class EndpointConfig : AppSettingsReader
     {
-        private const string DefaultEnvironment = "dev";
+        private readonly Dictionary<string, string> _endpoints;
 
         public EndpointConfig(IConfiguration config, string prefix = null) : base(config, prefix)
         {
+            _endpoints = new Dictionary<string, string>
+            {
+                {"dev", "http://localhost:5004"},
+                {"test", "https://test.coronamelder-dist.nl"},
+                {"acc", "https://acceptatie.coronamelder-dist.nl"},
+                {"prod", "https://productie.coronamelder-dist.nl"}
+            };
+        }
+        
+        public string CdnBaseUrl(string environment)
+        {
+            return _endpoints[environment];
         }
 
-        public string Environment => GetConfigValue("environment", DefaultEnvironment);
+        public string ManifestEndPoint => "manifest";
 
-        public string CdnBaseUrl => GetConfigValue($"baseUrls:cdn:{Environment}", "");
+        public string AppConfigEndPoint => "appconfig";
 
-        public string ManifestEndPoint => GetConfigValue($"endpoints:cdn:manifest", "");
+        public string RiskCalculationParametersEndPoint => "riskcalculationparameters";
 
-        public string AppConfigEndPoint => GetConfigValue($"endpoints:cdn:appConfig", "");
+        public string ExposureKeySetEndPoint => "exposurekeyset";
 
-        public string RiskCalculationParametersEndPoint => GetConfigValue($"endpoints:cdn:riskCalculationParameters", "");
-
-        public string ExposureKeySetEndPoint => GetConfigValue($"endpoints:cdn:exposureKeySet", "");
-
-        public string ResourceBundleEndPoint => GetConfigValue($"endpoints:cdn:resourceBundle", "");
+        public string ResourceBundleEndPoint => "resourceBundle";
     }
 }

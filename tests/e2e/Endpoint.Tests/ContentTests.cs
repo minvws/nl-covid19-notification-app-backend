@@ -13,15 +13,19 @@ namespace Endpoint.Tests
     public class ContentTests : TestBase
     {
         [Theory]
-        [InlineData("v3")]
-        [InlineData("v4")]
-        public async Task Should_HaveReceived_The_Manifest_With_Correct_Values(string version)
+        [InlineData("test", "v3")]
+        [InlineData("acc", "v3")]
+        [InlineData("prod", "v3")]
+        [InlineData("test", "v4")]
+        [InlineData("acc", "v4")]
+        [InlineData("prod", "v4")]
+        public async Task Should_HaveReceived_The_Manifest_With_Correct_Values(string environment, string version)
         {
             // Arrange
             var cdnClient = new CdnClient();
 
             // Act
-            var (responseMessage, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.ManifestEndPoint}");
+            var (responseMessage, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.ManifestEndPoint}");
 
             // Assert
             Assert. Equal(HttpStatusCode.OK, responseMessage.StatusCode); // I should have received the manifest
@@ -33,16 +37,20 @@ namespace Endpoint.Tests
         }
 
         [Theory]
-        [InlineData("v3")]
-        [InlineData("v4")]
-        public async Task Should_HaveReceived_The_AppConfig_With_Correct_Values(string version)
+        [InlineData("test", "v3")]
+        [InlineData("acc", "v3")]
+        [InlineData("prod", "v3")]
+        [InlineData("test", "v4")]
+        [InlineData("acc", "v4")]
+        [InlineData("prod", "v4")]
+        public async Task Should_HaveReceived_The_AppConfig_With_Correct_Values(string environment, string version)
         {
             // Arrange
             var cdnClient = new CdnClient();
 
             // Act
-            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.ManifestEndPoint}");
-            var (responseMessage, appConfig) = await cdnClient.GetCdnContent<AppConfig>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.AppConfigEndPoint}/{manifest.AppConfig}");
+            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.ManifestEndPoint}");
+            var (responseMessage, appConfig) = await cdnClient.GetCdnContent<AppConfig>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.AppConfigEndPoint}/{manifest.AppConfig}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
@@ -65,15 +73,17 @@ namespace Endpoint.Tests
         }
 
         [Theory]
-        [InlineData("v4")]
-        public async Task Should_HaveReceived_The_RiskCalculationParameters_With_Correct_Values(string version)
+        [InlineData("test", "v4")]
+        [InlineData("acc", "v4")]
+        [InlineData("prod", "v4")]
+        public async Task Should_HaveReceived_The_RiskCalculationParameters_With_Correct_Values(string environment, string version)
         {
             // Arrange
             var cdnClient = new CdnClient();
 
             // Act
-            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.ManifestEndPoint}");
-            var (responseMessage, rcp) = await cdnClient.GetCdnContent<RiskCalculationParameters>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.RiskCalculationParametersEndPoint}/{manifest.RiskCalculationParameters}");
+            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.ManifestEndPoint}");
+            var (responseMessage, rcp) = await cdnClient.GetCdnContent<RiskCalculationParameters>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.RiskCalculationParametersEndPoint}/{manifest.RiskCalculationParameters}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
@@ -94,15 +104,17 @@ namespace Endpoint.Tests
         }
 
         [Theory]
-        [InlineData("v4")]
-        public async Task Should_HaveReceived_The_ResourceBundle_With_Correct_Values(string version)
+        [InlineData("test", "v4")]
+        [InlineData("acc", "v4")]
+        [InlineData("prod", "v4")]
+        public async Task Should_HaveReceived_The_ResourceBundle_With_Correct_Values(string environment, string version)
         {
             // Arrange
             var cdnClient = new CdnClient();
 
             // Act
-            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.ManifestEndPoint}");
-            var (responseMessage, resourceBundle) = await cdnClient.GetCdnContent<ResourceBundle>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.ResourceBundleEndPoint}/{manifest.ResourceBundle}");
+            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.ManifestEndPoint}");
+            var (responseMessage, resourceBundle) = await cdnClient.GetCdnContent<ResourceBundle>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.ResourceBundleEndPoint}/{manifest.ResourceBundle}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
@@ -147,15 +159,17 @@ namespace Endpoint.Tests
         }
 
         [Theory]
-        [InlineData("v4")]
-        public async Task Should_HaveReceived_The_ExposureKeySet_With_Correct_Values(string version)
+        [InlineData("test", "v4")]
+        [InlineData("acc", "v4")]
+        [InlineData("prod", "v4")]
+        public async Task Should_HaveReceived_The_ExposureKeySet_With_Correct_Values(string environment, string version)
         {
             // Arrange
             var cdnClient = new CdnClient();
 
             // Act
-            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.ManifestEndPoint}");
-            var (responseMessage, rcp) = await cdnClient.GetCdnContent<ExposureKeySet>(new Uri($"{Config.CdnBaseUrl}"), $"{version}", $"{Config.ExposureKeySetEndPoint}/{manifest.ExposureKeySets.First()}");
+            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.ManifestEndPoint}");
+            var (responseMessage, rcp) = await cdnClient.GetCdnContent<ExposureKeySet>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.ExposureKeySetEndPoint}/{manifest.ExposureKeySets.First()}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);

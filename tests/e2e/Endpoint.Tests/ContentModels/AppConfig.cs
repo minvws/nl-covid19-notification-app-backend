@@ -8,7 +8,7 @@ namespace Endpoint.Tests.ContentModels
     {
         public int androidMinimumVersion { get; set; }
         public string appointmentPhoneNumber { get; set; }
-        public int decoyProbability { get; set; }
+        public decimal decoyProbability { get; set; }
         public string iOSAppStoreURL { get; set; }
         public string iOSMinimumVersion { get; set; }
         public string iOSMinimumVersionMessage { get; set; }
