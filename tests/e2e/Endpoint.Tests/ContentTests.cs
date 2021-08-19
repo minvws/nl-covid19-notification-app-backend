@@ -29,7 +29,7 @@ namespace Endpoint.Tests
             var (responseMessage, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.ManifestEndPoint}");
 
             // Assert
-            Assert. Equal(HttpStatusCode.OK, responseMessage.StatusCode); // I should have received the manifest
+            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode); // I should have received the manifest
             Assert.NotNull(manifest); // Manifest retrieved.
             Assert.NotNull(manifest.AppConfig); // AppConfig key retrieved.
             Assert.NotNull(manifest.RiskCalculationParameters); // RiskCalculationParameters key retrieved.
