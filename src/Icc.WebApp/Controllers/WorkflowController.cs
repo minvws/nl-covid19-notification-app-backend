@@ -77,7 +77,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
             if (args.GGDKey.Length == OldGGDKeyLength)
             {
                 args.GGDKey = _lLuhnModNGenerator.CalculateCheckCode(args.GGDKey);
-                _logger.FixedGgdKey();
+                _logger.WriteFixedGgdKey();
                 return true;
             }
 
