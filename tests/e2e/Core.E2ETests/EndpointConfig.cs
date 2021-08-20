@@ -20,16 +20,16 @@ namespace Core.E2ETests
             _cdnBaseUrls = new Dictionary<string, string>
             {
                 {"dev", "https://localhost:5001"},
-                {"test", "https://test.coronamelder-dist.nl"},
-                {"acc", "https://acceptatie.coronamelder-dist.nl"},
+                {"test", "http://test.coronamelder-dist.nl"},
+                {"acc", "http://acceptatie.coronamelder-dist.nl"},
                 {"prod", "https://productie.coronamelder-dist.nl"}
             };
 
             _appBaseUrls = new Dictionary<string, string>
             {
                 {"dev", "https://localhost:5002"},
-                {"test", "https://test.coronamelder-api.nl"},
-                {"acc", "https://acceptatie.coronamelder-api.nl"},
+                {"test", "http://test.coronamelder-api.nl"},
+                {"acc", "http://acceptatie.coronamelder-api.nl"},
                 {"prod", "https://coronamelder-api.nl"}
             };
 
