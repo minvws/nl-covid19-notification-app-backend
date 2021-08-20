@@ -264,6 +264,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.E2ETests", "tests\e2e\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endpoint.Tests", "tests\e2e\Endpoint.Tests\Endpoint.Tests.csproj", "{93389D4D-3271-4FFA-9CE9-3C92A677281B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scenario.Tests", "tests\e2e\Scenario.Tests\Scenario.Tests.csproj", "{23DF13F2-1AEB-4E04-B000-9F1E0520FCD6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -620,6 +622,10 @@ Global
 		{93389D4D-3271-4FFA-9CE9-3C92A677281B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93389D4D-3271-4FFA-9CE9-3C92A677281B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93389D4D-3271-4FFA-9CE9-3C92A677281B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23DF13F2-1AEB-4E04-B000-9F1E0520FCD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23DF13F2-1AEB-4E04-B000-9F1E0520FCD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23DF13F2-1AEB-4E04-B000-9F1E0520FCD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23DF13F2-1AEB-4E04-B000-9F1E0520FCD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -720,6 +726,7 @@ Global
 		{65594ED1-A05A-427B-8D97-5C9486309731} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}
 		{8ECA3FDC-0732-41E9-A44A-B92216074552} = {72259EEA-61F5-415E-B5D7-52F5B73EA3DE}
 		{93389D4D-3271-4FFA-9CE9-3C92A677281B} = {72259EEA-61F5-415E-B5D7-52F5B73EA3DE}
+		{23DF13F2-1AEB-4E04-B000-9F1E0520FCD6} = {72259EEA-61F5-415E-B5D7-52F5B73EA3DE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}
