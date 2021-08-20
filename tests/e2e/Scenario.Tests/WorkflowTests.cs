@@ -23,7 +23,7 @@ using Xunit;
 
 namespace Scenario.Tests
 {
-    //[Trait("test", "e2e")]
+    [Trait("test", "e2e")]
     public class WorkflowTests : TestBase
     {
         private readonly IRandomNumberGenerator _randomNumberGenerator;
