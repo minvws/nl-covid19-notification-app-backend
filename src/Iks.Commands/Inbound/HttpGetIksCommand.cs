@@ -75,30 +75,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
                 case HttpStatusCode.NotFound:
                     _logger.WriteResponseNotFound();
-                    return new HttpGetIksResult
-                    {
-                        BatchTag = string.Empty,
-                        NextBatchTag = null,
-                        ResultCode = response.StatusCode
-                    };
+                    return WriteEmptyResult(date, response.StatusCode);
 
                 case HttpStatusCode.Gone:
                     _logger.WriteResponseGone();
-                    return new HttpGetIksResult
-                    {
-                        BatchTag = string.Empty,
-                        NextBatchTag = null,
-                        ResultCode = response.StatusCode
-                    };
+                    return WriteEmptyResult(date, response.StatusCode);
 
                 case HttpStatusCode.BadRequest:
                     _logger.WriteResponseBadRequest();
-                    return new HttpGetIksResult
-                    {
-                        BatchTag = string.Empty,
-                        NextBatchTag = null,
-                        ResultCode = response.StatusCode
-                    };
+                    return WriteEmptyResult(date, response.StatusCode);
 
                 case HttpStatusCode.Forbidden:
                     _logger.WriteResponseForbidden();
@@ -141,5 +126,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
             return request;
         }
+
+        private HttpGetIksResult WriteEmptyResult(DateTime date, HttpStatusCode statusCode)
+        {
+            return new HttpGetIksResult
+            {
+                BatchTag = string.Empty,
+                NextBatchTag = null,
+                RequestedDay = date,
+                ResultCode = statusCode
+            };
+        }
+
     }
 }

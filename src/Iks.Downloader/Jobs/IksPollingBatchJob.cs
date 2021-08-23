@@ -69,122 +69,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
                 if (_downloadedBatch.ResultCode == HttpStatusCode.OK)
                 {
                     ProcessBatch();
-                }
-
-                SetNextBatchtagAndDate();
-            }
-        }
-
-        private void ProcessBatch()
-        {
-            var batchAlreadyReceived = _iksInDbContext.Received.AsNoTracking().Any(x => x.BatchTag == _downloadedBatch.BatchTag);
-
-            if (batchAlreadyReceived)
-            {
-                _logger.WriteBatchAlreadyProcessed(_downloadedBatch.BatchTag);
-            }
-            else
-            {
-                _logger.WriteProcessingData(_dayToRequest, _downloadedBatch.BatchTag);
-
-                try
-                {
-                    WriteBatchToDb();
-                }
-                catch (Exception e)
-                {
-                    _logger.WriteEfgsError(e);
-                }
-            }
-        }
-
-        private void SetNextBatchtagAndDate()
-        {
-            // Move on to the next batchTag if available; otherwise, move on to the next day.
-            // In case of erroneous results: either move to next batchTag or next day.
-
-            if (_downloadedBatch.ResultCode == HttpStatusCode.BadRequest || _downloadedBatch.ResultCode == HttpStatusCode.NotFound)
-            {
-                // In case of 400 or 404: skip to next day
-                var batchWasDownloadedFromPreviousDay = _downloadedBatch?.RequestedDay.Date < _dateTimeProvider.Snapshot.Date
-                    || _dayToRequest < _dateTimeProvider.Snapshot.Date;
-
-                if (batchWasDownloadedFromPreviousDay)
-                {
-                    _logger.WriteMovingToNextDay();
-                    _dayToRequest = _dayToRequest.AddDays(1);
-                    _tagToRequest = string.Empty;
+                    SetNextBatchtagAndDate();
                 }
                 else
                 {
-                    _logger.WriteNoNextBatchNoMoreDays();
-                    _continueDownloading = false;
+                    ProcessErrors();
                 }
-                return;
-
-                // - This 400 response is returned by EFGS when for some reason a batchTag is requested that has a different "created date" on their end, then the date we send along in the request.
-                // - This scenario shouldn't happen, but when it does, it is useful to not stop downloading keys altogether, but rather to move on to the next day and request the first key of *that* day.
-                // - When requesting date from EFGS, if you do not provide a specific batchTag, but just a date, it will return the first batchTag for that date. This seems the right way to recover
-                //   from a situation wherein somehow a requested batchTag/date combination leads to a 400 response.
-
-                //var nextDayDate = date.AddDays(1); // Request for next day
-                //var batchTag = $"{nextDayDate:yyyyMMdd}";
-                //var uri = new Uri($"{_efgsConfig.BaseUrl}/diagnosiskeys/download/{nextDayDate:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
-                //var request = BuildHttpRequest(batchTag, date);
-
-                //_logger.WriteRequest(request);
-
-                //response = await _httpClient.SendAsync(request);
-
-                //_logger.WriteResponse(response.StatusCode);
-                //_logger.WriteResponseHeaders(response.Headers);
-
-                //// Handle response
-                //return await HandleResponse(date, response);
-            }
-
-            if (_downloadedBatch.ResultCode == HttpStatusCode.Gone)
-            {
-                // In case of 410: try to download next batch with increased batch-number
-                var batchTagData = _downloadedBatch.BatchTag.Split("-").ToList();
-                var batchTagNumber = Convert.ToInt32(batchTagData.LastOrDefault());
-                batchTagData[batchTagData.Count - 1] = (batchTagNumber + 1).ToString();
-
-                _tagToRequest = string.Join('-', batchTagData);
-                return;
-            }
-
-            _tagToRequest = _downloadedBatch?.NextBatchTag ?? string.Empty;
-
-            if (string.IsNullOrEmpty(_tagToRequest))
-            {
-                _logger.WriteNoNextBatch();
-
-                var batchWasDownloadedFromPreviousDay = _downloadedBatch?.RequestedDay.Date < _dateTimeProvider.Snapshot.Date
-                    || _dayToRequest < _dateTimeProvider.Snapshot.Date;
-
-                if (batchWasDownloadedFromPreviousDay)
-                {
-                    _logger.WriteMovingToNextDay();
-                    _dayToRequest = _dayToRequest.AddDays(1);
-                }
-                else
-                {
-                    _logger.WriteNoNextBatchNoMoreDays();
-                    _continueDownloading = false;
-                }
-            }
-            else
-            {
-                // Log for informational purposes
-                _logger.WriteNextBatchFound(_tagToRequest);
-                _logger.WriteBatchProcessedInNextLoop(_tagToRequest);
-            }
-
-            // Log for informational purposes
-            if (_downloadCount > _efgsConfig.MaxBatchesPerRun)
-            {
-                _logger.WriteBatchMaximumReached(_efgsConfig.MaxBatchesPerRun);
             }
         }
 
@@ -217,6 +107,100 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
             }
         }
 
+        private void ProcessBatch()
+        {
+            var batchAlreadyReceived = _iksInDbContext.Received.AsNoTracking().Any(x => x.BatchTag == _downloadedBatch.BatchTag);
+
+            if (batchAlreadyReceived)
+            {
+                _logger.WriteBatchAlreadyProcessed(_downloadedBatch.BatchTag);
+            }
+            else
+            {
+                _logger.WriteProcessingData(_dayToRequest, _downloadedBatch.BatchTag);
+
+                try
+                {
+                    WriteBatchToDb();
+                    WriteRunToDb();
+                }
+                catch (Exception e)
+                {
+                    _logger.WriteEfgsError(e);
+                }
+            }
+        }
+
+        private void ProcessErrors()
+        {
+            switch (_downloadedBatch.ResultCode)
+            {
+                case HttpStatusCode.BadRequest:
+                    // 400: requested batchtag doesn't match CreatedDate on found batch - halt and catch fire
+                    throw new EfgsCommunicationException($"Request with date '{_downloadedBatch.RequestedDay}' and batchTag '{_downloadedBatch.BatchTag}' resulted in a Bad Request-response");
+
+                case HttpStatusCode.NotFound:
+                    // 404: requested date doesn't exist yet - retry later (stop downloading)
+                    _logger.WriteResponseNotFound();
+                    WriteRunToDb();
+                    _continueDownloading = false;
+                    return;
+
+                case HttpStatusCode.Gone:
+                    // 410: requested date is too old - skip to next day
+                    _logger.WriteResponseGone();
+                    WriteRunToDb();
+                    _tagToRequest = string.Empty;
+                    IncrementDate();
+
+                    return;
+
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
+        private void SetNextBatchtagAndDate()
+        {
+            // Move on to the next batchTag if available; otherwise, move on to the next day, if possible.
+            _tagToRequest = _downloadedBatch?.NextBatchTag ?? string.Empty;
+
+            if (string.IsNullOrEmpty(_tagToRequest))
+            {
+                _logger.WriteNoNextBatch();
+                IncrementDate();
+            }
+            else
+            {
+                // Log for informational purposes
+                _logger.WriteNextBatchFound(_tagToRequest);
+                _logger.WriteBatchProcessedInNextLoop(_tagToRequest);
+            }
+
+            // Log for informational purposes
+            if (_downloadCount > _efgsConfig.MaxBatchesPerRun)
+            {
+                _logger.WriteBatchMaximumReached(_efgsConfig.MaxBatchesPerRun);
+            }
+        }
+
+        private void IncrementDate()
+        {
+            var batchWasDownloadedFromPreviousDay = _downloadedBatch?.RequestedDay.Date < _dateTimeProvider.Snapshot.Date
+                    || _dayToRequest < _dateTimeProvider.Snapshot.Date;
+
+            if (batchWasDownloadedFromPreviousDay)
+            {
+                _logger.WriteMovingToNextDay();
+                _dayToRequest = _dayToRequest.AddDays(1);
+            }
+            else
+            {
+                _logger.WriteNoNextBatchNoMoreDays();
+                _continueDownloading = false;
+            }
+        }
+
         private void WriteBatchToDb()
         {
             _writer.Execute(new IksWriteArgs
@@ -224,13 +208,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
                 BatchTag = _downloadedBatch.BatchTag,
                 Content = _downloadedBatch.Content
             });
+        }
 
-            // Keep track of the last batch we wrote to the database
-            // And keep track of the last time this job was run in a functionally meaningful way
-            _jobInfo.LastBatchTag = _downloadedBatch.BatchTag;
+        private void WriteRunToDb()
+        {
             _jobInfo.LastRun = _downloadedBatch.RequestedDay;
+            _jobInfo.LastBatchTag = _downloadedBatch.BatchTag;
 
             _iksInDbContext.SaveChanges();
         }
+
     }
 }
