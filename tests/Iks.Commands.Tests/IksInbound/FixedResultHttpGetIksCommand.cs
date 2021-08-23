@@ -85,7 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 {
                     BatchTag = string.Empty,
                     NextBatchTag = null,
-                    ResultCode = HttpStatusCode.NotFound
+                    ResultCode = HttpStatusCode.Gone //returned by EFGS when a batch is requested that's too old 
                 };
             }
 

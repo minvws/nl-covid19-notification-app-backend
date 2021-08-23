@@ -145,7 +145,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var downloadedBatches = new List<IksWriteArgs>();
 
             var writer = new Mock<IIksWriterCommand>();
-            writer.Setup(_ => _.Execute(It.IsAny<IksWriteArgs>()))
+            writer.Setup(x => x.Execute(It.IsAny<IksWriteArgs>()))
                 .Callback((IksWriteArgs args) => downloadedBatches.Add(args));
 
             var responses = new List<HttpGetIksResult>
@@ -291,14 +291,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
         }
 
         [Fact]
-        public async void EfgsReturns400_ExecuteAsync_NextDayIsRequested()
+        public async void EfgsReturns400_ExecuteAsync_ExceptionThrownAndJobStateNotStored()
         {
             //Arrange
-            var firstUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{_now.AddDays(-2):yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
-            var secondUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{_now.AddDays(-1):yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
-            var thirdUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{_now:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
+            var mockHttpClientHandler = new Mock<HttpClientHandler>();
+            var downloadedBatches = new List<IksWriteArgs>();
 
-            var firstResponseMessage = new HttpResponseMessage
+            var testUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{_now.AddDays(-1):yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
+            var secondTestUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{_now:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
+
+            var testResponseMessage = new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.BadRequest
             };
@@ -310,29 +312,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             };
             secondResponseMessage.Headers.Add("batchTag", "today");
 
-            var thirdResponseMessage = new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new ByteArrayContent(_dummyContent),
-            };
-            thirdResponseMessage.Headers.Add("batchTag", "tomorrow");
+            mockHttpClientHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(r => r.RequestUri == testUri),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(testResponseMessage);
 
-            var mockHttpClientHandler = new Mock<HttpClientHandler>();
             mockHttpClientHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(r => r.RequestUri == firstUri), ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(firstResponseMessage);
-            mockHttpClientHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(r => r.RequestUri == secondUri), ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(secondResponseMessage);
-            mockHttpClientHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(r => r.RequestUri == thirdUri), ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(thirdResponseMessage);
+               .Setup<Task<HttpResponseMessage>>(
+                   "SendAsync",
+                   ItExpr.Is<HttpRequestMessage>(r => r.RequestUri == secondTestUri),
+                   ItExpr.IsAny<CancellationToken>())
+               .ReturnsAsync(secondResponseMessage);
 
             var writer = new Mock<IIksWriterCommand>();
-            var downloadedBatches = new List<IksWriteArgs>();
 
-            writer.Setup(_ => _.Execute(It.IsAny<IksWriteArgs>()))
+            writer.Setup(x => x.Execute(It.IsAny<IksWriteArgs>()))
                 .Callback((IksWriteArgs args) => downloadedBatches.Add(args));
+
 
             var receiver = new HttpGetIksCommand(
                 _config,
@@ -349,16 +347,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 _logger);
 
             //Act
-            sut.Run();
+            Action releaseThe400 = () => sut.Run();
+            var jobResultState = _iksInDbContext.InJob.SingleOrDefaultAsync().GetAwaiter().GetResult();
 
             //Assert
-            Assert.Equal(2, downloadedBatches.Count);
-            Assert.Equal("today", downloadedBatches[0].BatchTag);
-            Assert.Equal("tomorrow", downloadedBatches[1].BatchTag);
+            Assert.Throws<EfgsCommunicationException>(releaseThe400);
+            Assert.Empty(downloadedBatches);
+            Assert.Null(jobResultState);
         }
 
         [Fact]
-        public void EFGSReturns404_ExecuteAsync_NextDayIsRequested()
+        public void EFGSReturns404_ExecuteAsync_DownloadHaltedAndJobStateStored()
         {
             //Arrange
             var mockHttpClientHandler = new Mock<HttpClientHandler>();
@@ -368,6 +367,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var downloadedBatches = new List<IksWriteArgs>();
 
             var testUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{yesterday:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
+            var secondTestUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{_now:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
 
             var responseMessage = new HttpResponseMessage
             {
@@ -381,13 +381,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             };
             secondResponseMessage.Headers.Add("batchTag", "today");
 
-
             mockHttpClientHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
                     ItExpr.Is<HttpRequestMessage>(r => r.RequestUri == testUri),
                     ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(responseMessage);
+
+            mockHttpClientHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(r => r.RequestUri == secondTestUri),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(secondResponseMessage);
 
             writer.Setup(x => x.Execute(It.IsAny<IksWriteArgs>()))
                 .Callback((IksWriteArgs args) => downloadedBatches.Add(args));
@@ -413,11 +419,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var jobResultState = _iksInDbContext.InJob.SingleOrDefaultAsync().GetAwaiter().GetResult();
 
             Assert.Empty(downloadedBatches);
-            Assert.Equal($"{yesterday:yyyy-MM-dd}", jobResultState.LastBatchTag);
+            Assert.Equal(string.Empty, jobResultState.LastBatchTag);
         }
 
         [Fact]
-        public void EFGSReturns410_ExecuteAsync_NextBatchIsRequested()
+        public void EFGSReturns410_ExecuteAsync_NextDayIsRequestedAndJobStateStored()
         {
             //Arrange
             var mockHttpClientHandler = new Mock<HttpClientHandler>();
@@ -427,19 +433,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var downloadedBatches = new List<IksWriteArgs>();
 
             var testUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{yesterday:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
-            var nextBatchUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{yesterday:yyyy-MM-dd}-1", UriKind.RelativeOrAbsolute);
+            var secondTestUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{_now:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
 
             var firstResponseMessage = new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.NotFound
-            };
-
-            var secondResponseMessage = new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new ByteArrayContent(_dummyContent)
             };
-            secondResponseMessage.Headers.Add("batchTag", "today");
+            firstResponseMessage.Headers.Add("batchTag", "yesterday");
+
+            var secondResponseMessage = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.Gone
+            };
 
             mockHttpClientHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>(
@@ -451,12 +457,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             mockHttpClientHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
-                    ItExpr.Is<HttpRequestMessage>(r => r.RequestUri == nextBatchUri),
+                    ItExpr.Is<HttpRequestMessage>(r => r.RequestUri == secondTestUri),
                     ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(secondResponseMessage);
 
-
-            writer.Setup(_ => _.Execute(It.IsAny<IksWriteArgs>()))
+            writer.Setup(x => x.Execute(It.IsAny<IksWriteArgs>()))
                 .Callback((IksWriteArgs args) => downloadedBatches.Add(args));
 
             var receiver = new HttpGetIksCommand(
@@ -480,7 +485,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var jobResultState = _iksInDbContext.InJob.SingleOrDefaultAsync().GetAwaiter().GetResult();
 
             Assert.Single(downloadedBatches);
-            Assert.Equal($"{yesterday:yyyy-MM-dd}-1", jobResultState.LastBatchTag);
+            Assert.Equal("yesterday", downloadedBatches[0].BatchTag);
+            Assert.Equal("", jobResultState.LastBatchTag);
+            Assert.Equal(_now.Date, jobResultState.LastRun);
         }
 
     }
