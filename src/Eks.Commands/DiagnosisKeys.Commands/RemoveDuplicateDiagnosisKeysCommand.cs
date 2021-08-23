@@ -42,7 +42,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             }
 
             await _dkSourceDbContext.BulkUpdateWithTransactionAsync(affectedEntities, new SubsetBulkArgs());
-           
 
             return null;
         }
