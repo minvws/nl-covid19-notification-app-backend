@@ -15,7 +15,7 @@ trigger:
     - .
 
 pool:
-  name: 'CIBG-BuildRelease-O'
+  name: 'CIBG-BuildRelease-O-2016'
 
 parameters:
 - name: RUN_SQLSERVER_TESTS

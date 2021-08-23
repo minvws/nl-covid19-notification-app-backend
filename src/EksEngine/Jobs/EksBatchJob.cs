@@ -38,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Jobs
 
             _commandInvoker
                 .SetCommand(_snapshotWorkflowTeksToDksCommand)
-                //.SetCommand(_removeDuplicateDiagnosisKeysCommand)
+                .SetCommand(_removeDuplicateDiagnosisKeysCommand)
                 .SetCommand(_exposureKeySetBatchJobMk3)
                 .Execute();
 

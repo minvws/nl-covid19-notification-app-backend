@@ -66,7 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _jobName = $"ExposureKeySetsJob_{_dateTimeProvider.Snapshot:u}".Replace(" ", "_").Replace(":", "_");
         }
 
-        public async Task<EksEngineResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             if (_fired)
             {
