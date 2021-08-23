@@ -154,7 +154,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 )
                 );
 
-            return _engine.ExecuteAsync().GetAwaiter().GetResult();
+            return (EksEngineResult) _engine.ExecuteAsync().GetAwaiter().GetResult();
         }
 
         private class FakeEksConfig : IEksConfig
