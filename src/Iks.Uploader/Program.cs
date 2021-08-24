@@ -57,6 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
             services.AddSingleton<IEfgsConfig, EfgsConfig>();
             services.AddTransient<IksSendBatchCommand>();
             services.AddTransient<HttpPostIksCommand>();
+            services.AddSingleton<Func<HttpPostIksCommand>>(x => x.GetService<HttpPostIksCommand>);
             services.AddTransient<IBatchTagProvider, BatchTagProvider>();
             services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();

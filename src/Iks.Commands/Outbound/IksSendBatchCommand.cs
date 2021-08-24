@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
     // TODO: this class (together with HttpPostIksCommand) will be refactored soon!
     public class IksSendBatchCommand
     {
-        private readonly HttpPostIksCommand _iksSendCommand;
+        private readonly Func<HttpPostIksCommand> _iksSendCommandFactory;;
         private readonly IksOutDbContext _iksOutDbContext;
         private List<int> _todo;
         private readonly IIksSigner _signer;
@@ -28,12 +28,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
         public IksSendBatchCommand(
             IksOutDbContext iksOutDbContext,
-            HttpPostIksCommand iksSendCommand,
+            Func<HttpPostIksCommand> iksSendCommandFactory,
             IIksSigner signer,
             IBatchTagProvider batchTagProvider,
             IksUploaderLoggingExtensions logger)
         {
-            _iksSendCommand = iksSendCommand ?? throw new ArgumentNullException(nameof(iksSendCommand));
+            _iksSendCommandFactory = iksSendCommandFactory ?? throw new ArgumentNullException(nameof(iksSendCommandFactory));
             _iksOutDbContext = iksOutDbContext ?? throw new ArgumentNullException(nameof(iksOutDbContext));
             _signer = signer ?? throw new ArgumentNullException(nameof(signer));
             _batchTagProvider = batchTagProvider ?? throw new ArgumentNullException(nameof(batchTagProvider));
@@ -120,7 +120,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private async Task SendOne(IksSendCommandArgs args)
         {
             // NOTE: no retry here
-            var result = await _iksSendCommand.ExecuteAsync(args);
+            var sender = _iksSendCommandFactory();
+            var result = await sender.ExecuteAsync(args);
 
             _lastResult = result;
 
