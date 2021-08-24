@@ -28,7 +28,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
         private DateTime _dayToRequest;
         private int _downloadCount;
         private bool _continueDownloading;
-        private HttpGetIksResult _downloadedBatch;
 
         public IksPollingBatchJob(
             IUtcDateTimeProvider dateTimeProvider,
@@ -63,17 +62,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
 
             while (_continueDownloading && _downloadCount <= _efgsConfig.MaxBatchesPerRun)
             {
-                _downloadedBatch = _batchDownloader.ExecuteAsync(_dayToRequest, _tagToRequest).GetAwaiter().GetResult();
+                var downloadedBatch = _batchDownloader.ExecuteAsync(_dayToRequest, _tagToRequest).GetAwaiter().GetResult();
                 _downloadCount++;
 
-                if (_downloadedBatch.ResultCode == HttpStatusCode.OK)
+                if (downloadedBatch.ResultCode == HttpStatusCode.OK)
                 {
-                    ProcessBatch();
-                    SetNextBatchTagAndDate();
+                    ProcessBatch(downloadedBatch);
+                    SetNextBatchTagAndDate(downloadedBatch.NextBatchTag);
                 }
                 else
                 {
-                    ProcessErrors();
+                    ProcessErrors(downloadedBatch);
                 }
             }
         }
@@ -107,22 +106,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
             }
         }
 
-        private void ProcessBatch()
+        private void ProcessBatch(HttpGetIksResult downloadedBatch)
         {
-            var batchAlreadyReceived = _iksInDbContext.Received.AsNoTracking().Any(x => x.BatchTag == _downloadedBatch.BatchTag);
+            var batchAlreadyReceived = _iksInDbContext.Received.AsNoTracking().Any(x => x.BatchTag == downloadedBatch.BatchTag);
 
             if (batchAlreadyReceived)
             {
-                _logger.WriteBatchAlreadyProcessed(_downloadedBatch.BatchTag);
+                _logger.WriteBatchAlreadyProcessed(downloadedBatch.BatchTag);
             }
             else
             {
-                _logger.WriteProcessingData(_dayToRequest, _downloadedBatch.BatchTag);
+                _logger.WriteProcessingData(_dayToRequest, downloadedBatch.BatchTag);
 
                 try
                 {
-                    WriteBatchToDb();
-                    WriteRunToDb();
+                    WriteBatchToDb(downloadedBatch);
+                    WriteRunToDb(_dayToRequest, downloadedBatch.BatchTag);
                 }
                 catch (Exception e)
                 {
@@ -131,27 +130,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
             }
         }
 
-        private void ProcessErrors()
+        private void ProcessErrors(HttpGetIksResult downloadedBatch)
         {
-            switch (_downloadedBatch.ResultCode)
+            switch (downloadedBatch.ResultCode)
             {
                 case HttpStatusCode.BadRequest:
                     // 400: requested batchtag doesn't match CreatedDate on found batch - halt and catch fire
-                    throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{_downloadedBatch.BatchTag}' resulted in a Bad Request-response");
+                    throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{downloadedBatch.BatchTag}' resulted in a Bad Request-response");
 
                 case HttpStatusCode.NotFound:
                     // 404: requested date doesn't exist yet - retry later (stop downloading)
                     _logger.WriteResponseNotFound();
-                    WriteRunToDb();
+                    WriteRunToDb(_dayToRequest, downloadedBatch.BatchTag);
                     _continueDownloading = false;
                     return;
 
                 case HttpStatusCode.Gone:
                     // 410: requested date is too old - skip to next day
                     _logger.WriteResponseGone();
-                    WriteRunToDb();
+                    WriteRunToDb(_dayToRequest, downloadedBatch.BatchTag);
                     _tagToRequest = string.Empty;
-                    IncrementDate();
+                    IncrementDayToRequest();
                     return;
 
                 default:
@@ -159,15 +158,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
             }
         }
 
-        private void SetNextBatchTagAndDate()
+        private void SetNextBatchTagAndDate(string? downloadedBatchTag)
         {
             // Move on to the next batchTag if available; otherwise, move on to the next day, if possible.
-            _tagToRequest = _downloadedBatch?.NextBatchTag ?? string.Empty;
+            _tagToRequest = downloadedBatchTag ?? string.Empty;
 
             if (string.IsNullOrEmpty(_tagToRequest))
             {
                 _logger.WriteNoNextBatch();
-                IncrementDate();
+                IncrementDayToRequest();
             }
             else
             {
@@ -183,7 +182,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
             }
         }
 
-        private void IncrementDate()
+        private void IncrementDayToRequest()
         {
             if (_dayToRequest < _dateTimeProvider.Snapshot.Date)
             {
@@ -197,19 +196,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
             }
         }
 
-        private void WriteBatchToDb()
+        private void WriteBatchToDb(HttpGetIksResult downloadedBatch)
         {
             _writer.Execute(new IksWriteArgs
             {
-                BatchTag = _downloadedBatch.BatchTag,
-                Content = _downloadedBatch.Content
+                BatchTag = downloadedBatch.BatchTag,
+                Content = downloadedBatch.Content
             });
         }
 
-        private void WriteRunToDb()
+        private void WriteRunToDb(DateTime requestedDate, string lastDownloadedBatchTag)
         {
-            _jobInfo.LastRun = _dayToRequest.Date;
-            _jobInfo.LastBatchTag = _downloadedBatch.BatchTag;
+            _jobInfo.LastRun = requestedDate.Date;
+            _jobInfo.LastBatchTag = lastDownloadedBatchTag;
 
             _iksInDbContext.SaveChanges();
         }

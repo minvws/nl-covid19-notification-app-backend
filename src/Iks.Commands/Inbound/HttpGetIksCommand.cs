@@ -74,15 +74,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
                 case HttpStatusCode.NotFound:
                     _logger.WriteResponseNotFound();
-                    return WriteEmptyResult(date, response.StatusCode);
+                    return CreateEmptyResult(date, response.StatusCode);
 
                 case HttpStatusCode.Gone:
                     _logger.WriteResponseGone();
-                    return WriteEmptyResult(date, response.StatusCode);
+                    return CreateEmptyResult(date, response.StatusCode);
 
                 case HttpStatusCode.BadRequest:
                     _logger.WriteResponseBadRequest();
-                    return WriteEmptyResult(date, response.StatusCode);
+                    return CreateEmptyResult(date, response.StatusCode);
 
                 case HttpStatusCode.Forbidden:
                     _logger.WriteResponseForbidden();
@@ -124,7 +124,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             return request;
         }
 
-        private HttpGetIksResult WriteEmptyResult(DateTime date, HttpStatusCode statusCode)
+        private HttpGetIksResult CreateEmptyResult(DateTime date, HttpStatusCode statusCode)
         {
             return new HttpGetIksResult
             {
