@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 {
     public class HttpGetIksCommand : IHttpGetIksCommand
     {
-        const string ApplicationProtobuf = "application/protobuf; version=1.0";
+        private const string ApplicationProtobuf = "application/protobuf; version=1.0";
 
         private readonly IEfgsConfig _efgsConfig;
         private readonly IAuthenticationCertificateProvider _certificateProvider;
@@ -69,7 +69,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                         BatchTag = response.Headers.SafeGetValue("batchTag"),
                         NextBatchTag = nextBatchTag,
                         Content = await response.Content.ReadAsByteArrayAsync(),
-                        RequestedDay = date,
                         ResultCode = response.StatusCode
                     };
 
@@ -97,8 +96,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                     _logger.WriteResponseUndefined(response.StatusCode);
                     throw new EfgsCommunicationException();
             }
-
-            return null;
         }
 
         private HttpRequestMessage BuildHttpRequest(string batchTag, DateTime date)
@@ -133,7 +130,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             {
                 BatchTag = string.Empty,
                 NextBatchTag = null,
-                RequestedDay = date,
                 ResultCode = statusCode
             };
         }

@@ -23,12 +23,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
         private readonly IEfgsConfig _efgsConfig;
         private readonly IksDownloaderLoggingExtensions _logger;
 
-        private IksInJobEntity _jobInfo { get; set; }
-        private string _tagToRequest { get; set; }
-        private DateTime _dayToRequest { get; set; }
-        private int _downloadCount { get; set; }
-        private bool _continueDownloading { get; set; }
-        private HttpGetIksResult _downloadedBatch { get; set; }
+        private IksInJobEntity _jobInfo;
+        private string _tagToRequest;
+        private DateTime _dayToRequest;
+        private int _downloadCount;
+        private bool _continueDownloading;
+        private HttpGetIksResult _downloadedBatch;
 
         public IksPollingBatchJob(
             IUtcDateTimeProvider dateTimeProvider,
@@ -69,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
                 if (_downloadedBatch.ResultCode == HttpStatusCode.OK)
                 {
                     ProcessBatch();
-                    SetNextBatchtagAndDate();
+                    SetNextBatchTagAndDate();
                 }
                 else
                 {
@@ -90,9 +90,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
             _jobInfo = lastJob;
 
             var lastWrittenBatchTag = _jobInfo.LastBatchTag;
-            var dateFromBatchtag = lastWrittenBatchTag.Split("-").FirstOrDefault();
+            var dateFromBatchTag = lastWrittenBatchTag.Split("-").FirstOrDefault();
 
-            if (string.IsNullOrEmpty(dateFromBatchtag))
+            if (string.IsNullOrEmpty(dateFromBatchTag))
             {
                 // LastWrittenBatchTag is somehow unusable or unavailable
                 // Set requestDate as far back as allowed and keep requestBatchTag empty
@@ -102,7 +102,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
             {
                 // LastWrittenBatchTag is useable: continue where we left off.
                 // The date and the batchTag's creation date need to be the same, otherwise EFGS will return a 404.
-                _dayToRequest = DateTime.ParseExact(dateFromBatchtag, "yyyyMMdd", null);
+                _dayToRequest = DateTime.ParseExact(dateFromBatchTag, "yyyyMMdd", null);
                 _tagToRequest = lastWrittenBatchTag;
             }
         }
@@ -137,7 +137,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
             {
                 case HttpStatusCode.BadRequest:
                     // 400: requested batchtag doesn't match CreatedDate on found batch - halt and catch fire
-                    throw new EfgsCommunicationException($"Request with date '{_downloadedBatch.RequestedDay}' and batchTag '{_downloadedBatch.BatchTag}' resulted in a Bad Request-response");
+                    throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{_downloadedBatch.BatchTag}' resulted in a Bad Request-response");
 
                 case HttpStatusCode.NotFound:
                     // 404: requested date doesn't exist yet - retry later (stop downloading)
@@ -152,7 +152,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
                     WriteRunToDb();
                     _tagToRequest = string.Empty;
                     IncrementDate();
-
                     return;
 
                 default:
@@ -160,7 +159,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
             }
         }
 
-        private void SetNextBatchtagAndDate()
+        private void SetNextBatchTagAndDate()
         {
             // Move on to the next batchTag if available; otherwise, move on to the next day, if possible.
             _tagToRequest = _downloadedBatch?.NextBatchTag ?? string.Empty;
@@ -186,10 +185,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
 
         private void IncrementDate()
         {
-            var batchWasDownloadedFromPreviousDay = _downloadedBatch?.RequestedDay.Date < _dateTimeProvider.Snapshot.Date
-                    || _dayToRequest < _dateTimeProvider.Snapshot.Date;
-
-            if (batchWasDownloadedFromPreviousDay)
+            if (_dayToRequest < _dateTimeProvider.Snapshot.Date)
             {
                 _logger.WriteMovingToNextDay();
                 _dayToRequest = _dayToRequest.AddDays(1);
@@ -212,7 +208,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
 
         private void WriteRunToDb()
         {
-            _jobInfo.LastRun = _downloadedBatch.RequestedDay;
+            _jobInfo.LastRun = _dayToRequest.Date;
             _jobInfo.LastBatchTag = _downloadedBatch.BatchTag;
 
             _iksInDbContext.SaveChanges();
