@@ -161,12 +161,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 
             // Assert
             Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2)); // Stuffing added
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet)); // Stuffing added
+            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2)); // Stuffing not added
+            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet)); // Stuffing not added
             Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.Manifest));
 
             Assert.Equal(0, _workflowContext.TemporaryExposureKeys.Count());
-            Assert.Equal(150, _dkSourceContext.DiagnosisKeys.Count()); // TekMinCount is set to 150. 
+            Assert.Equal(0, _dkSourceContext.DiagnosisKeys.Count());
         }
 
         [Fact]
@@ -197,9 +197,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 
             // Assert
             Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2)); // Stuffing added
+            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2)); // Stuffing not added
             //Obsolete - replace with raw content
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet)); // Stuffing added
+            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet)); // Stuffing not added
             Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.Manifest));
         }
     }
