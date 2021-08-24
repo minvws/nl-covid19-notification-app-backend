@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
     public class IksSendBatchCommand
     {
         private readonly Func<HttpPostIksCommand> _iksSendCommandFactory;
-        private readonly Func<IksOutDbContext> _iksOutboundDbContextFactory;
+        private readonly IksOutDbContext _iksOutDbContext;
         private List<int> _todo;
         private readonly IIksSigner _signer;
         private readonly IBatchTagProvider _batchTagProvider;
@@ -27,14 +27,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private readonly IksUploaderLoggingExtensions _logger;
 
         public IksSendBatchCommand(
-            Func<IksOutDbContext> iksOutboundDbContextFactory,
+            IksOutDbContext iksOutDbContext,
             Func<HttpPostIksCommand> iksSendCommandFactory,
             IIksSigner signer,
             IBatchTagProvider batchTagProvider,
             IksUploaderLoggingExtensions logger)
         {
             _iksSendCommandFactory = iksSendCommandFactory ?? throw new ArgumentNullException(nameof(iksSendCommandFactory));
-            _iksOutboundDbContextFactory = iksOutboundDbContextFactory ?? throw new ArgumentNullException(nameof(iksOutboundDbContextFactory));
+            _iksOutDbContext = iksOutDbContext ?? throw new ArgumentNullException(nameof(iksOutDbContext));
             _signer = signer ?? throw new ArgumentNullException(nameof(signer));
             _batchTagProvider = batchTagProvider ?? throw new ArgumentNullException(nameof(batchTagProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -42,15 +42,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
         public async Task<IksSendBatchResult> ExecuteAsync()
         {
-            using (var dbc = _iksOutboundDbContextFactory())
-            {
-                _todo = dbc.Iks
-                    .Where(x => !x.Sent && !x.Error)
-                    .OrderBy(x => x.Created)
-                    .ThenBy(x => x.Qualifier)
-                    .Select(x => x.Id)
-                    .ToList();
-            }
+            _todo = _iksOutDbContext.Iks
+                .AsNoTracking()
+                .Where(x => !x.Sent && !x.Error)
+                .OrderBy(x => x.Created)
+                .ThenBy(x => x.Qualifier)
+                .Select(x => x.Id)
+                .ToList();
 
             foreach (var t in _todo)
             {
@@ -82,8 +80,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
         private async Task ProcessOne(int i)
         {
-            using var dbc = _iksOutboundDbContextFactory();
-            var item = await dbc.Iks.SingleAsync(x => x.Id == i);
+            var item = await _iksOutDbContext.Iks.SingleAsync(x => x.Id == i);
 
             var args = new IksSendCommandArgs
             {
@@ -112,7 +109,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             // * Allow for manual fixing of data errors with a special retry state?
             //
 
-            await dbc.SaveChangesAsync();
+            await _iksOutDbContext.SaveChangesAsync();
         }
 
         /// <summary>
