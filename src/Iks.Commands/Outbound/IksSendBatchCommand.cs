@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
     // TODO: this class (together with HttpPostIksCommand) will be refactored soon!
     public class IksSendBatchCommand
     {
-        private readonly Func<HttpPostIksCommand> _iksSendCommandFactory;;
+        private readonly Func<HttpPostIksCommand> _iksSendCommandFactory;
         private readonly IksOutDbContext _iksOutDbContext;
         private List<int> _todo;
         private readonly IIksSigner _signer;
