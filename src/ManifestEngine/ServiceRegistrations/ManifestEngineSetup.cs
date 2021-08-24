@@ -28,8 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.ServiceRe
             services.AddTransient<ManifestV4Builder>();
 
             // Operating components
-            services.AddTransient<Func<IContentEntityFormatter>>(x => x.GetRequiredService<StandardContentEntityFormatter>);
-            services.AddTransient<StandardContentEntityFormatter>();
+            services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient(x =>
