@@ -56,8 +56,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             // Act
             await sut.ExecuteAsync();
 
-            // Assert
-            Assert.Equal(2, _dkSourceContext.DiagnosisKeys.Count(_ => _.PublishedLocally));
+            // Assert PublishedLocally
+            Assert.Equal(2, _dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally));
+
+            // Assert PublishedToEfgs
+            Assert.Equal(2, _dkSourceContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
         }
 
         [Fact]
@@ -78,8 +81,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             // Act
             await sut.ExecuteAsync();
 
-            // Assert
-            Assert.Equal(3, _dkSourceContext.DiagnosisKeys.Count(_ => _.PublishedLocally));
+            // Assert PublishedLocally - no change
+            Assert.Equal(1, _dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally));
+
+            // Assert PublishedToEfgs
+            Assert.Equal(3, _dkSourceContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
         }
 
         [Fact]
@@ -100,9 +106,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             // Act
             await sut.ExecuteAsync();
 
-            // Assert
-            Assert.Single(_dkSourceContext.DiagnosisKeys.Where(x => x.Local.TransmissionRiskLevel == TransmissionRiskLevel.High && x.PublishedLocally == false && x.DailyKey.KeyData == new byte[] { 0xA }));
-            Assert.Equal(2, _dkSourceContext.DiagnosisKeys.Count(x => x.Local.TransmissionRiskLevel == TransmissionRiskLevel.Low && x.PublishedLocally == true && x.DailyKey.KeyData == new byte[] { 0xA }));
+            // Assert PublishedToEfgs
+            Assert.Single(_dkSourceContext.DiagnosisKeys.Where(x => x.Local.TransmissionRiskLevel == TransmissionRiskLevel.High && x.PublishedToEfgs == false && x.DailyKey.KeyData == new byte[] { 0xA }));
+            Assert.Equal(2, _dkSourceContext.DiagnosisKeys.Count(x => x.Local.TransmissionRiskLevel == TransmissionRiskLevel.Low && x.PublishedToEfgs == true && x.DailyKey.KeyData == new byte[] { 0xA }));
+
+            // Assert PublishedLocally - no de-duplication
+            Assert.Equal(3, _dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally == false && x.DailyKey.KeyData == new byte[] { 0xA }));
         }
 
         [Fact]
@@ -127,11 +136,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             // Act
             await sut.ExecuteAsync();
 
-            // Assert
+            // Assert PublishedToEfgs
             // For Keydata '0xA', expected a single entity having the first Created date and Not published locally
-            Assert.Single(_dkSourceContext.DiagnosisKeys.Where(x => x.Created == firstCreatedDate && x.PublishedLocally == false && x.DailyKey.KeyData == new byte[] { 0xA }));
+            Assert.Single(_dkSourceContext.DiagnosisKeys.Where(x => x.Created == firstCreatedDate && x.PublishedToEfgs == false && x.DailyKey.KeyData == new byte[] { 0xA }));
             // For Keydata '0xA', expected 2 entities having a later Created date and both published locally
-            Assert.Equal(2, _dkSourceContext.DiagnosisKeys.Count(x => x.Created == otherCreatedDate && x.PublishedLocally == true && x.DailyKey.KeyData == new byte[] { 0xA }));
+            Assert.Equal(2, _dkSourceContext.DiagnosisKeys.Count(x => x.Created == otherCreatedDate && x.PublishedToEfgs == true && x.DailyKey.KeyData == new byte[] { 0xA }));
+
+            // Assert PublishedLocally - no de-duplication
+            Assert.Equal(1, _dkSourceContext.DiagnosisKeys.Count(x => x.Created == firstCreatedDate && x.PublishedLocally == false && x.DailyKey.KeyData == new byte[] { 0xA }));
+            Assert.Equal(2, _dkSourceContext.DiagnosisKeys.Count(x => x.Created == otherCreatedDate && x.PublishedLocally == false && x.DailyKey.KeyData == new byte[] { 0xA }));
         }
 
         private static DiagnosisKeyEntity CreateDk(byte[] keyData, int rsn, int rp, bool publishedLocally, DateTime? created = null, TransmissionRiskLevel trl = TransmissionRiskLevel.Low)
@@ -144,7 +157,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                     RollingPeriod = rp,
                     RollingStartNumber = rsn
                 },
-                PublishedToEfgs = true,
+                PublishedToEfgs = publishedLocally,
                 PublishedLocally = publishedLocally,
                 Local = new LocalTekInfo
                 {
