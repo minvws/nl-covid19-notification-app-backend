@@ -37,8 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             foreach (var diagnosisKeyEntity in affectedEntities)
             {
                 // Mark duplicateEntities ReadyForCleanup
-                // diagnosisKeyEntity.ReadyForCleanup = diagnosisKeyEntity.PublishedLocally && diagnosisKeyEntity.PublishedToEfgs;
-                diagnosisKeyEntity.ReadyForCleanup = diagnosisKeyEntity.PublishedToEfgs;
+                diagnosisKeyEntity.ReadyForCleanup = diagnosisKeyEntity.PublishedLocally && diagnosisKeyEntity.PublishedToEfgs;
             }
 
             await _dkSourceDbContext.BulkUpdateWithTransactionAsync(affectedEntities, new SubsetBulkArgs());
@@ -54,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 var duplicates = duplicateList.Value.OrderByDescending(p => p.Local.TransmissionRiskLevel).ToList();
 
                 MarkEfgsDuplicates(duplicates, affectedEntityList);
-                //MarkLocalDuplicates(duplicates, affectedEntityList);
+                MarkLocalDuplicates(duplicates, affectedEntityList);
             }
 
             return affectedEntityList;
@@ -97,41 +96,41 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             }
         }
 
-        //private static void MarkLocalDuplicates(IReadOnlyCollection<DiagnosisKeyEntity> duplicateEntityList, ICollection<DiagnosisKeyEntity> affectedEntityList)
-        //{
-        //    // Mark ALL as Published if any has been published
-        //    if (duplicateEntityList.Any(p => p.PublishedLocally))
-        //    {
-        //        // Iterate through all unmarked as published
-        //        foreach (var diagnosisKeyEntity in duplicateEntityList.Where(diagnosisKeyEntity => !diagnosisKeyEntity.PublishedLocally))
-        //        {
-        //            diagnosisKeyEntity.PublishedLocally = true;
+        private static void MarkLocalDuplicates(IReadOnlyCollection<DiagnosisKeyEntity> duplicateEntityList, ICollection<DiagnosisKeyEntity> affectedEntityList)
+        {
+            // Mark ALL as Published if any has been published
+            if (duplicateEntityList.Any(p => p.PublishedLocally))
+            {
+                // Iterate through all unmarked as published
+                foreach (var diagnosisKeyEntity in duplicateEntityList.Where(diagnosisKeyEntity => !diagnosisKeyEntity.PublishedLocally))
+                {
+                    diagnosisKeyEntity.PublishedLocally = true;
 
-        //            // Add diagnosisKeyEntity in affectedEntityList if it isn't in there already
-        //            if (affectedEntityList.All(p => p.Id != diagnosisKeyEntity.Id))
-        //            {
-        //                affectedEntityList.Add(diagnosisKeyEntity);
-        //            }
-        //        }
-        //    }
-        //    // Mark all except the row with the highest TRL if non are published
-        //    else
-        //    {
-        //        foreach (var diagnosisKeyEntity in duplicateEntityList.Skip(1))
-        //        {
-        //            if (diagnosisKeyEntity.PublishedLocally)
-        //            { continue; }
+                    // Add diagnosisKeyEntity in affectedEntityList if it isn't in there already
+                    if (affectedEntityList.All(p => p.Id != diagnosisKeyEntity.Id))
+                    {
+                        affectedEntityList.Add(diagnosisKeyEntity);
+                    }
+                }
+            }
+            // Mark all except the row with the highest TRL if non are published
+            else
+            {
+                foreach (var diagnosisKeyEntity in duplicateEntityList.Skip(1))
+                {
+                    if (diagnosisKeyEntity.PublishedLocally)
+                    { continue; }
 
-        //            diagnosisKeyEntity.PublishedLocally = true;
+                    diagnosisKeyEntity.PublishedLocally = true;
 
-        //            // Add diagnosisKeyEntity in affectedEntityList if it isn't in there already
-        //            if (affectedEntityList.All(p => p.Id != diagnosisKeyEntity.Id))
-        //            {
-        //                affectedEntityList.Add(diagnosisKeyEntity);
-        //            }
-        //        }
-        //    }
-        //}
+                    // Add diagnosisKeyEntity in affectedEntityList if it isn't in there already
+                    if (affectedEntityList.All(p => p.Id != diagnosisKeyEntity.Id))
+                    {
+                        affectedEntityList.Add(diagnosisKeyEntity);
+                    }
+                }
+            }
+        }
 
         private struct DiagnosisKeysEntityComparer : IEqualityComparer<DiagnosisKeyEntity>
         {
