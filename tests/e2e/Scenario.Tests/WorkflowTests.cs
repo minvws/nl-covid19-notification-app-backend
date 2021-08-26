@@ -1,41 +1,57 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Core.E2ETests;
+using Endpoint.Tests;
+using Endpoint.Tests.ContentModels;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.SendTeks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using Xunit;
 
 namespace Scenario.Tests
 {
+    public enum TestOrder
+    {
+        CheckEndpoints = 1,
+        Register = 2,
+        PostKeys = 3,
+        AuthorizePubTek = 4,
+        VerifyExposureKeySet = 5
+
+    }
+
+    [TestCaseOrderer("Core.E2ETests.PriorityOrderer", "Core.E2ETests")]
     [Trait("test", "e2e")]
     public class WorkflowTests : TestBase
     {
         private readonly IRandomNumberGenerator _randomNumberGenerator;
+
+        public static EnrollmentResponseV2 EnrollmentResponseV2;
+        public static PostTeksArgs PostTeks;
+        public static ManifestContent CurrentManifest;
 
         public WorkflowTests()
         {
             _randomNumberGenerator = new StandardRandomNumberGenerator();
         }
 
+        [TestPriority((int)TestOrder.CheckEndpoints)]
         [Theory]
         [InlineData("test")]
-        [InlineData("acc")]
+        //[InlineData("acc")]
         [InlineData("prod")]
         public async Task Get_MobileApi_Endpoint_Returns_Http200(string environment)
         {
@@ -49,15 +65,24 @@ namespace Scenario.Tests
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode); // I should have received the manifest
         }
 
+        [TestPriority((int)TestOrder.Register)]
         [Theory]
-        [InlineData("test")]
+        [InlineData("dev")]
         public async Task Calling_RegisterEndpoint_Result_In_New_Workflow_Entry(string environment)
         {
+            // Arrange
+
+            // Get the current manifest.
+            var cdnClient = new CdnClient();
+            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v4", $"{Config.ManifestEndPoint}");
+            CurrentManifest = manifest;
+
             var client = new AppClient();
 
             // Register
             // Act
             var (responseMessage, enrollmentResponse) = await client.PostAsync<EnrollmentResponseV2>(new Uri($"{Config.AppBaseUrl(environment)}"), $"v2", $"{Config.RegisterEndPoint}", null);
+            EnrollmentResponseV2 = enrollmentResponse;
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
@@ -65,12 +90,19 @@ namespace Scenario.Tests
             Assert.NotNull(enrollmentResponse.BucketId);
             Assert.NotNull(enrollmentResponse.ConfirmationKey);
             Assert.NotNull(enrollmentResponse.GGDKey);
+        }
 
-            // Post Keys
+        [TestPriority((int)TestOrder.PostKeys)]
+        [Theory]
+        [InlineData("dev")]
+        public async Task Calling_PostKeysEndpoint_Result_In_New_Added_Teks(string environment)
+        {
+            var client = new AppClient();
+
             // Arrange
-            var args = GenerateTeks(enrollmentResponse.BucketId);
+            PostTeks = GenerateTeks(EnrollmentResponseV2.BucketId);
 
-            var tekDates = args.Keys
+            var tekDates = PostTeks.Keys
                 .OrderBy(x => x.RollingStartNumber)
                 .Select(x => new { x, Date = x.RollingStartNumber.FromRollingStartNumber() });
 
@@ -79,9 +111,11 @@ namespace Scenario.Tests
                 Trace.WriteLine($"RSN:{i.x.RollingStartNumber} Date:{i.Date:yyyy-MM-dd}.");
             }
 
-            var data = args.ToByteArray();
+            Trace.Write(PostTeks.ToJson());
 
-            var signature = HttpUtility.UrlEncode(Sign(Convert.FromBase64String(enrollmentResponse.ConfirmationKey), data));
+            var data = PostTeks.ToByteArray();
+
+            var signature = HttpUtility.UrlEncode(Sign(Convert.FromBase64String(EnrollmentResponseV2.ConfirmationKey), data));
             var postkeysContent = new ByteArrayContent(data);
             postkeysContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
@@ -95,7 +129,9 @@ namespace Scenario.Tests
             // Arrange
             var publishTekArgs = new PublishTekArgs
             {
-                GGDKey = enrollmentResponse.GGDKey, SubjectHasSymptoms = true, DateOfSymptomsOnset = DateTime.Today
+                GGDKey = EnrollmentResponseV2.GGDKey,
+                SubjectHasSymptoms = true,
+                DateOfSymptomsOnset = DateTime.Today
             };
 
             var pubtekContent = new StringContent(publishTekArgs.ToJson(), Encoding.UTF8, "application/json");
@@ -105,6 +141,55 @@ namespace Scenario.Tests
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, pubTekResult.StatusCode);
+
+        }
+
+        [TestPriority((int)TestOrder.AuthorizePubTek)]
+        [Theory]
+        [InlineData("dev")]
+        public async Task CallingPubTekEndpoint_Result_In_Authorized_Entry(string environment)
+        {
+            var client = new AppClient();
+
+            // Authorize
+            // Arrange
+            var publishTekArgs = new PublishTekArgs
+            {
+                GGDKey = EnrollmentResponseV2.GGDKey,
+                SubjectHasSymptoms = true,
+                DateOfSymptomsOnset = DateTime.Today
+            };
+
+            var pubtekContent = new StringContent(publishTekArgs.ToJson(), Encoding.UTF8, "application/json");
+
+            // Act
+            var pubTekResult = await client.PutAsync(new Uri($"{Config.IccApiBaseUrl(environment)}"), "pubtek", pubtekContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, pubTekResult.StatusCode);
+
+        }
+
+        [TestPriority((int)TestOrder.VerifyExposureKeySet)]
+        [Theory]
+        [InlineData("dev")]
+        public async Task New_ExposureKeySets_Should_Be_Published(string environment)
+        {
+            await Task.Delay(1000 * 60); // 60 seconds delay
+
+            // Arrange
+            // Get the current manifest.
+            var cdnClient = new CdnClient();
+            var (_, newManifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v4", $"{Config.ManifestEndPoint}");
+
+            // Manifest should be new
+            Assert.False(newManifest.Equals(CurrentManifest));
+
+            // Act
+            var (responseMessage, rcp) = await cdnClient.GetCdnContent<ExposureKeySet>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v4", $"{Config.ExposureKeySetEndPoint}/{newManifest.ExposureKeySets.First()}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
 
         }
 
