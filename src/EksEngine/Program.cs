@@ -47,10 +47,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             // Step specific registrations
             services.EksProcessRegistration();
+            services.SigningProcessRegistration();
             services.IksImportProcessRegistration();
             services.IksPublishingProcessRegistration();
             services.ManifestUpdateRegistration();
-            services.SigningProcessRegistration();
         }
     }
 }

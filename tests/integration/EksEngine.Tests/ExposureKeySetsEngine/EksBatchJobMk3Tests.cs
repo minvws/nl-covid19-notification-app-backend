@@ -142,7 +142,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                     )
                 );
 
-            return await _engine.ExecuteAsync();
+            return (EksEngineResult) await _engine.ExecuteAsync();
         }
 
         private class FakeEksConfig : IEksConfig
@@ -205,16 +205,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             result = await RunEngine();
 
             Assert.Equal(0, result.InputCount);
-            Assert.Equal(5, result.StuffingCount);
-            Assert.Equal(5, result.OutputCount);
+            Assert.Equal(0, result.StuffingCount);
+            Assert.Equal(0, result.OutputCount);
             Assert.Equal(0, result.TransmissionRiskNoneCount);
-            Assert.NotEmpty(result.EksInfo);
+            Assert.Empty(result.EksInfo);
 
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(2, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet));
-            Assert.Equal(10, _dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally)); // Another extra of 5 stuffing records added
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet));
+            Assert.Equal(5, _dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally));
 
             Assert.True(result.TotalSeconds > 0);
         }
@@ -232,9 +232,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.True(result.Started > new DateTime(2020, 8, 1, 0, 0, 0, DateTimeKind.Utc));
             Assert.Equal(0, result.InputCount);
             Assert.Equal(0, result.FilteredInputCount);
-            Assert.Equal(5, result.StuffingCount);
-            Assert.Equal(5, result.OutputCount);
-            Assert.NotEmpty(result.EksInfo);
+            Assert.Equal(0, result.StuffingCount);
+            Assert.Equal(0, result.OutputCount);
+            Assert.Empty(result.EksInfo);
             Assert.Equal(0, result.TransmissionRiskNoneCount);
 
             Assert.Equal(0, result.ReconcileOutputCount);
