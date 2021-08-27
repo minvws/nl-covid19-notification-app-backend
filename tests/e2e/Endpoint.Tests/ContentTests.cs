@@ -1,10 +1,16 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Core.E2ETests;
 using Endpoint.Tests.ContentModels;
+using Google.Protobuf;
+using Iks.Protobuf;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
 using Xunit;
 
@@ -177,8 +183,27 @@ namespace Endpoint.Tests
             Assert.Equal(MediaTypeHeaderValue.Parse("application/zip"), responseMessage.Content.Headers.ContentType); // A appconfig response structure validation
             Assert.True(responseMessage.Headers.Age?.TotalSeconds < responseMessage.Headers.CacheControl.MaxAge?.TotalSeconds); // Max-Age of app config data validated, not older then 1209600 sec. (14 days)
 
+            
+            if (TryParse(rcp.eksData, out var temporaryExposureKeyExport)){ }
 
             Assert.NotNull(rcp);
+            Assert.NotNull(temporaryExposureKeyExport);
+        }
+
+
+        private bool TryParse(byte[] buffer, out TemporaryExposureKeyExport result)
+        {
+            result = null;
+            try
+            {
+                var parser = new MessageParser<TemporaryExposureKeyExport>(() => new TemporaryExposureKeyExport());
+                result = parser.ParseFrom(buffer);
+                return true;
+            }
+            catch (InvalidProtocolBufferException e)
+            {
+                return false;
+            }
         }
     }
 }
