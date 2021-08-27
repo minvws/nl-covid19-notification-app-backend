@@ -86,18 +86,4 @@ namespace Endpoint.Tests
             return (responseMessage, await ParseEksContent(await responseMessage.Content.ReadAsStreamAsync()));
         }
     }
-
-    public class ProtoBufParser
-    {
-        public T Parse<T>(byte[] content)
-        {
-            var eks = (T)Activator.CreateInstance(typeof(ExposureKeySet));
-            if (eks is ExposureKeySet set)
-            {
-                set.eksData = content;
-            }
-
-            return eks;
-        }
-    }
 }
