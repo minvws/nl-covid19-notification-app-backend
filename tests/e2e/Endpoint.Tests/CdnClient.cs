@@ -44,7 +44,7 @@ namespace Endpoint.Tests
         {
             using var archive = new ZipArchive(stream);
 
-            var content = archive.ReadEntry(ZippedContentEntryNames.EksContent).Skip(11).ToByteArray();
+            var content = archive.ReadEntry(ZippedContentEntryNames.EksContent);
 
             var parser = new MessageParser<TemporaryExposureKeyExport>(() => new TemporaryExposureKeyExport());
             var result = parser.ParseFrom(content);
