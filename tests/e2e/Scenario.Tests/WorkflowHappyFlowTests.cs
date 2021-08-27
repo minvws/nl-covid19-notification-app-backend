@@ -22,18 +22,23 @@ using Xunit;
 
 namespace Scenario.Tests
 {
+
+    /// <summary>
+    /// The tests need to run in a specific order
+    /// </summary>
     public enum TestOrder
     {
-        CheckEndpoints = 1,
-        Register = 2,
-        PostKeys = 3,
-        AuthorizePubTek = 4,
-        VerifyExposureKeySet = 5
+        CheckEndpoints = 1, // First check if the endpoints are up and running
+        Register = 2, // Register a new workflow
+        PostKeys = 3, // Post keys to the workflow
+        AuthorizePubTek = 4, // Authorize the workflow
+        VerifyExposureKeySet = 5 // Get the ExposureKeySet from the CDN
 
     }
 
     /// <summary>
-    /// Testing the happy flow 
+    /// Testing the happy flow
+    /// A prerequisite is that the already exist a manifest to be fetched from the CDN. Run the ManifestEngine to create one.
     /// </summary>
     [TestCaseOrderer("Core.E2ETests.PriorityOrderer", "Core.E2ETests")]
     [Trait("test", "e2e")]
@@ -52,9 +57,10 @@ namespace Scenario.Tests
 
         [TestPriority((int)TestOrder.CheckEndpoints)]
         [Theory]
+        [InlineData("dev")]
         [InlineData("test")]
         //[InlineData("acc")]
-        [InlineData("prod")]
+        //[InlineData("prod")]
         public async Task Get_MobileApi_Endpoint_Returns_Http200(string environment)
         {
             // Arrange
@@ -67,13 +73,17 @@ namespace Scenario.Tests
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode); // I should have received the manifest
         }
 
+        /// <summary>
+        /// The first step in this e2e test is the register a new workflow.
+        /// </summary>
+        /// <param name="environment"></param>
+        /// <returns></returns>
         [TestPriority((int)TestOrder.Register)]
         [Theory]
         [InlineData("dev")]
         public async Task Calling_RegisterEndpoint_Result_In_New_Workflow_Entry(string environment)
         {
             // Arrange
-
             // Get the current manifest.
             var cdnClient = new CdnClient();
             var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v4", $"{Config.ManifestEndPoint}");
@@ -175,7 +185,8 @@ namespace Scenario.Tests
         [InlineData("dev")]
         public async Task New_ExposureKeySets_Should_Be_Published(string environment)
         {
-            await Task.Delay(1000 * 60); // 60 seconds delay
+            // Added a delay to run EKsEngine (This can be done manually in dev, or wait for a scheduled task to kick the engine)
+            await Task.Delay(1000 * 60 * 5); // 5 minutes delay
 
             // Arrange
             // Get the current manifest.
