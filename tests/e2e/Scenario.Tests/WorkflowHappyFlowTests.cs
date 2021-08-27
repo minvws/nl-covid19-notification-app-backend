@@ -205,7 +205,7 @@ namespace Scenario.Tests
             // TODO: find out why for some reason only 149 keys are returned. 150 are expected (10 posted and stuffed to 150 total)
             //Assert.True(rcp.Count >= 150);
 
-     var keys = PostTeks?.Keys.Select(p => p.KeyData).ToList();
+            var keys = PostTeks?.Keys.Select(p => p.KeyData).ToList();
             var result = rcp?.Where(x => keys.Contains(x)).ToList();
 
             Assert.Equal(PostTeks?.Keys.Length, result?.Count);
