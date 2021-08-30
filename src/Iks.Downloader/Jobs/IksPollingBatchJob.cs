@@ -136,32 +136,40 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
             {
                 case HttpStatusCode.BadRequest:
                     // 400: requested batchtag doesn't match CreatedDate on found batch - halt and catch fire
+                    _logger.WriteResponseBadRequest();
                     throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{downloadedBatch.BatchTag}' resulted in a Bad Request-response");
 
                 case HttpStatusCode.NotFound:
                     // 404: requested date doesn't exist yet - retry later (stop downloading)
                     _logger.WriteResponseNotFound();
-                    WriteRunToDb(_dayToRequest, downloadedBatch.BatchTag);
                     _continueDownloading = false;
                     return;
 
                 case HttpStatusCode.Gone:
                     // 410: requested date is too old - skip to next day
                     _logger.WriteResponseGone();
-                    WriteRunToDb(_dayToRequest, downloadedBatch.BatchTag);
                     _tagToRequest = string.Empty;
                     IncrementDayToRequest();
                     return;
 
+                case HttpStatusCode.Forbidden:
+                    _logger.WriteResponseForbidden();
+                    throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{downloadedBatch.BatchTag}' resulted in a Forbidden-response");
+
+                case HttpStatusCode.NotAcceptable:
+                    _logger.WriteResponseNotAcceptable();
+                    throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{downloadedBatch.BatchTag}' resulted in a Not-Acceptable-response");
+
                 default:
-                    throw new ArgumentException();
+                    _logger.WriteResponseUndefined(downloadedBatch.ResultCode);
+                    throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{downloadedBatch.BatchTag}' resulted in an undefined response");
             }
         }
 
-        private void SetNextBatchTagAndDate(string? downloadedBatchTag)
+        private void SetNextBatchTagAndDate(string? batchTag)
         {
             // Move on to the next batchTag if available; otherwise, move on to the next day, if possible.
-            _tagToRequest = downloadedBatchTag ?? string.Empty;
+            _tagToRequest = batchTag ?? string.Empty;
 
             if (string.IsNullOrEmpty(_tagToRequest))
             {

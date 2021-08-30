@@ -44,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 _logger.WriteResponse(response.StatusCode);
                 _logger.WriteResponseHeaders(response.Headers);
 
-                return await HandleResponse(date, response);
+                return await HandleResponse(response);
             }
             catch (Exception e)
             {
@@ -54,47 +54,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             }
         }
 
-        private async Task<HttpGetIksResult> HandleResponse(DateTime date, HttpResponseMessage response)
+        private async Task<HttpGetIksResult> HandleResponse(HttpResponseMessage response)
         {
-            switch (response.StatusCode)
+            if (response.StatusCode == HttpStatusCode.OK)
             {
-                case HttpStatusCode.OK:
-                    // EFGS returns the string 'null' if there is no batch tag. We will represent this with an actual null.
-                    var nextBatchTag = response.Headers.SafeGetValue("nextBatchTag");
-                    nextBatchTag = nextBatchTag == "null" ? null : nextBatchTag;
+                // EFGS returns the string 'null' if there is no batch tag. We will represent this with an actual null.
+                var nextBatchTag = response.Headers.SafeGetValue("nextBatchTag");
+                nextBatchTag = nextBatchTag == "null" ? null : nextBatchTag;
 
-                    return new HttpGetIksResult
-                    {
-                        //TODO errors if info not present
-                        BatchTag = response.Headers.SafeGetValue("batchTag"),
-                        NextBatchTag = nextBatchTag,
-                        Content = await response.Content.ReadAsByteArrayAsync(),
-                        ResultCode = response.StatusCode
-                    };
-
-                case HttpStatusCode.NotFound:
-                    _logger.WriteResponseNotFound();
-                    return CreateEmptyResult(date, response.StatusCode);
-
-                case HttpStatusCode.Gone:
-                    _logger.WriteResponseGone();
-                    return CreateEmptyResult(date, response.StatusCode);
-
-                case HttpStatusCode.BadRequest:
-                    _logger.WriteResponseBadRequest();
-                    return CreateEmptyResult(date, response.StatusCode);
-
-                case HttpStatusCode.Forbidden:
-                    _logger.WriteResponseForbidden();
-                    throw new EfgsCommunicationException();
-
-                case HttpStatusCode.NotAcceptable:
-                    _logger.WriteResponseNotAcceptable();
-                    throw new EfgsCommunicationException();
-
-                default:
-                    _logger.WriteResponseUndefined(response.StatusCode);
-                    throw new EfgsCommunicationException();
+                return new HttpGetIksResult
+                {
+                    //TODO errors if info not present
+                    BatchTag = response.Headers.SafeGetValue("batchTag"),
+                    NextBatchTag = nextBatchTag,
+                    Content = await response.Content.ReadAsByteArrayAsync(),
+                    ResultCode = response.StatusCode
+                };
+            }
+            else
+            {
+                return new HttpGetIksResult
+                {
+                    BatchTag = string.Empty,
+                    NextBatchTag = null,
+                    ResultCode = response.StatusCode
+                };
             }
         }
 
@@ -123,16 +107,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
             return request;
         }
-
-        private HttpGetIksResult CreateEmptyResult(DateTime date, HttpStatusCode statusCode)
-        {
-            return new HttpGetIksResult
-            {
-                BatchTag = string.Empty,
-                NextBatchTag = null,
-                ResultCode = statusCode
-            };
-        }
-
     }
 }

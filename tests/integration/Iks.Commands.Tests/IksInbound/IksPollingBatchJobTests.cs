@@ -357,7 +357,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
         }
 
         [Fact]
-        public void EFGSReturns404_ExecuteAsync_DownloadHaltedAndJobStateStored()
+        public void EFGSReturns404_ExecuteAsync_DownloadHaltedAndJobStateNotStored()
         {
             //Arrange
             var mockHttpClientHandler = new Mock<HttpClientHandler>();
@@ -419,11 +419,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var jobResultState = _iksInDbContext.InJob.SingleOrDefaultAsync().GetAwaiter().GetResult();
 
             Assert.Empty(downloadedBatches);
-            Assert.Equal(string.Empty, jobResultState.LastBatchTag);
+            Assert.Null(jobResultState);
         }
 
         [Fact]
-        public void EFGSReturns410_ExecuteAsync_NextDayIsRequestedAndJobStateStored()
+        public void EFGSReturns410_ExecuteAsync_NextDayIsRequested()
         {
             //Arrange
             var mockHttpClientHandler = new Mock<HttpClientHandler>();
@@ -482,12 +482,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             sut.Run();
 
             //Assert
-            var jobResultState = _iksInDbContext.InJob.SingleOrDefaultAsync().GetAwaiter().GetResult();
-
             Assert.Single(downloadedBatches);
             Assert.Equal("yesterday", downloadedBatches[0].BatchTag);
-            Assert.Equal("", jobResultState.LastBatchTag);
-            Assert.Equal(_now.Date, jobResultState.LastRun);
         }
 
     }
