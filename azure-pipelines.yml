@@ -15,7 +15,7 @@ trigger:
     - .
 
 pool:
-  name: 'CIBG-BuildRelease-O'
+  name: 'CIBG-BuildRelease-O-2016'
 
 parameters:
 - name: RUN_SQLSERVER_TESTS
@@ -47,7 +47,7 @@ variables:
   Tools.GenTeks.ArtifactSubDirectory: 'GenTeks'
   Tools.ForceTekAuth.ArtifactSubDirectory: 'ForceTekAuth'
   Tools.SigTestFileCreator.ArtifactSubDirectory: 'SigTestFileCreator'
-  Tools.Eks.Parser.ArtifactSubDirectory: 'Eks.Parser'
+  Tools.ProtobufScrubber.ArtifactSubDirectory: 'ProtobufScrubber'
   DacPac.ArtifactSubDirectory: 'Database'
   HSMScripting.ArtifactSubDirectory: 'HSM-Scripting'
   Apps.ManagementPortal.ArtifactSubDirectory: 'ManagementPortal'
@@ -99,8 +99,8 @@ stages:
   - template: /build/pipelines/jobs/apps-publish-manifestengine-artifact.yaml
   
   # ---- Tools:
-  # Eks.Parser
-  #- template: /build/pipelines/jobs/tools-publish-eksparcer-artifact.yaml
+  # ProtobufScrubber
+  - template: /build/pipelines/jobs/tools-publish-protobufscrubber-artifact.yaml
 
   # ForceTekAuth
   #- template: /build/pipelines/jobs/tools-publish-forcetekauth-artifact.yaml
@@ -118,5 +118,5 @@ stages:
   # HSM-Scripting files
   - template: /build/pipelines/jobs/files-publish-hsm-scripting-artifact.yaml
 
-  # Managemnet Portal
+  # Management Portal
   - template: /build/pipelines/jobs/apps-publish-managementportal-artifact.yaml

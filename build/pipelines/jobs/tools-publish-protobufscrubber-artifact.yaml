@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_ProtobufScrubber
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Tools.ProtobufScrubber.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'ProtobufScrubber'
+    - name: ProjectPath
+      value: 'src/ProtobufScrubber/ProtobufScrubber.csproj'
+    displayName: 'Publish Build Artifact ProtobufScrubber'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

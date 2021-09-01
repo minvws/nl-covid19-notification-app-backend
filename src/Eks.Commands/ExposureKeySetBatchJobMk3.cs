@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     /// Stuffing is now written back to the DK table. NB this must occur BEFORE the DKS are built or stuffing can be inferred.
     /// NB With at least 2 strategy pattern type changes this is, strictly speaking, the Mk4.
     /// </summary>
-    public sealed class ExposureKeySetBatchJobMk3
+    public sealed class ExposureKeySetBatchJobMk3 : BaseCommand
     {
         private readonly IEksConfig _eksConfig;
         private readonly IEksBuilder _setBuilder;
@@ -66,7 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _jobName = $"ExposureKeySetsJob_{_dateTimeProvider.Snapshot:u}".Replace(" ", "_").Replace(":", "_");
         }
 
-        public async Task<EksEngineResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             if (_fired)
             {

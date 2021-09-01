@@ -33,14 +33,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
         //d65b6d0fb08646e8b947f460aa9d2998d22709c459bac9859189a7ae9727e494
         public bool Validate(string id)
         {
-            const int sha256Length = 32;
+            const int Sha256Length = 32;
 
             if (string.IsNullOrWhiteSpace(id))
             {
                 return false;
             }
 
-            if (id.Length != sha256Length * 2)
+            if (id.Length != Sha256Length * 2)
             {
                 return false;
             }

@@ -56,8 +56,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             _logger.WriteRequest(request);
             _logger.WriteRequestContent(args.Content);
 
-            using var client = new HttpClient(clientHandler);
-            client.Timeout = TimeSpan.FromSeconds(5); //TODO config
+            using var client = new HttpClient(clientHandler)
+            {
+                Timeout = TimeSpan.FromSeconds(5)
+            };
 
             try
             {

@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
@@ -19,13 +20,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
 
         public const string Name = "TekCount";
 
-        public StatisticArgs Execute()
+        public async Task<StatisticArgs> ExecuteAsync()
         {
 
             return new StatisticArgs
             {
                 Name = Name,
-                Value = _dbContext.TemporaryExposureKeys.Count()
+                Value = await _dbContext.TemporaryExposureKeys.CountAsync()
             };
         }
     }
