@@ -8,6 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 {
     public interface IIksWriterCommand
     {
-        public Task Execute(IksWriteArgs args);
+        public void Execute(IksWriteArgs args);
     }
 }

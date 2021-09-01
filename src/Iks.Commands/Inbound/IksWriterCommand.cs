@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
@@ -21,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        public async Task Execute(IksWriteArgs args)
+        public void Execute(IksWriteArgs args)
         {
             var e = new IksInEntity
             {
@@ -31,8 +30,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 //Received = ? Not sure we need this cos its just a log.
             };
 
-            await _dbContext.Received.AddAsync(e);
-            await _dbContext.SaveChangesAsync();
+            _dbContext.Received.Add(e);
+            _dbContext.SaveChanges();
         }
     }
 }
