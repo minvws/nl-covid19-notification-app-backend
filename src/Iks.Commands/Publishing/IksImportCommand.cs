@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
     /// <summary>
     /// Read and process single inbound IKS
     /// </summary>
-    public class IksImportCommand
+    public class IksImportCommand : BaseCommand
     {
         private readonly DkSourceDbContext _dkSourceDbContext;
         private readonly IDiagnosticKeyProcessor[] _importProcessors;
@@ -40,20 +40,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task Execute(IksInEntity entity)
+        public override async Task<ICommandResult> ExecuteAsync(IParameters parameters)
         {
+            var commandResult = new CommandResult();
 
+            var entity = ((Parameters)parameters).IksInEntity;
             if (!TryParse(entity.Content, out var batch))
             {
                 entity.Error = true;
-                return;
+                commandResult.HasErrors = true;
+                return commandResult;
             }
 
             if (batch?.Keys == null || batch.Keys.Count == 0)
             {
                 //TODO log.
                 entity.Error = true;
-                return;
+                commandResult.HasErrors = true;
+                return commandResult;
             }
 
             var items = batch.Keys
@@ -86,8 +90,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                 }).ToArray();
 
             items = _importProcessors.Execute(items);
-            var result = items.Select(x => x.DiagnosisKey).ToList(); //Can't get rid of compiler warning.
-            await _dkSourceDbContext.BulkInsertAsync2(result, new SubsetBulkArgs());
+            var result = items.Select(x => x.DiagnosisKey).ToList();
+            await _dkSourceDbContext.BulkInsertWithTransactionAsync(result, new SubsetBulkArgs());
+
+            return commandResult;
         }
 
         private bool TryParse(byte[] buffer, out DiagnosisKeyBatch result)
@@ -142,6 +148,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             }
 
             return true;
+        }
+
+        public new class Parameters : IParameters
+        {
+            public IksInEntity IksInEntity { get; set; }
         }
     }
 }

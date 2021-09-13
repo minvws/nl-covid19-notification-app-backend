@@ -11,7 +11,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
 {
     public static class EfBulkExtensions
     {
-        public static async Task BulkUpdateAsync2<T>(this DbContext db, IList<T> page, SubsetBulkArgs args) where T : class
+        public static async Task BulkUpdateWithTransactionAsync<T>(this DbContext db, IList<T> page, SubsetBulkArgs args) where T : class
         {
             await using (db.BeginTransaction())
             {
@@ -20,11 +20,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             }
         }
 
-        public static async Task BulkInsertAsync2<T>(this DbContext db, IList<T> page, SubsetBulkArgs args) where T : class
+        public static async Task BulkInsertWithTransactionAsync<T>(this DbContext db, IList<T> page, SubsetBulkArgs args) where T : class
         {
             await using (db.BeginTransaction())
             {
                 await db.BulkInsertAsync(page, args.ToBulkConfig());
+                db.SaveAndCommit();
+            }
+        }
+
+        public static async Task BulkDeleteWithTransactionAsync<T>(this DbContext db, IList<T> page, SubsetBulkArgs args) where T : class
+        {
+            await using (db.BeginTransaction())
+            {
+                await db.BulkDeleteAsync(page, args.ToBulkConfig());
                 db.SaveAndCommit();
             }
         }

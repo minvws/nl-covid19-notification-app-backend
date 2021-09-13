@@ -39,7 +39,9 @@ GRANT UPDATE ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_IccBackend];
 GRANT SELECT ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_IccBackend];
 GRANT UPDATE ON [dbo].[TemporaryExposureKeys] TO [Dbr_Service_IccBackend];
 
---[Dbr_Service_EksEngine] 
+--[Dbr_Service_EksEngine]
+GRANT CREATE TABLE TO [Dbr_Service_EksEngine];
+
 GRANT SELECT ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_EksEngine];
 GRANT UPDATE ON [dbo].[TekReleaseWorkflowState] TO [Dbr_Service_EksEngine];
 

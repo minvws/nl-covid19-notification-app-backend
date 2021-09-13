@@ -20,14 +20,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
     public class HttpPostReleaseTeksCommand2
     {
         private readonly PostKeysLoggingExtensions _logger;
-        private readonly WorkflowDbContext _dbContext;
+        private readonly WorkflowDbContext _workflowDbContext;
 
         private readonly IPostTeksValidator _keyValidator;
         private readonly ITekWriter _writer;
         private readonly IJsonSerializer _jsonSerializer;
         private readonly ISignatureValidator _signatureValidator;
         private readonly ITekListWorkflowFilter _tekListWorkflowFilter;
-        private readonly IWorkflowConfig _workflowConfig;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly ITekValidPeriodFilter _tekApplicableWindowFilter;
 
@@ -49,8 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _workflowConfig = workflowConfig ?? throw new ArgumentNullException(nameof(workflowConfig));
-            _dbContext = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
+            _workflowDbContext = dbContextProvider ?? throw new ArgumentNullException(nameof(dbContextProvider));
             _keyValidator = keyValidator ?? throw new ArgumentNullException(nameof(keyValidator));
             _writer = writer ?? throw new ArgumentNullException(nameof(writer));
             _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
@@ -126,7 +124,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             teks = filterResult.Items;
             _logger.WriteValidTekCount(teks.Length);
 
-            var workflow = _dbContext
+            var workflow = _workflowDbContext
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Teks)
                 .SingleOrDefault(x => x.BucketId == _bucketIdBytes);
@@ -163,8 +161,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
                 NewItems = filterResults.Items
             };
 
+            _workflowDbContext.BeginTransaction();
             await _writer.ExecuteAsync(writeArgs);
-            _dbContext.SaveAndCommit();
+            _workflowDbContext.SaveAndCommit();
+
             _logger.WriteDbWriteCommitted();
 
             if (filterResults.Items.Length != 0)

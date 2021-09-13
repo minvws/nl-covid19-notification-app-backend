@@ -4,10 +4,11 @@
 
 using System.Linq;
 using System.Net;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
-    public class IksSendBatchResult
+    public class IksSendBatchResult : CommandResult
     {
         public bool Success => Sent.Count(x => x.StatusCode == HttpStatusCode.OK) == Found;
         public int Found { get; set; }

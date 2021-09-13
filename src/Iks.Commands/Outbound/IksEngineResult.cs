@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 // Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
@@ -11,7 +12,7 @@ using System.Linq;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
-    public class IksEngineResult
+    public class IksEngineResult : CommandResult
     {
         public DateTime Started { get; set; }
         public double SnapshotSeconds { get; set; }

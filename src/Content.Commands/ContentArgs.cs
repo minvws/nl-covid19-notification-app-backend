@@ -3,14 +3,14 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public class ContentArgs
     {
         public DateTime Release { get; set; }
-        public string ContentType { get; set; }
-
+        public ContentTypes ContentType { get; set; }
         public string Json { get; set; }
     }
 }

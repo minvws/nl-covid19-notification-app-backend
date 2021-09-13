@@ -71,7 +71,6 @@
     "websocket-extensions": ">=0.1.4"
   },
   "optionalDependencies": {
-    "node-sass": "^4.12.0",
     "protractor": "~5.4.2",
     "tslint": "~5.20.0"
   }

@@ -44,6 +44,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         private const int PubTekStart = Base + 27;
         private const int PublishTekCommit = Base + 28;
+        private const int FixedGgdKey = Base + 29;
+        private const int GgdKeyValidationFailed = Base + 30;
 
         public static void WriteHttpFail(this ILogger logger, Uri uri, HttpStatusCode status, string response)
         {
@@ -362,6 +364,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
             logger.LogDebug("[{name}/{id}] Writing.",
                 Name, PublishTekCommit);
+        }
+
+        public static void WriteFixedGgdKey(this ILogger logger)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            logger.LogDebug("[{name/{id}}] Fixed 6-digit GGDKey with LuhnModN checkcode.",
+                Name, FixedGgdKey);
+        }
+
+        public static void WriteGgdKeyValidationFailed(this ILogger logger)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            logger.LogInformation("[{name}/{id}] Validation of GGDKey failed.",
+                Name, GgdKeyValidationFailed);
         }
     }
 }

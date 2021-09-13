@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -16,15 +18,11 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramewo
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
-
-
     /// <summary>
     /// Build content
     /// </summary>
-    public class IksEngine
+    public class IksEngine : BaseCommand
     {
-        private readonly IWrappedEfExtensions _sqlCommands;
-
         private readonly ILogger<IksEngine> _logger;
         private readonly IksInputSnapshotCommand _snapshotter;
         private readonly IksFormatter _formatter;
@@ -45,10 +43,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
         private bool _fired;
         private readonly Stopwatch _buildSetStopwatch = new Stopwatch();
-        private readonly Func<IksPublishingJobDbContext> _publishingDbContextFac;
+        private readonly IksPublishingJobDbContext _publishingDbContext;
 
 
-        public IksEngine(ILogger<IksEngine> logger, IksInputSnapshotCommand snapshotter, IksFormatter formatter, IIksConfig config, IUtcDateTimeProvider dateTimeProvider, MarkDiagnosisKeysAsUsedByIks markSourceAsUsed, IksJobContentWriter contentWriter, Func<IksPublishingJobDbContext> publishingDbContextFac, IWrappedEfExtensions sqlCommands)
+        public IksEngine(ILogger<IksEngine> logger, IksInputSnapshotCommand snapshotter, IksFormatter formatter, IIksConfig config, IUtcDateTimeProvider dateTimeProvider, MarkDiagnosisKeysAsUsedByIks markSourceAsUsed, IksJobContentWriter contentWriter, IksPublishingJobDbContext publishingDbContext)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _snapshotter = snapshotter ?? throw new ArgumentNullException(nameof(snapshotter));
@@ -57,12 +55,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _markSourceAsUsed = markSourceAsUsed ?? throw new ArgumentNullException(nameof(markSourceAsUsed));
             _contentWriter = contentWriter ?? throw new ArgumentNullException(nameof(contentWriter));
-            _publishingDbContextFac = publishingDbContextFac ?? throw new ArgumentNullException(nameof(publishingDbContextFac));
-            _sqlCommands = sqlCommands ?? throw new ArgumentNullException(nameof(sqlCommands));
+            _publishingDbContext = publishingDbContext ?? throw new ArgumentNullException(nameof(publishingDbContext));
             _jobName = "IksEngine";
         }
 
-        public async Task<IksEngineResult> ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             if (_fired)
             {
@@ -111,9 +108,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         {
             _logger.LogDebug("Clear job tables.");
 
-            await using var dbc = _publishingDbContextFac();
-            await _sqlCommands.TruncateTableAsync(dbc, TableNames.IksEngineInput);
-            await _sqlCommands.TruncateTableAsync(dbc, TableNames.IksEngineOutput);
+            await _publishingDbContext.TruncateAsync<IksCreateJobInputEntity>();
+            await _publishingDbContext.TruncateAsync<IksCreateJobOutputEntity>();
         }
 
         private async Task BuildOutput()
@@ -178,12 +174,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             _logger.LogInformation("Write IKS - Id:{CreatingJobQualifier}.", e.CreatingJobQualifier);
 
-            await using (var dbc = _publishingDbContextFac())
-            {
-                await using var tx = dbc.BeginTransaction();
-                await dbc.AddAsync(e);
-                dbc.SaveAndCommit();
-            }
+            await using var tx = _publishingDbContext.BeginTransaction();
+            await _publishingDbContext.AddAsync(e);
+            _publishingDbContext.SaveAndCommit();
 
             _logger.LogInformation("Mark TEKs as used.");
 
@@ -193,14 +186,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             }
 
             //Could be 750k in this hit
-            await using (var dbc2 = _publishingDbContextFac())
+            var bulkArgs = new SubsetBulkArgs
             {
-                var bargs = new SubsetBulkArgs
-                {
-                    PropertiesToInclude = new[] { nameof(IksCreateJobInputEntity.Used) }
-                };
-                await dbc2.BulkUpdateAsync2(_output, bargs); //TX
-            }
+                PropertiesToInclude = new[] { nameof(IksCreateJobInputEntity.Used) }
+            };
+            await _publishingDbContext.BulkUpdateWithTransactionAsync(_output, bulkArgs);
 
             _engineResult.OutputCount += _output.Count;
 
@@ -212,8 +202,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         {
             _logger.LogDebug("Read page - Skip {Skip}, Take {Take}.", skip, take);
 
-            using var dbc = _publishingDbContextFac();
-            var result = dbc.Set<IksCreateJobInputEntity>()
+            var result = _publishingDbContext.Input
+                .AsNoTracking()
                 .OrderBy(x => x.DailyKey.KeyData)
                 .Skip(skip)
                 .Take(take)
@@ -228,7 +218,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         {
             _logger.LogInformation("Commit results - publish EKSs.");
 
-            await _contentWriter.ExecuteAsyc();
+            await _contentWriter.ExecuteAsync();
 
             _logger.LogInformation("Commit results - Mark TEKs as Published.");
             var result = await _markSourceAsUsed.ExecuteAsync();

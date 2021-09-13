@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFram
 {
     public class DkSourceDbContext : DbContext
     {
-        public DkSourceDbContext(DbContextOptions options)
+        public DkSourceDbContext(DbContextOptions<DkSourceDbContext> options)
             : base(options)
         {
         }

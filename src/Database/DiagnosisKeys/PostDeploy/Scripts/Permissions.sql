@@ -25,6 +25,8 @@ GRANT UPDATE  ON SCHEMA::[dbo] TO [Dbr_Service];
 GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 
 --[Dbr_Service_EksEngine]
+GRANT CREATE TABLE TO [Dbr_Service_EksEngine];
+
 GRANT SELECT ON [dbo].[DiagnosisKeys] TO [Dbr_Service_EksEngine];
 GRANT INSERT ON [dbo].[DiagnosisKeys] TO [Dbr_Service_EksEngine];
 GRANT UPDATE ON [dbo].[DiagnosisKeys] TO [Dbr_Service_EksEngine];

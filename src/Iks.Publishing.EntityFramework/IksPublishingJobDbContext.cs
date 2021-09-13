@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFra
 {
     public class IksPublishingJobDbContext : DbContext
     {
-        public IksPublishingJobDbContext(DbContextOptions options)
+        public IksPublishingJobDbContext(DbContextOptions<IksPublishingJobDbContext> options)
             : base(options)
         {
         }

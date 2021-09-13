@@ -4,10 +4,12 @@
 
 using System;
 using System.Threading.Tasks;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
-    public class NlContentResignExistingV1ContentCommand
+    public class NlContentResignExistingV1ContentCommand : BaseCommand
     {
         private readonly NlContentResignCommand _resigner;
 
@@ -16,12 +18,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             _resigner = resigner ?? throw new ArgumentNullException(nameof(resigner));
         }
 
-        public async Task ExecuteAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             await _resigner.ExecuteAsync(ContentTypes.ExposureKeySet, ContentTypes.ExposureKeySetV2, ZippedContentEntryNames.EksContent);
             await _resigner.ExecuteAsync(ContentTypes.AppConfig, ContentTypes.AppConfigV2, ZippedContentEntryNames.Content);
             await _resigner.ExecuteAsync(ContentTypes.RiskCalculationParameters, ContentTypes.RiskCalculationParametersV2, ZippedContentEntryNames.Content);
             await _resigner.ExecuteAsync(ContentTypes.ResourceBundle, ContentTypes.ResourceBundleV2, ZippedContentEntryNames.Content);
+
+            return null;
         }
     }
 }

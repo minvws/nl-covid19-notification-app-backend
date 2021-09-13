@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using Newtonsoft.Json;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication
 {
@@ -15,14 +16,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
         /// Is a string composed of six characters followed by one checksum character.
         /// The checksum is calculated according to the Luhn mod N algorithm (which is a modification to the original Luhn algorithm as described in ISO/IEC 8712 Annex B).
         /// </summary>
-        public string GGDKey { get; set; }
+        [JsonProperty("ggdKey")] public string GGDKey { get; set; }
         /// <summary>
         /// A boolean value which is set to true if the subject has symptoms (symptomatic), false otherwise (asymptomatic) 
         /// </summary>
-        public bool Symptomatic { get; set; }
+        [JsonProperty("subjectHasSymptoms")] public bool SubjectHasSymptoms { get; set; }
         /// <summary>
-        /// The given StartOfInfectiousPeriod or Date of Test entered by the GGD user
+        /// The given DateOfSymptomsOnset
         /// </summary>
-        public DateTime? SelectedDate { get; set; }
+        [JsonProperty("dateOfSymptomsOnset")] public DateTime? DateOfSymptomsOnset { get; set; }
+        /// <summary>
+        /// The given DateOfTest
+        /// </summary>
+        [JsonProperty("dateOfTest")] public DateTime? DateOfTest { get; set; }
     }
 }

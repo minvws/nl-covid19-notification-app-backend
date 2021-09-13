@@ -34,7 +34,6 @@
     <ProjectReference Include="..\Iks.Commands\Iks.Commands.csproj" />
     <ProjectReference Include="..\Manifest.Commands\Manifest.Commands.csproj" />
     <ProjectReference Include="..\MobileAppApi.EntityFramework\MobileAppApi.EntityFramework.csproj" />
-    <ProjectReference Include="..\Stats.EntityFramework\Stats.EntityFramework.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

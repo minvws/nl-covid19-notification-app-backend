@@ -16,33 +16,31 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
     //TODO add ticket - split up into explicit commands for each version.
-    public class ManifestUpdateCommand
+    public class ManifestUpdateCommand : BaseCommand
     {
         private readonly ManifestV2Builder _v2Builder; //Todo: rename classes to ManifestVxBuilder
         private readonly ManifestV3Builder _v3Builder;
         private readonly ManifestV4Builder _v4Builder;
-        private readonly Func<ContentDbContext> _contentDbProvider;
+        private readonly ContentDbContext _contentDbContext;
         private readonly ManifestUpdateCommandLoggingExtensions _logger;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly IJsonSerializer _jsonSerializer;
-        private readonly Func<IContentEntityFormatter> _formatter;
-
-        private ContentDbContext _contentDb;
+        private readonly IContentEntityFormatter _formatter;
 
         public ManifestUpdateCommand(
             ManifestV2Builder v2Builder,
             ManifestV3Builder v3Builder,
             ManifestV4Builder v4Builder,
-            Func<ContentDbContext> contentDbProvider,
+            ContentDbContext contentDbContext,
             ManifestUpdateCommandLoggingExtensions logger,
             IUtcDateTimeProvider dateTimeProvider,
             IJsonSerializer jsonSerializer,
-            Func<IContentEntityFormatter> formatter)
+            IContentEntityFormatter formatter)
         {
             _v2Builder = v2Builder ?? throw new ArgumentNullException(nameof(v2Builder));
             _v3Builder = v3Builder ?? throw new ArgumentNullException(nameof(v3Builder));
             _v4Builder = v4Builder ?? throw new ArgumentNullException(nameof(v4Builder));
-            _contentDbProvider = contentDbProvider ?? throw new ArgumentNullException(nameof(contentDbProvider));
+            _contentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
@@ -54,21 +52,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         public async Task ExecuteV3Async() => await Execute(async () => await _v3Builder.ExecuteAsync(), ContentTypes.ManifestV3);
         public async Task ExecuteV4Async() => await Execute(async () => await _v4Builder.ExecuteAsync(), ContentTypes.ManifestV4);
 
-        public async Task ExecuteAllAsync()
+        public override async Task<ICommandResult> ExecuteAsync()
         {
             await ExecuteV2Async();
             await ExecuteV3Async();
             await ExecuteV4Async();
+
+            return null;
         }
 
-        private async Task Execute<T>(Func<Task<T>> build, string contentType) where T : IEquatable<T>
+        private async Task Execute<T>(Func<Task<T>> build, ContentTypes contentType) where T : IEquatable<T>
         {
             var snapshot = _dateTimeProvider.Snapshot;
 
-            _contentDb ??= _contentDbProvider();
-            await using var tx = _contentDb.BeginTransaction();
+            await using var tx = _contentDbContext.BeginTransaction();
 
-            var currentManifestData = await _contentDb.SafeGetLatestContentAsync(contentType, snapshot);
+            var currentManifestData = await _contentDbContext.SafeGetLatestContentAsync(contentType, snapshot);
             var candidateManifest = await build();
 
             if (currentManifestData != null)
@@ -84,7 +83,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                 }
 
                 // If current manifest does not equal existing manifest, then replace current manifest.
-                _contentDb.Remove(currentManifestData);
+                _contentDbContext.Remove(currentManifestData);
             }
 
             _logger.WriteStart();
@@ -95,10 +94,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                 Release = snapshot,
                 Type = contentType
             };
-            await _formatter().FillAsync(contentEntity, candidateManifest);
+            await _formatter.FillAsync(contentEntity, candidateManifest);
 
-            _contentDb.Add(contentEntity);
-            _contentDb.SaveAndCommit();
+            _contentDbContext.Add(contentEntity);
+            _contentDbContext.SaveAndCommit();
 
             _logger.WriteFinished();
         }

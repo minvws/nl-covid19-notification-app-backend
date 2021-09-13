@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.EntityFramework;
@@ -21,14 +22,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
             _dtp = dtp ?? throw new ArgumentNullException(nameof(dtp));
         }
 
-        public void Write(StatisticArgs[] args)
+        public async Task WriteAsync(StatisticArgs[] args)
         {
             var entries = args.Select(Map).ToArray();
-            _dbContext.StatisticsEntries.AddRange(entries);
-            _dbContext.SaveChanges(); //Implicit TX
+            await _dbContext.StatisticsEntries.AddRangeAsync(entries);
+            await _dbContext.SaveChangesAsync(); //Implicit TX
         }
 
-        StatisticsEntryEntity Map(StatisticArgs args)
+        private StatisticsEntryEntity Map(StatisticArgs args)
         {
             return new StatisticsEntryEntity
             {

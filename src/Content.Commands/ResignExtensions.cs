@@ -2,7 +2,6 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
@@ -24,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
             services.AddTransient(x =>
                new NlContentResignCommand(
-                    x.GetRequiredService<Func<ContentDbContext>>(),
+                    x.GetRequiredService<ContentDbContext>(),
                     new CmsSignerEnhanced(
                         new LocalMachineStoreCertificateProvider(
                             new LocalMachineStoreCertificateProviderConfig(

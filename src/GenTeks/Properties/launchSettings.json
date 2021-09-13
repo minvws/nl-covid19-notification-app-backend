@@ -2,7 +2,7 @@
   "profiles": {
     "GenTeks": {
       "commandName": "Project",
-      "commandLineArgs": "10 10"
+      "commandLineArgs": "1000 1000"
     }
   }
 }

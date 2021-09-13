@@ -3,16 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.ServiceRegistrations;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
 {
@@ -33,49 +28,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
 
         private static void Start(IServiceProvider serviceProvider, string[] args)
         {
-            var config = serviceProvider.GetService<IEfgsConfig>();
-
-            if (!config.DownloaderEnabled)
-            {
-                var logger = serviceProvider.GetService<IksDownloaderLoggingExtensions>();
-                logger.WriteDisabledByConfig();
-
-                return;
-            }
-
-            var pollingBatchJob = serviceProvider.GetService<IksPollingBatchJob>();
-            pollingBatchJob.ExecuteAsync().GetAwaiter().GetResult();
+            serviceProvider.GetService<IksPollingBatchJob>().Run();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
             services.AddSingleton<IConfiguration>(configuration);
-            services.AddSingleton<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.DbContextRegistration(configuration);
 
-            services.AddTransient(x => x.CreateDbContext(y => new IksInDbContext(y), DatabaseConnectionStringNames.IksIn, false));
+            services.IksDownloadingProcessRegistration();
 
-            services.AddSingleton<IEfgsConfig, EfgsConfig>();
-            services.AddTransient<IiHttpGetIksCommand, HttpGetIksCommand>();
-            services.AddTransient<IIksWriterCommand, IksWriterCommand>();
-            services.AddTransient<Func<IiHttpGetIksCommand>>(x => x.GetService<IiHttpGetIksCommand>);
-            services.AddTransient<Func<IIksWriterCommand>>(x => x.GetService<IIksWriterCommand>);
-            services.AddTransient<IksPollingBatchJob>();
+            // Authentication (with certs)
+            services.AuthenticationProviderRegistration();
 
-            services
-                .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
-                .AddCertificate();
-
-            services.AddSingleton<IThumbprintConfig, LocalMachineStoreCertificateProviderConfig>();
-
-            services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
-            services.AddSingleton<IksDownloaderLoggingExtensions>();
-
-            services.AddTransient<IAuthenticationCertificateProvider>(
-                x => new LocalMachineStoreCertificateProvider(
-                    new LocalMachineStoreCertificateProviderConfig(
-                        x.GetRequiredService<IConfiguration>(), "Certificates:EfgsAuthentication"),
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
-                ));
+            // Shared registrations
+            services.SettingsRegistration();
+            services.LoggingExtensionsRegistration();
         }
     }
 }

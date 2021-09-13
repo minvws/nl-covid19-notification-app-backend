@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
@@ -19,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             _httpResponseHeaderConfig = httpResponseHeaderConfig ?? throw new ArgumentNullException(nameof(httpResponseHeaderConfig));
         }
 
-        public async Task ExecuteAsync(HttpContext httpContext, string type, string id)
+        public async Task ExecuteAsync(HttpContext httpContext, ContentTypes type, string id)
         {
             var e = await _getCommand.ExecuteAsync(httpContext, type, id);
             if (e == null)

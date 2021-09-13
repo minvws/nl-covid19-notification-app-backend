@@ -17,12 +17,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public class NlContentResignCommand
     {
-        private readonly Func<ContentDbContext> _contentDbContext;
+        private readonly ContentDbContext _contentDbContext;
         private readonly IContentSigner _contentSigner;
         private readonly ResignerLoggingExtensions _logger;
 
         private string _contentEntryName;
-        private string _toType;
+        private ContentTypes _toType;
 
         /// <summary>
         /// Comparer ensures content is equivalent so that items are not re-signed more than once
@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             public int GetHashCode(ContentEntity obj) => HashCode.Combine(obj.Created, obj.Release, obj.PublishingId);
         }
 
-        public NlContentResignCommand(Func<ContentDbContext> contentDbContext, IContentSigner contentSigner, ResignerLoggingExtensions logger)
+        public NlContentResignCommand(ContentDbContext contentDbContext, IContentSigner contentSigner, ResignerLoggingExtensions logger)
         {
             _contentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _contentSigner = contentSigner ?? throw new ArgumentNullException(nameof(contentSigner));
@@ -47,15 +47,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         /// <summary>
         /// Copy and sign all content of 'fromType' that has not already been re-signed.
         /// </summary>
-        public async Task ExecuteAsync(string fromType, string toType, string contentEntryName)
+        public async Task ExecuteAsync(ContentTypes fromType, ContentTypes toType, string contentEntryName)
         {
             _toType = toType;
             _contentEntryName = contentEntryName;
 
-            var db = _contentDbContext();
-
-            var fromItems = db.Content.Where(x => x.Type == fromType).ToArray();
-            var toItems = db.Content.Where(x => x.Type == toType).ToArray();
+            var fromItems = _contentDbContext.Content.Where(x => x.Type == fromType).ToArray();
+            var toItems = _contentDbContext.Content.Where(x => x.Type == toType).ToArray();
             var todo = fromItems.Except(toItems, new ContentEntityComparer()).ToArray();
 
             _logger.WriteReport(todo);
@@ -70,8 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
         private async Task ReSignAsync(ContentEntity item)
         {
-            await using var db = _contentDbContext();
-            await using var tx = db.BeginTransaction();
+            await using var tx = _contentDbContext.BeginTransaction();
 
             var content = await ReplaceSignatureAsync(item.Content);
             var e = new ContentEntity
@@ -83,8 +80,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 Type = _toType,
                 PublishingId = item.PublishingId
             };
-            await db.Content.AddAsync(e);
-            db.SaveAndCommit();
+            await _contentDbContext.Content.AddAsync(e);
+            _contentDbContext.SaveAndCommit();
         }
 
         private async Task<byte[]> ReplaceSignatureAsync(byte[] archiveBytes)

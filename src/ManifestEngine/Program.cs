@@ -5,15 +5,9 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Jobs;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.ServiceRegistrations;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
 {
@@ -32,42 +26,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             }
         }
 
-        private static void Start(IServiceProvider services, string[] args)
+        private static void Start(IServiceProvider serviceProvider, string[] args)
         {
-            var job = services.GetRequiredService<ManifestUpdateCommand>();
-            job.ExecuteAllAsync().GetAwaiter().GetResult();
+            serviceProvider.GetRequiredService<ManifestBatchJob>().Run();
         }
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-            // Db and basic functions
-            services.AddTransient(x => x.CreateDbContext(y => new ContentDbContext(y), DatabaseConnectionStringNames.Content, false));
-            services.AddTransient<Func<ContentDbContext>>(x => x.GetRequiredService<ContentDbContext>);
-            services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddSingleton<IConfiguration>(configuration);
-            services.AddSingleton<IEksConfig, StandardEksConfig>();
-            services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
-
-            // Orchestrating components
-            services.AddTransient<ManifestUpdateCommand>();
-            services.AddTransient<ManifestV2Builder>();
-            services.AddTransient<ManifestV3Builder>();
-            services.AddTransient<ManifestV4Builder>();
-
-            // Operating components
-            services.AddTransient<Func<IContentEntityFormatter>>(x => x.GetRequiredService<StandardContentEntityFormatter>);
-            services.AddTransient<StandardContentEntityFormatter>();
-            services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
-            services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient(x =>
-                SignerConfigStartup.BuildEvSigner(
-                    x.GetRequiredService<IConfiguration>(),
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
-                    x.GetRequiredService<IUtcDateTimeProvider>()));
-
-            // Logging
-            services.AddSingleton<ManifestUpdateCommandLoggingExtensions>();
-            services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
+            services.DbContextRegistration(configuration);
+            services.ManifestEngineRegistration();
+            services.SettingsRegistration();
+            services.LoggingExtensionsRegistration();
         }
     }
 }

@@ -28,7 +28,9 @@ GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 
 --specific permissions for PublishingJob here..
 
---[Dbr_Service_EksEngine] 
+--[Dbr_Service_EksEngine]
+GRANT CREATE TABLE TO [Dbr_Service_EksEngine];
+
 GRANT INSERT ON [dbo].[IksCreateJobInput] TO [Dbr_Service_EksEngine];
 GRANT SELECT ON [dbo].[IksCreateJobInput] TO [Dbr_Service_EksEngine];
 GRANT UPDATE ON [dbo].[IksCreateJobInput] TO [Dbr_Service_EksEngine];

@@ -4,10 +4,11 @@
 
 using System;
 using System.Linq;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 {
-    public class EksEngineResult
+    public class EksEngineResult : CommandResult
     {
         public DateTime Started { get; set; }
         public double SnapshotSeconds { get; set; }
@@ -20,7 +21,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         public EksInfo[] EksInfo { get; set; }
         public int ReconcileOutputCount => InputCount + StuffingCount - TransmissionRiskNoneCount - OutputCount;
         public int ReconcileEksSumCount => EksInfo.Sum(x => x.TekCount) - OutputCount;
-
-        //public int DupesFound { get; set; } ?
     }
 }

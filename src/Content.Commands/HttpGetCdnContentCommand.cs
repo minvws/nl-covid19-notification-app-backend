@@ -33,18 +33,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         /// <summary>
         /// Immutable content
         /// </summary>
-        public async Task<ContentEntity> ExecuteAsync(HttpContext httpContext, string type, string id)
+        public async Task<ContentEntity> ExecuteAsync(HttpContext httpContext, ContentTypes type, string id)
         {
             if (httpContext == null)
             {
                 throw new ArgumentNullException(nameof(httpContext));
-            }
-
-            if (!ContentTypes.IsValid(type))
-            {
-                _logger.WriteInvalidType(id);
-                httpContext.Response.StatusCode = 400;
-                httpContext.Response.ContentLength = 0;
             }
 
             if (!_publishingIdService.Validate(id))
@@ -53,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 httpContext.Response.StatusCode = 400;
                 httpContext.Response.ContentLength = 0;
             }
-
+            
             if (!httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
             {
                 _logger.WriteHeaderMissing();

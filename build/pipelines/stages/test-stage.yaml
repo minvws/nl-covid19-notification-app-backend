@@ -81,7 +81,7 @@ stages:
           inputs:
             command: 'test'
             projects: $(ProjectsToTest)
-            arguments: '--filter db!=ss&db!=mem --logger trx --no-build'
+            arguments: '--filter db!=ss&db!=mem&test!=e2e --logger trx --no-build'
 
             # Run Unit Tests
         - task: DotNetCoreCLI@2
