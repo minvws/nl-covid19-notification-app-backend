@@ -10,7 +10,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
     public class RootController : ControllerBase
     {
         [HttpGet]
