@@ -202,8 +202,8 @@ namespace Scenario.Tests
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
 
-            // TODO: find out why for some reason only 149 keys are returned. 150 are expected (10 posted and stuffed to 150 total)
-            //Assert.True(rcp.Count >= 150);
+            // 150 are expected (100 posted and stuffed to 150 total)
+            Assert.True(rcp.Count >= 150);
 
             var keys = PostTeks?.Keys.Select(p => p.KeyData).ToList();
             var result = rcp?.Where(x => keys.Contains(x)).ToList();
@@ -214,8 +214,8 @@ namespace Scenario.Tests
         private PostTeksArgs GenerateTeks(string bucketId)
         {
             var keys = new List<PostTeksItemArgs>();
-
-            for (var i = 0; i < 10; i++)
+            // Add 100 keys
+            for (var i = 0; i < 100; i++)
             {
                 keys.Add(new PostTeksItemArgs
                 {

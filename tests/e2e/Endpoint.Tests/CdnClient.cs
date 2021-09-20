@@ -10,14 +10,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Core.E2ETests;
-using Endpoint.Tests.ContentModels;
 using Google.Protobuf;
-using Iks.Protobuf;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat;
 
 namespace Endpoint.Tests
@@ -46,8 +42,10 @@ namespace Endpoint.Tests
 
             var content = archive.ReadEntry(ZippedContentEntryNames.EksContent);
 
+            var messageBytes = content.Skip(16).ToArray(); // Remove header bytes
+
             var parser = new MessageParser<TemporaryExposureKeyExport>(() => new TemporaryExposureKeyExport());
-            var result = parser.ParseFrom(content);
+            var result = parser.ParseFrom(messageBytes);
 
             var keys = new List<string>();
 
