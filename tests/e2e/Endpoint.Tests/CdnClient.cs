@@ -8,6 +8,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using Google.Protobuf;
@@ -57,6 +58,19 @@ namespace Endpoint.Tests
             return keys;
         }
 
+        protected async Task<TemporaryExposureKeyExport> ParseEksToExport(Stream stream)
+        {
+            using var archive = new ZipArchive(stream);
+
+            var content = archive.ReadEntry(ZippedContentEntryNames.EksContent);
+
+            var messageBytes = content.Skip(16).ToArray(); // Remove header bytes
+
+            var parser = new MessageParser<TemporaryExposureKeyExport>(() => new TemporaryExposureKeyExport());
+            var result = parser.ParseFrom(messageBytes);
+            return result;
+        }
+
         public async Task RemoveExcessBytes(ZipArchive eksZip)
         {
             var gaenSigEntry = eksZip.GetEntry(ZippedContentEntryNames.EksGaenSig);
@@ -76,12 +90,20 @@ namespace Endpoint.Tests
             return (responseMessage, ParseContent<T>(await responseMessage.Content.ReadAsStreamAsync()));
         }
 
-        public async Task<(HttpResponseMessage, List<string>)> GetCdnEksContent<T>(Uri uri, string version, string endpoint)
+        public async Task<(HttpResponseMessage, List<string>)> GetCdnEksContent(Uri uri, string version, string endpoint)
         {
             _client = new HttpClient { BaseAddress = uri };
             var responseMessage = await _client.GetAsync($"{version}/{endpoint}");
 
             return (responseMessage, await ParseEksContent(await responseMessage.Content.ReadAsStreamAsync()));
+        }
+
+        public async Task<(HttpResponseMessage, TemporaryExposureKeyExport)> GetCdnEksExport(Uri uri, string version, string endpoint)
+        {
+            _client = new HttpClient { BaseAddress = uri };
+            var responseMessage = await _client.GetAsync($"{version}/{endpoint}");
+
+            return (responseMessage, await ParseEksToExport(await responseMessage.Content.ReadAsStreamAsync()));
         }
     }
 }

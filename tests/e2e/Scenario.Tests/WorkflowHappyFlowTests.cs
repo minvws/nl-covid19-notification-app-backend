@@ -197,7 +197,7 @@ namespace Scenario.Tests
             Assert.False(newManifest.Equals(CurrentManifest));
 
             // Act
-            var (responseMessage, rcp) = await cdnClient.GetCdnEksContent<List<string>>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v4", $"{Config.ExposureKeySetEndPoint}/{newManifest.ExposureKeySets.Last()}");
+            var (responseMessage, rcp) = await cdnClient.GetCdnEksContent(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v4", $"{Config.ExposureKeySetEndPoint}/{newManifest.ExposureKeySets.Last()}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);

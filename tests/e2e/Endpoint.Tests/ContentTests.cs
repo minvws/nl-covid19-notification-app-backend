@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -176,33 +177,38 @@ namespace Endpoint.Tests
 
             // Act
             var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.ManifestEndPoint}");
-            var (responseMessage, rcp) = await cdnClient.GetCdnContent<ExposureKeySet>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.ExposureKeySetEndPoint}/{manifest.ExposureKeySets.First()}");
+            var (responseMessage, rcp) = await cdnClient.GetCdnEksExport(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v4", $"{Config.ExposureKeySetEndPoint}/{manifest.ExposureKeySets.Last()}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
             Assert.Equal(MediaTypeHeaderValue.Parse("application/zip"), responseMessage.Content.Headers.ContentType); // A appconfig response structure validation
             Assert.True(responseMessage.Headers.Age?.TotalSeconds < responseMessage.Headers.CacheControl.MaxAge?.TotalSeconds); // Max-Age of app config data validated, not older then 1209600 sec. (14 days)
 
-            
-            if (TryParse(rcp.eksData, out var temporaryExposureKeyExport)){ }
-
             Assert.NotNull(rcp);
-            Assert.NotNull(temporaryExposureKeyExport);
-        }
 
+            Assert.True(!string.IsNullOrEmpty(rcp.StartTimestamp.ToString()));
+            Assert.True(!string.IsNullOrEmpty(rcp.EndTimestamp.ToString()));
+            Assert.True(!string.IsNullOrEmpty(rcp.Region));
+            Assert.True(rcp.BatchNum > 0);
+            Assert.True(rcp.BatchSize > 0);
+            Assert.True(rcp.SignatureInfos.Any());
+            Assert.True(rcp.Keys.Any());
 
-        private bool TryParse(byte[] buffer, out TemporaryExposureKeyExport result)
-        {
-            result = null;
-            try
+            Assert.True(rcp.SignatureInfos.First().SignatureAlgorithm.Equals("1.2.840.10045.4.3.2"));
+            Assert.True(rcp.SignatureInfos.First().VerificationKeyId.Equals("204"));
+            Assert.True(!string.IsNullOrEmpty(rcp.SignatureInfos.First().VerificationKeyVersion));
+
+            foreach (var temporaryExposureKey in rcp.Keys)
             {
-                var parser = new MessageParser<TemporaryExposureKeyExport>(() => new TemporaryExposureKeyExport());
-                result = parser.ParseFrom(buffer);
-                return true;
-            }
-            catch (InvalidProtocolBufferException e)
-            {
-                return false;
+                Assert.True(temporaryExposureKey.HasKeyData);
+                Assert.True(temporaryExposureKey.HasRollingStartIntervalNumber);
+                Assert.True(temporaryExposureKey.HasRollingPeriod);
+                Assert.True(temporaryExposureKey.HasDaysSinceOnsetOfSymptoms);
+
+                Assert.NotNull(temporaryExposureKey.KeyData);
+                Assert.True(temporaryExposureKey.RollingStartIntervalNumber > 0);
+                Assert.True(temporaryExposureKey.RollingPeriod > 0);
+                Assert.True(!string.IsNullOrEmpty(temporaryExposureKey.DaysSinceOnsetOfSymptoms.ToString()));
             }
         }
     }
