@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
             _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _httpClient = new  HttpClient(httpClientHandler ?? throw new ArgumentNullException(nameof(httpClientHandler)));
+            _httpClient = new HttpClient(httpClientHandler ?? throw new ArgumentNullException(nameof(httpClientHandler)));
         }
 
         public async Task<HttpGetIksResult> ExecuteAsync(DateTime date, string batchTag)
