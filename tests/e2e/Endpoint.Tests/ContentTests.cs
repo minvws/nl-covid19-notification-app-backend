@@ -1,17 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Core.E2ETests;
 using Endpoint.Tests.ContentModels;
-using Google.Protobuf;
-using Iks.Protobuf;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.GeneratedGaenFormat;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
 using Xunit;
 
