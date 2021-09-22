@@ -333,7 +333,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             var mockHttpClientFactory = new Mock<IHttpClientFactory>();
             var client = new HttpClient(mockHttpClientHandler.Object);
-            mockHttpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+            mockHttpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(client);
 
             var receiver = new HttpGetIksCommand(
                 _config,
@@ -403,7 +403,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             var mockHttpClientFactory = new Mock<IHttpClientFactory>();
             var client = new HttpClient(mockHttpClientHandler.Object);
-            mockHttpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+            mockHttpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(client);
 
             var receiver = new HttpGetIksCommand(
                 _config,
@@ -473,7 +473,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             var mockHttpClientFactory = new Mock<IHttpClientFactory>();
             var client = new HttpClient(mockHttpClientHandler.Object);
-            mockHttpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+            mockHttpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(client);
 
             var receiver = new HttpGetIksCommand(
                 _config,
