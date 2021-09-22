@@ -19,14 +19,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         private readonly IEfgsConfig _efgsConfig;
         private readonly IAuthenticationCertificateProvider _certificateProvider;
         private readonly IksDownloaderLoggingExtensions _logger;
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public HttpGetIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IksDownloaderLoggingExtensions logger, HttpClientHandler httpClientHandler)
+        public HttpGetIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IHttpClientFactory httpClientFactory, IksDownloaderLoggingExtensions logger)
         {
             _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
             _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
+            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _httpClient = new HttpClient(httpClientHandler ?? throw new ArgumentNullException(nameof(httpClientHandler)));
         }
 
         public async Task<HttpGetIksResult> ExecuteAsync(DateTime date, string batchTag)
@@ -39,7 +39,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
                 _logger.WriteRequest(request);
 
-                var response = await _httpClient.SendAsync(request);
+                var httpClient = _httpClientFactory.CreateClient();
+                var response = await httpClient.SendAsync(request);
 
                 _logger.WriteResponse(response.StatusCode);
                 _logger.WriteResponseHeaders(response.Headers);
