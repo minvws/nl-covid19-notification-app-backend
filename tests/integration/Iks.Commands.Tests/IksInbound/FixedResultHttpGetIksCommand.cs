@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
 
@@ -18,23 +17,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
     internal class FixedResultHttpGetIksCommand : IHttpGetIksCommand
     {
         private const string DateFormatString = "yyyyMMdd";
-        private readonly Dictionary<string, List<HttpGetIksResult>> _responses;
+        private readonly Dictionary<string, List<HttpGetIksSuccessResult>> _responses;
         private readonly Dictionary<string, int> _callIndexes = new Dictionary<string, int>();
 
-        public static FixedResultHttpGetIksCommand Create(List<HttpGetIksResult> responses)
+        public static FixedResultHttpGetIksCommand Create(List<HttpGetIksSuccessResult> responses)
         {
             return Create(responses, DateTime.Now);
         }
 
-        public static FixedResultHttpGetIksCommand Create(List<HttpGetIksResult> responses, DateTime date)
+        public static FixedResultHttpGetIksCommand Create(List<HttpGetIksSuccessResult> responses, DateTime date)
         {
-            return new FixedResultHttpGetIksCommand(new Dictionary<string, List<HttpGetIksResult>>
+            return new FixedResultHttpGetIksCommand(new Dictionary<string, List<HttpGetIksSuccessResult>>
             {
                 {date.ToString(DateFormatString), responses}
             });
         }
 
-        private FixedResultHttpGetIksCommand(Dictionary<string, List<HttpGetIksResult>> responses)
+        private FixedResultHttpGetIksCommand(Dictionary<string, List<HttpGetIksSuccessResult>> responses)
         {
             _responses = responses;
             foreach (var key in responses.Keys)
@@ -43,13 +42,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             }
         }
 
-        public void AddItem(HttpGetIksResult item, DateTime date)
+        public void AddItem(HttpGetIksSuccessResult item, DateTime date)
         {
             var dateString = date.ToString(DateFormatString);
 
             if (!_responses.ContainsKey(dateString))
             {
-                _responses[dateString] = new List<HttpGetIksResult>();
+                _responses[dateString] = new List<HttpGetIksSuccessResult>();
                 _callIndexes[dateString] = 0;
             }
 
@@ -63,30 +62,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             dateResponses.Add(item);
         }
 
-        public void AddItem(HttpGetIksResult item)
+        public void AddItem(HttpGetIksSuccessResult item)
         {
             AddItem(item, DateTime.Now);
         }
 
-        public Task<HttpGetIksResult> ExecuteAsync(DateTime date, string batchTag = null)
+        public Task<HttpGetIksSuccessResult> ExecuteAsync(DateTime date, string batchTag = null)
         {
-            HttpGetIksResult result = null;
+            HttpGetIksSuccessResult result = null;
             var dateString = date.ToString(DateFormatString);
 
-            //TODO: If batchTag is null, return the first batch from date; otherwise get the batch matching batchTag
             if (_callIndexes.ContainsKey(dateString) && _callIndexes[dateString] < _responses[dateString].Count)
             {
                 result = _responses[dateString][_callIndexes[dateString]++];
-                result.ResultCode = HttpStatusCode.OK;
-            }
-            else
-            {
-                result = new HttpGetIksResult
-                {
-                    BatchTag = string.Empty,
-                    NextBatchTag = null,
-                    ResultCode = HttpStatusCode.Gone //returned by EFGS when a batch is requested that's too old 
-                };
             }
 
             return Task.FromResult(result);

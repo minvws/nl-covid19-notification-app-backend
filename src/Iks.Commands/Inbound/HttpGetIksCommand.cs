@@ -14,38 +14,101 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 {
     public class HttpGetIksCommand : IHttpGetIksCommand
     {
-        private const string ApplicationProtobuf = "application/protobuf; version=1.0";
+
+        const string ApplicationProtobuf = "application/protobuf; version=1.0";
 
         private readonly IEfgsConfig _efgsConfig;
         private readonly IAuthenticationCertificateProvider _certificateProvider;
         private readonly IksDownloaderLoggingExtensions _logger;
-        private readonly IHttpClientFactory _httpClientFactory;
 
-        public HttpGetIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IHttpClientFactory httpClientFactory, IksDownloaderLoggingExtensions logger)
+        public HttpGetIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IksDownloaderLoggingExtensions logger)
         {
             _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
             _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
-            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<HttpGetIksResult> ExecuteAsync(DateTime date, string batchTag)
+        public async Task<HttpGetIksSuccessResult> ExecuteAsync(DateTime date, string batchTag)
         {
+            _logger.WriteRequestingData(date, batchTag);
+
+            var uri = new Uri($"{_efgsConfig.BaseUrl}/diagnosiskeys/download/{date:yyyy-MM-dd}");
+
             try
             {
-                _logger.WriteRequestingData(date, batchTag);
+                // Configure authentication certificate
+                using var clientCert = _certificateProvider.GetCertificate();
+                using var clientHandler = new HttpClientHandler
+                {
+                    ClientCertificateOptions = ClientCertificateOption.Manual
+                };
 
-                var request = BuildHttpRequest(batchTag, date);
+                // Provide the authentication certificate manually
+                clientHandler.ClientCertificates.Clear();
+                clientHandler.ClientCertificates.Add(clientCert);
+
+                // Build the request
+                var request = new HttpRequestMessage { RequestUri = uri };
+                request.Headers.Add("Accept", ApplicationProtobuf);
+
+                if (!string.IsNullOrWhiteSpace(batchTag))
+                {
+                    request.Headers.Add("batchTag", batchTag);
+                }
+
+                if (_efgsConfig.SendClientAuthenticationHeaders)
+                {
+                    request.Headers.Add("X-SSL-Client-SHA256", clientCert.ComputeSha256Hash());
+                    request.Headers.Add("X-SSL-Client-DN", clientCert.Subject.Replace(" ", string.Empty));
+                }
+
+                using var client = new HttpClient(clientHandler);
 
                 _logger.WriteRequest(request);
 
-                var httpClient = _httpClientFactory.CreateClient();
-                var response = await httpClient.SendAsync(request);
+                var response = await client.SendAsync(request);
 
                 _logger.WriteResponse(response.StatusCode);
                 _logger.WriteResponseHeaders(response.Headers);
 
-                return await HandleResponse(response);
+                // Handle response
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                        // EFGS returns the string 'null' if there is no batch tag. We will represent this with an actual null.
+                        var nextBatchTag = response.Headers.SafeGetValue("nextBatchTag");
+                        nextBatchTag = nextBatchTag == "null" ? null : nextBatchTag;
+                        return new HttpGetIksSuccessResult
+                        {
+                            //TODO errors if info not present
+                            BatchTag = response.Headers.SafeGetValue("batchTag"),
+                            NextBatchTag = nextBatchTag,
+                            Content = await response.Content.ReadAsByteArrayAsync()
+                        };
+                    case HttpStatusCode.NotFound:
+                        _logger.WriteResponseNotFound();
+                        return null;
+                    case HttpStatusCode.Gone:
+                        _logger.WriteResponseGone();
+                        return null;
+                    case HttpStatusCode.BadRequest:
+                        // A 400 response is returned by EFGS when for some reason a batchTag is requested
+                        // that has a different "created date" on their end, then the date we send along in the request.
+                        // This scenario shouldn't happen, but when it does, it is useful to not stop downloading keys altogether,
+                        // but rather to move on to the next day and request the first key of *that* day.
+                        // The IksPollingBatchJob will attempt to move on to a next day when the returned result is null.
+                        _logger.WriteResponseBadRequest();
+                        return null;
+                    case HttpStatusCode.Forbidden:
+                        _logger.WriteResponseForbidden();
+                        throw new EfgsCommunicationException();
+                    case HttpStatusCode.NotAcceptable:
+                        _logger.WriteResponseNotAcceptable();
+                        throw new EfgsCommunicationException();
+                    default:
+                        _logger.WriteResponseUndefined(response.StatusCode);
+                        throw new EfgsCommunicationException();
+                }
             }
             catch (Exception e)
             {
@@ -53,60 +116,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
                 throw;
             }
-        }
-
-        private async Task<HttpGetIksResult> HandleResponse(HttpResponseMessage response)
-        {
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                // EFGS returns the string 'null' if there is no batch tag. We will represent this with an actual null.
-                var nextBatchTag = response.Headers.SafeGetValue("nextBatchTag");
-                nextBatchTag = nextBatchTag == "null" ? null : nextBatchTag;
-
-                return new HttpGetIksResult
-                {
-                    //TODO errors if info not present
-                    BatchTag = response.Headers.SafeGetValue("batchTag"),
-                    NextBatchTag = nextBatchTag,
-                    Content = await response.Content.ReadAsByteArrayAsync(),
-                    ResultCode = response.StatusCode
-                };
-            }
-            else
-            {
-                return new HttpGetIksResult
-                {
-                    BatchTag = string.Empty,
-                    NextBatchTag = null,
-                    ResultCode = response.StatusCode
-                };
-            }
-        }
-
-        private HttpRequestMessage BuildHttpRequest(string batchTag, DateTime date)
-        {
-            var request = new HttpRequestMessage
-            {
-                RequestUri = new Uri($"{_efgsConfig.BaseUrl}/diagnosiskeys/download/{date:yyyy-MM-dd}", UriKind.RelativeOrAbsolute)
-            };
-
-            request.Headers.Add("Accept", ApplicationProtobuf);
-
-            if (!string.IsNullOrWhiteSpace(batchTag))
-            {
-                request.Headers.Add("batchTag", batchTag);
-            }
-
-            if (_efgsConfig.SendClientAuthenticationHeaders)
-            {
-                //Might cause scope errors...
-                using var clientCert = _certificateProvider.GetCertificate();
-
-                request.Headers.Add("X-SSL-Client-SHA256", clientCert.ComputeSha256Hash());
-                request.Headers.Add("X-SSL-Client-DN", clientCert.Subject.Replace(" ", string.Empty));
-            }
-
-            return request;
         }
     }
 }
