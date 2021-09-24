@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
@@ -28,8 +29,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         /// <param name="parameters"></param>
         public CommandInvoker SetCommand(ICommand<IParameters> command)
         {
+            var commandExecutor = _commands.FirstOrDefault(p => p.CommandName == command.GetType().Name);
+            if (commandExecutor != null)
+            {
+                return this; // Just return, 
+            }
+
             _commandExecutor = new CommandExecutor
             {
+                CommandName = command.GetType().Name,
                 Command = command
             };
 
@@ -45,8 +53,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         /// <param name="parameters"></param>
         public CommandInvoker SetCommand(ICommand<IParameters> command, IParameters parameters)
         {
+            var commandExecutor = _commands.FirstOrDefault(p => p.CommandName == command.GetType().Name);
+            if (commandExecutor != null)
+            {
+                _commands.Remove(commandExecutor); // Remove command to be able to add command with updated parameters
+            }
+
             _commandExecutor = new CommandExecutor
             {
+                CommandName = command.GetType().Name,
                 Command = command,
                 Parameters = parameters
             };
@@ -101,6 +116,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 
         private class CommandExecutor
         {
+            public string CommandName { get; set; }
             public ICommand<IParameters> Command { get; set; }
             public Action BeforeAction { get; set; }
             public Action AfterAction { get; set; }
