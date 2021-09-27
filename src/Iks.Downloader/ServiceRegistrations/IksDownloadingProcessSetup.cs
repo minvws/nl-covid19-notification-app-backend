@@ -15,6 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.ServiceRe
             services.AddTransient<IHttpGetIksCommand, HttpGetIksCommand>();
             services.AddTransient<IIksWriterCommand, IksWriterCommand>();
             services.AddTransient<IksPollingBatchJob>();
+            services.AddHttpClient();
         }
     }
 }

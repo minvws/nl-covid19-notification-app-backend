@@ -9,6 +9,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 {
     public interface IHttpGetIksCommand
     {
-        Task<HttpGetIksResult> ExecuteAsync(DateTime date, string batchTag);
+        Task<HttpGetIksSuccessResult> ExecuteAsync(DateTime date, string batchTag);
     }
 }

@@ -8,12 +8,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 {
     public class EfgsCommunicationException : Exception
     {
-        public EfgsCommunicationException()
-        {
-        }
-
-        public EfgsCommunicationException(string efgsMessage) : base(efgsMessage)
-        {
-        }
     }
 }
