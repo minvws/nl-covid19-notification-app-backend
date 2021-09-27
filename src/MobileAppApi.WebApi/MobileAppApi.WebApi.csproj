@@ -24,9 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="appsettings - Copy.development.json">
-      <DependentUpon>appsettings.development.json</DependentUpon>
-    </None>
     <None Include="appsettings.development.json" />
   </ItemGroup>
 
