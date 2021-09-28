@@ -11,8 +11,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
     /// </summary>
     class EfgsConfigMock : IEfgsConfig
     {
-        public string BaseUrl => "";
-        public bool SendClientAuthenticationHeaders => true;
+        public string BaseUrl => "http://localhost";
+        public bool SendClientAuthenticationHeaders => false;
         public int DaysToDownload => 1;
         public int MaxBatchesPerRun => 10;
         public bool UploaderEnabled => true;
