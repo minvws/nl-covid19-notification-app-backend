@@ -96,9 +96,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _eksEngineResult.SnapshotSeconds = snapshotResult.SnapshotSeconds;
             _eksEngineResult.TransmissionRiskNoneCount = await GetTransmissionRiskNoneCountAsync();
 
-            await StuffAsync();
-            await BuildOutputAsync();
-            await CommitResultsAsync();
+            if (snapshotResult.TekInputCount != 0)
+            {
+                await StuffAsync();
+                await BuildOutputAsync();
+                await CommitResultsAsync();
+            }
 
             _eksEngineResult.TotalSeconds = stopwatch.Elapsed.TotalSeconds;
             _eksEngineResult.EksInfo = _eksResults.ToArray();
@@ -126,6 +129,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private async Task StuffAsync()
         {
+            if (_eksEngineResult.InputCount == 0)
+            {
+                _logger.WriteNoStuffingNoTeks();
+                return;
+            }
+
             var tekCount = _eksPublishingJobDbContext.EksInput.Count(x => x.TransmissionRiskLevel != TransmissionRiskLevel.None);
 
             var stuffingCount = tekCount < _eksConfig.TekCountMin ? _eksConfig.TekCountMin - tekCount : 0;

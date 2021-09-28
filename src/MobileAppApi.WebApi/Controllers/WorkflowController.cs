@@ -15,7 +15,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.SendTe
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
     public class WorkflowController : ControllerBase
     {
         private readonly PostKeysLoggingExtensions _loggerPostKeys;

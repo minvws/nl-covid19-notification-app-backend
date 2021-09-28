@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
+    <PackageReference Include="coverlet.collector" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Content.Commands\Content.Commands.csproj" />
+    <ProjectReference Include="..\..\..\src\Core\Core.csproj" />
+    <ProjectReference Include="..\..\..\src\Icc.Commands\Icc.Commands.csproj" />
+    <ProjectReference Include="..\..\..\src\Manifest.Commands\Manifest.Commands.csproj" />
+    <ProjectReference Include="..\..\..\src\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
+    <ProjectReference Include="..\Core.E2ETests\Core.E2ETests.csproj" />
+    <ProjectReference Include="..\Endpoint.Tests\Endpoint.Tests.csproj" />
+  </ItemGroup>
+
+</Project>

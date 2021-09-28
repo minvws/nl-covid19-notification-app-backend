@@ -13,18 +13,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.18.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.18" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.18" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.18" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.18" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
-    <PackageReference Include="xunit" Version="2.4.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
     <PackageReference Include="coverlet.collector" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Content.Commands\Content.Commands.csproj" />
+    <ProjectReference Include="..\..\..\src\Eks.Commands\Eks.Commands.csproj" />
+    <ProjectReference Include="..\..\..\src\Eks.Protobuf\Eks.Protobuf.csproj" />
+    <ProjectReference Include="..\..\..\src\Iks.Protobuf\Iks.Protobuf.csproj" />
     <ProjectReference Include="..\..\..\src\Manifest.Commands\Manifest.Commands.csproj" />
     <ProjectReference Include="..\Core.E2ETests\Core.E2ETests.csproj" />
   </ItemGroup>

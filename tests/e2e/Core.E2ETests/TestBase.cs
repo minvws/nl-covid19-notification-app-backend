@@ -13,7 +13,6 @@ namespace Core.E2ETests
         public TestBase()
         {
             var configurationRoot = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables()  // <== this is important
                 .Build();
 
