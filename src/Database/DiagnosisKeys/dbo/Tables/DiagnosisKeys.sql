@@ -25,6 +25,14 @@
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
+CREATE NONCLUSTERED INDEX [Symptom_ReportType] ON [dbo].[DiagnosisKeys]
+(
+	[Local_Symptomatic] ASC,
+	[Local_ReportType] ASC
+)
+INCLUDE([Id],[Local_TransmissionRiskLevel],[Local_DaysSinceSymptomsOnset]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
 ALTER TABLE [dbo].[DiagnosisKeys] ADD  CONSTRAINT [DF_DiagnosisKeys_Created]  DEFAULT (getdate()) FOR [Created]
 GO
 
