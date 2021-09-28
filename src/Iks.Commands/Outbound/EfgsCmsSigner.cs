@@ -13,10 +13,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
     public class EfgsCmsSigner : IIksSigner
     {
         private readonly ICertificateProvider _certificateProvider;
+        private readonly IThumbprintConfig _config;
 
-        public EfgsCmsSigner(ICertificateProvider certificateProvider)
+        private const string EfgsSigningThumbprint = "Certificates:EFGSSigning"; // Todo: path to thumbprint in config should be stored in these classes; refactor thumbprintconfigprovider to use this string
+
+        public EfgsCmsSigner(ICertificateProvider certificateProvider, IThumbprintConfig config)
         {
             _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public string SignatureOid => "2.16.840.1.101.3.4.2.1";
@@ -28,12 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 throw new ArgumentNullException(nameof(content));
             }
 
-            var certificate = _certificateProvider.GetCertificate();
-
-            if (!certificate.HasPrivateKey)
-            {
-                throw new InvalidOperationException($"Certificate does not have a private key - Subject:{certificate.Subject} Thumbprint:{certificate.Thumbprint}.");
-            }
+            var certificate = _certificateProvider.GetCertificate(_config.Thumbprint, _config.RootTrusted);
 
             var contentInfo = new ContentInfo(content);
             var signedCms = new SignedCms(contentInfo, true);

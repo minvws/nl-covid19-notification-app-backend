@@ -15,12 +15,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         private readonly ICertificateProvider _certificateProvider;
         private readonly ICertificateChainProvider _certificateChainProvider;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
+        private readonly IThumbprintConfig _config;
 
-        public CmsSignerEnhanced(ICertificateProvider certificateProvider, ICertificateChainProvider certificateChainProvider, IUtcDateTimeProvider dateTimeProvider)
+        private const string NlThumbprint = "Certificates:NL"; // Todo: path to thumbprint in config should be stored in these classes; refactor thumbprintconfigprovider to use this string
+
+        public CmsSignerEnhanced(
+            ICertificateProvider certificateProvider,
+            ICertificateChainProvider certificateChainProvider,
+            IUtcDateTimeProvider dateTimeProvider,
+            IThumbprintConfig config)
         {
             _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
             _certificateChainProvider = certificateChainProvider ?? throw new ArgumentNullException(nameof(certificateChainProvider));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public string SignatureOid => "2.16.840.1.101.3.4.2.1";
@@ -32,13 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 throw new ArgumentNullException(nameof(content));
             }
 
-            var certificate = _certificateProvider.GetCertificate();
-
-            if (!certificate.HasPrivateKey)
-            {
-                throw new InvalidOperationException($"Certificate does not have a private key - Subject:{certificate.Subject} Thumbprint:{certificate.Thumbprint}.");
-            }
-
+            var certificate = _certificateProvider.GetCertificate(_config.Thumbprint, _config.RootTrusted);
             var certificateChain = _certificateChainProvider.GetCertificates();
 
             var contentInfo = new ContentInfo(content);

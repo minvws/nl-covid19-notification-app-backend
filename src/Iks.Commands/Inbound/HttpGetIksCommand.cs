@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             try
             {
                 // Configure authentication certificate
-                using var clientCert = _certificateProvider.GetCertificate();
+                using var clientCert = _certificateProvider.GetCertificate(TODO, TODO); //Todo: combine this with the EfgsDownloader fix
                 using var clientHandler = new HttpClientHandler
                 {
                     ClientCertificateOptions = ClientCertificateOption.Manual

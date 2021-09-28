@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public X509Certificate2 GetCertificate()
+        public X509Certificate2 GetCertificate(string thumbprint, bool rootTrusted)
         {
             var a = typeof(EmbeddedResourceCertificateProvider).Assembly;
 

@@ -15,11 +15,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
     public class EcdSaSigner : IGaContentSigner
     {
         private readonly ICertificateProvider _provider;
+        private readonly IThumbprintConfig _config;
         private const string SignatureAlgorithmDescription = "1.2.840.10045.4.3.2";
 
-        public EcdSaSigner(ICertificateProvider provider)
+        private const string GaV12Thumbprint = "Certificates:GA"; // Todo: path to thumbprint in config should be stored in these classes; refactor thumbprintconfigprovider to use this string
+
+        public EcdSaSigner(ICertificateProvider provider, IThumbprintConfig config)
         {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public string SignatureOid => SignatureAlgorithmDescription;
@@ -31,10 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 throw new ArgumentNullException(nameof(content));
             }
 
-            //using var hasher = SHA256.Create();
-            //var hash = hasher.ComputeHash(content);
-
-            var cert = _provider.GetCertificate();
+            var cert = _provider.GetCertificate(_config.Thumbprint, _config.RootTrusted);
 
             if (cert == null)
             {

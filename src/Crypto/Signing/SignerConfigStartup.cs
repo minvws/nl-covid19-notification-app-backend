@@ -22,33 +22,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 
         public static IContentSigner BuildEvSigner(
             IConfiguration config,
-            LocalMachineStoreCertificateProviderLoggingExtensions extensions,
+            LocalMachineStoreCertificateProviderLoggingExtensions loggingExtensions,
             IUtcDateTimeProvider dateTimeProvider)
         {
             return new CmsSignerEnhanced(
-                new LocalMachineStoreCertificateProvider(
-                    new LocalMachineStoreCertificateProviderConfig(
+                new LocalMachineStoreCertificateProvider(loggingExtensions),
+                new EmbeddedResourcesCertificateChainProvider(
+                    new EmbeddedResourceCertificateConfig(
                         config,
-                        NlSettingPrefix),
-                    extensions),
-                    new EmbeddedResourcesCertificateChainProvider(
-                        new EmbeddedResourceCertificateConfig(
-                            config,
-                            NlChainPrefix)),
-                    dateTimeProvider);
+                        NlChainPrefix)),
+                dateTimeProvider,
+                new LocalMachineStoreCertificateProviderConfig( // Todo: refactor to fit its purpose of getting config data
+                    config,
+                    GaSettingPrefix)
+                );
         }
 
         public static IGaContentSigner BuildGaSigner(
-            IConfiguration config,
-            LocalMachineStoreCertificateProviderLoggingExtensions extensions)
+            LocalMachineStoreCertificateProviderLoggingExtensions loggingExtensions,
+            IConfiguration config)
         {
             return new EcdSaSigner(
-                new LocalMachineStoreCertificateProvider(
-                    new LocalMachineStoreCertificateProviderConfig(
-                        config,
-                        GaSettingPrefix),
-                    extensions));
+                new LocalMachineStoreCertificateProvider(loggingExtensions),
+                new LocalMachineStoreCertificateProviderConfig( // Todo: refactor to fit its purpose of getting config data
+                    config,
+                    GaSettingPrefix));
         }
-
     }
 }
