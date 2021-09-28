@@ -39,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
                 _logger.WriteRequest(request);
 
-                var httpClient = _httpClientFactory.CreateClient();
+                var httpClient = _httpClientFactory.CreateClient(UniversalConstants.EfgsDownloader);
                 var response = await httpClient.SendAsync(request);
 
                 _logger.WriteResponse(response.StatusCode);
