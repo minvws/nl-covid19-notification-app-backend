@@ -5,11 +5,12 @@ using System.Net;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 {
-    public class HttpGetIksSuccessResult
+    public class HttpGetIksResult
     {
         //Id for the first batch of confirmation of the request
         public string BatchTag { get; set; }
         public string NextBatchTag { get; set; }
         public byte[] Content { get; set; }
+        public HttpStatusCode ResultCode { get; set;}
     }
 }
