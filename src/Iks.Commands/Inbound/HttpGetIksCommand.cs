@@ -99,7 +99,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
             if (_efgsConfig.SendClientAuthenticationHeaders)
             {
-                //Might cause scope errors...
                 using var clientCert = _certificateProvider.GetCertificate();
 
                 request.Headers.Add("X-SSL-Client-SHA256", clientCert.ComputeSha256Hash());
