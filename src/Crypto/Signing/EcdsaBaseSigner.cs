@@ -9,33 +9,25 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 {
-    /// <summary>
-    /// For GAEN EKS Signing
-    /// </summary>
-    public class EcdSaSigner : IGaContentSigner
+    public abstract class EcdsaBaseSigner
     {
-        private readonly ICertificateProvider _provider;
-        private readonly IThumbprintConfig _config;
-        private const string SignatureAlgorithmDescription = "1.2.840.10045.4.3.2";
+        protected readonly ICertificateProvider Provider;
+        protected readonly IThumbprintConfig Config;
 
-        private const string GaV12Thumbprint = "Certificates:GA"; // Todo: path to thumbprint in config should be stored in these classes; refactor thumbprintconfigprovider to use this string
-
-        public EcdSaSigner(ICertificateProvider provider, IThumbprintConfig config)
+        protected EcdsaBaseSigner(ICertificateProvider provider, IThumbprintConfig config)
         {
-            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
-            _config = config ?? throw new ArgumentNullException(nameof(config));
+            Provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            Config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
-        public string SignatureOid => SignatureAlgorithmDescription;
-
-        public byte[] GetSignature(byte[] content)
+        public virtual byte[] GetSignature(byte[] content)
         {
             if (content == null)
             {
                 throw new ArgumentNullException(nameof(content));
             }
 
-            var cert = _provider.GetCertificate(_config.Thumbprint, _config.RootTrusted);
+            var cert = Provider.GetCertificate(Config.Thumbprint, Config.RootTrusted);
 
             if (cert == null)
             {

@@ -12,6 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
     public static class SignerConfigStartup
     {
         private const string GaSettingPrefix = "Certificates:GA";
+        private const string GaV15SettingPrefix = "Certificates:GAv15";
         private const string NlSettingPrefix = "Certificates:NL";
         private const string NlChainPrefix = NlSettingPrefix + ":Chain";
 
@@ -39,11 +40,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             LocalMachineStoreCertificateProviderLoggingExtensions loggingExtensions,
             IConfiguration config)
         {
-            return new EcdSaSigner(
+            return new GASigner(
                 new LocalMachineStoreCertificateProvider(loggingExtensions),
                 new ThumbprintConfig( // Todo: refactor to fit its purpose of getting config data
                     config,
                     GaSettingPrefix));
+        }
+
+        public static IGaContentSigner BuildGaV15Signer(
+            LocalMachineStoreCertificateProviderLoggingExtensions loggingExtensions,
+            IConfiguration config)
+        {
+            return new GAv15Signer(
+                new LocalMachineStoreCertificateProvider(loggingExtensions),
+                new ThumbprintConfig( // Todo: refactor to fit its purpose of getting config data
+                    config,
+                    GaV15SettingPrefix));
         }
     }
 }

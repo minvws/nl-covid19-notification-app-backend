@@ -26,17 +26,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
             cmsCertChainMock.Setup(x => x.Path).Returns("StaatDerNLChain-EV-Expires-2022-12-05.p7b");
             cmsCertChainMock.Setup(x => x.Password).Returns(string.Empty); //Not password-protected
 
-            //TODO: check this :)
-            var configMock = new Mock<IConfiguration>();
+            var thumbprintMock = new Mock<IThumbprintConfig>();
+            thumbprintMock.Setup(x => x.Thumbprint).Returns(string.Empty); //Not a secret.
 
             return new CmsSignerEnhanced(
                 new EmbeddedResourceCertificateProvider(cmsCertMock.Object, certProviderLogger),
-                new CertificateChainConfig(configMock.Object),
+                cmsCertMock.Object,
                 new StandardUtcDateTimeProvider(),
-                new ThumbprintConfig(configMock.Object));
+                thumbprintMock.Object);
         }
 
-        public static EcdSaSigner CreateEcdsaSigner(ILoggerFactory lf)
+        public static IGaContentSigner CreateGASigner(ILoggerFactory lf)
         {
             var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(
                 lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
@@ -45,14 +45,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
             gaCertLoc.Setup(x => x.Path).Returns("TestECDSA.p12");
             gaCertLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
 
-            //TODO: check this :)
-            var configMock = new Mock<IConfiguration>();
+            var thumbprintMock = new Mock<IThumbprintConfig>();
+            thumbprintMock.Setup(x => x.Thumbprint).Returns(string.Empty); //Not a secret.
 
-            return new EcdSaSigner(
+            return new GASigner(
                 new EmbeddedResourceCertificateProvider(
                     gaCertLoc.Object,
                     certProviderLogger),
-                new ThumbprintConfig(configMock.Object));
+                    thumbprintMock.Object);
+        }
+
+        public static IGaContentSigner CreateGAv15Signer(ILoggerFactory lf)
+        {
+            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(
+                lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
+
+            var gaCertLoc = new Mock<ICertificateChainConfig>();
+            gaCertLoc.Setup(x => x.Path).Returns("TestECDSA.p12");
+            gaCertLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
+
+            var thumbprintMock = new Mock<IThumbprintConfig>();
+            thumbprintMock.Setup(x => x.Thumbprint).Returns(string.Empty); //Not a secret.
+
+            return new GAv15Signer(
+                new EmbeddedResourceCertificateProvider(
+                    gaCertLoc.Object,
+                    certProviderLogger),
+                    thumbprintMock.Object);
         }
     }
 }

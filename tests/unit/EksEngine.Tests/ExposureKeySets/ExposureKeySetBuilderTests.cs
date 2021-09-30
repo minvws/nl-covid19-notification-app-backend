@@ -44,7 +44,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
-                TestSignerHelpers.CreateEcdsaSigner(lf),
+                TestSignerHelpers.CreateGASigner(lf),
+                TestSignerHelpers.CreateGAv15Signer(lf),
                 TestSignerHelpers.CreateCmsSignerEnhanced(lf),
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
@@ -73,7 +74,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
-                TestSignerHelpers.CreateEcdsaSigner(lf),
+                TestSignerHelpers.CreateGASigner(lf),
+                TestSignerHelpers.CreateGAv15Signer(lf),
                 dummySigner,
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),

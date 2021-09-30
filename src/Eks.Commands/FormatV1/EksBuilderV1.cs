@@ -16,6 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
         private const string Header = "EK Export v1    ";
 
         private readonly IGaContentSigner _gaenContentSigner;
+        private readonly IGaContentSigner _gaenV15ContentSigner;
         private readonly IContentSigner _nlContentSigner;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly IEksContentFormatter _eksContentFormatter;
@@ -25,6 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
         public EksBuilderV1(
             IEksHeaderInfoConfig headerInfoConfig,
             IGaContentSigner gaenContentSigner,
+            IGaContentSigner gaenV15ContentSigner,
             IContentSigner nlContentSigner,
             IUtcDateTimeProvider dateTimeProvider,
             IEksContentFormatter eksContentFormatter,
@@ -32,6 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
             )
         {
             _gaenContentSigner = gaenContentSigner ?? throw new ArgumentNullException(nameof(gaenContentSigner));
+            _gaenV15ContentSigner = gaenV15ContentSigner ?? throw new ArgumentNullException(nameof(gaenV15ContentSigner));
             _nlContentSigner = nlContentSigner ?? throw new ArgumentNullException(nameof(nlContentSigner));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _eksContentFormatter = eksContentFormatter ?? throw new ArgumentNullException(nameof(eksContentFormatter));

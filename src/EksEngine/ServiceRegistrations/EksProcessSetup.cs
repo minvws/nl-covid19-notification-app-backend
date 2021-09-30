@@ -2,9 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -51,7 +54,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
             services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
             services.AddTransient<IEksJobContentWriter, EksJobContentWriter>();
-            services.AddTransient<IEksBuilder, EksBuilderV1>();
+
+            services.AddTransient<IEksBuilder, EksBuilderV1>(x => new EksBuilderV1(
+                x.GetRequiredService<IEksHeaderInfoConfig>(),
+                SignerConfigStartup.BuildGaSigner(
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<IConfiguration>()),
+                SignerConfigStartup.BuildGaV15Signer(
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<IConfiguration>()),
+                SignerConfigStartup.BuildEvSigner(
+                    x.GetRequiredService<IConfiguration>(),
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<IUtcDateTimeProvider>()),
+                x.GetRequiredService<IUtcDateTimeProvider>(),
+                x.GetRequiredService<IEksContentFormatter>(),
+                x.GetRequiredService<EksBuilderV1LoggingExtensions>()
+            ));
+
             services.AddTransient<MarkDiagnosisKeysAsUsedLocally>();
             services.AddTransient<FixedCountriesOfInterestOutboundDiagnosticKeyProcessor>();
             services.AddTransient<NlToEfgsDsosDiagnosticKeyProcessorMk1>();
