@@ -26,14 +26,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
             cmsCertChainMock.Setup(x => x.Path).Returns("StaatDerNLChain-EV-Expires-2022-12-05.p7b");
             cmsCertChainMock.Setup(x => x.Password).Returns(string.Empty); //Not password-protected
 
-            //TODO: check this :)
-            var configMock = new Mock<IConfiguration>();
+            var thumbprintConfigMock = new Mock<IThumbprintConfig>();
+
+            thumbprintConfigMock.Setup(x => x.RootTrusted).Returns(It.IsAny<bool>());
+            thumbprintConfigMock.Setup(x => x.Thumbprint).Returns(It.IsAny<string>());
 
             return new CmsSignerEnhanced(
                 new EmbeddedResourceCertificateProvider(cmsCertMock.Object, certProviderLogger),
-                new CertificateChainConfig(configMock.Object),
+                cmsCertChainMock.Object,
                 new StandardUtcDateTimeProvider(),
-                new ThumbprintConfig(configMock.Object));
+                thumbprintConfigMock.Object);
         }
 
         public static EcdSaSigner CreateEcdsaSigner(ILoggerFactory lf)
@@ -45,14 +47,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
             gaCertLoc.Setup(x => x.Path).Returns("TestECDSA.p12");
             gaCertLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
 
-            //TODO: check this :)
-            var configMock = new Mock<IConfiguration>();
+            var thumbprintConfigMock = new Mock<IThumbprintConfig>();
+
+            thumbprintConfigMock.Setup(x => x.RootTrusted).Returns(It.IsAny<bool>());
+            thumbprintConfigMock.Setup(x => x.Thumbprint).Returns(It.IsAny<string>());
 
             return new EcdSaSigner(
                 new EmbeddedResourceCertificateProvider(
                     gaCertLoc.Object,
                     certProviderLogger),
-                new ThumbprintConfig(configMock.Object));
+                thumbprintConfigMock.Object);
         }
     }
 }
