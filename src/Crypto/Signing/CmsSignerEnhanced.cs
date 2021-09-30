@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         private readonly ICertificateProvider _certificateProvider;
         private readonly ICertificateChainConfig _certificateChainConfig;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
-        private readonly IThumbprintConfig _config;
+        private readonly IThumbprintConfig _thumbprintConfig;
 
         private const string NlThumbprint = "Certificates:NL"; // Todo: path to thumbprint in config should be stored in these classes; refactor thumbprintconfigprovider to use this string
 
@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
             _certificateChainConfig = certificateConfig ?? throw new ArgumentNullException(nameof(certificateConfig));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _config = thumbprintConfig ?? throw new ArgumentNullException(nameof(thumbprintConfig));
+            _thumbprintConfig = thumbprintConfig ?? throw new ArgumentNullException(nameof(thumbprintConfig));
         }
 
         public string SignatureOid => "2.16.840.1.101.3.4.2.1";
@@ -42,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 throw new ArgumentNullException(nameof(content));
             }
 
-            var certificate = _certificateProvider.GetCertificate(_config.Thumbprint, _config.RootTrusted);
+            var certificate = _certificateProvider.GetCertificate(_thumbprintConfig.Thumbprint, _thumbprintConfig.RootTrusted);
             var certificateChain = GetCertificateChain();
 
             var contentInfo = new ContentInfo(content);

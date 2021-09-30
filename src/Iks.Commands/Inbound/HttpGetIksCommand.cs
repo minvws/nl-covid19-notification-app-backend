@@ -18,13 +18,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
         private readonly IEfgsConfig _efgsConfig;
         private readonly IAuthenticationCertificateProvider _certificateProvider;
+        private readonly IThumbprintConfig _thumbprintConfig;
         private readonly IksDownloaderLoggingExtensions _logger;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public HttpGetIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IHttpClientFactory httpClientFactory, IksDownloaderLoggingExtensions logger)
+        public HttpGetIksCommand(
+            IEfgsConfig efgsConfig,
+            IAuthenticationCertificateProvider certificateProvider,
+            IThumbprintConfig thumbprintConfig,
+            IHttpClientFactory httpClientFactory,
+            IksDownloaderLoggingExtensions logger)
         {
             _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
             _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
+            _thumbprintConfig = thumbprintConfig ?? throw new ArgumentNullException(nameof(thumbprintConfig));
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -99,7 +106,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
             if (_efgsConfig.SendClientAuthenticationHeaders)
             {
-                using var clientCert = _certificateProvider.GetCertificate();
+                using var clientCert = _certificateProvider.GetCertificate(
+                    _thumbprintConfig.Thumbprint, _thumbprintConfig.RootTrusted);
 
                 request.Headers.Add("X-SSL-Client-SHA256", clientCert.ComputeSha256Hash());
                 request.Headers.Add("X-SSL-Client-DN", clientCert.Subject.Replace(" ", string.Empty));
