@@ -11,6 +11,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1
 {
+    /// <summary>
+    /// Building EKS GAEN and GAENv15 content
+    /// </summary>
     public class EksBuilderV1 : IEksBuilder
     {
         private const string Header = "EK Export v1    ";
@@ -42,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<byte[]> BuildAsync(TemporaryExposureKeyArgs[] keys)
+        public async Task<(byte[], byte[])> BuildAsync(TemporaryExposureKeyArgs[] keys)
         {
             if (keys == null)
             {
@@ -54,23 +57,40 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
                 throw new ArgumentException("At least one key in null.", nameof(keys));
             }
 
-            var securityInfo = GetGaenSignatureInfo();
+            var securityInfo = GetGaenSignatureInfo(_gaenContentSigner.SignatureOid, _config.VerificationKeyVersion);
+            var securityInfoV15 = GetGaenSignatureInfo(_gaenV15ContentSigner.SignatureOid, _config.VerificationKeyVersion);
 
+            var content = CreateContent(keys, securityInfo);
+            var contentV15 = CreateContent(keys, securityInfoV15);
+
+            var zippedContent = await CreateZippedContent(_gaenContentSigner, content, securityInfo);
+            var zippedContentV15 = await CreateZippedContent(_gaenV15ContentSigner, contentV15, securityInfoV15);
+
+            return (zippedContent, zippedContentV15);
+        }
+
+        private ExposureKeySetContentArgs CreateContent(TemporaryExposureKeyArgs[] keys, SignatureInfoArgs securityInfo)
+        {
             var content = new ExposureKeySetContentArgs
             {
                 Header = Header,
                 Region = "NL",
                 BatchNum = 1,
                 BatchSize = 1,
-                SignatureInfos = new[] { securityInfo },
+                SignatureInfos = new[] {securityInfo},
                 StartTimestamp = _dateTimeProvider.Snapshot.AddDays(-1).ToUnixTimeU64(),
                 EndTimestamp = _dateTimeProvider.Snapshot.ToUnixTimeU64(),
                 Keys = keys
             };
 
-            var contentBytes = _eksContentFormatter.GetBytes(content);
+            return content;
+        }
+
+        private async Task<byte[]> CreateZippedContent(IGaContentSigner gaContentSigner, ExposureKeySetContentArgs exposureKeySetContentArgs, SignatureInfoArgs securityInfoArgs)
+        {
+            var contentBytes = _eksContentFormatter.GetBytes(exposureKeySetContentArgs);
             var nlSig = _nlContentSigner.GetSignature(contentBytes);
-            var gaenSig = _gaenContentSigner.GetSignature(contentBytes);
+            var gaenSig = gaContentSigner.GetSignature(contentBytes);
 
             _logger.WriteNlSig(nlSig);
             _logger.WriteGaenSig(gaenSig);
@@ -81,24 +101,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
                 {
                     new ExposureKeySetSignatureContentArgs
                     {
-                        SignatureInfo = securityInfo,
+                        SignatureInfo = securityInfoArgs,
                         Signature = gaenSig,
-                        BatchSize = content.BatchSize,
-                        BatchNum = content.BatchNum
-                    },
+                        BatchSize = exposureKeySetContentArgs.BatchSize,
+                        BatchNum = exposureKeySetContentArgs.BatchNum
+                    } 
                 }
             };
 
             var gaenSigFile = _eksContentFormatter.GetBytes(signatures);
-            return await new ZippedContentBuilder().BuildEksAsync(contentBytes, gaenSigFile, nlSig);
+
+            var zippedContent = await new ZippedContentBuilder().BuildEksAsync(contentBytes, gaenSigFile, nlSig);
+            return zippedContent;
         }
 
-        private SignatureInfoArgs GetGaenSignatureInfo()
+        private SignatureInfoArgs GetGaenSignatureInfo(string signatureOid, string verificationKeyVersion)
             => new SignatureInfoArgs
             {
-                SignatureAlgorithm = _gaenContentSigner.SignatureOid,
+                SignatureAlgorithm = signatureOid,
                 VerificationKeyId = _config.VerificationKeyId,
-                VerificationKeyVersion = _config.VerificationKeyVersion,
+                VerificationKeyVersion = verificationKeyVersion,
                 AppBundleId = _config.AppBundleId
             };
     }

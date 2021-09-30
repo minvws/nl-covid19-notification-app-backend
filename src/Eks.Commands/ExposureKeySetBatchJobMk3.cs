@@ -213,7 +213,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
             var args = _output.Select(Map).ToArray();
 
-            var content = await _setBuilder.BuildAsync(args);
+            var (content, contentV15) = await _setBuilder.BuildAsync(args);
 
             var eksCreateJobOutputEntity = new EksCreateJobOutputEntity
             {
