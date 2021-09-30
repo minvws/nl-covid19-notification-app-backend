@@ -16,8 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
         {
             // Batch Job
             services.AddTransient<IIksSigner, EfgsCmsSigner>();
-            services.AddTransient<IEmbeddedResourceCertificateConfig, EmbeddedResourceCertificateConfig>();
-            services.AddTransient<ICertificateChainProvider, EmbeddedResourcesCertificateChainProvider>();
+            services.AddTransient<ICertificateChainConfig, CertificateChainConfig>();
             services.AddTransient<ICertificateProvider>(
                 x => new LocalMachineStoreCertificateProvider(
                     x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));

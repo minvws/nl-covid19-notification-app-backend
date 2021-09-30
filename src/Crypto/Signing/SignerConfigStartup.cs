@@ -27,12 +27,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         {
             return new CmsSignerEnhanced(
                 new LocalMachineStoreCertificateProvider(loggingExtensions),
-                new EmbeddedResourcesCertificateChainProvider(
-                    new EmbeddedResourceCertificateConfig(
-                        config,
-                        NlChainPrefix)),
+                new CertificateChainConfig(config, NlChainPrefix),
                 dateTimeProvider,
-                new LocalMachineStoreCertificateProviderConfig( // Todo: refactor to fit its purpose of getting config data
+                new ThumbprintConfig( // Todo: refactor to fit its purpose of getting config data
                     config,
                     GaSettingPrefix)
                 );
@@ -44,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         {
             return new EcdSaSigner(
                 new LocalMachineStoreCertificateProvider(loggingExtensions),
-                new LocalMachineStoreCertificateProviderConfig( // Todo: refactor to fit its purpose of getting config data
+                new ThumbprintConfig( // Todo: refactor to fit its purpose of getting config data
                     config,
                     GaSettingPrefix));
         }
