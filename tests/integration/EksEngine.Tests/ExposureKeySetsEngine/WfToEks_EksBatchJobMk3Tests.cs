@@ -168,7 +168,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         private class FakeEksBuilder : IEksBuilder
         {
-            public async Task<byte[]> BuildAsync(TemporaryExposureKeyArgs[] keys) => new byte[] { 1 };
+            public async Task<(byte[], byte[])> BuildAsync(TemporaryExposureKeyArgs[] keys) => (new byte[] { 1 }, new byte[] { 1 });
         }
 
         #endregion

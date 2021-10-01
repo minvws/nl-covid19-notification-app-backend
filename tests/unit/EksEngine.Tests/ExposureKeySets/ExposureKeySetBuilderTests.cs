@@ -52,7 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 eksBuilderV1Logger);
 
             //Act
-            var result = sut.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
+            var (result, resultv15) = sut.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
             Trace.WriteLine($"{keyCount} keys = {result.Length} bytes.");
 
             //Assert
@@ -82,7 +82,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 eksBuilderV1Logger);
 
             //Act
-            var result = sut.BuildAsync(GetRandomKeys(keyCount, 123)).GetAwaiter().GetResult();
+            var (result, resultv15) = sut.BuildAsync(GetRandomKeys(keyCount, 123)).GetAwaiter().GetResult();
 
             //Assert
             using var zipFileInMemory = new MemoryStream();

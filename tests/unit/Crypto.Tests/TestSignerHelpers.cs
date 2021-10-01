@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
 
             return new CmsSignerEnhanced(
                 new EmbeddedResourceCertificateProvider(cmsCertMock.Object, certProviderLogger),
-                cmsCertMock.Object,
+                cmsCertChainMock.Object,
                 new StandardUtcDateTimeProvider(),
                 thumbprintMock.Object);
         }
