@@ -55,6 +55,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             _certProviderMock = new Mock<IAuthenticationCertificateProvider>();
             _thumbprintConfigMock = new Mock<IThumbprintConfig>();
 
+            _thumbprintConfigMock.Setup(x => x.RootTrusted).Returns(It.IsAny<bool>());
+            _thumbprintConfigMock.Setup(x => x.Thumbprint).Returns(It.IsAny<string>());
+
             var mockCertificate = new Mock<X509Certificate2>();
             _certProviderMock.Setup(p => p.GetCertificate(It.IsAny<string>(), It.IsAny<bool>())).Returns(mockCertificate.Object);
         }

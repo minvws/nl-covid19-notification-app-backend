@@ -26,14 +26,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
             cmsCertChainMock.Setup(x => x.Path).Returns("StaatDerNLChain-EV-Expires-2022-12-05.p7b");
             cmsCertChainMock.Setup(x => x.Password).Returns(string.Empty); //Not password-protected
 
-            var thumbprintMock = new Mock<IThumbprintConfig>();
-            thumbprintMock.Setup(x => x.Thumbprint).Returns(string.Empty); //Not a secret.
+            var thumbprintConfigMock = new Mock<IThumbprintConfig>();
+
+            thumbprintConfigMock.Setup(x => x.RootTrusted).Returns(It.IsAny<bool>());
+            thumbprintConfigMock.Setup(x => x.Thumbprint).Returns(It.IsAny<string>());
 
             return new CmsSignerEnhanced(
                 new EmbeddedResourceCertificateProvider(cmsCertMock.Object, certProviderLogger),
                 cmsCertChainMock.Object,
                 new StandardUtcDateTimeProvider(),
-                thumbprintMock.Object);
+                thumbprintConfigMock.Object);
         }
 
         public static IGaContentSigner CreateGASigner(ILoggerFactory lf)
