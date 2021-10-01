@@ -21,6 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entitie
 
         //New for GAENv2
         RiskCalculationParametersV3,
-        ManifestV4
+        ManifestV4,
+        ExposureKeySetV3,
     }
 }
