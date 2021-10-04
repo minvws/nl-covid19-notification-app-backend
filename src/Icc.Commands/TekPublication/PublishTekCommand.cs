@@ -35,8 +35,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
         /// Assume args validated
         /// </summary>
         /// <param name="args">The PubTEK values</param>
+        /// <param name="isOriginPortal">True if the Origin of the args is the Icc portal, otherwise false</param>
         /// <returns>True if succeeded, otherwise false</returns>
-        public async Task<bool> ExecuteAsync(PublishTekArgs args, bool refererIsLocal)
+        public async Task<bool> ExecuteAsync(PublishTekArgs args, bool isOriginPortal)
         {
             // Defensive check for PublishTekArgs being null
             if (args == null)

@@ -47,9 +47,9 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Controllers
 
             _logger.WritePubTekStart();
 
-            var refererIsLocal = !string.IsNullOrEmpty(refererName) && refererName.Equals(LocalRefererName);
+            var isOriginPortal = !string.IsNullOrEmpty(refererName) && refererName.Equals(LocalRefererName);
 
-            var result = await publishTekService.ExecuteAsync(args, refererIsLocal);
+            var result = await publishTekService.ExecuteAsync(args, isOriginPortal);
 
             // As per rfc7231#section-6.3.1 HTTP 200 OK will be returned to indicate that the request has succeeded.
             // Please note that HTTP 200 OK will be returned regardless of whether the key is considered valid or invalid. It may be understood as “request received and processed”.

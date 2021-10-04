@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Services
             _publishTekArgsValidator = publishTekArgsValidator ?? throw new ArgumentNullException(nameof(publishTekArgsValidator));
         }
 
-        public async Task<PublishTekResponse> ExecuteAsync(PublishTekArgs args, bool refererIsLocal)
+        public async Task<PublishTekResponse> ExecuteAsync(PublishTekArgs args, bool isOriginPortal)
         {
             var response = new PublishTekResponse();
 
@@ -42,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Services
             else
             {
                 // If valid, try to publish the TEK.
-                response.Valid = await _publishTekCommand.ExecuteAsync(args, refererIsLocal);
+                response.Valid = await _publishTekCommand.ExecuteAsync(args, isOriginPortal);
             }
 
             // Return a response with only true or false. No further information should be send to the client.
