@@ -45,6 +45,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        /// <summary>
+        /// Builds content with Gaen V12 and Gaen V15 signed data and signing files
+        /// </summary>
+        /// <param name="keys">All TEks</param>
+        /// <returns>First result is byte[] result the  Gaen V12 data, the second byte[] result is the Gaen V15 data</returns>
         public async Task<(byte[], byte[])> BuildAsync(TemporaryExposureKeyArgs[] keys)
         {
             if (keys == null)

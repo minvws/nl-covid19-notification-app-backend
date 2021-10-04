@@ -7,7 +7,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 {
     /// <summary>
-    /// For GAEN EKS Signing
+    /// For signing EKS with GAEN-V15 certificate
     /// </summary>
     public class GAv15Signer : EcdsaBaseSigner, IGaContentSigner
     {
