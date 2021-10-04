@@ -10,6 +10,7 @@
     [DateOfSymptomsOnset]   DATETIME2 (7)  NULL,
     [IsSymptomatic]         INT            NULL,
     [PollToken]             NVARCHAR (450) NULL,
+    [IsOriginPortal]        BIT            NOT NULL DEFAULT 0,
     CONSTRAINT [PK_TekReleaseWorkflowState] PRIMARY KEY CLUSTERED  ([Id] ASC)
 );
 
@@ -44,4 +45,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_TekReleaseWorkflowState_BucketId]
 GO
 CREATE NONCLUSTERED INDEX [IX_TekReleaseWorkflowState_AuthorisedByCaregiver]
     ON [dbo].[TekReleaseWorkflowState]([AuthorisedByCaregiver] ASC);
+
+
+GO
 
