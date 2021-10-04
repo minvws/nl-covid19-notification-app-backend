@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -97,14 +98,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
         /// <param name="model">The actual model</param>
         /// <param name="requestUri">The uri to post to</param>
         /// <param name="token">The generated cancellation token</param>
+        /// <param name="refererName">Optional name of caller</param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> PutAsync<T>(T model, string requestUri, CancellationToken token) where T : class
+        public async Task<HttpResponseMessage> PutAsync<T>(T model, string requestUri, CancellationToken token, string refererName = "") where T : class
         {
             try
             {
                 var message = JsonConvert.SerializeObject(model, Formatting.None);
 
                 HttpContent httpContent = new StringContent(message, Encoding.UTF8, "application/json");
+                httpContent.Headers.Add("RefererName", new List<string> { refererName });
                 var response = await _httpClient.PutAsync(requestUri, httpContent, token);
 
                 if (response.IsSuccessStatusCode)

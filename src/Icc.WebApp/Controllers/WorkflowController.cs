@@ -25,6 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
     {
         private const int OldGGDKeyLength = 6;
         private const int ValidGGDKeyLength = 7;
+        private const string RefererName = "Icc.WebApp";
 
         private readonly IRestApiClient _restApiClient;
         private readonly ILuhnModNGenerator _lLuhnModNGenerator;
@@ -59,7 +60,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
             var token = source.Token;
 
             _logger.WritePubTekStart();
-            var responseMessage = await _restApiClient.PutAsync(args, $"{EndPointNames.CaregiversPortalApi.PubTek}", token);
+            
+            var responseMessage = await _restApiClient.PutAsync(args, $"{EndPointNames.CaregiversPortalApi.PubTek}", token, RefererName);
             var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
             return result;
         }
