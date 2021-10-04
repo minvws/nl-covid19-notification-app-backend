@@ -21,6 +21,8 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Controllers
     /// </summary>
     public class WorkflowController : Controller
     {
+        private const string LocalRefererName = "Icc.WebApp";
+
         private readonly ILogger _logger;
 
         public WorkflowController(ILogger<WorkflowController> logger)
@@ -36,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("/pubtek")]
-        public async Task<IActionResult> PutPubTek([FromBody] PublishTekArgs args, [FromServices] IPublishTekService publishTekService)
+        public async Task<IActionResult> PutPubTek([FromHeader] string refererName, [FromBody] PublishTekArgs args, [FromServices] IPublishTekService publishTekService)
         {
             if (publishTekService == null)
             {
@@ -45,7 +47,9 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Controllers
 
             _logger.WritePubTekStart();
 
-            var result = await publishTekService.ExecuteAsync(args);
+            var refererIsLocal = !string.IsNullOrEmpty(refererName) && refererName.Equals(LocalRefererName);
+
+            var result = await publishTekService.ExecuteAsync(args, refererIsLocal);
 
             // As per rfc7231#section-6.3.1 HTTP 200 OK will be returned to indicate that the request has succeeded.
             // Please note that HTTP 200 OK will be returned regardless of whether the key is considered valid or invalid. It may be understood as “request received and processed”.

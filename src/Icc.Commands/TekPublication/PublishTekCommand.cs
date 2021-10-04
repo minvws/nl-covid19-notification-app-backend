@@ -36,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
         /// </summary>
         /// <param name="args">The PubTEK values</param>
         /// <returns>True if succeeded, otherwise false</returns>
-        public async Task<bool> ExecuteAsync(PublishTekArgs args)
+        public async Task<bool> ExecuteAsync(PublishTekArgs args, bool refererIsLocal)
         {
             // Defensive check for PublishTekArgs being null
             if (args == null)
