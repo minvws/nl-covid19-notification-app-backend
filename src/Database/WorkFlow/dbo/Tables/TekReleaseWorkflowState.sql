@@ -10,7 +10,7 @@
     [DateOfSymptomsOnset]   DATETIME2 (7)  NULL,
     [IsSymptomatic]         INT            NULL,
     [PollToken]             NVARCHAR (450) NULL,
-    [IsOriginPortal]        BIT            NOT NULL DEFAULT 0,
+    [IsOriginPortal]        BIT            NULL, -- Will be set not null default 0 in post-deploy
     CONSTRAINT [PK_TekReleaseWorkflowState] PRIMARY KEY CLUSTERED  ([Id] ASC)
 );
 
