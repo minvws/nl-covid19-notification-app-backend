@@ -5,5 +5,6 @@ DECLARE @Domain NVARCHAR(3) = '$(Domain)';
 :r .\Scripts\Users.sql
 :r .\Scripts\RoleMemberships.sql
 :r .\Scripts\Permissions.sql
+:r .\Scripts\SetIsOriginPortal.sql
 
 PRINT 'FINISHED POST-DEPLOYMENT ON $(Domain)'
