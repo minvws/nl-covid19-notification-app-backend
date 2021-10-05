@@ -1,7 +1,5 @@
 -- Sets IsOriginPortal on existing entries to 1 if their values are not defined
 
-USE [workflow]
-
 UPDATE [dbo].[TekReleaseWorkflowState]
 SET [IsOriginPortal] = 1
 WHERE [IsOriginPortal] IS NULL
