@@ -67,6 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             wf.GGDKey = null; //Clear from usable key range
             wf.StartDateOfTekInclusion = args.SubjectHasSymptoms ? args.DateOfSymptomsOnset : args.DateOfTest; // The date is currently a StartDateOfTekInclusion or Date of Test. The system lacks having 2 date variants so the existing StartDateOfTekInclusion will hold either
             wf.IsSymptomatic = args.SubjectHasSymptoms ? InfectiousPeriodType.Symptomatic : InfectiousPeriodType.Asymptomatic;
+            wf.IsOriginPortal = isOriginPortal;
 
             var success = await PublishTek(wf);
 
