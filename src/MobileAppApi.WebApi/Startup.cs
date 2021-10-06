@@ -39,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             Configuration = configuration;
             _isDev = env?.IsDevelopment() ?? throw new ArgumentException(nameof(env));
         }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IJsonSerializer, StandardJsonSerializer>();

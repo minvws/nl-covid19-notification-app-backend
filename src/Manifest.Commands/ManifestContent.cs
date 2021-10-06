@@ -18,6 +18,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 
         public bool Equals(ManifestContent other)
         {
+            if (other is null)
+            {
+                return false;
+            }
+
             return ExposureKeySets.SequenceEqual(other.ExposureKeySets)
                 && RiskCalculationParameters == other.RiskCalculationParameters
                 && AppConfig == other.AppConfig

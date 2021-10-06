@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Net;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -16,11 +17,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
     public class IksPollingBatchJob : IJob
     {
         private readonly IUtcDateTimeProvider _dateTimeProvider;
-        private readonly IHttpGetIksCommand _receiver;
+        private readonly IHttpGetIksCommand _batchDownloader;
         private readonly IIksWriterCommand _writer;
         private readonly IksInDbContext _iksInDbContext;
         private readonly IEfgsConfig _efgsConfig;
         private readonly IksDownloaderLoggingExtensions _logger;
+
+        private IksInJobEntity _jobInfo;
+        private string _tagToRequest;
+        private DateTime _dayToRequest;
+        private int _downloadCount;
+        private bool _continueDownloading;
 
         public IksPollingBatchJob(
             IUtcDateTimeProvider dateTimeProvider,
@@ -31,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
             IksDownloaderLoggingExtensions logger)
         {
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
-            _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
+            _batchDownloader = receiver ?? throw new ArgumentNullException(nameof(receiver));
             _writer = writer ?? throw new ArgumentNullException(nameof(writer));
             _iksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
             _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
@@ -46,122 +53,173 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
                 return;
             }
 
-            var jobInfo = GetJobInfo();
-            var lastWrittenBatchTag = jobInfo.LastBatchTag;
-            var tagToRequest = string.Empty;
+            _downloadCount = 0;
+            _continueDownloading = true;
+            _tagToRequest = string.Empty;
+            _dayToRequest = _dateTimeProvider.Snapshot.Date;
 
-            // Set date to a default of today.
-            // Either we continue where we left off, or we grab as many batches as allowed
-            // (i.e., a few days worth back from today)
-            var dayToRequest = _dateTimeProvider.Snapshot.Date;
+            SetInitialBatchTagAndDate();
 
-            var batchTagDatePart = lastWrittenBatchTag.Split("-").FirstOrDefault();
-
-            if (!string.IsNullOrEmpty(batchTagDatePart))
+            while (_continueDownloading && _downloadCount <= _efgsConfig.MaxBatchesPerRun)
             {
-                // All is good, start requesting batch from where we left off.
-                // The date and the batchTag's creation date need to be the same,
-                // otherwise EFGS will return a HTTP status 404.
-                dayToRequest = DateTime.ParseExact(batchTagDatePart, "yyyyMMdd", null);
-                tagToRequest = lastWrittenBatchTag;
-            }
-            else
-            {
-                // If lastWrittenBatchTag is somehow unusable or unavailable,
-                // go as far back as allowed with the date and don't send a batchTag to EFGS
-                // (i.e., keep tagToRequest as an empty string)
-                dayToRequest = dayToRequest.AddDays(_efgsConfig.DaysToDownload * -1);
-            }
+                var downloadedBatch = _batchDownloader.ExecuteAsync(_dayToRequest, _tagToRequest).GetAwaiter().GetResult();
+                _downloadCount++;
 
-            var downloadCount = 0;
-            var daysLeft = true;
-
-            while (daysLeft && downloadCount <= _efgsConfig.MaxBatchesPerRun)
-            {
-                var result = _receiver.ExecuteAsync(dayToRequest, tagToRequest).GetAwaiter().GetResult();
-                downloadCount++;
-
-                // If we have a success response and we haven't already received the current batchTag, process it
-                if (result != null && !_iksInDbContext.Received.AsNoTracking().Any(x => x.BatchTag == result.BatchTag))
+                if (downloadedBatch.ResultCode == HttpStatusCode.OK)
                 {
-                    _logger.WriteProcessingData(dayToRequest, result.BatchTag);
-
-                    try
-                    {
-                        // Persists batch to database
-                        _writer.Execute(new IksWriteArgs
-                        {
-                            BatchTag = result.BatchTag,
-                            Content = result.Content
-                        });
-
-                        // Update jobinfo:
-                        // Keep track of the last batch we wrote to the database
-                        jobInfo.LastBatchTag = result.BatchTag;
-                        // And keep track of the last time this job was run in a functionally meaningful way
-                        jobInfo.LastRun = _dateTimeProvider.Snapshot;
-
-                        // Persist updated jobinfo to database
-                        _iksInDbContext.SaveChanges();
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.WriteEfgsError(e);
-                    }
-                }
-                else if (result != null)
-                {
-                    // Log this for informational purposes
-                    _logger.WriteBatchAlreadyProcessed(result.BatchTag);
-                }
-
-                // Move on to the next batchTag if available; otherwise, move on to the next day.
-                // If result was null because of an non-success response from EFGS,
-                // it will be dealt with here by moving on to a next day if possible.
-                tagToRequest = result?.NextBatchTag ?? string.Empty;
-
-                if (string.IsNullOrEmpty(tagToRequest))
-                {
-                    _logger.WriteNoNextBatch();
-
-                    if (dayToRequest < _dateTimeProvider.Snapshot.Date)
-                    {
-                        _logger.WriteMovingToNextDay();
-                        dayToRequest = dayToRequest.AddDays(1);
-                    }
-                    else
-                    {
-                        _logger.WriteNoNextBatchNoMoreDays();
-                        daysLeft = false;
-                    }
+                    ProcessBatch(downloadedBatch);
+                    SetNextBatchTagAndDate(downloadedBatch.NextBatchTag);
                 }
                 else
                 {
-                    // Log this for informational purposes
-                    _logger.WriteNextBatchFound(tagToRequest);
-                    _logger.WriteBatchProcessedInNextLoop(tagToRequest);
-                }
-
-                // Log this for informational purposes
-                if (downloadCount > _efgsConfig.MaxBatchesPerRun)
-                {
-                    _logger.WriteBatchMaximumReached(_efgsConfig.MaxBatchesPerRun);
+                    ProcessErrors(downloadedBatch);
                 }
             }
         }
 
-        private IksInJobEntity GetJobInfo()
+        private void SetInitialBatchTagAndDate()
         {
-            var result = _iksInDbContext.InJob.SingleOrDefault();
+            var lastJob = _iksInDbContext.InJob.SingleOrDefault();
 
-            if (result != null)
+            if (lastJob == null)
             {
-                return result;
+                lastJob = new IksInJobEntity();
+                _iksInDbContext.InJob.Add(lastJob);
+            }
+            _jobInfo = lastJob;
+
+            var lastWrittenBatchTag = _jobInfo.LastBatchTag;
+            var dateFromBatchTag = lastWrittenBatchTag.Split("-").FirstOrDefault();
+
+            if (string.IsNullOrEmpty(dateFromBatchTag))
+            {
+                // LastWrittenBatchTag is somehow unusable or unavailable
+                // Set requestDate as far back as allowed and keep requestBatchTag empty
+                _dayToRequest = _dayToRequest.AddDays(-1 * _efgsConfig.DaysToDownload);
+            }
+            else
+            {
+                // LastWrittenBatchTag is useable: continue where we left off.
+                // The date and the batchTag's creation date need to be the same, otherwise EFGS will return a 404.
+                _dayToRequest = DateTime.ParseExact(dateFromBatchTag, "yyyyMMdd", null);
+                _tagToRequest = lastWrittenBatchTag;
+            }
+        }
+
+        private void ProcessBatch(HttpGetIksResult downloadedBatch)
+        {
+            var batchAlreadyReceived = _iksInDbContext.Received.AsNoTracking().Any(x => x.BatchTag == downloadedBatch.BatchTag);
+
+            if (batchAlreadyReceived)
+            {
+                _logger.WriteBatchAlreadyProcessed(downloadedBatch.BatchTag);
+            }
+            else
+            {
+                _logger.WriteProcessingData(_dayToRequest, downloadedBatch.BatchTag);
+
+                try
+                {
+                    WriteBatchToDb(downloadedBatch);
+                    WriteRunToDb(_dayToRequest, downloadedBatch.BatchTag);
+                }
+                catch (Exception e)
+                {
+                    _logger.WriteEfgsError(e);
+                }
+            }
+        }
+
+        private void ProcessErrors(HttpGetIksResult downloadedBatch)
+        {
+            switch (downloadedBatch.ResultCode)
+            {
+                case HttpStatusCode.BadRequest:
+                    // 400: requested batchtag doesn't match CreatedDate on found batch - halt and catch fire
+                    _logger.WriteResponseBadRequest();
+                    throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{downloadedBatch.BatchTag}' resulted in a Bad Request-response");
+
+                case HttpStatusCode.NotFound:
+                    // 404: requested date doesn't exist yet - retry later (stop downloading)
+                    _logger.WriteResponseNotFound();
+                    _continueDownloading = false;
+                    return;
+
+                case HttpStatusCode.Gone:
+                    // 410: requested date is too old - skip to next day
+                    _logger.WriteResponseGone();
+                    _tagToRequest = string.Empty;
+                    IncrementDayToRequest();
+                    return;
+
+                case HttpStatusCode.Forbidden:
+                    _logger.WriteResponseForbidden();
+                    throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{downloadedBatch.BatchTag}' resulted in a Forbidden-response");
+
+                case HttpStatusCode.NotAcceptable:
+                    _logger.WriteResponseNotAcceptable();
+                    throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{downloadedBatch.BatchTag}' resulted in a Not-Acceptable-response");
+
+                default:
+                    _logger.WriteResponseUndefined(downloadedBatch.ResultCode);
+                    throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{downloadedBatch.BatchTag}' resulted in an undefined response");
+            }
+        }
+
+        private void SetNextBatchTagAndDate(string? batchTag)
+        {
+            // Move on to the next batchTag if available; otherwise, move on to the next day, if possible.
+            _tagToRequest = batchTag ?? string.Empty;
+
+            if (string.IsNullOrEmpty(_tagToRequest))
+            {
+                _logger.WriteNoNextBatch();
+                IncrementDayToRequest();
+            }
+            else
+            {
+                // Log for informational purposes
+                _logger.WriteNextBatchFound(_tagToRequest);
+                _logger.WriteBatchProcessedInNextLoop(_tagToRequest);
             }
 
-            result = new IksInJobEntity();
-            _iksInDbContext.InJob.Add(result);
-            return result;
+            // Log for informational purposes
+            if (_downloadCount > _efgsConfig.MaxBatchesPerRun)
+            {
+                _logger.WriteBatchMaximumReached(_efgsConfig.MaxBatchesPerRun);
+            }
         }
+
+        private void IncrementDayToRequest()
+        {
+            if (_dayToRequest < _dateTimeProvider.Snapshot.Date)
+            {
+                _logger.WriteMovingToNextDay();
+                _dayToRequest = _dayToRequest.AddDays(1);
+            }
+            else
+            {
+                _logger.WriteNoNextBatchNoMoreDays();
+                _continueDownloading = false;
+            }
+        }
+
+        private void WriteBatchToDb(HttpGetIksResult downloadedBatch)
+        {
+            _writer.Execute(new IksWriteArgs
+            {
+                BatchTag = downloadedBatch.BatchTag,
+                Content = downloadedBatch.Content
+            });
+        }
+
+        private void WriteRunToDb(DateTime requestedDate, string lastDownloadedBatchTag)
+        {
+            _jobInfo.LastRun = requestedDate.Date;
+            _jobInfo.LastBatchTag = lastDownloadedBatchTag;
+
+            _iksInDbContext.SaveChanges();
+        }
+
     }
 }

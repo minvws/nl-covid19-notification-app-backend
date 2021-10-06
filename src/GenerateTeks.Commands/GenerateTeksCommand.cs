@@ -74,6 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GenerateTeks.Commands
                     AuthorisedByCaregiver = DateTime.UtcNow,
                     StartDateOfTekInclusion = DateTime.UtcNow.AddDays(-1),
                     IsSymptomatic = InfectiousPeriodType.Symptomatic,
+                    IsOriginPortal = Convert.ToBoolean(_numberGenerator.Next(0, 1))
                 };
 
                 _logger.LogDebug($"Adding workflowStateEntity # {i}");

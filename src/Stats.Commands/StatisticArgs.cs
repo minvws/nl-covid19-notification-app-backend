@@ -9,5 +9,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
         public string Name { get; set; }
         public string Qualifier { get; set; }
         public double Value { get; set; }
+        public double TotalFromPortal { get; set; }
+        public double TotalFromOther { get; set; }
     }
 }

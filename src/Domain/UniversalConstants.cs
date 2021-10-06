@@ -18,5 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
         public const int BucketIdByteCount = 32;
         public const int ConfirmationKeyByteCount = 32;
         public const int PostKeysSignatureByteCount = 32;
+
+        public const string EfgsDownloader = "EfgsDownloader";
     }
 }
