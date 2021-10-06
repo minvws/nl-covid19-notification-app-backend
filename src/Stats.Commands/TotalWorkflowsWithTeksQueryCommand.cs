@@ -25,7 +25,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
             return new StatisticArgs
             {
                 Name = "WorkflowsWithTeksCount",
-                Value = await _dbContext.KeyReleaseWorkflowStates.CountAsync(x => x.Teks.Any())
+                Value = await _dbContext.KeyReleaseWorkflowStates.CountAsync(x => x.Teks.Any()),
+                TotalFromPortal = await _dbContext.KeyReleaseWorkflowStates.CountAsync(x => x.IsOriginPortal && x.Teks.Any()),
+                TotalFromOther = await _dbContext.KeyReleaseWorkflowStates.CountAsync(x => !x.IsOriginPortal && x.Teks.Any())
             };
         }
     }

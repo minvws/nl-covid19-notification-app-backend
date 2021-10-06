@@ -141,6 +141,7 @@
     <Build Include="Security\Roles\Subroles.sql" />
     <Build Include="dbo\Tables\TekReleaseWorkflowState.sql" />
     <Build Include="dbo\Tables\TemporaryExposureKeys.sql" />
+    <None Include="PostDeploy\Scripts\SetIsOriginPortal.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="Appbeheerders">

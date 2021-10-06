@@ -67,14 +67,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Sta
             await _statsDbContext.BulkDeleteAsync(_statsDbContext.StatisticsEntries.ToList());
 
             var workflows = new[] {
-                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{1}, ConfirmationKey = new byte[]{1}, LabConfirmationId = "1", Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>()},
-                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{2}, ConfirmationKey = new byte[]{2}, LabConfirmationId = "2",  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() },
-                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{3}, ConfirmationKey = new byte[]{3}, LabConfirmationId = "3",  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() },
-                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{4}, ConfirmationKey = new byte[]{4}, LabConfirmationId = "4",  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() },
-                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{5}, ConfirmationKey = new byte[]{5}, LabConfirmationId = "5",  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() },
-                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{6}, ConfirmationKey = new byte[]{6}, LabConfirmationId = null,  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() },
-                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{7}, ConfirmationKey = new byte[]{7}, LabConfirmationId = null,  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() },
-                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{8}, ConfirmationKey = new byte[]{8}, LabConfirmationId = null,  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() }
+                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{1}, ConfirmationKey = new byte[]{1}, GGDKey = "1", Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>()},
+                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{2}, ConfirmationKey = new byte[]{2}, GGDKey = "2",  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() },
+                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{3}, ConfirmationKey = new byte[]{3}, GGDKey = "3",  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() },
+                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{4}, ConfirmationKey = new byte[]{4}, GGDKey = "4",  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() },
+                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{5}, ConfirmationKey = new byte[]{5}, GGDKey = "5",  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() },
+                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{6}, ConfirmationKey = new byte[]{6}, GGDKey = null,  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() },
+                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{7}, ConfirmationKey = new byte[]{7}, GGDKey = null,  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() },
+                new TekReleaseWorkflowStateEntity { BucketId = new byte[]{8}, ConfirmationKey = new byte[]{8}, GGDKey = null,  Created = DateTime.MinValue, ValidUntil = DateTime.MinValue, Teks = new List<TekEntity>() }
             };
 
             ((List<TekEntity>)workflows[0].Teks).AddRange(new[] { new TekEntity { KeyData = new byte[0], PublishingState = PublishingState.Published, PublishAfter = DateTime.MinValue } });
