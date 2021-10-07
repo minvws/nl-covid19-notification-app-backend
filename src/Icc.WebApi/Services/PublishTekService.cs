@@ -42,7 +42,8 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.WebApi.Services
             else
             {
                 // If valid, try to publish the TEK.
-                response.Valid = await _publishTekCommand.ExecuteAsync(args);
+                var result = await _publishTekCommand.ExecuteAsync(new PublishTekCommand.Parameters{PublishTekArgs = args, IsOriginPortal = true});
+                response.Valid = !result.HasErrors;
             }
 
             // Return a response with only true or false. No further information should be send to the client.

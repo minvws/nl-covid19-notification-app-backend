@@ -24,7 +24,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
             return new StatisticArgs
             {
                 Name = Name,
-                Value = await _dbContext.KeyReleaseWorkflowStates.CountAsync(x => x.LabConfirmationId == null)
+                Value = await _dbContext.KeyReleaseWorkflowStates.CountAsync(x => x.GGDKey == null),
+                TotalFromPortal = await _dbContext.KeyReleaseWorkflowStates.CountAsync(x => x.IsOriginPortal && x.GGDKey == null),
+                TotalFromOther = await _dbContext.KeyReleaseWorkflowStates.CountAsync(x => !x.IsOriginPortal && x.GGDKey == null),
             };
         }
     }
