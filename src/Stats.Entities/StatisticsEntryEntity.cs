@@ -19,5 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Entities
         //TODO nullable
         public string Qualifier { get; set; }
         public double Value { get; set; }
+        public double TotalFromPortal { get; set; }
+        public double TotalFromOther { get; set; }
     }
 }

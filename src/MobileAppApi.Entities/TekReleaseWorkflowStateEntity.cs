@@ -56,6 +56,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
         [Obsolete("PollToken will be obsolete for new version of the ICC backend API")]
         public string PollToken { get; set; }
 
+        public bool IsOriginPortal { get; set; }
+
         public virtual ICollection<TekEntity> Teks { get; set; } = new List<TekEntity>();
     }
 }

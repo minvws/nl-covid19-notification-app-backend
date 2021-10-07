@@ -15,7 +15,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entity
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication
 {
-    public class PublishTekCommand
+    public class PublishTekCommand : BaseCommand
     {
         private readonly WorkflowDbContext _workflowDb;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
@@ -34,12 +34,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
         /// <summary>
         /// Assume args validated
         /// </summary>
+        /// <param name="parameters"> Containing args && isOriginPortal values</param>
         /// <param name="args">The PubTEK values</param>
+        /// <param name="isOriginPortal">True if the Origin of the args is the Icc portal, otherwise false</param>
         /// <returns>True if succeeded, otherwise false</returns>
-        public async Task<bool> ExecuteAsync(PublishTekArgs args)
+        public override async Task<ICommandResult> ExecuteAsync(IParameters parameters)
         {
+            var args = ((Parameters)parameters).PublishTekArgs;
+            var isOriginPortal = ((Parameters)parameters).IsOriginPortal;
+
             // Defensive check for PublishTekArgs being null
-            if (args == null)
+            if (((Parameters)parameters).PublishTekArgs == null)
             {
                 throw new ArgumentNullException(nameof(args));
             }
@@ -54,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             if (wf == null)
             {
                 _logger.WriteKeyReleaseWorkflowStateNotFound(args.GGDKey);
-                return false;
+                return new CommandResult{ HasErrors = true };
             }
 
             wf.AuthorisedByCaregiver = _dateTimeProvider.Snapshot;
@@ -62,6 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             wf.GGDKey = null; //Clear from usable key range
             wf.StartDateOfTekInclusion = args.SubjectHasSymptoms ? args.DateOfSymptomsOnset : args.DateOfTest; // The date is currently a StartDateOfTekInclusion or Date of Test. The system lacks having 2 date variants so the existing StartDateOfTekInclusion will hold either
             wf.IsSymptomatic = args.SubjectHasSymptoms ? InfectiousPeriodType.Symptomatic : InfectiousPeriodType.Asymptomatic;
+            wf.IsOriginPortal = isOriginPortal;
 
             var success = await PublishTek(wf);
 
@@ -70,7 +76,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
                 _logger.LogInformation($"GGDKey {wf.GGDKey} authorized.");
             }
 
-            return success;
+            return new CommandResult{ HasErrors = false };
         }
 
         private async Task<bool> PublishTek(TekReleaseWorkflowStateEntity workflowStateEntity)
@@ -131,6 +137,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
                 x.Number == 2601
                 && x.Message.Contains("TekReleaseWorkflowState")
                 && x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.GGDKey))); // TODO: Rewritten code after removing the update on PollToken. Error can be less relative at this moment. 
+        }
+
+        public new class Parameters : IParameters
+        {
+            public PublishTekArgs PublishTekArgs { get; set; }
+            public bool IsOriginPortal { get; set; }
         }
     }
 }

@@ -46,7 +46,7 @@ namespace Icc.WebApp.Tests
             return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(JsonSerializer.Serialize(new PublishTekResponse { Valid = true })) };
         }
 
-        public async Task<HttpResponseMessage> PutAsync<T>(T model, string requestUri, CancellationToken token) where T : class
+        public async Task<HttpResponseMessage> PutAsync<T>(T model, string requestUri, CancellationToken token, string refererName = "") where T : class
         {
             var args = (PublishTekArgs)Convert.ChangeType(model, typeof(PublishTekArgs));
             if (args.GGDKey == "111111")
