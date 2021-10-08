@@ -19,8 +19,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly IThumbprintConfig _thumbprintConfig;
 
-        private const string NlThumbprint = "Certificates:NL"; // Todo: path to thumbprint in config should be stored in these classes; refactor thumbprintconfigprovider to use this string
-
         public CmsSignerEnhanced(
             ICertificateProvider certificateProvider,
             ICertificateChainConfig certificateConfig,

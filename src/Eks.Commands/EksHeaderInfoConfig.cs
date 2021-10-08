@@ -13,5 +13,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         public string AppBundleId => GetConfigValue(nameof(AppBundleId), "nl.rijksoverheid.en");
         public string VerificationKeyId => GetConfigValue(nameof(VerificationKeyId), "204");
         public string VerificationKeyVersion => GetConfigValue(nameof(VerificationKeyVersion), "v1");
+        public string VerificationKeyVersionV15 => GetConfigValue(nameof(VerificationKeyVersionV15), "v2");
     }
 }
