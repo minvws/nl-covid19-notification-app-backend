@@ -5,6 +5,7 @@
     [Content]              VARBINARY (MAX) NOT NULL,
     [CreatingJobName]      NVARCHAR (MAX)  NOT NULL,
     [CreatingJobQualifier] INT             NOT NULL,
+    [GaenVersion]          INT             NOT NULL  DEFAULT 12, 
     CONSTRAINT [PK_EksCreateJobOutput] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

@@ -214,19 +214,34 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             var args = _output.Select(Map).ToArray();
 
             var (content, contentV15) = await _setBuilder.BuildAsync(args);
+            var release = _eksEngineResult.Started;
+            var eksCount = ++_eksCount;
 
-            var eksCreateJobOutputEntity = new EksCreateJobOutputEntity
+            var eksCreateJobOutputEntityV12 = new EksCreateJobOutputEntity
             {
                 Region = DefaultValues.Region,
-                Release = _eksEngineResult.Started,
-                CreatingJobQualifier = ++_eksCount,
+                Release = release,
+                CreatingJobQualifier = eksCount,
                 Content = content,
+                GaenVersion = GaenVersion.v12
             };
 
-            _logger.WriteWritingCurrentEks(eksCreateJobOutputEntity.CreatingJobQualifier);
+            _logger.WriteWritingCurrentEks(eksCreateJobOutputEntityV12.CreatingJobQualifier);
+
+            var eksCreateJobOutputEntityV15 = new EksCreateJobOutputEntity
+            {
+                Region = DefaultValues.Region,
+                Release = release,
+                CreatingJobQualifier = eksCount,
+                Content = contentV15,
+                GaenVersion = GaenVersion.v15
+            };
+
+            _logger.WriteWritingCurrentEks(eksCreateJobOutputEntityV12.CreatingJobQualifier);
 
             await using var tx = _eksPublishingJobDbContext.BeginTransaction();
-            await _eksPublishingJobDbContext.AddAsync(eksCreateJobOutputEntity);
+            await _eksPublishingJobDbContext.AddAsync(eksCreateJobOutputEntityV12);
+            await _eksPublishingJobDbContext.AddAsync(eksCreateJobOutputEntityV15);
             _eksPublishingJobDbContext.SaveAndCommit();
 
             _logger.WriteMarkTekAsUsed();

@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         {
             await using (_eksPublishingJobDbContext.BeginTransaction())
             {
-                var move = _eksPublishingJobDbContext.EksOutput.AsNoTracking().Select(
+                var moveV12 = _eksPublishingJobDbContext.EksOutput.AsNoTracking().Where(x => x.GaenVersion == GaenVersion.v12).Select(
                     x => new ContentEntity
                     {
                         Created = x.Release,
@@ -45,13 +45,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                         PublishingId = _publishingIdService.Create(x.Content)
                     }).ToArray();
 
+                var moveV15 = _eksPublishingJobDbContext.EksOutput.AsNoTracking().Where(x => x.GaenVersion == GaenVersion.v15).Select(
+                    x => new ContentEntity
+                    {
+                        Created = x.Release,
+                        Release = x.Release,
+                        ContentTypeName = MediaTypeNames.Application.Zip,
+                        Content = x.Content,
+                        Type = ContentTypes.ExposureKeySetV3,
+                        PublishingId = _publishingIdService.Create(x.Content)
+                    }).ToArray();
+
                 await using (_contentDbContext.BeginTransaction())
                 {
-                    await _contentDbContext.Content.AddRangeAsync(move);
+                    await _contentDbContext.Content.AddRangeAsync(moveV12);
+                    await _contentDbContext.Content.AddRangeAsync(moveV15);
                     _contentDbContext.SaveAndCommit();
                 }
 
-                _logger.WritePublished(move.Length);
+                _logger.WritePublished(GaenVersion.v12, moveV12.Length);
+                _logger.WritePublished(GaenVersion.v15, moveV15.Length);
             }
         }
     }
