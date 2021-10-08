@@ -17,14 +17,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.ServiceRe
                 .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
                 .AddCertificate();
 
-            services.AddSingleton<IThumbprintConfig, LocalMachineStoreCertificateProviderConfig>();
+            services.AddSingleton<IThumbprintConfig, ThumbprintConfig>();
 
             services.AddTransient<IAuthenticationCertificateProvider>(
                 x => new LocalMachineStoreCertificateProvider(
-                    new LocalMachineStoreCertificateProviderConfig(
-                        x.GetRequiredService<IConfiguration>(), "Certificates:EfgsAuthentication"),
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
-                ));
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));
         }
     }
 }

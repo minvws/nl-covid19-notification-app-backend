@@ -44,14 +44,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
-                TestSignerHelpers.CreateEcdsaSigner(lf),
+                TestSignerHelpers.CreateGASigner(lf),
+                TestSignerHelpers.CreateGAv15Signer(lf),
                 TestSignerHelpers.CreateCmsSignerEnhanced(lf),
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
                 eksBuilderV1Logger);
 
             //Act
-            var result = sut.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
+            var (result, resultv15) = sut.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
             Trace.WriteLine($"{keyCount} keys = {result.Length} bytes.");
 
             //Assert
@@ -73,14 +74,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
-                TestSignerHelpers.CreateEcdsaSigner(lf),
+                TestSignerHelpers.CreateGASigner(lf),
+                TestSignerHelpers.CreateGAv15Signer(lf),
                 dummySigner,
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
                 eksBuilderV1Logger);
 
             //Act
-            var result = sut.BuildAsync(GetRandomKeys(keyCount, 123)).GetAwaiter().GetResult();
+            var (result, resultv15) = sut.BuildAsync(GetRandomKeys(keyCount, 123)).GetAwaiter().GetResult();
 
             //Assert
             using var zipFileInMemory = new MemoryStream();

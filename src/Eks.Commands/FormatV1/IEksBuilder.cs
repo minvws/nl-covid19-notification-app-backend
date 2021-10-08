@@ -8,6 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
 {
     public interface IEksBuilder
     {
-        Task<byte[]> BuildAsync(TemporaryExposureKeyArgs[] keys);
+        Task<(byte[], byte[])> BuildAsync(TemporaryExposureKeyArgs[] keys);
     }
 }

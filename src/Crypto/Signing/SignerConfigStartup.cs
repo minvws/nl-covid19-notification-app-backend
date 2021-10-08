@@ -12,6 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
     public static class SignerConfigStartup
     {
         private const string GaSettingPrefix = "Certificates:GA";
+        private const string GaV15SettingPrefix = "Certificates:GAv15";
         private const string NlSettingPrefix = "Certificates:NL";
         private const string NlChainPrefix = NlSettingPrefix + ":Chain";
 
@@ -22,33 +23,39 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 
         public static IContentSigner BuildEvSigner(
             IConfiguration config,
-            LocalMachineStoreCertificateProviderLoggingExtensions extensions,
+            LocalMachineStoreCertificateProviderLoggingExtensions loggingExtensions,
             IUtcDateTimeProvider dateTimeProvider)
         {
             return new CmsSignerEnhanced(
-                new LocalMachineStoreCertificateProvider(
-                    new LocalMachineStoreCertificateProviderConfig(
-                        config,
-                        NlSettingPrefix),
-                    extensions),
-                    new EmbeddedResourcesCertificateChainProvider(
-                        new EmbeddedResourceCertificateConfig(
-                            config,
-                            NlChainPrefix)),
-                    dateTimeProvider);
+                new LocalMachineStoreCertificateProvider(loggingExtensions),
+                new CertificateChainConfig(config, NlChainPrefix),
+                dateTimeProvider,
+                new ThumbprintConfig( // Todo: refactor to fit its purpose of getting config data
+                    config,
+                    GaSettingPrefix)
+                );
         }
 
         public static IGaContentSigner BuildGaSigner(
-            IConfiguration config,
-            LocalMachineStoreCertificateProviderLoggingExtensions extensions)
+            LocalMachineStoreCertificateProviderLoggingExtensions loggingExtensions,
+            IConfiguration config)
         {
-            return new EcdSaSigner(
-                new LocalMachineStoreCertificateProvider(
-                    new LocalMachineStoreCertificateProviderConfig(
-                        config,
-                        GaSettingPrefix),
-                    extensions));
+            return new GASigner(
+                new LocalMachineStoreCertificateProvider(loggingExtensions),
+                new ThumbprintConfig( // Todo: refactor to fit its purpose of getting config data
+                    config,
+                    GaSettingPrefix));
         }
 
+        public static IGaContentSigner BuildGaV15Signer(
+            LocalMachineStoreCertificateProviderLoggingExtensions loggingExtensions,
+            IConfiguration config)
+        {
+            return new GAv15Signer(
+                new LocalMachineStoreCertificateProvider(loggingExtensions),
+                new ThumbprintConfig( // Todo: refactor to fit its purpose of getting config data
+                    config,
+                    GaV15SettingPrefix));
+        }
     }
 }

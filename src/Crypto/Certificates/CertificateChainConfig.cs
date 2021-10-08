@@ -7,9 +7,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
-    public class EmbeddedResourceCertificateConfig : AppSettingsReader, IEmbeddedResourceCertificateConfig
+    public class CertificateChainConfig : AppSettingsReader, ICertificateChainConfig
     {
-        public EmbeddedResourceCertificateConfig(IConfiguration config, string prefix = null) : base(config, prefix)
+        public CertificateChainConfig(IConfiguration config, string prefix = null) : base(config, prefix)
         {
         }
 

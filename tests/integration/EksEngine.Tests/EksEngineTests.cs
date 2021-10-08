@@ -83,6 +83,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             gaSigner.Setup(x => x.SignatureOid).Returns("unittest");
             gaSigner.Setup(x => x.GetSignature(It.IsAny<byte[]>())).Returns(new byte[] { 1 });
 
+            var gaV15Signer = new Mock<IGaContentSigner>(MockBehavior.Strict);
+            gaV15Signer.Setup(x => x.SignatureOid).Returns("unittestV15");
+            gaV15Signer.Setup(x => x.GetSignature(It.IsAny<byte[]>())).Returns(new byte[] { 1 });
+
             var nlSigner = new Mock<IContentSigner>(MockBehavior.Loose);
             nlSigner.Setup(x => x.GetSignature(new byte[0])).Returns(new byte[] { 2 });
 
@@ -100,7 +104,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             _rng = new StandardRandomNumberGenerator();
             _eksJob = new ExposureKeySetBatchJobMk3(
                 eksConfig.Object,
-                new EksBuilderV1(eksHeaderConfig.Object, gaSigner.Object, nlSigner.Object, _dtp, new GeneratedProtobufEksContentFormatter(),
+                new EksBuilderV1(eksHeaderConfig.Object, gaSigner.Object, gaV15Signer.Object, nlSigner.Object, _dtp, new GeneratedProtobufEksContentFormatter(),
                     new EksBuilderV1LoggingExtensions(_lf.CreateLogger<EksBuilderV1LoggingExtensions>())
                     ),
                 _eksPublishingJobContext,

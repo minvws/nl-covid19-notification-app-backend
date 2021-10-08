@@ -18,10 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
                 .AddCertificate();
             services.AddTransient<IAuthenticationCertificateProvider>(x =>
                 new LocalMachineStoreCertificateProvider(
-                    new LocalMachineStoreCertificateProviderConfig(
-                        x.GetRequiredService<IConfiguration>(), "Certificates:EfgsAuthentication"),
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()
-                ));
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));
         }
     }
 }

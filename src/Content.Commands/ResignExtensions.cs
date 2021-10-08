@@ -26,17 +26,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                     x.GetRequiredService<ContentDbContext>(),
                     new CmsSignerEnhanced(
                         new LocalMachineStoreCertificateProvider(
-                            new LocalMachineStoreCertificateProviderConfig(
-                                x.GetRequiredService<IConfiguration>(),
-                                NlSettingPrefix),
                             x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()),
-
-                        new EmbeddedResourcesCertificateChainProvider(
-                            new EmbeddedResourceCertificateConfig(
-                                x.GetRequiredService<IConfiguration>(),
-                                ChainPrefix)),
-                        x.GetRequiredService<IUtcDateTimeProvider>()),
-
+                        new CertificateChainConfig(
+                            x.GetRequiredService<IConfiguration>(),
+                            ChainPrefix),
+                        x.GetRequiredService<IUtcDateTimeProvider>(),
+                        new ThumbprintConfig(
+                            x.GetRequiredService<IConfiguration>(),
+                            NlSettingPrefix)),
                     x.GetRequiredService<ResignerLoggingExtensions>()));
 
         }

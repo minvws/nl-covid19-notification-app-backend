@@ -34,8 +34,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
                     x.GetRequiredService<IUtcDateTimeProvider>()));
             services.AddTransient(x =>
                 SignerConfigStartup.BuildGaSigner(
-                    x.GetRequiredService<IConfiguration>(),
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<IConfiguration>()));
+            services.AddTransient(x =>
+                SignerConfigStartup.BuildGaV15Signer(
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<IConfiguration>()));
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
         }
     }

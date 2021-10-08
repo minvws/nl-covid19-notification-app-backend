@@ -49,7 +49,7 @@ namespace SigTestFileCreator
 
             var fileContents = File.ReadAllBytes(fullPath);
 
-            var signedFileContents = await BuildEksOutputAsync(fileContents);
+            var (signedFileContents, signedV15FileContents) = await BuildEksOutputAsync(fileContents);
 
             _logger.WriteSavingResultfile();
             using (var outputFile = File.Create($"{fileDirectory}\\{fileName}-signed.zip", 1024, FileOptions.None))
@@ -60,7 +60,7 @@ namespace SigTestFileCreator
             _logger.WriteFinished(fileDirectory);
         }
 
-        private async Task<byte[]> BuildEksOutputAsync(byte[] fileData)
+        private async Task<(byte[], byte[])> BuildEksOutputAsync(byte[] fileData)
         {
             _logger.WriteBuildingResultFile();
 

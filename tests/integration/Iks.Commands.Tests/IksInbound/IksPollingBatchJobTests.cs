@@ -28,14 +28,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
     public class IksPollingBatchJobTests : IDisposable
     {
         private readonly IksInDbContext _iksInDbContext;
+        private readonly IksDownloaderLoggingExtensions _logger;
+        private readonly DateTime _now;
+        private readonly string _dateString;
+        private readonly byte[] _dummyContent = new byte[] { 0x0, 0x0 };
+
+        private readonly Mock<IUtcDateTimeProvider> _dtpMock;
+        private readonly EfgsConfigMock _efgsConfigMock = new EfgsConfigMock();
+        private readonly Mock<IAuthenticationCertificateProvider> _certProviderMock;
+        private readonly Mock<IThumbprintConfig> _thumbprintConfigMock;
+
         private static DbConnection connection;
-        private Mock<IUtcDateTimeProvider> _dtp;
-        private DateTime _now;
-        private string _dateString;
-        private IksDownloaderLoggingExtensions _logger;
-        private readonly EfgsConfigMock _config = new EfgsConfigMock();
-        private byte[] _dummyContent = new byte[] { 0x0, 0x0 };
-        private Mock<IAuthenticationCertificateProvider> _certProvider;
 
         public IksPollingBatchJobTests()
         {
@@ -45,14 +48,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             _now = DateTime.UtcNow;
             _dateString = _now.Date.ToString("yyyyMMdd");
 
-            _dtp = new Mock<IUtcDateTimeProvider>();
-            _dtp.Setup(x => x.Snapshot).Returns(_now);
+            _dtpMock = new Mock<IUtcDateTimeProvider>();
+            _dtpMock.Setup(x => x.Snapshot).Returns(_now);
 
             _logger = new IksDownloaderLoggingExtensions(new NullLogger<IksDownloaderLoggingExtensions>());
-            _certProvider = new Mock<IAuthenticationCertificateProvider>();
+            _certProviderMock = new Mock<IAuthenticationCertificateProvider>();
+            _thumbprintConfigMock = new Mock<IThumbprintConfig>();
+
+            _thumbprintConfigMock.Setup(x => x.RootTrusted).Returns(It.IsAny<bool>());
+            _thumbprintConfigMock.Setup(x => x.Thumbprint).Returns(It.IsAny<string>());
 
             var mockCertificate = new Mock<X509Certificate2>();
-            _certProvider.Setup<X509Certificate2>(p => p.GetCertificate()).Returns(mockCertificate.Object);
+            _certProviderMock.Setup(p => p.GetCertificate(It.IsAny<string>(), It.IsAny<bool>())).Returns(mockCertificate.Object);
         }
 
         private static DbConnection CreateInMemoryDatabase()
@@ -89,11 +96,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 .Callback((IksWriteArgs args) => downloadedBatches.Add(args));
 
             var sut = new IksPollingBatchJob(
-                _dtp.Object,
+                _dtpMock.Object,
                 receiver,
                 writer.Object,
                 _iksInDbContext,
-                _config,
+                _efgsConfigMock,
                 _logger);
 
             // Act
@@ -123,11 +130,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
             var sut = new IksPollingBatchJob(
-                _dtp.Object,
+                _dtpMock.Object,
                 receiver,
                 writer.Object,
                 _iksInDbContext,
-                _config, _logger);
+                _efgsConfigMock, _logger);
 
             // Act
             sut.Run();
@@ -155,11 +162,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
             var sut = new IksPollingBatchJob(
-                _dtp.Object,
+                _dtpMock.Object,
                 receiver,
                 writer.Object,
                 _iksInDbContext,
-                _config,
+                _efgsConfigMock,
                 _logger);
 
             // Act
@@ -220,11 +227,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = FixedResultHttpGetIksCommand.Create(responses);
 
             var sut = new IksPollingBatchJob(
-                _dtp.Object,
+                _dtpMock.Object,
                 receiver,
                 writer.Object,
                 _iksInDbContext,
-                _config,
+                _efgsConfigMock,
                 _logger);
 
             // Act
@@ -248,7 +255,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 .Callback((IksWriteArgs args) => downloadedBatches.Add(args));
 
             var yesterday = _now.AddDays(-1);
-            var dateStringTomorrow = _dtp.Object.Snapshot.Date.AddDays(1).ToString("yyyyMMdd");
+            var dateStringTomorrow = _dtpMock.Object.Snapshot.Date.AddDays(1).ToString("yyyyMMdd");
 
             var responses = new List<HttpGetIksResult>()
             {
@@ -259,11 +266,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = FixedResultHttpGetIksCommand.Create(responses, yesterday);
 
             var sut = new IksPollingBatchJob(
-                _dtp.Object,
+                _dtpMock.Object,
                 receiver,
                 writer.Object,
                 _iksInDbContext,
-                _config,
+                _efgsConfigMock,
                 _logger);
 
             // Act
@@ -297,8 +304,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var mockHttpClientHandler = new Mock<HttpClientHandler>();
             var downloadedBatches = new List<IksWriteArgs>();
 
-            var testUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{_now.AddDays(-1):yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
-            var secondTestUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{_now:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
+            var testUri = new Uri($"{_efgsConfigMock.BaseUrl}/diagnosiskeys/download/{_now.AddDays(-1):yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
+            var secondTestUri = new Uri($"{_efgsConfigMock.BaseUrl}/diagnosiskeys/download/{_now:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
 
             var testResponseMessage = new HttpResponseMessage
             {
@@ -336,17 +343,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             mockHttpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(client);
 
             var receiver = new HttpGetIksCommand(
-                _config,
-                _certProvider.Object,
+                _efgsConfigMock,
+                _certProviderMock.Object,
+                _thumbprintConfigMock.Object,
                 mockHttpClientFactory.Object,
                 _logger);
 
             var sut = new IksPollingBatchJob(
-                _dtp.Object,
+                _dtpMock.Object,
                 receiver,
                 writer.Object,
                 _iksInDbContext,
-                _config,
+                _efgsConfigMock,
                 _logger);
 
             //Act
@@ -369,8 +377,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var yesterday = _now.AddDays(-1);
             var downloadedBatches = new List<IksWriteArgs>();
 
-            var testUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{yesterday:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
-            var secondTestUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{_now:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
+            var testUri = new Uri($"{_efgsConfigMock.BaseUrl}/diagnosiskeys/download/{yesterday:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
+            var secondTestUri = new Uri($"{_efgsConfigMock.BaseUrl}/diagnosiskeys/download/{_now:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
 
             var responseMessage = new HttpResponseMessage
             {
@@ -406,17 +414,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             mockHttpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(client);
 
             var receiver = new HttpGetIksCommand(
-                _config,
-                _certProvider.Object,
+                _efgsConfigMock,
+                _certProviderMock.Object,
+                _thumbprintConfigMock.Object,
                 mockHttpClientFactory.Object,
                 _logger);
 
             var sut = new IksPollingBatchJob(
-                _dtp.Object,
+                _dtpMock.Object,
                 receiver,
                 writer.Object,
                 _iksInDbContext,
-                _config,
+                _efgsConfigMock,
                 _logger);
 
             //Act
@@ -439,8 +448,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var yesterday = _now.AddDays(-1);
             var downloadedBatches = new List<IksWriteArgs>();
 
-            var testUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{yesterday:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
-            var secondTestUri = new Uri($"{_config.BaseUrl}/diagnosiskeys/download/{_now:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
+            var testUri = new Uri($"{_efgsConfigMock.BaseUrl}/diagnosiskeys/download/{yesterday:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
+            var secondTestUri = new Uri($"{_efgsConfigMock.BaseUrl}/diagnosiskeys/download/{_now:yyyy-MM-dd}", UriKind.RelativeOrAbsolute);
 
             var firstResponseMessage = new HttpResponseMessage
             {
@@ -476,17 +485,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             mockHttpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(client);
 
             var receiver = new HttpGetIksCommand(
-                _config,
-                _certProvider.Object,
+                _efgsConfigMock,
+                _certProviderMock.Object,
+                _thumbprintConfigMock.Object,
                 mockHttpClientFactory.Object,
                 _logger);
 
             var sut = new IksPollingBatchJob(
-                _dtp.Object,
+                _dtpMock.Object,
                 receiver,
                 writer.Object,
                 _iksInDbContext,
-                _config,
+                _efgsConfigMock,
                 _logger);
 
             //Act

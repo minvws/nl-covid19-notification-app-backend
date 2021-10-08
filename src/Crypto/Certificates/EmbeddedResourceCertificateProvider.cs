@@ -9,19 +9,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
     public class EmbeddedResourceCertificateProvider : ICertificateProvider
     {
-        private readonly IEmbeddedResourceCertificateConfig _config;
+        private readonly ICertificateChainConfig _config;
         private readonly EmbeddedCertProviderLoggingExtensions _logger;
 
-        public EmbeddedResourceCertificateProvider(IEmbeddedResourceCertificateConfig config, EmbeddedCertProviderLoggingExtensions logger)
+        public EmbeddedResourceCertificateProvider(ICertificateChainConfig config, EmbeddedCertProviderLoggingExtensions logger)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public X509Certificate2 GetCertificate()
+        public X509Certificate2 GetCertificate(string thumbprint, bool rootTrusted)
         {
-            var a = typeof(EmbeddedResourceCertificateProvider).Assembly;
-
             //This matches the assembly base namespace and the folder name of the resource files.
             using var s = ResourcesHook.GetManifestResourceStream(_config.Path);
             if (s == null)
