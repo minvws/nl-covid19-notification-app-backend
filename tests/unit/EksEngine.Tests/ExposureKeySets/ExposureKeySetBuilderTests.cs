@@ -26,6 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             public string AppBundleId => "nl.rijksoverheid.en";
             public string VerificationKeyId => "ServerNL";
             public string VerificationKeyVersion => "v1";
+            public string VerificationKeyVersionV15 => "v2";
         }
 
         //y = 4.3416x + 715.24
