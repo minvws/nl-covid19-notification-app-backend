@@ -25,6 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
             services.AddTransient<ManifestV2Builder>();
             services.AddTransient<ManifestV3Builder>();
             services.AddTransient<ManifestV4Builder>();
+            services.AddTransient<ManifestV5Builder>();
             services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient(x =>
