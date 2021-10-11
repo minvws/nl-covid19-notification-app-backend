@@ -26,6 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.ServiceRe
             services.AddTransient<ManifestV2Builder>();
             services.AddTransient<ManifestV3Builder>();
             services.AddTransient<ManifestV4Builder>();
+            services.AddTransient<ManifestV5Builder>();
 
             // Operating components
             services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
