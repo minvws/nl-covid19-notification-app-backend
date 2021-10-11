@@ -63,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
             }
 
             var securityInfo = GetGaenSignatureInfo(_gaenContentSigner.SignatureOid, _config.VerificationKeyVersion);
-            var securityInfoV15 = GetGaenSignatureInfo(_gaenV15ContentSigner.SignatureOid, _config.VerificationKeyVersion);
+            var securityInfoV15 = GetGaenSignatureInfo(_gaenV15ContentSigner.SignatureOid, _config.VerificationKeyVersionV15);
 
             var content = CreateContent(keys, securityInfo);
             var contentV15 = CreateContent(keys, securityInfoV15);

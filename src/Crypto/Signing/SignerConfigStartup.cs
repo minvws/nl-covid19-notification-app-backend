@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 new LocalMachineStoreCertificateProvider(loggingExtensions),
                 new CertificateChainConfig(config, NlChainPrefix),
                 dateTimeProvider,
-                new ThumbprintConfig( // Todo: refactor to fit its purpose of getting config data
+                new ThumbprintConfig(
                     config,
                     GaSettingPrefix)
                 );
@@ -42,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         {
             return new GASigner(
                 new LocalMachineStoreCertificateProvider(loggingExtensions),
-                new ThumbprintConfig( // Todo: refactor to fit its purpose of getting config data
+                new ThumbprintConfig(
                     config,
                     GaSettingPrefix));
         }
@@ -53,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         {
             return new GAv15Signer(
                 new LocalMachineStoreCertificateProvider(loggingExtensions),
-                new ThumbprintConfig( // Todo: refactor to fit its purpose of getting config data
+                new ThumbprintConfig(
                     config,
                     GaV15SettingPrefix));
         }
