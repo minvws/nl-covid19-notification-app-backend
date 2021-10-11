@@ -19,7 +19,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ma
             ( ContentTypes.Manifest, LoggingCodex.RemoveExpiredManifest ),
             ( ContentTypes.ManifestV2, LoggingCodex.RemoveExpiredManifestV2 ),
             ( ContentTypes.ManifestV3, LoggingCodex.RemoveExpiredManifestV3 ),
-            ( ContentTypes.ManifestV4, LoggingCodex.RemoveExpiredManifestV4 )
+            ( ContentTypes.ManifestV4, LoggingCodex.RemoveExpiredManifestV4 ),
+            ( ContentTypes.ManifestV5, LoggingCodex.RemoveExpiredManifestV5 )
         };
 
         public RemoveExpiredManifestsCommand(RemoveExpiredManifestsReceiver receiver)

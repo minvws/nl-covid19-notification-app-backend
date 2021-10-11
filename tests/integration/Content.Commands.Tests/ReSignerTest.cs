@@ -53,6 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
                 new ContentEntity { Content = new byte[0], PublishingId = "3", ContentTypeName = "Meh", Type = ContentTypes.AppConfigV2, Created = d, Release = d },
                 new ContentEntity { Content = new byte[0], PublishingId = "4", ContentTypeName = "Meh", Type = ContentTypes.ExposureKeySet, Created = d, Release = d },
                 new ContentEntity { Content = new byte[0], PublishingId = "5", ContentTypeName = "Meh", Type = ContentTypes.ExposureKeySetV2, Created = d, Release = d },
+                new ContentEntity { Content = new byte[0], PublishingId = "6", ContentTypeName = "Meh", Type = ContentTypes.ExposureKeySetV3, Created = d, Release = d },
             });
 
             await _contentDbContext.SaveChangesAsync();
@@ -61,7 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
             await resigner.ExecuteAsync(ContentTypes.Manifest, ContentTypes.ManifestV2, ZippedContentEntryNames.Content);
 
             //check the numbers
-            Assert.Equal(6, _contentDbContext.Content.Count());
+            Assert.Equal(7, _contentDbContext.Content.Count());
 
             var m2 = _contentDbContext.Content.Single(x => x.PublishingId == "1" && x.Type == ContentTypes.ManifestV2);
 

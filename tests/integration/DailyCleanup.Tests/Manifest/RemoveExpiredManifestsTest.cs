@@ -29,7 +29,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
             ContentTypes.Manifest,
             ContentTypes.ManifestV2,
             ContentTypes.ManifestV3,
-            ContentTypes.ManifestV4
+            ContentTypes.ManifestV4,
+            ContentTypes.ManifestV5,
         };
 
         protected RemoveExpiredManifestsTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
@@ -42,6 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
         [InlineData(ContentTypes.ManifestV2)]
         [InlineData(ContentTypes.ManifestV3)]
         [InlineData(ContentTypes.ManifestV4)]
+        [InlineData(ContentTypes.ManifestV5)]
         public async Task Remove_Expired_Manifest_By_Type_Should_Leave_One(ContentTypes manifestTypeName)
         {
             //Arrange
@@ -108,6 +110,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
         [InlineData(ContentTypes.ManifestV2)]
         [InlineData(ContentTypes.ManifestV3)]
         [InlineData(ContentTypes.ManifestV4)]
+        [InlineData(ContentTypes.ManifestV5)]
         public async Task Remove_Zero_Manifest_By_Type_Should_Not_Crash(ContentTypes manifestTypeName)
         {
             //Arrange
