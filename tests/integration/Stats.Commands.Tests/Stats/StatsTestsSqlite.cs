@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Data.Common;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ using Xunit;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Stats
 {
     [Trait("db", "mem")]
-    public class StatsTestsSqlite : StatsTests
+    public class StatsTestsSqlite : StatsTests, IDisposable
     {
         private static DbConnection connection;
 
