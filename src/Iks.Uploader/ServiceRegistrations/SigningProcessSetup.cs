@@ -12,8 +12,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
 {
     public static class SigningProcessSetup
     {
+        private const string EfgsSigningSettingPrefix = "Certificates:EFGSSigning";
+
         public static void SigningProcessRegistration(this IServiceCollection services)
         {
+            services.AddTransient<IThumbprintConfig>(
+                x => new ThumbprintConfig(
+                    x.GetRequiredService<IConfiguration>(),
+                    EfgsSigningSettingPrefix));
+
             // Batch Job
             services.AddTransient<IIksSigner, EfgsCmsSigner>();
             services.AddTransient<ICertificateChainConfig, CertificateChainConfig>();
