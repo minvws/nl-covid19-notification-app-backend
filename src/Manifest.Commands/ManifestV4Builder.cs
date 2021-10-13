@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             {
                 ExposureKeySets = await _contentDbContext.SafeGetActiveContentIdListAsync(ContentTypes.ExposureKeySet, from, snapshot),
                 RiskCalculationParameters = await _contentDbContext.SafeGetLatestContentIdAsync(ContentTypes.RiskCalculationParametersV3, snapshot),
-                AppConfig = await _contentDbContext.SafeGetLatestContentIdAsync(ContentTypes.AppConfig, snapshot),
+                AppConfig = await _contentDbContext.SafeGetLatestContentIdAsync(ContentTypes.AppConfigV2, snapshot),
                 ResourceBundle = await _contentDbContext.SafeGetLatestContentIdAsync(ContentTypes.ResourceBundleV3, snapshot)
             };
         }
