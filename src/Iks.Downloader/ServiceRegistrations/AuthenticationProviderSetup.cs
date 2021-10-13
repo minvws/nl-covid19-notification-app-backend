@@ -11,13 +11,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.ServiceRe
 {
     public static class AuthenticationProviderSetup
     {
+        private const string EfgsAuthenticationSettingPrefix = "Certificates:EfgsAuthentication";
+
         public static void AuthenticationProviderRegistration(this IServiceCollection services)
         {
             services
                 .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
                 .AddCertificate();
 
-            services.AddSingleton<IThumbprintConfig, ThumbprintConfig>();
+            services.AddTransient<IThumbprintConfig>(
+                x => new ThumbprintConfig(
+                    x.GetRequiredService<IConfiguration>(),
+                    EfgsAuthenticationSettingPrefix));
 
             services.AddTransient<IAuthenticationCertificateProvider>(
                 x => new LocalMachineStoreCertificateProvider(

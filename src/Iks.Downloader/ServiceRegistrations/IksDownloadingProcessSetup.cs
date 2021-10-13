@@ -18,7 +18,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.ServiceRe
         {
             services.AddTransient<IHttpGetIksCommand, HttpGetIksCommand>();
             services.AddTransient<IIksWriterCommand, IksWriterCommand>();
-            services.AddTransient<IThumbprintConfig, ThumbprintConfig>();
             services.AddTransient<IksPollingBatchJob>();
             services.AddHttpClient(UniversalConstants.EfgsDownloader)
                 .ConfigurePrimaryHttpMessageHandler(ConfigureClientCertificate);
@@ -32,6 +31,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.ServiceRe
             };
 
             var clientCertificateProvider = services.GetRequiredService<IAuthenticationCertificateProvider>();
+
+            // ThumbprintConfig was registered in AuthenticationProviderSetup
             var thumbprintConfig = services.GetRequiredService<IThumbprintConfig>();
 
             handler.ClientCertificates.Clear();
