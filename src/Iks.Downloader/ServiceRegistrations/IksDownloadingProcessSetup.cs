@@ -4,6 +4,7 @@
 
 using System;
 using System.Net.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -14,8 +15,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.ServiceRe
 {
     public static class IksDownloadingProcessSetup
     {
+        private const string EfgsAuthenticationSettingPrefix = "Certificates:EfgsAuthentication";
+
         public static void IksDownloadingProcessRegistration(this IServiceCollection services)
         {
+            services.AddTransient<IThumbprintConfig>(
+                x => new ThumbprintConfig(
+                    x.GetRequiredService<IConfiguration>(),
+                    EfgsAuthenticationSettingPrefix));
+
             services.AddTransient<IHttpGetIksCommand, HttpGetIksCommand>();
             services.AddTransient<IIksWriterCommand, IksWriterCommand>();
             services.AddTransient<IksPollingBatchJob>();
@@ -31,8 +39,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.ServiceRe
             };
 
             var clientCertificateProvider = services.GetRequiredService<IAuthenticationCertificateProvider>();
-
-            // ThumbprintConfig was registered in AuthenticationProviderSetup
             var thumbprintConfig = services.GetRequiredService<IThumbprintConfig>();
 
             handler.ClientCertificates.Clear();

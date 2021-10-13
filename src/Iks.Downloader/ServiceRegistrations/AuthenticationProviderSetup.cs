@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.AspNetCore.Authentication.Certificate;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 
@@ -11,18 +10,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.ServiceRe
 {
     public static class AuthenticationProviderSetup
     {
-        private const string EfgsAuthenticationSettingPrefix = "Certificates:EfgsAuthentication";
-
         public static void AuthenticationProviderRegistration(this IServiceCollection services)
         {
             services
                 .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
                 .AddCertificate();
 
-            services.AddTransient<IThumbprintConfig>(
-                x => new ThumbprintConfig(
-                    x.GetRequiredService<IConfiguration>(),
-                    EfgsAuthenticationSettingPrefix));
+
 
             services.AddTransient<IAuthenticationCertificateProvider>(
                 x => new LocalMachineStoreCertificateProvider(
