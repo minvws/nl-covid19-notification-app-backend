@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 dateTimeProvider,
                 new ThumbprintConfig(
                     config,
-                    GaSettingPrefix)
+                    NlSettingPrefix)
                 );
         }
 
@@ -44,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 new LocalMachineStoreCertificateProvider(loggingExtensions),
                 new ThumbprintConfig(
                     config,
-                    NlSettingPrefix));
+                    GaSettingPrefix));
         }
 
         public static IGaContentSigner BuildGaV15Signer(
