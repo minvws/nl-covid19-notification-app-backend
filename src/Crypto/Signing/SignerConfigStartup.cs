@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 dateTimeProvider,
                 new ThumbprintConfig(
                     config,
-                    GaSettingPrefix)
+                    NlSettingPrefix)
                 );
         }
 
