@@ -15,8 +15,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private readonly ICertificateProvider _certificateProvider;
         private readonly IThumbprintConfig _config;
 
-        private const string EfgsSigningThumbprint = "Certificates:EFGSSigning"; // Todo: path to thumbprint in config should be stored in these classes; refactor thumbprintconfigprovider to use this string
-
         public EfgsCmsSigner(ICertificateProvider certificateProvider, IThumbprintConfig config)
         {
             _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
