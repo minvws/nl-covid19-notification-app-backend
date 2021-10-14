@@ -23,6 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs
         private readonly RemovePublishedDiagnosisKeysCommand _removePublishedDiagnosisKeysCommand;
         private readonly RemoveExpiredEksCommand _removeExpiredEksCommand;
         private readonly RemoveExpiredEksV2Command _removeExpiredEksV2Command;
+        private readonly RemoveExpiredEksV3Command _removeExpiredEksV3Command;
         private readonly RemoveExpiredManifestsCommand _removeExpiredManifestsCommand;
         private readonly RemoveExpiredIksInCommand _removeExpiredIksInCommand;
         private readonly RemoveExpiredIksOutCommand _removeExpiredIksOutCommand;
@@ -35,6 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs
             RemoveDiagnosisKeysReadyForCleanupCommand removeDiagnosisKeysReadyForCleanupCommand,
             RemoveExpiredEksCommand removeExpiredEksCommand,
             RemoveExpiredEksV2Command removeExpiredEksV2Command,
+            RemoveExpiredEksV3Command removeExpiredEksV3Command,
             RemoveExpiredManifestsCommand removeExpiredManifestsCommand,
             RemoveExpiredIksInCommand removeExpiredIksInCommand,
             RemoveExpiredIksOutCommand removeExpiredIksOutCommand)
@@ -47,6 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs
             _removePublishedDiagnosisKeysCommand = removePublishedDiagnosisKeysCommand ?? throw new ArgumentNullException(nameof(removePublishedDiagnosisKeysCommand));
             _removeExpiredEksCommand = removeExpiredEksCommand ?? throw new ArgumentNullException(nameof(removeExpiredEksCommand));
             _removeExpiredEksV2Command = removeExpiredEksV2Command ?? throw new ArgumentNullException(nameof(removeExpiredEksV2Command));
+            _removeExpiredEksV3Command = removeExpiredEksV3Command ?? throw new ArgumentNullException(nameof(removeExpiredEksV3Command));
             _removeExpiredManifestsCommand = removeExpiredManifestsCommand ?? throw new ArgumentNullException(nameof(removeExpiredManifestsCommand));
             _removeExpiredIksInCommand = removeExpiredIksInCommand ?? throw new ArgumentNullException(nameof(removeExpiredIksInCommand));
             _removeExpiredIksOutCommand = removeExpiredIksOutCommand ?? throw new ArgumentNullException(nameof(removeExpiredIksOutCommand));
@@ -62,6 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs
                 .SetCommand(_removePublishedDiagnosisKeysCommand).WithPreExecuteAction(_logger.WriteEksCleanupStarting)
                 .SetCommand(_removeExpiredEksCommand)
                 .SetCommand(_removeExpiredEksV2Command).WithPreExecuteAction(_logger.WriteEksV2CleanupStarting)
+                .SetCommand(_removeExpiredEksV3Command).WithPreExecuteAction(_logger.WriteEksV3CleanupStarting)
                 .SetCommand(_removeExpiredManifestsCommand).WithPreExecuteAction(_logger.WriteManiFestCleanupStarting)
                 .SetCommand(_removeExpiredIksInCommand).WithPreExecuteAction(_logger.WriteExpiredIksInCleanupStarting)
                 .SetCommand(_removeExpiredIksOutCommand).WithPreExecuteAction(_logger.WriteExpiredIksOutCleanupStarting)
