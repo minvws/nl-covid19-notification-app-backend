@@ -17,6 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.ServiceRegi
             services.AddSingleton<ExpiredEksLoggingExtensions>();
             services.AddSingleton<ExpiredWorkflowLoggingExtensions>();
             services.AddSingleton<ExpiredEksV2LoggingExtensions>();
+            services.AddSingleton<ExpiredEksV3LoggingExtensions>();
             services.AddSingleton<RemoveExpiredIksLoggingExtensions>();
         }
     }
