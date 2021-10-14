@@ -44,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 new LocalMachineStoreCertificateProvider(loggingExtensions),
                 new ThumbprintConfig(
                     config,
-                    GaSettingPrefix));
+                    NlSettingPrefix));
         }
 
         public static IGaContentSigner BuildGaV15Signer(
