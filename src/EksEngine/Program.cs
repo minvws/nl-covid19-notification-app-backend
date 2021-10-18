@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Jobs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistrations;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 {
@@ -32,7 +31,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             serviceProvider.GetRequiredService<IksImportBatchJob>().Run();
             serviceProvider.GetRequiredService<EksBatchJob>().Run();
             serviceProvider.GetRequiredService<ManifestBatchJob>().Run();
-            //serviceProvider.GetRequiredService<SigningBatchJob>().Run();
             serviceProvider.GetRequiredService<IksBatchJob>().Run();
         }
 
@@ -47,7 +45,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
 
             // Step specific registrations
             services.EksProcessRegistration();
-            services.SigningProcessRegistration();
             services.IksImportProcessRegistration();
             services.IksPublishingProcessRegistration();
             services.ManifestUpdateRegistration();
