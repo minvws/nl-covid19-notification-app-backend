@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             serviceProvider.GetRequiredService<IksImportBatchJob>().Run();
             serviceProvider.GetRequiredService<EksBatchJob>().Run();
             serviceProvider.GetRequiredService<ManifestBatchJob>().Run();
-            serviceProvider.GetRequiredService<SigningBatchJob>().Run();
+            //serviceProvider.GetRequiredService<SigningBatchJob>().Run();
             serviceProvider.GetRequiredService<IksBatchJob>().Run();
         }
 

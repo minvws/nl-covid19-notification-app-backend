@@ -210,7 +210,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount + result.StuffingCount);
 
@@ -227,7 +227,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(1, _contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet)); // 2nd has only stuffing
+            Assert.Equal(1, _contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2)); // 2nd has only stuffing
             Assert.Equal(1, _contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3)); // 2nd has only stuffing
             Assert.Equal(5, _dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally)); // 2nd run adds 0 stuffing records
 
@@ -254,7 +254,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_workflowContext.TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published), result.InputCount);
 
@@ -291,7 +291,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount + result.StuffingCount);
 
@@ -328,7 +328,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
@@ -369,7 +369,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
@@ -411,7 +411,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 

@@ -63,17 +63,17 @@ namespace DbProvision
         {
             if (arg.Equals("-a", StringComparison.InvariantCultureIgnoreCase))
             {
-                return ContentTypes.AppConfig;
+                return ContentTypes.AppConfigV2;
             }
 
             if (arg.Equals("-r", StringComparison.InvariantCultureIgnoreCase))
             {
-                return ContentTypes.RiskCalculationParameters;
+                return ContentTypes.RiskCalculationParametersV2;
             }
 
             if (arg.Equals("-b", StringComparison.InvariantCultureIgnoreCase))
             {
-                return ContentTypes.ResourceBundle;
+                return ContentTypes.ResourceBundleV2;
             }
 
             if (arg.Equals("-b2", StringComparison.InvariantCultureIgnoreCase))

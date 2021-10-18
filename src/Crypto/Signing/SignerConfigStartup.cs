@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 
@@ -15,12 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
         private const string GaV15SettingPrefix = "Certificates:GAv15";
         private const string NlSettingPrefix = "Certificates:NL";
         private const string NlChainPrefix = NlSettingPrefix + ":Chain";
-
-        public static void DummySignerStartup(this IServiceCollection services)
-        {
-            services.AddTransient<IContentSigner>(x => new DummyCmsSigner());
-        }
-
+        
         public static IContentSigner BuildEvSigner(
             IConfiguration config,
             LocalMachineStoreCertificateProviderLoggingExtensions loggingExtensions,

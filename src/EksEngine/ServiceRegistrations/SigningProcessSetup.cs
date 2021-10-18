@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Jobs;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistrations
@@ -18,7 +17,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
 
             // Commands
             services.NlResignerStartup();
-            services.DummySignerStartup();
         }
     }
 }
