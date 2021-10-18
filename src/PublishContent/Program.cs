@@ -6,11 +6,12 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
@@ -41,7 +42,10 @@ namespace PublishContent
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
 
             services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient<IContentSigner, DummyCmsSigner>();
+            services.AddTransient<IContentSigner>(x => SignerConfigStartup.BuildEvSigner(
+                configuration,
+                new LocalMachineStoreCertificateProviderLoggingExtensions(new Logger<LocalMachineStoreCertificateProviderLoggingExtensions>(new LoggerFactory())),
+                new StandardUtcDateTimeProvider()));
 
             services.AddTransient<ContentValidator>();
             services.AddTransient<ContentInsertDbCommand>();

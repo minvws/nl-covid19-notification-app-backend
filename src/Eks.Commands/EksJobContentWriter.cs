@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                         Release = x.Release,
                         ContentTypeName = MediaTypeNames.Application.Zip,
                         Content = x.Content,
-                        Type = ContentTypes.ExposureKeySet,
+                        Type = ContentTypes.ExposureKeySetV2,
                         PublishingId = _publishingIdService.Create(x.Content)
                     }).ToArray();
 

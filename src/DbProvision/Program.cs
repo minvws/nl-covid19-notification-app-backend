@@ -6,12 +6,13 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -77,7 +78,10 @@ namespace DbProvision
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<ContentInsertDbCommand>();
-            services.AddTransient<IContentSigner, DummyCmsSigner>();
+            services.AddTransient<IContentSigner>(x => SignerConfigStartup.BuildEvSigner(
+                  configuration,
+                  new LocalMachineStoreCertificateProviderLoggingExtensions(new NullLogger<LocalMachineStoreCertificateProviderLoggingExtensions>()),
+                  new StandardUtcDateTimeProvider()));
 
             services.PublishContentForV3Startup();
         }
