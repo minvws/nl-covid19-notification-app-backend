@@ -16,7 +16,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ma
 
         private readonly List<(ContentTypes, int)> _manifestTypesAndLoggingCodexNumber = new List<(ContentTypes, int)>
         {
-            ( ContentTypes.Manifest, LoggingCodex.RemoveExpiredManifest ),
             ( ContentTypes.ManifestV2, LoggingCodex.RemoveExpiredManifestV2 ),
             ( ContentTypes.ManifestV3, LoggingCodex.RemoveExpiredManifestV3 ),
             ( ContentTypes.ManifestV4, LoggingCodex.RemoveExpiredManifestV4 ),

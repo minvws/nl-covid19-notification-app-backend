@@ -26,7 +26,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
 
         private readonly List<ContentTypes> _manifestTypes = new List<ContentTypes>
         {
-            ContentTypes.Manifest,
             ContentTypes.ManifestV2,
             ContentTypes.ManifestV3,
             ContentTypes.ManifestV4,

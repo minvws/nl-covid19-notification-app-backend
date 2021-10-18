@@ -32,9 +32,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             return new ManifestContent
             {
                 ExposureKeySets = await _contentDbContext.SafeGetActiveContentIdListAsync(ContentTypes.ExposureKeySetV2, from, snapshot),
-                RiskCalculationParameters = await _contentDbContext.SafeGetLatestContentIdAsync(ContentTypes.RiskCalculationParameters, snapshot),
+                RiskCalculationParameters = await _contentDbContext.SafeGetLatestContentIdAsync(ContentTypes.RiskCalculationParametersV2, snapshot),
                 AppConfig = await _contentDbContext.SafeGetLatestContentIdAsync(ContentTypes.AppConfigV2, snapshot),
-                ResourceBundle = await _contentDbContext.SafeGetLatestContentIdAsync(ContentTypes.ResourceBundle, snapshot)
+                ResourceBundle = await _contentDbContext.SafeGetLatestContentIdAsync(ContentTypes.ResourceBundleV2, snapshot)
             };
         }
     }

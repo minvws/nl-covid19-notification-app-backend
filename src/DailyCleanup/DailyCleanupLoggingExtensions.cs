@@ -86,12 +86,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
                 Name, WorkflowCleanupStarting);
         }
 
-        public void WriteResignerStarting()
-        {
-            _logger.LogInformation("[{name}/{id}] Daily cleanup - Resigning existing v1 content.",
-                Name, ResignerStarting);
-        }
-
         public void WriteEksV2CleanupStarting()
         {
             _logger.LogInformation("[{name}/{id}] Daily cleanup - Cleanup EKSv2 run starting.",
