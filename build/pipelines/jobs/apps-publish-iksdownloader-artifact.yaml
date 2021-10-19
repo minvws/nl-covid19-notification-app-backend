@@ -1,6 +1,6 @@
 jobs:  
   - job: Build_Iks_Downloader
-    dependsOn: Install_SDK_31x
+    dependsOn: Install_SDK_50
     variables:
     - name: ArtifactSubfolder
       value: $(Apps.IksDownloader.ArtifactSubDirectory)
