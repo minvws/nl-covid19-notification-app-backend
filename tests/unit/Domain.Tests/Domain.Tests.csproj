@@ -6,6 +6,7 @@
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Tests</RootNamespace>
 	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup>
 
   <ItemGroup>
