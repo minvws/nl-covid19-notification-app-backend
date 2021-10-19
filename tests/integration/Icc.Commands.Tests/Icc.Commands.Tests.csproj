@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>Icc.Commands.Tests.!DONOTDEPLOY!</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tests</RootNamespace>
 	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>

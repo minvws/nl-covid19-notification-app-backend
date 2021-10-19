@@ -60,9 +60,10 @@ stages:
         
         # Install .Net Core 3.1 LTS Version
         - task: UseDotNet@2
-          displayName: 'Install .NET Core SDK'
+          displayName: 'Install .NET SDK 5.0'
           inputs:
-            version: 3.1.x
+            packageType: 'sdk'
+            version: '5.0.x'
         # Restore 
         - task: NuGetToolInstaller@1
           displayName: 'Install NuGet Tool'
