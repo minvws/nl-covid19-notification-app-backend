@@ -72,12 +72,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             stopwatch.Start();
 
             _logger.LogInformation("Started - JobName:{JobName}", _jobName);
-
-            if (Environment.UserInteractive && !WindowsIdentityQueries.CurrentUserIsAdministrator())
-            {
-                _logger.LogWarning("{JobName} started WITHOUT elevated privileges - errors may occur when signing content.", _jobName);
-            }
-
+            
             _engineResult.Started = _dateTimeProvider.Snapshot; //Align with the logged job name.
 
             await ClearJobTables();
