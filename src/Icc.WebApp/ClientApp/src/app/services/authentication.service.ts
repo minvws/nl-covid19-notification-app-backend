@@ -45,8 +45,8 @@ export class AuthenticationService {
     }
 
     private static errorHandler(error: HttpErrorResponse, caught: Observable<any>): Observable<any> {
-        // TODO error handling
-        throw error;
+        this.logout();
+        return of(false);
     }
 
   public buildUrl(endpoint: string) {
