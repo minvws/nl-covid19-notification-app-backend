@@ -36,6 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         private const int NextBatchFound = Base + 19;
         private const int NoNextBatchNoNextDay = Base + 20;
         private const int RequestingData = Base + 21;
+        private const int BatchTag = Base + 22;
 
         private readonly ILogger _logger;
 
@@ -93,6 +94,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             _logger.LogInformation("[{name}/{id}] Response headers: {headers}",
                 Name, ResponseHeaders,
                 responseHeaders.ToString());
+        }
+
+        public void WriteBatchTagNotFound()
+        {
+            _logger.LogWarning("[{name}/{id}]Response headers: BatchTag not found.",
+                Name, BatchTag);
         }
 
         public void WriteResponseNotFound()
