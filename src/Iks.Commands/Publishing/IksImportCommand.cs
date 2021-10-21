@@ -54,7 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 
             if (batch?.Keys == null || batch.Keys.Count == 0)
             {
-                //TODO log.
+                _logger.LogError("Batch doesn't exist or doesn't have keys.", batch);
                 entity.Error = true;
                 commandResult.HasErrors = true;
                 return commandResult;
