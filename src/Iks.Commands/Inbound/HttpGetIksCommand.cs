@@ -67,27 +67,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 // EFGS returns the string 'null' if there is no batch tag. We will represent this with an actual null.
+                var batchTag = response.Headers.SafeGetValue("batchTag");
                 var nextBatchTag = response.Headers.SafeGetValue("nextBatchTag");
                 nextBatchTag = nextBatchTag == "null" ? null : nextBatchTag;
 
-                return new HttpGetIksResult
+                if (!string.IsNullOrEmpty(batchTag))
                 {
-                    //TODO errors if info not present
-                    BatchTag = response.Headers.SafeGetValue("batchTag"),
-                    NextBatchTag = nextBatchTag,
-                    Content = await response.Content.ReadAsByteArrayAsync(),
-                    ResultCode = response.StatusCode
-                };
+                    return new HttpGetIksResult
+                    {
+                        BatchTag = batchTag,
+                        NextBatchTag = nextBatchTag,
+                        Content = await response.Content.ReadAsByteArrayAsync(),
+                        ResultCode = response.StatusCode
+                    };
+                }
+
+                _logger.WriteBatchTagNotFound();
             }
-            else
+
+            return new HttpGetIksResult
             {
-                return new HttpGetIksResult
-                {
-                    BatchTag = string.Empty,
-                    NextBatchTag = null,
-                    ResultCode = response.StatusCode
-                };
-            }
+                BatchTag = string.Empty,
+                NextBatchTag = null,
+                ResultCode = response.StatusCode
+            };
         }
 
         private HttpRequestMessage BuildHttpRequest(string batchTag, DateTime date)
