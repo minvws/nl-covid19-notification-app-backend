@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Text;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
+namespace EksEngine.Tests
 {
     /// <summary>
     /// Returns a byte array that indicates no RSA-signature is created

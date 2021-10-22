@@ -24,6 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
         private const int WorkflowCleanupStarting = Base + 6;
         private const int ResignerStarting = Base + 7;
         private const int EksV2CleanupStarting = Base + 8;
+        private const int EksV3CleanupStarting = Base + 14;
         private const int ManifestV2CleanupStarting = Base + 9;
         private const int ExpiredIksInCleanupStarting = Base + 10;
         private const int ExpiredIksOutCleanupStarting = Base + 11;
@@ -85,16 +86,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
                 Name, WorkflowCleanupStarting);
         }
 
-        public void WriteResignerStarting()
-        {
-            _logger.LogInformation("[{name}/{id}] Daily cleanup - Resigning existing v1 content.",
-                Name, ResignerStarting);
-        }
-
         public void WriteEksV2CleanupStarting()
         {
             _logger.LogInformation("[{name}/{id}] Daily cleanup - Cleanup EKSv2 run starting.",
                 Name, EksV2CleanupStarting);
+        }
+
+        public void WriteEksV3CleanupStarting()
+        {
+            _logger.LogInformation("[{name}/{id}] Daily cleanup - Cleanup EKSv3 run starting.",
+                Name, EksV3CleanupStarting);
         }
 
         public void WriteManifestV2CleanupStarting()

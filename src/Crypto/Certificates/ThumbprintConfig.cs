@@ -7,9 +7,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
-    public class LocalMachineStoreCertificateProviderConfig : AppSettingsReader, IThumbprintConfig
+    public class ThumbprintConfig : AppSettingsReader, IThumbprintConfig
     {
-        public LocalMachineStoreCertificateProviderConfig(IConfiguration config, string prefix = null) : base(config, prefix) { }
+        public ThumbprintConfig(IConfiguration config, string prefix = null) : base(config, prefix) { }
 
         public string Thumbprint => GetConfigValue<string>(nameof(Thumbprint));
         public bool RootTrusted => GetConfigValue<bool>(nameof(RootTrusted));

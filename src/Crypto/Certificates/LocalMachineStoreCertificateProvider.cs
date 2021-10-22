@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
@@ -10,43 +11,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
     public class LocalMachineStoreCertificateProvider : ICertificateProvider, IAuthenticationCertificateProvider
     {
-        private readonly IThumbprintConfig _thumbprintConfig;
         private readonly LocalMachineStoreCertificateProviderLoggingExtensions _logger;
 
-        public LocalMachineStoreCertificateProvider(IThumbprintConfig thumbprintConfig, LocalMachineStoreCertificateProviderLoggingExtensions logger)
+        public LocalMachineStoreCertificateProvider(LocalMachineStoreCertificateProviderLoggingExtensions logger)
         {
-            _thumbprintConfig = thumbprintConfig ?? throw new ArgumentNullException(nameof(thumbprintConfig));
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public X509Certificate2 GetCertificate()
+        public X509Certificate2 GetCertificate(string thumbprint, bool rootTrusted)
         {
-            using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-            store.Open(OpenFlags.ReadOnly);
+            X509Certificate2 result;
 
-            _logger.WriteFindingCert(_thumbprintConfig.Thumbprint, _thumbprintConfig.RootTrusted);
+            _logger.WriteFindingCert(thumbprint, rootTrusted);
 
-            var result = ReadCertFromStore(store);
-            if (result == null)
-            {
-                _logger.WriteCertNotFound(_thumbprintConfig.Thumbprint);
-                throw new InvalidOperationException("Certificate not found.");
-            }
-
-            if (!result.HasPrivateKey)
-            {
-                _logger.WriteNoPrivateKey(_thumbprintConfig.Thumbprint);
-                throw new InvalidOperationException("Private key not found.");
-            }
-
-            return result;
-        }
-        private X509Certificate2 ReadCertFromStore(X509Store x509Store)
-        {
             try
             {
-                return x509Store.Certificates
-                    .Find(X509FindType.FindByThumbprint, _thumbprintConfig.Thumbprint, _thumbprintConfig.RootTrusted)
+                using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+                store.Open(OpenFlags.ReadOnly);
+
+                result = store.Certificates
+                    .Find(X509FindType.FindByThumbprint, thumbprint, rootTrusted)
                     .OfType<X509Certificate2>()
                     .FirstOrDefault();
             }
@@ -55,7 +39,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
                 _logger.WriteCertReadError(e);
                 throw;
             }
-        }
 
+            if (result == null)
+            {
+                _logger.WriteCertNotFound(thumbprint);
+                throw new InvalidOperationException("Certificate not found.");
+            }
+
+            if (!result.HasPrivateKey)
+            {
+                _logger.WriteNoPrivateKey(thumbprint);
+                throw new InvalidOperationException("Private key not found on certificate.");
+            }
+
+            return result;
+        }
     }
 }

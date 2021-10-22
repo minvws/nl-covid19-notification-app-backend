@@ -84,6 +84,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
                     _contentDbContext,
                     eksConfigMock.Object,
                     dateTimeProvider),
+                new ManifestV5Builder(
+                    _contentDbContext,
+                    eksConfigMock.Object,
+                    dateTimeProvider),
                 _contentDbContext,
                 new ManifestUpdateCommandLoggingExtensions(lf.CreateLogger<ManifestUpdateCommandLoggingExtensions>()),
                 dateTimeProvider,

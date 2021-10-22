@@ -156,7 +156,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         private class FakeEksBuilder : IEksBuilder
         {
-            public async Task<byte[]> BuildAsync(TemporaryExposureKeyArgs[] keys) => new byte[] { 1 };
+            public async Task<(byte[], byte[])> BuildAsync(TemporaryExposureKeyArgs[] keys) => (new byte[] { 1 }, new byte[] { 1 });
         }
 
         [Fact]
@@ -197,7 +197,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount + result.StuffingCount);
 
             Assert.True(result.TotalSeconds > 0);
@@ -213,7 +214,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3));
             Assert.Equal(5, _dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally));
 
             Assert.True(result.TotalSeconds > 0);
@@ -240,7 +242,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_workflowContext.TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Published), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
@@ -275,7 +278,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount + result.StuffingCount);
 
             Assert.True(result.TotalSeconds > 0);
@@ -314,7 +318,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
@@ -353,7 +358,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(5, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
@@ -392,7 +398,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount); //InputCount + StuffingCount - TransmissionRiskNoneCount - OutputCount;
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
@@ -431,7 +438,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(2, result.ReconcileOutputCount); //InputCount + StuffingCount - TransmissionRiskNoneCount - OutputCount;
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
@@ -470,7 +478,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
@@ -510,7 +519,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             Assert.Equal(0, result.ReconcileOutputCount);
             Assert.Equal(0, result.ReconcileEksSumCount);
 
-            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
+            Assert.Equal(_contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
             Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);

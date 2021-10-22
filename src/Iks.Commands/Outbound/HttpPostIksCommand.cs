@@ -14,14 +14,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
     public class HttpPostIksCommand
     {
         private readonly IEfgsConfig _efgsConfig;
+        private readonly IThumbprintConfig _config;
         private readonly IAuthenticationCertificateProvider _certificateProvider;
         private readonly IksUploaderLoggingExtensions _logger;
 
-        public HttpPostIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IksUploaderLoggingExtensions logger)
+        private const string EfgsCientThumbprint = "Certificates:EFGSClient"; // Todo: path to thumbprint in config should be stored in these classes; refactor thumbprintconfigprovider to use this string
+
+        public HttpPostIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IksUploaderLoggingExtensions logger, IThumbprintConfig config)
         {
             _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
             _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public async Task<HttpPostIksResult> ExecuteAsync(IksSendCommandArgs args)
@@ -29,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             var uri = new Uri($"{_efgsConfig.BaseUrl}/diagnosiskeys/upload");
 
             // Configure authentication certificate
-            using var clientCert = _certificateProvider.GetCertificate();
+            using var clientCert = _certificateProvider.GetCertificate(_config.Thumbprint, _config.RootTrusted);
             using var clientHandler = new HttpClientHandler
             {
                 ClientCertificateOptions = ClientCertificateOption.Manual

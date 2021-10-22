@@ -7,7 +7,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
     /// <summary>
     /// Embedded resources or file system.
     /// </summary>
-    public interface IEmbeddedResourceCertificateConfig
+    public interface ICertificateChainConfig
     {
         /// <summary>
         /// File system location or embedded resource path

@@ -5,6 +5,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 {
@@ -21,11 +22,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public void WritePublished(int count)
+        public void WritePublished(GaenVersion version, int count)
         {
-            _logger.LogInformation("[{name}/{id}] Published EKSs - Count:{Count}.",
-                Name, Published,
-                count);
+            _logger.LogInformation($"[{Name}/{Published}] Published Gaen {version} - EKSs - Count:{count}.");
         }
     }
 }

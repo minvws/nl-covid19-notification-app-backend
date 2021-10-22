@@ -47,10 +47,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
             {
                 Content = new byte[0],
                 PublishingId = id.ToString(),
-                ContentTypeName = "meh",
+                ContentTypeName = "ExposureKeySet",
                 Created = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) - TimeSpan.FromDays(id),
                 Release = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) - TimeSpan.FromDays(id),
                 Type = ContentTypes.ExposureKeySet
+            });
+
+            _contentDbContext.Content.Add(new ContentEntity
+            {
+                Content = new byte[0],
+                PublishingId = id.ToString(),
+                ContentTypeName = "ExposureKeySetV2",
+                Created = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) - TimeSpan.FromDays(id),
+                Release = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) - TimeSpan.FromDays(id),
+                Type = ContentTypes.ExposureKeySetV2
+            });
+
+            _contentDbContext.Content.Add(new ContentEntity
+            {
+                Content = new byte[0],
+                PublishingId = id.ToString(),
+                ContentTypeName = "ExposureKeySetV3",
+                Created = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) - TimeSpan.FromDays(id),
+                Release = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) - TimeSpan.FromDays(id),
+                Type = ContentTypes.ExposureKeySetV3
             });
 
             _contentDbContext.SaveChanges();
@@ -139,6 +159,206 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
             var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
             var fakeEksConfig = new FakeEksConfig() { CleanupDeletesData = true };
             var command = new RemoveExpiredEksCommand(_contentDbContext, fakeEksConfig, fakeDtp, expEksLogger);
+
+            for (var i = 0; i < 20; i++)
+            {
+                Add(i);
+            }
+
+            // Act
+            var result = (RemoveExpiredEksCommandResult)await command.ExecuteAsync();
+
+            // Assert
+            Assert.Equal(20, result.Found);
+            Assert.Equal(5, result.Zombies);
+            Assert.Equal(5, result.GivenMercy);
+            Assert.Equal(15, result.Remaining);
+            Assert.Equal(0, result.Reconciliation);
+        }
+
+        [Fact]
+        public async Task CleanerV2()
+        {
+            // Arrange
+            await _contentDbContext.TruncateAsync<ContentEntity>();
+
+            var lf = new LoggerFactory();
+            var expEksLogger = new ExpiredEksV2LoggingExtensions(lf.CreateLogger<ExpiredEksV2LoggingExtensions>());
+            var command = new RemoveExpiredEksV2Command(_contentDbContext, new FakeEksConfig(), new StandardUtcDateTimeProvider(), expEksLogger);
+
+            // Act
+            var result = (RemoveExpiredEksCommandResult)await command.ExecuteAsync();
+
+            // Assert
+            Assert.Equal(0, result.Found);
+            Assert.Equal(0, result.Zombies);
+            Assert.Equal(0, result.GivenMercy);
+            Assert.Equal(0, result.Remaining);
+            Assert.Equal(0, result.Reconciliation);
+        }
+
+        [Fact]
+        public async Task NoKillV2()
+        {
+            // Arrange
+            await _contentDbContext.TruncateAsync<ContentEntity>();
+
+            var lf = new LoggerFactory();
+            var expEksLogger = new ExpiredEksV2LoggingExtensions(lf.CreateLogger<ExpiredEksV2LoggingExtensions>());
+            var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
+            var command = new RemoveExpiredEksV2Command(_contentDbContext, new FakeEksConfig(), fakeDtp, expEksLogger);
+
+            Add(15);
+
+            // Act
+            var result = (RemoveExpiredEksCommandResult)await command.ExecuteAsync();
+
+            // Assert
+            Assert.Equal(1, result.Found);
+            Assert.Equal(1, result.Zombies);
+            Assert.Equal(0, result.GivenMercy);
+            Assert.Equal(1, result.Remaining);
+            Assert.Equal(0, result.Reconciliation);
+        }
+
+
+        [Fact]
+        public async Task KillV2()
+        {
+            // Arrange
+            await _contentDbContext.TruncateAsync<ContentEntity>();
+
+            var lf = new LoggerFactory();
+            var expEksLogger = new ExpiredEksV2LoggingExtensions(lf.CreateLogger<ExpiredEksV2LoggingExtensions>());
+            var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
+            var fakeEksConfig = new FakeEksConfig() { CleanupDeletesData = true };
+            var command = new RemoveExpiredEksV2Command(_contentDbContext, fakeEksConfig, fakeDtp, expEksLogger);
+
+            Add(15);
+
+            // Act
+            var result = (RemoveExpiredEksCommandResult)await command.ExecuteAsync();
+
+            // Assert
+            Assert.Equal(1, result.Found);
+            Assert.Equal(1, result.Zombies);
+            Assert.Equal(1, result.GivenMercy);
+            Assert.Equal(0, result.Remaining);
+            Assert.Equal(0, result.Reconciliation);
+        }
+
+
+        [Fact]
+        public async Task MoreRealisticV2()
+        {
+            // Arrange
+            await _contentDbContext.BulkDeleteAsync(_contentDbContext.Content.ToList());
+
+            var lf = new LoggerFactory();
+            var expEksLogger = new ExpiredEksV2LoggingExtensions(lf.CreateLogger<ExpiredEksV2LoggingExtensions>());
+            var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
+            var fakeEksConfig = new FakeEksConfig() { CleanupDeletesData = true };
+            var command = new RemoveExpiredEksV2Command(_contentDbContext, fakeEksConfig, fakeDtp, expEksLogger);
+
+            for (var i = 0; i < 20; i++)
+            {
+                Add(i);
+            }
+
+            // Act
+            var result = (RemoveExpiredEksCommandResult)await command.ExecuteAsync();
+
+            // Assert
+            Assert.Equal(20, result.Found);
+            Assert.Equal(5, result.Zombies);
+            Assert.Equal(5, result.GivenMercy);
+            Assert.Equal(15, result.Remaining);
+            Assert.Equal(0, result.Reconciliation);
+        }
+
+        [Fact]
+        public async Task CleanerV3()
+        {
+            // Arrange
+            await _contentDbContext.TruncateAsync<ContentEntity>();
+
+            var lf = new LoggerFactory();
+            var expEksLogger = new ExpiredEksV3LoggingExtensions(lf.CreateLogger<ExpiredEksV3LoggingExtensions>());
+            var command = new RemoveExpiredEksV3Command(_contentDbContext, new FakeEksConfig(), new StandardUtcDateTimeProvider(), expEksLogger);
+
+            // Act
+            var result = (RemoveExpiredEksCommandResult)await command.ExecuteAsync();
+
+            // Assert
+            Assert.Equal(0, result.Found);
+            Assert.Equal(0, result.Zombies);
+            Assert.Equal(0, result.GivenMercy);
+            Assert.Equal(0, result.Remaining);
+            Assert.Equal(0, result.Reconciliation);
+        }
+
+        [Fact]
+        public async Task NoKillV3()
+        {
+            // Arrange
+            await _contentDbContext.TruncateAsync<ContentEntity>();
+
+            var lf = new LoggerFactory();
+            var expEksLogger = new ExpiredEksV3LoggingExtensions(lf.CreateLogger<ExpiredEksV3LoggingExtensions>());
+            var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
+            var command = new RemoveExpiredEksV3Command(_contentDbContext, new FakeEksConfig(), fakeDtp, expEksLogger);
+
+            Add(15);
+
+            // Act
+            var result = (RemoveExpiredEksCommandResult)await command.ExecuteAsync();
+
+            // Assert
+            Assert.Equal(1, result.Found);
+            Assert.Equal(1, result.Zombies);
+            Assert.Equal(0, result.GivenMercy);
+            Assert.Equal(1, result.Remaining);
+            Assert.Equal(0, result.Reconciliation);
+        }
+
+
+        [Fact]
+        public async Task KillV3()
+        {
+            // Arrange
+            await _contentDbContext.TruncateAsync<ContentEntity>();
+
+            var lf = new LoggerFactory();
+            var expEksLogger = new ExpiredEksV3LoggingExtensions(lf.CreateLogger<ExpiredEksV3LoggingExtensions>());
+            var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
+            var fakeEksConfig = new FakeEksConfig() { CleanupDeletesData = true };
+            var command = new RemoveExpiredEksV3Command(_contentDbContext, fakeEksConfig, fakeDtp, expEksLogger);
+
+            Add(15);
+
+            // Act
+            var result = (RemoveExpiredEksCommandResult)await command.ExecuteAsync();
+
+            // Assert
+            Assert.Equal(1, result.Found);
+            Assert.Equal(1, result.Zombies);
+            Assert.Equal(1, result.GivenMercy);
+            Assert.Equal(0, result.Remaining);
+            Assert.Equal(0, result.Reconciliation);
+        }
+
+
+        [Fact]
+        public async Task MoreRealisticV3()
+        {
+            // Arrange
+            await _contentDbContext.BulkDeleteAsync(_contentDbContext.Content.ToList());
+
+            var lf = new LoggerFactory();
+            var expEksLogger = new ExpiredEksV3LoggingExtensions(lf.CreateLogger<ExpiredEksV3LoggingExtensions>());
+            var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
+            var fakeEksConfig = new FakeEksConfig() { CleanupDeletesData = true };
+            var command = new RemoveExpiredEksV3Command(_contentDbContext, fakeEksConfig, fakeDtp, expEksLogger);
 
             for (var i = 0; i < 20; i++)
             {

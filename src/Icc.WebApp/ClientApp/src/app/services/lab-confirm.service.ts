@@ -22,8 +22,7 @@ export class LabConfirmService {
     private data: { ggdKey: string; subjectHasSymptoms: boolean; dateOfSymptomsOnset: Date; dateOfTest: Date };
 
     private static errorHandler(error: HttpErrorResponse, caught: Observable<any>): Observable<any> {
-        // TODO error handling
-        throw error;
+        throw error; // Handled in caller
     }
 
     confirmLabId(GGDKeys: Array<string>, selectedDate: Date, symptomatic: boolean): Observable<any> {

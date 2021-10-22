@@ -6,11 +6,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entitie
 {
     public enum ContentTypes
     {
-        ResourceBundle,
-        AppConfig,
-        RiskCalculationParameters,
         ExposureKeySet,
-        Manifest,
         AppConfigV2,
         RiskCalculationParametersV2,
         ExposureKeySetV2,
@@ -21,6 +17,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entitie
 
         //New for GAENv2
         RiskCalculationParametersV3,
-        ManifestV4
+        ManifestV4,
+        ManifestV5,
+        ExposureKeySetV3,
     }
 }

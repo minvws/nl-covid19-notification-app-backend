@@ -47,8 +47,8 @@ namespace SigTestFileCreator
                     x.GetRequiredService<IUtcDateTimeProvider>()));
             services.AddTransient(x =>
                 SignerConfigStartup.BuildGaSigner(
-                    x.GetRequiredService<IConfiguration>(),
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));
+                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<IConfiguration>()));
         }
     }
 }

@@ -9,32 +9,25 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 {
-    /// <summary>
-    /// For GAEN EKS Signing
-    /// </summary>
-    public class EcdSaSigner : IGaContentSigner
+    public abstract class EcdsaBaseSigner
     {
-        private readonly ICertificateProvider _provider;
-        private const string SignatureAlgorithmDescription = "1.2.840.10045.4.3.2";
+        protected readonly ICertificateProvider Provider;
+        protected readonly IThumbprintConfig Config;
 
-        public EcdSaSigner(ICertificateProvider provider)
+        protected EcdsaBaseSigner(ICertificateProvider provider, IThumbprintConfig config)
         {
-            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            Provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            Config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
-        public string SignatureOid => SignatureAlgorithmDescription;
-
-        public byte[] GetSignature(byte[] content)
+        public virtual byte[] GetSignature(byte[] content)
         {
             if (content == null)
             {
                 throw new ArgumentNullException(nameof(content));
             }
 
-            //using var hasher = SHA256.Create();
-            //var hash = hasher.ComputeHash(content);
-
-            var cert = _provider.GetCertificate();
+            var cert = Provider.GetCertificate(Config.Thumbprint, Config.RootTrusted);
 
             if (cert == null)
             {

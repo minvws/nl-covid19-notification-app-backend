@@ -57,6 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
                 new ManifestV2Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
                 new ManifestV3Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
                 new ManifestV4Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
+                new ManifestV5Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
                 _contentDbContext,
                 loggingExtensionsMock,
                 _dateTimeProviderMock.Object,
@@ -73,10 +74,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             await _sut.ExecuteAsync();
 
             //Assert
-            Assert.Equal(3, _contentDbContext.Content.Count());
+            Assert.Equal(4, _contentDbContext.Content.Count());
             Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
             Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV3));
             Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV4));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV5));
         }
 
         [Fact]
@@ -93,10 +95,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             await _sut.ExecuteAsync();
 
             //Assert
-            Assert.Equal(3, _contentDbContext.Content.Count());
+            Assert.Equal(4, _contentDbContext.Content.Count());
             Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
             Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV3));
             Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV4));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV5));
         }
     }
 }

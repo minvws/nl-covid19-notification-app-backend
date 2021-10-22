@@ -18,13 +18,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
         private readonly IEfgsConfig _efgsConfig;
         private readonly IAuthenticationCertificateProvider _certificateProvider;
+        private readonly IThumbprintConfig _thumbprintConfig;
         private readonly IksDownloaderLoggingExtensions _logger;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public HttpGetIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IHttpClientFactory httpClientFactory, IksDownloaderLoggingExtensions logger)
+        public HttpGetIksCommand(
+            IEfgsConfig efgsConfig,
+            IAuthenticationCertificateProvider certificateProvider,
+            IThumbprintConfig thumbprintConfig,
+            IHttpClientFactory httpClientFactory,
+            IksDownloaderLoggingExtensions logger)
         {
             _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
             _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
+            _thumbprintConfig = thumbprintConfig ?? throw new ArgumentNullException(nameof(thumbprintConfig));
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -60,27 +67,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 // EFGS returns the string 'null' if there is no batch tag. We will represent this with an actual null.
+                var batchTag = response.Headers.SafeGetValue("batchTag");
                 var nextBatchTag = response.Headers.SafeGetValue("nextBatchTag");
                 nextBatchTag = nextBatchTag == "null" ? null : nextBatchTag;
 
-                return new HttpGetIksResult
+                if (!string.IsNullOrEmpty(batchTag))
                 {
-                    //TODO errors if info not present
-                    BatchTag = response.Headers.SafeGetValue("batchTag"),
-                    NextBatchTag = nextBatchTag,
-                    Content = await response.Content.ReadAsByteArrayAsync(),
-                    ResultCode = response.StatusCode
-                };
+                    return new HttpGetIksResult
+                    {
+                        BatchTag = batchTag,
+                        NextBatchTag = nextBatchTag,
+                        Content = await response.Content.ReadAsByteArrayAsync(),
+                        ResultCode = response.StatusCode
+                    };
+                }
+
+                _logger.WriteBatchTagNotFound();
             }
-            else
+
+            return new HttpGetIksResult
             {
-                return new HttpGetIksResult
-                {
-                    BatchTag = string.Empty,
-                    NextBatchTag = null,
-                    ResultCode = response.StatusCode
-                };
-            }
+                BatchTag = string.Empty,
+                NextBatchTag = null,
+                ResultCode = response.StatusCode
+            };
         }
 
         private HttpRequestMessage BuildHttpRequest(string batchTag, DateTime date)
@@ -99,7 +109,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
             if (_efgsConfig.SendClientAuthenticationHeaders)
             {
-                using var clientCert = _certificateProvider.GetCertificate();
+                using var clientCert = _certificateProvider.GetCertificate(
+                    _thumbprintConfig.Thumbprint, _thumbprintConfig.RootTrusted);
 
                 request.Headers.Add("X-SSL-Client-SHA256", clientCert.ComputeSha256Hash());
                 request.Headers.Add("X-SSL-Client-DN", clientCert.Subject.Replace(" ", string.Empty));

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.DsosEncoding;
@@ -14,10 +15,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
     public class NlTrlFromDecodedDosDiagnosticKeyProcessor : IDiagnosticKeyProcessor
     {
         private readonly ITransmissionRiskLevelCalculationMk2 _trlCalculation;
+        private readonly ILogger<NlTrlFromDecodedDosDiagnosticKeyProcessor> _logger;
 
-        public NlTrlFromDecodedDosDiagnosticKeyProcessor(ITransmissionRiskLevelCalculationMk2 trlCalculation)
+        public NlTrlFromDecodedDosDiagnosticKeyProcessor(ITransmissionRiskLevelCalculationMk2 trlCalculation, ILogger<NlTrlFromDecodedDosDiagnosticKeyProcessor> logger)
         {
             _trlCalculation = trlCalculation ?? throw new ArgumentNullException(nameof(trlCalculation));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public DkProcessingItem Execute(DkProcessingItem value)
@@ -29,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
 
             if (!value.Metadata.TryGetValue(DosDecodingDiagnosticKeyProcessor.DecodedDsosMetadataKey, out var decodedDos))
             {
-                //TODO log not present... and fill up the log files...
+                _logger.LogError("[NlTrlFromDecodedDosDiagnosticKeyProcessor] DosDecodingDiagnosticKeyProcessor.DecodedDsosMetadataKey not found");
                 return null;
             }
 

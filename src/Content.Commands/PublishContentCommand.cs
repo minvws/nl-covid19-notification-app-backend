@@ -16,7 +16,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
     {
         private readonly ContentValidator _validator;
         private readonly ContentInsertDbCommand _insertDbCommand;
-        private readonly Func<ContentInsertDbCommand> _insertDbCommandV3;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly ContentDbContext _contentDbContext;
         private readonly PublishContentLoggingExtensions _logger;
@@ -31,7 +30,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         {
             _validator = validator ?? throw new ArgumentNullException(nameof(validator));
             _insertDbCommand = insertDbCommand ?? throw new ArgumentNullException(nameof(insertDbCommand));
-            _insertDbCommandV3 = insertDbCommandV3 ?? throw new ArgumentNullException(nameof(insertDbCommandV3));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _contentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -48,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             {
                 Release = _dateTimeProvider.Snapshot,
                 ContentType = ParseContentType(args[0]),
-                Json = File.ReadAllText(args[1])
+                Json = await File.ReadAllTextAsync(args[1])
             };
 
             if (!_validator.IsValid(contentArgs))
@@ -58,19 +56,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
             _logger.WriteStartWriting(contentArgs.ContentType);
 
-            if (contentArgs.ContentType == ContentTypes.ResourceBundleV3 || contentArgs.ContentType == ContentTypes.RiskCalculationParametersV3) //needs direct signing with ev-cert
-            {
-                _contentDbContext.BeginTransaction();
-                await _insertDbCommandV3().ExecuteAsync(contentArgs);
-                _contentDbContext.SaveAndCommit();
-            }
-            else
-            {
-                _contentDbContext.BeginTransaction();
-                await _insertDbCommand.ExecuteAsync(contentArgs);
-                _contentDbContext.SaveAndCommit();
-
-            }
+            _contentDbContext.BeginTransaction();
+            await _insertDbCommand.ExecuteAsync(contentArgs);
+            _contentDbContext.SaveAndCommit();
 
             _logger.WriteFinishedWriting(contentArgs.ContentType);
         }
@@ -79,12 +67,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         {
             if (arg.Equals("-a", StringComparison.InvariantCultureIgnoreCase))
             {
-                return ContentTypes.AppConfig;
+                return ContentTypes.AppConfigV2;
             }
 
             if (arg.Equals("-r", StringComparison.InvariantCultureIgnoreCase))
             {
-                return ContentTypes.RiskCalculationParameters;
+                return ContentTypes.RiskCalculationParametersV2;
             }
 
             if (arg.Equals("-r2", StringComparison.InvariantCultureIgnoreCase))
@@ -94,7 +82,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
             if (arg.Equals("-b", StringComparison.InvariantCultureIgnoreCase))
             {
-                return ContentTypes.ResourceBundle;
+                return ContentTypes.ResourceBundleV2;
             }
 
             if (arg.Equals("-b2", StringComparison.InvariantCultureIgnoreCase))

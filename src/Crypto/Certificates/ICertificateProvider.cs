@@ -8,6 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
     public interface ICertificateProvider
     {
-        X509Certificate2 GetCertificate();
+        X509Certificate2 GetCertificate(string thumbprint, bool rootTrusted);
     }
 }

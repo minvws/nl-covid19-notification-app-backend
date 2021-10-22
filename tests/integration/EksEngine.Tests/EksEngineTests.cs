@@ -15,7 +15,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -51,7 +50,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
         private readonly SnapshotWorkflowTeksToDksCommand _snapshot;
         private readonly ExposureKeySetBatchJobMk3 _eksJob;
         private readonly ManifestUpdateCommand _manifestJob;
-        private readonly NlContentResignExistingV1ContentCommand _resign;
         private readonly StandardRandomNumberGenerator _rng;
 
         protected EksEngineTests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions, DbContextOptions<EksPublishingJobDbContext> eksPublishingJobDbContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions)
@@ -83,6 +81,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             gaSigner.Setup(x => x.SignatureOid).Returns("unittest");
             gaSigner.Setup(x => x.GetSignature(It.IsAny<byte[]>())).Returns(new byte[] { 1 });
 
+            var gaV15Signer = new Mock<IGaContentSigner>(MockBehavior.Strict);
+            gaV15Signer.Setup(x => x.SignatureOid).Returns("unittestV15");
+            gaV15Signer.Setup(x => x.GetSignature(It.IsAny<byte[]>())).Returns(new byte[] { 1 });
+
             var nlSigner = new Mock<IContentSigner>(MockBehavior.Loose);
             nlSigner.Setup(x => x.GetSignature(new byte[0])).Returns(new byte[] { 2 });
 
@@ -100,7 +102,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             _rng = new StandardRandomNumberGenerator();
             _eksJob = new ExposureKeySetBatchJobMk3(
                 eksConfig.Object,
-                new EksBuilderV1(eksHeaderConfig.Object, gaSigner.Object, nlSigner.Object, _dtp, new GeneratedProtobufEksContentFormatter(),
+                new EksBuilderV1(eksHeaderConfig.Object, gaSigner.Object, gaV15Signer.Object, nlSigner.Object, _dtp, new GeneratedProtobufEksContentFormatter(),
                     new EksBuilderV1LoggingExtensions(_lf.CreateLogger<EksBuilderV1LoggingExtensions>())
                     ),
                 _eksPublishingJobContext,
@@ -130,16 +132,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 new ManifestV2Builder(_contentDbContext, eksConfig.Object, _dtp),
                 new ManifestV3Builder(_contentDbContext, eksConfig.Object, _dtp),
                 new ManifestV4Builder(_contentDbContext, eksConfig.Object, _dtp),
+                new ManifestV5Builder(_contentDbContext, eksConfig.Object, _dtp),
                 _contentDbContext,
                 new ManifestUpdateCommandLoggingExtensions(_lf.CreateLogger<ManifestUpdateCommandLoggingExtensions>()),
                 _dtp,
                 jsonSerializer,
                 new StandardContentEntityFormatter(new ZippedSignedContentFormatter(nlSigner.Object), new Sha256HexPublishingIdService(), jsonSerializer)
             );
-
-            var thumbprintConfig = new Mock<IThumbprintConfig>(MockBehavior.Strict);
-            _resign = new NlContentResignExistingV1ContentCommand(
-                new NlContentResignCommand(_contentDbContext, nlSigner.Object, new ResignerLoggingExtensions(_lf.CreateLogger<ResignerLoggingExtensions>())));
         }
 
         [Fact]
@@ -157,13 +156,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             await _snapshot.ExecuteAsync();
             await _eksJob.ExecuteAsync();
             await _manifestJob.ExecuteAsync();
-            await _resign.ExecuteAsync();
 
             // Assert
             Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
             Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2)); // Stuffing not added
-            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet)); // Stuffing not added
-            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.Manifest));
 
             Assert.Equal(0, _workflowContext.TemporaryExposureKeys.Count());
             Assert.Equal(0, _dkSourceContext.DiagnosisKeys.Count());
@@ -193,14 +189,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             await _snapshot.ExecuteAsync(); //Too soon to publish TEKs
             await _eksJob.ExecuteAsync();
             await _manifestJob.ExecuteAsync();
-            await _resign.ExecuteAsync();
 
             // Assert
             Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
             Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2)); // Stuffing not added
-            //Obsolete - replace with raw content
-            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet)); // Stuffing not added
-            Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.Manifest));
         }
     }
 }

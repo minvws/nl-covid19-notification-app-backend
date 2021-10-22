@@ -13,13 +13,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi.Controlle
     public class RiskCalculationParametersController : ControllerBase
     {
         [HttpGet]
-        [Route("/v1/riskcalculationparameters/{id}")]
-        public async Task GetRiskCalculationParametersV1Async(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
-        {
-            await command.ExecuteAsync(HttpContext, ContentTypes.RiskCalculationParameters, id);
-        }
-
-        [HttpGet]
         [Route("/v2/riskcalculationparameters/{id}")]
         [Route("/v3/riskcalculationparameters/{id}")]
         public async Task GetRiskCalculationParametersV2Async(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
@@ -29,14 +22,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi.Controlle
 
         [HttpGet]
         [Route("/v4/riskcalculationparameters/{id}")]
-        public async Task GetRiskCalculationParametersV3Async(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
-        {
-            await command.ExecuteAsync(HttpContext, ContentTypes.RiskCalculationParametersV3, id);
-        }
-
-        [HttpGet]
         [Route("/v5/riskcalculationparameters/{id}")]
-        public async Task GetRiskCalculationParametersAsync(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
+        public async Task GetRiskCalculationParametersV3Async(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
         {
             await command.ExecuteAsync(HttpContext, ContentTypes.RiskCalculationParametersV3, id);
         }

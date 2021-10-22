@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using EksEngine.Tests;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1;
@@ -26,6 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             public string AppBundleId => "nl.rijksoverheid.en";
             public string VerificationKeyId => "ServerNL";
             public string VerificationKeyVersion => "v1";
+            public string VerificationKeyVersionV15 => "v2";
         }
 
         //y = 4.3416x + 715.24
@@ -44,21 +45,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
-                TestSignerHelpers.CreateEcdsaSigner(lf),
+                TestSignerHelpers.CreateGASigner(lf),
+                TestSignerHelpers.CreateGAv15Signer(lf),
                 TestSignerHelpers.CreateCmsSignerEnhanced(lf),
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
                 eksBuilderV1Logger);
 
             //Act
-            var result = sut.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
+            var (result, resultv15) = sut.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
             Trace.WriteLine($"{keyCount} keys = {result.Length} bytes.");
 
             //Assert
             Assert.True(result.Length > 0);
+            Assert.True(resultv15.Length > 0);
 
             using var fs = new FileStream("EKS.zip", FileMode.Create, FileAccess.Write);
             fs.Write(result, 0, result.Length);
+            using var fsV15 = new FileStream("EKSV15.zip", FileMode.Create, FileAccess.Write);
+            fsV15.Write(resultv15, 0, resultv15.Length);
         }
 
         [Fact]
@@ -73,14 +78,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
-                TestSignerHelpers.CreateEcdsaSigner(lf),
+                TestSignerHelpers.CreateGASigner(lf),
+                TestSignerHelpers.CreateGAv15Signer(lf),
                 dummySigner,
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
                 eksBuilderV1Logger);
 
             //Act
-            var result = sut.BuildAsync(GetRandomKeys(keyCount, 123)).GetAwaiter().GetResult();
+            var (result, resultv15) = sut.BuildAsync(GetRandomKeys(keyCount, 123)).GetAwaiter().GetResult();
 
             //Assert
             using var zipFileInMemory = new MemoryStream();
@@ -90,6 +96,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var nlSignature = zipFileContent.ReadEntry(ZippedContentEntryNames.NlSignature);
             Assert.NotNull(nlSignature);
             Assert.Equal(nlSignature, dummySigner.DummyContent);
+
+            //Assert V15
+            using var zipFileInMemoryV15 = new MemoryStream();
+            zipFileInMemoryV15.Write(resultv15, 0, resultv15.Length);
+
+            using var zipFileContentV15 = new ZipArchive(zipFileInMemoryV15, ZipArchiveMode.Read, false);
+            var nlSignatureV15 = zipFileContentV15.ReadEntry(ZippedContentEntryNames.NlSignature);
+            Assert.NotNull(nlSignatureV15);
+            Assert.Equal(nlSignatureV15, dummySigner.DummyContent);
         }
 
         private TemporaryExposureKeyArgs[] GetRandomKeys(int workflowCount, int seed)

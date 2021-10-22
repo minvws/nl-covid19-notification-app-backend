@@ -18,11 +18,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public const int PublishContent = 2000;
         public const int SigtestFileCreator = 2100;
         public const int DailyCleanup = 2200;
-        public const int RemoveExpiredManifest = 2300;
         public const int RemoveExpiredEks = 2400;
         public const int RemoveExpiredWorkflow = 2500;
         public const int Resigner = 2600;
         public const int RemoveExpiredEksV2 = 2700;
+        public const int RemoveExpiredEksV3 = 2750;
         public const int RemoveExpiredManifestV2 = 2800;
         public const int EksEngine = 2900;
         public const int Snapshot = 3000;
@@ -41,6 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public const int RemoveExpiredIks = 4300; //not entirely sure yet
         public const int RemoveExpiredManifestV3 = 4400;
         public const int RemoveExpiredManifestV4 = 4500;
-        public const int RegisterV2 = 4600;
+        public const int RemoveExpiredManifestV5 = 4600;
+        public const int RegisterV2 = 4700;
     }
 }
