@@ -266,6 +266,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scenario.Tests", "tests\e2e
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Icc_DistMemCache", "src\Database\Icc_DistMemCache\Icc_DistMemCache.sqlproj", "{83CF4DD9-E784-4235-9F7C-018BA7869E0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbBuilder", "src\DbBuilder\DbBuilder.csproj", "{B5838C8F-7B59-4655-8B63-E9B15C83CA96}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -628,6 +630,10 @@ Global
 		{83CF4DD9-E784-4235-9F7C-018BA7869E0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83CF4DD9-E784-4235-9F7C-018BA7869E0E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{83CF4DD9-E784-4235-9F7C-018BA7869E0E}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{B5838C8F-7B59-4655-8B63-E9B15C83CA96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5838C8F-7B59-4655-8B63-E9B15C83CA96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5838C8F-7B59-4655-8B63-E9B15C83CA96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5838C8F-7B59-4655-8B63-E9B15C83CA96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -729,6 +735,7 @@ Global
 		{93389D4D-3271-4FFA-9CE9-3C92A677281B} = {72259EEA-61F5-415E-B5D7-52F5B73EA3DE}
 		{23DF13F2-1AEB-4E04-B000-9F1E0520FCD6} = {72259EEA-61F5-415E-B5D7-52F5B73EA3DE}
 		{83CF4DD9-E784-4235-9F7C-018BA7869E0E} = {9DFC26E6-914B-4817-B924-EBAB52AB3268}
+		{B5838C8F-7B59-4655-8B63-E9B15C83CA96} = {854D6C6B-16DD-41C9-87E9-2E824154F3AA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}
