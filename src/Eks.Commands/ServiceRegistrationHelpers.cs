@@ -51,7 +51,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
                     x.GetRequiredService<FixedCountriesOfInterestOutboundDiagnosticKeyProcessor>(),
                     x.GetRequiredService<NlToEfgsDsosDiagnosticKeyProcessorMk1>()
-                }
+                },
+                new DeduplicateDiagnosiskeyInputEntities(
+                    x.GetRequiredService<DkSourceDbContext>(),
+                    x.GetRequiredService<ILoggerFactory>().CreateLogger<DeduplicateDiagnosiskeyInputEntities>())
              ));
 
             services.AddTransient<ISnapshotEksInput, SnapshotDiagnosisKeys>();

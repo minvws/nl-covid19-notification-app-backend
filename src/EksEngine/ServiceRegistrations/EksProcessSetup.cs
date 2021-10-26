@@ -40,7 +40,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
                     x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
                     x.GetRequiredService<FixedCountriesOfInterestOutboundDiagnosticKeyProcessor>(),
                     x.GetRequiredService<NlToEfgsDsosDiagnosticKeyProcessorMk1>()
-                }
+                },
+                new DeduplicateDiagnosiskeyInputEntities(
+                    x.GetRequiredService<DkSourceDbContext>(),
+                    x.GetRequiredService<ILoggerFactory>().CreateLogger<DeduplicateDiagnosiskeyInputEntities>())
             ));
 
             // DiagnosisKeys to Eks publishing job
