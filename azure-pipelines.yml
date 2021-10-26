@@ -36,7 +36,6 @@ variables:
   Apps.Content.WebApi.ArtifactSubDirectory: 'ContentApi'
   Apps.App.IccPortal.ArtifactSubDirectory: 'IccPortalApp'
   Apps.Api.IccBackend.ArtifactSubDirectory: 'IccBackendApi'
-  Apps.Icc.WebApi.ArtifactSubDirectory: 'IccBackend'
   Apps.MobileAppApi.WebApi.ArtifactSubDirectory: 'MobileAppApi'
   Apps.DailyCleanup.ArtifactSubDirectory: 'DailyCleanup'
   Apps.EksEngine.ArtifactSubDirectory: 'EksEngine'
@@ -79,9 +78,6 @@ stages:
   # ICC Backend Api (new)
   - template: /build/pipelines/jobs/apps-publish-iccbackend-artifact.yaml
 
-  # IccBackend (old)
-  - template: /build/pipelines/jobs/apps-publish-iccwebapi-artifact.yaml
-  
   # MobileAppApi
   - template: /build/pipelines/jobs/apps-publish-mobileappipawebapi-artifact.yaml
 
@@ -103,11 +99,7 @@ stages:
   # ProtobufScrubber
   - template: /build/pipelines/jobs/tools-publish-protobufscrubber-artifact.yaml
 
-  # ForceTekAuth
-  #- template: /build/pipelines/jobs/tools-publish-forcetekauth-artifact.yaml
-
-  # GenTeks
-  #- template: /build/pipelines/jobs/tools-publish-genteks-artifact.yaml
+  # Publish Content  
   - template: /build/pipelines/jobs/tools-publish-publishcontent-artifact.yaml
 
   # SigTestFileCreator
