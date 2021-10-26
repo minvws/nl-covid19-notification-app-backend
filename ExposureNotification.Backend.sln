@@ -185,7 +185,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "jobs", "jobs", "{C3CD8AF9-2
 		build\pipelines\jobs\apps-publish-dailycleanup-artifact.yaml = build\pipelines\jobs\apps-publish-dailycleanup-artifact.yaml
 		build\pipelines\jobs\apps-publish-eksengine-artifact.yaml = build\pipelines\jobs\apps-publish-eksengine-artifact.yaml
 		build\pipelines\jobs\apps-publish-iccbackend-artifact.yaml = build\pipelines\jobs\apps-publish-iccbackend-artifact.yaml
-		build\pipelines\jobs\apps-publish-iccwebapi-artifact.yaml = build\pipelines\jobs\apps-publish-iccwebapi-artifact.yaml
 		build\pipelines\jobs\apps-publish-iksdownloader-artifact.yaml = build\pipelines\jobs\apps-publish-iksdownloader-artifact.yaml
 		build\pipelines\jobs\apps-publish-iksuploader-artifact.yaml = build\pipelines\jobs\apps-publish-iksuploader-artifact.yaml
 		build\pipelines\jobs\apps-publish-managementportal-artifact.yaml = build\pipelines\jobs\apps-publish-managementportal-artifact.yaml
