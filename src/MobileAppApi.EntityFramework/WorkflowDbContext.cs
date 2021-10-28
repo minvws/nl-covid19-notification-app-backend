@@ -27,7 +27,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
 
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.BucketId).IsUnique();
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.ConfirmationKey).IsUnique();
-            modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.LabConfirmationId).IsUnique();
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.GGDKey).IsUnique();
 
             modelBuilder.Entity<TekReleaseWorkflowStateEntity>().HasIndex(x => x.ValidUntil);

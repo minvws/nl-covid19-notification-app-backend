@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
         {
             var entries = args.Select(Map).ToArray();
             await _dbContext.StatisticsEntries.AddRangeAsync(entries);
-            await _dbContext.SaveChangesAsync(); //Implicit TX
+            await _dbContext.SaveChangesAsync();
         }
 
         private StatisticsEntryEntity Map(StatisticArgs args)

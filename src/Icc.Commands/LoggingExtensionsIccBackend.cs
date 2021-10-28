@@ -38,9 +38,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
         private const int LogValidationError = Base + 21;
         private const int LogValidationInfo = Base + 22;
         private const int KeyReleaseWorkflowStateNotFound = Base + 23;
-        private const int WritingNewPollToken = Base + 24;
-        private const int DuplicatePollTokenFound = Base + 25;
-        private const int PollTokenCommit = Base + 26;
 
         private const int PubTekStart = Base + 27;
         private const int PublishTekCommit = Base + 28;
@@ -298,50 +295,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
                 messages);
         }
 
-        public static void WriteKeyReleaseWorkflowStateNotFound(this ILogger logger, string labId)
+        public static void WriteKeyReleaseWorkflowStateNotFound(this ILogger logger, string ggdKey)
         {
             if (logger == null)
             {
                 throw new ArgumentNullException(nameof(logger));
             }
 
-            logger.LogError("[{name}/{id}] KeyReleaseWorkflowState not found - LabConfirmationId:{LabConfirmationId}.",
+            logger.LogError("[{name}/{id}] KeyReleaseWorkflowState not found - GGDKey:{GGDKey}.",
                 Name, KeyReleaseWorkflowStateNotFound,
-                labId);
-        }
-
-        public static void WriteWritingNewPollToken(this ILogger logger)
-        {
-            if (logger == null)
-            {
-                throw new ArgumentNullException(nameof(logger));
-            }
-
-            logger.LogDebug("[{name}/{id}] Writing.",
-                Name, WritingNewPollToken);
-        }
-
-        public static void WriteDuplicatePollTokenFound(this ILogger logger, int attemptCount)
-        {
-            if (logger == null)
-            {
-                throw new ArgumentNullException(nameof(logger));
-            }
-
-            logger.LogWarning("[{name}/{id}] Duplicate PollToken found - attempt:{AttemptCount}.",
-                Name, DuplicatePollTokenFound,
-                attemptCount);
-        }
-
-        public static void WritePollTokenCommit(this ILogger logger)
-        {
-            if (logger == null)
-            {
-                throw new ArgumentNullException(nameof(logger));
-            }
-
-            logger.LogDebug("[{name}/{id}] Committed.",
-                Name, PollTokenCommit);
+                ggdKey);
         }
 
         public static void WritePubTekStart(this ILogger logger)

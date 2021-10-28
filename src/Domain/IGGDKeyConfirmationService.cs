@@ -2,11 +2,11 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 {
-    public interface IPollTokenService
+    public interface IGGDKeyConfirmationService
     {
         string Next();
-        bool ValidateToken(string value);
+        string[] Validate(string value);
     }
 }

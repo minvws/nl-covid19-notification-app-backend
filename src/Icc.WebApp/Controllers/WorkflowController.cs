@@ -23,7 +23,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
     [Authorize(AuthenticationSchemes = JwtAuthenticationHandler.SchemeName)]
     public class WorkflowController : Controller
     {
-        private const int OldGGDKeyLength = 6;
         private const int ValidGGDKeyLength = 7;
         private const string RefererName = "Icc.WebApp";
 
@@ -60,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
             var token = source.Token;
 
             _logger.WritePubTekStart();
-            
+
             var responseMessage = await _restApiClient.PutAsync(args, $"{EndPointNames.CaregiversPortalApi.PubTek}", token, RefererName);
             var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
             return result;
@@ -75,15 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
 
         private bool FixOrValidatePubTEK(PublishTekArgs args)
         {
-            // If a 6 digit code has been send no LuhnModN validation is possible at this point. Just add the check code and return valid.
-            if (args.GGDKey.Length == OldGGDKeyLength)
-            {
-                args.GGDKey = _lLuhnModNGenerator.CalculateCheckCode(args.GGDKey);
-                _logger.WriteFixedGgdKey();
-                return true;
-            }
-
-            // Else the code should be 7 digits and validated.
+            // The code should be 7 digits and validated.
             return args.GGDKey.Length == ValidGGDKeyLength && _luhnModNValidator.Validate(args.GGDKey);
         }
     }
