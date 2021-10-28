@@ -50,7 +50,7 @@ namespace GenTeks
             services.AddTransient<GenerateTeksCommand>();
             services.AddTransient<IWorkflowTime, TekReleaseWorkflowTime>();
 
-            services.AddSingleton<RegisterSecretLoggingExtensionsV2>();
+            services.AddSingleton<RegisterSecretLoggingExtensions>();
         }
     }
 }

@@ -16,7 +16,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entity
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret
 {
-    public class TekReleaseWorkflowStateCreateV2 : ISecretWriter
+    public class TekReleaseWorkflowStateCreate : ISecretWriter
     {
         private readonly WorkflowDbContext _workflowDbContext;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
@@ -24,16 +24,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private readonly ILuhnModNGenerator _luhnModNGenerator;
         private readonly ILuhnModNConfig _luhnModNConfig;
         private readonly IWorkflowTime _workflowTime;
-        private readonly RegisterSecretLoggingExtensionsV2 _logger;
+        private readonly RegisterSecretLoggingExtensions _logger;
 
-        public TekReleaseWorkflowStateCreateV2(
+        public TekReleaseWorkflowStateCreate(
             WorkflowDbContext workflowDbContext,
             IUtcDateTimeProvider dateTimeProvider,
             IRandomNumberGenerator numberGenerator,
             IWorkflowTime workflowTime,
             ILuhnModNConfig luhnModNConfig,
             ILuhnModNGenerator luhnModNGenerator,
-            RegisterSecretLoggingExtensionsV2 logger)
+            RegisterSecretLoggingExtensions logger)
         {
             _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));

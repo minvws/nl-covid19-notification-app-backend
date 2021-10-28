@@ -4,7 +4,7 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret
 {
-    public class EnrollmentResponseV2
+    public class EnrollmentResponse
     {
         // Key displayed by the phone for a user's interaction with the GGD
         public string GGDKey { get; set; }

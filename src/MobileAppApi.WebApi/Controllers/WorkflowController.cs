@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         [DecoyTimeAggregatorAttributeFactory]
         [HttpPost]
         [Route("/v2/register")]
-        public async Task<IActionResult> PostSecretV2([FromServices] HttpPostRegisterSecretV2 command)
+        public async Task<IActionResult> PostSecret([FromServices] HttpPostRegisterSecret command)
         {
             if (command == null)
             {
