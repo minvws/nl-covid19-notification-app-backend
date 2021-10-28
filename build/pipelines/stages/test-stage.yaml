@@ -68,13 +68,14 @@ stages:
           displayName: 'Install NuGet Tool'
 
         # Build 
-        - task: MSBuild@1
+        - task: DotNetCoreCLI@2
           displayName: Run dotnet build $(buildConfiguration)
           inputs:
-            solution: |
+            command: 'build'
+            projects: |
                 **/*.sln
                 !**/*Database.sln
-            msbuildArguments: ' --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)\tests'
+            arguments: ' --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)\tests'
 
         # Run Unit Tests
         - task: DotNetCoreCLI@2
