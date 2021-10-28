@@ -9,16 +9,16 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret
 {
-    public class HttpPostRegisterSecretV2
+    public class HttpPostRegisterSecret
     {
-        private readonly TekReleaseWorkflowStateCreateV2 _writer;
-        private readonly RegisterSecretLoggingExtensionsV2 _logger;
+        private readonly TekReleaseWorkflowStateCreate _writer;
+        private readonly RegisterSecretLoggingExtensions _logger;
         private readonly IWorkflowTime _workflowTime;
         private readonly IUtcDateTimeProvider _utcDateTimeProvider;
 
-        public HttpPostRegisterSecretV2(
-            TekReleaseWorkflowStateCreateV2 writer,
-            RegisterSecretLoggingExtensionsV2 logger,
+        public HttpPostRegisterSecret(
+            TekReleaseWorkflowStateCreate writer,
+            RegisterSecretLoggingExtensions logger,
             IWorkflowTime workflowTime,
             IUtcDateTimeProvider utcDateTimeProvider
             )
@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             {
                 var entity = await _writer.ExecuteAsync();
 
-                var result = new EnrollmentResponseV2
+                var result = new EnrollmentResponse
                 {
                     ConfirmationKey = Convert.ToBase64String(entity.ConfirmationKey),
                     BucketId = Convert.ToBase64String(entity.BucketId),
@@ -50,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             catch (Exception ex)
             {
                 _logger.WriteFailed(ex);
-                return new OkObjectResult(new EnrollmentResponseV2 { Validity = -1 });
+                return new OkObjectResult(new EnrollmentResponse { Validity = -1 });
             }
             finally
             {

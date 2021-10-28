@@ -49,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
 
             services.AddScoped<HttpPostReleaseTeksCommand2>();
-            services.AddScoped<HttpPostRegisterSecretV2>();
+            services.AddScoped<HttpPostRegisterSecret>();
 
             services.AddSingleton<ITekListValidationConfig, StandardTekListValidationConfig>();
             services.AddSingleton<ITekValidatorConfig, TekValidatorConfig>();
@@ -64,7 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddTransient<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddTransient<ITekListWorkflowFilter, BackwardCompatibleV15TekListWorkflowFilter>();
             services.AddTransient<IGGDKeyConfirmationService, GGDKeyConfirmationService>();
-            services.AddTransient<TekReleaseWorkflowStateCreateV2>();
+            services.AddTransient<TekReleaseWorkflowStateCreate>();
             services.AddTransient<ITekWriter, TekWriter>();
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
             services.AddTransient<ITekValidPeriodFilter, TekValidPeriodFilter>();
@@ -77,7 +77,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<IDecoyTimeCalculator, DecoyTimeCalculator>();
             services.AddSingleton<IWelfordsAlgorithm, WelfordsAlgorithm>();
 
-            services.AddSingleton<RegisterSecretLoggingExtensionsV2>();
+            services.AddSingleton<RegisterSecretLoggingExtensions>();
             services.AddSingleton<PostKeysLoggingExtensions>();
             services.AddSingleton<DecoyKeysLoggingExtensions>();
             services.AddSingleton<ResponsePaddingLoggingExtensions>();

@@ -8,7 +8,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret
 {
-    public class RegisterSecretLoggingExtensionsV2
+    public class RegisterSecretLoggingExtensions
     {
         private const string Name = "RegisterV2";
         private const int Base = LoggingCodex.RegisterV2;
@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 
         private readonly ILogger _logger;
 
-        public RegisterSecretLoggingExtensionsV2(ILogger<RegisterSecretLoggingExtensionsV2> logger)
+        public RegisterSecretLoggingExtensions(ILogger<RegisterSecretLoggingExtensions> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
