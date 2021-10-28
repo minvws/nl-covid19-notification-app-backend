@@ -9,14 +9,14 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 {
-    public class LabConfirmationIdService : ILabConfirmationIdService
+    public class GGDKeyConfirmationService : IGGDKeyConfirmationService
     {
         private readonly IRandomNumberGenerator _rng;
 
         private const int Length = 6;
         private const string PermittedCharacters = "BCFGJLQRSTUVXYZ23456789";
 
-        public LabConfirmationIdService(IRandomNumberGenerator rng)
+        public GGDKeyConfirmationService(IRandomNumberGenerator rng)
         {
             _rng = rng ?? throw new ArgumentNullException(nameof(rng));
         }

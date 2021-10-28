@@ -14,7 +14,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands;
@@ -50,7 +49,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
 
             services.AddScoped<HttpPostReleaseTeksCommand2>();
-            services.AddScoped<HttpPostRegisterSecret>();
             services.AddScoped<HttpPostRegisterSecretV2>();
 
             services.AddSingleton<ITekListValidationConfig, StandardTekListValidationConfig>();
@@ -65,12 +63,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddTransient<IPostTeksValidator, PostTeksArgsValidator>();
             services.AddTransient<ITemporaryExposureKeyValidator, TemporaryExposureKeyValidator>();
             services.AddTransient<ITekListWorkflowFilter, BackwardCompatibleV15TekListWorkflowFilter>();
-            services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
-            services.AddTransient<ISecretWriter, TekReleaseWorkflowStateCreate>();
+            services.AddTransient<IGGDKeyConfirmationService, GGDKeyConfirmationService>();
             services.AddTransient<TekReleaseWorkflowStateCreateV2>();
             services.AddTransient<ITekWriter, TekWriter>();
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
-            services.AddTransient<ILabConfirmationIdFormatter, StandardLabConfirmationIdFormatter>();
             services.AddTransient<ITekValidPeriodFilter, TekValidPeriodFilter>();
             services.AddScoped<ResponsePaddingFilterAttribute>();
             services.AddScoped<IResponsePaddingConfig, StandardResponsePaddingConfig>();
@@ -81,7 +77,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<IDecoyTimeCalculator, DecoyTimeCalculator>();
             services.AddSingleton<IWelfordsAlgorithm, WelfordsAlgorithm>();
 
-            services.AddSingleton<RegisterSecretLoggingExtensions>();
             services.AddSingleton<RegisterSecretLoggingExtensionsV2>();
             services.AddSingleton<PostKeysLoggingExtensions>();
             services.AddSingleton<DecoyKeysLoggingExtensions>();

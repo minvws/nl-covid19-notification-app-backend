@@ -108,7 +108,7 @@ namespace Icc.WebApp.Tests
         }
 
         [Fact]
-        public async Task PutPubTek_ReturnsOkResult_When_6Digit_PubTEK_IsValid()
+        public async Task PutPubTek_ReturnsFalseResult_When_6Digit_PubTEK_IsSend()
         {
             // Arrange
             var args = new PublishTekArgs
@@ -135,7 +135,7 @@ namespace Icc.WebApp.Tests
             var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
 
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
-            Assert.True(result.Valid);
+            Assert.False(result.Valid);
         }
 
         [Fact]

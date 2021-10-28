@@ -44,15 +44,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Workf
         {
             public int TimeToLiveMinutes => throw new NotImplementedException();
             public int PermittedMobileDeviceClockErrorMinutes => throw new NotImplementedException();
-            public int PostKeysSignatureLength => throw new NotImplementedException();
-            public int BucketIdLength => throw new NotImplementedException();
-            public int ConfirmationKeyLength => throw new NotImplementedException();
             public bool CleanupDeletesData { get; set; }
         }
         private class FakeDtp : IUtcDateTimeProvider
         {
             public DateTime Now() => throw new NotImplementedException();
-            public DateTime TakeSnapshot() => throw new NotImplementedException();
             public DateTime Snapshot { get; set; }
         }
 
@@ -217,8 +213,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Workf
                 Created = _dtp.Snapshot, //Doesnt matter
                 BucketId = new[] { (byte)_workflowCount },
                 ConfirmationKey = new[] { (byte)_workflowCount },
-                LabConfirmationId = publishedCount.HasValue ? null : _workflowCount.ToString(),
-                PollToken = publishedCount.HasValue ? _workflowCount.ToString() : null,
+                GGDKey = publishedCount.HasValue ? null : _workflowCount.ToString(),
                 AuthorisedByCaregiver = publishedCount.HasValue ? _dtp.Snapshot : (DateTime?)null,
                 StartDateOfTekInclusion = publishedCount.HasValue ? _dtp.Snapshot : (DateTime?)null,
                 ValidUntil = v
