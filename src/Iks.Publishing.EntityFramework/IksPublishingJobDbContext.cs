@@ -18,15 +18,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFra
         public DbSet<IksCreateJobInputEntity> Input { get; set; }
 
         public DbSet<IksCreateJobOutputEntity> Output { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            if (modelBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(modelBuilder));
-            }
-
-            //TODO indexes cos filters...
-        }
     }
 }

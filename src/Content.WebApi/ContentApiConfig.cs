@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
         }
 
         /// <summary>
-        /// TODO investigate use of this value and its defaults.
+        /// Used for Cors configuration
         /// </summary>
         public string Url => GetConfigValue(nameof(Url), "https://localhost:5001");
     }

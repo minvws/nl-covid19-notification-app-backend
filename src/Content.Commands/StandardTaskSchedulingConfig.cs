@@ -20,7 +20,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
         /// <summary>
         /// Replace missing or unparsable setting value with the production default.
-        /// TODO consider if this hides a potential issue - alternative is to throw a MissingCOnfigValueEx.
         /// </summary>
         public double DailyCleanupHoursAfterMidnight
         {

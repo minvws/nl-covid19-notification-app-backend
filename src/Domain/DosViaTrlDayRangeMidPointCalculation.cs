@@ -10,7 +10,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
     /// <summary>
     /// For outbound NL DKs
     /// Maps actual DSOS to TRL then to the midpoint of the day range for that TRL value.
-    /// TODO could replace with Range instead
     /// </summary>
     public class DosViaTrlDayRangeMidPointCalculation
     {

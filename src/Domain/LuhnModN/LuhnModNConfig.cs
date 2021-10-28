@@ -14,9 +14,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN
         /// </summary>
         public LuhnModNConfig() : this("BCFGJLQRSTUVXYZ23456789", 7) { }
 
-        /// <summary>
-        /// TODO load from config
-        /// </summary>
         public LuhnModNConfig(string characterSet, int valueLength)
         {
             if (characterSet.Distinct().Count() != characterSet.Length)

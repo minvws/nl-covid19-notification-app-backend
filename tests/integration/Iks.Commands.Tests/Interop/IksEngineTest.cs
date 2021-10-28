@@ -101,7 +101,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             //Act
             var result = (IksEngineResult)await Create().ExecuteAsync();
 
-            //TODO Assert.Equal(tekCount, result.InputCount);
             Assert.Equal(0, result.OutputCount);
             Assert.Empty(result.Items);
             Assert.Equal(0, result.ReconcileEksSumCount);
