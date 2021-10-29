@@ -10,6 +10,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
     [Owned]
     public class DailyKey
     {
+        public DailyKey()
+        {
+        }
+
         public DailyKey(byte[] keyData, int rollingStartNumber, int rollingPeriod)
         {
             KeyData = keyData ?? throw new ArgumentNullException(nameof(keyData));
