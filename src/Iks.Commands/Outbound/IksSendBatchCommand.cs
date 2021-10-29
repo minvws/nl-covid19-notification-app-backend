@@ -68,7 +68,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             if (batch == null)
             {
-                throw new Exception("TODO Something went wrong");
+                _logger.WriteBatchNOtExistInEntity(item);
+                return null;
             }
 
             var efgsSerializer = new EfgsDiagnosisKeyBatchSerializer();
@@ -78,13 +79,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
         private async Task ProcessOne(IksOutEntity item)
         {
-            //var item = await _iksOutboundDbContext.Iks.f(x => x.Id == i);
+            var signature = SignDks(item);
+
+            // If the signature is null no batch was present.
+            if (signature == null)
+            {
+                return;
+            }
 
             var args = new IksSendCommandArgs
             {
                 BatchTag = _batchTagProvider.Create(item.Content),
                 Content = item.Content,
-                Signature = SignDks(item)
+                Signature = signature
             };
 
             await SendOne(args);
