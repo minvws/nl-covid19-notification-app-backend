@@ -69,7 +69,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         }
 
         [Theory]
-        [InlineData("v1/register")]
         [InlineData("v2/register")]
         public async Task PostSecretTest_EmptyDb(string endpoint)
         {
@@ -95,18 +94,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
             {
                 BucketId = new byte[32],
                 ConfirmationKey = new byte[32],
-                LabConfirmationId = "1"
+                GGDKey = "1"
             };
 
             e1.ConfirmationKey[0] = (byte)value;
             e1.BucketId[0] = (byte)value;
-            e1.LabConfirmationId = $"{value}{value}{value}{value}{value}{value}";
+            e1.GGDKey = $"{value}{value}{value}{value}{value}{value}{value}";
 
             return e1;
         }
 
         [Theory]
-        [InlineData("v1")]
         [InlineData("v2")]
         public async Task PostSecretTest_5RetriesAndBang(string endpoint)
         {
@@ -115,12 +113,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
 
             var endpointToResultMap = new Dictionary<string, string>()
             {
-                { "v1", "{\"labConfirmationId\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}" },
                 { "v2", "{\"ggdKey\":null,\"bucketId\":null,\"confirmationKey\":null,\"validity\":-1}"}
             };
 
             _workflowDbContext.KeyReleaseWorkflowStates.AddRange(Enumerable.Range(1, 5).Select(Create));
-            _workflowDbContext.SaveChanges();
+            await _workflowDbContext.SaveChangesAsync();
 
             var client = _factory.CreateClient();
             _fakeNumbers.Value = 1;
@@ -134,7 +131,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         }
 
         [Theory]
-        [InlineData("v1/register")]
         [InlineData("v2/register")]
         public async Task PostSecret_MissThe5Existing(string endpoint)
         {
@@ -158,7 +154,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         }
 
         [Theory]
-        [InlineData("v1/register")]
         [InlineData("v2/register")]
         public async Task Register_has_padding(string endpoint)
         {

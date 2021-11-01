@@ -6,8 +6,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 {
     public class EnrollmentResponse
     {
-        // Confirmation code that the phone must display so the user can read it to an operator.
-        public string LabConfirmationId { get; set; }
+        // Key displayed by the phone for a user's interaction with the GGD
+        public string GGDKey { get; set; }
 
         // Random generated number that will later in the upload process associate the keys with the correct signature
         public string BucketId { get; set; }

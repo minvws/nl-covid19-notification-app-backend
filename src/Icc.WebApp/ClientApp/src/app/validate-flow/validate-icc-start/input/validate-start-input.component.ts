@@ -37,7 +37,7 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
   // The person having a test or having symptoms or both contacting the GGD
   public indexData: IndexData;
 
-  private LastConfirmedLCId: Array<string> = ['', '', '', '', '', '', ''];
+  private GGDKey: Array<string> = ['', '', '', '', '', '', ''];
 
   openDayPicker = false;
   demoMode = false;
@@ -80,10 +80,10 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
         }
       }
     }
-    const labCICharacter = this.indexData.GGDKey[index];
-    if (labCICharacter.length > 0) {
-      const labCICharacterValidMatch = labCICharacter.toUpperCase().match('^[' + this.indexData.allowedChars + ']+$');
-      this.indexData.GGDKeyValidState[index] = !(labCICharacterValidMatch == null || labCICharacterValidMatch.length < 1);
+    const GGDKeyCharacter = this.indexData.GGDKey[index];
+    if (GGDKeyCharacter.length > 0) {
+      const GGDKeyCharacterValidMatch = GGDKeyCharacter.toUpperCase().match('^[' + this.indexData.allowedChars + ']+$');
+      this.indexData.GGDKeyValidState[index] = !(GGDKeyCharacterValidMatch == null || GGDKeyCharacterValidMatch.length < 1);
     } else {
       this.indexData.GGDKeyValidState[index] = true;
     }
@@ -157,14 +157,14 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
       });
     }
 
-    if (this.indexData.GGDKey.join('') === this.LastConfirmedLCId.join('')) {
+    if (this.indexData.GGDKey.join('') === this.GGDKey.join('')) {
       alert('Het is niet mogelijk om meerdere keren dezelfde GGD-sleutel te verwerken. Probeer het opnieuw met een unieke GGD-sleutel.');
       return;
     }
     if (this.indexData.InfectionConfirmationIdValid()) {
       this.loading++;
 
-      this.reportService.confirmLabId(
+      this.reportService.confirmGGDKey(
         this.indexData.GGDKey,
         this.indexData.startDateOfTekInclusion,
         this.indexData.symptomatic
@@ -175,7 +175,7 @@ export class ValidateStartInputComponent implements OnInit, AfterViewInit {
           throw e;
         })).subscribe((result) => {
           this.loading--;
-          this.LastConfirmedLCId = [...this.indexData.GGDKey]; // 200 response
+          this.GGDKey = [...this.indexData.GGDKey]; // 200 response
 
           if (result.valid === true) {
             this.router.navigate(['/validate/confirm'], {
