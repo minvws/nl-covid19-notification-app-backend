@@ -44,49 +44,10 @@ namespace Icc.v2.WebApi.Tests
                 });
         }
 
-        #region Lab ConfirmationId tests
-        [Fact]
-        public async Task PutPubTek_ReturnsOkAndTrueResult_When_ConfirmationId_IsValid()
-        {
-            // Arrange
-            var args = new PublishTekArgs
-            {
-                GGDKey = "222222",
-                DateOfSymptomsOnset = DateTime.Today,
-                SubjectHasSymptoms = true
-            };
-
-            await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
-            _workflowDbContext.KeyReleaseWorkflowStates.Add(new TekReleaseWorkflowStateEntity
-            {
-                GGDKey = args.GGDKey,
-                StartDateOfTekInclusion = args.DateOfSymptomsOnset
-
-            });
-            await _workflowDbContext.SaveChangesAsync();
-
-            var client = _factory.CreateClient();
-
-            var source = new CancellationTokenSource();
-            var token = source.Token;
-
-            var content = new StringContent(JsonSerializer.Serialize(args))
-            {
-                Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
-            };
-
-            // Act
-            var responseMessage = await client.PutAsync($"{EndPointNames.CaregiversPortalApi.PubTek}", content, token);
-
-            // Assert
-            var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
-
-            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
-            Assert.True(result.Valid);
-        }
+        #region GGDKey tests
 
         [Fact]
-        public async Task PutPubTek_ReturnsOkAndTrueResult_When_ConfirmationId_IsNotValid()
+        public async Task PutPubTek_ReturnsOkAndTrueResult_When_GGDKey_IsNotValid()
         {
             // Arrange
             var args = new PublishTekArgs
@@ -128,7 +89,7 @@ namespace Icc.v2.WebApi.Tests
 
 
         [Fact]
-        public async Task PutPubTek_ReturnsOkAndTrueResult_When_PubTEK_IsValid()
+        public async Task PutPubTek_ReturnsOkAndTrueResult_When_GGDKey_IsValid()
         {
             // Arrange
             var args = new PublishTekArgs
@@ -168,7 +129,7 @@ namespace Icc.v2.WebApi.Tests
         }
 
         [Fact]
-        public async Task PutPubTek_ReturnsOkAndFalseResult_When_PubTEK_HasInValidCharacter()
+        public async Task PutPubTek_ReturnsOkAndFalseResult_When_GGDKey_HasInValidCharacter()
         {
             // Arrange
             var args = new PublishTekArgs
@@ -208,7 +169,7 @@ namespace Icc.v2.WebApi.Tests
         }
 
         [Fact]
-        public async Task PutPubTek_ReturnsOkAndFalseResult_When_PubTEK_HasInValidCheckCode()
+        public async Task PutPubTek_ReturnsOkAndFalseResult_When_GGDKey_HasInValidCheckCode()
         {
             // Arrange
             var args = new PublishTekArgs

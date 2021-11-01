@@ -40,7 +40,7 @@ namespace ForceTekAuth
 
             foreach (var i in notAuthed)
             {
-                i.LabConfirmationId = null;
+                i.GGDKey = null;
                 i.AuthorisedByCaregiver = _dtp.Snapshot;
                 i.StartDateOfTekInclusion = _dtp.Snapshot.Date.AddDays(-1);
             }
