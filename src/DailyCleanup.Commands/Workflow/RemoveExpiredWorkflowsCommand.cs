@@ -83,14 +83,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Wo
             stats.Count = dbc.KeyReleaseWorkflowStates.Count();
 
             stats.Expired = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _dtp.Snapshot);
-            stats.Unauthorised = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _dtp.Snapshot && (x.LabConfirmationId != null || x.GGDKey != null) && x.AuthorisedByCaregiver == null && x.StartDateOfTekInclusion == null);
-            stats.Authorised = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _dtp.Snapshot && x.LabConfirmationId == null && x.GGDKey == null && x.AuthorisedByCaregiver != null && x.StartDateOfTekInclusion != null);
+            stats.Unauthorised = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _dtp.Snapshot && x.GGDKey != null && x.AuthorisedByCaregiver == null && x.StartDateOfTekInclusion == null);
+            stats.Authorised = dbc.KeyReleaseWorkflowStates.Count(x => x.ValidUntil < _dtp.Snapshot && x.GGDKey == null && x.AuthorisedByCaregiver != null && x.StartDateOfTekInclusion != null);
 
             stats.AuthorisedAndFullyPublished = dbc.KeyReleaseWorkflowStates.Count(x =>
                 x.ValidUntil < _dtp.Snapshot &&
                 x.AuthorisedByCaregiver != null &&
                 x.StartDateOfTekInclusion != null &&
-                x.LabConfirmationId == null && x.GGDKey == null &&
+                x.GGDKey == null &&
                 x.Teks.Count(y => y.PublishingState == PublishingState.Unpublished) == 0);
 
             stats.TekCount = dbc.TemporaryExposureKeys.Count();

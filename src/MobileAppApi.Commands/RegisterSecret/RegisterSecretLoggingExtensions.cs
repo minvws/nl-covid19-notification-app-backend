@@ -10,8 +10,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 {
     public class RegisterSecretLoggingExtensions
     {
-        private const string Name = "Register";
-        private const int Base = LoggingCodex.Register;
+        private const string Name = "RegisterV2";
+        private const int Base = LoggingCodex.RegisterV2;
 
         private const int Start = Base;
         private const int Finished = Base + 99;

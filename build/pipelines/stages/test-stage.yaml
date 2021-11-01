@@ -73,7 +73,9 @@ stages:
           displayName: Run dotnet build $(buildConfiguration)
           inputs:
             command: 'build'
-            projects: '**/*.csproj'
+            projects: |
+                **/*.sln
+                !**/*Database.sln
             arguments: ' --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)\tests'
 
         # Run Unit Tests
