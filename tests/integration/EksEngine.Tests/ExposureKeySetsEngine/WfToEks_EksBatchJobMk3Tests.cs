@@ -92,9 +92,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             _snapshot.ExecuteAsync().GetAwaiter().GetResult();
         }
 
-        private static TekEntity CreateTek(int rsn)
+        private static TekEntity CreateTek(int index, int rsn)
         {
-            return new TekEntity { RollingStartNumber = rsn, RollingPeriod = 2, KeyData = new byte[16], PublishAfter = DateTime.UtcNow.AddHours(-1) };
+            var tek = new TekEntity { RollingStartNumber = rsn, RollingPeriod = 2, KeyData = new byte[16], PublishAfter = DateTime.UtcNow.AddHours(-1) };
+            tek.KeyData[0] = Convert.ToByte(index);
+            return tek;
         }
 
         private static TekReleaseWorkflowStateEntity Create(DateTime now, params TekEntity[] items)
@@ -194,7 +196,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             //One TEK from the dawn of time.
             var wfs = new[]
             {
-                Create(_dateTimeProvider.Snapshot, CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
+                Create(_dateTimeProvider.Snapshot, CreateTek(1, DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
             };
 
             Write(wfs);
@@ -274,7 +276,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             var wfs = new[]
             {
-                Create(_dateTimeProvider.Snapshot, CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
+                Create(_dateTimeProvider.Snapshot, CreateTek(1, DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
             };
 
             Write(wfs);
@@ -309,7 +311,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             _workflowContext.BulkDelete(_workflowContext.KeyReleaseWorkflowStates.ToList());
 
             var teks = Enumerable.Range(1, 5)
-                .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
+                .Select(x => CreateTek(x, DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
                 .ToArray();
 
             var wfs = new[]
@@ -347,7 +349,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             _workflowContext.BulkDelete(_workflowContext.KeyReleaseWorkflowStates.ToList());
 
             var teks = Enumerable.Range(1, 10)
-                .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
+                .Select(x => CreateTek(x, DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
                 .ToArray();
 
             var wfs = new[]
@@ -388,7 +390,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             _workflowContext.BulkDelete(_workflowContext.KeyReleaseWorkflowStates.ToList());
 
             var teks = Enumerable.Range(1, 11)
-                .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
+                .Select(x => CreateTek(x, DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
                 .ToArray();
 
             var wfs = new[]
