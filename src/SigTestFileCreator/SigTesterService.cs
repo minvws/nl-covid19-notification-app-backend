@@ -38,11 +38,6 @@ namespace SigTestFileCreator
                 throw new ArgumentException("The SigTestFileCreator requires one file as a command-line argument.");
             }
 
-            if (Environment.UserInteractive && !WindowsIdentityQueries.CurrentUserIsAdministrator())
-            {
-                _logger.WriteNoElevatedPrivs();
-            }
-
             var fullPath = Path.GetFullPath(args[0].Trim());
             var fileDirectory = Path.GetDirectoryName(fullPath);
             var fileName = Path.GetFileNameWithoutExtension(fullPath);
