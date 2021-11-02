@@ -129,7 +129,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             return errors.Any(x =>
                 x.Number == 2601
                 && x.Message.Contains("TekReleaseWorkflowState")
-                && x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.GGDKey))); // TODO: Rewritten code after removing the update on PollToken. Error can be less relative at this moment. 
+                && x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.GGDKey)));
         }
 
         public new class Parameters : IParameters

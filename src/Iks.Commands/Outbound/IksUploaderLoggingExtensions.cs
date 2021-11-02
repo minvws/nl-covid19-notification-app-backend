@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.Entities;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
@@ -30,6 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private const int ResponseRequestTooLarge = Base + 11;
         private const int ResponseServerError = Base + 12;
         private const int ResponseUnknownError = Base + 13;
+        private const int BatchNotExisting = Base + 14;
 
         private readonly ILogger _logger;
 
@@ -155,6 +157,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             _logger.LogError("[{name}/{id}] Unknown error: {httpResponseCode}.",
                 Name, ResponseUnknownError,
                 statusCode);
+        }
+
+        public void WriteBatchNotExistInEntity(IksOutEntity entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            _logger.LogError("[{name}/{id}] Batch does not exist in entity with Id: {Id}",
+                Name, BatchNotExisting,
+                entity.Id);
         }
     }
 }
