@@ -51,7 +51,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
             services.AddTransient<IEksStuffingGeneratorMk2, EksStuffingGeneratorMk2>();
             services.AddTransient<ITransmissionRiskLevelCalculationMk2, TransmissionRiskLevelCalculationMk2>();
             services.AddTransient<ISnapshotEksInput, SnapshotDiagnosisKeys>();
-            services.AddTransient<RemoveDuplicateDiagnosisKeysCommand>();
 
             // Publishing
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
