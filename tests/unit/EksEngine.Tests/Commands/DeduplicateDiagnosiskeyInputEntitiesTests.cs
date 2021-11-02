@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Data.Sqlite;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using Xunit;
 using FluentAssertions;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace EksEngine.Tests.Commands
 {
@@ -26,11 +28,10 @@ namespace EksEngine.Tests.Commands
         private static DbConnection connection;
         private readonly DkSourceDbContext _dkSourceContext;
         private readonly DeduplicateDiagnosiskeyInputEntities _sut;
-        private readonly LoggerFactory _lf;
 
         public DeduplicateDiagnosiskeyInputEntitiesTests()
         {
-            _lf = new LoggerFactory();
+            var lf = new LoggerFactory();
 
             var dkSourceDbContextOptions = new DbContextOptionsBuilder<DkSourceDbContext>()
                 .UseSqlite(CreateSqlDatabase())
@@ -42,7 +43,7 @@ namespace EksEngine.Tests.Commands
 
             _sut = new DeduplicateDiagnosiskeyInputEntities(
                 _dkSourceContext,
-                _lf.CreateLogger<DeduplicateDiagnosiskeyInputEntities>());
+                lf.CreateLogger<DeduplicateDiagnosiskeyInputEntities>());
         }
 
         private static DbConnection CreateSqlDatabase()
@@ -157,6 +158,66 @@ namespace EksEngine.Tests.Commands
 
             //Assert
             result.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task MatchingDkIsMarkedForCleanup_FilterOutExistingDailyKeys_EntityReturned()
+        {
+            //Arrange
+            var dkTobeCleaned = new DiagnosisKeyEntity()
+            {
+                DailyKey = new DailyKey
+                {
+                    KeyData = new byte[] { 0xA },
+                    RollingStartNumber = 1,
+                    RollingPeriod = 144
+                },
+                PublishedToEfgs = true,
+                PublishedLocally = false,
+                ReadyForCleanup = true,
+                Local = new LocalTekInfo
+                {
+                    TransmissionRiskLevel = TransmissionRiskLevel.Low
+                },
+                Created = DateTime.Now
+            };
+
+            var dkNotToBeCleaned = new DiagnosisKeyEntity()
+            {
+                DailyKey = new DailyKey
+                {
+                    KeyData = new byte[] { 0xB },
+                    RollingStartNumber = 1,
+                    RollingPeriod = 144
+                },
+                PublishedToEfgs = true,
+                PublishedLocally = false,
+                ReadyForCleanup = false,
+                Local = new LocalTekInfo
+                {
+                    TransmissionRiskLevel = TransmissionRiskLevel.Low
+                },
+                Created = DateTime.Now
+            };
+
+            _dkSourceContext.DiagnosisKeys.Add(dkTobeCleaned);
+            _dkSourceContext.DiagnosisKeys.Add(dkNotToBeCleaned);
+            _dkSourceContext.DiagnosisKeys.Add(CreateDk(new byte[] { 0xC }, 1, 144, false));
+            await _dkSourceContext.SaveChangesAsync();
+
+            var matchingInputEntity = CreateDkie(new byte[] { 0xA }, 1, 144);
+
+            var testInputEntities = new List<DiagnosisKeyInputEntity>
+            {
+                matchingInputEntity,
+                CreateDkie(new byte[] { 0xB }, 1, 144)
+            };
+
+            //Act
+            var result = await _sut.FilterOutExistingDailyKeys(testInputEntities);
+
+            //Assert
+            result.Should().ContainSingle(x => x == matchingInputEntity);
         }
 
         private static DiagnosisKeyInputEntity CreateDkie(
