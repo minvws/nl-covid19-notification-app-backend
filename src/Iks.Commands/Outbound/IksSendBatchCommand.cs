@@ -68,7 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             if (batch == null)
             {
-                _logger.WriteBatchNOtExistInEntity(item);
+                _logger.WriteBatchNotExistInEntity(item);
                 return null;
             }
 

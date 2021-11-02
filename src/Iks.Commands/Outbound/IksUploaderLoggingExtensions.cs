@@ -159,7 +159,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 statusCode);
         }
 
-        public void WriteBatchNOtExistInEntity(IksOutEntity entity)
+        public void WriteBatchNotExistInEntity(IksOutEntity entity)
         {
             if (entity == null)
             {
