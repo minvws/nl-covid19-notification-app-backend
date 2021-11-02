@@ -15,10 +15,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.DsosEncoding
 
         protected DsosDecodeResult(SymptomObservation symptomObservation, Range<int> values)
         {
-            //TODO ranges break this contraint.
-            //if (!DsosService.ValidRange.Contains(values))
-            //    throw new ArgumentOutOfRangeException(nameof(values));
-
             SymptomObservation = symptomObservation;
             Values = values;
         }

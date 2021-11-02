@@ -8,7 +8,6 @@ using System.Linq;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
 {
     /// <summary>
-    /// TODO not intended for prod.
     /// This case could actually happen - foreign long term visitor in NL.
     /// </summary>
     public class OnlyIncludeCountryOfOriginKeyProcessor : IDiagnosticKeyProcessor

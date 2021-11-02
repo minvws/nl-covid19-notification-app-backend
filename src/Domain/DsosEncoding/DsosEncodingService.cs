@@ -25,13 +25,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.DsosEncoding
             return OffsetSymptomaticOnsetDateUnknown + notTheDsos;
         }
 
-        public Range<int> ParseToRange(int value)
-        {
-            var intervalDuration = JavascriptMaths.Round(value / (double)RangeFactor); //TODO Check the intent?
-            var daysSinceLastDayOfInterval = value - intervalDuration * RangeFactor;
-            return new Range<int>(daysSinceLastDayOfInterval - (intervalDuration - 1), daysSinceLastDayOfInterval);
-        }
-
         //From the JS
         public bool TryDecode(int value, out DsosDecodeResult result)
         {
@@ -46,12 +39,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.DsosEncoding
             //1 day @ -14 to 19 days @ +21
             if (85 < value && value < 1922)
             {
-                var intervalDuration = JavascriptMaths.Round(value / (double)RangeFactor); //TODO Check the intent?
+                var intervalDuration = JavascriptMaths.Round(value / (double)RangeFactor);
                 var daysSinceLastDayOfInterval = value - intervalDuration * RangeFactor;
-
-                //TODO 
-                //if (!ValidRange.Contains(daysSinceLastDayOfInterval))
-                //    return false;
 
                 var r = new Range<int>(daysSinceLastDayOfInterval - (intervalDuration - 1), daysSinceLastDayOfInterval);
 
@@ -87,36 +76,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.DsosEncoding
             encodedResult = dsos;
             return result;
         }
-
-        //public bool TryEncodeSymptomaticDateRange(int daysSinceLastDayOfRange, int rangeSpanDays, out int encodedResult)
-        //{
-        //    //TODO Check!
-        //    var result = 0 < daysSinceLastDayOfRange && daysSinceLastDayOfRange < 14 && 0 < rangeSpanDays && rangeSpanDays < 14; //&& beginning of range?
-        //    encodedResult = rangeSpanDays * RangeFactor + daysSinceLastDayOfRange;
-        //    return result;
-        //}
-
-        //public bool TryEncodeSymptomaticOnsetUnknown(int daysSinceSubmission, out int encodedResult)
-        //{
-        //    var result = ValidRange(daysSinceSubmission);
-        //    encodedResult = result ? daysSinceSubmission + OffsetSymptomaticOnsetDateUnknown : int.MinValue;
-        //    return result;
-        //}
-
-        //public bool TryEncodeSymptomStatusUnknown(int daysSinceSubmission, out int encodedResult)
-        //{
-        //    var result = ValidRange(daysSinceSubmission);
-        //    encodedResult = result ? daysSinceSubmission + OffsetSymptomStateUnknown : int.MinValue;
-        //    return result;
-        //}
-
-
-        //public bool TryEncodeAsymptomatic(int daysSinceSubmission, out int encodedResult)
-        //{
-        //    var result = ValidRange(daysSinceSubmission);
-        //    encodedResult = result ? daysSinceSubmission + OffsetAsymptomatic : int.MinValue;
-        //    return result;
-        //}
-
     }
 }

@@ -22,7 +22,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities
 
         public ReportType? ReportType { get; set; } = Domain.ReportType.ConfirmedTest;
 
-        //TODO length 2
         public string CountryOfOrigin { get; set; }
     }
 }

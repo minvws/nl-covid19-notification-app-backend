@@ -14,6 +14,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Di
 {
     public class RemovePublishedDiagnosisKeysCommand : BaseCommand
     {
+        private const int CutOffDays = -14;
+
         private RemovePublishedDiagnosisKeysResult _result;
         private readonly DkSourceDbContext _diagnosticKeyDbContext;
         private readonly IUtcDateTimeProvider _utcDateTimeProvider;
@@ -33,8 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Di
 
             _result = new RemovePublishedDiagnosisKeysResult();
 
-            //TODO setting
-            var cutoff = _utcDateTimeProvider.Snapshot.AddDays(-14).Date.ToRollingStartNumber();
+            var cutoff = _utcDateTimeProvider.Snapshot.AddDays(CutOffDays).Date.ToRollingStartNumber();
 
             var resultToDelete = await _diagnosticKeyDbContext.DiagnosisKeys.AsNoTracking().Where(p =>
                 p.PublishedLocally && p.PublishedToEfgs && p.DailyKey.RollingStartNumber < cutoff).ToArrayAsync();

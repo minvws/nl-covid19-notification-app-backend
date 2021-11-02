@@ -85,24 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Tests
             Assert.Equal(value, symptomatic.DaysSinceOnsetOfSymptoms);
             Assert.Throws<InvalidOperationException>(() => symptomatic.DaysSinceLastSymptoms);
         }
-
-        [InlineData(86, -14, -14)] //Matches JS implementation
-        [InlineData(87, -13, -13)] //Matches JS implementation
-        [InlineData(100, 0, 0)] //Matches JS implementation
-        [InlineData(121, 21, 21)] //Matches JS implementation
-
-        [InlineData(186, -15, -14)] //Matches JS implementation
-        [InlineData(187, -14, -13)] //Matches JS implementation
-        [InlineData(200, -1, 0)] //Matches JS implementation
-        [InlineData(221, 20, 21)] //Matches JS implementation
-
-        [Theory]
-        public void Parse(int value, int lastDay, int duration)
-        {
-            var result = _encodingService.ParseToRange(value);
-            Assert.Equal(new Range<int>(lastDay, duration), result);
-        }
-
+        
         [InlineData(86, -14, -14)] //Min
         [InlineData(87, -13, -13)]
         [InlineData(100, 0, 0)]

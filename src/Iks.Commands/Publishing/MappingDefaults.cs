@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             => new InteropKeyFormatterArgs
             {
                 Value = value.DailyKey,
-                TransmissionRiskLevel = value.TransmissionRiskLevel.ToEfgsInt32(), //TODO or mapper?
+                TransmissionRiskLevel = value.TransmissionRiskLevel.ToEfgsInt32(),
                 ReportType = value.ReportType.ToEfgsReportType(),
                 CountriesOfInterest = value.CountriesOfInterest.Split(","),
                 DaysSinceSymtpomsOnset = value.DaysSinceSymptomsOnset

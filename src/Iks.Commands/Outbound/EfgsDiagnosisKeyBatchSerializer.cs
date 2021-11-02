@@ -13,7 +13,6 @@ using Iks.Protobuf;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
     /// <summary>
-    /// TODO Write to a stream instead of an array 
     /// Serializes the DiagnosisKeyBatch in the Efgs Signing format as described here:
     /// https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/docs/software-design-federation-gateway-service.md#32-signature-verification
     /// </summary>

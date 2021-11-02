@@ -13,10 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public DateTime Created { get; set; }
-
         public string Name { get; set; }
-
-        //TODO nullable
         public string Qualifier { get; set; }
         public double Value { get; set; }
         public double TotalFromPortal { get; set; }
