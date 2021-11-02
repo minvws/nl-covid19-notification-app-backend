@@ -17,7 +17,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
     {
         private readonly CountryCodeListParser _countryCodeListParser = new CountryCodeListParser();
 
-        //TODO organise settings properly
         public EfgsInteropConfig(IConfiguration config, string prefix = "Interop:Temp") : base(config, prefix)
         {
         }

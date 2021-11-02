@@ -155,8 +155,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             _logger.LogDebug("Add TEKs to output - Count:{Count}, Total:{OutputCount}.", page.Length, _output.Count);
         }
 
-
-        //TODO make this a writer
         private async Task WriteNewSetToOutput()
         {
             _logger.LogDebug("Build IKS.");

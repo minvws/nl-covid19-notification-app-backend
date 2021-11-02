@@ -20,12 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.Entities
         public DateTime ValidFor { get; set; }
         public byte[] Content { get; set; }
         public bool Sent { get; set; }
-
-        /// <summary>
-        /// TODO CreatingJobQualifier?
-        /// </summary>
         public int Qualifier { get; set; }
-
         public bool Error { get; set; }
     }
 }

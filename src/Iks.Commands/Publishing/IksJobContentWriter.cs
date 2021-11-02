@@ -37,7 +37,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                         ValidFor = x.Created,
                         Content = x.Content,
                         Qualifier = x.CreatingJobQualifier
-                        //TODO batch id? use qualifier
                     }).ToArray();
 
                 await using (_contentDbContext.BeginTransaction())

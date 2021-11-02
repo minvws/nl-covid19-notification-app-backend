@@ -13,10 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
     public class DkProcessingItem
     {
         public DiagnosisKeyEntity DiagnosisKey { get; set; }
-
-        /// <summary>
-        /// TODO if this is not required by any of the inbound filters, it can be removed.
-        /// </summary>
+        
         public IDictionary<string, object> Metadata { get; set; }
     }
 }

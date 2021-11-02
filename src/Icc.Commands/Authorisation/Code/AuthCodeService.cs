@@ -40,7 +40,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
             var principalJson = JsonConvert.SerializeObject(claimsObject);
             var encodedClaimsPrincipal = Encoding.UTF8.GetBytes(principalJson);
 
-            //TODO: add sliding expiration
             await _cache.SetAsync(authCode, encodedClaimsPrincipal);
 
             return authCode;
