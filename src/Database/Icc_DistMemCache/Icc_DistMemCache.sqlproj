@@ -61,6 +61,7 @@
     <Folder Include="PostDeploy" />
     <Folder Include="Security" />
     <Folder Include="PostDeploy\Scripts" />
+    <Folder Include="Security\Roles" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Cache.sql">
@@ -71,8 +72,15 @@
     <None Include="PostDeploy\Scripts\Permissions.sql" />
     <None Include="PostDeploy\Scripts\RoleMemberships.sql" />
     <None Include="PostDeploy\Scripts\Users.sql" />
+    <Build Include="Security\Roles\Dbr_Appbeheerders.sql" />
+    <Build Include="Security\Roles\Dbr_Funcbeheerders.sql" />
+    <Build Include="Security\Roles\Dbr_Ontwikkelaars.sql" />
+    <Build Include="Security\Roles\Dbr_Report.sql" />
+    <Build Include="Security\Roles\Dbr_Service.sql" />
+    <Build Include="Security\Roles\Dbr_Users.sql" />
+    <Build Include="Security\Roles\Subroles.sql" />
   </ItemGroup>
-   <ItemGroup>
+  <ItemGroup>
     <SqlCmdVariable Include="Appbeheerders">
       <DefaultValue>
       </DefaultValue>
