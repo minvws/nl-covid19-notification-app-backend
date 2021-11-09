@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         private readonly WorkflowDbContext _workflowDbContext;
         private readonly DkSourceDbContext _dkSourceDbContext;
         private readonly IDiagnosticKeyProcessor[] _orderedProcessorList;
-        private readonly DeduplicateDiagnosiskeyInputEntities _deduplicator;
+        private readonly DiagnosiskeyInputEntityDeduplicator _deduplicator;
 
         private int _commitIndex;
         private SnapshotWorkflowTeksToDksResult _result;
@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             WorkflowDbContext workflowDbContext,
             DkSourceDbContext dkSourceDbContext,
             IDiagnosticKeyProcessor[] orderedProcessorList,
-            DeduplicateDiagnosiskeyInputEntities deduplicator)
+            DiagnosiskeyInputEntityDeduplicator deduplicator)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));

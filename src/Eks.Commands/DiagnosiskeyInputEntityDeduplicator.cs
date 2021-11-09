@@ -13,12 +13,12 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramewor
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 {
-    public class DeduplicateDiagnosiskeyInputEntities
+    public class DiagnosiskeyInputEntityDeduplicator
     {
         private readonly DkSourceDbContext _dkSourceDbContext;
         private readonly ILogger _logger;
 
-        public DeduplicateDiagnosiskeyInputEntities(DkSourceDbContext dkSourceDbContext, ILogger<DeduplicateDiagnosiskeyInputEntities> logger)
+        public DiagnosiskeyInputEntityDeduplicator(DkSourceDbContext dkSourceDbContext, ILogger<DiagnosiskeyInputEntityDeduplicator> logger)
         {
             _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

@@ -5,11 +5,11 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics;
 using System.Linq;
-using Microsoft.Data.Sqlite;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
+using FluentAssertions;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
@@ -17,19 +17,17 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramewor
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using Xunit;
-using FluentAssertions;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace EksEngine.Tests.Commands
 {
     [Trait("db", "mem")]
-    public class DeduplicateDiagnosiskeyInputEntitiesTests : IDisposable
+    public class DiagnosiskeyInputEntityDeduplicatorTests : IDisposable
     {
         private static DbConnection connection;
         private readonly DkSourceDbContext _dkSourceContext;
-        private readonly DeduplicateDiagnosiskeyInputEntities _sut;
+        private readonly DiagnosiskeyInputEntityDeduplicator _sut;
 
-        public DeduplicateDiagnosiskeyInputEntitiesTests()
+        public DiagnosiskeyInputEntityDeduplicatorTests()
         {
             var lf = new LoggerFactory();
 
@@ -41,9 +39,9 @@ namespace EksEngine.Tests.Commands
 
             _dkSourceContext.BulkDelete(_dkSourceContext.DiagnosisKeys.ToList());
 
-            _sut = new DeduplicateDiagnosiskeyInputEntities(
+            _sut = new DiagnosiskeyInputEntityDeduplicator(
                 _dkSourceContext,
-                lf.CreateLogger<DeduplicateDiagnosiskeyInputEntities>());
+                lf.CreateLogger<DiagnosiskeyInputEntityDeduplicator>());
         }
 
         private static DbConnection CreateSqlDatabase()

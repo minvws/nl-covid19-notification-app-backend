@@ -51,9 +51,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 _workflowContext,
                 _dkSourceContext,
                 new IDiagnosticKeyProcessor[0],
-                new DeduplicateDiagnosiskeyInputEntities(
+                new DiagnosiskeyInputEntityDeduplicator(
                     _dkSourceContext,
-                    _lf.CreateLogger<DeduplicateDiagnosiskeyInputEntities>())
+                    _lf.CreateLogger<DiagnosiskeyInputEntityDeduplicator>())
             );
         }
 

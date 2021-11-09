@@ -95,9 +95,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 _workflowContext,
                 _dkSourceContext,
                 new IDiagnosticKeyProcessor[] { },
-                new DeduplicateDiagnosiskeyInputEntities(
+                new DiagnosiskeyInputEntityDeduplicator(
                     _dkSourceContext,
-                    _lf.CreateLogger<DeduplicateDiagnosiskeyInputEntities>())
+                    _lf.CreateLogger<DiagnosiskeyInputEntityDeduplicator>())
             );
 
             var countriesOut = new Mock<IOutboundFixedCountriesOfInterestSetting>();

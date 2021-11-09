@@ -61,9 +61,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(countriesOutMock.Object),
                     new NlToEfgsDsosDiagnosticKeyProcessorMk1()
                 },
-                new DeduplicateDiagnosiskeyInputEntities(
+                new DiagnosiskeyInputEntityDeduplicator(
                     _dkSourceDbContext,
-                    _lf.CreateLogger<DeduplicateDiagnosiskeyInputEntities>())
+                    _lf.CreateLogger<DiagnosiskeyInputEntityDeduplicator>())
             ).ExecuteAsync();
         }
 
