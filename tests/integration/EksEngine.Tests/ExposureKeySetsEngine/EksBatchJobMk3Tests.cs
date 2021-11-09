@@ -67,7 +67,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowContext,
                 _dkSourceContext,
-                new IDiagnosticKeyProcessor[] { }
+                new IDiagnosticKeyProcessor[] { },
+                new DiagnosiskeyInputEntityDeduplicator(
+                    _dkSourceContext,
+                    _lf.CreateLogger<DiagnosiskeyInputEntityDeduplicator>())
             );
 
             _outboundCountriesMock = new Mock<IOutboundFixedCountriesOfInterestSetting>();
@@ -86,9 +89,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             await _snapshot.ExecuteAsync();
         }
 
-        private static TekEntity CreateTek(int rsn)
+        private static TekEntity CreateTek(int index, int rsn)
         {
-            return new TekEntity { RollingStartNumber = rsn, RollingPeriod = 2, KeyData = new byte[16], PublishAfter = DateTime.UtcNow.AddHours(-1) };
+            var tek = new TekEntity { RollingStartNumber = rsn, RollingPeriod = 2, KeyData = new byte[16], PublishAfter = DateTime.UtcNow.AddHours(-1) };
+            tek.KeyData[0] = Convert.ToByte(index);
+            return tek;
         }
 
         private static TekReleaseWorkflowStateEntity Create(DateTime now, InfectiousPeriodType symptomatic, params TekEntity[] items)
@@ -177,7 +182,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             var wfs = new[]
             {
-                Create(_dateTimeProvider.Snapshot, InfectiousPeriodType.Symptomatic, CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
+                Create(_dateTimeProvider.Snapshot, InfectiousPeriodType.Symptomatic, CreateTek(1, DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
             };
 
             await Write(wfs);
@@ -257,7 +262,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             var wfs = new[]
             {
-                Create(_dateTimeProvider.Snapshot, InfectiousPeriodType.Symptomatic, CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
+                Create(_dateTimeProvider.Snapshot, InfectiousPeriodType.Symptomatic, CreateTek(1, DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
             };
 
             await Write(wfs);
@@ -292,7 +297,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             await BulkDeleteAllDataInTest();
 
             var teks = Enumerable.Range(1, 5)
-                .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
+                .Select(x => CreateTek(x, DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
                 .ToArray();
 
             var wfs = new[]
@@ -332,7 +337,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             await BulkDeleteAllDataInTest();
 
             var teks = Enumerable.Range(1, 5)
-                .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
+                .Select(x => CreateTek(x, DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
                 .ToArray();
 
             var wfs = new[]
@@ -372,7 +377,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             await BulkDeleteAllDataInTest();
 
             var teks = Enumerable.Range(1, 5)
-                .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(0).ToRollingStartNumber()))
+                .Select(x => CreateTek(x, DateTime.UtcNow.Date.AddDays(0).ToRollingStartNumber()))
                 .ToArray();
 
             var wfs = new[]
@@ -412,8 +417,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             await BulkDeleteAllDataInTest();
 
             var teks = new List<TekEntity>();
-            teks.AddRange(Enumerable.Range(1, 3).Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-1).ToRollingStartNumber()))); // dsos = 0
-            teks.AddRange(Enumerable.Range(1, 2).Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))); // dsos = -1
+            teks.AddRange(Enumerable.Range(1, 3).Select(x => CreateTek(x, DateTime.UtcNow.Date.AddDays(-1).ToRollingStartNumber()))); // dsos = 0
+            teks.AddRange(Enumerable.Range(1, 2).Select(x => CreateTek(x * 2, DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))); // dsos = -1
 
             var wfs = new[]
             {
@@ -452,7 +457,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             await BulkDeleteAllDataInTest();
 
             var teks = Enumerable.Range(1, 10)
-                .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
+                .Select(x => CreateTek(x, DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
                 .ToArray();
 
             var wfs = new[]
@@ -492,7 +497,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             await BulkDeleteAllDataInTest();
 
             var teks = Enumerable.Range(1, 11)
-                .Select(x => CreateTek(DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
+                .Select(x => CreateTek(x, DateTime.UtcNow.Date.AddDays(-2).ToRollingStartNumber()))
                 .ToArray();
 
             var wfs = new[]

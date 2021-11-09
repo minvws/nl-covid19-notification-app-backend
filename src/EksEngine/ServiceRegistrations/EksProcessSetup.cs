@@ -40,7 +40,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
                     x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
                     x.GetRequiredService<FixedCountriesOfInterestOutboundDiagnosticKeyProcessor>(),
                     x.GetRequiredService<NlToEfgsDsosDiagnosticKeyProcessorMk1>()
-                }
+                },
+                new DiagnosiskeyInputEntityDeduplicator(
+                    x.GetRequiredService<DkSourceDbContext>(),
+                    x.GetRequiredService<ILoggerFactory>().CreateLogger<DiagnosiskeyInputEntityDeduplicator>())
             ));
 
             // DiagnosisKeys to Eks publishing job
@@ -48,7 +51,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
             services.AddTransient<IEksStuffingGeneratorMk2, EksStuffingGeneratorMk2>();
             services.AddTransient<ITransmissionRiskLevelCalculationMk2, TransmissionRiskLevelCalculationMk2>();
             services.AddTransient<ISnapshotEksInput, SnapshotDiagnosisKeys>();
-            services.AddTransient<RemoveDuplicateDiagnosisKeysCommand>();
 
             // Publishing
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
