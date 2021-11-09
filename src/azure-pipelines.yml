@@ -9,7 +9,7 @@ trigger:
   - release
 
 pool:
-  name: 'CIBG-BuildRelease-O'
+  name: 'CIBG-BuildRelease-O-2016'
 
 variables:
   solution: '**/*.sln'
