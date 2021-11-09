@@ -6,7 +6,7 @@
 trigger:
   - master
 pool:
-  name: 'CIBG-BuildRelease-O'
+  name: 'CIBG-BuildRelease-O-2016'
 
 steps:
   - task: NodeTool@0
