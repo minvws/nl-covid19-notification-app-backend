@@ -6,7 +6,6 @@ SELECT
 	KeyData,
 	RollingStartNumber,
 	RollingPeriod,
-	Region,
 	PublishingState,
 	PublishAfter
 FROM openjson(
@@ -17,7 +16,6 @@ FROM openjson(
 			KeyData,
 			RollingStartNumber,
 			RollingPeriod,
-			Region,
 			PublishingState,
 			PublishAfter
 		FROM [TemporaryExposureKeys]
