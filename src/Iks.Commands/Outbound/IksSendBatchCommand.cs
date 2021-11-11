@@ -16,7 +16,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
     public class IksSendBatchCommand : BaseCommand
     {
-        private readonly HttpPostIksCommand _httpPostIksCommand;
+        //private readonly HttpPostIksCommand _httpPostIksCommand;
+        private readonly IksUploadService _iksUploadService;
         private readonly IksOutDbContext _iksOutboundDbContext;
         private List<IksOutEntity> _todo;
         private readonly IIksSigner _signer;
@@ -26,13 +27,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private readonly IksUploaderLoggingExtensions _logger;
 
         public IksSendBatchCommand(
+            IksUploadService iksUploadService,
             IksOutDbContext iksOutboundDbContext,
-            HttpPostIksCommand httpPostIksCommand,
+            //HttpPostIksCommand httpPostIksCommand,
             IIksSigner signer,
             IBatchTagProvider batchTagProvider,
             IksUploaderLoggingExtensions logger)
         {
-            _httpPostIksCommand = httpPostIksCommand ?? throw new ArgumentNullException(nameof(httpPostIksCommand));
+            _iksUploadService = iksUploadService ?? throw new ArgumentNullException(nameof(iksUploadService));
+            //_httpPostIksCommand = httpPostIksCommand ?? throw new ArgumentNullException(nameof(httpPostIksCommand));
             _iksOutboundDbContext = iksOutboundDbContext ?? throw new ArgumentNullException(nameof(iksOutboundDbContext));
             _signer = signer ?? throw new ArgumentNullException(nameof(signer));
             _batchTagProvider = batchTagProvider ?? throw new ArgumentNullException(nameof(batchTagProvider));
@@ -42,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         public override async Task<ICommandResult> ExecuteAsync()
         {
             _todo = _iksOutboundDbContext.Iks
-                .Where(x => !x.Sent && !x.Error)
+                .Where(x => !x.Sent)
                 .OrderBy(x => x.Created)
                 .ThenBy(x => x.Qualifier)
                 .Select(x => x)
@@ -119,7 +122,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private async Task SendOne(IksSendCommandArgs args)
         {
             // NOTE: no retry here
-            var result = await _httpPostIksCommand.ExecuteAsync(args);
+            var result = await _iksUploadService.ExecuteAsync(args);
 
             _lastResult = result;
 

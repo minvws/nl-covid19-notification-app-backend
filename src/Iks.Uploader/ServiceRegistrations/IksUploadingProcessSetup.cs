@@ -3,11 +3,13 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.Jobs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
+using Polly;
+using Polly.Contrib.WaitAndRetry;
+using Polly.Extensions.Http;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegistrations
 {
@@ -15,11 +17,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
     {
         public static void IksUploadingProcessRegistration(this IServiceCollection services)
         {
+            services.AddHttpClient<IksUploadService>()
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
+            .AddPolicyHandler(GetRetryPolicy())
+            .AddPolicyHandler(GetCircuitBreakerPolicy());
+
             services.AddTransient<IksUploadBatchJob>();
 
             services.AddTransient<IksSendBatchCommand>();
             services.AddTransient<IBatchTagProvider, BatchTagProvider>();
             services.AddSingleton<HttpPostIksCommand>();
+        }
+
+        static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            var delay = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 5);
+
+            return HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                .WaitAndRetryAsync(delay);
+        }
+
+        static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
+        {
+            return HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
         }
     }
 }
