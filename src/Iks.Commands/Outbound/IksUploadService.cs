@@ -9,10 +9,7 @@ using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
-using Polly;
 using Polly.CircuitBreaker;
-using Polly.Contrib.WaitAndRetry;
-using Polly.Retry;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
@@ -70,7 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 };
             }
             catch (BrokenCircuitException e)
-            {                
+            {
                 _logger.WriteEfgsError(e);
 
                 if (e.InnerException != null)

@@ -15,23 +15,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
 {
     public static class IksUploadingProcessSetup
     {
+        private const int RetryCount = 5;
+
         public static void IksUploadingProcessRegistration(this IServiceCollection services)
         {
             services.AddHttpClient<IksUploadService>()
             .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
-            .AddPolicyHandler(GetRetryPolicy())
-            .AddPolicyHandler(GetCircuitBreakerPolicy());
+            .AddPolicyHandler(GetRetryPolicy()) // Retry first
+            .AddPolicyHandler(GetCircuitBreakerPolicy()); // After maximum retries, activate Circuitbreaker.
 
             services.AddTransient<IksUploadBatchJob>();
 
             services.AddTransient<IksSendBatchCommand>();
             services.AddTransient<IBatchTagProvider, BatchTagProvider>();
-            services.AddSingleton<HttpPostIksCommand>();
         }
 
         static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {
-            var delay = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 5);
+            var delay = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: RetryCount);
 
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
@@ -43,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
-                .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
+                .CircuitBreakerAsync(RetryCount, TimeSpan.FromSeconds(30));
         }
     }
 }
