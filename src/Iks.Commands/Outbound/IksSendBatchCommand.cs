@@ -136,9 +136,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                        _logger.WriteResponseSuccess();
                         break;
                     case HttpStatusCode.MultiStatus:
-                        item.CanRetry = false; // No retry needed when send and only returns warnings
-                        _logger.WriteResponseWithWarnings(result.Content);
-                        item.ProcessState = ProcessState.Sent.ToString();
+                        item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
+                        _logger.WriteResponseMultiStatus(result.HttpResponseCode, result.Content);
+                        item.ProcessState = ProcessState.Invalid.ToString();
                         break;
                     case HttpStatusCode.BadRequest:
                         item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
