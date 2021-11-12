@@ -96,9 +96,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 Signature = signature
             };
 
-            await SendOne(args, item);
+            var httpPostIksResult = await SendOne(args, item);
             // Note: EFGS returns Created or OK on creation
-            if (!isNew && _lastResult.Exception)
+            if (!isNew && httpPostIksResult.Exception)
             {
                 item.RetryCount++;
             }
@@ -107,13 +107,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             item.Error = !item.Sent;
             await _iksOutboundDbContext.SaveChangesAsync();
 
-            var result = new IksSendResult
+            var iksSendResult = new IksSendResult
             {
-                Exception = _lastResult.Exception,
-                StatusCode = _lastResult?.HttpResponseCode
+                Exception = httpPostIksResult.Exception,
+                StatusCode = httpPostIksResult?.HttpResponseCode
             };
 
-            _results.Add(result);
+            _results.Add(iksSendResult);
         }
 
         /// <summary>
@@ -121,28 +121,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        private async Task SendOne(IksSendCommandArgs args, IksOutEntity item)
+        private async Task<HttpPostIksResult> SendOne(IksSendCommandArgs args, IksOutEntity item)
         {
             var result = await _iksUploadService.ExecuteAsync(args);
 
-            _lastResult = result;
-
             if (result != null)
             {
-                // Auto-retry: InternalServerError, ANY undefined error
-                // Fix config then retry: BadRequest, Forbidden
-                // Fix file then retry: NotAcceptable
-                // Skip: NotAcceptable
                 switch (result.HttpResponseCode)
                 {
                     case HttpStatusCode.OK:
                     case HttpStatusCode.Created:
                         item.CanRetry = false; // No retry needed when send successfully
-                        _logger.WriteResponseSuccess();
+                        item.ProcessState = ProcessState.Sent.ToString();
+                       _logger.WriteResponseSuccess();
                         break;
                     case HttpStatusCode.MultiStatus:
                         item.CanRetry = false; // No retry needed when send and only returns warnings
                         _logger.WriteResponseWithWarnings(result.Content);
+                        item.ProcessState = ProcessState.Sent.ToString();
                         break;
                     case HttpStatusCode.BadRequest:
                         item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
@@ -151,7 +147,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                         break;
                     case HttpStatusCode.Forbidden:
                         item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
-                        item.ProcessState = ProcessState.InValid.ToString(); // Adjust State to Invalid
+                        item.ProcessState = ProcessState.Invalid.ToString(); // Adjust State to Invalid
                         _logger.WriteResponseForbidden();
                         break;
                     case HttpStatusCode.NotAcceptable:
@@ -161,7 +157,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                         break;
                     case HttpStatusCode.RequestEntityTooLarge:
                         item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
-                        item.ProcessState = ProcessState.InValid.ToString(); // Adjust State to InValid
+                        item.ProcessState = ProcessState.Invalid.ToString(); // Adjust State to InValid
                         _logger.WriteResponseRequestTooLarge();
                         break;
                     case HttpStatusCode.InternalServerError:
@@ -176,6 +172,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                         break;
                 }
             }
+
+            return result;
         }
     }
 }

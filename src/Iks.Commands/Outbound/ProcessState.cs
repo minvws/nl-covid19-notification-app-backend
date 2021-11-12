@@ -9,8 +9,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         Unknown,
         New,
         Failed,
-        Send,
+        Sent,
         Skipped,
-        InValid,
+        Invalid,
     }
 }
