@@ -5,6 +5,8 @@
 using System;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.Jobs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
 using Polly;
