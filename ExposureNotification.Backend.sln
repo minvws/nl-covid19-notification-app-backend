@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30104.148
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AF7302DA-EC4A-4A77-9092-98DEAB8B4D5C}"
 	ProjectSection(SolutionItems) = preProject
@@ -141,17 +141,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "development", "development"
 		docker\development\.dockerignore = docker\development\.dockerignore
 		docker\development\appsettings.development.json = docker\development\appsettings.development.json
 		docker\development\appsettings.json = docker\development\appsettings.json
-		docker\development\Dockerfile.DbProvision = docker\development\Dockerfile.DbProvision
-		docker\development\Dockerfile.Dist = docker\development\Dockerfile.Dist
-		docker\development\Dockerfile.IccWebApi = docker\development\Dockerfile.IccWebApi
-		docker\development\Dockerfile.IccWebApiV2 = docker\development\Dockerfile.IccWebApiV2
-		docker\development\Dockerfile.IccWebApp = docker\development\Dockerfile.IccWebApp
-		docker\development\Dockerfile.MobileApi = docker\development\Dockerfile.MobileApi
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "hacks", "hacks", "{77DC2C29-308B-411D-B13C-098A4F3C76F1}"
-	ProjectSection(SolutionItems) = preProject
-		docker\development\hacks\WindowsIdentityStuff.cs = docker\development\hacks\WindowsIdentityStuff.cs
+		docker\development\Dockerfile.DbBuilder = docker\development\Dockerfile.DbBuilder
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{27576F12-63A8-4D88-8548-2E8770243C1F}"
@@ -602,7 +592,6 @@ Global
 		{A18FFA4C-EBAB-4456-823B-92D12279F030} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}
 		{854D6C6B-16DD-41C9-87E9-2E824154F3AA} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}
 		{E4E317C9-6B41-4E93-99D2-0D3B10FD52FF} = {7B34EF2E-51E5-4734-AB98-490C0CCB02CD}
-		{77DC2C29-308B-411D-B13C-098A4F3C76F1} = {E4E317C9-6B41-4E93-99D2-0D3B10FD52FF}
 		{27576F12-63A8-4D88-8548-2E8770243C1F} = {F458B84D-1A03-45EE-9D7E-DCB6E766E722}
 		{C3CD8AF9-2F56-46E4-9AD1-CBA4DFF4B271} = {27576F12-63A8-4D88-8548-2E8770243C1F}
 		{01808CB4-79B1-46E8-A219-3A857F1C9B94} = {27576F12-63A8-4D88-8548-2E8770243C1F}
