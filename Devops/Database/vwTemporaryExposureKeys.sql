@@ -27,7 +27,7 @@ FROM openjson(
 	KeyData varchar(max),
 	RollingStartNumber int,
 	RollingPeriod int,
-	Region varchar(2),
 	PublishingState int,
 	PublishAfter datetime2(7)
 )
+GO
