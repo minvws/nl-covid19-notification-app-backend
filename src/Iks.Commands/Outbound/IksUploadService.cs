@@ -22,8 +22,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private readonly IAuthenticationCertificateProvider _certificateProvider;
         private readonly IksUploaderLoggingExtensions _logger;
 
-        //private readonly AsyncRetryPolicy _retryPolicy;
-
         public IksUploadService(HttpClient httpClient, IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IksUploaderLoggingExtensions logger, IThumbprintConfig config)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
@@ -31,11 +29,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _config = config ?? throw new ArgumentNullException(nameof(config));
-
-            //var delay = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 5);
-            //_retryPolicy = Policy
-            //    .Handle<HttpRequestException>()
-            //    .WaitAndRetryAsync(delay);
         }
 
         public async Task<HttpPostIksResult> ExecuteAsync(IksSendCommandArgs args)
@@ -53,11 +46,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             clientHandler.ClientCertificates.Clear();
             clientHandler.ClientCertificates.Add(clientCert);
 
-            //_logger.WriteRequestContent(args.Content);           
+            _logger.WriteRequestContent(args.Content);
 
             try
             {
-                // var response = await _retryPolicy.ExecuteAsync<HttpResponseMessage>(async () => await _httpClient.SendAsync(BuildRequest(args, uri, clientCert)));
                 var response = await _httpClient.SendAsync(BuildRequest(args, uri, clientCert));
 
                 return new HttpPostIksResult
