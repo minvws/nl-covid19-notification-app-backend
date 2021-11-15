@@ -32,7 +32,7 @@ FROM openjson(
 	Id int,
 	Created datetime2(7),
 	ValidUntil datetime2(7),
-	GGDKey nvarchar(6),
+	GGDKey nvarchar(7),
 	ConfirmationKey varchar(max),
 	BucketId varchar(max),
 	AuthorisedByCaregiver datetime2(7),
