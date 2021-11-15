@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             clientHandler.ClientCertificates.Clear();
             clientHandler.ClientCertificates.Add(clientCert);
 
-            _logger.WriteRequestContent(args.Content);           
+            _logger.WriteRequestContent(args.Content);
 
             try
             {

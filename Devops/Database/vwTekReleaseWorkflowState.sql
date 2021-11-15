@@ -5,24 +5,26 @@ SELECT
 	Id,
 	Created,
 	ValidUntil,
-	LabConfirmationId,
+	GGDKey,
 	ConfirmationKey,
 	BucketId,
 	AuthorisedByCaregiver,
 	DateOfSymptomsOnset,
-	PollToken
+	IsSymptomatic,
+	IsOriginPortal
 FROM openjson(
 	(
 		SELECT 
 			Id,
 			Created,
 			ValidUntil,
-			LabConfirmationId,
+			GGDKey,
 			ConfirmationKey,
 			BucketId,
 			AuthorisedByCaregiver,
 			DateOfSymptomsOnset,
-			PollToken
+			IsSymptomatic,
+			IsOriginPortal
 		FROM [dbo].[TekReleaseWorkflowState]
 		FOR JSON AUTO
 	)
@@ -30,11 +32,12 @@ FROM openjson(
 	Id int,
 	Created datetime2(7),
 	ValidUntil datetime2(7),
-	LabConfirmationId nvarchar(6),
+	GGDKey nvarchar(7),
 	ConfirmationKey varchar(max),
 	BucketId varchar(max),
 	AuthorisedByCaregiver datetime2(7),
 	DateOfSymptomsOnset datetime2(7),
-	PollToken varchar(max)
+	IsSymptomatic int,
+	IsOriginPortal bit
 )
 GO
