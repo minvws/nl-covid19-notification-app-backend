@@ -18,8 +18,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private readonly IAuthenticationCertificateProvider _certificateProvider;
         private readonly IksUploaderLoggingExtensions _logger;
 
-        private const string EfgsCientThumbprint = "Certificates:EFGSClient"; // Todo: path to thumbprint in config should be stored in these classes; refactor thumbprintconfigprovider to use this string
-
         public HttpPostIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IksUploaderLoggingExtensions logger, IThumbprintConfig config)
         {
             _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
@@ -73,8 +71,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 {
                     HttpResponseCode = response.StatusCode,
                     Content = await response.Content.ReadAsStringAsync()
-                    //TODO How is this used?
-                    //TODO BatchTag = response.Headers.GetSingleValueOrDefault("batchTag")
                 };
             }
             catch (Exception e)

@@ -15,15 +15,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
-
-        /// <summary>
-        /// TODO Could be a date without time.
-        /// </summary>
+        
         public DateTime Created { get; set; }
         public DateTime ValidUntil { get; set; }
-
-        [MinLength(6), MaxLength(6)]
-        public string LabConfirmationId { get; set; }
 
         [MinLength(7), MaxLength(7)]
         public string GGDKey { get; set; }
@@ -42,19 +36,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
         /// <summary>
         /// This is either the DateOfSymptomsOnset or Date of Test value.
         /// </summary>
-        [Column("DateOfSymptomsOnset")] // TODO: rename DB column to StartDateOfTekInclusion
+        [Column("DateOfSymptomsOnset")]
         public DateTime? StartDateOfTekInclusion { get; set; }
 
         /// <summary>
         /// True if Index has symptoms, otherwise false
         /// </summary>
         public InfectiousPeriodType? IsSymptomatic { get; set; }
-
-        /// <summary>
-        /// Rotating auth token for Icc Portal refresh to see KeysLastUploaded time.
-        /// </summary>
-        [Obsolete("PollToken will be obsolete for new version of the ICC backend API")]
-        public string PollToken { get; set; }
 
         public bool IsOriginPortal { get; set; }
 

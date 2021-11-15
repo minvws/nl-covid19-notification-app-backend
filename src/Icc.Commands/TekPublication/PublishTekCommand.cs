@@ -53,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             var wf = await _workflowDb
                 .KeyReleaseWorkflowStates
                 .Include(x => x.Teks)
-                .FirstOrDefaultAsync(x => x.GGDKey == args.GGDKey || args.GGDKey.StartsWith(x.LabConfirmationId));
+                .FirstOrDefaultAsync(x => x.GGDKey == args.GGDKey);
 
             // If no PubTEK value is found the process should be ended. The PubTEK key does not exist or is already processed/published.
             if (wf == null)
@@ -63,7 +63,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             }
 
             wf.AuthorisedByCaregiver = _dateTimeProvider.Snapshot;
-            wf.LabConfirmationId = null; //Clear from usable key range
             wf.GGDKey = null; //Clear from usable key range
             wf.StartDateOfTekInclusion = args.SubjectHasSymptoms ? args.DateOfSymptomsOnset : args.DateOfTest; // The date is currently a StartDateOfTekInclusion or Date of Test. The system lacks having 2 date variants so the existing StartDateOfTekInclusion will hold either
             wf.IsSymptomatic = args.SubjectHasSymptoms ? InfectiousPeriodType.Symptomatic : InfectiousPeriodType.Asymptomatic;
@@ -98,15 +97,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
                 throw new InvalidOperationException("Maximum attempts reached.");
             }
 
-            if (_attemptCount > 1)
-            {
-                _logger.WriteDuplicatePollTokenFound(_attemptCount);
-            }
-
             try
             {
                 await _workflowDb.SaveChangesAsync();
-                _logger.WritePollTokenCommit();
                 return true;
             }
             catch (DbUpdateException ex)
@@ -136,7 +129,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             return errors.Any(x =>
                 x.Number == 2601
                 && x.Message.Contains("TekReleaseWorkflowState")
-                && x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.GGDKey))); // TODO: Rewritten code after removing the update on PollToken. Error can be less relative at this moment. 
+                && x.Message.Contains(nameof(TekReleaseWorkflowStateEntity.GGDKey)));
         }
 
         public new class Parameters : IParameters

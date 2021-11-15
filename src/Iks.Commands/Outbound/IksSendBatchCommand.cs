@@ -68,7 +68,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             if (batch == null)
             {
-                throw new Exception("TODO Something went wrong");
+                _logger.WriteBatchNotExistInEntity(item);
+                return null;
             }
 
             var efgsSerializer = new EfgsDiagnosisKeyBatchSerializer();
@@ -78,13 +79,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
         private async Task ProcessOne(IksOutEntity item)
         {
-            //var item = await _iksOutboundDbContext.Iks.f(x => x.Id == i);
+            var signature = SignDks(item);
+
+            // If the signature is null no batch was present.
+            if (signature == null)
+            {
+                return;
+            }
 
             var args = new IksSendCommandArgs
             {
                 BatchTag = _batchTagProvider.Create(item.Content),
                 Content = item.Content,
-                Signature = SignDks(item)
+                Signature = signature
             };
 
             await SendOne(args);
@@ -101,12 +108,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             item.Sent = _lastResult?.HttpResponseCode == HttpStatusCode.Created;
             item.Error = !item.Sent;
 
-            // TODO: Implement a state machine for batches; this is useful around error cases.
-            // * Re-try for selected states.
-            // * For data errors, end state with invalid (initially).
-            // * Allow for manual fixing of data errors with a special retry state?
-            //
-
             await _iksOutboundDbContext.SaveChangesAsync();
         }
 
@@ -122,7 +123,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             _lastResult = result;
 
-            // TODO: handle the return types
             if (result != null)
             {
                 switch (result.HttpResponseCode)
@@ -154,38 +154,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                         break;
                 }
             }
-
-            // TODO for Production Quality Code:
-            //
-            // Handle the error codes like this:
-            //
-            // Auto-retry: InternalServerError, ANY undefined error
-            // Fix config then retry: BadRequest, Forbidden
-            // Fix file then retry: NotAcceptable
-            // Skip: NotAcceptable
-            //
-            // Also: consider splitting this file up into a class which makes the calls, and a class
-            // which handles the workflow described above.
-            //
-            // The table IksOut will gain the fields: State, RetryCount, Retry flag
-            // 
-            // Code modified to include anything tagged with the Retry flag again.
-            //
-            // We must also define a State enumeration with a logical set of states as per the error handling.
-            // State diagram is helpful here (TODO: Ryan)
-            //
-            // Basically we must be able to manually trigger retries for any data errors and configuration errors, have automatic retry for
-            // transient errors. Ideally driven by some kind of portal, but at first it will be DB tinkering.
-            //
-            // For states:
-            //
-            // States: New, Failed, Sent (ended successfully), Skipped (ended unsuccessfully)
-            // Failed states (combined Efgs and our own errors):
-            //    EfgsInvalidSignature, EfgsInvalidCertificate, EfgsInvalidContent, EfgsDuplicateContent, EfgsUnavailable, EfgsUndefined
-            //    UnableToConnect (when we can't connect to efgs), Unknown (catch-all for any other errors)
-            //
-            // I think that it's cleaner to split the states into State and FailedState; the latter being more detailed states for failures.
-
         }
     }
 }

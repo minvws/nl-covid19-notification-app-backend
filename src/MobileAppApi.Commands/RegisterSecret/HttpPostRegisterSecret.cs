@@ -11,25 +11,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 {
     public class HttpPostRegisterSecret
     {
-        private readonly ISecretWriter _writer;
+        private readonly TekReleaseWorkflowStateCreate _writer;
         private readonly RegisterSecretLoggingExtensions _logger;
         private readonly IWorkflowTime _workflowTime;
         private readonly IUtcDateTimeProvider _utcDateTimeProvider;
-        private readonly ILabConfirmationIdFormatter _labConfirmationIdFormatter;
 
         public HttpPostRegisterSecret(
-            ISecretWriter writer,
+            TekReleaseWorkflowStateCreate writer,
             RegisterSecretLoggingExtensions logger,
             IWorkflowTime workflowTime,
-            IUtcDateTimeProvider utcDateTimeProvider,
-            ILabConfirmationIdFormatter labConfirmationIdFormatter
+            IUtcDateTimeProvider utcDateTimeProvider
             )
         {
             _writer = writer ?? throw new ArgumentNullException(nameof(writer));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _workflowTime = workflowTime ?? throw new ArgumentNullException(nameof(workflowTime));
             _utcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));
-            _labConfirmationIdFormatter = labConfirmationIdFormatter ?? throw new ArgumentNullException(nameof(labConfirmationIdFormatter));
         }
 
         public async Task<IActionResult> ExecuteAsync()
@@ -44,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
                 {
                     ConfirmationKey = Convert.ToBase64String(entity.ConfirmationKey),
                     BucketId = Convert.ToBase64String(entity.BucketId),
-                    LabConfirmationId = _labConfirmationIdFormatter.Format(entity.LabConfirmationId), //Architects choice to use UI format in response.
+                    GGDKey = entity.GGDKey,
                     Validity = _workflowTime.TimeToLiveSeconds(_utcDateTimeProvider.Snapshot, entity.ValidUntil)
                 };
 

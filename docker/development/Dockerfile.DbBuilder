@@ -1,0 +1,14 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS builder
+
+COPY . app/
+WORKDIR app/
+COPY docker/development/appsettings.json .
+
+RUN dotnet publish src/DbBuilder/DbBuilder.csproj --no-self-contained  --configuration Release -o publish --version-suffix local
+
+RUN find ./publish -name appsettings.json -exec cp appsettings.json {} \;
+
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine
+WORKDIR /app
+COPY --from=builder app/publish/ .
+ENTRYPOINT ["dotnet", "DbBuilder.dll"]

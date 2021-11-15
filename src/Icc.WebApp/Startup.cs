@@ -87,7 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
             services.AddTransient<IJwtService, JwtService>();
 
             services.AddSingleton<IAuthCodeService, AuthCodeService>();
-            services.AddTransient<ILabConfirmationIdService, LabConfirmationIdService>();
+            services.AddTransient<IGGDKeyConfirmationService, GGDKeyConfirmationService>();
             services.AddCors();
 
             if (_useTestJwtClaims)
@@ -108,10 +108,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
             });
 
             services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(_configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
-
-            services.AddTransient<WriteNewPollTokenWriter>();
-            services.AddTransient<IPollTokenService, PollTokenService>();
-
+            
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.HttpOnly = HttpOnlyPolicy.Always;

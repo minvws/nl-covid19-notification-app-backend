@@ -37,14 +37,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             var result = new DiagnosisKey
             {
                 KeyData = ByteString.CopyFrom(arg.Value.KeyData),
-                DaysSinceOnsetOfSymptoms = arg.DaysSinceSymtpomsOnset,  //TODO move to RSN (int) (Math.Floor((_DateTimeProvider.Snapshot - arg.DateOfSyptomsOnset).TotalDays)), 
+                DaysSinceOnsetOfSymptoms = arg.DaysSinceSymtpomsOnset,
                 RollingPeriod = (uint)arg.Value.RollingPeriod,
                 RollingStartIntervalNumber = (uint)arg.Value.RollingStartNumber,
                 TransmissionRiskLevel = arg.TransmissionRiskLevel,
                 Origin = arg.Origin,
                 ReportType = arg.ReportType,
             };
-            result.VisitedCountries.AddRange(arg.CountriesOfInterest); //arg.CountriesOfInterest.Except("NL")?
+            result.VisitedCountries.AddRange(arg.CountriesOfInterest);
             return result;
         }
     }

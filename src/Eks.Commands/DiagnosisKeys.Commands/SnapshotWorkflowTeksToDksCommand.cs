@@ -29,11 +29,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         private readonly WorkflowDbContext _workflowDbContext;
         private readonly DkSourceDbContext _dkSourceDbContext;
         private readonly IDiagnosticKeyProcessor[] _orderedProcessorList;
+        private readonly DiagnosiskeyInputEntityDeduplicator _deduplicator;
 
         private int _commitIndex;
         private SnapshotWorkflowTeksToDksResult _result;
 
-        public SnapshotWorkflowTeksToDksCommand(ILogger<SnapshotWorkflowTeksToDksCommand> logger, IUtcDateTimeProvider dateTimeProvider, ITransmissionRiskLevelCalculationMk2 transmissionRiskLevelCalculation, WorkflowDbContext workflowDbContext, DkSourceDbContext dkSourceDbContext, IDiagnosticKeyProcessor[] orderedProcessorList)
+        public SnapshotWorkflowTeksToDksCommand(
+            ILogger<SnapshotWorkflowTeksToDksCommand> logger,
+            IUtcDateTimeProvider dateTimeProvider,
+            ITransmissionRiskLevelCalculationMk2 transmissionRiskLevelCalculation,
+            WorkflowDbContext workflowDbContext,
+            DkSourceDbContext dkSourceDbContext,
+            IDiagnosticKeyProcessor[] orderedProcessorList,
+            DiagnosiskeyInputEntityDeduplicator deduplicator)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
@@ -41,6 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
             _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
             _orderedProcessorList = orderedProcessorList ?? throw new ArgumentNullException(nameof(orderedProcessorList));
+            _deduplicator = deduplicator ?? throw new ArgumentNullException(nameof(deduplicator));
         }
 
         public override async Task<ICommandResult> ExecuteAsync()
@@ -52,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             _result = new SnapshotWorkflowTeksToDksResult();
             await ClearJobTablesAsync();
-            await SnapshotTeks();
+            await SnapshotAndFilterTeks();
             await CommitSnapshotAsync();
             return _result;
         }
@@ -67,7 +76,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             await _dkSourceDbContext.TruncateAsync<DiagnosisKeyInputEntity>();
         }
 
-        private async Task SnapshotTeks()
+        private async Task SnapshotAndFilterTeks()
         {
             _logger.LogDebug("Snapshot publishable TEKs.");
 
@@ -81,7 +90,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             while (page.Count > 0)
             {
-                await _dkSourceDbContext.BulkInsertWithTransactionAsync(page.ToList(), new SubsetBulkArgs());
+                var filteredPage = await _deduplicator.FilterOutExistingDailyKeys(page);
+
+                await _dkSourceDbContext.BulkInsertWithTransactionAsync(filteredPage, new SubsetBulkArgs());
 
                 index += page.Count;
                 page = ReadFromWorkflow(index, PageSize);
@@ -90,7 +101,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             _result.TekReadCount = index;
         }
 
-        private IList<DiagnosisKeyInputEntity> ReadFromWorkflow(int index, int pageSize)
+        private List<DiagnosisKeyInputEntity> ReadFromWorkflow(int index, int pageSize)
         {
             var snapshot = _dateTimeProvider.Snapshot;
 

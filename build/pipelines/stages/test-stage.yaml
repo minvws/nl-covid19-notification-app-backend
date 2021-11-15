@@ -40,7 +40,7 @@ stages:
     workspace:
       clean: all # what to clean up before the job runs - outputs | resources | all
     pool:
-      name: 'CIBG-BuildRelease-O'
+      name: 'CIBG-BuildRelease-O-2016'
     steps:     
         # Install .Net Core 2.0 Version
         - task: UseDotNet@2
@@ -72,7 +72,9 @@ stages:
           displayName: Run dotnet build $(buildConfiguration)
           inputs:
             command: 'build'
-            projects: '**/*.csproj'
+            projects: |
+                **/*.sln
+                !**/*Database.sln
             arguments: ' --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)\tests'
 
         # Run Unit Tests

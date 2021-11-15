@@ -59,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             catch (Exception e)
             {
                 //NB. Cannot catch the internal exception type (cross-platform design of .NET Core)
-                if (e.GetType().Name == "WindowsCryptographicException" && e.Message == "Keyset does not exist" && !WindowsIdentityQueries.CurrentUserIsAdministrator())
+                if (e.GetType().Name == "WindowsCryptographicException" && e.Message == "Keyset does not exist")
                 {
                     throw new InvalidOperationException("Failed to sign with certificate when current user does not have UAC elevated permissions.", e);
                 }

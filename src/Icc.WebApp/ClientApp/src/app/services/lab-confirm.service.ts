@@ -25,7 +25,7 @@ export class LabConfirmService {
         throw error; // Handled in caller
     }
 
-    confirmLabId(GGDKeys: Array<string>, selectedDate: Date, symptomatic: boolean): Observable<any> {
+    confirmGGDKey(GGDKeys: Array<string>, selectedDate: Date, symptomatic: boolean): Observable<any> {
         const serviceUrl = location.origin + '/pubtek';
         this.data = {
             'ggdKey': GGDKeys.join(''),

@@ -15,10 +15,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
-    //TODO add ticket - split up into explicit commands for each version.
     public class ManifestUpdateCommand : BaseCommand
     {
-        private readonly ManifestV2Builder _v2Builder; //Todo: rename classes to ManifestVxBuilder
+        private readonly ManifestV2Builder _v2Builder;
         private readonly ManifestV3Builder _v3Builder;
         private readonly ManifestV4Builder _v4Builder;
         private readonly ManifestV5Builder _v5Builder;

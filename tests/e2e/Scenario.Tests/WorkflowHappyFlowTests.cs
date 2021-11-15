@@ -46,7 +46,7 @@ namespace Scenario.Tests
     {
         private readonly IRandomNumberGenerator _randomNumberGenerator;
 
-        public static EnrollmentResponseV2 EnrollmentResponseV2;
+        public static EnrollmentResponse EnrollmentResponseV2;
         public static PostTeksArgs PostTeks;
         public static ManifestContent CurrentManifest;
 
@@ -93,7 +93,7 @@ namespace Scenario.Tests
 
             // Register
             // Act
-            var (responseMessage, enrollmentResponse) = await client.PostAsync<EnrollmentResponseV2>(new Uri($"{Config.AppBaseUrl(environment)}"), $"v2", $"{Config.RegisterEndPoint}", null);
+            var (responseMessage, enrollmentResponse) = await client.PostAsync<EnrollmentResponse>(new Uri($"{Config.AppBaseUrl(environment)}"), $"v2", $"{Config.RegisterEndPoint}", null);
             EnrollmentResponseV2 = enrollmentResponse;
 
             // Assert

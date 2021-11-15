@@ -1,8 +1,7 @@
 {
   "profiles": {
     "ProtobufScrubber": {
-      "commandName": "Project",
-      "commandLineArgs": "c:\\temp\\7513cd57c8872d4dc3bb6e772250e2ff0f8e915f8e0da3813fa19204425b68ab.zip"
+      "commandName": "Project"
     }
   }
 }

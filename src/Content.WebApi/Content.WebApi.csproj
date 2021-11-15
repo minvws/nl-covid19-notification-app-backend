@@ -10,14 +10,6 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile></DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>$(SolutionDir)\ContentApi\NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.xml</DocumentationFile>
-  </PropertyGroup>
-
   <ItemGroup>
     <Content Include="..\appsettings.release.json" Link="appsettings.release.json" />
   </ItemGroup>

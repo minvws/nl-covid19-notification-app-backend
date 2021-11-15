@@ -35,8 +35,4 @@
     <ProjectReference Include="..\MobileAppApi.Commands\MobileAppApi.Commands.csproj" />
   </ItemGroup>
 
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="xcopy $(ProjectDir)appsettings.*.json $(OutDir) /Y" />
-    </Target>
-
 </Project>

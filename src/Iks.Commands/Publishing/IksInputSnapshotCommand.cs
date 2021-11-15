@@ -89,7 +89,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                 DkId = x.Dkid,
                 DaysSinceSymptomsOnset = x.DaysSinceSymptomsOnset.Value,
                 TransmissionRiskLevel = TransmissionRiskLevel.None, //Remove; this isn't in used in any calculations
-                ReportType = ReportType.ConfirmedTest, //TODO move setting this to a DK Processors later.
+                ReportType = ReportType.ConfirmedTest,
                 DailyKey = x.DailyKey,
                 CountriesOfInterest = string.Join(",", _config.CountriesOfInterest)
             })

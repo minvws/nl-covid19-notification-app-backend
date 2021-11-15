@@ -40,7 +40,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
                 return new UnauthorizedResult();
             }
 
-            //TODO: add sliding expiry time to distributed cache
             await _authCodeService.RevokeAuthCodeAsync(args.Code);
 
             var jwtToken = _jwtService.Generate(claims);

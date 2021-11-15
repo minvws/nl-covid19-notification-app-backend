@@ -15,20 +15,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Jobs
         private readonly ILogger<EksBatchJob> _logger;
         private readonly CommandInvoker _commandInvoker;
         private readonly SnapshotWorkflowTeksToDksCommand _snapshotWorkflowTeksToDksCommand;
-        private readonly RemoveDuplicateDiagnosisKeysCommand _removeDuplicateDiagnosisKeysCommand;
         private readonly ExposureKeySetBatchJobMk3 _exposureKeySetBatchJobMk3;
 
         public EksBatchJob(ILogger<EksBatchJob> logger,
             CommandInvoker commandInvoker,
             SnapshotWorkflowTeksToDksCommand snapshotWorkflowTeksToDksCommand,
-            RemoveDuplicateDiagnosisKeysCommand removeDuplicateDiagnosisKeysCommand,
             ExposureKeySetBatchJobMk3 exposureKeySetBatchJobMk3
             )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _commandInvoker = commandInvoker ?? throw new ArgumentNullException(nameof(commandInvoker));
             _snapshotWorkflowTeksToDksCommand = snapshotWorkflowTeksToDksCommand ?? throw new ArgumentNullException(nameof(snapshotWorkflowTeksToDksCommand));
-            _removeDuplicateDiagnosisKeysCommand = removeDuplicateDiagnosisKeysCommand ?? throw new ArgumentNullException(nameof(removeDuplicateDiagnosisKeysCommand));
             _exposureKeySetBatchJobMk3 = exposureKeySetBatchJobMk3 ?? throw new ArgumentNullException(nameof(exposureKeySetBatchJobMk3));
         }
 
@@ -38,7 +35,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Jobs
 
             _commandInvoker
                 .SetCommand(_snapshotWorkflowTeksToDksCommand)
-                .SetCommand(_removeDuplicateDiagnosisKeysCommand)
                 .SetCommand(_exposureKeySetBatchJobMk3)
                 .Execute();
 

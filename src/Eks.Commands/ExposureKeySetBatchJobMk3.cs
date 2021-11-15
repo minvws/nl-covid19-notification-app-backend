@@ -79,12 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             stopwatch.Start();
 
             _logger.WriteStart(_jobName);
-
-            if (Environment.UserInteractive && !WindowsIdentityQueries.CurrentUserIsAdministrator())
-            {
-                _logger.WriteNoElevatedPrivs(_jobName);
-            }
-
+            
             _eksEngineResult.Started = _dateTimeProvider.Snapshot; //Align with the logged job name.
 
             await ClearJobTablesAsync();

@@ -8,13 +8,11 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <WarningsAsErrors>NU1605;CS8625</WarningsAsErrors>
-    <DocumentationFile></DocumentationFile>
+    <WarningsAsErrors>NU1605;CS8625</WarningsAsErrors>    
     <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <WarningsAsErrors>CS8625</WarningsAsErrors>
-    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="BleCalibration\**" />
