@@ -103,7 +103,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 item.RetryCount++;
             }
 
-            item.Sent = _lastResult?.HttpResponseCode == HttpStatusCode.Created;
+            item.Sent = httpPostIksResult.HttpResponseCode == HttpStatusCode.Created || httpPostIksResult.HttpResponseCode == HttpStatusCode.OK;
             item.Error = !item.Sent;
             await _iksOutboundDbContext.SaveChangesAsync();
 
@@ -140,25 +140,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                         _logger.WriteResponseMultiStatus(result.HttpResponseCode, result.Content);
                         item.ProcessState = ProcessState.Invalid.ToString();
                         break;
-                    case HttpStatusCode.BadRequest:
-                        item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
-                        item.ProcessState = ProcessState.Failed.ToString(); // Adjust State to Failed
-                        _logger.WriteResponseBadRequest();
-                        break;
                     case HttpStatusCode.Forbidden:
                         item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
                         item.ProcessState = ProcessState.Invalid.ToString(); // Adjust State to Invalid
                         _logger.WriteResponseForbidden();
+                        break;
+                    case HttpStatusCode.RequestEntityTooLarge:
+                        item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
+                        item.ProcessState = ProcessState.Invalid.ToString(); // Adjust State to Invalid
+                        _logger.WriteResponseRequestTooLarge();
                         break;
                     case HttpStatusCode.NotAcceptable:
                         item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
                         item.ProcessState = ProcessState.Skipped.ToString(); // Adjust State to Skipped
                         _logger.WriteResponseNotAcceptable();
                         break;
-                    case HttpStatusCode.RequestEntityTooLarge:
+                    case HttpStatusCode.BadRequest:
                         item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
-                        item.ProcessState = ProcessState.Invalid.ToString(); // Adjust State to Invalid
-                        _logger.WriteResponseRequestTooLarge();
+                        item.ProcessState = ProcessState.Failed.ToString(); // Adjust State to Failed
+                        _logger.WriteResponseBadRequest();
                         break;
                     case HttpStatusCode.InternalServerError:
                         item.CanRetry = true;

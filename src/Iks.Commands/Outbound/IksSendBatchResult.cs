@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
     public class IksSendBatchResult : CommandResult
     {
-        public bool Success => Sent.Count(x => x.StatusCode == HttpStatusCode.OK) == Found;
+        public bool Success => Sent.Count(x => x.StatusCode == HttpStatusCode.Created || x.StatusCode == HttpStatusCode.OK) == Found;
         public int Found { get; set; }
         public IksSendResult[] Sent { get; set; }
     }
