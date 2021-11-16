@@ -149,14 +149,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
         public void WriteResponseUnknownError(HttpStatusCode? statusCode)
         {
-            if (statusCode == null)
-            {
-                throw new ArgumentNullException(nameof(statusCode));
-            }
-
             _logger.LogError("[{name}/{id}] Unknown error: {httpResponseCode}.",
                 Name, ResponseUnknownError,
-                statusCode);
+                statusCode?.ToString() ?? "No HttpStatusCode received");
         }
 
         public void WriteBatchNotExistInEntity(IksOutEntity entity)

@@ -4,22 +4,27 @@
 
 using System;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
+using Polly.CircuitBreaker;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
-    public class HttpPostIksCommand
+    public class IksUploadService
     {
+        private readonly HttpClient _httpClient;
+
         private readonly IEfgsConfig _efgsConfig;
         private readonly IThumbprintConfig _config;
         private readonly IAuthenticationCertificateProvider _certificateProvider;
         private readonly IksUploaderLoggingExtensions _logger;
 
-        public HttpPostIksCommand(IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IksUploaderLoggingExtensions logger, IThumbprintConfig config)
+        public IksUploadService(HttpClient httpClient, IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IksUploaderLoggingExtensions logger, IThumbprintConfig config)
         {
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
             _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -41,31 +46,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             clientHandler.ClientCertificates.Clear();
             clientHandler.ClientCertificates.Add(clientCert);
 
-            // Build request
-            var request = new HttpRequestMessage(HttpMethod.Post, uri);
-            request.Content = new ByteArrayContent(args.Content);
-            request.Content.Headers.Add("Content-Type", "application/protobuf; version=1.0");
-            request.Headers.Add("BatchTag", args.BatchTag);
-            request.Headers.Add("batchSignature", Convert.ToBase64String(args.Signature));
-            request.Headers.Add("Accept", "application/json;version=1.0");
-
-            if (_efgsConfig.SendClientAuthenticationHeaders)
-            {
-                request.Headers.Add("X-SSL-Client-SHA256", clientCert.ComputeSha256Hash());
-                request.Headers.Add("X-SSL-Client-DN", clientCert.Subject.Replace(" ", string.Empty));
-            }
-
-            _logger.WriteRequest(request);
             _logger.WriteRequestContent(args.Content);
-
-            using var client = new HttpClient(clientHandler)
-            {
-                Timeout = TimeSpan.FromSeconds(5)
-            };
 
             try
             {
-                var response = await client.SendAsync(request);
+                var response = await _httpClient.SendAsync(BuildRequest(args, uri, clientCert));
 
                 return new HttpPostIksResult
                 {
@@ -73,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                     Content = await response.Content.ReadAsStringAsync()
                 };
             }
-            catch (Exception e)
+            catch (BrokenCircuitException e)
             {
                 _logger.WriteEfgsError(e);
 
@@ -87,6 +72,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                     Exception = true
                 };
             }
+        }
+
+        private HttpRequestMessage BuildRequest(IksSendCommandArgs args, Uri uri, X509Certificate2 clientCert)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, uri)
+            {
+                Content = new ByteArrayContent(args.Content)
+            };
+
+            request.Content.Headers.Add("Content-Type", "application/protobuf; version=1.0");
+            request.Headers.Add("BatchTag", args.BatchTag);
+            request.Headers.Add("batchSignature", Convert.ToBase64String(args.Signature));
+            request.Headers.Add("Accept", "application/json;version=1.0");
+
+            if (_efgsConfig.SendClientAuthenticationHeaders)
+            {
+                request.Headers.Add("X-SSL-Client-SHA256", clientCert.ComputeSha256Hash());
+                request.Headers.Add("X-SSL-Client-DN", clientCert.Subject.Replace(" ", string.Empty));
+            }
+
+            _logger.WriteRequest(request);
+
+            return request;
         }
     }
 }
