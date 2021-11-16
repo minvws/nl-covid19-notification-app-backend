@@ -16,23 +16,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
     public class IksSendBatchCommand : BaseCommand
     {
-        private readonly HttpPostIksCommand _httpPostIksCommand;
+        private readonly IksUploadService _iksUploadService;
         private readonly IksOutDbContext _iksOutboundDbContext;
-        private List<IksOutEntity> _todo;
+        private List<IksOutEntity> _iksOutEntities;
         private readonly IIksSigner _signer;
         private readonly IBatchTagProvider _batchTagProvider;
         private readonly List<IksSendResult> _results = new List<IksSendResult>();
-        private HttpPostIksResult _lastResult;
+        private readonly HttpPostIksResult _lastResult;
         private readonly IksUploaderLoggingExtensions _logger;
 
         public IksSendBatchCommand(
+            IksUploadService iksUploadService,
             IksOutDbContext iksOutboundDbContext,
-            HttpPostIksCommand httpPostIksCommand,
             IIksSigner signer,
             IBatchTagProvider batchTagProvider,
             IksUploaderLoggingExtensions logger)
         {
-            _httpPostIksCommand = httpPostIksCommand ?? throw new ArgumentNullException(nameof(httpPostIksCommand));
+            _iksUploadService = iksUploadService ?? throw new ArgumentNullException(nameof(iksUploadService));
             _iksOutboundDbContext = iksOutboundDbContext ?? throw new ArgumentNullException(nameof(iksOutboundDbContext));
             _signer = signer ?? throw new ArgumentNullException(nameof(signer));
             _batchTagProvider = batchTagProvider ?? throw new ArgumentNullException(nameof(batchTagProvider));
@@ -41,21 +41,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
         public override async Task<ICommandResult> ExecuteAsync()
         {
-            _todo = _iksOutboundDbContext.Iks
-                .Where(x => !x.Sent && !x.Error)
+            _iksOutEntities = _iksOutboundDbContext.Iks
+                .Where(x => !x.Sent && (!x.CanRetry.HasValue || x.CanRetry.Value))
                 .OrderBy(x => x.Created)
                 .ThenBy(x => x.Qualifier)
                 .Select(x => x)
                 .ToList();
 
-            foreach (var iksOutEntity in _todo)
+            foreach (var iksOutEntity in _iksOutEntities)
             {
                 await ProcessOne(iksOutEntity);
             }
 
             return new IksSendBatchResult
             {
-                Found = _todo.Count,
+                Found = _iksOutEntities.Count,
                 Sent = _results.ToArray()
             };
         }
@@ -79,6 +79,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
         private async Task ProcessOne(IksOutEntity item)
         {
+            var isNew = item.ProcessState.Equals(ProcessState.New.ToString());
+
             var signature = SignDks(item);
 
             // If the signature is null no batch was present.
@@ -94,21 +96,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 Signature = signature
             };
 
-            await SendOne(args);
-
-            var result = new IksSendResult
-            {
-                Exception = _lastResult.Exception,
-                StatusCode = _lastResult?.HttpResponseCode
-            };
-
-            _results.Add(result);
-
+            var httpPostIksResult = await SendOne(args, item);
             // Note: EFGS returns Created or OK on creation
+            if (!isNew && httpPostIksResult.Exception)
+            {
+                item.RetryCount++;
+            }
+
             item.Sent = _lastResult?.HttpResponseCode == HttpStatusCode.Created;
             item.Error = !item.Sent;
-
             await _iksOutboundDbContext.SaveChangesAsync();
+
+            var iksSendResult = new IksSendResult
+            {
+                Exception = httpPostIksResult.Exception,
+                StatusCode = httpPostIksResult?.HttpResponseCode
+            };
+
+            _results.Add(iksSendResult);
         }
 
         /// <summary>
@@ -116,12 +121,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        private async Task SendOne(IksSendCommandArgs args)
+        private async Task<HttpPostIksResult> SendOne(IksSendCommandArgs args, IksOutEntity item)
         {
-            // NOTE: no retry here
-            var result = await _httpPostIksCommand.ExecuteAsync(args);
-
-            _lastResult = result;
+            var result = await _iksUploadService.ExecuteAsync(args);
 
             if (result != null)
             {
@@ -129,31 +131,49 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 {
                     case HttpStatusCode.OK:
                     case HttpStatusCode.Created:
-                        _logger.WriteResponseSuccess();
-                        return;
+                        item.CanRetry = false; // No retry needed when sent successfully
+                        item.ProcessState = ProcessState.Sent.ToString();
+                       _logger.WriteResponseSuccess();
+                        break;
                     case HttpStatusCode.MultiStatus:
+                        item.CanRetry = false; // No retry needed when sent and only returns warnings
                         _logger.WriteResponseWithWarnings(result.Content);
-                        return;
+                        item.ProcessState = ProcessState.Sent.ToString();
+                        break;
                     case HttpStatusCode.BadRequest:
+                        item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
+                        item.ProcessState = ProcessState.Failed.ToString(); // Adjust State to Failed
                         _logger.WriteResponseBadRequest();
                         break;
                     case HttpStatusCode.Forbidden:
+                        item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
+                        item.ProcessState = ProcessState.Invalid.ToString(); // Adjust State to Invalid
                         _logger.WriteResponseForbidden();
                         break;
                     case HttpStatusCode.NotAcceptable:
+                        item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
+                        item.ProcessState = ProcessState.Skipped.ToString(); // Adjust State to Skipped
                         _logger.WriteResponseNotAcceptable();
                         break;
                     case HttpStatusCode.RequestEntityTooLarge:
+                        item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
+                        item.ProcessState = ProcessState.Invalid.ToString(); // Adjust State to Invalid
                         _logger.WriteResponseRequestTooLarge();
                         break;
                     case HttpStatusCode.InternalServerError:
+                        item.CanRetry = true;
+                        item.ProcessState = ProcessState.Failed.ToString(); // Adjust State to Failed 
                         _logger.WriteResponseInternalServerError();
                         break;
                     default:
+                        item.CanRetry = true;
+                        item.ProcessState = ProcessState.Failed.ToString(); // Adjust State to Failed
                         _logger.WriteResponseUnknownError(result.HttpResponseCode);
                         break;
                 }
             }
+
+            return result;
         }
     }
 }
