@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Net;
 using System.Net.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.Jobs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
 using Polly;
@@ -17,19 +18,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
 {
     public static class IksUploadingProcessSetup
     {
+        private const string EfgsAuthenticationSettingPrefix = "Certificates:EfgsAuthentication";
         private const int RetryCount = 5;
 
         public static void IksUploadingProcessRegistration(this IServiceCollection services)
         {
             services.AddHttpClient<IksUploadService>()
-            .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
-            .AddPolicyHandler(GetRetryPolicy()) // Retry first
-            .AddPolicyHandler(GetCircuitBreakerPolicy()); // After maximum retries, activate Circuitbreaker.
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
+                .AddPolicyHandler(GetRetryPolicy()) // Retry first
+                .AddPolicyHandler(GetCircuitBreakerPolicy()); // After maximum retries, activate CircuitBreaker.
 
             services.AddTransient<IksUploadBatchJob>();
 
             services.AddTransient<IksSendBatchCommand>();
             services.AddTransient<IBatchTagProvider, BatchTagProvider>();
+
+            services.AddTransient<IThumbprintConfig>(
+               x => new ThumbprintConfig(
+                   x.GetRequiredService<IConfiguration>(),
+                   EfgsAuthenticationSettingPrefix));
         }
 
         static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
@@ -38,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
 
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
-                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                .OrResult(msg => msg.StatusCode == HttpStatusCode.NotFound)
                 .WaitAndRetryAsync(delay);
         }
 
