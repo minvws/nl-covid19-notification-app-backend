@@ -57,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
         [InlineData(HttpStatusCode.OK)]
         [InlineData(HttpStatusCode.Created)]
         [Theory]
-        public async Task TaskIksSendBatchCommand_Execute_Returns_Result_In_Sent(HttpStatusCode httpStatusCode)
+        public async Task IksSendBatchCommand_Execute_Returns_Result_In_Sent(HttpStatusCode httpStatusCode)
         {
             // Arrange
             await IksOutDb();
@@ -87,7 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
         [InlineData(HttpStatusCode.RequestEntityTooLarge)]
         [InlineData(HttpStatusCode.Forbidden)]
         [Theory]
-        public async Task TaskIksSendBatchCommand_Execute_Result_In_Invalid(HttpStatusCode httpStatusCode)
+        public async Task IksSendBatchCommand_Execute_Result_In_Invalid(HttpStatusCode httpStatusCode)
         {
             // Arrange
             await IksOutDb();
@@ -117,7 +117,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
         [InlineData(HttpStatusCode.InternalServerError)]
         [InlineData(null)]
         [Theory]
-        public async Task TaskIksSendBatchCommand_Execute_Result_In_Failed(HttpStatusCode httpStatusCode)
+        public async Task IksSendBatchCommand_Execute_Result_In_Failed(HttpStatusCode httpStatusCode)
         {
             // Arrange
             await IksOutDb();
@@ -155,7 +155,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
 
         [InlineData(HttpStatusCode.NotAcceptable)]
         [Theory]
-        public async Task TaskIksSendBatchCommand_Execute_Result_In_Skipped(HttpStatusCode httpStatusCode)
+        public async Task IksSendBatchCommand_Execute_Result_In_Skipped(HttpStatusCode httpStatusCode)
         {
             // Arrange
             await IksOutDb();
@@ -190,10 +190,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
             {
                new InteropKeyFormatterArgs {
                    DaysSinceSymtpomsOnset = 0,
-                    Origin = "Local",
-                    ReportType = (global::Iks.Protobuf.EfgsReportType)EfgsReportType.Unknown,
-                    TransmissionRiskLevel = 0,
-                    Value = new DailyKey(new byte[]{1}, 1, DateTime.UtcNow.Date.ToRollingStartNumber())
+                   Origin = "Local",
+                   ReportType = (global::Iks.Protobuf.EfgsReportType)EfgsReportType.Unknown,
+                   TransmissionRiskLevel = 0,
+                   Value = new DailyKey(new byte[]{1}, 1, DateTime.UtcNow.Date.ToRollingStartNumber())
                }
             };
 
