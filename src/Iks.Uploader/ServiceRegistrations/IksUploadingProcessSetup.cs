@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Net;
 using System.Net.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,9 +24,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
         public static void IksUploadingProcessRegistration(this IServiceCollection services)
         {
             services.AddHttpClient<IksUploadService>()
-            .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
-            .AddPolicyHandler(GetRetryPolicy()) // Retry first
-            .AddPolicyHandler(GetCircuitBreakerPolicy()); // After maximum retries, activate Circuitbreaker.
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
+                .AddPolicyHandler(GetRetryPolicy()) // Retry first
+                .AddPolicyHandler(GetCircuitBreakerPolicy()); // After maximum retries, activate CircuitBreaker.
 
             services.AddTransient<IksUploadBatchJob>();
 
@@ -44,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
 
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
-                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                .OrResult(msg => msg.StatusCode == HttpStatusCode.NotFound)
                 .WaitAndRetryAsync(delay);
         }
 

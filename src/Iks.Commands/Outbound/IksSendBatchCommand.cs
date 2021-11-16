@@ -131,12 +131,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 {
                     case HttpStatusCode.OK:
                     case HttpStatusCode.Created:
-                        item.CanRetry = false; // No retry needed when send successfully
+                        item.CanRetry = false; // No retry needed when sent successfully
                         item.ProcessState = ProcessState.Sent.ToString();
                        _logger.WriteResponseSuccess();
                         break;
                     case HttpStatusCode.MultiStatus:
-                        item.CanRetry = false; // No retry needed when send and only returns warnings
+                        item.CanRetry = false; // No retry needed when sent and only returns warnings
                         _logger.WriteResponseWithWarnings(result.Content);
                         item.ProcessState = ProcessState.Sent.ToString();
                         break;
@@ -157,7 +157,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                         break;
                     case HttpStatusCode.RequestEntityTooLarge:
                         item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
-                        item.ProcessState = ProcessState.Invalid.ToString(); // Adjust State to InValid
+                        item.ProcessState = ProcessState.Invalid.ToString(); // Adjust State to Invalid
                         _logger.WriteResponseRequestTooLarge();
                         break;
                     case HttpStatusCode.InternalServerError:
