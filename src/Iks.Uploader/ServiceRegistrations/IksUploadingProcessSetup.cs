@@ -4,9 +4,9 @@
 
 using System;
 using System.Net.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.Jobs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
 using Polly;
@@ -17,6 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
 {
     public static class IksUploadingProcessSetup
     {
+        private const string EfgsAuthenticationSettingPrefix = "Certificates:EfgsAuthentication";
         private const int RetryCount = 5;
 
         public static void IksUploadingProcessRegistration(this IServiceCollection services)
@@ -30,6 +31,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
 
             services.AddTransient<IksSendBatchCommand>();
             services.AddTransient<IBatchTagProvider, BatchTagProvider>();
+
+            services.AddTransient<IThumbprintConfig>(
+               x => new ThumbprintConfig(
+                   x.GetRequiredService<IConfiguration>(),
+                   EfgsAuthenticationSettingPrefix));
         }
 
         static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
