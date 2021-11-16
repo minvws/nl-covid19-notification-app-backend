@@ -60,7 +60,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
         public async Task TaskIksSendBatchCommand_Execute_Returns_Result_In_Sent(HttpStatusCode httpStatusCode)
         {
             // Arrange
-            // Arrange
             await IksOutDb();
             var responseMessage = new HttpResponseMessage
             {
