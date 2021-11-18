@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30413.136
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Content", "Content\Content.sqlproj", "{DCE516D6-26DD-4DAA-9AF9-09936F91279D}"
 EndProject
@@ -22,6 +22,8 @@ EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "IksOut", "IksOut\IksOut.sqlproj", "{35B037B5-DC5B-4A81-8D89-AC68A80BAD5A}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "IksPublishingJob", "IksPublishingJob\IksPublishingJob.sqlproj", "{B2903BFD-1520-4899-BC86-553DFD49269C}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Icc_DistMemCache", "Icc_DistMemCache\Icc_DistMemCache.sqlproj", "{83CF4DD9-E784-4235-9F7C-018BA7869E0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +85,12 @@ Global
 		{B2903BFD-1520-4899-BC86-553DFD49269C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2903BFD-1520-4899-BC86-553DFD49269C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2903BFD-1520-4899-BC86-553DFD49269C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{83CF4DD9-E784-4235-9F7C-018BA7869E0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83CF4DD9-E784-4235-9F7C-018BA7869E0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83CF4DD9-E784-4235-9F7C-018BA7869E0E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{83CF4DD9-E784-4235-9F7C-018BA7869E0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83CF4DD9-E784-4235-9F7C-018BA7869E0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83CF4DD9-E784-4235-9F7C-018BA7869E0E}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

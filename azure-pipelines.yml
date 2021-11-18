@@ -49,7 +49,6 @@ variables:
   Tools.ProtobufScrubber.ArtifactSubDirectory: 'ProtobufScrubber'
   DacPac.ArtifactSubDirectory: 'Database'
   HSMScripting.ArtifactSubDirectory: 'HSM-Scripting'
-  Apps.ManagementPortal.ArtifactSubDirectory: 'ManagementPortal'
   
 stages:
 # Tests all unittest in 'ProjectsToTest'
@@ -110,6 +109,3 @@ stages:
 
   # HSM-Scripting files
   - template: /build/pipelines/jobs/files-publish-hsm-scripting-artifact.yaml
-
-  # Management Portal
-  - template: /build/pipelines/jobs/apps-publish-managementportal-artifact.yaml

@@ -22,5 +22,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.Entities
         public bool Sent { get; set; }
         public int Qualifier { get; set; }
         public bool Error { get; set; }
+        public string ProcessState { get; set; }
+        public int RetryCount { get; set; }
+        public bool? CanRetry { get; set; }
     }
 }
