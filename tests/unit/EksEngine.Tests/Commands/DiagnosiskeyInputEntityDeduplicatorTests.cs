@@ -4,12 +4,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using FluentAssertions;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
@@ -20,21 +18,16 @@ using Xunit;
 
 namespace EksEngine.Tests.Commands
 {
-    [Trait("db", "mem")]
-    public class DiagnosiskeyInputEntityDeduplicatorTests : IDisposable
+    public abstract class DiagnosiskeyInputEntityDeduplicatorTests
     {
-        private static DbConnection connection;
         private readonly DkSourceDbContext _dkSourceContext;
         private readonly DiagnosiskeyInputEntityDeduplicator _sut;
 
-        public DiagnosiskeyInputEntityDeduplicatorTests()
+        public DiagnosiskeyInputEntityDeduplicatorTests(DbContextOptions<DkSourceDbContext> dkSourceContextOptions)
         {
             var lf = new LoggerFactory();
 
-            var dkSourceDbContextOptions = new DbContextOptionsBuilder<DkSourceDbContext>()
-                .UseSqlite(CreateSqlDatabase())
-                .Options;
-            _dkSourceContext = new DkSourceDbContext(dkSourceDbContextOptions);
+            _dkSourceContext = new DkSourceDbContext(dkSourceContextOptions ?? throw new ArgumentNullException(nameof(dkSourceContextOptions)));
             _dkSourceContext.Database.EnsureCreated();
 
             _dkSourceContext.BulkDelete(_dkSourceContext.DiagnosisKeys.ToList());
@@ -43,15 +36,6 @@ namespace EksEngine.Tests.Commands
                 _dkSourceContext,
                 lf.CreateLogger<DiagnosiskeyInputEntityDeduplicator>());
         }
-
-        private static DbConnection CreateSqlDatabase()
-        {
-            connection = new SqliteConnection("Filename=:memory:");
-            connection.Open();
-            return connection;
-        }
-
-        public void Dispose() => connection.Dispose();
 
         [Fact]
         public async Task DkTableEmpty_FilterOutExistingDailyKeys_AllEntitiesReturned()

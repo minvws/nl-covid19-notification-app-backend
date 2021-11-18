@@ -26,8 +26,7 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Core.EntityFramework\Core.EntityFramework.csproj" />
+  <ItemGroup>    
     <ProjectReference Include="..\..\..\src\Eks.Commands\Eks.Commands.csproj" />
     <ProjectReference Include="..\..\..\src\GenerateTeks.Commands\GenerateTeks.Commands.csproj" />
     <ProjectReference Include="..\..\..\src\Manifest.Commands\Manifest.Commands.csproj" />
