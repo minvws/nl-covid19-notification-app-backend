@@ -5,7 +5,7 @@ jobs:
     - name: ArtifactSubfolder
       value: $(Tests.Endpoint.ArtifactSubDirectory)
     - name: ProjectBuildFolder
-      value: 'EndpointTests'
+      value: 'Endpoint.Tests'
     - name: ProjectPath
       value: 'tests/e2e/Endpoint.Tests/Endpoint.Tests.csproj'
     displayName: 'Publish Build Artifact Endpoint Tests'
