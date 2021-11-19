@@ -10,4 +10,4 @@ jobs:
       value: 'tests/e2e/Scenario.Tests/Scenario.Tests.csproj'
     displayName: 'Publish Build Artifact Scenario Tests'
     steps:
-      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps-no-appsettings.yaml'
