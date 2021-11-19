@@ -16,17 +16,11 @@ steps:
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\E2E-Artifacts'
-      ArtifactName: $(Publish.ArtifactName)
-      publishLocation: 'Container'
-    # Publish the artifact for the pipelines to use
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publishing E2E Artifact'
-    inputs:
-      pathtoPublish: '$(Build.ArtifactStagingDirectory)/E2E-Artifacts' 
-      artifactName: 'E2E-Tests'
+      ArtifactName: 'E2E-Tests'
+      publishLocation: 'Container'      
   - task: CmdLine@2
     displayName: 'Cleanup build artifact folder'
     inputs:
-      script: 'rmdir /q /s $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder)'
+      script: 'rmdir /q /s $(Build.ArtifactStagingDirectory)\E2E-Artifacts\$(ArtifactSubfolder)'
 
-      
+        
