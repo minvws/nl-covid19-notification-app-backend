@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_E2E_ScenarioTests
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Tests.Scenario.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'ScenarioTests'
+    - name: ProjectPath
+      value: 'tests/e2e/Scenario.Tests/Scenario.Tests.csproj'
+    displayName: 'Publish Build Artifact Scenario Tests'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'
