@@ -2,16 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="appsettings.json" />
+    <None Remove="appsettings.release.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="appsettings.release.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   
