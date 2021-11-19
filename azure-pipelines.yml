@@ -116,3 +116,4 @@ stages:
 
   # E2E Scenario Tests
   - template: /build/pipelines/jobs/tests-e2e-publish-scenariotests-artifact.yaml
+

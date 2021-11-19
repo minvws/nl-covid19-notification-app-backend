@@ -12,12 +12,18 @@ steps:
   - task: CmdLine@2
     displayName: 'Copy files to: $(ArtifactSubfolder)'
     inputs:
-      script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder) $(Build.ArtifactStagingDirectory)\Artifacts\$(ArtifactSubfolder) /E /I'           
+      script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder) $(Build.ArtifactStagingDirectory)\E2E-Artifacts\$(ArtifactSubfolder) /E /I'           
   - task: PublishBuildArtifacts@1
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\Artifacts'
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\E2E-Artifacts'
       ArtifactName: $(Publish.ArtifactName)
       publishLocation: 'Container'
+    # Publish the artifact for the pipelines to use
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publishing E2E Artifact'
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)/E2E-Artifacts' 
+      artifactName: 'E2E-Tests'
   - task: CmdLine@2
     displayName: 'Cleanup build artifact folder'
     inputs:
