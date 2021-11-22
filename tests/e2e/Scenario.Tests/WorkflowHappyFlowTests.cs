@@ -57,7 +57,6 @@ namespace Scenario.Tests
 
         [TestPriority((int)TestOrder.CheckEndpoints)]
         [Theory]
-        [InlineData("dev")]
         [InlineData("test")]
         //[InlineData("acc")]
         //[InlineData("prod")]
@@ -80,13 +79,13 @@ namespace Scenario.Tests
         /// <returns></returns>
         [TestPriority((int)TestOrder.Register)]
         [Theory]
-        [InlineData("dev")]
+        [InlineData("test")]
         public async Task Calling_RegisterEndpoint_Result_In_New_Workflow_Entry(string environment)
         {
             // Arrange
             // Get the current manifest.
             var cdnClient = new CdnClient();
-            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v4", $"{Config.ManifestEndPoint}");
+            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v5", $"{Config.ManifestEndPoint}");
             CurrentManifest = manifest;
 
             var client = new AppClient();
@@ -106,7 +105,7 @@ namespace Scenario.Tests
 
         [TestPriority((int)TestOrder.PostKeys)]
         [Theory]
-        [InlineData("dev")]
+        [InlineData("test")]
         public async Task Calling_PostKeysEndpoint_Result_In_New_Added_Teks(string environment)
         {
             var client = new AppClient();
@@ -157,7 +156,7 @@ namespace Scenario.Tests
 
         [TestPriority((int)TestOrder.AuthorizePubTek)]
         [Theory]
-        [InlineData("dev")]
+        [InlineData("test")]
         public async Task CallingPubTekEndpoint_Result_In_Authorized_Entry(string environment)
         {
             var client = new AppClient();
@@ -182,7 +181,7 @@ namespace Scenario.Tests
 
         [TestPriority((int)TestOrder.VerifyExposureKeySet)]
         [Theory]
-        [InlineData("dev")]
+        [InlineData("test")]
         public async Task New_ExposureKeySets_Should_Be_Published(string environment)
         {
             // Added a delay to run EKsEngine (This can be done manually in dev, or wait for a scheduled task to kick the engine)
@@ -191,13 +190,13 @@ namespace Scenario.Tests
             // Arrange
             // Get the current manifest.
             var cdnClient = new CdnClient();
-            var (_, newManifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v4", $"{Config.ManifestEndPoint}");
+            var (_, newManifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v5", $"{Config.ManifestEndPoint}");
 
             // Manifest should be new
             Assert.False(newManifest.Equals(CurrentManifest));
 
             // Act
-            var (responseMessage, rcp) = await cdnClient.GetCdnEksContent(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v4", $"{Config.ExposureKeySetEndPoint}/{newManifest.ExposureKeySets.Last()}");
+            var (responseMessage, rcp) = await cdnClient.GetCdnEksContent(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v5", $"{Config.ExposureKeySetEndPoint}/{newManifest.ExposureKeySets.Last()}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
