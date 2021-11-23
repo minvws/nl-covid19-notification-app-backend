@@ -73,9 +73,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 var nextBatchTag = response.Headers.SafeGetValue("nextBatchTag");
                 nextBatchTag = nextBatchTag == "null" ? null : nextBatchTag;
 
-                //var myresult = response.Content.ReadAsStringAsync().Result.Replace("\"", string.Empty);
-                //var mybytearray = Convert.FromBase64String(myresult);
-
                 if (!string.IsNullOrEmpty(batchTag) && TryParse(await response.Content.ReadAsByteArrayAsync(), out var parsedContent))
                 {
                     return new HttpGetIksResult
@@ -97,7 +94,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 ResultCode = response.StatusCode
             };
         }
-              
 
         private bool TryParse(byte[] buffer, out DiagnosisKeyBatch result)
         {
@@ -108,8 +104,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 result = parser.ParseFrom(buffer);
                 return true;
             }
-            catch (InvalidProtocolBufferException e)
+            catch (InvalidProtocolBufferException)
             {
+                _logger.WriteResponseNotAcceptable();
                 return false;
             }
         }
