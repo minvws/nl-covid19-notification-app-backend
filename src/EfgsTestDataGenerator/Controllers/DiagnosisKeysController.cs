@@ -1,7 +1,8 @@
 using System;
+using System.IO;
 using System.Net;
-using System.Net.Http;
 using EfgsTestDataGenerator.Services;
+using Google.Protobuf;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -10,6 +11,7 @@ namespace EfgsTestDataGenerator.Controllers
     [Route("diagnosiskeys")]
     public class DiagnosisKeysController : Controller
     {
+        private const string ApplicationProtobuf = "application/protobuf; version=1.0";
         private readonly EfgsDataService _efgsDataService;
         private readonly ILogger<DiagnosisKeysController> _logger;
 
@@ -24,15 +26,24 @@ namespace EfgsTestDataGenerator.Controllers
             return View();
         }
 
+        [HttpGet]
         [Route("download/{date}")]
-        public HttpResponseMessage Download(string date)
+        public IActionResult DownloadToIActionResult(string date)
         {
-            var response = new HttpResponseMessage(HttpStatusCode.OK);
-            var batchTag = "";
-            var nextBatchTag = "";
+            HttpContext.Request.Headers.TryGetValue("batchTag", out var batchTag);
 
-            response.Headers.Add("batchTag", batchTag);
-            response.Headers.Add("nextBatchTag", nextBatchTag);
+            var efgsDataSet = _efgsDataService.GetEfgsDataSet(date, batchTag);
+
+            if(efgsDataSet == null)
+            {
+                return StatusCode((int)HttpStatusCode.Gone);
+            }
+
+            var memorystream = new MemoryStream(efgsDataSet.Content.ToByteArray());
+            var response = Ok(memorystream);
+
+            Response.Headers.Add("batchTag", efgsDataSet.BatchTag);
+            Response.Headers.Add("nextBatchTag", efgsDataSet.NextBatchTag);
 
             return response;
         }

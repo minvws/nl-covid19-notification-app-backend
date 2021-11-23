@@ -6,6 +6,8 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Google.Protobuf;
+using Iks.Protobuf;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -71,13 +73,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 var nextBatchTag = response.Headers.SafeGetValue("nextBatchTag");
                 nextBatchTag = nextBatchTag == "null" ? null : nextBatchTag;
 
-                if (!string.IsNullOrEmpty(batchTag))
+                //var myresult = response.Content.ReadAsStringAsync().Result.Replace("\"", string.Empty);
+                //var mybytearray = Convert.FromBase64String(myresult);
+
+                if (!string.IsNullOrEmpty(batchTag) && TryParse(await response.Content.ReadAsByteArrayAsync(), out var parsedContent))
                 {
                     return new HttpGetIksResult
                     {
                         BatchTag = batchTag,
                         NextBatchTag = nextBatchTag,
-                        Content = await response.Content.ReadAsByteArrayAsync(),
+                        Content = parsedContent.ToByteArray(),
                         ResultCode = response.StatusCode
                     };
                 }
@@ -91,6 +96,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 NextBatchTag = null,
                 ResultCode = response.StatusCode
             };
+        }
+              
+
+        private bool TryParse(byte[] buffer, out DiagnosisKeyBatch result)
+        {
+            result = null;
+            try
+            {
+                var parser = new MessageParser<DiagnosisKeyBatch>(() => new DiagnosisKeyBatch());
+                result = parser.ParseFrom(buffer);
+                return true;
+            }
+            catch (InvalidProtocolBufferException e)
+            {
+                return false;
+            }
         }
 
         private HttpRequestMessage BuildHttpRequest(string batchTag, DateTime date)

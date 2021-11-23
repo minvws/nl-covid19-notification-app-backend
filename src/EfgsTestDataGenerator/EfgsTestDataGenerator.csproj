@@ -4,4 +4,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Iks.Commands\Iks.Commands.csproj" />
+    <ProjectReference Include="..\Iks.Protobuf\Iks.Protobuf.csproj" />
+  </ItemGroup>
+
 </Project>
