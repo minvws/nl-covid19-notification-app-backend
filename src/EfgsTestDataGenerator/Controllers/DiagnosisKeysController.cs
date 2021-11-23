@@ -11,7 +11,6 @@ namespace EfgsTestDataGenerator.Controllers
     [Route("diagnosiskeys")]
     public class DiagnosisKeysController : Controller
     {
-        private const string ApplicationProtobuf = "application/protobuf; version=1.0";
         private readonly EfgsDataService _efgsDataService;
         private readonly ILogger<DiagnosisKeysController> _logger;
 
