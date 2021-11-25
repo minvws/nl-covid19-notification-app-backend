@@ -43,19 +43,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
             var result = new EksCreateJobInputEntity[count];
             for (var i = 0; i < count; i++)
             {
-                var rsn = _dateTimeProvider.Snapshot.Date.AddDays(-_rng.Next(0, _eksConfig.LifetimeDays)).ToRollingStartNumber();
-                var rp = GenerateRollingPeriod(rsn);
-                var dsos = _rng.Next(_trlCalculation.SignificantDayRange.Lo, _trlCalculation.SignificantDayRange.Hi);
+                var rollingStartNumber = _dateTimeProvider.Snapshot.Date.AddDays(-_rng.Next(0, _eksConfig.LifetimeDays)).ToRollingStartNumber();
+                var rollingPeriod = GenerateRollingPeriod(rollingStartNumber);
+                var daysSinceSymptomsOnset = _rng.Next(_trlCalculation.SignificantDayRange.Lo, _trlCalculation.SignificantDayRange.Hi);
                 var reportType = 1;
                 var symptomatic = (InfectiousPeriodType)_rng.Next(0, 1);
                 result[i] = new EksCreateJobInputEntity
                 {
                     KeyData = _rng.NextByteArray(UniversalConstants.DailyKeyDataByteCount),
-                    RollingPeriod = rp,
-                    RollingStartNumber = rsn,
-                    DaysSinceSymptomsOnset = dsos,
-                    TransmissionRiskLevel = _trlCalculation.Calculate(dsos),
-                    Symptomatic = dsos < 0 ? InfectiousPeriodType.Symptomatic : symptomatic, // If dsos < 0 then always symptomatic. Else add the random value
+                    RollingPeriod = rollingPeriod,
+                    RollingStartNumber = rollingStartNumber,
+                    DaysSinceSymptomsOnset = daysSinceSymptomsOnset,
+                    TransmissionRiskLevel = _trlCalculation.Calculate(daysSinceSymptomsOnset),
+                    Symptomatic = daysSinceSymptomsOnset < 0 ? InfectiousPeriodType.Symptomatic : symptomatic, // If dsos < 0 then always symptomatic. Else add the random value
                     ReportType = reportType
                 };
             }
