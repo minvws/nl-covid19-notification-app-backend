@@ -44,13 +44,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
             for (var i = 0; i < count; i++)
             {
                 var rsn = _dateTimeProvider.Snapshot.Date.AddDays(-_rng.Next(0, _eksConfig.LifetimeDays)).ToRollingStartNumber();
+                var rp = GenerateRollingPeriod(rsn);
                 var dsos = _rng.Next(_trlCalculation.SignificantDayRange.Lo, _trlCalculation.SignificantDayRange.Hi);
                 var reportType = 1;
                 var symptomatic = (InfectiousPeriodType)_rng.Next(0, 1);
                 result[i] = new EksCreateJobInputEntity
                 {
                     KeyData = _rng.NextByteArray(UniversalConstants.DailyKeyDataByteCount),
-                    RollingPeriod = UniversalConstants.RollingPeriodRange.Hi,
+                    RollingPeriod = rp,
                     RollingStartNumber = rsn,
                     DaysSinceSymptomsOnset = dsos,
                     TransmissionRiskLevel = _trlCalculation.Calculate(dsos),
@@ -60,6 +61,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
             }
 
             return result;
+        }
+
+        private int GenerateRollingPeriod(int rollingStartNumber)
+        {
+            var rollingStartToday = _dateTimeProvider.Snapshot.Date.ToRollingStartNumber();
+
+            // If the rollingStartNumber is from before today,
+            // simply return the max value for rollingPeriod (i.e., 144)
+            if (rollingStartNumber < rollingStartToday)
+            {
+                return UniversalConstants.RollingPeriodRange.Hi;
+            }
+
+            // Otherwise, generate a rollingPeriod between 1 and 144 to pair
+            // today's rollingStartNumber with a realistic rollingPeriod
+            return _rng.Next(UniversalConstants.RollingPeriodRange.Lo, UniversalConstants.RollingPeriodRange.Hi);
         }
     }
 }
