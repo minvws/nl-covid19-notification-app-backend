@@ -20,6 +20,9 @@ namespace Endpoint.Tests
         [InlineData("test", "v4")]
         [InlineData("acc", "v4")]
         [InlineData("prod", "v4")]
+        [InlineData("test", "v5")]
+        [InlineData("acc", "v5")]
+        [InlineData("prod", "v5")]
         public async Task Should_HaveReceived_The_Manifest_With_Correct_Values(string environment, string version)
         {
             // Arrange
@@ -44,6 +47,9 @@ namespace Endpoint.Tests
         [InlineData("test", "v4")]
         [InlineData("acc", "v4")]
         [InlineData("prod", "v4")]
+        [InlineData("test", "v5")]
+        [InlineData("acc", "v5")]
+        [InlineData("prod", "v5")]
         public async Task Should_HaveReceived_The_AppConfig_With_Correct_Values(string environment, string version)
         {
             // Arrange
@@ -77,6 +83,9 @@ namespace Endpoint.Tests
         [InlineData("test", "v4")]
         [InlineData("acc", "v4")]
         [InlineData("prod", "v4")]
+        [InlineData("test", "v5")]
+        [InlineData("acc", "v5")]
+        [InlineData("prod", "v5")]
         public async Task Should_HaveReceived_The_RiskCalculationParameters_With_Correct_Values(string environment, string version)
         {
             // Arrange
@@ -108,6 +117,9 @@ namespace Endpoint.Tests
         [InlineData("test", "v4")]
         [InlineData("acc", "v4")]
         [InlineData("prod", "v4")]
+        [InlineData("test", "v5")]
+        [InlineData("acc", "v5")]
+        [InlineData("prod", "v5")]
         public async Task Should_HaveReceived_The_ResourceBundle_With_Correct_Values(string environment, string version)
         {
             // Arrange
@@ -126,43 +138,15 @@ namespace Endpoint.Tests
             resourceBundle.CreateTestableResourceBundle();
 
             Assert.Equal(11, resourceBundle.TestableResources.Count);
-
-            foreach (var resource in resourceBundle.TestableResources)
-            {
-                Assert.True(!string.IsNullOrEmpty(resource.about_this_notification_body));
-                Assert.True(!string.IsNullOrEmpty(resource.about_this_notification_title));
-                Assert.True(!string.IsNullOrEmpty(resource.advice_body));
-                Assert.True(!string.IsNullOrEmpty(resource.advice_title));
-                Assert.True(!string.IsNullOrEmpty(resource.dont_test_body));
-                Assert.True(!string.IsNullOrEmpty(resource.dont_test_title));
-                Assert.True(!string.IsNullOrEmpty(resource.exposure_notification_body));
-                Assert.True(!string.IsNullOrEmpty(resource.exposure_notification_body_exposure_days_11_x));
-                Assert.True(!string.IsNullOrEmpty(resource.exposure_notification_body_v1_legacy));
-                Assert.True(!string.IsNullOrEmpty(resource.exposure_notification_title));
-                Assert.True(!string.IsNullOrEmpty(resource.medical_help_body));
-                Assert.True(!string.IsNullOrEmpty(resource.medical_help_title));
-                Assert.True(!string.IsNullOrEmpty(resource.next_steps_body));
-                Assert.True(!string.IsNullOrEmpty(resource.next_steps_body_exposure_days_11_x));
-                Assert.True(!string.IsNullOrEmpty(resource.next_steps_body_exposure_days_1_10));
-                Assert.True(!string.IsNullOrEmpty(resource.next_steps_body_exposure_days_4_10));
-                Assert.True(!string.IsNullOrEmpty(resource.next_steps_body_exposure_days_x_3));
-                Assert.True(!string.IsNullOrEmpty(resource.next_steps_title));
-                Assert.True(!string.IsNullOrEmpty(resource.next_steps_title_exposure_days_11_x));
-                Assert.True(!string.IsNullOrEmpty(resource.stay_home_body));
-                Assert.True(!string.IsNullOrEmpty(resource.stay_home_title));
-                Assert.True(!string.IsNullOrEmpty(resource.symptoms_body));
-                Assert.True(!string.IsNullOrEmpty(resource.symptoms_title));
-                Assert.True(!string.IsNullOrEmpty(resource.test_negative_body));
-                Assert.True(!string.IsNullOrEmpty(resource.test_negative_title));
-                Assert.True(!string.IsNullOrEmpty(resource.vaccinated_body));
-                Assert.True(!string.IsNullOrEmpty(resource.vaccinated_title));
-            }
         }
 
         [Theory]
         [InlineData("test", "v4")]
         [InlineData("acc", "v4")]
         [InlineData("prod", "v4")]
+        [InlineData("test", "v5")]
+        [InlineData("acc", "v5")]
+        [InlineData("prod", "v5")]
         public async Task Should_HaveReceived_The_ExposureKeySet_With_Correct_Values(string environment, string version)
         {
             // Arrange
@@ -170,7 +154,7 @@ namespace Endpoint.Tests
 
             // Act
             var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.ManifestEndPoint}");
-            var (responseMessage, rcp) = await cdnClient.GetCdnEksExport(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v4", $"{Config.ExposureKeySetEndPoint}/{manifest.ExposureKeySets.Last()}");
+            var (responseMessage, rcp) = await cdnClient.GetCdnEksExport(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.ExposureKeySetEndPoint}/{manifest.ExposureKeySets.Last()}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);

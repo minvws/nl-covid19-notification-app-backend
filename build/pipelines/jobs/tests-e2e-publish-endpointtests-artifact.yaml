@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_E2E_EndpointTests
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Tests.Endpoint.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'Endpoint.Tests'
+    - name: ProjectPath
+      value: 'tests/e2e/Endpoint.Tests/Endpoint.Tests.csproj'
+    displayName: 'Publish Build Artifact Endpoint Tests'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps-e2e.yaml'

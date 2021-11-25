@@ -49,6 +49,8 @@ variables:
   Tools.ProtobufScrubber.ArtifactSubDirectory: 'ProtobufScrubber'
   DacPac.ArtifactSubDirectory: 'Database'
   HSMScripting.ArtifactSubDirectory: 'HSM-Scripting'
+  Tests.Endpoint.ArtifactSubDirectory: 'EndpointTests'
+  Tests.Scenario.ArtifactSubDirectory: 'ScenarioTests'
   
 stages:
 # Tests all unittest in 'ProjectsToTest'
@@ -108,3 +110,10 @@ stages:
 
   # HSM-Scripting files
   - template: /build/pipelines/jobs/files-publish-hsm-scripting-artifact.yaml
+
+  # E2E Endpoint Tests
+  - template: /build/pipelines/jobs/tests-e2e-publish-endpointtests-artifact.yaml
+
+  # E2E Scenario Tests
+  - template: /build/pipelines/jobs/tests-e2e-publish-scenariotests-artifact.yaml
+
