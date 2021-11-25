@@ -36,14 +36,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands
             var rollingStartMin = _config.RollingStartNumberMin;
             var rollingStartToday = _dateTimeProvider.Snapshot.Date.ToRollingStartNumber();
 
-            if (!(rollingStartMin <= value.RollingStartNumber && value.RollingStartNumber <= rollingStartToday))
+            // This checks no keys come in with RollingStartNumbers from before 2020-07-01 (date of release of GA SDKs)
+            // Invalidate entire upload if it contains a key with such a RollingStartNumber.
+            if (value.RollingStartNumber < rollingStartMin)
             {
                 result.Add($"RollingStartNumber out of range - {value.RollingStartNumber}.");
-            }
-
-            if (!(UniversalConstants.RollingPeriodRange.Lo <= value.RollingPeriod && value.RollingPeriod <= UniversalConstants.RollingPeriodRange.Hi))
-            {
-                result.Add($"RollingPeriod out of range - {value.RollingPeriod}.");
             }
 
             if (string.IsNullOrEmpty(value.KeyData))
