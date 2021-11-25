@@ -39,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             // Also filter out TEKs that have an invalid value for RollingPeriod.
             var result = values
                 .Where(x => x.RollingStartNumber >= lowerLimit
-                    && x.RollingStartNumber <= _dateTimeProvider.Snapshot.ToRollingStartNumber()
+                    && x.RollingStartNumber <= _dateTimeProvider.Snapshot.Date.ToRollingStartNumber()
                     && x.RollingPeriod >= UniversalConstants.RollingPeriodRange.Lo
                     && x.RollingPeriod <= UniversalConstants.RollingPeriodRange.Hi).ToArray();
 
