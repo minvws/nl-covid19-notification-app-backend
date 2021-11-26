@@ -43,23 +43,40 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
             var result = new EksCreateJobInputEntity[count];
             for (var i = 0; i < count; i++)
             {
-                var rsn = _dateTimeProvider.Snapshot.Date.AddDays(-_rng.Next(0, _eksConfig.LifetimeDays)).ToRollingStartNumber();
-                var dsos = _rng.Next(_trlCalculation.SignificantDayRange.Lo, _trlCalculation.SignificantDayRange.Hi);
+                var rollingStartNumber = _dateTimeProvider.Snapshot.Date.AddDays(-_rng.Next(0, _eksConfig.LifetimeDays)).ToRollingStartNumber();
+                var rollingPeriod = GenerateRollingPeriod(rollingStartNumber);
+                var daysSinceSymptomsOnset = _rng.Next(_trlCalculation.SignificantDayRange.Lo, _trlCalculation.SignificantDayRange.Hi);
                 var reportType = 1;
                 var symptomatic = (InfectiousPeriodType)_rng.Next(0, 1);
                 result[i] = new EksCreateJobInputEntity
                 {
                     KeyData = _rng.NextByteArray(UniversalConstants.DailyKeyDataByteCount),
-                    RollingPeriod = UniversalConstants.RollingPeriodRange.Hi,
-                    RollingStartNumber = rsn,
-                    DaysSinceSymptomsOnset = dsos,
-                    TransmissionRiskLevel = _trlCalculation.Calculate(dsos),
-                    Symptomatic = dsos < 0 ? InfectiousPeriodType.Symptomatic : symptomatic, // If dsos < 0 then always symptomatic. Else add the random value
+                    RollingPeriod = rollingPeriod,
+                    RollingStartNumber = rollingStartNumber,
+                    DaysSinceSymptomsOnset = daysSinceSymptomsOnset,
+                    TransmissionRiskLevel = _trlCalculation.Calculate(daysSinceSymptomsOnset),
+                    Symptomatic = daysSinceSymptomsOnset < 0 ? InfectiousPeriodType.Symptomatic : symptomatic, // If dsos < 0 then always symptomatic. Else add the random value
                     ReportType = reportType
                 };
             }
 
             return result;
+        }
+
+        private int GenerateRollingPeriod(int rollingStartNumber)
+        {
+            var rollingStartToday = _dateTimeProvider.Snapshot.Date.ToRollingStartNumber();
+
+            // If the rollingStartNumber is from before today,
+            // simply return the max value for rollingPeriod (i.e., 144)
+            if (rollingStartNumber < rollingStartToday)
+            {
+                return UniversalConstants.RollingPeriodRange.Hi;
+            }
+
+            // Otherwise, generate a rollingPeriod between 1 and 144 to pair
+            // today's rollingStartNumber with a realistic rollingPeriod
+            return _rng.Next(UniversalConstants.RollingPeriodRange.Lo, UniversalConstants.RollingPeriodRange.Hi);
         }
     }
 }

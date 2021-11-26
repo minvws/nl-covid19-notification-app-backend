@@ -119,7 +119,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 .Select(x => new
                 {
                     x.Id,
-                    DailyKey = new DailyKey(x.KeyData, x.RollingStartNumber, UniversalConstants.RollingPeriodRange.Hi), //Constant cos iOS xxx requires all RP to be 144
+                    DailyKey = new DailyKey(x.KeyData, x.RollingStartNumber, x.RollingPeriod),
                     DateOfSymptomsOnset = x.Owner.StartDateOfTekInclusion.Value,
                     Symptomatic = x.Owner.IsSymptomatic.Value
                 }).ToList();
