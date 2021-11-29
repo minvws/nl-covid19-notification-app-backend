@@ -201,7 +201,7 @@ namespace Scenario.Tests
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
 
-            // 150 are expected (100 posted and stuffed to 150 total)
+            // 150 are expected (50 posted and stuffed to 150 total)
             Assert.True(rcp.Count >= 150);
 
             var keys = PostTeks?.Keys.Select(p => p.KeyData).ToList();
@@ -213,8 +213,8 @@ namespace Scenario.Tests
         private PostTeksArgs GenerateTeks(string bucketId)
         {
             var keys = new List<PostTeksItemArgs>();
-            // Add 100 keys
-            for (var i = 0; i < 100; i++)
+            // Add 50 keys
+            for (var i = 0; i < 50; i++)
             {
                 keys.Add(new PostTeksItemArgs
                 {
