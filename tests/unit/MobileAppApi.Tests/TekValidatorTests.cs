@@ -37,8 +37,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
         {
             // Arrange
             var rollingStartNumber = DateTime.UtcNow.Date.AddDays(addDays).ToRollingStartNumber();
-
-
             var config = new DefaultTekValidatorConfig();
             var dateTimeProvider = new StandardUtcDateTimeProvider();
             var filter = new TekValidPeriodFilter(config, dateTimeProvider);
@@ -61,12 +59,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
         [InlineData(0, 145)] // RollingStartNumber is today and RollingPeriod is above max value
         [InlineData(-15, 1)] // RollingStartNumber is before max days in the past and RollingPeriod is min value
         [InlineData(1, 1)] // RollingStartNumber is in the future and RollingPeriod is min value
-        public void Teks_Edgecases_Are_InValid(int addDays, int rollingPeriod)
+        public void Teks_Edgecases_Are_Invalid(int addDays, int rollingPeriod)
         {
             // Arrange
             var rollingStartNumber = DateTime.UtcNow.Date.AddDays(addDays).ToRollingStartNumber();
-
-
             var config = new DefaultTekValidatorConfig();
             var dateTimeProvider = new StandardUtcDateTimeProvider();
             var filter = new TekValidPeriodFilter(config, dateTimeProvider);
@@ -90,8 +86,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
         {
             // Arrange
             var rollingStartNumber = DateTime.UtcNow.Date.AddDays(dayOffset).ToRollingStartNumber();
-
-
             var config = new DefaultTekValidatorConfig();
             var dateTimeProvider = new StandardUtcDateTimeProvider();
             var filter = new TekValidPeriodFilter(config, dateTimeProvider);
@@ -116,7 +110,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
             var config = new DefaultTekValidatorConfig();
             var dateTimeProvider = new StandardUtcDateTimeProvider();
             var filter = new TekValidPeriodFilter(config, dateTimeProvider);
-
             var teks = new List<Tek>();
 
             for (var dayOffset = -(config.MaxAgeDays); dayOffset >= 0; dayOffset++)
@@ -128,7 +121,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
                     teks.Add(new Tek { RollingStartNumber = rollingStartNumber, RollingPeriod = rollingPeriod });
                 }
             }
-
 
             // Act
             var result = filter.Execute(teks.ToArray());
@@ -157,7 +149,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
                 yield return new object[] { -2 };
                 yield return new object[] { -1 };
             }
-
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
     }
