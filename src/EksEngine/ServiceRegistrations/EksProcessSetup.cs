@@ -47,6 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
             ));
 
             // DiagnosisKeys to Eks publishing job
+            services.AddTransient<RemoveDuplicateDiagnosisKeysCommand>();
             services.AddTransient<ExposureKeySetBatchJobMk3>();
             services.AddTransient<IEksStuffingGeneratorMk2, EksStuffingGeneratorMk2>();
             services.AddTransient<ITransmissionRiskLevelCalculationMk2, TransmissionRiskLevelCalculationMk2>();
