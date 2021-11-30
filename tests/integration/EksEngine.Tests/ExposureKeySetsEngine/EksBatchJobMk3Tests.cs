@@ -67,10 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowContext,
                 _dkSourceContext,
-                new IDiagnosticKeyProcessor[] { },
-                new DiagnosiskeyInputEntityDeduplicator(
-                    _dkSourceContext,
-                    _lf.CreateLogger<DiagnosiskeyInputEntityDeduplicator>())
+                Array.Empty<IDiagnosticKeyProcessor>()
             );
 
             _outboundCountriesMock = new Mock<IOutboundFixedCountriesOfInterestSetting>();
