@@ -139,7 +139,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "development", "development", "{E4E317C9-6B41-4E93-99D2-0D3B10FD52FF}"
 	ProjectSection(SolutionItems) = preProject
 		docker\development\.dockerignore = docker\development\.dockerignore
-		docker\development\appsettings.development.json = docker\development\appsettings.development.json
 		docker\development\appsettings.json = docker\development\appsettings.json
 		docker\development\Dockerfile.DbBuilder = docker\development\Dockerfile.DbBuilder
 	EndProjectSection
