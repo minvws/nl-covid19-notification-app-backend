@@ -18,10 +18,10 @@ GRANT SELECT  ON SCHEMA::[dbo] TO [Dbr_Funcbeheerders];
 
 --specific permissions for [Cache]
 
-GRANT SELECT ON [dbo].[Cache] TO [Dbr_Service_IccBackend];
-GRANT INSERT ON [dbo].[Cache] TO [Dbr_Service_IccBackend];
-GRANT UPDATE ON [dbo].[Cache] TO [Dbr_Service_IccBackend];
-GRANT DELETE ON [dbo].[Cache] TO [Dbr_Service_IccBackend];
+GRANT SELECT ON [dbo].[Cache] TO [Dbr_Service_Portal];
+GRANT INSERT ON [dbo].[Cache] TO [Dbr_Service_Portal];
+GRANT UPDATE ON [dbo].[Cache] TO [Dbr_Service_Portal];
+GRANT DELETE ON [dbo].[Cache] TO [Dbr_Service_Portal];
 
 --end
 
