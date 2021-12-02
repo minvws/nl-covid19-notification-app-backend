@@ -55,10 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                     new ExcludeTrlNoneDiagnosticKeyProcessor(),
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_outboundCountries.Object),
                     new NlToEfgsDsosDiagnosticKeyProcessorMk1()
-                },
-                new DiagnosiskeyInputEntityDeduplicator(
-                    _dkSourceDbContext,
-                    _lf.CreateLogger<DiagnosiskeyInputEntityDeduplicator>()));
+                });
         }
 
         private void Write(TekReleaseWorkflowStateEntity[] workflows)
