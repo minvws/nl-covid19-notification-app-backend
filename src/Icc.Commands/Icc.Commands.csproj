@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands</RootNamespace>
 	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
@@ -11,7 +11,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="JWT" Version="8.4.2" />
+    <PackageReference Include="JWT" Version="8.7.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf</RootNamespace>
 	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.18.1" />
+    <PackageReference Include="Google.Protobuf" Version="3.19.1" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.Entities</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.Entities</RootNamespace>
 	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
