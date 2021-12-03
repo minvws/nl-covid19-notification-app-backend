@@ -22,6 +22,12 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
 using Xunit;
+using Iks.Protobuf;
+using Google.Protobuf;
+using System.Linq;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
+using EfgsReportType = Iks.Protobuf.EfgsReportType;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksInbound
 {
@@ -37,6 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
         private readonly EfgsConfigMock _efgsConfigMock = new EfgsConfigMock();
         private readonly Mock<IAuthenticationCertificateProvider> _certProviderMock;
         private readonly Mock<IThumbprintConfig> _thumbprintConfigMock;
+        private readonly IRandomNumberGenerator _numberGenerator;
 
         private static DbConnection connection;
 
@@ -60,6 +67,51 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
             var mockCertificate = new Mock<X509Certificate2>();
             _certProviderMock.Setup(p => p.GetCertificate(It.IsAny<string>(), It.IsAny<bool>())).Returns(mockCertificate.Object);
+
+            _numberGenerator = new StandardRandomNumberGenerator();
+            _dummyContent = GenerateKeys();
+        }
+
+        private byte[] GenerateKeys()
+        {
+            var args = new List<InteropKeyFormatterArgs>();
+            for (var i = 0; i < 10; i++)
+            {
+                args.Add(new InteropKeyFormatterArgs
+                {
+                    CountriesOfInterest = new[] { "BE", "GR", "LT", "PT", "BG", "ES", "LU", "RO", "CZ", "FR", "HU", "SI", "DK", "HR", "MT", "SK", "DE", "IT", "NL", "FI", "EE", "CY", "AT", "SE", "IE", "LV", "PL", "IS", "NO", "LI", "CH" },
+                    DaysSinceSymtpomsOnset = 2000,
+                    TransmissionRiskLevel = 3,
+                    Origin = "DE",
+                    Value = new DailyKey
+                    {
+                        KeyData = _numberGenerator.NextByteArray(UniversalConstants.DailyKeyDataByteCount),
+                        RollingPeriod = _numberGenerator.Next(1, UniversalConstants.RollingPeriodRange.Hi),
+                        RollingStartNumber = DateTime.UtcNow.Date.ToRollingStartNumber()
+                    }
+                });
+            }
+
+            var result = new DiagnosisKeyBatch();
+            result.Keys.AddRange(args.Select(Map));
+
+            return result.ToByteArray();
+        }
+
+        private DiagnosisKey Map(InteropKeyFormatterArgs arg)
+        {
+            var result = new DiagnosisKey
+            {
+                KeyData = ByteString.CopyFrom(arg.Value.KeyData),
+                RollingPeriod = (uint)arg.Value.RollingPeriod,
+                RollingStartIntervalNumber = (uint)arg.Value.RollingStartNumber,
+                DaysSinceOnsetOfSymptoms = arg.DaysSinceSymtpomsOnset,
+                TransmissionRiskLevel = 3,
+                ReportType = EfgsReportType.ConfirmedTest,
+                Origin = arg.Origin,
+            };
+            result.VisitedCountries.AddRange(arg.CountriesOfInterest);
+            return result;
         }
 
         private static DbConnection CreateInMemoryDatabase()

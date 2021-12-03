@@ -29,7 +29,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         private readonly WorkflowDbContext _workflowDbContext;
         private readonly DkSourceDbContext _dkSourceDbContext;
         private readonly IDiagnosticKeyProcessor[] _orderedProcessorList;
-        private readonly DiagnosiskeyInputEntityDeduplicator _deduplicator;
 
         private int _commitIndex;
         private SnapshotWorkflowTeksToDksResult _result;
@@ -40,16 +39,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             ITransmissionRiskLevelCalculationMk2 transmissionRiskLevelCalculation,
             WorkflowDbContext workflowDbContext,
             DkSourceDbContext dkSourceDbContext,
-            IDiagnosticKeyProcessor[] orderedProcessorList,
-            DiagnosiskeyInputEntityDeduplicator deduplicator)
+            IDiagnosticKeyProcessor[] orderedProcessorList)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _transmissionRiskLevelCalculation = transmissionRiskLevelCalculation ?? throw new ArgumentNullException(nameof(transmissionRiskLevelCalculation));
             _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
             _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
-            _orderedProcessorList = orderedProcessorList ?? throw new ArgumentNullException(nameof(orderedProcessorList));
-            _deduplicator = deduplicator ?? throw new ArgumentNullException(nameof(deduplicator));
+            _orderedProcessorList = orderedProcessorList ?? throw new ArgumentNullException(nameof(orderedProcessorList));            
         }
 
         public override async Task<ICommandResult> ExecuteAsync()
@@ -61,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             _result = new SnapshotWorkflowTeksToDksResult();
             await ClearJobTablesAsync();
-            await SnapshotAndFilterTeks();
+            await SnapshotTeks();
             await CommitSnapshotAsync();
             return _result;
         }
@@ -76,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             await _dkSourceDbContext.TruncateAsync<DiagnosisKeyInputEntity>();
         }
 
-        private async Task SnapshotAndFilterTeks()
+        private async Task SnapshotTeks()
         {
             _logger.LogDebug("Snapshot publishable TEKs.");
 
@@ -90,9 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             while (page.Count > 0)
             {
-                var filteredPage = await _deduplicator.FilterOutExistingDailyKeys(page);
-
-                await _dkSourceDbContext.BulkInsertWithTransactionAsync(filteredPage, new SubsetBulkArgs());
+                await _dkSourceDbContext.BulkInsertWithTransactionAsync(page, new SubsetBulkArgs());
 
                 index += page.Count;
                 page = ReadFromWorkflow(index, PageSize);
@@ -119,7 +114,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 .Select(x => new
                 {
                     x.Id,
-                    DailyKey = new DailyKey(x.KeyData, x.RollingStartNumber, UniversalConstants.RollingPeriodRange.Hi), //Constant cos iOS xxx requires all RP to be 144
+                    DailyKey = new DailyKey(x.KeyData, x.RollingStartNumber, x.RollingPeriod),
                     DateOfSymptomsOnset = x.Owner.StartDateOfTekInclusion.Value,
                     Symptomatic = x.Owner.IsSymptomatic.Value
                 }).ToList();

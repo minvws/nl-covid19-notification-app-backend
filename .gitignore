@@ -9,7 +9,7 @@ McsTestConfigProvider.Db.DoNotCommit.cs
 *.userosscache
 *.sln.docstates
 local.settings.json
-*.[Dd]evelopment.json
+**/*.[Dd]evelopment.json
 .idea
 
 # User-specific files (MonoDevelop/Xamarin Studio)
@@ -63,7 +63,7 @@ BenchmarkDotNet.Artifacts/
 project.lock.json
 project.fragment.lock.json
 artifacts/
-appsettings.Development.json
+appsettings.[Dd]evelopment.json
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt

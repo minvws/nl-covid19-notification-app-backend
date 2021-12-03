@@ -16,3 +16,5 @@ CREATE ROLE [Dbr_Service_DbProvision] AUTHORIZATION [dbo];
 GO
 CREATE ROLE [Dbr_Service_GenTeks] AUTHORIZATION [dbo];
 GO
+CREATE ROLE [Dbr_Service_Portal] AUTHORIZATION [dbo];
+GO
