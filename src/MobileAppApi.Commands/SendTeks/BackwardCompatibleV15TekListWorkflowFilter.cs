@@ -44,21 +44,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             return new FilterResult<Tek>(_valid.ToArray(), messages);
         }
 
-        private string[] ValidateSingleTek(Tek item)
+        private string[] ValidateSingleTek(Tek tek)
         {
-            if (_lastPublishedRsn.HasValue && item.RollingStartNumber <= _lastPublishedRsn)
+            if (_lastPublishedRsn.HasValue && tek.RollingStartNumber <= _lastPublishedRsn)
             {
                 return new[] { "Before last published." };
             }
 
-            if (item.StartDate > _workflow.Created.Date)
+            if (tek.StartDate > _workflow.Created.Date)
             {
                 //Kill 'same day' keys
                 return new[] { "Too recent." };
             }
 
             var snapshot = _dateTimeProvider.Snapshot;
-            if (item.StartDate == snapshot.Date)
+            if (tek.StartDate == snapshot.Date)
             {
                 // this is a ‘same day key’, generated on the day the user gets result. 
                 // it must arrive within the call window (Step 4 from proposed process)
@@ -67,18 +67,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
                     return new[] { "Authorisation window expired." };
                 }
 
-                item.PublishAfter = snapshot.AddMinutes(_config.PublishingDelayInMinutes);
-                _valid.Add(item);
+                var embargoDateTime = snapshot.AddMinutes(_config.PublishingDelayInMinutes);
+                var tekStartDateTime = (tek.RollingStartNumber + tek.RollingPeriod).FromRollingStartNumber();
+                if (tekStartDateTime > embargoDateTime)
+                {
+                    tek.PublishAfter = snapshot.Date.AddDays(1).AddMinutes(_config.PublishingDelayInMinutes);
+                }
+                else
+                {
+                    tek.PublishAfter = embargoDateTime;
+                }
+
+                _valid.Add(tek);
                 return new[] { "Same day key accepted - Reason:Before call or within call window Key." };
             }
 
             // key from result day that arrives after today with extra check to ensure it’s a 1.4 device and not a tampered 1.5 device (Step 5)
-            if (item.StartDate == _workflow.Created.Date && _workflowHasKeyOnCreationDate)
+            if (tek.StartDate == _workflow.Created.Date && _workflowHasKeyOnCreationDate)
             {
                 return new[] { "Tek for result day after midnight rejected - already a tek present for that day." };
             }
 
-            _valid.Add(item);
+            _valid.Add(tek);
             return new string[0];
         }
     }
