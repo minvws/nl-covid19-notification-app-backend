@@ -167,7 +167,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
         }
 
         [Fact]
-        public void Gaen15SameDay_UsingCurrentDateTime_TekReleaseOn()
+        public void Gaen15SameDay_UsingCurrentDateTime_TekReleaseOn_Publishing()
         {
             var utcDateToday = DateTime.UtcNow.Date;
             var year = DateTime.UtcNow.Date.Year;
@@ -254,27 +254,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
         {
             var utcDateToday = DateTime.UtcNow.Date;
 
+            var year = utcDateToday.Year;
+            var month = utcDateToday.Month;
+            var today = utcDateToday.Day;
+            var yesterday = utcDateToday.AddDays(-1).Day;
+            var tomorrow = utcDateToday.AddDays(1).Day;
+
             // add keys from yesterday, today and tomorrow
             var deviceTeks = new List<Tek>
             {
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(-1).Day, 1, 1),
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(-1).Day, 2, 57),
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(-1).Day, 3, 58),
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(-1).Day, 4, 69),
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(-1).Day, 5, 70),
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(-1).Day, 6, 144),
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(0).Day, 7, 1),
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(0).Day, 8, 57), // 9:30 AM UTC (before embargo  time)
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(0).Day, 9, 58), // 9:40 AM UTC (before embargo  time)
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(0).Day, 10, 69), // 11:30 AM UTC (before embargo  time)
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(0).Day, 11, 70), // 11:40 AM UTC (after embargo  time)
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(0).Day, 12, 144),
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(1).Day, 13, 1),
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(1).Day, 14, 57),
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(1).Day, 15, 58),
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(1).Day, 16, 69),
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(1).Day, 17, 70),
-                GenerateTek(utcDateToday.AddDays(0).Year, utcDateToday.AddDays(0).Month, utcDateToday.AddDays(1).Day, 18, 144)
+                GenerateTek(year, month, yesterday, 1, 1),
+                GenerateTek(year, month, yesterday, 2, 57),
+                GenerateTek(year, month, yesterday, 3, 58),
+                GenerateTek(year, month, yesterday, 4, 69),
+                GenerateTek(year, month, yesterday, 5, 70),
+                GenerateTek(year, month, yesterday, 6, 144),
+                GenerateTek(year, month, today, 7, 1),
+                GenerateTek(year, month, today, 8, 57), // 9:30 AM UTC (before embargo  time)
+                GenerateTek(year, month, today, 9, 58), // 9:40 AM UTC (before embargo  time)
+                GenerateTek(year, month, today, 10, 69), // 11:30 AM UTC (before embargo  time)
+                GenerateTek(year, month, today, 11, 70), // 11:40 AM UTC (after embargo  time)
+                GenerateTek(year, month, today, 12, 144),
+                GenerateTek(year, month, tomorrow, 13, 1),
+                GenerateTek(year, month, tomorrow, 14, 57),
+                GenerateTek(year, month, tomorrow, 15, 58),
+                GenerateTek(year, month, tomorrow, 16, 69),
+                GenerateTek(year, month, tomorrow, 17, 70),
+                GenerateTek(year, month, tomorrow, 18, 144)
             };
 
 
@@ -297,7 +303,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
         }
 
         [Fact]
-        public void Gaen14Or15SameDayTekReleaseOff()
+        public void Gaen14Or15_SameDay_TekReleaseOff_NoPublishing()
         {
             var keysOnDevice = Enumerable.Range(1, 14).Select(x => GenerateTek(2020, 9, x, 1)).ToList();
 
