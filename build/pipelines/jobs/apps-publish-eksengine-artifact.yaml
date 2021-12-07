@@ -1,6 +1,6 @@
 jobs:  
   - job: Build_EksEngine
-    dependsOn: Install_SDK_50
+    dependsOn: Install_SDK_60
     variables:
     - name: ArtifactSubfolder
       value: $(Apps.EksEngine.ArtifactSubDirectory)

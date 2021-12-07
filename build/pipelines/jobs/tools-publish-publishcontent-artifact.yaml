@@ -1,6 +1,6 @@
 jobs:  
   - job: Build_PublishContent
-    dependsOn: Install_SDK_50
+    dependsOn: Install_SDK_60
     variables:
     - name: ArtifactSubfolder
       value: $(Tools.PublishContent.ArtifactSubDirectory)

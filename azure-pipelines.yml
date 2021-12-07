@@ -61,14 +61,14 @@ stages:
   dependsOn: Test
   displayName: 'Publish builds'
   jobs:  
-  - job: Install_SDK_50
+  - job: Install_SDK_60
     steps:
       # Install .Net 5.0 Version
       - task: UseDotNet@2
-        displayName: 'Install .NET 5.0 SDK'
+        displayName: 'Install .NET 6.0 SDK'
         inputs:
           packageType: 'sdk'
-          version: '5.0.x'
+          version: '6.0.x'
   # ---- Apps:
   # ContentApi
   - template: /build/pipelines/jobs/apps-publish-contentwebapi-artifact.yaml

@@ -60,10 +60,10 @@ stages:
         
         # Install .Net 5.0 Version
         - task: UseDotNet@2
-          displayName: 'Install .NET SDK 5.0'
+          displayName: 'Install .NET SDK 6.0'
           inputs:
             packageType: 'sdk'
-            version: '5.0.x'
+            version: '6.0.x'
         # Restore 
         - task: NuGetToolInstaller@1
           displayName: 'Install NuGet Tool'

@@ -171,7 +171,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "stages", "stages", "{01808C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{CB1C1CF2-8C60-42F2-90DE-675784F5EEF0}"
 	ProjectSection(SolutionItems) = preProject
-		build\pipelines\jobs\templates\build-and-publish-steps-no-appsettings.yaml = build\pipelines\jobs\templates\build-and-publish-steps-no-appsettings.yaml
+		build\pipelines\jobs\templates\build-and-publish-steps-e2e.yaml = build\pipelines\jobs\templates\build-and-publish-steps-e2e.yaml
 		build\pipelines\jobs\templates\build-and-publish-steps.yaml = build\pipelines\jobs\templates\build-and-publish-steps.yaml
 	EndProjectSection
 EndProject
@@ -231,7 +231,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scenario.Tests", "tests\e2e
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbBuilder", "src\DbBuilder\DbBuilder.csproj", "{B5838C8F-7B59-4655-8B63-E9B15C83CA96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EfgsTestDataGenerator", "src\EfgsTestDataGenerator\EfgsTestDataGenerator.csproj", "{3A11F17C-EB8E-45EF-B3FA-E63881B64132}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfgsTestDataGenerator", "src\EfgsTestDataGenerator\EfgsTestDataGenerator.csproj", "{3A11F17C-EB8E-45EF-B3FA-E63881B64132}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
