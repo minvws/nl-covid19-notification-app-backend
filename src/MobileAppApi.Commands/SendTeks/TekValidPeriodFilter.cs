@@ -33,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             }
 
             var lowerInclusiveDate = _dateTimeProvider.Snapshot.Date - TimeSpan.FromDays(_config.MaxAgeDays);
-            var lowerLimit = lowerInclusiveDate.ToRollingStartNumber();
+            var lowerLimit = lowerInclusiveDate.ToRollingStartNumber(); // MaxAgeDays in the past 
 
             // Filter out TEKs that are too old, or that start in the future.
             // Also filter out TEKs that have an invalid value for RollingPeriod.

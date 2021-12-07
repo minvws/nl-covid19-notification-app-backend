@@ -149,14 +149,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
         public void WriteResponseUnknownError(HttpStatusCode? statusCode)
         {
-            if (statusCode == null)
-            {
-                throw new ArgumentNullException(nameof(statusCode));
-            }
-
             _logger.LogError("[{name}/{id}] Unknown error: {httpResponseCode}.",
                 Name, ResponseUnknownError,
-                statusCode);
+                statusCode?.ToString() ?? "No HttpStatusCode received");
+        }
+
+        internal void WriteResponseMultiStatus(HttpStatusCode? httpResponseCode, string responseContent)
+        {
+            if (!httpResponseCode.HasValue)
+            {
+                throw new ArgumentNullException(nameof(httpResponseCode));
+            }
+
+            if (responseContent == null)
+            {
+                throw new ArgumentNullException(nameof(responseContent));
+            }
+
+            _logger.LogError("[{name}/{id}] Responsecode {httpResponseCode} EFGS: Invalid request (either errors in the data or an invalid key). Warnings {responseContent}",
+                Name, BatchNotExisting,
+                httpResponseCode.Value, responseContent);
         }
 
         public void WriteBatchNotExistInEntity(IksOutEntity entity)

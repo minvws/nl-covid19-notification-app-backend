@@ -20,6 +20,9 @@ namespace Endpoint.Tests
         [InlineData("test", "v4")]
         [InlineData("acc", "v4")]
         [InlineData("prod", "v4")]
+        [InlineData("test", "v5")]
+        [InlineData("acc", "v5")]
+        [InlineData("prod", "v5")]
         public async Task Should_HaveReceived_The_Manifest_With_Correct_Values(string environment, string version)
         {
             // Arrange
@@ -44,6 +47,9 @@ namespace Endpoint.Tests
         [InlineData("test", "v4")]
         [InlineData("acc", "v4")]
         [InlineData("prod", "v4")]
+        [InlineData("test", "v5")]
+        [InlineData("acc", "v5")]
+        [InlineData("prod", "v5")]
         public async Task Should_HaveReceived_The_AppConfig_With_Correct_Values(string environment, string version)
         {
             // Arrange
@@ -77,6 +83,9 @@ namespace Endpoint.Tests
         [InlineData("test", "v4")]
         [InlineData("acc", "v4")]
         [InlineData("prod", "v4")]
+        [InlineData("test", "v5")]
+        [InlineData("acc", "v5")]
+        [InlineData("prod", "v5")]
         public async Task Should_HaveReceived_The_RiskCalculationParameters_With_Correct_Values(string environment, string version)
         {
             // Arrange
@@ -108,6 +117,9 @@ namespace Endpoint.Tests
         [InlineData("test", "v4")]
         [InlineData("acc", "v4")]
         [InlineData("prod", "v4")]
+        [InlineData("test", "v5")]
+        [InlineData("acc", "v5")]
+        [InlineData("prod", "v5")]
         public async Task Should_HaveReceived_The_ResourceBundle_With_Correct_Values(string environment, string version)
         {
             // Arrange
@@ -132,6 +144,9 @@ namespace Endpoint.Tests
         [InlineData("test", "v4")]
         [InlineData("acc", "v4")]
         [InlineData("prod", "v4")]
+        [InlineData("test", "v5")]
+        [InlineData("acc", "v5")]
+        [InlineData("prod", "v5")]
         public async Task Should_HaveReceived_The_ExposureKeySet_With_Correct_Values(string environment, string version)
         {
             // Arrange
@@ -139,7 +154,7 @@ namespace Endpoint.Tests
 
             // Act
             var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.ManifestEndPoint}");
-            var (responseMessage, rcp) = await cdnClient.GetCdnEksExport(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v4", $"{Config.ExposureKeySetEndPoint}/{manifest.ExposureKeySets.Last()}");
+            var (responseMessage, rcp) = await cdnClient.GetCdnEksExport(new Uri($"{Config.CdnBaseUrl(environment)}"), $"{version}", $"{Config.ExposureKeySetEndPoint}/{manifest.ExposureKeySets.Last()}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);

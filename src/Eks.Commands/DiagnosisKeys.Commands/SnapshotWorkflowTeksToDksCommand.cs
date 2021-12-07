@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             _result = new SnapshotWorkflowTeksToDksResult();
             await ClearJobTablesAsync();
-            await SnapshotAndTeks();
+            await SnapshotTeks();
             await CommitSnapshotAsync();
             return _result;
         }
@@ -73,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             await _dkSourceDbContext.TruncateAsync<DiagnosisKeyInputEntity>();
         }
 
-        private async Task SnapshotAndTeks()
+        private async Task SnapshotTeks()
         {
             _logger.LogDebug("Snapshot publishable TEKs.");
 
