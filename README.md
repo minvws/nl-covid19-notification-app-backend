@@ -41,7 +41,7 @@ docker-compose up --build
 First make sure that you have the following installed:
 
 1. Dotnet Core 3.1 SDK: https://dotnet.microsoft.com/download/dotnet-core/3.1
-1. Node JS 12.18.1+ with NPM: https://nodejs.org/en/
+1. Node JS 14.15.1+ with NPM: https://nodejs.org/en/ (It will NOT work wilt Node version 15.x.x)
 1. Yarn: https://yarnpkg.com/
 1. Angular CLI: https://angular.io/guide/setup-local
 1. Optionally either Visual Studio or Rider.
@@ -55,28 +55,21 @@ Then clone this repo.
 1. Add an `appsettings.Development.json` file. This overrides the settings in appsettings.json. And add a value for the MSS connection string.
 1. Go to the ServerStandAlone folder and run it with 'dotnet run'.
 
+### ICC Portal (SPA Web Application)
 
-### ICC Portal
+The ICC Portal consists of a .Net Core hosted Angular frontend found under `Icc.WebApp`
+1. Go to the `Icc.v2.WebApi` folder and run it with `dotnet run`, this will start the backend in Kestrel.
+1. Access the APIs here: `http://localhost:5011/`.
+1. Done :)
 
-The ICC Portal consists of a .Net Core backend found under `IccBackend` and an Angular / ASP.Net MVC Core frontend found under `ICCPortal`
-
-#### ICC Portal backend
+#### ICC Portal Pubtek Api
 
 1. Setup a database instance. Windows users can use a local SQL Server.
-1. Add an `appsettings.Development.json` file to the folder `IccBackend`. This overrides the settings in appsettings.json. And add a value for the MSS connection string.
-1. Go to the `\IccBackend` folder and run it with `dotnet run`, this will start the backend in Kestrel.
-1. Access the APIs here: `http://localhost:5000/swagger/index.html`.
-1. To provision the database you must execute `​/devops​/nukeandpavedb` in Swagger.
+1. Add an `appsettings.Development.json` file to the folder `Icc.v2.WebApi`. This overrides the settings in appsettings.json. And add a value for the MSS connection string.
+1. Go to the `Icc.v2.WebApi` folder and run it with `dotnet run`, this will start the backend in Kestrel.
+1. Access the APIs here: `http://localhost:5003/swagger/index.html`.
 1. Done :)
 
-#### ICC Portal frontend
-
-1. Clone this repo
-1. Open a terminal and go to `\ICCPortal\ClientApp`.
-1. Run `yarn` to install all of the dependencies.
-1. Run the frontend with `ng serve`.
-1. The server API url can be configured in `ICCPortal\ClientApp\src\environments\environment.ts`
-1. Done :)
 
 ## Building and packaging
 
