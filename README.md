@@ -41,7 +41,7 @@ docker-compose up --build
 First make sure that you have the following installed:
 
 1. Dotnet Core 3.1 SDK: https://dotnet.microsoft.com/download/dotnet-core/3.1
-1. Node JS 14.15.1+ with NPM: https://nodejs.org/en/ (It will NOT work wilt Node version 15.x.x)
+1. Node JS 14.15.1+ with NPM: https://nodejs.org/en/ (It will NOT work wilt Node version 15.x.x or higher)
 1. Yarn: https://yarnpkg.com/
 1. Angular CLI: https://angular.io/guide/setup-local
 1. Optionally either Visual Studio or Rider.
