@@ -79,7 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
         private async Task ProcessOne(IksOutEntity item)
         {
-            var isNew = item.ProcessState == ProcessState.New.ToString();
+            var isNew = ProcessState.New.ToString().Equals(item.ProcessState);
 
             var signature = SignDks(item);
 
