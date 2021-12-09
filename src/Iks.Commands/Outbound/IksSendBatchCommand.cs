@@ -101,6 +101,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             if (!isNew && httpPostIksResult.Exception)
             {
                 item.RetryCount++;
+                _logger.WriteEntityIdInRetry(item);
             }
 
             item.Sent = httpPostIksResult.HttpResponseCode == HttpStatusCode.Created || httpPostIksResult.HttpResponseCode == HttpStatusCode.OK;
