@@ -17,7 +17,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public const int DbProvision = 1900;
         public const int PublishContent = 2000;
         public const int SigtestFileCreator = 2100;
-        public const int RemoveExpiredWorkflow = 2500;
         public const int Resigner = 2600;
         public const int RemoveExpiredManifestV2 = 2800;
         public const int EksEngine = 2900;
