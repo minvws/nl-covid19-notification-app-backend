@@ -12,7 +12,7 @@ steps:
   - task: CmdLine@2
     displayName: 'Copy files to: $(ArtifactSubfolder)'
     inputs:
-      script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder) $(Build.ArtifactStagingDirectory)\E2E-Artifacts\$(ArtifactSubfolder) /E /I'           
+      script: 'xcopy $(Build.ArtifactStagingDirectory)\publish\$(ArtifactSubfolder)\$(ProjectBuildFolder) $(Build.ArtifactStagingDirectory)\\E2E-public-Artifacts\$(ArtifactSubfolder) /E /I'           
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\E2E-public-Artifacts'
