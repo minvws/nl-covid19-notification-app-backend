@@ -53,7 +53,7 @@ namespace Core.E2ETests
 
             _cdnBaseUrlsInternal = new Dictionary<string, string>
             {
-                {"dev", "https://localhost:5001"},
+                {"dev", "http://corona-dist-content-DEV.covt.mhscibg.nl"},
                 {"test", "http://corona-dist-content-DEV.covt.mhscibg.nl"},
                 {"acc", "https://acceptatie.coronamelder-dist.nl"},
                 {"prod", "https://productie.coronamelder-dist.nl"}
@@ -61,7 +61,7 @@ namespace Core.E2ETests
 
             _appBaseUrlsInternal = new Dictionary<string, string>
             {
-                {"dev", "https://localhost:5002"},
+                {"dev", "http://corona-app-mobile-dev.covt.mhscibg.nl"},
                 {"test", "http://corona-app-mobile-dev.covt.mhscibg.nl"},
                 {"acc", "https://acceptatie.coronamelder-api.nl"},
                 {"prod", "https://coronamelder-api.nl"}
@@ -69,14 +69,14 @@ namespace Core.E2ETests
 
             _iccApiBaseUrlsInternal = new Dictionary<string, string>
             {
-                {"dev", "https://localhost:5003"},
+                {"dev", "http://corona-app-services-dev.covt.mhscibg.nl"},
                 {"test", "http://corona-app-services-dev.covt.mhscibg.nl"},
                 {"acc", "https://acceptatie.coronamelder-portal.nl"},
             };
 
             _iccPortalBaseUrlsInternal = new Dictionary<string, string>
             {
-                {"dev", "https://localhost:5011"},
+                {"dev", "https://test.coronamelder-portal.nl"},
                 {"test", "https://test.coronamelder-portal.nl"},
                 {"acc", "https://acceptatie.coronamelder-portal.nl"}
             };
