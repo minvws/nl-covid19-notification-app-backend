@@ -182,5 +182,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 Name, BatchNotExisting,
                 entity.Id);
         }
+
+        public void WriteEntityIdInRetry(IksOutEntity entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            _logger.LogError($"[{Name}/{EfgsError}] Batch does not exist in entity with Id: {entity.Id}, retry count: {entity.RetryCount}");
+        }
     }
 }
