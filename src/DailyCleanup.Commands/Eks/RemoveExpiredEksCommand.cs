@@ -38,7 +38,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ek
             var cutoff = (_dtp.Snapshot - TimeSpan.FromDays(_config.LifetimeDays)).Date;
 
             result.Found = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet);
-
             _logger.LogInformation("Current EKS - Count: {CurrentEksFound}.", result.Found);
 
             var zombies = _dbContext.Content
@@ -47,7 +46,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ek
                 .ToList();
 
             result.Zombies = zombies.Count;
-
             _logger.LogInformation("Found expired EKS - Cutoff: {EksCutoff:yyyy-MM-dd}, Count: {TotalEksFound}", cutoff, result.Zombies);
 
             foreach (var i in zombies)
