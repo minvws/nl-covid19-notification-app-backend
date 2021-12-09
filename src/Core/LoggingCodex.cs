@@ -22,7 +22,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public const int RemoveExpiredWorkflow = 2500;
         public const int Resigner = 2600;
         public const int RemoveExpiredEksV2 = 2700;
-        public const int RemoveExpiredEksV3 = 2750;
         public const int RemoveExpiredManifestV2 = 2800;
         public const int EksEngine = 2900;
         public const int Snapshot = 3000;
