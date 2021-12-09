@@ -25,7 +25,7 @@ namespace Core.E2ETests
             {
                 {"dev", "https://localhost:5001"},
                 {"test", "https://test.coronamelder-dist.nl"},
-                {"acc", "http://acceptatie.coronamelder-dist.nl"},
+                {"acc", "https://acceptatie.coronamelder-dist.nl"},
                 {"prod", "https://productie.coronamelder-dist.nl"}
             };
 
@@ -33,7 +33,7 @@ namespace Core.E2ETests
             {
                 {"dev", "https://localhost:5002"},
                 {"test", "https://test.coronamelder-api.nl"},
-                {"acc", "http://acceptatie.coronamelder-api.nl"},
+                {"acc", "https://acceptatie.coronamelder-api.nl"},
                 {"prod", "https://coronamelder-api.nl"}
             };
 
