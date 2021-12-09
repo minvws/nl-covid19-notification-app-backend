@@ -6,11 +6,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public static class LoggingCodex
     {
-        public const int Register = 1100;
         public const int PostTeks = 1200;
         public const int Decoy = 1300;
         public const int ResponsePadding = 1400;
-        public const int ExceptionInterceptor = 1500;
         public const int SuppressError = 1600;
         public const int GetCdnContent = 1700;
         public const int IccBackend = 1800;
@@ -29,10 +27,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public const int CertLmProvider = 3600;
         public const int IksDownloader = 3700;
         public const int IksUploader = 3800;
-        public const int IksEngine = 3900;
-        public const int WorkFlowTeksToDksCommand = 4000;
-        public const int IksImportBatchJob = 4100;
-        public const int ConsoleAppRunner = 4200; //not entirely sure yet
         public const int RemoveExpiredIks = 4300; //not entirely sure yet
         public const int RemoveExpiredManifestV3 = 4400;
         public const int RemoveExpiredManifestV4 = 4500;
