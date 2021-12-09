@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs
 {
     public class DailyCleanupJob : IJob
     {
-        private readonly ILogger<DailyCleanupJob> _logger;
+        private readonly ILogger _logger;
         private readonly CommandInvoker _commandInvoker;
         private readonly StatisticsCommand _statisticsCommand;
         private readonly RemoveExpiredWorkflowsCommand _removeExpiredWorkflowsCommand;

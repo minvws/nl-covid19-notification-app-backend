@@ -83,7 +83,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
             await _contentDbContext.TruncateAsync<ContentEntity>();
 
             var lf = new LoggerFactory();
-            var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
+            var expEksLogger = lf.CreateLogger<RemoveExpiredEksCommand>();
             var command = new RemoveExpiredEksCommand(_contentDbContext, new FakeEksConfig(), new StandardUtcDateTimeProvider(), expEksLogger);
 
             // Act
@@ -104,7 +104,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
             await _contentDbContext.TruncateAsync<ContentEntity>();
 
             var lf = new LoggerFactory();
-            var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
+            var expEksLogger = lf.CreateLogger<RemoveExpiredEksCommand>();
             var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
             var command = new RemoveExpiredEksCommand(_contentDbContext, new FakeEksConfig(), fakeDtp, expEksLogger);
 
@@ -129,7 +129,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
             await _contentDbContext.TruncateAsync<ContentEntity>();
 
             var lf = new LoggerFactory();
-            var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
+            var expEksLogger = lf.CreateLogger<RemoveExpiredEksCommand>();
             var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
             var fakeEksConfig = new FakeEksConfig() { CleanupDeletesData = true };
             var command = new RemoveExpiredEksCommand(_contentDbContext, fakeEksConfig, fakeDtp, expEksLogger);
@@ -155,7 +155,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
             await _contentDbContext.BulkDeleteAsync(_contentDbContext.Content.ToList());
 
             var lf = new LoggerFactory();
-            var expEksLogger = new ExpiredEksLoggingExtensions(lf.CreateLogger<ExpiredEksLoggingExtensions>());
+            var expEksLogger = lf.CreateLogger<RemoveExpiredEksCommand>();
             var fakeDtp = new FakeDtp() { Snapshot = new DateTime(2020, 6, 20, 0, 0, 0, DateTimeKind.Utc) };
             var fakeEksConfig = new FakeEksConfig() { CleanupDeletesData = true };
             var command = new RemoveExpiredEksCommand(_contentDbContext, fakeEksConfig, fakeDtp, expEksLogger);
