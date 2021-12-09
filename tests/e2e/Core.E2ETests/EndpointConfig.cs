@@ -28,7 +28,7 @@ namespace Core.E2ETests
             _appBaseUrls = new Dictionary<string, string>
             {
                 {"dev", "https://localhost:5002"},
-                {"test", "https://test.coronamelder-api.nl"},
+                {"test", "http://corona-app-mobile-dev.covt.mhscibg.nl"},
                 {"acc", "https://acceptatie.coronamelder-api.nl"},
                 {"prod", "https://coronamelder-api.nl"}
             };
@@ -36,7 +36,7 @@ namespace Core.E2ETests
             _iccApiBaseUrls = new Dictionary<string, string>
             {
                 {"dev", "https://localhost:5003"},
-                {"test", "http://corona-app-services-DEV.covt.mhscibg.nl"},
+                {"test", "http://corona-app-services-dev.covt.mhscibg.nl"},
                 {"acc", "https://acceptatie.coronamelder-portal.nl"},
             };
 
