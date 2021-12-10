@@ -76,7 +76,7 @@ stages:
             projects: |
                 **/*.sln
                 !**/*Database.sln
-            arguments: ' --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)\tests'
+            arguments: ' --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
 
         # Run Unit Tests
         - task: DotNetCoreCLI@2
