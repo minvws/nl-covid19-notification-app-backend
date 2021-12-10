@@ -41,7 +41,7 @@ namespace Icc.v2.WebApi.Tests
                     {
                         services.AddScoped(sp => new WorkflowDbContext(workflowDbContextOptions));
                         services.AddControllers();
-                    }).UseSolutionRelativeContentRoot("/src/Icc.v2.WebApi");
+                    }).UseSolutionRelativeContentRoot("./src/Icc.v2.WebApi");
                     ;
                 });
         }
