@@ -22,7 +22,6 @@ using NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi;
 using Xunit;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-[assembly: WebApplicationFactoryContentRoot("Icc.v2.WebApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "./", "Icc.v2.WebApi.dll", "1")]
 namespace Icc.v2.WebApi.Tests
 {
     public abstract class WorkflowControllerTests : WebApplicationFactory<Startup>

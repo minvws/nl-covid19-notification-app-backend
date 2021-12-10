@@ -22,7 +22,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entity
 using Xunit;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-[assembly: WebApplicationFactoryContentRoot("Icc.WebApp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "./src/Icc.WebApp", "Icc.WebApp.dll", "1")]
 namespace Icc.WebApp.Tests
 {
     public abstract class WorkflowControllerTests : WebApplicationFactory<Startup>
