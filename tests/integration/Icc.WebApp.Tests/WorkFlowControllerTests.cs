@@ -37,6 +37,7 @@ namespace Icc.WebApp.Tests
                     services.AddScoped(p => new WorkflowDbContext(workflowDbContextOptions));
                     services.AddHttpClient<IRestApiClient, FakeRestApiClient>();
                     services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
+                    services.AddControllers().AddApplicationPart(typeof(Startup).Assembly);
                 });
             });
         }
