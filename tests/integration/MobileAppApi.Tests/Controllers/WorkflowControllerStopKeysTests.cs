@@ -20,6 +20,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyK
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using Xunit;
 
+[assembly: WebApplicationFactoryContentRoot("MobileAppApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "./", "MobileAppApi.dll", "1")]
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
 {
     public class WorkflowControllerStopKeysTests : WebApplicationFactory<Startup>
