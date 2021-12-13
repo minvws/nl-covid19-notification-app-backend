@@ -16,11 +16,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
         public static void LoggingExtensionsRegistration(this IServiceCollection services)
         {
             services.AddSingleton<EksBuilderV1LoggingExtensions>();
-            services.AddSingleton<ResignerLoggingExtensions>();
             services.AddSingleton<EksEngineLoggingExtensions>();
             services.AddSingleton<SnapshotLoggingExtensions>();
             services.AddSingleton<EksJobContentWriterLoggingExtensions>();
-            services.AddSingleton<MarkWorkFlowTeksAsUsedLoggingExtensions>();
             services.AddSingleton<ManifestUpdateCommandLoggingExtensions>();
             services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
         }
