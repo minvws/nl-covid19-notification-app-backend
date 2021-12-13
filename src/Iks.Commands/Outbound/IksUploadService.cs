@@ -37,14 +37,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             // Configure authentication certificate
             using var clientCert = _certificateProvider.GetCertificate(_config.Thumbprint, _config.RootTrusted);
-            using var clientHandler = new HttpClientHandler
-            {
-                ClientCertificateOptions = ClientCertificateOption.Manual
-            };
-
-            // Provide the authentication certificate manually
-            clientHandler.ClientCertificates.Clear();
-            clientHandler.ClientCertificates.Add(clientCert);
 
             _logger.WriteRequestContent(args.Content);
 

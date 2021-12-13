@@ -24,11 +24,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
         public static void IksUploadingProcessRegistration(this IServiceCollection services)
         {
             services.AddHttpClient<IksUploadService>()
+                .ConfigurePrimaryHttpMessageHandler(x =>
+                {
+                    return new EfgsOutboundHttpClientHandler(
+                         x.GetRequiredService<IAuthenticationCertificateProvider>(),
+                         x.GetRequiredService<IThumbprintConfig>()
+                        );
+                })
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
                 .AddPolicyHandler(GetRetryPolicy()) // Retry first
                 .AddPolicyHandler(GetCircuitBreakerPolicy()); // After maximum retries, activate CircuitBreaker.
 
             services.AddTransient<IksUploadBatchJob>();
+            services.AddTransient<EfgsOutboundHttpClientHandler>();
 
             services.AddTransient<IksSendBatchCommand>();
             services.AddTransient<IBatchTagProvider, BatchTagProvider>();
