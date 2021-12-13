@@ -81,7 +81,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<PostKeysLoggingExtensions>();
             services.AddSingleton<DecoyKeysLoggingExtensions>();
             services.AddSingleton<ResponsePaddingLoggingExtensions>();
-            services.AddSingleton<SuppressErrorLoggingExtensions>();
 
             if (_isDev)
             {

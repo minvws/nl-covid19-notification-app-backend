@@ -9,7 +9,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public const int PostTeks = 1200;
         public const int Decoy = 1300;
         public const int ResponsePadding = 1400;
-        public const int SuppressError = 1600;
         public const int GetCdnContent = 1700;
         public const int IccBackend = 1800;
         public const int DbProvision = 1900;
