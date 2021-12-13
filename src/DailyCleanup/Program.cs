@@ -36,7 +36,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup
             services.AddSingleton<IConfiguration>(configuration);
 
             services.DbContextRegistration(configuration);
-            services.LoggingExtensionsRegistration();
             services.SettingsRegistration();
             services.DailyCleanupJobRegistration();
             services.DailyStatsRegistration();
