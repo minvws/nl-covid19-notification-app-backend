@@ -4,6 +4,8 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys
 {
     public class DecoyTimeCalculator : IDecoyTimeCalculator
@@ -26,11 +28,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
             }
         }
 
-        private readonly DecoyKeysLoggingExtensions _logger;
+        private readonly ILogger _logger;
         private readonly object _lock = new object();
         private readonly IWelfordsAlgorithm _algorithm;
 
-        public DecoyTimeCalculator(DecoyKeysLoggingExtensions logger, IWelfordsAlgorithm algorithm)
+        public DecoyTimeCalculator(ILogger<DecoyTimeCalculator> logger, IWelfordsAlgorithm algorithm)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _algorithm = algorithm ?? throw new ArgumentNullException(nameof(algorithm));
@@ -48,7 +50,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
             lock (_lock)
             {
                 var result = _algorithm.AddDataPoint(t.TotalMilliseconds);
-                _logger.WriteTimeRegistered(result.Count, t.TotalMilliseconds, result.Mean, result.StandardDeviation);
+                _logger.LogDebug("Entry no. {EntryNr} registered. Time: {EntryTime:F2}. Mean: {EntryMean:F2}, Stdev: {EntryStDev:F2}]",
+                    result.Count, t.TotalMilliseconds, result.Mean, result.StandardDeviation);
             }
         }
 
@@ -58,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.De
             {
                 var timeMs = _algorithm.GetNormalSample();
                 var result = TimeSpan.FromMilliseconds(timeMs >= 0 ? timeMs : 0);
-                _logger.WriteGeneratingDelay(result);
+                _logger.LogDebug("Delaying for {DelayMs:F2} milliseconds", result.TotalMilliseconds);
                 return result;
             }
         }

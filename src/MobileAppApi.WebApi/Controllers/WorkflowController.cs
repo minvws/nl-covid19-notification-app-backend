@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret;
@@ -18,12 +19,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
     public class WorkflowController : ControllerBase
     {
         private readonly PostKeysLoggingExtensions _loggerPostKeys;
-        private readonly DecoyKeysLoggingExtensions _loggerDecoyKeys;
+        private readonly ILogger _logger;
 
-        public WorkflowController(PostKeysLoggingExtensions loggerPostKeys, DecoyKeysLoggingExtensions loggerDecoyKeys)
+        public WorkflowController(PostKeysLoggingExtensions loggerPostKeys, ILogger<WorkflowController> logger)
         {
             _loggerPostKeys = loggerPostKeys ?? throw new ArgumentNullException(nameof(loggerPostKeys));
-            _loggerDecoyKeys = loggerDecoyKeys ?? throw new ArgumentNullException(nameof(loggerDecoyKeys));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [ResponsePaddingFilterFactory]
@@ -64,7 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
         [Route("/v1/stopkeys")]
         public IActionResult StopKeys()
         {
-            _loggerDecoyKeys.WriteStartDecoy();
+            _logger.LogInformation("POST triggered.");
             return new OkResult();
         }
 

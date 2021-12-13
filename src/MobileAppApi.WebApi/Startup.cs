@@ -79,7 +79,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
 
             services.AddSingleton<RegisterSecretLoggingExtensions>();
             services.AddSingleton<PostKeysLoggingExtensions>();
-            services.AddSingleton<DecoyKeysLoggingExtensions>();
 
             if (_isDev)
             {

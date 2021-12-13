@@ -21,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
                 .Returns(-1000);
 
             var sut = new DecoyTimeCalculator(
-                new DecoyKeysLoggingExtensions(loggerFactory.CreateLogger<DecoyKeysLoggingExtensions>()),
+                loggerFactory.CreateLogger<DecoyTimeCalculator>(),
                 algorithmMock.Object);
 
             //Act
