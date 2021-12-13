@@ -184,7 +184,7 @@ namespace Scenario.Tests
         public async Task New_ExposureKeySets_Should_Be_Published(string environment)
         {
             // Added a delay to run EKsEngine (This can be done manually in dev, or wait for a scheduled task to kick the engine)
-            await Task.Delay(1000 * 60 * 5); // 5 minutes delay
+            await Task.Delay(1000 * 60 * 10); // 5 minutes delay
 
             // Arrange
             // Get the current manifest.
