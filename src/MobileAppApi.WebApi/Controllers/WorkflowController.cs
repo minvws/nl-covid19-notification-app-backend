@@ -18,12 +18,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
     [ApiController]
     public class WorkflowController : ControllerBase
     {
-        private readonly PostKeysLoggingExtensions _loggerPostKeys;
         private readonly ILogger _logger;
 
-        public WorkflowController(PostKeysLoggingExtensions loggerPostKeys, ILogger<WorkflowController> logger)
+        public WorkflowController(ILogger<WorkflowController> logger)
         {
-            _loggerPostKeys = loggerPostKeys ?? throw new ArgumentNullException(nameof(loggerPostKeys));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -39,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Controllers
                 throw new ArgumentNullException(nameof(command));
             }
 
-            _loggerPostKeys.WriteStartPostKeys();
+            _logger.LogInformation("POST triggered.");
             return await command.ExecuteAsync(sig, Request);
         }
 

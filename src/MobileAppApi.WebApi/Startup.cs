@@ -78,7 +78,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<IWelfordsAlgorithm, WelfordsAlgorithm>();
 
             services.AddSingleton<RegisterSecretLoggingExtensions>();
-            services.AddSingleton<PostKeysLoggingExtensions>();
 
             if (_isDev)
             {

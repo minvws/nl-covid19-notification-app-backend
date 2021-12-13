@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -19,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
 {
     public class HttpPostReleaseTeksCommand2
     {
-        private readonly PostKeysLoggingExtensions _logger;
+        private readonly ILogger _logger;
         private readonly WorkflowDbContext _workflowDbContext;
 
         private readonly IPostTeksValidator _keyValidator;
@@ -35,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         private byte[] _bodyBytes;
 
         public HttpPostReleaseTeksCommand2(
-            PostKeysLoggingExtensions logger,
+            ILogger<HttpPostReleaseTeksCommand2> logger,
             IWorkflowConfig workflowConfig,
             WorkflowDbContext dbContextProvider,
             IPostTeksValidator keyValidator,
@@ -72,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
 
             if ((signature?.Length ?? 0) != UniversalConstants.PostKeysSignatureByteCount)
             {
-                _logger.WriteSignatureValidationFailed();
+                _logger.LogInformation("Signature is null or incorrect length.");
                 return;
             }
 
@@ -83,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             }
             catch (Exception e)
             {
-                _logger.WritePostBodyParsingFailed(e);
+                _logger.LogInformation(e, "Error reading body");
                 return;
             }
 
@@ -91,7 +92,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             var base64ParserResult = base64Parser.TryParseAndValidate(_argsObject.BucketId, UniversalConstants.BucketIdByteCount);
             if (!base64ParserResult.Valid)
             {
-                _logger.WriteBucketIdParsingFailed(_argsObject.BucketId, base64ParserResult.Messages);
+                _logger.LogInformation("BucketId failed validation - BucketId: {BucketId} Messages: \n{Messages}",
+                    _argsObject.BucketId, string.Join("\n", base64ParserResult.Messages));
                 return;
             }
 
@@ -100,7 +102,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             var messages = _keyValidator.Validate(_argsObject);
             if (messages.Length > 0)
             {
-                _logger.WriteTekValidationFailed(messages);
+                _logger.LogInformation("Tek failed validation - Messages: \n{Messages}", string.Join("\n", messages));
                 return;
             }
 
@@ -113,16 +115,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             messages = new TekListDuplicateValidator().Validate(teks);
             if (messages.Length > 0)
             {
-                _logger.WriteTekDuplicatesFound(messages);
+                _logger.LogInformation("Tek duplicates found - Messages: \n{Messages}", string.Join("\n", messages));
                 return;
             }
 
             //Validation ends, filtering starts
 
             var filterResult = _tekApplicableWindowFilter.Execute(teks);
-            _logger.WriteApplicableWindowFilterResult(filterResult.Messages);
+
+            if (filterResult.Messages.Length > 0)
+            {
+                _logger.LogInformation("Tek failed validation - Messages: \n{Messages}",
+                    string.Join("\n", filterResult.Messages));
+            }
+
             teks = filterResult.Items;
-            _logger.WriteValidTekCount(teks.Length);
+            _logger.LogInformation("TEKs remaining - Count: {ValidTekCount}.", teks.Length);
 
             var workflow = _workflowDbContext
                 .KeyReleaseWorkflowStates
@@ -131,30 +139,39 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
 
             if (workflow == null)
             {
-                _logger.WriteBucketDoesNotExist(_argsObject.BucketId);
+                _logger.LogError("Bucket does not exist - Id: {BucketId}.", _argsObject.BucketId);
                 return;
             }
 
             if (!_signatureValidator.Valid(signature, workflow.ConfirmationKey, _bodyBytes))
             {
-                _logger.WriteSignatureInvalid(workflow.BucketId, signature);
+                _logger.LogError("Signature not valid - Signature: {Signature} Bucket:{BucketId}",
+                    Convert.ToBase64String(signature), Convert.ToBase64String(workflow.BucketId));
+
                 return;
             }
 
             var filterResults = _tekListWorkflowFilter.Filter(teks, workflow);
-            _logger.WriteWorkflowFilterResults(filterResults.Messages);
-            _logger.WriteValidTekCountSecondPass(teks.Length);
+
+            if (filterResults.Messages.Length > 0)
+            {
+                _logger.LogInformation("WriteWorkflowFilterResults: \n{Messages}.",
+                    string.Join("\n", filterResults.Messages));
+            }
+
+            _logger.LogInformation("TEKs remaining in second pass - Count: {RemainingTekCount}.", teks.Length);
 
             //Run after the filter removes the existing TEKs from the args.
             var allTeks = workflow.Teks.Select(Mapper.MapToTek).Concat(filterResults.Items).ToArray();
             messages = new TekListDuplicateKeyDataValidator().Validate(allTeks);
             if (messages.Length > 0)
             {
-                _logger.WriteTekDuplicatesFoundWholeWorkflow(messages);
-                return;
+                _logger.LogInformation("Tek duplicates found - Whole Workflow - Messages: \n{Messages}",
+                    string.Join("\n", messages));
             }
 
-            _logger.WriteDbWriteStart();
+            _logger.LogInformation("Teks added - Writing db.");
+
             var writeArgs = new TekWriteArgs
             {
                 WorkflowStateEntityEntity = workflow,
@@ -165,11 +182,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
             await _writer.ExecuteAsync(writeArgs);
             _workflowDbContext.SaveAndCommit();
 
-            _logger.WriteDbWriteCommitted();
+            _logger.LogInformation("Teks added - Committed.");
 
             if (filterResults.Items.Length != 0)
             {
-                _logger.WriteTekCountAdded(filterResults.Items.Length);
+                _logger.LogInformation("Teks added - Count: {TeksAddedCount}.", filterResults.Items.Length);
             }
         }
     }
