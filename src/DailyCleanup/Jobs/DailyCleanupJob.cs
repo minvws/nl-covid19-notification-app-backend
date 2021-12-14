@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.DiagnosisKeys;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Eks;
@@ -15,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs
 {
     public class DailyCleanupJob : IJob
     {
-        private readonly DailyCleanupLoggingExtensions _logger;
+        private readonly ILogger _logger;
         private readonly CommandInvoker _commandInvoker;
         private readonly StatisticsCommand _statisticsCommand;
         private readonly RemoveExpiredWorkflowsCommand _removeExpiredWorkflowsCommand;
@@ -28,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs
         private readonly RemoveExpiredIksInCommand _removeExpiredIksInCommand;
         private readonly RemoveExpiredIksOutCommand _removeExpiredIksOutCommand;
 
-        public DailyCleanupJob(DailyCleanupLoggingExtensions logger,
+        public DailyCleanupJob(ILogger<DailyCleanupJob> logger,
             CommandInvoker commandInvoker,
             StatisticsCommand statisticsCommand,
             RemoveExpiredWorkflowsCommand removeExpiredWorkflowsCommand,
@@ -56,22 +57,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs
         }
         public void Run()
         {
-            _logger.WriteStart();
+            _logger.LogInformation("Daily cleanup - Starting.");
 
             _commandInvoker
-                .SetCommand(_statisticsCommand).WithPreExecuteAction(_logger.WriteDailyStatsCalcStarting)
-                .SetCommand(_removeExpiredWorkflowsCommand).WithPreExecuteAction(_logger.WriteWorkflowCleanupStarting)
+                .SetCommand(_statisticsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Calculating daily stats starting."))
+                .SetCommand(_removeExpiredWorkflowsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Workflows run starting."))
                 .SetCommand(_removeDiagnosisKeysReadyForCleanupCommand)
-                .SetCommand(_removePublishedDiagnosisKeysCommand).WithPreExecuteAction(_logger.WriteEksCleanupStarting)
-                .SetCommand(_removeExpiredEksCommand)
-                .SetCommand(_removeExpiredEksV2Command).WithPreExecuteAction(_logger.WriteEksV2CleanupStarting)
-                .SetCommand(_removeExpiredEksV3Command).WithPreExecuteAction(_logger.WriteEksV3CleanupStarting)
-                .SetCommand(_removeExpiredManifestsCommand).WithPreExecuteAction(_logger.WriteManiFestCleanupStarting)
-                .SetCommand(_removeExpiredIksInCommand).WithPreExecuteAction(_logger.WriteExpiredIksInCleanupStarting)
-                .SetCommand(_removeExpiredIksOutCommand).WithPreExecuteAction(_logger.WriteExpiredIksOutCleanupStarting)
+                .SetCommand(_removePublishedDiagnosisKeysCommand)
+                .SetCommand(_removeExpiredEksCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup EKS run starting"))
+                .SetCommand(_removeExpiredEksV2Command).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup EKSv2 run starting."))
+                .SetCommand(_removeExpiredEksV3Command).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup EKSv3 run starting."))
+                .SetCommand(_removeExpiredManifestsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Manifests run starting."))
+                .SetCommand(_removeExpiredIksInCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Expired IksIn run starting."))
+                .SetCommand(_removeExpiredIksOutCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Expired IksOut run starting."))
                 .Execute();
 
-            _logger.WriteFinished();
+            _logger.LogInformation("Daily cleanup - Finished.");
         }
     }
 }

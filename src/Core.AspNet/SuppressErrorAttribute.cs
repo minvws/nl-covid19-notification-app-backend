@@ -6,6 +6,7 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
 {
@@ -14,12 +15,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
     /// </summary>
     public class SuppressErrorAttribute : ActionFilterAttribute
     {
-        private readonly SuppressErrorLoggingExtensions _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public SuppressErrorAttribute(SuppressErrorLoggingExtensions logger)
+        public SuppressErrorAttribute(ILogger<SuppressErrorAttribute> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -41,7 +42,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
                 return;
             }
 
-            _logger.WriteCallFailed(context.ActionDescriptor);
+            _logger.LogDebug("Call to {ActionDescriptor} failed, overriding response code to return 200.",
+                context.ActionDescriptor);
+
             context.Result = new OkResult();
         }
     }

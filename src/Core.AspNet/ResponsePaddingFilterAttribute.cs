@@ -5,6 +5,7 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
 {
@@ -24,13 +25,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
 
         private readonly IResponsePaddingConfig _config;
         private readonly IRandomNumberGenerator _rng;
-        private readonly ResponsePaddingLoggingExtensions _logger;
+        private readonly ILogger _logger;
         private readonly IPaddingGenerator _paddingGenerator;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public ResponsePaddingFilterAttribute(IResponsePaddingConfig config, IRandomNumberGenerator rng, ResponsePaddingLoggingExtensions logger, IPaddingGenerator paddingGenerator)
+        public ResponsePaddingFilterAttribute(IResponsePaddingConfig config, IRandomNumberGenerator rng, ILogger<ResponsePaddingFilterAttribute> logger, IPaddingGenerator paddingGenerator)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _rng = rng ?? throw new ArgumentNullException(nameof(rng));
@@ -56,21 +57,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
             // Nothing needs doing if we're above the minimum length
             if (resultString.Length >= _config.ByteCountMinimum)
             {
-                _logger.WriteNoPaddingNeeded(resultString.Length, _config.ByteCountMinimum);
+                _logger.LogInformation("No padding needed as response length of {Length} is greater than the minimum of {MinimumLengthInBytes}.",
+                    resultString.Length, _config.ByteCountMinimum);
+
                 return;
             }
 
             // Calculate length of padding to add
             var paddingLength = _rng.Next(_config.ByteCountMinimum, _config.ByteCountMaximum) - resultString.Length;
-            _logger.WriteLengthOfResponsePadding(paddingLength);
+            _logger.LogInformation("Length of response padding: {PaddingLength}.", paddingLength);
 
             // Get the padding bytes
             var padding = _paddingGenerator.Generate(paddingLength);
-            _logger.WritePaddingContent(padding);
+            _logger.LogDebug("Response padding:{Padding}", padding);
 
             // Add padding here
             context.HttpContext.Response.Headers.Add(PaddingHeader, padding);
-            _logger.WritePaddingAdded();
+            _logger.LogInformation("Added padding to the response.");
         }
     }
 }
