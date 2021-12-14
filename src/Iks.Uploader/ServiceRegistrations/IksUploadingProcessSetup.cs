@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
             services.AddTransient<IThumbprintConfig>(
                x => new ThumbprintConfig(
                    x.GetRequiredService<IConfiguration>(),
-                   NlSigningettingPrefix));
+                   EfgsSigningettingPrefix));
         }
 
         static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
