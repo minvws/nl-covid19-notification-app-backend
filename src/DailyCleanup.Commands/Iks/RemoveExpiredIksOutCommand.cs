@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ik
             var cutoff = (_utcDateTimeProvider.Snapshot - TimeSpan.FromDays(lifetimeDays)).Date;
 
             _result.Found = _iksOutDbContext.Iks.Count();
-            _logger.LogInformation(" Current IksOut - Count: {CurrentIksOutFound}.", _result.Found);
+            _logger.LogInformation("Current IksOut - Count: {CurrentIksOutFound}.", _result.Found);
 
 
             var zombies = _iksOutDbContext.Iks.AsNoTracking()
