@@ -218,7 +218,7 @@ namespace Scenario.Tests
                 keys.Add(new PostTeksItemArgs
                 {
                     RollingStartNumber = DateTime.UtcNow.Date.ToRollingStartNumber(),
-                    RollingPeriod = _randomNumberGenerator.Next(1, UniversalConstants.RollingPeriodRange.Hi),
+                    RollingPeriod = 1, // This test expects the keys to be published without prolonged embargo
                     KeyData = Convert.ToBase64String(_randomNumberGenerator.NextByteArray(UniversalConstants.DailyKeyDataByteCount))
                 });
             }
