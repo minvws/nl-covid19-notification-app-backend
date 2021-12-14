@@ -19,6 +19,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public const int CertLmProvider = 3600;
         public const int IksDownloader = 3700;
         public const int IksUploader = 3800;
-        public const int RegisterV2 = 4700;
     }
 }
