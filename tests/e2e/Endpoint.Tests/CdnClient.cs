@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Google.Protobuf;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Protobuf;
@@ -20,11 +21,14 @@ namespace Endpoint.Tests
 {
     public class CdnClient
     {
+        private readonly ILogger<CdnClient> _logger;
+
         private readonly IJsonSerializer _jsonSerializer;
         private HttpClient _client;
 
         public CdnClient()
         {
+            _logger = new Logger<CdnClient>(new LoggerFactory());
             _jsonSerializer = new StandardJsonSerializer();
         }
 
@@ -83,6 +87,7 @@ namespace Endpoint.Tests
 
         public async Task<(HttpResponseMessage, T)> GetCdnContent<T>(Uri uri, string version, string endpoint)
         {
+
             _client = new HttpClient { BaseAddress = uri };
             var responseMessage = await _client.GetAsync($"{version}/{endpoint}");
 
@@ -91,6 +96,8 @@ namespace Endpoint.Tests
 
         public async Task<(HttpResponseMessage, List<string>)> GetCdnEksContent(Uri uri, string version, string endpoint)
         {
+            _logger.LogInformation($"Request uri: {uri}");
+
             _client = new HttpClient { BaseAddress = uri };
             var responseMessage = await _client.GetAsync($"{version}/{endpoint}");
 
@@ -99,6 +106,8 @@ namespace Endpoint.Tests
 
         public async Task<(HttpResponseMessage, TemporaryExposureKeyExport)> GetCdnEksExport(Uri uri, string version, string endpoint)
         {
+            _logger.LogInformation($"Request uri: {uri}");
+
             _client = new HttpClient { BaseAddress = uri };
             var responseMessage = await _client.GetAsync($"{version}/{endpoint}");
 

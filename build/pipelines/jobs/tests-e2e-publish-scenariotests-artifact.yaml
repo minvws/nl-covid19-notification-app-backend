@@ -8,6 +8,6 @@ jobs:
       value: 'Scenario.Tests'
     - name: ProjectPath
       value: 'tests/e2e/Scenario.Tests/Scenario.Tests.csproj'
-    displayName: 'Publish Build Artifact Scenario Tests'
+    displayName: 'Publish Build Artifact Scenario Tests to run within domain'
     steps:
-      - template: '/build/pipelines/jobs/templates/build-and-publish-steps-e2e.yaml'
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps-e2e-domain.yaml'
