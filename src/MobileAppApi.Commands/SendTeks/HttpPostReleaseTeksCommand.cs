@@ -18,7 +18,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entity
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.SendTeks
 {
-    public class HttpPostReleaseTeksCommand2
+    public class HttpPostReleaseTeksCommand
     {
         private readonly ILogger _logger;
         private readonly WorkflowDbContext _workflowDbContext;
@@ -35,8 +35,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
         private byte[] _bucketIdBytes;
         private byte[] _bodyBytes;
 
-        public HttpPostReleaseTeksCommand2(
-            ILogger<HttpPostReleaseTeksCommand2> logger,
+        public HttpPostReleaseTeksCommand(
+            ILogger<HttpPostReleaseTeksCommand> logger,
             IWorkflowConfig workflowConfig,
             WorkflowDbContext dbContextProvider,
             IPostTeksValidator keyValidator,
