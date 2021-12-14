@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
     public static class IksUploadingProcessSetup
     {
         private const string EfgsAuthenticationSettingPrefix = "Certificates:EfgsAuthentication";
-        private const string NlSigningettingPrefix = "Certificates:NL";
+        private const string EfgsSigningettingPrefix = "Certificates:EfgsSigning";
         private const int RetryCount = 5;
 
         public static void IksUploadingProcessRegistration(this IServiceCollection services)
