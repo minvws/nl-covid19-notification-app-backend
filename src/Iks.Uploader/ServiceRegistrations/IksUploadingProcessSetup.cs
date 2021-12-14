@@ -19,6 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
     public static class IksUploadingProcessSetup
     {
         private const string EfgsAuthenticationSettingPrefix = "Certificates:EfgsAuthentication";
+        private const string NlSigningettingPrefix = "Certificates:NL";
         private const int RetryCount = 5;
 
         public static void IksUploadingProcessRegistration(this IServiceCollection services)
@@ -28,7 +29,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
                 {
                     return new EfgsOutboundHttpClientHandler(
                          x.GetRequiredService<IAuthenticationCertificateProvider>(),
-                         x.GetRequiredService<IThumbprintConfig>()
+                         new ThumbprintConfig(
+                           x.GetRequiredService<IConfiguration>(),
+                           EfgsAuthenticationSettingPrefix)
                         );
                 })
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
@@ -44,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
             services.AddTransient<IThumbprintConfig>(
                x => new ThumbprintConfig(
                    x.GetRequiredService<IConfiguration>(),
-                   EfgsAuthenticationSettingPrefix));
+                   NlSigningettingPrefix));
         }
 
         static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
