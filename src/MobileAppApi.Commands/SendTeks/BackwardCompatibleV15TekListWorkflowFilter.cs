@@ -68,8 +68,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Se
                 }
 
                 var embargoDateTime = snapshot.AddMinutes(_config.PublishingDelayInMinutes);
-                var tekStartDateTime = (tek.RollingStartNumber + tek.RollingPeriod).FromRollingStartNumber();
-                if (tekStartDateTime > embargoDateTime)
+                var tekRSNStartDateTime = tek.RollingStartNumber.FromRollingStartNumber();
+                var tekRSNPlusRPStartDateTime = (tek.RollingStartNumber + tek.RollingPeriod).FromRollingStartNumber();
+                if (tekRSNStartDateTime < snapshot && tekRSNPlusRPStartDateTime > embargoDateTime)
                 {
                     tek.PublishAfter = snapshot.Date.AddDays(1).AddMinutes(_config.PublishingDelayInMinutes);
                 }
