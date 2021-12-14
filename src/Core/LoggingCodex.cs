@@ -6,7 +6,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public static class LoggingCodex
     {
-        public const int GetCdnContent = 1700;
         public const int IccBackend = 1800;
         public const int DbProvision = 1900;
         public const int PublishContent = 2000;
