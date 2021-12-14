@@ -6,7 +6,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
 
 namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Services
@@ -36,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Services
             var errors = _publishTekArgsValidator.Validate(args);
             if (errors.Any())
             {
-                _logger.LogValidationMessages(errors);
+                _logger.LogError("{Messages}.", string.Join(Environment.NewLine, errors));
                 response.Valid = false;
             }
             else

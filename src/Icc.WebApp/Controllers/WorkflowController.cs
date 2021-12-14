@@ -51,14 +51,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
             // Fail fast -> If the code is not valid, return the response with false result. 
             if (!FixOrValidatePubTEK(args))
             {
-                _logger.WriteGgdKeyValidationFailed();
+                _logger.LogInformation("Validation of GGDKey failed.");
                 return new PublishTekResponse { Valid = false };
             }
 
             var source = new CancellationTokenSource();
             var token = source.Token;
 
-            _logger.WritePubTekStart();
+            _logger.LogInformation("PUT PubTEK triggered.");
 
             var responseMessage = await _restApiClient.PutAsync(args, $"{EndPointNames.CaregiversPortalApi.PubTek}", token, RefererName);
             var result = JsonConvert.DeserializeObject<PublishTekResponse>(await responseMessage.Content.ReadAsStringAsync());
