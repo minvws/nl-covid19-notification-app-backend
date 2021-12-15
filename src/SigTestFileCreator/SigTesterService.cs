@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
@@ -16,12 +17,12 @@ namespace SigTestFileCreator
     {
         private readonly IEksBuilder _eksZipBuilder;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
-        private readonly SigTestFileCreatorLoggingExtensions _logger;
+        private readonly ILogger _logger;
 
         public SigTesterService(
             IEksBuilder eksZipBuilder,
             IUtcDateTimeProvider dateTimeProvider,
-            SigTestFileCreatorLoggingExtensions logger
+            ILogger<SigTesterService> logger
             )
         {
             _eksZipBuilder = eksZipBuilder ?? throw new ArgumentNullException(nameof(eksZipBuilder));
@@ -31,7 +32,7 @@ namespace SigTestFileCreator
 
         public async Task ExecuteAsync(string[] args)
         {
-            _logger.WriteStart(_dateTimeProvider.Snapshot);
+            _logger.LogDebug("Key presence Test started ({Time}).", _dateTimeProvider.Snapshot);
 
             if (args.Length != 1)
             {
@@ -44,20 +45,22 @@ namespace SigTestFileCreator
 
             var fileContents = File.ReadAllBytes(fullPath);
 
-            var (signedFileContents, signedV15FileContents) = await BuildEksOutputAsync(fileContents);
+            var (signedFileContents, _) = await BuildEksOutputAsync(fileContents);
 
-            _logger.WriteSavingResultfile();
+            _logger.LogDebug("Saving EKS-engine resultfile.");
+
             using (var outputFile = File.Create($"{fileDirectory}\\{fileName}-signed.zip", 1024, FileOptions.None))
             {
                 outputFile.Write(signedFileContents);
             }
 
-            _logger.WriteFinished(fileDirectory);
+            _logger.LogDebug("Key presence test complete.\nResults can be found in: {OutputLocation}.",
+                fileDirectory);
         }
 
         private async Task<(byte[], byte[])> BuildEksOutputAsync(byte[] fileData)
         {
-            _logger.WriteBuildingResultFile();
+            _logger.LogDebug("Building EKS-engine resultfile.");
 
             var args = new TemporaryExposureKeyArgs[]
             {
