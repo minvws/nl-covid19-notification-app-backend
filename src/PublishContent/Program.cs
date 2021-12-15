@@ -50,8 +50,6 @@ namespace PublishContent
             services.AddTransient<ContentValidator>();
             services.AddTransient<ContentInsertDbCommand>();
 
-            services.AddSingleton<PublishContentLoggingExtensions>();
-
             services.PublishContentForV3Startup();
         }
     }

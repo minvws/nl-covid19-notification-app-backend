@@ -67,7 +67,6 @@ namespace DbProvision
             services.AddDbContext<DataProtectionKeysDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.DataProtectionKeys)));
 
             services.AddSingleton<IConfiguration>(configuration);
-            services.AddSingleton<PublishContentLoggingExtensions>();
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 

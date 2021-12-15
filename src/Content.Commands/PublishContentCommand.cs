@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -18,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         private readonly ContentInsertDbCommand _insertDbCommand;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly ContentDbContext _contentDbContext;
-        private readonly PublishContentLoggingExtensions _logger;
+        private readonly ILogger _logger;
 
         public PublishContentCommand(
             ContentValidator validator,
@@ -26,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             Func<ContentInsertDbCommand> insertDbCommandV3,
             IUtcDateTimeProvider dateTimeProvider,
             ContentDbContext contentDbContext,
-            PublishContentLoggingExtensions logger)
+            ILogger<PublishContentCommand> logger)
         {
             _validator = validator ?? throw new ArgumentNullException(nameof(validator));
             _insertDbCommand = insertDbCommand ?? throw new ArgumentNullException(nameof(insertDbCommand));
@@ -54,13 +55,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 throw new InvalidOperationException("Content not valid.");
             }
 
-            _logger.WriteStartWriting(contentArgs.ContentType);
+            _logger.LogDebug("Writing {ContentType} to database.", contentArgs.ContentType);
 
             _contentDbContext.BeginTransaction();
             await _insertDbCommand.ExecuteAsync(contentArgs);
             _contentDbContext.SaveAndCommit();
 
-            _logger.WriteFinishedWriting(contentArgs.ContentType);
+            _logger.LogDebug("Done writing {ContentType} to database.", contentArgs.ContentType);
         }
 
         private ContentTypes ParseContentType(string arg)
