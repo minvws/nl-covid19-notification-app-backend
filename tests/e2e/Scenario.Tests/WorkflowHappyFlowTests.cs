@@ -59,14 +59,13 @@ namespace Scenario.Tests
         [Theory]
         [InlineData("test")]
         //[InlineData("acc")]
-        //[InlineData("prod")]
         public async Task Get_MobileApi_Endpoint_Returns_Http200(string environment)
         {
             // Arrange
             var appClient = new AppClient();
 
             // Act
-            var responseMessage = await appClient.GetAsync(new Uri($"{Config.AppBaseUrl(environment)}"));
+            var responseMessage = await appClient.GetAsync(new Uri($"{Config.AppBaseUrl(environment, true)}"));
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode); // I should have received the manifest
@@ -85,14 +84,14 @@ namespace Scenario.Tests
             // Arrange
             // Get the current manifest.
             var cdnClient = new CdnClient();
-            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v5", $"{Config.ManifestEndPoint}");
+            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ManifestEndPoint}");
             CurrentManifest = manifest;
 
             var client = new AppClient();
 
             // Register
             // Act
-            var (responseMessage, enrollmentResponse) = await client.PostAsync<EnrollmentResponse>(new Uri($"{Config.AppBaseUrl(environment)}"), $"v2", $"{Config.RegisterEndPoint}", null);
+            var (responseMessage, enrollmentResponse) = await client.PostAsync<EnrollmentResponse>(new Uri($"{Config.AppBaseUrl(environment, true)}"), $"v2", $"{Config.RegisterEndPoint}", null);
             EnrollmentResponseV2 = enrollmentResponse;
 
             // Assert
@@ -131,7 +130,7 @@ namespace Scenario.Tests
             postkeysContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
             // Act
-            var postkeysResult = await client.PostAsync(new Uri($"{Config.AppBaseUrl(environment)}"), "v1", $"postkeys?sig={signature}", postkeysContent);
+            var postkeysResult = await client.PostAsync(new Uri($"{Config.AppBaseUrl(environment, true)}"), "v1", $"postkeys?sig={signature}", postkeysContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, postkeysResult.StatusCode);
@@ -148,7 +147,7 @@ namespace Scenario.Tests
             var pubtekContent = new StringContent(publishTekArgs.ToJson(), Encoding.UTF8, "application/json");
 
             // Act
-            var pubTekResult = await client.PutAsync(new Uri($"{Config.IccApiBaseUrl(environment)}"), "pubtek", pubtekContent);
+            var pubTekResult = await client.PutAsync(new Uri($"{Config.IccApiBaseUrl(environment, true)}"), "pubtek", pubtekContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, pubTekResult.StatusCode);
@@ -173,7 +172,7 @@ namespace Scenario.Tests
             var pubtekContent = new StringContent(publishTekArgs.ToJson(), Encoding.UTF8, "application/json");
 
             // Act
-            var pubTekResult = await client.PutAsync(new Uri($"{Config.IccApiBaseUrl(environment)}"), "pubtek", pubtekContent);
+            var pubTekResult = await client.PutAsync(new Uri($"{Config.IccApiBaseUrl(environment, true)}"), "pubtek", pubtekContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, pubTekResult.StatusCode);
@@ -185,18 +184,18 @@ namespace Scenario.Tests
         public async Task New_ExposureKeySets_Should_Be_Published(string environment)
         {
             // Added a delay to run EKsEngine (This can be done manually in dev, or wait for a scheduled task to kick the engine)
-            await Task.Delay(1000 * 60 * 5); // 5 minutes delay
+            await Task.Delay(1000 * 60 * 10); // 5 minutes delay
 
             // Arrange
             // Get the current manifest.
             var cdnClient = new CdnClient();
-            var (_, newManifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v5", $"{Config.ManifestEndPoint}");
+            var (_, newManifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ManifestEndPoint}");
 
             // Manifest should be new
             Assert.False(newManifest.Equals(CurrentManifest));
 
             // Act
-            var (responseMessage, rcp) = await cdnClient.GetCdnEksContent(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v5", $"{Config.ExposureKeySetEndPoint}/{newManifest.ExposureKeySets.Last()}");
+            var (responseMessage, rcp) = await cdnClient.GetCdnEksContent(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ExposureKeySetEndPoint}/{newManifest.ExposureKeySets.Last()}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
@@ -219,7 +218,7 @@ namespace Scenario.Tests
                 keys.Add(new PostTeksItemArgs
                 {
                     RollingStartNumber = DateTime.UtcNow.Date.ToRollingStartNumber(),
-                    RollingPeriod = _randomNumberGenerator.Next(1, UniversalConstants.RollingPeriodRange.Hi),
+                    RollingPeriod = 1, // This test expects the keys to be published without prolonged embargo
                     KeyData = Convert.ToBase64String(_randomNumberGenerator.NextByteArray(UniversalConstants.DailyKeyDataByteCount))
                 });
             }
