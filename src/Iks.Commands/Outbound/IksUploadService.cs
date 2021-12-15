@@ -6,6 +6,7 @@ using System;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
@@ -15,20 +16,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 {
     public class IksUploadService
     {
+        private const string EfgsAuthenticationSettingPrefix = "Certificates:EfgsAuthentication";
+
         private readonly HttpClient _httpClient;
 
         private readonly IEfgsConfig _efgsConfig;
-        private readonly IThumbprintConfig _config;
+        private readonly IThumbprintConfig _efgsAuthenticationConfig;
         private readonly IAuthenticationCertificateProvider _certificateProvider;
         private readonly IksUploaderLoggingExtensions _logger;
 
-        public IksUploadService(HttpClient httpClient, IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IksUploaderLoggingExtensions logger, IThumbprintConfig config)
+        public IksUploadService(HttpClient httpClient, IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IksUploaderLoggingExtensions logger, IConfiguration config)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
             _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _efgsAuthenticationConfig = new ThumbprintConfig(config ?? throw new ArgumentNullException(nameof(config)), EfgsAuthenticationSettingPrefix);
         }
 
         public async Task<HttpPostIksResult> ExecuteAsync(IksSendCommandArgs args)
@@ -36,15 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             var uri = new Uri($"{_efgsConfig.BaseUrl}/diagnosiskeys/upload");
 
             // Configure authentication certificate
-            using var clientCert = _certificateProvider.GetCertificate(_config.Thumbprint, _config.RootTrusted);
-            using var clientHandler = new HttpClientHandler
-            {
-                ClientCertificateOptions = ClientCertificateOption.Manual
-            };
-
-            // Provide the authentication certificate manually
-            clientHandler.ClientCertificates.Clear();
-            clientHandler.ClientCertificates.Add(clientCert);
+            using var clientCert = _certificateProvider.GetCertificate(_efgsAuthenticationConfig.Thumbprint, _efgsAuthenticationConfig.RootTrusted);
 
             _logger.WriteRequestContent(args.Content);
 
