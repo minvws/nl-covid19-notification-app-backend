@@ -6,7 +6,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public static class LoggingCodex
     {
-        public const int Snapshot = 3000;
         public const int EksBuilderV1 = 3100;
         public const int EksJobContentWriter = 3200;
         public const int ManifestUpdate = 3400;
