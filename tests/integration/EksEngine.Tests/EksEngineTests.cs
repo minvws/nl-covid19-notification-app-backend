@@ -134,7 +134,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 new ManifestV4Builder(_contentDbContext, eksConfig.Object, _dtp),
                 new ManifestV5Builder(_contentDbContext, eksConfig.Object, _dtp),
                 _contentDbContext,
-                new ManifestUpdateCommandLoggingExtensions(_lf.CreateLogger<ManifestUpdateCommandLoggingExtensions>()),
+                _lf.CreateLogger<ManifestUpdateCommand>(),
                 _dtp,
                 jsonSerializer,
                 new StandardContentEntityFormatter(new ZippedSignedContentFormatter(nlSigner.Object), new Sha256HexPublishingIdService(), jsonSerializer)

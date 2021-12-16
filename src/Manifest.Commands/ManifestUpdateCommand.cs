@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
@@ -22,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         private readonly ManifestV4Builder _v4Builder;
         private readonly ManifestV5Builder _v5Builder;
         private readonly ContentDbContext _contentDbContext;
-        private readonly ManifestUpdateCommandLoggingExtensions _logger;
+        private readonly ILogger _logger;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly IJsonSerializer _jsonSerializer;
         private readonly IContentEntityFormatter _formatter;
@@ -33,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             ManifestV4Builder v4Builder,
             ManifestV5Builder v5Builder,
             ContentDbContext contentDbContext,
-            ManifestUpdateCommandLoggingExtensions logger,
+            ILogger<ManifestUpdateCommand> logger,
             IUtcDateTimeProvider dateTimeProvider,
             IJsonSerializer jsonSerializer,
             IContentEntityFormatter formatter)
@@ -81,7 +82,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                 if (candidateManifest.Equals(currentManifest))
                 {
                     // If current manifest equals existing manifest, do nothing
-                    _logger.WriteUpdateNotRequired();
+                    _logger.LogInformation("Manifest does NOT require updating.");
 
                     return;
                 }
@@ -90,7 +91,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                 _contentDbContext.Remove(currentManifestData);
             }
 
-            _logger.WriteStart();
+            _logger.LogInformation("Manifest updating.");
 
             var contentEntity = new ContentEntity
             {
@@ -103,7 +104,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             _contentDbContext.Add(contentEntity);
             _contentDbContext.SaveAndCommit();
 
-            _logger.WriteFinished();
+            _logger.LogInformation("Manifest updated.");
         }
 
         private T ParseContent<T>(byte[] formattedContent)
