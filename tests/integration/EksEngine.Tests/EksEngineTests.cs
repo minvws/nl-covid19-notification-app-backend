@@ -103,7 +103,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             _eksJob = new ExposureKeySetBatchJobMk3(
                 eksConfig.Object,
                 new EksBuilderV1(eksHeaderConfig.Object, gaSigner.Object, gaV15Signer.Object, nlSigner.Object, _dtp, new GeneratedProtobufEksContentFormatter(),
-                    new EksBuilderV1LoggingExtensions(_lf.CreateLogger<EksBuilderV1LoggingExtensions>())
+                    _lf.CreateLogger<EksBuilderV1>()
                     ),
                 _eksPublishingJobContext,
                 _dtp,

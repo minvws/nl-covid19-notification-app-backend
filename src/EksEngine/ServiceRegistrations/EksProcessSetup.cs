@@ -69,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
                     x.GetRequiredService<IUtcDateTimeProvider>()),
                 x.GetRequiredService<IUtcDateTimeProvider>(),
                 x.GetRequiredService<IEksContentFormatter>(),
-                x.GetRequiredService<EksBuilderV1LoggingExtensions>()
+                x.GetRequiredService<ILogger<EksBuilderV1>>()
             ));
 
             services.AddTransient<MarkDiagnosisKeysAsUsedLocally>();
