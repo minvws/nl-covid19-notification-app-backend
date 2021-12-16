@@ -186,7 +186,22 @@ namespace Scenario.Tests
             // Arrange
             // Get the current manifest.
             var cdnClient = new CdnClient();
-            var newManifest = await PollForManifest(environment, cdnClient);
+            ManifestContent newManifest = null;
+
+            var manifestIsNew = false;
+            var maxRetries = 30;
+            var retriesCount = 0;
+            while (!manifestIsNew && retriesCount < maxRetries)
+            {
+                (_, newManifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ManifestEndPoint}");
+                manifestIsNew = !newManifest.Equals(CurrentManifest);
+
+                if (!manifestIsNew)
+                {
+                    retriesCount++;
+                    await Task.Delay(30 * 1000); // Delay 30 seconds
+                }
+            }
 
             // Manifest should be new
             Assert.False(newManifest.Equals(CurrentManifest));
@@ -208,18 +223,17 @@ namespace Scenario.Tests
 
         private PostTeksArgs GenerateTeks(string bucketId)
         {
-            var keys = new List<PostTeksItemArgs>();
-            // Add 50 keys
-            for (var i = 0; i < 50; i++)
+            var keys = new List<PostTeksItemArgs>
             {
-                keys.Add(new PostTeksItemArgs
+                // Add 1 key
+                new PostTeksItemArgs
                 {
                     // This test expects the keys to be published without prolonged embargo
                     RollingStartNumber = DateTime.UtcNow.Date.AddDays(-1).ToRollingStartNumber(),
                     RollingPeriod = 1,
                     KeyData = Convert.ToBase64String(_randomNumberGenerator.NextByteArray(UniversalConstants.DailyKeyDataByteCount))
-                });
-            }
+                }
+            };
 
             return new PostTeksArgs { BucketId = bucketId, Keys = keys.ToArray(), Padding = "ZGVmYXVsdA==" };
         }
