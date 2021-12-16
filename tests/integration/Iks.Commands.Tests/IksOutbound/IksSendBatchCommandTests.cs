@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -11,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Moq.Protected;
@@ -32,6 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
 
         private readonly EfgsConfigMock _efgsConfigFake = new EfgsConfigMock();
         private readonly Mock<IAuthenticationCertificateProvider> _certProviderMock;
+        private readonly IConfiguration _configuration;
         private readonly Mock<IThumbprintConfig> _thumbprintConfigMock;
         private readonly Mock<IIksSigner> _signerMock;
         private readonly Mock<IBatchTagProvider> _batchTagProviderMock;
@@ -52,6 +55,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
 
             var mockCertificate = new Mock<X509Certificate2>();
             _certProviderMock.Setup(p => p.GetCertificate(It.IsAny<string>(), It.IsAny<bool>())).Returns(mockCertificate.Object);
+
+            _configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(
+                    new Dictionary<string, string> {
+                        {"Certificates:EfgsAuthentication:Thumbprint", "Thumbprint"},
+                        {"Certificates:EfgsAuthentication:RootTrusted", "false"},
+                    }
+                )
+                .Build();
         }
 
         [InlineData(HttpStatusCode.OK)]
@@ -228,7 +240,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
                     _efgsConfigFake,
                     _certProviderMock.Object,
                     _logger,
-                    _thumbprintConfigMock.Object),
+                    _configuration),
                 _iksOutDbContext,
                 _signerMock.Object,
                 _batchTagProviderMock.Object,

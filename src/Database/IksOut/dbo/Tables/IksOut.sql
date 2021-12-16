@@ -6,7 +6,7 @@
 	[Sent] [bit] NOT NULL,
 	[Qualifier] [int] NOT NULL,
     [Error] BIT NOT NULL DEFAULT 0, 
-    [ProcessState] NVARCHAR(50) NULL, 
+    [ProcessState] NVARCHAR(50) NOT NULL DEFAULT 'New', 
     [RetryCount] INT NOT NULL DEFAULT 0, 
     [CanRetry] BIT NULL, 
     CONSTRAINT [PK_IksOut] PRIMARY KEY CLUSTERED 

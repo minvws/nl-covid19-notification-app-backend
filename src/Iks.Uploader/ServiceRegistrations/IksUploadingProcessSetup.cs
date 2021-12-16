@@ -19,16 +19,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
     public static class IksUploadingProcessSetup
     {
         private const string EfgsAuthenticationSettingPrefix = "Certificates:EfgsAuthentication";
+        private const string EfgsSigningSettingPrefix = "Certificates:EfgsSigning";
         private const int RetryCount = 5;
 
         public static void IksUploadingProcessRegistration(this IServiceCollection services)
         {
             services.AddHttpClient<IksUploadService>()
+                .ConfigurePrimaryHttpMessageHandler(x =>
+                {
+                    return new EfgsOutboundHttpClientHandler(
+                         x.GetRequiredService<IAuthenticationCertificateProvider>(),
+                         new ThumbprintConfig(
+                           x.GetRequiredService<IConfiguration>(),
+                           EfgsAuthenticationSettingPrefix)
+                        );
+                })
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
                 .AddPolicyHandler(GetRetryPolicy()) // Retry first
                 .AddPolicyHandler(GetCircuitBreakerPolicy()); // After maximum retries, activate CircuitBreaker.
 
             services.AddTransient<IksUploadBatchJob>();
+            services.AddTransient<EfgsOutboundHttpClientHandler>();
 
             services.AddTransient<IksSendBatchCommand>();
             services.AddTransient<IBatchTagProvider, BatchTagProvider>();
@@ -36,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
             services.AddTransient<IThumbprintConfig>(
                x => new ThumbprintConfig(
                    x.GetRequiredService<IConfiguration>(),
-                   EfgsAuthenticationSettingPrefix));
+                   EfgsSigningSettingPrefix));
         }
 
         static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()

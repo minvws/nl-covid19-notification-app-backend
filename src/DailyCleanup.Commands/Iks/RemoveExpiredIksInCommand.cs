@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
@@ -15,13 +16,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ik
     public class RemoveExpiredIksInCommand : BaseCommand
     {
         private readonly IksInDbContext _iksInDbContext;
-        private readonly RemoveExpiredIksLoggingExtensions _logger;
+        private readonly ILogger _logger;
 
         private readonly IUtcDateTimeProvider _utcDateTimeProvider;
         private RemoveExpiredIksCommandResult _result;
         private readonly IIksCleaningConfig _iksCleaningConfig;
 
-        public RemoveExpiredIksInCommand(IksInDbContext iksInDbContext, RemoveExpiredIksLoggingExtensions logger, IUtcDateTimeProvider utcDateTimeProvider, IIksCleaningConfig iksCleaningConfig)
+        public RemoveExpiredIksInCommand(IksInDbContext iksInDbContext, ILogger<RemoveExpiredIksInCommand> logger, IUtcDateTimeProvider utcDateTimeProvider, IIksCleaningConfig iksCleaningConfig)
         {
             _iksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -39,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ik
                 throw new InvalidOperationException("Object already used.");
             }
 
-            _logger.WriteStart("IksIn");
+            _logger.LogInformation("Begin removing expired IksIn.");
 
             _result = new RemoveExpiredIksCommandResult();
 
@@ -47,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ik
             var cutoff = (_utcDateTimeProvider.Snapshot - TimeSpan.FromDays(lifetimeDays)).Date;
 
             _result.Found = _iksInDbContext.Received.Count();
-            _logger.WriteCurrentIksFound(_result.Found);
+            _logger.LogInformation("Current IksIn - Count: {CurrentIksInFound}.", _result.Found);
 
             var zombies = _iksInDbContext.Received
                 .Where(x => x.Created < cutoff)
@@ -55,8 +56,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ik
                 .ToList();
 
             _result.Zombies = zombies.Count;
-
-            _logger.WriteTotalIksFound(cutoff, _result.Zombies);
+            _logger.LogInformation("Found expired IksIn - Cutoff: {IksInCutoff:yyyy-MM-dd}, Count: {TotalIksInFound}", cutoff, _result.Zombies);
 
             // DELETE FROM IksIn.dbo.IksIn WHERE Created < (today - 14-days)
             var iksToBeCleaned = await _iksInDbContext.Received.AsNoTracking().Where(p => p.Created < cutoff).ToArrayAsync();
@@ -64,15 +64,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ik
             await _iksInDbContext.BulkDeleteWithTransactionAsync(iksToBeCleaned, new SubsetBulkArgs());
 
             _result.Remaining = _iksInDbContext.Received.Count();
-
-            _logger.WriteRemovedAmount(_result.GivenMercy, _result.Remaining);
+            _logger.LogInformation("Removed expired IksIn - Count: {IksInRemoved}, Remaining: {IksInRemaining}", _result.GivenMercy, _result.Remaining);
 
             if (_result.Reconciliation != 0)
             {
-                _logger.WriteReconciliationFailed(_result.Reconciliation);
+                _logger.LogError("Reconciliation failed - Found-GivenMercy-Remaining: {IksInReconciliationCount}.", _result.Reconciliation);
             }
 
-            _logger.WriteFinished();
+            _logger.LogInformation("Finished IksIn cleanup.");
             return _result;
         }
     }

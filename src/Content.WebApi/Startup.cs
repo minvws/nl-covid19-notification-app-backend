@@ -63,8 +63,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
             services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
 
-            services.AddSingleton<GetCdnContentLoggingExtensions>();
-
             if (_isDev)
             {
                 services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });

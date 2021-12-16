@@ -79,7 +79,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
         private async Task ProcessOne(IksOutEntity item)
         {
-            var isNew = item.ProcessState.Equals(ProcessState.New.ToString());
+            var isNew = ProcessState.New.ToString().Equals(item.ProcessState);
 
             var signature = SignDks(item);
 
@@ -101,6 +101,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             if (!isNew && httpPostIksResult.Exception)
             {
                 item.RetryCount++;
+                _logger.WriteEntityIdInRetry(item);
             }
 
             item.Sent = httpPostIksResult.HttpResponseCode == HttpStatusCode.Created || httpPostIksResult.HttpResponseCode == HttpStatusCode.OK;

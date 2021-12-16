@@ -126,6 +126,7 @@
     <Folder Include="dbo\Tables" />
     <Folder Include="PreDeploy" />
     <Folder Include="PreDeploy\Scripts" />
+    <Folder Include="dbo\Views" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Security\Roles\Dbr_Appbeheerders.sql" />
@@ -142,6 +143,8 @@
     <Build Include="dbo\Tables\TekReleaseWorkflowState.sql" />
     <Build Include="dbo\Tables\TemporaryExposureKeys.sql" />
     <None Include="PostDeploy\Scripts\SetIsOriginPortal.sql" />
+    <Build Include="dbo\Views\vwTekReleaseWorkflowState.sql" />
+    <Build Include="dbo\Views\vwTemporaryExposureKeys.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="Appbeheerders">

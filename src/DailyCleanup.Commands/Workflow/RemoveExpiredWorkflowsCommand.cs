@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -18,12 +19,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Wo
     public class RemoveExpiredWorkflowsCommand : BaseCommand
     {
         private readonly WorkflowDbContext _workflowDbContext;
-        private readonly ExpiredWorkflowLoggingExtensions _logger;
+        private readonly ILogger _logger;
         private readonly IUtcDateTimeProvider _dtp;
         private RemoveExpiredWorkflowsResult _result;
         private readonly IWorkflowConfig _config;
 
-        public RemoveExpiredWorkflowsCommand(WorkflowDbContext workflowDbContext, ExpiredWorkflowLoggingExtensions logger, IUtcDateTimeProvider dtp, IWorkflowConfig config)
+        public RemoveExpiredWorkflowsCommand(WorkflowDbContext workflowDbContext, ILogger<RemoveExpiredWorkflowsCommand> logger, IUtcDateTimeProvider dtp, IWorkflowConfig config)
         {
             _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -47,20 +48,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Wo
                 DeletionsOn = _config.CleanupDeletesData
             };
 
-            _logger.WriteStart();
+            _logger.LogInformation("Begin Workflow cleanup.");
 
             ReadStats(_result.Before, _workflowDbContext);
             LogReport(_result.Before, "Workflow stats before cleanup:");
 
             if (!_result.DeletionsOn)
             {
-                _logger.WriteFinishedNothingRemoved();
+                _logger.LogInformation("No Workflows deleted - Deletions switched off.");
                 return _result;
             }
 
             if (_result.Before.Authorised != _result.Before.AuthorisedAndFullyPublished)
             {
-                _logger.WriteUnpublishedTekFound(); // Authorised unpublished TEKs exist.
+                // Authorised unpublished TEKs exist.
+                _logger.LogCritical("Authorised unpublished TEKs exist. Aborting workflow cleanup.");
                 _result.HasErrors = true;
             }
             else
@@ -68,13 +70,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Wo
                 var workflowsToDelete = _workflowDbContext.KeyReleaseWorkflowStates.AsNoTracking().Where(p => p.ValidUntil < _dtp.Snapshot).ToList();
                 _result.GivenMercy = workflowsToDelete.Count;
                 await _workflowDbContext.BulkDeleteWithTransactionAsync(workflowsToDelete, new SubsetBulkArgs());
-                _logger.WriteRemovedAmount(_result.GivenMercy);
+                _logger.LogInformation("Workflows deleted - Unauthorised: {UnauthorisedWorkflows}", _result.GivenMercy);
             }
 
             ReadStats(_result.After, _workflowDbContext);
 
             LogReport(_result.Before, "Workflow stats after cleanup:");
-            _logger.WriteFinished();
+            _logger.LogInformation("Workflow cleanup complete.");
             return _result;
         }
 
@@ -115,7 +117,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Wo
             sb.AppendLine($"   Published:{stats.TekPublished}");
             sb.AppendLine($"   Unpublished:{stats.TekUnpublished}");
 
-            _logger.WriteReport(sb.ToString());
+            _logger.LogInformation("{WorkflowReport}.", sb.ToString());
         }
     }
 }

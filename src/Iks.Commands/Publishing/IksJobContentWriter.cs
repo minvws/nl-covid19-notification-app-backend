@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
@@ -36,7 +37,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                         Created = x.Created,
                         ValidFor = x.Created,
                         Content = x.Content,
-                        Qualifier = x.CreatingJobQualifier
+                        Qualifier = x.CreatingJobQualifier,
+                        CanRetry = true,
+                        ProcessState = ProcessState.New.ToString()
                     }).ToArray();
 
                 await using (_contentDbContext.BeginTransaction())

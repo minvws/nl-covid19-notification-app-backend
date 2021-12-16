@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
 
-            services.AddScoped<HttpPostReleaseTeksCommand2>();
+            services.AddScoped<HttpPostReleaseTeksCommand>();
             services.AddScoped<HttpPostRegisterSecret>();
 
             services.AddSingleton<ITekListValidationConfig, StandardTekListValidationConfig>();
@@ -78,10 +78,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<IWelfordsAlgorithm, WelfordsAlgorithm>();
 
             services.AddSingleton<RegisterSecretLoggingExtensions>();
-            services.AddSingleton<PostKeysLoggingExtensions>();
-            services.AddSingleton<DecoyKeysLoggingExtensions>();
-            services.AddSingleton<ResponsePaddingLoggingExtensions>();
-            services.AddSingleton<SuppressErrorLoggingExtensions>();
 
             if (_isDev)
             {
