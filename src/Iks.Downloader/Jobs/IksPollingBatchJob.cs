@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
@@ -21,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
         private readonly IIksWriterCommand _writer;
         private readonly IksInDbContext _iksInDbContext;
         private readonly IEfgsConfig _efgsConfig;
-        private readonly IksDownloaderLoggingExtensions _logger;
+        private readonly ILogger _logger;
 
         private IksInJobEntity _jobInfo;
         private string _tagToRequest;
@@ -35,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
             IIksWriterCommand writer,
             IksInDbContext iksInDbContext,
             IEfgsConfig efgsConfig,
-            IksDownloaderLoggingExtensions logger)
+            ILogger<IksPollingBatchJob> logger)
         {
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _batchDownloader = receiver ?? throw new ArgumentNullException(nameof(receiver));
@@ -49,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
         {
             if (!_efgsConfig.DownloaderEnabled)
             {
-                _logger.WriteDisabledByConfig();
+                _logger.LogWarning("EfgsDownloader is disabled by the configuration.");
                 return;
             }
 
@@ -112,11 +113,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
 
             if (batchAlreadyReceived)
             {
-                _logger.WriteBatchAlreadyProcessed(downloadedBatch.BatchTag);
+                _logger.LogInformation("Batch {BatchTag} has already been processed.",
+                    downloadedBatch.BatchTag);
             }
             else
             {
-                _logger.WriteProcessingData(_dayToRequest, downloadedBatch.BatchTag);
+                _logger.LogInformation("Processing data for {Date}, batch {BatchTag}",
+                    _dayToRequest, downloadedBatch.BatchTag);
 
                 try
                 {
@@ -125,7 +128,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
                 }
                 catch (Exception e)
                 {
-                    _logger.WriteEfgsError(e);
+                    _logger.LogCritical(e, "EFGS error");
                 }
             }
         }
@@ -136,32 +139,33 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
             {
                 case HttpStatusCode.BadRequest:
                     // 400: requested batchtag doesn't match CreatedDate on found batch - halt and catch fire
-                    _logger.WriteResponseBadRequest();
+                    _logger.LogCritical("EFGS: missing or invalid header!");
                     throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{downloadedBatch.BatchTag}' resulted in a Bad Request-response");
 
                 case HttpStatusCode.NotFound:
                     // 404: requested date doesn't exist yet - retry later (stop downloading)
-                    _logger.WriteResponseNotFound();
+                    _logger.LogWarning("EFGS: No data found.");
                     _continueDownloading = false;
                     return;
 
                 case HttpStatusCode.Gone:
                     // 410: requested date is too old - skip to next day
-                    _logger.WriteResponseGone();
+                    _logger.LogWarning("EFGS: No data found (expired).");
                     _tagToRequest = string.Empty;
                     IncrementDayToRequest();
                     return;
 
                 case HttpStatusCode.Forbidden:
-                    _logger.WriteResponseForbidden();
+                    _logger.LogCritical("EFGS: missing or invalid certificate!");
                     throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{downloadedBatch.BatchTag}' resulted in a Forbidden-response");
 
                 case HttpStatusCode.NotAcceptable:
-                    _logger.WriteResponseNotAcceptable();
+                    _logger.LogCritical("EFGS: data format or content is not valid!");
                     throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{downloadedBatch.BatchTag}' resulted in a Not-Acceptable-response");
 
                 default:
-                    _logger.WriteResponseUndefined(downloadedBatch.ResultCode);
+                    _logger.LogCritical("EFGS: undefined HTTP status ({Status}) returned!",
+                        downloadedBatch.ResultCode);
                     throw new EfgsCommunicationException($"Request with date '{_dayToRequest.Date}' and batchTag '{downloadedBatch.BatchTag}' resulted in an undefined response");
             }
         }
@@ -173,20 +177,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
 
             if (string.IsNullOrEmpty(_tagToRequest))
             {
-                _logger.WriteNoNextBatch();
+                _logger.LogInformation("No next batch, so: ending this day.");
                 IncrementDayToRequest();
             }
             else
             {
                 // Log for informational purposes
-                _logger.WriteNextBatchFound(_tagToRequest);
-                _logger.WriteBatchProcessedInNextLoop(_tagToRequest);
+                _logger.LogInformation("We have a nextBatch with value {NextBatchTag} so we keep going.",
+                    _tagToRequest);
+                _logger.LogInformation("New NextBatchTag {NextBatchTag}, it will be processed next loop.",
+                    _tagToRequest);
             }
 
             // Log for informational purposes
             if (_downloadCount > _efgsConfig.MaxBatchesPerRun)
             {
-                _logger.WriteBatchMaximumReached(_efgsConfig.MaxBatchesPerRun);
+                _logger.LogInformation("Maximum number of batches per run of {MaxBatches} reached.",
+                    _efgsConfig.MaxBatchesPerRun);
             }
         }
 
@@ -194,12 +201,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.Jobs
         {
             if (_dayToRequest < _dateTimeProvider.Snapshot.Date)
             {
-                _logger.WriteMovingToNextDay();
+                _logger.LogInformation("Moving to the next day!");
                 _dayToRequest = _dayToRequest.AddDays(1);
             }
             else
             {
-                _logger.WriteNoNextBatchNoMoreDays();
+                _logger.LogInformation("No next batch, no more available days, so: ending.");
                 _continueDownloading = false;
             }
         }

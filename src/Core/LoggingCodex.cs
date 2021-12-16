@@ -6,7 +6,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
 {
     public static class LoggingCodex
     {
-        public const int IksDownloader = 3700;
         public const int IksUploader = 3800;
     }
 }
