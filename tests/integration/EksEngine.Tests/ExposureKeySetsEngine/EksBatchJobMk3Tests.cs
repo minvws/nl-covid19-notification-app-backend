@@ -135,7 +135,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                     })),
                 new MarkDiagnosisKeysAsUsedLocally(dkSourceContext, _fakeEksConfig, eksPublishingJobContext, _lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_contentDbContext, eksPublishingJobContext, new Sha256HexPublishingIdService(),
-                    new EksJobContentWriterLoggingExtensions(_lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
+                    _lf.CreateLogger<EksJobContentWriter>()),
                 new WriteStuffingToDiagnosisKeys(dkSourceContext, eksPublishingJobContext,
                     new IDiagnosticKeyProcessor[] {
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_outboundCountriesMock.Object),

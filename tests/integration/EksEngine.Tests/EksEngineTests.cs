@@ -120,7 +120,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                         }
                     })),
                 new MarkDiagnosisKeysAsUsedLocally(_dkSourceContext, eksConfig.Object, _eksPublishingJobContext, _lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
-                new EksJobContentWriter(_contentDbContext, _eksPublishingJobContext, new Sha256HexPublishingIdService(), new EksJobContentWriterLoggingExtensions(_lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
+                new EksJobContentWriter(_contentDbContext, _eksPublishingJobContext, new Sha256HexPublishingIdService(), _lf.CreateLogger<EksJobContentWriter>()),
                 new WriteStuffingToDiagnosisKeys(_dkSourceContext, _eksPublishingJobContext,
                 new IDiagnosticKeyProcessor[] {
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(countriesOut.Object),

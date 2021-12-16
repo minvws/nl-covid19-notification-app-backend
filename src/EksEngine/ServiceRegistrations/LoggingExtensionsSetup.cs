@@ -13,7 +13,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
     {
         public static void LoggingExtensionsRegistration(this IServiceCollection services)
         {
-            services.AddSingleton<EksJobContentWriterLoggingExtensions>();
             services.AddSingleton<ManifestUpdateCommandLoggingExtensions>();
         }
     }
