@@ -77,8 +77,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddSingleton<IDecoyTimeCalculator, DecoyTimeCalculator>();
             services.AddSingleton<IWelfordsAlgorithm, WelfordsAlgorithm>();
 
-            services.AddSingleton<RegisterSecretLoggingExtensions>();
-
             if (_isDev)
             {
                 services.AddSwaggerGen(o => { o.SwaggerDoc("v1", new OpenApiInfo { Title = Title, Version = "v1" }); });

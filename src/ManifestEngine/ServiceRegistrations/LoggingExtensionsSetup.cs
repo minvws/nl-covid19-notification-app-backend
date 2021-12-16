@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.Extensions.DependencyInjection;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.ServiceRegistrations
@@ -13,7 +12,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.ServiceRe
         public static void LoggingExtensionsRegistration(this IServiceCollection services)
         {
             services.AddSingleton<ManifestUpdateCommandLoggingExtensions>();
-            services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
         }
     }
 }

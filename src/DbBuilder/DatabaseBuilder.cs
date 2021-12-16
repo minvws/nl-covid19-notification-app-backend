@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DbProvision;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -20,7 +21,7 @@ namespace DbBuilder
 {
     public class DatabaseBuilder
     {
-        private readonly DbProvisionLoggingExtensions _logger;
+        private readonly ILogger _logger;
 
         private readonly WorkflowDbContext _workflowDbContext;
         private readonly ContentDbContext _contentDbContext;
@@ -32,7 +33,7 @@ namespace DbBuilder
         private readonly IksOutDbContext _iksOutDbContext;
         private readonly IksPublishingJobDbContext _iksPublishingJobDbContext;
 
-        public DatabaseBuilder(DbProvisionLoggingExtensions logger,
+        public DatabaseBuilder(ILogger<DatabaseBuilder> logger,
             WorkflowDbContext workflowDbContext,
             ContentDbContext contentDbContext,
             EksPublishingJobDbContext eksPublishingJobDbContext,
@@ -60,36 +61,36 @@ namespace DbBuilder
         {
             var nuke = !args.Contains("nonuke");
 
-            _logger.WriteStart();
+            _logger.LogInformation("Start.");
 
-            _logger.WriteWorkFlowDb();
+            _logger.LogInformation("Workflow...");
             await ProvisionWorkflow(nuke);
 
-            _logger.WriteContentDb();
+            _logger.LogInformation("Content...");
             await ProvisionContent(nuke);
 
-            _logger.WriteJobDb();
+            _logger.LogInformation("Job...");
             await ProvisionEksPublishingJob(nuke);
 
-            _logger.WriteDataProtectionKeysDb();
+            _logger.LogInformation("DataProtectionKeys...");
             await ProvisionDataProtectionKeys(nuke);
 
-            _logger.WriteStatsDb();
+            _logger.LogInformation("Stats...");
             await ProvisionStats(nuke);
 
-            _logger.WriteDkSourceDb();
+            _logger.LogInformation("DkSource...");
             await ProvisionDkSource(nuke);
 
-            _logger.WriteIksInDb();
+            _logger.LogInformation("IksIn...");
             await ProvisionIksIn(nuke);
 
-            _logger.WriteIksOutDb();
+            _logger.LogInformation("IksOut...");
             await ProvisionIksOut(nuke);
 
-            _logger.WriteIksPublishingJobDb();
+            _logger.LogInformation("IksPublishingJob...");
             await ProvisionIksPublishingJob(nuke);
 
-            _logger.WriteFinished();
+            _logger.LogInformation("Complete.");
         }
 
         private async Task ProvisionWorkflow(bool nuke)

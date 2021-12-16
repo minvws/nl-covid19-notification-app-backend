@@ -96,23 +96,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
             }
             catch (FormatException exception)
             {
-                _logger.WriteInvalidTokenFormat(exception);
+                _logger.LogWarning(exception, "Invalid jwt token, FormatException.");
             }
             catch (InvalidTokenPartsException exception)
             {
-                _logger.WriteInvalidTokenParts(exception);
+                _logger.LogWarning(exception, "Invalid jwt token, InvalidTokenPartsException.");
             }
             catch (TokenExpiredException exception)
             {
-                _logger.WriteTokenExpired(exception);
+                _logger.LogWarning(exception, "Invalid jwt token, TokenExpiredException");
             }
             catch (SignatureVerificationException exception)
             {
-                _logger.WriteTokenSigInvalid(exception);
+                _logger.LogWarning(exception, " Invalid jwt token, SignatureVerificationException.");
             }
             catch (Exception exception)
             {
-                _logger.WriteTokenOtherError(exception);
+                _logger.LogError(exception, "Invalid jwt token, Other error.");
             }
 
             return false;

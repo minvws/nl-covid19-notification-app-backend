@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret
@@ -12,13 +13,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
     public class HttpPostRegisterSecret
     {
         private readonly TekReleaseWorkflowStateCreate _writer;
-        private readonly RegisterSecretLoggingExtensions _logger;
+        private readonly ILogger _logger;
         private readonly IWorkflowTime _workflowTime;
         private readonly IUtcDateTimeProvider _utcDateTimeProvider;
 
         public HttpPostRegisterSecret(
             TekReleaseWorkflowStateCreate writer,
-            RegisterSecretLoggingExtensions logger,
+            ILogger<HttpPostRegisterSecret> logger,
             IWorkflowTime workflowTime,
             IUtcDateTimeProvider utcDateTimeProvider
             )
@@ -31,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
 
         public async Task<IActionResult> ExecuteAsync()
         {
-            _logger.WriteStartSecret();
+            _logger.LogInformation("POST register triggered.");
 
             try
             {
@@ -49,12 +50,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             }
             catch (Exception ex)
             {
-                _logger.WriteFailed(ex);
+                _logger.LogCritical(ex, "Failed to create an enrollment response.");
                 return new OkObjectResult(new EnrollmentResponse { Validity = -1 });
             }
             finally
             {
-                _logger.WriteFinished();
+                _logger.LogDebug("Finished.");
             }
         }
     }

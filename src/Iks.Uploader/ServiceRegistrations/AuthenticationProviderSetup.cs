@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.AspNetCore.Authentication.Certificate;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegistrations
@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
                 .AddCertificate();
             services.AddTransient<IAuthenticationCertificateProvider>(x =>
                 new LocalMachineStoreCertificateProvider(
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));
+                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>()));
         }
     }
 }

@@ -14,8 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
     {
         public static CmsSignerEnhanced CreateCmsSignerEnhanced(ILoggerFactory lf)
         {
-            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(
-                lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
+            var certProviderLogger = lf.CreateLogger<EmbeddedResourceCertificateProvider>();
 
             var cmsCertMock = new Mock<ICertificateChainConfig>();
             cmsCertMock.Setup(x => x.Path).Returns("TestRSA.p12");
@@ -39,8 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
 
         public static IGaContentSigner CreateGASigner(ILoggerFactory lf)
         {
-            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(
-                lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
+            var certProviderLogger = lf.CreateLogger<EmbeddedResourceCertificateProvider>();
 
             var gaCertLoc = new Mock<ICertificateChainConfig>();
             gaCertLoc.Setup(x => x.Path).Returns("TestECDSA.p12");
@@ -58,8 +56,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
 
         public static IGaContentSigner CreateGAv15Signer(ILoggerFactory lf)
         {
-            var certProviderLogger = new EmbeddedCertProviderLoggingExtensions(
-                lf.CreateLogger<EmbeddedCertProviderLoggingExtensions>());
+            var certProviderLogger = lf.CreateLogger<EmbeddedResourceCertificateProvider>();
 
             var gaCertLoc = new Mock<ICertificateChainConfig>();
             gaCertLoc.Setup(x => x.Path).Returns("TestECDSA.p12");
