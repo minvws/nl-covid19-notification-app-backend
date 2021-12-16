@@ -183,13 +183,25 @@ namespace Scenario.Tests
         [InlineData("test")]
         public async Task New_ExposureKeySets_Should_Be_Published(string environment)
         {
-            // Added a delay to run EKsEngine (This can be done manually in dev, or wait for a scheduled task to kick the engine)
-            await Task.Delay(1000 * 60 * 10); // 5 minutes delay
-
             // Arrange
             // Get the current manifest.
             var cdnClient = new CdnClient();
-            var (_, newManifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ManifestEndPoint}");
+            ManifestContent newManifest = null;
+
+            var manifestIsNew = false;
+            var maxRetries = 30;
+            var retriesCount = 0;
+            while (!manifestIsNew && retriesCount < maxRetries)
+            {
+                (_, newManifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ManifestEndPoint}");
+                manifestIsNew = !newManifest.Equals(CurrentManifest);
+
+                if (!manifestIsNew)
+                {
+                    retriesCount++;
+                    await Task.Delay(30 * 1000); // Delay 30 seconds
+                }
+            }
 
             // Manifest should be new
             Assert.False(newManifest.Equals(CurrentManifest));
