@@ -58,14 +58,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
             services.AddTransient<IEksBuilder, EksBuilderV1>(x => new EksBuilderV1(
                 x.GetRequiredService<IEksHeaderInfoConfig>(),
                 SignerConfigStartup.BuildGaSigner(
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
                     x.GetRequiredService<IConfiguration>()),
                 SignerConfigStartup.BuildGaV15Signer(
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
                     x.GetRequiredService<IConfiguration>()),
                 SignerConfigStartup.BuildEvSigner(
                     x.GetRequiredService<IConfiguration>(),
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
                     x.GetRequiredService<IUtcDateTimeProvider>()),
                 x.GetRequiredService<IUtcDateTimeProvider>(),
                 x.GetRequiredService<IEksContentFormatter>(),

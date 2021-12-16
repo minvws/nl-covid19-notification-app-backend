@@ -11,7 +11,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public const int EksBuilderV1 = 3100;
         public const int EksJobContentWriter = 3200;
         public const int ManifestUpdate = 3400;
-        public const int CertLmProvider = 3600;
         public const int IksDownloader = 3700;
         public const int IksUploader = 3800;
     }

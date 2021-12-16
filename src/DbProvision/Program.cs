@@ -50,7 +50,6 @@ namespace DbProvision
 
                     services.GetRequiredService<ContentPublisher>().ExecuteAsync(subArgs).GetAwaiter().GetResult();
                 }
-
             }
         }
 
@@ -78,7 +77,7 @@ namespace DbProvision
             services.AddTransient<ContentInsertDbCommand>();
             services.AddTransient<IContentSigner>(x => SignerConfigStartup.BuildEvSigner(
                   configuration,
-                  new LocalMachineStoreCertificateProviderLoggingExtensions(new NullLogger<LocalMachineStoreCertificateProviderLoggingExtensions>()),
+                  new NullLogger<LocalMachineStoreCertificateProvider>(),
                   new StandardUtcDateTimeProvider()));
 
             services.PublishContentForV3Startup();

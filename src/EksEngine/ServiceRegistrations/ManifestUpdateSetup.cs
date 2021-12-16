@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
@@ -31,15 +32,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
             services.AddTransient(x =>
                 SignerConfigStartup.BuildEvSigner(
                     x.GetRequiredService<IConfiguration>(),
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
                     x.GetRequiredService<IUtcDateTimeProvider>()));
             services.AddTransient(x =>
                 SignerConfigStartup.BuildGaSigner(
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
                     x.GetRequiredService<IConfiguration>()));
             services.AddTransient(x =>
                 SignerConfigStartup.BuildGaV15Signer(
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
                     x.GetRequiredService<IConfiguration>()));
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
         }

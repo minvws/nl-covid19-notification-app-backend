@@ -3,17 +3,17 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
     public class LocalMachineStoreCertificateProvider : ICertificateProvider, IAuthenticationCertificateProvider
     {
-        private readonly LocalMachineStoreCertificateProviderLoggingExtensions _logger;
+        private readonly ILogger _logger;
 
-        public LocalMachineStoreCertificateProvider(LocalMachineStoreCertificateProviderLoggingExtensions logger)
+        public LocalMachineStoreCertificateProvider(ILogger<LocalMachineStoreCertificateProvider> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -22,7 +22,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
         {
             X509Certificate2 result;
 
-            _logger.WriteFindingCert(thumbprint, rootTrusted);
+            _logger.LogInformation("Finding certificate - Thumbprint: {Thumbprint}, RootTrusted: {RootTrusted}.",
+                thumbprint, rootTrusted);
 
             try
             {
@@ -36,19 +37,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
             }
             catch (Exception e)
             {
-                _logger.WriteCertReadError(e);
+                _logger.LogError(e, "Error reading certificate store.");
                 throw;
             }
 
             if (result == null)
             {
-                _logger.WriteCertNotFound(thumbprint);
+                _logger.LogCritical("Certificate not found: {Thumbprint}.", thumbprint);
                 throw new InvalidOperationException("Certificate not found.");
             }
 
             if (!result.HasPrivateKey)
             {
-                _logger.WriteNoPrivateKey(thumbprint);
+                _logger.LogCritical("Certificate has no private key: {Thumbprint}.", thumbprint);
                 throw new InvalidOperationException("Private key not found on certificate.");
             }
 

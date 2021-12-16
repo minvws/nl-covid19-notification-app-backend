@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.ServiceRegistrations
@@ -16,11 +17,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.ServiceRe
                 .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
                 .AddCertificate();
 
-
-
             services.AddTransient<IAuthenticationCertificateProvider>(
                 x => new LocalMachineStoreCertificateProvider(
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));
+                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>()));
         }
     }
 }
