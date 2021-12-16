@@ -16,7 +16,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             var clientCert = certificateProvider.GetCertificate(config.Thumbprint, config.RootTrusted);
             ClientCertificates.Add(clientCert);
-
         }
     }
 }
