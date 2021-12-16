@@ -126,7 +126,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new FakeEksBuilder(),
                 eksPublishingJobContext,
                 new StandardUtcDateTimeProvider(),
-                new EksEngineLoggingExtensions(_lf.CreateLogger<EksEngineLoggingExtensions>()),
+                _lf.CreateLogger<ExposureKeySetBatchJobMk3>(),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(),
                     new StandardRandomNumberGenerator(), _dateTimeProvider, _fakeEksConfig),
                 new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new NullLogger<SnapshotLoggingExtensions>()),
