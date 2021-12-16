@@ -203,39 +203,7 @@ namespace Scenario.Tests
             var keys = PostTeks?.Keys.Select(p => p.KeyData).ToList();
             var result = rcp?.Where(x => keys.Contains(x)).ToList();
 
-            // Retry the Eks Content Verification a couple of times becaue it could be the EksEngine was already running, publishing test keys from Bastion
-            var retryEksContentVerification = 0;
-            while (PostTeks?.Keys.Length != result?.Count || retryEksContentVerification >= 5)
-            {
-                newManifest = await PollForManifest(environment, cdnClient);
-                (responseMessage, rcp) = await cdnClient.GetCdnEksContent(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ExposureKeySetEndPoint}/{newManifest.ExposureKeySets.Last()}");
-
-                result = rcp?.Where(x => keys.Contains(x)).ToList();
-                retryEksContentVerification++;
-            }
-
             Assert.Equal(PostTeks?.Keys.Length, result?.Count);
-        }
-
-        private async Task<ManifestContent> PollForManifest(string environment, CdnClient cdnClient)
-        {
-            ManifestContent newManifest = null;
-            var manifestIsNew = false;
-            var maxRetries = 30;
-            var retriesCount = 0;
-            while (!manifestIsNew && retriesCount < maxRetries)
-            {
-                (_, newManifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ManifestEndPoint}");
-                manifestIsNew = !newManifest.Equals(CurrentManifest);
-
-                if (!manifestIsNew)
-                {
-                    retriesCount++;
-                    await Task.Delay(30 * 1000); // Delay 30 seconds
-                }
-            }
-
-            return newManifest;
         }
 
         private PostTeksArgs GenerateTeks(string bucketId)
@@ -246,8 +214,9 @@ namespace Scenario.Tests
             {
                 keys.Add(new PostTeksItemArgs
                 {
-                    RollingStartNumber = DateTime.UtcNow.AddDays(-1).Date.ToRollingStartNumber(),
-                    RollingPeriod = 1, // This test expects the keys to be published without prolonged embargo
+                    // This test expects the keys to be published without prolonged embargo
+                    RollingStartNumber = DateTime.UtcNow.Date.AddDays(-1).ToRollingStartNumber(),
+                    RollingPeriod = 1,
                     KeyData = Convert.ToBase64String(_randomNumberGenerator.NextByteArray(UniversalConstants.DailyKeyDataByteCount))
                 });
             }
