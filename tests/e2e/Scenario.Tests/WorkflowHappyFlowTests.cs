@@ -183,45 +183,66 @@ namespace Scenario.Tests
         [InlineData("test")]
         public async Task New_ExposureKeySets_Should_Be_Published(string environment)
         {
-            // Added a delay to run EKsEngine (This can be done manually in dev, or wait for a scheduled task to kick the engine)
-            await Task.Delay(1000 * 60 * 10); // 5 minutes delay
-
             // Arrange
             // Get the current manifest.
             var cdnClient = new CdnClient();
-            var (_, newManifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ManifestEndPoint}");
+            ManifestContent newManifest = null;
+
+            var manifestIsNew = false;
+            var maxRetries = 30;
+            var retriesCount = 0;
+            while (!manifestIsNew && retriesCount < maxRetries)
+            {
+                (_, newManifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ManifestEndPoint}");
+                manifestIsNew = !newManifest.Equals(CurrentManifest);
+
+                if (!manifestIsNew)
+                {
+                    retriesCount++;
+                    await Task.Delay(30 * 1000); // Delay 30 seconds
+                }
+            }
 
             // Manifest should be new
             Assert.False(newManifest.Equals(CurrentManifest));
 
             // Act
-            var (responseMessage, rcp) = await cdnClient.GetCdnEksContent(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ExposureKeySetEndPoint}/{newManifest.ExposureKeySets.Last()}");
+            foreach (var eksKey in newManifest.ExposureKeySets)
+            {
+                var (responseMessage, rcp) = await cdnClient.GetCdnEksContent(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ExposureKeySetEndPoint}/{eksKey}");
 
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
+                // Assert
+                Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
 
-            // 150 are expected (50 posted and stuffed to 150 total)
-            Assert.True(rcp.Count >= 150);
+                // 150 minimum are expected (1 posted and stuffed to 150 total)
+                if (rcp.Count >= 150)
+                {
+                    Assert.True(rcp.Count >= 150);
 
-            var keys = PostTeks?.Keys.Select(p => p.KeyData).ToList();
-            var result = rcp?.Where(x => keys.Contains(x)).ToList();
+                    var keys = PostTeks?.Keys.Select(p => p.KeyData).ToList();
+                    var result = rcp?.Where(x => keys.Contains(x)).ToList();
 
-            Assert.Equal(PostTeks?.Keys.Length, result?.Count);
+                    if(result.Count > 0)
+                    {
+                        Assert.Equal(PostTeks?.Keys.Length, result?.Count);
+                    }
+                }
+            }
         }
 
         private PostTeksArgs GenerateTeks(string bucketId)
         {
-            var keys = new List<PostTeksItemArgs>();
-            // Add 50 keys
-            for (var i = 0; i < 50; i++)
+            var keys = new List<PostTeksItemArgs>
             {
-                keys.Add(new PostTeksItemArgs
+                // Add 1 key
+                new PostTeksItemArgs
                 {
-                    RollingStartNumber = DateTime.UtcNow.Date.ToRollingStartNumber(),
-                    RollingPeriod = 1, // This test expects the keys to be published without prolonged embargo
+                    // This test expects the keys to be published without prolonged embargo
+                    RollingStartNumber = DateTime.UtcNow.Date.AddDays(-1).ToRollingStartNumber(),
+                    RollingPeriod = 1,
                     KeyData = Convert.ToBase64String(_randomNumberGenerator.NextByteArray(UniversalConstants.DailyKeyDataByteCount))
-                });
-            }
+                }
+            };
 
             return new PostTeksArgs { BucketId = bucketId, Keys = keys.ToArray(), Padding = "ZGVmYXVsdA==" };
         }
