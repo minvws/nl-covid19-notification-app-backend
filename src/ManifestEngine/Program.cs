@@ -37,7 +37,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.DbContextRegistration(configuration);
             services.ManifestEngineRegistration();
             services.SettingsRegistration();
-            services.LoggingExtensionsRegistration();
         }
     }
 }

@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
@@ -24,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly IEksContentFormatter _eksContentFormatter;
         private readonly IEksHeaderInfoConfig _config;
-        private readonly EksBuilderV1LoggingExtensions _logger;
+        private readonly ILogger _logger;
 
         public EksBuilderV1(
             IEksHeaderInfoConfig headerInfoConfig,
@@ -33,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
             IContentSigner nlContentSigner,
             IUtcDateTimeProvider dateTimeProvider,
             IEksContentFormatter eksContentFormatter,
-            EksBuilderV1LoggingExtensions logger
+            ILogger<EksBuilderV1> logger
             )
         {
             _gaenContentSigner = gaenContentSigner ?? throw new ArgumentNullException(nameof(gaenContentSigner));
@@ -97,8 +98,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
             var nlSig = _nlContentSigner.GetSignature(contentBytes);
             var gaenSig = gaContentSigner.GetSignature(contentBytes);
 
-            _logger.WriteNlSig(nlSig);
-            _logger.WriteGaenSig(gaenSig);
+            _logger.LogDebug("NL Sig: {NlSig}.", Convert.ToBase64String(nlSig));
+            _logger.LogDebug("GAEN Sig: {GaenSig}.", Convert.ToBase64String(gaenSig));
 
             var signatures = new ExposureKeySetSignaturesContentArgs
             {
@@ -110,7 +111,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
                         Signature = gaenSig,
                         BatchSize = exposureKeySetContentArgs.BatchSize,
                         BatchNum = exposureKeySetContentArgs.BatchNum
-                    } 
+                    }
                 }
             };
 

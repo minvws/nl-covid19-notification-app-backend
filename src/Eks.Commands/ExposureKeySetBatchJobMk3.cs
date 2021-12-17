@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -32,7 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private readonly IEksBuilder _setBuilder;
         private readonly IEksStuffingGeneratorMk2 _eksStuffingGenerator;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
-        private readonly EksEngineLoggingExtensions _logger;
+        private readonly ILogger _logger;
         private readonly ISnapshotEksInput _snapshotter;
         private readonly MarkDiagnosisKeysAsUsedLocally _markWorkFlowTeksAsUsed;
 
@@ -50,7 +51,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private readonly Stopwatch _buildEksStopwatch = new Stopwatch();
         private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
 
-        public ExposureKeySetBatchJobMk3(IEksConfig eksConfig, IEksBuilder builder, EksPublishingJobDbContext eksPublishingJobDbContext, IUtcDateTimeProvider dateTimeProvider, EksEngineLoggingExtensions logger, IEksStuffingGeneratorMk2 eksStuffingGenerator, ISnapshotEksInput snapshotter, MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed, IEksJobContentWriter contentWriter, IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys)
+        public ExposureKeySetBatchJobMk3(
+            IEksConfig eksConfig,
+            IEksBuilder builder,
+            EksPublishingJobDbContext eksPublishingJobDbContext,
+            IUtcDateTimeProvider dateTimeProvider,
+            ILogger<ExposureKeySetBatchJobMk3> logger,
+            IEksStuffingGeneratorMk2 eksStuffingGenerator,
+            ISnapshotEksInput snapshotter,
+            MarkDiagnosisKeysAsUsedLocally markDiagnosisKeysAsUsed,
+            IEksJobContentWriter contentWriter,
+            IWriteStuffingToDiagnosisKeys writeStuffingToDiagnosisKeys)
         {
             _eksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
             _setBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
@@ -78,8 +89,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            _logger.WriteStart(_jobName);
-            
+            _logger.LogInformation("Started - JobName: {JobName}.", _jobName);
+
             _eksEngineResult.Started = _dateTimeProvider.Snapshot; //Align with the logged job name.
 
             await ClearJobTablesAsync();
@@ -101,10 +112,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _eksEngineResult.TotalSeconds = stopwatch.Elapsed.TotalSeconds;
             _eksEngineResult.EksInfo = _eksResults.ToArray();
 
-            _logger.WriteReconciliationMatchUsable(_eksEngineResult.ReconcileOutputCount);
-            _logger.WriteReconciliationMatchCount(_eksEngineResult.ReconcileEksSumCount);
+            _logger.LogInformation(
+                "Reconciliation - Teks in EKSs matches usable input and stuffing - Delta: {ReconcileOutputCount}.",
+                _eksEngineResult.ReconcileOutputCount);
 
-            _logger.WriteFinished(_jobName);
+            _logger.LogInformation(
+                "Reconciliation - Teks in EKSs matches output count - Delta: {ReconcileEksSumCount}.",
+                _eksEngineResult.ReconcileEksSumCount);
+
+            _logger.LogInformation("{JobName} complete.", _jobName);
 
             return _eksEngineResult;
         }
@@ -116,7 +132,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private async Task ClearJobTablesAsync()
         {
-            _logger.WriteCleartables();
+            _logger.LogDebug("Clear job tables.");
 
             await _eksPublishingJobDbContext.TruncateAsync<EksCreateJobInputEntity>();
             await _eksPublishingJobDbContext.TruncateAsync<EksCreateJobOutputEntity>();
@@ -126,7 +142,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         {
             if (_eksEngineResult.InputCount == 0)
             {
-                _logger.WriteNoStuffingNoTeks();
+                _logger.LogInformation("No stuffing required - No publishable TEKs.");
                 return;
             }
 
@@ -135,33 +151,35 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             var stuffingCount = tekCount < _eksConfig.TekCountMin ? _eksConfig.TekCountMin - tekCount : 0;
             if (stuffingCount == 0)
             {
-                _logger.WriteNoStuffingMinimumOk();
+                _logger.LogInformation("No stuffing required - Minimum TEK count OK.");
                 return;
             }
 
             _eksEngineResult.StuffingCount = stuffingCount;
 
             var stuffing = _eksStuffingGenerator.Execute(stuffingCount);
-            _logger.WriteStuffingRequired(stuffing.Length);
+            _logger.LogInformation("Stuffing required - Count: {StuffingCount}.", stuffing.Length);
 
             await _eksPublishingJobDbContext.BulkInsertAsync(stuffing);
-            _logger.WriteStuffingAdded();
+            _logger.LogInformation("Stuffing added.");
         }
 
         private async Task BuildOutputAsync()
         {
-            _logger.WriteBuildEkses();
+            _logger.LogDebug("Build EKSs.");
             _buildEksStopwatch.Start();
 
             var inputIndex = 0;
             var page = GetInputPage(inputIndex, _eksConfig.PageSize);
-            _logger.WriteReadTeks(page.Length);
+            _logger.LogDebug("Read TEKs - Count: {TeksReadCount}.", page.Length);
 
             while (page.Length > 0)
             {
                 if (_output.Count + page.Length >= _eksConfig.TekCountMax)
                 {
-                    _logger.WritePageFillsToCapacity(_eksConfig.TekCountMax);
+                    _logger.LogDebug("This page fills the EKS to capacity - Capacity: {Capacity}.",
+                        _eksConfig.TekCountMax);
+
                     var remainingCapacity = _eksConfig.TekCountMax - _output.Count;
                     AddToOutput(page.Take(remainingCapacity).ToArray()); //Fill to max
                     await WriteNewEksToOutputAsync();
@@ -174,12 +192,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
                 inputIndex += _eksConfig.PageSize; //Move input index
                 page = GetInputPage(inputIndex, _eksConfig.PageSize); //Read next page.
-                _logger.WriteReadTeks(page.Length);
+                _logger.LogDebug("Read TEKs - Count: {TeksReadCount}.", page.Length);
             }
 
             if (_output.Count > 0)
             {
-                _logger.WriteRemainingTeks(_output.Count);
+                _logger.LogDebug("Write remaining TEKs - Count: {TeksRemainingCount}.", _output.Count);
                 await WriteNewEksToOutputAsync();
             }
         }
@@ -187,7 +205,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private void AddToOutput(EksCreateJobInputEntity[] page)
         {
             _output.AddRange(page); //Lots of memory
-            _logger.WriteAddTeksToOutput(page.Length, _output.Count);
+            _logger.LogDebug("Add TEKs to output - Count: {TeksAddedCount}, Total: {OutputCount}.",
+                page.Length, _output.Count);
         }
 
         private static TemporaryExposureKeyArgs Map(EksCreateJobInputEntity c)
@@ -204,7 +223,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private async Task WriteNewEksToOutputAsync()
         {
-            _logger.WriteBuildEntry();
+            _logger.LogDebug("Build EKS.");
 
             var args = _output.Select(Map).ToArray();
 
@@ -221,7 +240,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 GaenVersion = GaenVersion.v12
             };
 
-            _logger.WriteWritingCurrentEks(eksCreateJobOutputEntityV12.CreatingJobQualifier);
+            _logger.LogInformation("Write EKS - Id: {CreatingJobQualifier}.",
+                eksCreateJobOutputEntityV12.CreatingJobQualifier);
 
             var eksCreateJobOutputEntityV15 = new EksCreateJobOutputEntity
             {
@@ -232,14 +252,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 GaenVersion = GaenVersion.v15
             };
 
-            _logger.WriteWritingCurrentEks(eksCreateJobOutputEntityV12.CreatingJobQualifier);
+            _logger.LogInformation("Write EKS - Id: {CreatingJobQualifier}.",
+                eksCreateJobOutputEntityV15.CreatingJobQualifier);
 
             await using var tx = _eksPublishingJobDbContext.BeginTransaction();
             await _eksPublishingJobDbContext.AddAsync(eksCreateJobOutputEntityV12);
             await _eksPublishingJobDbContext.AddAsync(eksCreateJobOutputEntityV15);
             _eksPublishingJobDbContext.SaveAndCommit();
 
-            _logger.WriteMarkTekAsUsed();
+            _logger.LogInformation("Mark TEKs as used.");
 
             foreach (var i in _output)
             {
@@ -261,7 +282,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private EksCreateJobInputEntity[] GetInputPage(int skip, int take)
         {
-            _logger.WriteStartReadPage(skip, take);
+            _logger.LogDebug("Read page - Skip {Skip}, Take {Take}.", skip, take);
 
             var unFilteredResult = _eksPublishingJobDbContext.EksInput
                 .AsNoTracking()
@@ -271,21 +292,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 .Take(take)
                 .ToArray();
 
-            _logger.WriteFinishedReadPage(unFilteredResult.Length);
+            _logger.LogDebug("Read page - Count: {EksReadCount}.", unFilteredResult.Length);
 
             return unFilteredResult;
         }
 
         private async Task CommitResultsAsync()
         {
-            _logger.WriteCommitPublish();
+            _logger.LogInformation("Commit results - publish EKSs.");
 
             await _contentWriter.ExecuteAsync();
 
-            _logger.WriteCommitMarkTeks();
+            _logger.LogInformation("Commit results - Mark TEKs as Published.");
             var result = await _markWorkFlowTeksAsUsed.ExecuteAsync();
-            _logger.WriteTotalMarked(result.Marked);
-
+            _logger.LogInformation("Marked as published - Total: {TotalMarked}.", result.Marked);
 
             //Write stuffing to DKs
             await _writeStuffingToDiagnosisKeys.ExecuteAsync();

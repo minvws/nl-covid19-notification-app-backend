@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -20,9 +21,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private readonly ContentDbContext _contentDbContext;
         private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
         private readonly IPublishingIdService _publishingIdService;
-        private readonly EksJobContentWriterLoggingExtensions _logger;
+        private readonly ILogger _logger;
 
-        public EksJobContentWriter(ContentDbContext contentDbContext, EksPublishingJobDbContext eksPublishingJobDbContext, IPublishingIdService publishingIdService, EksJobContentWriterLoggingExtensions logger)
+        public EksJobContentWriter(
+            ContentDbContext contentDbContext,
+            EksPublishingJobDbContext eksPublishingJobDbContext,
+            IPublishingIdService publishingIdService,
+            ILogger<EksJobContentWriter> logger)
         {
             _contentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _eksPublishingJobDbContext = eksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContext));
@@ -63,8 +68,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     _contentDbContext.SaveAndCommit();
                 }
 
-                _logger.WritePublished(GaenVersion.v12, moveV12.Length);
-                _logger.WritePublished(GaenVersion.v15, moveV15.Length);
+                _logger.LogInformation(
+                    "Published Gaen {GaenVersion} - EKSs - Count: {EksPublishedCount}.",
+                    GaenVersion.v12, moveV12.Length);
+                _logger.LogInformation(
+                    "Published Gaen {GaenVersion} - EKSs - Count: {EksPublishedCount}.",
+                    GaenVersion.v15, moveV15.Length);
             }
         }
     }
