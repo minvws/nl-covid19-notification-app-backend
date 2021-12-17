@@ -207,18 +207,27 @@ namespace Scenario.Tests
             Assert.False(newManifest.Equals(CurrentManifest));
 
             // Act
-            var (responseMessage, rcp) = await cdnClient.GetCdnEksContent(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ExposureKeySetEndPoint}/{newManifest.ExposureKeySets.Last()}");
+            foreach (var eksKey in newManifest.ExposureKeySets)
+            {
+                var (responseMessage, rcp) = await cdnClient.GetCdnEksContent(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ExposureKeySetEndPoint}/{eksKey}");
 
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
+                // Assert
+                Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
 
-            // 150 are expected (50 posted and stuffed to 150 total)
-            Assert.True(rcp.Count >= 150);
+                // 150 are expected (50 posted and stuffed to 150 total)
+                if (rcp.Count == 150)
+                {
+                    Assert.True(rcp.Count >= 150);
 
-            var keys = PostTeks?.Keys.Select(p => p.KeyData).ToList();
-            var result = rcp?.Where(x => keys.Contains(x)).ToList();
+                    var keys = PostTeks?.Keys.Select(p => p.KeyData).ToList();
+                    var result = rcp?.Where(x => keys.Contains(x)).ToList();
 
-            Assert.Equal(PostTeks?.Keys.Length, result?.Count);
+                    if(result.Count > 0)
+                    {
+                        Assert.Equal(PostTeks?.Keys.Length, result?.Count);
+                    }
+                }
+            }
         }
 
         private PostTeksArgs GenerateTeks(string bucketId)
