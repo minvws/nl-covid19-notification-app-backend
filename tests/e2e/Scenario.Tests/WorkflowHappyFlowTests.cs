@@ -214,8 +214,8 @@ namespace Scenario.Tests
                 // Assert
                 Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
 
-                // 150 are expected (50 posted and stuffed to 150 total)
-                if (rcp.Count == 150)
+                // 150 minimum are expected (1 posted and stuffed to 150 total)
+                if (rcp.Count >= 150)
                 {
                     Assert.True(rcp.Count >= 150);
 
