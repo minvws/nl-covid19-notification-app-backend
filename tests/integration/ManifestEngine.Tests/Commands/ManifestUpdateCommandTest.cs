@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
@@ -43,9 +43,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             _dateTimeProviderMock.Setup(x => x.Snapshot)
                 .Returns(_mockedTime);
 
-            var loggerFactory = new LoggerFactory();
             var jsonSerializer = new StandardJsonSerializer();
-            var loggerMock = loggerFactory.CreateLogger<ManifestUpdateCommand>();
+            var logger = new NullLogger<ManifestUpdateCommand>();
 
             IContentEntityFormatter contentFormatterInjector = new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(nlSignerMock.Object),
@@ -58,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
                 new ManifestV4Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
                 new ManifestV5Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
                 _contentDbContext,
-                loggerMock,
+                logger,
                 _dateTimeProviderMock.Object,
                 jsonSerializer,
                 contentFormatterInjector

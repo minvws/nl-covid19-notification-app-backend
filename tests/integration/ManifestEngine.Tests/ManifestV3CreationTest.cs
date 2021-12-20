@@ -8,7 +8,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
@@ -60,13 +60,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         private ManifestUpdateCommand CompileManifestUpdateCommand()
         {
             var eksConfigMock = new Mock<IEksConfig>();
-            var lf = new LoggerFactory();
             var dateTimeProvider = new StandardUtcDateTimeProvider();
             var jsonSerialiser = new StandardJsonSerializer();
 
             IContentEntityFormatter formatterForV3 = new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(
-                    TestSignerHelpers.CreateCmsSignerEnhanced(lf)),
+                    TestSignerHelpers.CreateCmsSignerEnhanced()),
                     new Sha256HexPublishingIdService(),
                     jsonSerialiser
                         );
@@ -89,7 +88,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
                     eksConfigMock.Object,
                     dateTimeProvider),
                 _contentDbContext,
-                lf.CreateLogger<ManifestUpdateCommand>(),
+                new NullLogger<ManifestUpdateCommand>(),
                 dateTimeProvider,
                 jsonSerialiser,
                 formatterForV3

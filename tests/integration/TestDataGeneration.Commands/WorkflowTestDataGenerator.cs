@@ -5,7 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -16,7 +16,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagnosis
 using NL.Rijksoverheid.ExposureNotification.BackEnd.GenerateTeks.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.RegisterSecret;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
-using Serilog.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Commands
 {
@@ -24,15 +23,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
     {
         private readonly WorkflowDbContext _workflowDbContext;
         private readonly DkSourceDbContext _dkSourceDbContext;
-        private readonly ILoggerFactory _loggerFactory = new SerilogLoggerFactory();
         private readonly IUtcDateTimeProvider _utcDateTimeProvider = new StandardUtcDateTimeProvider();
         private readonly StandardRandomNumberGenerator _rng = new StandardRandomNumberGenerator();
-        private readonly LoggerFactory _lf;
 
         public WorkflowTestDataGenerator(WorkflowDbContext workflowDbContext, DkSourceDbContext dkSourceDbContext)
         {
-            _lf = new LoggerFactory();
-
             _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
             _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
         }
@@ -50,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
             var countriesOutMock = new Mock<IOutboundFixedCountriesOfInterestSetting>();
             countriesOutMock.Setup(x => x.CountriesOfInterest).Returns(new[] { "DE" });
 
-            await new SnapshotWorkflowTeksToDksCommand(_loggerFactory.CreateLogger<SnapshotWorkflowTeksToDksCommand>(),
+            await new SnapshotWorkflowTeksToDksCommand(new NullLogger<SnapshotWorkflowTeksToDksCommand>(),
                 _utcDateTimeProvider,
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowDbContext,
@@ -72,7 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
             var luhnModNConfig = new LuhnModNConfig();
             var luhnModNGenerator = new LuhnModNGenerator(luhnModNConfig);
 
-            var gen = new GenerateTeksCommand(_workflowDbContext, _rng, _utcDateTimeProvider, new TekReleaseWorkflowTime(workflowConfigMock.Object), luhnModNConfig, luhnModNGenerator, _lf.CreateLogger<GenerateTeksCommand>());
+            var gen = new GenerateTeksCommand(_workflowDbContext, _rng, _utcDateTimeProvider, new TekReleaseWorkflowTime(workflowConfigMock.Object), luhnModNConfig, luhnModNGenerator, new NullLogger<GenerateTeksCommand>());
             await gen.ExecuteAsync(new GenerateTeksCommandArgs { WorkflowCount = workflowCount, TekCountPerWorkflow = tekPerWorkflowCount });
 
             if (workflowCount != _workflowDbContext.KeyReleaseWorkflowStates.Count())

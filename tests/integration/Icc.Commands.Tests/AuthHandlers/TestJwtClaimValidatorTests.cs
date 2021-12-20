@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Abstractions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Validators;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -19,10 +20,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
 
         public TestJwtClaimValidatorTests()
         {
-            var logger = new TestLogger<TestJwtClaimValidator>();
             _server = WireMockServer.Start();
             _testJwtClaimValidator =
-                new TestJwtClaimValidator(TestTheIdentityHubServiceCreator.CreateInstance(_server), logger);
+                new TestJwtClaimValidator(TestTheIdentityHubServiceCreator.CreateInstance(_server), new NullLogger<TestJwtClaimValidator>());
         }
 
         [Fact]

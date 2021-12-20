@@ -7,7 +7,7 @@ using System.Data.Common;
 using System.Linq;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Iks;
@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Iks
             dateTimeProvider.Setup(x => x.Snapshot).Returns(currentDate);
             var configurationMock = new Mock<IIksCleaningConfig>();
             configurationMock.Setup(p => p.LifetimeDays).Returns(14);
-            var logger = new Mock<ILogger<RemoveExpiredIksInCommand>>();
+            var logger = new NullLogger<RemoveExpiredIksInCommand>();
 
             // Assemble - add data up to "now"
             var firstDate = DateTime.Parse("2020-12-01T20:00:00Z");
@@ -66,7 +66,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Iks
             // Act
             var command = new RemoveExpiredIksInCommand(
                 _iksInDbContext,
-                logger.Object,
+                logger,
                 dateTimeProvider.Object,
                 configurationMock.Object
             );

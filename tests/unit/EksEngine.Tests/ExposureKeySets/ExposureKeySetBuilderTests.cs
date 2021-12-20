@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using EksEngine.Tests;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -16,6 +15,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1;
 using Xunit;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySets
 {
@@ -39,18 +39,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         public void Build(int keyCount, int seed)
         {
             //Arrange
-            var lf = new LoggerFactory();
-            var eksBuilderV1Logger = lf.CreateLogger<EksBuilderV1>();
             var dtp = new StandardUtcDateTimeProvider();
 
             var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
-                TestSignerHelpers.CreateGASigner(lf),
-                TestSignerHelpers.CreateGAv15Signer(lf),
-                TestSignerHelpers.CreateCmsSignerEnhanced(lf),
+                TestSignerHelpers.CreateGASigner(),
+                TestSignerHelpers.CreateGAv15Signer(),
+                TestSignerHelpers.CreateCmsSignerEnhanced(),
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
-                eksBuilderV1Logger);
+                new NullLogger<EksBuilderV1>());
 
             //Act
             var (result, resultv15) = sut.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
@@ -71,19 +69,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         {
             //Arrange
             var keyCount = 500;
-            var lf = new LoggerFactory();
-            var eksBuilderV1Logger = lf.CreateLogger<EksBuilderV1>();
             var dtp = new StandardUtcDateTimeProvider();
             var dummySigner = new DummyCmsSigner();
 
             var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
-                TestSignerHelpers.CreateGASigner(lf),
-                TestSignerHelpers.CreateGAv15Signer(lf),
+                TestSignerHelpers.CreateGASigner(),
+                TestSignerHelpers.CreateGAv15Signer(),
                 dummySigner,
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
-                eksBuilderV1Logger);
+                new NullLogger<EksBuilderV1>());
 
             //Act
             var (result, resultv15) = sut.BuildAsync(GetRandomKeys(keyCount, 123)).GetAwaiter().GetResult();
