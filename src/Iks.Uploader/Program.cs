@@ -46,7 +46,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
 
             // Shared registrations
             services.SettingsRegistration();
-            services.LoggingExtensionsRegistration();
         }
     }
 }
