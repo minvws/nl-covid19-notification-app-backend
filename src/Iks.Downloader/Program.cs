@@ -43,7 +43,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
 
             // Shared registrations
             services.SettingsRegistration();
-            services.LoggingExtensionsRegistration();
         }
     }
 }

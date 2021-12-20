@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 
             var loggerFactory = new LoggerFactory();
             var jsonSerializer = new StandardJsonSerializer();
-            var loggingExtensionsMock = loggerFactory.CreateLogger<ManifestUpdateCommand>();
+            var loggerMock = loggerFactory.CreateLogger<ManifestUpdateCommand>();
 
             IContentEntityFormatter contentFormatterInjector = new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(nlSignerMock.Object),
@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
                 new ManifestV4Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
                 new ManifestV5Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
                 _contentDbContext,
-                loggingExtensionsMock,
+                loggerMock,
                 _dateTimeProviderMock.Object,
                 jsonSerializer,
                 contentFormatterInjector
