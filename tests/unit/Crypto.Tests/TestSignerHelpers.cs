@@ -2,7 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
@@ -12,10 +12,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
 {
     public static class TestSignerHelpers
     {
-        public static CmsSignerEnhanced CreateCmsSignerEnhanced(ILoggerFactory lf)
+        public static CmsSignerEnhanced CreateCmsSignerEnhanced()
         {
-            var certProviderLogger = lf.CreateLogger<EmbeddedResourceCertificateProvider>();
-
             var cmsCertMock = new Mock<ICertificateChainConfig>();
             cmsCertMock.Setup(x => x.Path).Returns("TestRSA.p12");
             cmsCertMock.Setup(x => x.Password).Returns("Covid-19!"); //Not a secret.
@@ -30,16 +28,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
             thumbprintConfigMock.Setup(x => x.Thumbprint).Returns(It.IsAny<string>());
 
             return new CmsSignerEnhanced(
-                new EmbeddedResourceCertificateProvider(cmsCertMock.Object, certProviderLogger),
-                cmsCertChainMock.Object,
-                new StandardUtcDateTimeProvider(),
-                thumbprintConfigMock.Object);
+                new EmbeddedResourceCertificateProvider(
+                    cmsCertMock.Object,
+                    new NullLogger<EmbeddedResourceCertificateProvider>()),
+                    cmsCertChainMock.Object,
+                    new StandardUtcDateTimeProvider(),
+                    thumbprintConfigMock.Object);
         }
 
-        public static IGaContentSigner CreateGASigner(ILoggerFactory lf)
+        public static IGaContentSigner CreateGASigner()
         {
-            var certProviderLogger = lf.CreateLogger<EmbeddedResourceCertificateProvider>();
-
             var gaCertLoc = new Mock<ICertificateChainConfig>();
             gaCertLoc.Setup(x => x.Path).Returns("TestECDSA.p12");
             gaCertLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
@@ -50,14 +48,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
             return new GASigner(
                 new EmbeddedResourceCertificateProvider(
                     gaCertLoc.Object,
-                    certProviderLogger),
+                    new NullLogger<EmbeddedResourceCertificateProvider>()),
                     thumbprintMock.Object);
         }
 
-        public static IGaContentSigner CreateGAv15Signer(ILoggerFactory lf)
+        public static IGaContentSigner CreateGAv15Signer()
         {
-            var certProviderLogger = lf.CreateLogger<EmbeddedResourceCertificateProvider>();
-
             var gaCertLoc = new Mock<ICertificateChainConfig>();
             gaCertLoc.Setup(x => x.Path).Returns("TestECDSA.p12");
             gaCertLoc.Setup(x => x.Password).Returns(string.Empty); //Not a secret.
@@ -68,7 +64,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
             return new GAv15Signer(
                 new EmbeddedResourceCertificateProvider(
                     gaCertLoc.Object,
-                    certProviderLogger),
+                    new NullLogger<EmbeddedResourceCertificateProvider>()),
                     thumbprintMock.Object);
         }
     }

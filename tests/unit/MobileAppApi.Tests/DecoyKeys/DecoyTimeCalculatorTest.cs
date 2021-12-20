@@ -2,7 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.DecoyKeys;
 using Xunit;
@@ -14,14 +14,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Decoy
         [Fact]
         public void GetDelay_NoNegativeValues()
         {
-            //Arrange
-            var loggerFactory = new LoggerFactory();
+            //Arrange            
             var algorithmMock = new Mock<IWelfordsAlgorithm>();
             algorithmMock.Setup(x => x.GetNormalSample())
                 .Returns(-1000);
 
             var sut = new DecoyTimeCalculator(
-                loggerFactory.CreateLogger<DecoyTimeCalculator>(),
+                new NullLogger<DecoyTimeCalculator>(),
                 algorithmMock.Object);
 
             //Act

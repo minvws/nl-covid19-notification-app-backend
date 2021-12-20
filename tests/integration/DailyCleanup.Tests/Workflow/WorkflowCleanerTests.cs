@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Workflow;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -20,6 +20,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Workf
     public abstract class WorkflowCleanerTests
     {
         private readonly WorkflowDbContext _workflowDbContext;
+        private readonly RemoveExpiredWorkflowsCommand _command;
+        private readonly FakeConfig _fakeConfig;
+        private readonly FakeDtp _dtp;
+
+        private int _workflowCount;
 
         protected WorkflowCleanerTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions)
         {
@@ -29,16 +34,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Workf
             _fakeConfig = new FakeConfig();
             _dtp = new FakeDtp();
 
-            var lf = new LoggerFactory();
-            var expWorkflowLogger = lf.CreateLogger<RemoveExpiredWorkflowsCommand>();
-            _command = new RemoveExpiredWorkflowsCommand(_workflowDbContext, expWorkflowLogger, _dtp, _fakeConfig);
+            _command = new RemoveExpiredWorkflowsCommand(
+                _workflowDbContext,
+                new NullLogger<RemoveExpiredWorkflowsCommand>(),
+                _dtp,
+                _fakeConfig);
         }
-
-        private readonly RemoveExpiredWorkflowsCommand _command;
-        private readonly FakeConfig _fakeConfig;
-        private readonly FakeDtp _dtp;
-
-        private int _workflowCount;
 
         private class FakeConfig : IWorkflowConfig
         {

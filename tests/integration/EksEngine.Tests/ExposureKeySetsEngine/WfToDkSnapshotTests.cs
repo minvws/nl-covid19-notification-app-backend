@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
@@ -15,7 +15,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramewor
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
@@ -29,13 +28,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         private readonly WorkflowDbContext _workflowContext;
         private readonly DkSourceDbContext _dkSourceContext;
-        private readonly LoggerFactory _lf;
         private readonly Mock<IUtcDateTimeProvider> _dateTimeProvider;
 
         protected WfToDkSnapshotTests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions)
         {
             _dateTimeProvider = new Mock<IUtcDateTimeProvider>();
-            _lf = new LoggerFactory();
 
             _workflowContext = new WorkflowDbContext(workflowContextOptions ?? throw new ArgumentNullException(nameof(workflowContextOptions)));
             _workflowContext.Database.EnsureCreated();
@@ -45,7 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         private SnapshotWorkflowTeksToDksCommand Create()
         {
-            return new SnapshotWorkflowTeksToDksCommand(_lf.CreateLogger<SnapshotWorkflowTeksToDksCommand>(),
+            return new SnapshotWorkflowTeksToDksCommand(new NullLogger<SnapshotWorkflowTeksToDksCommand>(),
                 _dateTimeProvider.Object,
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowContext,

@@ -28,14 +28,12 @@ using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using EfgsReportType = Iks.Protobuf.EfgsReportType;
-using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksInbound
 {
     public class IksPollingBatchJobTests : IDisposable
     {
         private readonly IksInDbContext _iksInDbContext;
-        private readonly LoggerFactory _lf;
         private readonly DateTime _now;
         private readonly string _dateString;
         private readonly byte[] _dummyContent = new byte[] { 0x0, 0x0 };
@@ -59,7 +57,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             _dtpMock = new Mock<IUtcDateTimeProvider>();
             _dtpMock.Setup(x => x.Snapshot).Returns(_now);
 
-            _lf = new LoggerFactory();
             _certProviderMock = new Mock<IAuthenticationCertificateProvider>();
             _thumbprintConfigMock = new Mock<IThumbprintConfig>();
 
@@ -154,7 +151,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 writer.Object,
                 _iksInDbContext,
                 _efgsConfigMock,
-                _lf.CreateLogger<IksPollingBatchJob>());
+                new NullLogger<IksPollingBatchJob>());
 
             // Act
             sut.Run();
@@ -188,7 +185,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 writer.Object,
                 _iksInDbContext,
                 _efgsConfigMock,
-                _lf.CreateLogger<IksPollingBatchJob>());
+                new NullLogger<IksPollingBatchJob>());
 
             // Act
             sut.Run();
@@ -200,7 +197,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
         }
 
         [Fact]
-        public async void SecondBatchAddedAfterFirstDownload_ExecuteAsync_BothDownloaded()
+        public void SecondBatchAddedAfterFirstDownload_ExecuteAsync_BothDownloaded()
         {
             // Arrange
             var downloadedBatches = new List<IksWriteArgs>();
@@ -221,7 +218,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 writer.Object,
                 _iksInDbContext,
                 _efgsConfigMock,
-                _lf.CreateLogger<IksPollingBatchJob>());
+                new NullLogger<IksPollingBatchJob>());
 
             // Act
             sut.Run();
@@ -240,7 +237,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
         }
 
         [Fact]
-        public async void DuplicateBatchesPresent_ExecuteAsync_DuplicatesNotDownloaded()
+        public void DuplicateBatchesPresent_ExecuteAsync_DuplicatesNotDownloaded()
         {
             // Arrange
             var downloadedBatches = new List<IksWriteArgs>();
@@ -286,7 +283,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 writer.Object,
                 _iksInDbContext,
                 _efgsConfigMock,
-                _lf.CreateLogger<IksPollingBatchJob>());
+                new NullLogger<IksPollingBatchJob>());
 
             // Act
             sut.Run();
@@ -299,7 +296,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
         }
 
         [Fact]
-        public async void NewBatchesForNextDayAddedAfterFirstDownload_ExecuteAsync_AllDownloadedInOrder()
+        public void NewBatchesForNextDayAddedAfterFirstDownload_ExecuteAsync_AllDownloadedInOrder()
         {
             // Arrange
             var downloadedBatches = new List<IksWriteArgs>();
@@ -325,7 +322,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 writer.Object,
                 _iksInDbContext,
                 _efgsConfigMock,
-                _lf.CreateLogger<IksPollingBatchJob>());
+                new NullLogger<IksPollingBatchJob>());
 
             // Act
             sut.Run();
@@ -352,7 +349,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
         }
 
         [Fact]
-        public async void EfgsReturns400_ExecuteAsync_ExceptionThrownAndJobStateNotStored()
+        public void EfgsReturns400_ExecuteAsync_ExceptionThrownAndJobStateNotStored()
         {
             //Arrange
             var mockHttpClientHandler = new Mock<HttpClientHandler>();
@@ -401,7 +398,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 _certProviderMock.Object,
                 _thumbprintConfigMock.Object,
                 mockHttpClientFactory.Object,
-                _lf.CreateLogger<HttpGetIksCommand>());
+                new NullLogger<HttpGetIksCommand>());
 
             var sut = new IksPollingBatchJob(
                 _dtpMock.Object,
@@ -409,7 +406,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 writer.Object,
                 _iksInDbContext,
                 _efgsConfigMock,
-                _lf.CreateLogger<IksPollingBatchJob>());
+                new NullLogger<IksPollingBatchJob>());
 
             //Act
             Action releaseThe400 = () => sut.Run();
@@ -472,7 +469,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 _certProviderMock.Object,
                 _thumbprintConfigMock.Object,
                 mockHttpClientFactory.Object,
-                _lf.CreateLogger<HttpGetIksCommand>());
+                new NullLogger<HttpGetIksCommand>());
 
             var sut = new IksPollingBatchJob(
                 _dtpMock.Object,
@@ -480,7 +477,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 writer.Object,
                 _iksInDbContext,
                 _efgsConfigMock,
-                _lf.CreateLogger<IksPollingBatchJob>());
+                new NullLogger<IksPollingBatchJob>());
 
             //Act
             sut.Run();
@@ -543,7 +540,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 _certProviderMock.Object,
                 _thumbprintConfigMock.Object,
                 mockHttpClientFactory.Object,
-                _lf.CreateLogger<HttpGetIksCommand>());
+                new NullLogger<HttpGetIksCommand>());
 
             var sut = new IksPollingBatchJob(
                 _dtpMock.Object,
@@ -551,7 +548,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
                 writer.Object,
                 _iksInDbContext,
                 _efgsConfigMock,
-                _lf.CreateLogger<IksPollingBatchJob>());
+                new NullLogger<IksPollingBatchJob>());
 
             //Act
             sut.Run();

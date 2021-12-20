@@ -4,7 +4,6 @@
 
 using System;
 using System.Text;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
 using Xunit;
 
@@ -22,9 +21,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
         [InlineData(10000)]
         public void Build(int length)
         {
-            var lf = new LoggerFactory();
             var content = Encoding.UTF8.GetBytes(CreateString(length));
-            var sig = TestSignerHelpers.CreateCmsSignerEnhanced(lf).GetSignature(content);
+            var sig = TestSignerHelpers.CreateCmsSignerEnhanced().GetSignature(content);
             Assert.True((sig?.Length ?? 0) != 0);
         }
 

@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
@@ -45,8 +44,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 
         private readonly IUtcDateTimeProvider _dtp = new StandardUtcDateTimeProvider();
 
-        private readonly LoggerFactory _lf;
-
         private readonly SnapshotWorkflowTeksToDksCommand _snapshot;
         private readonly ExposureKeySetBatchJobMk3 _eksJob;
         private readonly ManifestUpdateCommand _manifestJob;
@@ -54,8 +51,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 
         protected EksEngineTests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions, DbContextOptions<EksPublishingJobDbContext> eksPublishingJobDbContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _lf = new LoggerFactory();
-
             _workflowContext = new WorkflowDbContext(workflowContextOptions ?? throw new ArgumentNullException(nameof(workflowContextOptions)));
             _workflowContext.Database.EnsureCreated();
             _dkSourceContext = new DkSourceDbContext(dkSourceContextOptions ?? throw new ArgumentNullException(nameof(dkSourceContextOptions)));
@@ -89,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             nlSigner.Setup(x => x.GetSignature(new byte[0])).Returns(new byte[] { 2 });
 
             _snapshot = new SnapshotWorkflowTeksToDksCommand(
-                _lf.CreateLogger<SnapshotWorkflowTeksToDksCommand>(),
+                new NullLogger<SnapshotWorkflowTeksToDksCommand>(),
                 _dtp,
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowContext,
@@ -103,11 +98,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             _eksJob = new ExposureKeySetBatchJobMk3(
                 eksConfig.Object,
                 new EksBuilderV1(eksHeaderConfig.Object, gaSigner.Object, gaV15Signer.Object, nlSigner.Object, _dtp, new GeneratedProtobufEksContentFormatter(),
-                    _lf.CreateLogger<EksBuilderV1>()
+                    new NullLogger<EksBuilderV1>()
                     ),
                 _eksPublishingJobContext,
                 _dtp,
-                _lf.CreateLogger<ExposureKeySetBatchJobMk3>(),
+                new NullLogger<ExposureKeySetBatchJobMk3>(),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(), _rng, _dtp, eksConfig.Object),
                 new SnapshotDiagnosisKeys(new NullLogger<SnapshotDiagnosisKeys>(), _dkSourceContext, _eksPublishingJobContext, new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
                         {
@@ -119,8 +114,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                             new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
                         }
                     })),
-                new MarkDiagnosisKeysAsUsedLocally(_dkSourceContext, eksConfig.Object, _eksPublishingJobContext, _lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
-                new EksJobContentWriter(_contentDbContext, _eksPublishingJobContext, new Sha256HexPublishingIdService(), _lf.CreateLogger<EksJobContentWriter>()),
+                new MarkDiagnosisKeysAsUsedLocally(_dkSourceContext, eksConfig.Object, _eksPublishingJobContext, new NullLogger<MarkDiagnosisKeysAsUsedLocally>()),
+                new EksJobContentWriter(_contentDbContext, _eksPublishingJobContext, new Sha256HexPublishingIdService(), new NullLogger<EksJobContentWriter>()),
                 new WriteStuffingToDiagnosisKeys(_dkSourceContext, _eksPublishingJobContext,
                 new IDiagnosticKeyProcessor[] {
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(countriesOut.Object),
@@ -134,7 +129,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 new ManifestV4Builder(_contentDbContext, eksConfig.Object, _dtp),
                 new ManifestV5Builder(_contentDbContext, eksConfig.Object, _dtp),
                 _contentDbContext,
-                _lf.CreateLogger<ManifestUpdateCommand>(),
+                new NullLogger<ManifestUpdateCommand>(),
                 _dtp,
                 jsonSerializer,
                 new StandardContentEntityFormatter(new ZippedSignedContentFormatter(nlSigner.Object), new Sha256HexPublishingIdService(), jsonSerializer)
@@ -180,7 +175,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             var luhnModNConfig = new LuhnModNConfig();
             var luhnModNGenerator = new LuhnModNGenerator(luhnModNConfig);
 
-            await new GenerateTeksCommand(_workflowContext, _rng, _dtp, new TekReleaseWorkflowTime(workflowConfig.Object), luhnModNConfig, luhnModNGenerator, _lf.CreateLogger<GenerateTeksCommand>()).ExecuteAsync(new GenerateTeksCommandArgs { TekCountPerWorkflow = 1, WorkflowCount = 1 });
+            await new GenerateTeksCommand(_workflowContext, _rng, _dtp, new TekReleaseWorkflowTime(workflowConfig.Object), luhnModNConfig, luhnModNGenerator, new NullLogger<GenerateTeksCommand>()).ExecuteAsync(new GenerateTeksCommandArgs { TekCountPerWorkflow = 1, WorkflowCount = 1 });
 
             Assert.Equal(1, _workflowContext.TemporaryExposureKeys.Count());
             Assert.Equal(0, _dkSourceContext.DiagnosisKeys.Count());

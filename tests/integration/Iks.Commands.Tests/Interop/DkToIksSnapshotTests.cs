@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
@@ -23,7 +23,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
     {
         private readonly DkSourceDbContext _dkSourceDbContext;
         private readonly IksPublishingJobDbContext _iksPublishingDbContext;
-        private readonly LoggerFactory _lf = new LoggerFactory();
         private readonly Mock<IUtcDateTimeProvider> _dateTimeProvider = new Mock<IUtcDateTimeProvider>();
         private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _countriesConfigMock = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
 
@@ -40,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             _countriesConfigMock.Setup(x => x.CountriesOfInterest).Returns(new[] { "DE", "BG" });
 
 
-            return new IksInputSnapshotCommand(_lf.CreateLogger<IksInputSnapshotCommand>(),
+            return new IksInputSnapshotCommand(new NullLogger<IksInputSnapshotCommand>(),
                 _dkSourceDbContext,
                 _iksPublishingDbContext,
                 _countriesConfigMock.Object
