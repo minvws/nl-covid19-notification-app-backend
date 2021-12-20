@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
@@ -45,7 +44,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         private readonly DbContextOptions<EksPublishingJobDbContext> _publishingContextOptions;
         private readonly ContentDbContext _contentContext;
 
-        private readonly LoggerFactory _lf;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
 
         private ExposureKeySetBatchJobMk3 _engine;
@@ -66,9 +64,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             _dateTimeProvider = new StandardUtcDateTimeProvider();
             _fakeEksConfig = new FakeEksConfig { LifetimeDays = 14, PageSize = 1000, TekCountMax = 10, TekCountMin = 5 };
-            _lf = new LoggerFactory();
 
-            _snapshot = new SnapshotWorkflowTeksToDksCommand(_lf.CreateLogger<SnapshotWorkflowTeksToDksCommand>(),
+            _snapshot = new SnapshotWorkflowTeksToDksCommand(new NullLogger<SnapshotWorkflowTeksToDksCommand>(),
                 new StandardUtcDateTimeProvider(),
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowContext,
@@ -126,7 +123,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new FakeEksBuilder(),
                 eksPublishingJobContext,
                 new StandardUtcDateTimeProvider(),
-                _lf.CreateLogger<ExposureKeySetBatchJobMk3>(),
+                new NullLogger<ExposureKeySetBatchJobMk3>(),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(),
                     new StandardRandomNumberGenerator(), _dateTimeProvider, _fakeEksConfig),
                 new SnapshotDiagnosisKeys(new NullLogger<SnapshotDiagnosisKeys>(),
@@ -142,10 +139,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                         }
                     })),
                 new MarkDiagnosisKeysAsUsedLocally(_dkSourceContext, _fakeEksConfig,
-                    eksPublishingJobContext, _lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
+                    eksPublishingJobContext, new NullLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_contentContext, eksPublishingJobContext,
                     new Sha256HexPublishingIdService(),
-                    _lf.CreateLogger<EksJobContentWriter>()),
+                    new NullLogger<EksJobContentWriter>()),
                 new WriteStuffingToDiagnosisKeys(_dkSourceContext,
                     eksPublishingJobContext,
                     new IDiagnosticKeyProcessor[]

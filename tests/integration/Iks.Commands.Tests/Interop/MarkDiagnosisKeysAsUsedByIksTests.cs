@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -23,7 +23,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
     {
         private readonly DkSourceDbContext _dkSourceDbContext;
         private readonly IksPublishingJobDbContext _iksPublishingDbContext;
-        private readonly LoggerFactory _lf = new LoggerFactory();
         private readonly Mock<IUtcDateTimeProvider> _utcDateTimeProviderMock = new Mock<IUtcDateTimeProvider>();
         private readonly Mock<IIksConfig> _iksConfigMock = new Mock<IIksConfig>();
 
@@ -42,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
                 _dkSourceDbContext,
                 _iksConfigMock.Object,
                 _iksPublishingDbContext,
-                _lf.CreateLogger<MarkDiagnosisKeysAsUsedByIks>()
+                new NullLogger<MarkDiagnosisKeysAsUsedByIks>()
             );
         }
 

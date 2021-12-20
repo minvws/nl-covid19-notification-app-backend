@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Iks.Protobuf;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
@@ -23,14 +24,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private readonly IBatchTagProvider _batchTagProvider;
         private readonly List<IksSendResult> _results = new List<IksSendResult>();
         private readonly HttpPostIksResult _lastResult;
-        private readonly IksUploaderLoggingExtensions _logger;
+        private readonly ILogger _logger;
 
         public IksSendBatchCommand(
             IksUploadService iksUploadService,
             IksOutDbContext iksOutboundDbContext,
             IIksSigner signer,
             IBatchTagProvider batchTagProvider,
-            IksUploaderLoggingExtensions logger)
+            ILogger<IksSendBatchCommand> logger)
         {
             _iksUploadService = iksUploadService ?? throw new ArgumentNullException(nameof(iksUploadService));
             _iksOutboundDbContext = iksOutboundDbContext ?? throw new ArgumentNullException(nameof(iksOutboundDbContext));
@@ -68,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             if (batch == null)
             {
-                _logger.WriteBatchNotExistInEntity(item);
+                _logger.LogError("Batch does not exist in entity with Id: {EntityId}", item.Id);
                 return null;
             }
 
@@ -101,7 +102,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             if (!isNew && httpPostIksResult.Exception)
             {
                 item.RetryCount++;
-                _logger.WriteEntityIdInRetry(item);
+                _logger.LogError(
+                    "Batch does not exist in entity with Id: {EntityId}, retry count: {EntityRetryCount}",
+                    item.Id, item.RetryCount);
             }
 
             item.Sent = httpPostIksResult.HttpResponseCode == HttpStatusCode.Created || httpPostIksResult.HttpResponseCode == HttpStatusCode.OK;
@@ -134,42 +137,46 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                     case HttpStatusCode.Created:
                         item.CanRetry = false; // No retry needed when sent successfully
                         item.ProcessState = ProcessState.Sent.ToString();
-                       _logger.WriteResponseSuccess();
+                        _logger.LogInformation("EFGS: Success.");
                         break;
                     case HttpStatusCode.MultiStatus:
                         item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
-                        _logger.WriteResponseMultiStatus(result.HttpResponseCode, result.Content);
+                        _logger.LogError(
+                            "Responsecode {HttpResponseCode} EFGS: Invalid request (either errors in the data or an invalid key). Warnings {ResponseContent}",
+                            result.HttpResponseCode?.ToString() ?? "(none)",
+                            result.Content);
                         item.ProcessState = ProcessState.Invalid.ToString();
                         break;
                     case HttpStatusCode.Forbidden:
                         item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
                         item.ProcessState = ProcessState.Invalid.ToString(); // Adjust State to Invalid
-                        _logger.WriteResponseForbidden();
+                        _logger.LogError("EFGS: Invalid/missing certificates.");
                         break;
                     case HttpStatusCode.RequestEntityTooLarge:
                         item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
                         item.ProcessState = ProcessState.Invalid.ToString(); // Adjust State to Invalid
-                        _logger.WriteResponseRequestTooLarge();
+                        _logger.LogError("EFGS: Data already exists (Http: Request Entity too large).");
                         break;
                     case HttpStatusCode.NotAcceptable:
                         item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
                         item.ProcessState = ProcessState.Skipped.ToString(); // Adjust State to Skipped
-                        _logger.WriteResponseNotAcceptable();
+                        _logger.LogError("EFGS:  Data format or content is not valid.");
                         break;
                     case HttpStatusCode.BadRequest:
                         item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
                         item.ProcessState = ProcessState.Failed.ToString(); // Adjust State to Failed
-                        _logger.WriteResponseBadRequest();
+                        _logger.LogError("EFGS: Invalid request (either errors in the data or an invalid signature).");
                         break;
                     case HttpStatusCode.InternalServerError:
                         item.CanRetry = true;
                         item.ProcessState = ProcessState.Failed.ToString(); // Adjust State to Failed 
-                        _logger.WriteResponseInternalServerError();
+                        _logger.LogError("EFGS: Not able to write data. Retry please.");
                         break;
                     default:
                         item.CanRetry = true;
                         item.ProcessState = ProcessState.Failed.ToString(); // Adjust State to Failed
-                        _logger.WriteResponseUnknownError(result.HttpResponseCode);
+                        _logger.LogError("Unknown error: {HttpResponseCode}.",
+                            result.HttpResponseCode?.ToString() ?? "No HttpStatusCode received");
                         break;
                 }
             }

@@ -8,7 +8,6 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
 
@@ -17,12 +16,10 @@ namespace Icc.WebApp.Tests
     public class FakeRestApiClient : IRestApiClient
     {
         private readonly HttpClient _httpClient;
-        private readonly ILogger<FakeRestApiClient> _logger;
 
-        public FakeRestApiClient(HttpClient httpClient, ILogger<FakeRestApiClient> logger)
+        public FakeRestApiClient(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _logger = logger;
         }
 
         public Uri BaseAddress

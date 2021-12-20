@@ -30,7 +30,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
     public abstract class IksSendBatchCommandTests
     {
         private readonly IksOutDbContext _iksOutDbContext;
-        private readonly IksUploaderLoggingExtensions _logger;
 
         private readonly EfgsConfigMock _efgsConfigFake = new EfgsConfigMock();
         private readonly Mock<IAuthenticationCertificateProvider> _certProviderMock;
@@ -43,8 +42,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
         {
             _iksOutDbContext = new IksOutDbContext(iksOutDbContextOptions ?? throw new ArgumentNullException(nameof(iksOutDbContextOptions)));
             _iksOutDbContext.Database.EnsureCreated();
-
-            _logger = new IksUploaderLoggingExtensions(new NullLogger<IksUploaderLoggingExtensions>());
             _certProviderMock = new Mock<IAuthenticationCertificateProvider>();
             _thumbprintConfigMock = new Mock<IThumbprintConfig>();
             _signerMock = new Mock<IIksSigner>();
@@ -239,12 +236,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
                     new HttpClient(handlerMock.Object),
                     _efgsConfigFake,
                     _certProviderMock.Object,
-                    _logger,
+                    new NullLogger<IksUploadService>(),
                     _configuration),
                 _iksOutDbContext,
                 _signerMock.Object,
                 _batchTagProviderMock.Object,
-                _logger
+                new NullLogger<IksSendBatchCommand>()
                 );
         }
     }
