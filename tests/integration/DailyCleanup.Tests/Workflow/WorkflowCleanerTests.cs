@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Workf
             _dtp = new FakeDtp();
 
             var lf = new LoggerFactory();
-            var expWorkflowLogger = new ExpiredWorkflowLoggingExtensions(lf.CreateLogger<ExpiredWorkflowLoggingExtensions>());
+            var expWorkflowLogger = lf.CreateLogger<RemoveExpiredWorkflowsCommand>();
             _command = new RemoveExpiredWorkflowsCommand(_workflowDbContext, expWorkflowLogger, _dtp, _fakeConfig);
         }
 

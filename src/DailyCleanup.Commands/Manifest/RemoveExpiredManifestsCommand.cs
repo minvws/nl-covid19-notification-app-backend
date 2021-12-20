@@ -14,12 +14,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ma
     {
         private readonly RemoveExpiredManifestsReceiver _receiver;
 
-        private readonly List<(ContentTypes, int)> _manifestTypesAndLoggingCodexNumber = new List<(ContentTypes, int)>
+        private readonly List<ContentTypes> _manifestTypes = new List<ContentTypes>
         {
-            ( ContentTypes.ManifestV2, LoggingCodex.RemoveExpiredManifestV2 ),
-            ( ContentTypes.ManifestV3, LoggingCodex.RemoveExpiredManifestV3 ),
-            ( ContentTypes.ManifestV4, LoggingCodex.RemoveExpiredManifestV4 ),
-            ( ContentTypes.ManifestV5, LoggingCodex.RemoveExpiredManifestV5 )
+            ContentTypes.ManifestV2,
+            ContentTypes.ManifestV3,
+            ContentTypes.ManifestV4,
+            ContentTypes.ManifestV5
         };
 
         public RemoveExpiredManifestsCommand(RemoveExpiredManifestsReceiver receiver)
@@ -32,9 +32,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ma
         /// </summary>
         public override async Task<ICommandResult> ExecuteAsync()
         {
-            foreach (var item in _manifestTypesAndLoggingCodexNumber)
+            foreach (var item in _manifestTypes)
             {
-                _ = await _receiver.RemoveManifestsAsync(manifestType: item.Item1, loggingBaseNumber: item.Item2);
+                _ = await _receiver.RemoveManifestsAsync(manifestType: item);
             }
 
             return null;

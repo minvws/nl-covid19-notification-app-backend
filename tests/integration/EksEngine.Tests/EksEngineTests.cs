@@ -103,13 +103,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             _eksJob = new ExposureKeySetBatchJobMk3(
                 eksConfig.Object,
                 new EksBuilderV1(eksHeaderConfig.Object, gaSigner.Object, gaV15Signer.Object, nlSigner.Object, _dtp, new GeneratedProtobufEksContentFormatter(),
-                    new EksBuilderV1LoggingExtensions(_lf.CreateLogger<EksBuilderV1LoggingExtensions>())
+                    _lf.CreateLogger<EksBuilderV1>()
                     ),
                 _eksPublishingJobContext,
                 _dtp,
-                new EksEngineLoggingExtensions(_lf.CreateLogger<EksEngineLoggingExtensions>()),
+                _lf.CreateLogger<ExposureKeySetBatchJobMk3>(),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(), _rng, _dtp, eksConfig.Object),
-                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new NullLogger<SnapshotLoggingExtensions>()), _dkSourceContext, _eksPublishingJobContext, new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
+                new SnapshotDiagnosisKeys(new NullLogger<SnapshotDiagnosisKeys>(), _dkSourceContext, _eksPublishingJobContext, new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
                         {
                             InfectiousPeriodType.Symptomatic,
                             new HashSet<int>() { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
@@ -120,7 +120,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                         }
                     })),
                 new MarkDiagnosisKeysAsUsedLocally(_dkSourceContext, eksConfig.Object, _eksPublishingJobContext, _lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
-                new EksJobContentWriter(_contentDbContext, _eksPublishingJobContext, new Sha256HexPublishingIdService(), new EksJobContentWriterLoggingExtensions(_lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
+                new EksJobContentWriter(_contentDbContext, _eksPublishingJobContext, new Sha256HexPublishingIdService(), _lf.CreateLogger<EksJobContentWriter>()),
                 new WriteStuffingToDiagnosisKeys(_dkSourceContext, _eksPublishingJobContext,
                 new IDiagnosticKeyProcessor[] {
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(countriesOut.Object),
@@ -134,7 +134,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 new ManifestV4Builder(_contentDbContext, eksConfig.Object, _dtp),
                 new ManifestV5Builder(_contentDbContext, eksConfig.Object, _dtp),
                 _contentDbContext,
-                new ManifestUpdateCommandLoggingExtensions(_lf.CreateLogger<ManifestUpdateCommandLoggingExtensions>()),
+                _lf.CreateLogger<ManifestUpdateCommand>(),
                 _dtp,
                 jsonSerializer,
                 new StandardContentEntityFormatter(new ZippedSignedContentFormatter(nlSigner.Object), new Sha256HexPublishingIdService(), jsonSerializer)

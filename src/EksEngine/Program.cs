@@ -41,7 +41,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine
             // Shared registrations
             services.DbContextRegistration(configuration);
             services.SettingsRegistration();
-            services.LoggingExtensionsRegistration();
 
             // Step specific registrations
             services.EksProcessRegistration();

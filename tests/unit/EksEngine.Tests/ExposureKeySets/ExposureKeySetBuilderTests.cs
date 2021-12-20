@@ -40,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         {
             //Arrange
             var lf = new LoggerFactory();
-            var eksBuilderV1Logger = new EksBuilderV1LoggingExtensions(lf.CreateLogger<EksBuilderV1LoggingExtensions>());
+            var eksBuilderV1Logger = lf.CreateLogger<EksBuilderV1>();
             var dtp = new StandardUtcDateTimeProvider();
 
             var sut = new EksBuilderV1(
@@ -72,7 +72,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             //Arrange
             var keyCount = 500;
             var lf = new LoggerFactory();
-            var eksBuilderV1Logger = new EksBuilderV1LoggingExtensions(lf.CreateLogger<EksBuilderV1LoggingExtensions>());
+            var eksBuilderV1Logger = lf.CreateLogger<EksBuilderV1>();
             var dtp = new StandardUtcDateTimeProvider();
             var dummySigner = new DummyCmsSigner();
 

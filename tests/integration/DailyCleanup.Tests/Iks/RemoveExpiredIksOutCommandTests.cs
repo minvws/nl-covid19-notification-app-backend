@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Iks
             dateTimeProvider.Setup(x => x.Snapshot).Returns(currentDate);
             var configurationMock = new Mock<IIksCleaningConfig>();
             configurationMock.Setup(p => p.LifetimeDays).Returns(14);
-            var logger = new Mock<ILogger<RemoveExpiredIksLoggingExtensions>>();
+            var logger = new Mock<ILogger<RemoveExpiredIksOutCommand>>();
 
             // Assemble - add data up to "now"
             var firstDate = DateTime.Parse("2020-12-01T20:00:00Z");
@@ -69,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Iks
             // Act
             var command = new RemoveExpiredIksOutCommand(
                 _iksOutDbContext,
-                new RemoveExpiredIksLoggingExtensions(logger.Object),
+                logger.Object,
                 dateTimeProvider.Object,
                 configurationMock.Object
             );

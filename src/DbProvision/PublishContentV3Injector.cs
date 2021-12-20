@@ -5,6 +5,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -18,8 +19,6 @@ namespace DbProvision
     {
         public static void PublishContentForV3Startup(this IServiceCollection services)
         {
-            services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
-
             services.AddTransient<Func<ContentInsertDbCommand>>(x =>
                 () => new ContentInsertDbCommand(
                     x.GetRequiredService<ContentDbContext>(),
@@ -28,7 +27,7 @@ namespace DbProvision
                     new ZippedSignedContentFormatter(
                         SignerConfigStartup.BuildEvSigner(
                             x.GetRequiredService<IConfiguration>(),
-                            x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                            x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
                             x.GetRequiredService<IUtcDateTimeProvider>())))
             );
         }

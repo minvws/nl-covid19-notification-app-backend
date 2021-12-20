@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -18,9 +19,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ek
         private readonly ContentDbContext _dbContext;
         private readonly IEksConfig _config;
         private readonly IUtcDateTimeProvider _dtp;
-        private readonly ExpiredEksLoggingExtensions _logger;
+        private readonly ILogger _logger;
 
-        public RemoveExpiredEksCommand(ContentDbContext dbContext, IEksConfig config, IUtcDateTimeProvider dtp, ExpiredEksLoggingExtensions logger)
+        public RemoveExpiredEksCommand(ContentDbContext dbContext, IEksConfig config, IUtcDateTimeProvider dtp, ILogger<RemoveExpiredEksCommand> logger)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -32,12 +33,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ek
         {
             var result = new RemoveExpiredEksCommandResult();
 
-            _logger.WriteStart();
+            _logger.LogInformation("Begin removing expired EKS.");
 
             var cutoff = (_dtp.Snapshot - TimeSpan.FromDays(_config.LifetimeDays)).Date;
 
             result.Found = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet);
-            _logger.WriteCurrentEksFound(result.Found);
+            _logger.LogInformation("Current EKS - Count: {CurrentEksFound}.", result.Found);
 
             var zombies = _dbContext.Content
                 .Where(x => x.Type == ContentTypes.ExposureKeySet && x.Release < cutoff)
@@ -45,16 +46,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ek
                 .ToList();
 
             result.Zombies = zombies.Count;
+            _logger.LogInformation("Found expired EKS - Cutoff: {EksCutoff:yyyy-MM-dd}, Count: {TotalEksFound}", cutoff, result.Zombies);
 
-            _logger.WriteTotalEksFound(cutoff, result.Zombies);
             foreach (var i in zombies)
             {
-                _logger.WriteEntryFound(i.PublishingId, i.Release);
+                _logger.LogInformation("Found expired EKS - PublishingId: {EksPublishingId} Release: {EksRelease}", i.PublishingId, i.Release);
             }
 
             if (!_config.CleanupDeletesData)
             {
-                _logger.WriteFinishedNothingRemoved();
+                _logger.LogInformation("Finished EKS cleanup. In safe mode - no deletions.");
                 result.Remaining = result.Found;
                 return result;
             }
@@ -64,14 +65,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ek
 
             result.Remaining = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySet);
 
-            _logger.WriteRemovedAmount(result.GivenMercy, result.Remaining);
+            _logger.LogInformation("Removed expired EKS - Count: {EksCount}, Remaining: {EksRemaining}", result.GivenMercy, result.Remaining);
 
             if (result.Reconciliation != 0)
             {
-                _logger.WriteReconciliationFailed(result.Reconciliation);
+                _logger.LogError("Reconciliation failed - Found-GivenMercy-Remaining: {EksRemaining}.", result.Reconciliation);
             }
 
-            _logger.WriteFinished();
+            _logger.LogInformation("Finished EKS cleanup.");
             return result;
         }
     }

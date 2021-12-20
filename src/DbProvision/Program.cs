@@ -50,7 +50,6 @@ namespace DbProvision
 
                     services.GetRequiredService<ContentPublisher>().ExecuteAsync(subArgs).GetAwaiter().GetResult();
                 }
-
             }
         }
 
@@ -67,8 +66,6 @@ namespace DbProvision
             services.AddDbContext<DataProtectionKeysDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.DataProtectionKeys)));
 
             services.AddSingleton<IConfiguration>(configuration);
-            services.AddSingleton<DbProvisionLoggingExtensions>();
-            services.AddSingleton<PublishContentLoggingExtensions>();
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
@@ -80,7 +77,7 @@ namespace DbProvision
             services.AddTransient<ContentInsertDbCommand>();
             services.AddTransient<IContentSigner>(x => SignerConfigStartup.BuildEvSigner(
                   configuration,
-                  new LocalMachineStoreCertificateProviderLoggingExtensions(new NullLogger<LocalMachineStoreCertificateProviderLoggingExtensions>()),
+                  new NullLogger<LocalMachineStoreCertificateProvider>(),
                   new StandardUtcDateTimeProvider()));
 
             services.PublishContentForV3Startup();

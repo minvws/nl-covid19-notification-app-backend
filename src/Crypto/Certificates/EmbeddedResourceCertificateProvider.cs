@@ -4,15 +4,18 @@
 
 using System;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.Logging;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
     public class EmbeddedResourceCertificateProvider : ICertificateProvider
     {
         private readonly ICertificateChainConfig _config;
-        private readonly EmbeddedCertProviderLoggingExtensions _logger;
+        private readonly ILogger _logger;
 
-        public EmbeddedResourceCertificateProvider(ICertificateChainConfig config, EmbeddedCertProviderLoggingExtensions logger)
+        public EmbeddedResourceCertificateProvider(
+            ICertificateChainConfig config,
+            ILogger<EmbeddedResourceCertificateProvider> logger)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -24,11 +27,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
             using var s = ResourcesHook.GetManifestResourceStream(_config.Path);
             if (s == null)
             {
-                _logger.WriteResourceFail();
+                _logger.LogError("Failed to get manifest resource stream.");
                 throw new InvalidOperationException("Could not find resource.");
             }
 
-            _logger.WriteResourceFound();
+            _logger.LogInformation("Resource found.");
             var bytes = new byte[s.Length];
             s.Read(bytes, 0, bytes.Length);
             return new X509Certificate2(bytes, _config.Password, X509KeyStorageFlags.Exportable);

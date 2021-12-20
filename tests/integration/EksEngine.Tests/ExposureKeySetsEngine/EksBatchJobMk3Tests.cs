@@ -120,9 +120,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new FakeEksBuilder(),
                 eksPublishingJobContext,
                 new StandardUtcDateTimeProvider(),
-                new EksEngineLoggingExtensions(_lf.CreateLogger<EksEngineLoggingExtensions>()),
+                _lf.CreateLogger<ExposureKeySetBatchJobMk3>(),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(), new StandardRandomNumberGenerator(), _dateTimeProvider, _fakeEksConfig),
-                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new NullLogger<SnapshotLoggingExtensions>()), dkSourceContext, eksPublishingJobContext,
+                new SnapshotDiagnosisKeys(new NullLogger<SnapshotDiagnosisKeys>(), dkSourceContext, eksPublishingJobContext,
                     new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
                         {
                             InfectiousPeriodType.Symptomatic,
@@ -135,7 +135,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                     })),
                 new MarkDiagnosisKeysAsUsedLocally(dkSourceContext, _fakeEksConfig, eksPublishingJobContext, _lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_contentDbContext, eksPublishingJobContext, new Sha256HexPublishingIdService(),
-                    new EksJobContentWriterLoggingExtensions(_lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
+                    _lf.CreateLogger<EksJobContentWriter>()),
                 new WriteStuffingToDiagnosisKeys(dkSourceContext, eksPublishingJobContext,
                     new IDiagnosticKeyProcessor[] {
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_outboundCountriesMock.Object),

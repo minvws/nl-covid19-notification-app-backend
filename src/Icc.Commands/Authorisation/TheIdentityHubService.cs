@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
     public class TheIdentityHubService : ITheIdentityHubService
     {
         private readonly TheIdentityHubOptions _options;
-        private readonly ILogger<TheIdentityHubService> _logger;
+        private readonly ILogger _logger;
 
         public TheIdentityHubService(IOptionsMonitor<TheIdentityHubOptions> options,
             ILogger<TheIdentityHubService> logger)
@@ -59,13 +59,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
             var responseString = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {
-                _logger.WriteHttpFail(requestUri, response.StatusCode, responseString);
+                _logger.LogWarning("{RequestUri}: Failed HTTP: {ResponseStatusCode} - {ResponseString}.",
+                    requestUri, response.StatusCode, responseString);
                 return false;
             }
 
             if (string.IsNullOrEmpty(responseString))
             {
-                _logger.WriteEmptyResponseString(requestUri, response.StatusCode, responseString);
+                _logger.LogWarning("{RequestUri}: Failed ResponseString is empty: {ResponseStatusCode} - {ResponseString}.",
+                    requestUri, response.StatusCode, responseString);
                 return false;
             }
 
@@ -73,11 +75,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 
             if (responseObject.ContainsKey("error") && responseObject["error"] != null)
             {
-                _logger.WriteHttpFail(requestUri, response.StatusCode, responseString);
+                _logger.LogWarning("{RequestUri}: Failed HTTP: {ResponseStatusCode} - {ResponseString}.",
+                    requestUri, response.StatusCode, responseString);
                 return false;
             }
 
-            _logger.WriteTokenVerifyResult(responseString);
+            _logger.LogInformation("Positive token verify result {ResponseString}.", responseString);
             return responseObject.ContainsKey("audience") && responseObject["audience"] != null;
         }
 
@@ -111,11 +114,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 
             if (response.IsSuccessStatusCode)
             {
-                _logger.WriteTokenRevokeSuccess();
+                _logger.LogInformation("Access Token successfully revoked.");
                 return true;
             }
 
-            _logger.WriteTokenNotRevoked(response.StatusCode.ToString());
+            _logger.LogWarning("Access Token not revoked, statuscode {ResponseStatusCode}.", response.StatusCode.ToString());
             return false;
         }
 

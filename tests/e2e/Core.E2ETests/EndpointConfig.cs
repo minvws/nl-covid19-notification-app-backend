@@ -14,6 +14,10 @@ namespace Core.E2ETests
         private readonly Dictionary<string, string> _appBaseUrls;
         private readonly Dictionary<string, string> _iccApiBaseUrls;
         private readonly Dictionary<string, string> _iccPortalBaseUrls;
+        private readonly Dictionary<string, string> _cdnBaseUrlsInternal;
+        private readonly Dictionary<string, string> _appBaseUrlsInternal;
+        private readonly Dictionary<string, string> _iccApiBaseUrlsInternal;
+        private readonly Dictionary<string, string> _iccPortalBaseUrlsInternal;
 
         public EndpointConfig(IConfiguration config, string prefix = null) : base(config, prefix)
         {
@@ -46,25 +50,75 @@ namespace Core.E2ETests
                 {"test", "https://test.coronamelder-portal.nl"},
                 {"acc", "https://acceptatie.coronamelder-portal.nl"}
             };
+
+            _cdnBaseUrlsInternal = new Dictionary<string, string>
+            {
+                {"dev", "http://corona-dist-content-DEV.covt.mhscibg.nl"},
+                {"test", "http://corona-dist-content-DEV.covt.mhscibg.nl"},
+                {"acc", "https://acceptatie.coronamelder-dist.nl"},
+                {"prod", "https://productie.coronamelder-dist.nl"}
+            };
+
+            _appBaseUrlsInternal = new Dictionary<string, string>
+            {
+                {"dev", "http://corona-app-mobile-dev.covt.mhscibg.nl"},
+                {"test", "http://corona-app-mobile-dev.covt.mhscibg.nl"},
+                {"acc", "https://acceptatie.coronamelder-api.nl"},
+                {"prod", "https://coronamelder-api.nl"}
+            };
+
+            _iccApiBaseUrlsInternal = new Dictionary<string, string>
+            {
+                {"dev", "http://corona-app-services-dev.covt.mhscibg.nl"},
+                {"test", "http://corona-app-services-dev.covt.mhscibg.nl"},
+                {"acc", "https://acceptatie.coronamelder-portal.nl"},
+            };
+
+            _iccPortalBaseUrlsInternal = new Dictionary<string, string>
+            {
+                {"dev", "https://test.coronamelder-portal.nl"},
+                {"test", "https://test.coronamelder-portal.nl"},
+                {"acc", "https://acceptatie.coronamelder-portal.nl"}
+            };
         }
 
-        public string CdnBaseUrl(string environment)
+        public string CdnBaseUrl(string environment, bool useInternal = false)
         {
+            if (useInternal)
+            {
+                return _cdnBaseUrlsInternal[environment];
+            }
+
             return _cdnBaseUrls[environment];
         }
 
-        public string AppBaseUrl(string environment)
+        public string AppBaseUrl(string environment, bool useInternal = false)
         {
+            if (useInternal)
+            {
+                return _appBaseUrlsInternal[environment];
+            }
+
             return _appBaseUrls[environment];
         }
 
-        public string IccApiBaseUrl(string environment)
+        public string IccApiBaseUrl(string environment, bool useInternal = false)
         {
+            if (useInternal)
+            {
+                return _iccApiBaseUrlsInternal[environment];
+            }
+
             return _iccApiBaseUrls[environment];
         }
 
-        public string IccPortalBaseUrl(string environment)
+        public string IccPortalBaseUrl(string environment, bool useInternal = false)
         {
+            if (useInternal)
+            {
+                return _iccPortalBaseUrlsInternal[environment];
+            }
+
             return _iccPortalBaseUrls[environment];
         }
 

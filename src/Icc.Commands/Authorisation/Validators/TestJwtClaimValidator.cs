@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
     public class TestJwtClaimValidator : IJwtClaimValidator
     {
         private readonly ITheIdentityHubService _theIdentityHubService;
-        private readonly ILogger<TestJwtClaimValidator> _logger;
+        private readonly ILogger _logger;
         const string TestAccessToken = "test_access_token";
 
         public TestJwtClaimValidator(ITheIdentityHubService theIdentityHubService,
@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 
             if (decodedClaims["access_token"] == TestAccessToken)
             {
-                _logger.WriteTestJwtUsed();
+                _logger.LogWarning("Test JWT Used for authorization!.");
                 return true;
             }
 

@@ -13,7 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
     public class HttpGetAccessDeniedCommand
     {
         private readonly IIccPortalConfig _configuration;
-        private readonly ILogger<HttpGetAccessDeniedCommand> _logger;
+        private readonly ILogger _logger;
 
         public HttpGetAccessDeniedCommand(IIccPortalConfig configuration,
             ILogger<HttpGetAccessDeniedCommand> logger)
@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
 
         public IActionResult Execute(HttpContext httpContext)
         {
-            _logger.WriteInsufficientRole();
+            _logger.LogInformation("AccessDenied for login, insufficient role.");
             var redirectUrl = _configuration.FrontendBaseUrl + "/?e=access_denied";
             return new RedirectResult(redirectUrl);
         }

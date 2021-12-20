@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             // If no PubTEK value is found the process should be ended. The PubTEK key does not exist or is already processed/published.
             if (wf == null)
             {
-                _logger.WriteKeyReleaseWorkflowStateNotFound(args.GGDKey);
+                _logger.LogError("KeyReleaseWorkflowState not found - GGDKey: {GGDKey}.", args.GGDKey);
                 return new CommandResult{ HasErrors = true };
             }
 
@@ -72,7 +72,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
 
             if (success)
             {
-                _logger.LogInformation($"GGDKey {wf.GGDKey} authorized.");
+                _logger.LogInformation("GGDKey {GGDKey} authorized.", wf.GGDKey);
             }
 
             return new CommandResult{ HasErrors = false };
@@ -80,7 +80,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
 
         private async Task<bool> PublishTek(TekReleaseWorkflowStateEntity workflowStateEntity)
         {
-            _logger.WriteWritingPublishTek();
+            _logger.LogDebug("Writing.");
 
             var success = await WriteAttempt(workflowStateEntity);
             while (!success)

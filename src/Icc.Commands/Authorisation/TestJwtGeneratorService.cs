@@ -12,23 +12,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
     public class TestJwtGeneratorService
     {
         private readonly IJwtService _jwtService;
-        private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly ILogger<TestJwtGeneratorService> _logger;
 
-        public TestJwtGeneratorService(IJwtService jwtService, IUtcDateTimeProvider dateTimeProvider,
-            ILogger<TestJwtGeneratorService> logger)
+        public TestJwtGeneratorService(IJwtService jwtService, ILogger<TestJwtGeneratorService> logger)
         {
             _jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
-            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-
-            _logger.WriteTestJwtConstructed();
+            _logger.LogInformation("TestJwtGeneratorService Singleton constructed, generating test JWT now....");
             var testJwtData = new Dictionary<string, object> { { "access_token", "test_access_token" }, { "id", "0" } };
 
             var expiry = new StandardUtcDateTimeProvider().Now().AddDays(7).ToUnixTimeU64();
 
-            _logger.WriteGeneratedToken(jwtService.Generate(expiry, testJwtData));
+            var token = _jwtService.Generate(expiry, testJwtData);
+            _logger.LogInformation("{Token}.", token);
         }
     }
 }

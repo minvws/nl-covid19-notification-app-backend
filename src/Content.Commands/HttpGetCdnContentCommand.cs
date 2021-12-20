@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -19,10 +20,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
     {
         private readonly ContentDbContext _dbContext;
         private readonly IPublishingIdService _publishingIdService;
-        private readonly GetCdnContentLoggingExtensions _logger;
+        private readonly ILogger _logger;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
 
-        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, GetCdnContentLoggingExtensions logger, IUtcDateTimeProvider dateTimeProvider)
+        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IUtcDateTimeProvider dateTimeProvider)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _publishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
@@ -42,14 +43,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
             if (!_publishingIdService.Validate(id))
             {
-                _logger.WriteInvalidId(id);
+                _logger.LogError("Invalid content id - {ContentId}.", id);
                 httpContext.Response.StatusCode = 400;
                 httpContext.Response.ContentLength = 0;
             }
-            
+
             if (!httpContext.Request.Headers.TryGetValue("if-none-match", out var etagValue))
             {
-                _logger.WriteHeaderMissing();
+                _logger.LogDebug("Required request header missing - if-none-match.");
                 httpContext.Response.ContentLength = 0;
                 httpContext.Response.StatusCode = 400;
             }
@@ -58,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
             if (content == null)
             {
-                _logger.WriteNotFound(id);
+                _logger.LogError("Content not found - {ContentId}.", id);
                 httpContext.Response.StatusCode = 404;
                 httpContext.Response.ContentLength = 0;
                 return null;
@@ -66,7 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
             if (etagValue == content.PublishingId)
             {
-                _logger.WriteEtagFound(id);
+                _logger.LogWarning("Matching etag found, responding with 304 - {ContentId}.", id);
                 httpContext.Response.StatusCode = 304;
                 httpContext.Response.ContentLength = 0;
                 return null;
