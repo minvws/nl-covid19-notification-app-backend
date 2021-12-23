@@ -58,7 +58,7 @@ stages:
             projectKey: 'MSS.Backend'
             projectName: 'CoronaMelder.Backend'
         
-        # Install .Net 5.0 Version
+        # Install .Net 6.0 Version
         - task: UseDotNet@2
           displayName: 'Install .NET SDK 6.0'
           inputs:

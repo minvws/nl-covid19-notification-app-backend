@@ -63,7 +63,7 @@ stages:
   jobs:  
   - job: Install_SDK_60
     steps:
-      # Install .Net 5.0 Version
+      # Install .Net 6.0 Version
       - task: UseDotNet@2
         displayName: 'Install .NET 6.0 SDK'
         inputs:
