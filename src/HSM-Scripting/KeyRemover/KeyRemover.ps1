@@ -123,7 +123,6 @@ $certName = read-host "`nPlease enter the filename of the certificate with exten
 $Host.UI.RawUI.FlushInputBuffer() #clears any annoying newlines that were accidentally copied in
 
 $CertThumb = (RunWithErrorCheck "$OpenSslLoc x509 -fingerprint -sha1 -noout -in $certName") -replace "SHA1 Fingerprint=|:",""
-$SubjectData = (RunWithErrorCheck "$OpenSslLoc x509 -subject -noout -in $certName") -replace "subject=",""
 
 if($CertThumb.Length -ne 40)
 {
@@ -134,17 +133,13 @@ if($CertThumb.Length -ne 40)
 }
 
 $storeData = RunWithErrorCheck "certutil -store `"My`" `"$CertThumb`""
-
 $containerEntry = $storeData | Select-String -pattern "Key Container" | Select -ExpandProperty Line
 $containerEntry -match "= (?<KeycontainerString>.*)" | Out-Null
 $containerString = $matches["KeycontainerString"]
 
 write-host "`nAbout to remove the following certificate and HSM-keypair:"
-write-host "`nSubject: $SubjectData"
-write-host "`nThumbprint: $CertThumb"
-Write-host "`nKey Container: $containerString"
-write-host "`nCert data:`n"
 $storeData | Foreach-object {write-host $_}
+Write-host "" #empty line for emphasis
 
 Write-Warning "`nIs this all correct? If not: abort this script with Ctrl+C."
 Pause
@@ -161,10 +156,12 @@ if([string]::concat($removeResult) -notmatch "Deleting Certificate") #failed rem
 }
 
 write-host "`nHSM:"
+Pause
 RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool`" Name=$containerString deletekey"
+
+write-host "`nPost-check for key presence"
+Pause
+RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool`" listkeys"
 
 write-host "`nRemoval has been completed."
 Pause
-
-write-host "`nPost-check for key presence"
-RunWithErrorCheck "`"$HSMAdminToolsDir\cngtool`" listkeys"
