@@ -96,7 +96,7 @@ namespace Endpoint.Tests
 
         public async Task<(HttpResponseMessage, List<string>)> GetCdnEksContent(Uri uri, string version, string endpoint)
         {
-            _logger.LogInformation($"Request uri: {uri}");
+            _logger.LogInformation("Request uri: {RequestUri}", uri);
 
             _client = new HttpClient { BaseAddress = uri };
             var responseMessage = await _client.GetAsync($"{version}/{endpoint}");
@@ -106,7 +106,7 @@ namespace Endpoint.Tests
 
         public async Task<(HttpResponseMessage, TemporaryExposureKeyExport)> GetCdnEksExport(Uri uri, string version, string endpoint)
         {
-            _logger.LogInformation($"Request uri: {uri}");
+            _logger.LogInformation("Request uri: {RequestUri}", uri);
 
             _client = new HttpClient { BaseAddress = uri };
             var responseMessage = await _client.GetAsync($"{version}/{endpoint}");

@@ -127,7 +127,7 @@ namespace EfgsTestDataGenerator.Services
             }
             catch (InvalidProtocolBufferException e)
             {
-                _logger.LogError("Error reading IKS protobuf.", e.ToString());
+                _logger.LogError(e, "Error reading IKS protobuf.");
                 return false;
             }
         }
