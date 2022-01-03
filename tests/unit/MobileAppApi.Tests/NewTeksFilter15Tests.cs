@@ -235,7 +235,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
 
             // Day after tomorrow
             deviceTeks.RemoveAt(0);
-            deviceTeks.Add(GenerateTek(year, month, tomorrow + 1, 1));
+            var dayAfterTomorrow = DateTime.UtcNow.Date.AddDays(2);
+            deviceTeks.Add(GenerateTek(dayAfterTomorrow.Year, dayAfterTomorrow.Month, dayAfterTomorrow.Day, 1));
             Assert.Equal(18, deviceTeks.Count);
             //Nothing new to publish
             Assert.Empty(Publish(utcDateToday.AddDays(2).AddMinutes(1)));

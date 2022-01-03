@@ -38,8 +38,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
         {
             try
             {
-                _logger.LogInformation($"BaseUrl: {_httpClient.BaseAddress}");
-                _logger.LogInformation($"RequestUri: {requestUri}");
+                _logger.LogInformation("BaseUrl: {BaseAddress}", _httpClient.BaseAddress);
+                _logger.LogInformation("RequestUri: {RequestUri}", requestUri);
 
                 var response = await _httpClient.GetAsync(requestUri, token);
 
@@ -54,7 +54,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in GET from: {_httpClient.BaseAddress}/{requestUri}.", e.ToString());
+                _logger.LogError(e, "Error in GET from: {BaseAddress}/{RequestUri}",
+                    _httpClient.BaseAddress, requestUri);
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
         }
@@ -86,7 +87,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in POST to: {_httpClient.BaseAddress}/{requestUri}.", e.ToString());
+                _logger.LogError(e, "Error in POST to: {BaseAddress}/{RequestUri}",
+                    _httpClient.BaseAddress, requestUri);
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
         }
@@ -121,7 +123,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in POST to: {_httpClient.BaseAddress}/{requestUri}.", e.ToString());
+                _logger.LogError(e, "Error in POST to: {BaseAddress}/{RequestUri}",
+                    _httpClient.BaseAddress, requestUri);
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
         }
