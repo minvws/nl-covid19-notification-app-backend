@@ -50,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 
             if (tokenExpiry > maxExpiry)
             {
-                _logger.LogInformation("Token invalid, has longer exp. than configured {claimLifetimeHours} hrs.",
+                _logger.LogInformation("Token invalid, has longer exp. than configured {ClaimLifetimeHours} hrs.",
                     _iccPortalConfig.ClaimLifetimeHours.ToString());
                 return false;
             }
