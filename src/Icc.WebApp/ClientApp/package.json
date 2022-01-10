@@ -27,7 +27,7 @@
     "@types/file-saver": "^2.0.1",
     "aspnet-prerendering": "^3.0.1",
     "bootstrap": "^4.3.1",
-    "colors": "^1.1.2",
+    "colors": "1.4.0",
     "core-js": "^3.3.3",
     "dotenv": "^5.0.0",
     "file-saver": "^2.0.2",
