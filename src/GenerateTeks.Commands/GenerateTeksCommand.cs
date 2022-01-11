@@ -77,22 +77,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GenerateTeks.Commands
                     IsOriginPortal = Convert.ToBoolean(_numberGenerator.Next(0, 1))
                 };
 
-                _logger.LogDebug($"Adding workflowStateEntity # {i}");
+                _logger.LogDebug("Adding workflowStateEntity # {WorkflowStateEntityCount}", i);
 
                 workflowList.Add(workflowStateEntity);
             }
 
             var bulkConfig = new BulkConfig { SetOutputIdentity = true, BatchSize = 100 };
 
-            _logger.LogDebug($"BeginTransactionAsync:");
+            _logger.LogDebug("BeginTransactionAsync:");
             await using var transaction = await _workflowDb.Database.BeginTransactionAsync();
 
-            _logger.LogDebug($"BulkInsertAsync [workflowList]");
+            _logger.LogDebug("BulkInsertAsync [workflowList]");
             await _workflowDb.BulkInsertAsync(workflowList, bulkConfig);
 
             foreach (var entity in workflowList)
             {
-                _logger.LogDebug($"Generate Teks for TekReleaseWorkflowStateEntity");
+                _logger.LogDebug("Generate Teks for TekReleaseWorkflowStateEntity");
                 GenTeks(entity);
 
                 foreach (var tek in entity.Teks)
@@ -102,10 +102,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GenerateTeks.Commands
                 tekList.AddRange(entity.Teks);
             }
 
-            _logger.LogDebug($"BulkInsertAsync [tekList]");
+            _logger.LogDebug("BulkInsertAsync [tekList]");
             await _workflowDb.BulkInsertAsync(tekList);
 
-            _logger.LogDebug($"CommitAsync");
+            _logger.LogDebug("CommitAsync");
             await transaction.CommitAsync();
         }
 

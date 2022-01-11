@@ -44,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps
             catch (Exception ex)
             {
                 _serviceProvider.GetRequiredService<ILogger<ConsoleAppRunner>>()
-                    .LogCritical(ex.ToString());
+                    .LogCritical(ex, "Error starting the console app");
             }
             finally
             {

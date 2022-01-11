@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
 
             if (!new DsosEncodingService().TryDecode(value.DiagnosisKey.Efgs.DaysSinceSymptomsOnset.Value, out var result))
             {
-                _logger.LogError("[DosDecodingDiagnosticKeyProcessor] Dsos value cannot be decoded", value.DiagnosisKey.Efgs.DaysSinceSymptomsOnset.Value);
+                _logger.LogError("[DosDecodingDiagnosticKeyProcessor] Dsos value cannot be decoded");
                 return null;
             }
 

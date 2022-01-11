@@ -141,9 +141,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                         break;
                     case HttpStatusCode.MultiStatus:
                         item.CanRetry = false; // Set Retry to false. After fix, set the value to true manually
-                        _logger.LogError(
-                            "Responsecode {HttpResponseCode} EFGS: Invalid request (either errors in the data or an invalid key). Warnings {ResponseContent}",
-                            result.HttpResponseCode?.ToString() ?? "(none)",
+                        _logger.LogWarning(
+                            "HTTP 207 Multi-Status returned (either duplicates in the data or EFGS server error). Warnings {ResponseContent}",
                             result.Content);
                         item.ProcessState = ProcessState.Invalid.ToString();
                         break;
