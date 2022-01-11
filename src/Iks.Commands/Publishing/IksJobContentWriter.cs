@@ -48,7 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                     _contentDbContext.SaveAndCommit();
                 }
 
-                _logger.LogInformation("Published EKSs - Count:{Count}.", move.Length);
+                _logger.LogInformation("Published EKSs - Count: {Count}.", move.Length);
             }
         }
     }

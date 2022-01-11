@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                 Count = index
             };
 
-            _logger.LogInformation("DKs to publish - Count:{Count}.", index);
+            _logger.LogInformation("DKs to publish - Count: {Count}.", index);
 
             return result;
         }
