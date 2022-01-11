@@ -69,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet
 
             // Get the padding bytes
             var padding = _paddingGenerator.Generate(paddingLength);
-            _logger.LogDebug("Response padding:{Padding}", padding);
+            _logger.LogDebug("Response padding: {Padding}", padding);
 
             // Add padding here
             context.HttpContext.Response.Headers.Add(PaddingHeader, padding);

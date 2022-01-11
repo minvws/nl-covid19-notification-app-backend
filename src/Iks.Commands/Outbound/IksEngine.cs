@@ -71,7 +71,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            _logger.LogInformation("Started - JobName:{JobName}", _jobName);
+            _logger.LogInformation("Started - JobName: {JobName}", _jobName);
             
             _engineResult.Started = _dateTimeProvider.Snapshot; //Align with the logged job name.
 
@@ -91,8 +91,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             _engineResult.TotalSeconds = stopwatch.Elapsed.TotalSeconds;
             _engineResult.Items = _iksResults.ToArray();
 
-            _logger.LogInformation("Reconciliation - Teks in EKSs matches usable input and stuffing - Delta:{ReconcileOutputCount}", _engineResult.ReconcileOutputCount);
-            _logger.LogInformation("Reconciliation - Teks in EKSs matches output count - Delta:{ReconcileEksSumCount}", _engineResult.ReconcileEksSumCount);
+            _logger.LogInformation("Reconciliation - Teks in EKSs matches usable input and stuffing - Delta: {ReconcileOutputCount}", _engineResult.ReconcileOutputCount);
+            _logger.LogInformation("Reconciliation - Teks in EKSs matches output count - Delta: {ReconcileEksSumCount}", _engineResult.ReconcileEksSumCount);
 
             _logger.LogInformation("{JobName} complete.", _jobName);
 
@@ -114,13 +114,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             var inputIndex = 0;
             var page = GetInputPage(inputIndex, _config.PageSize);
-            _logger.LogDebug("Read TEKs - Count:{Count}", page.Length);
+            _logger.LogDebug("Read TEKs - Count: {Count}", page.Length);
 
             while (page.Length > 0)
             {
                 if (_output.Count + page.Length >= _config.ItemCountMax)
                 {
-                    _logger.LogDebug("This page fills the EKS to capacity - Capacity:{Capacity}.", _config.ItemCountMax);
+                    _logger.LogDebug("This page fills the EKS to capacity - Capacity: {Capacity}.", _config.ItemCountMax);
                     var remainingCapacity = _config.ItemCountMax - _output.Count;
                     AddToOutput(page.Take(remainingCapacity).ToArray()); //Fill to max
                     await WriteNewSetToOutput();
@@ -133,12 +133,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
                 inputIndex += _config.PageSize; //Move input index
                 page = GetInputPage(inputIndex, _config.PageSize); //Read next page.
-                _logger.LogDebug("Read TEKs - Count:{Count}.", page.Length);
+                _logger.LogDebug("Read TEKs - Count: {Count}.", page.Length);
             }
 
             if (_output.Count > 0)
             {
-                _logger.LogDebug("Write remaining TEKs - Count:{Count}.", _output.Count);
+                _logger.LogDebug("Write remaining TEKs - Count: {Count}.", _output.Count);
                 await WriteNewSetToOutput();
             }
         }
@@ -147,7 +147,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private void AddToOutput(IksCreateJobInputEntity[] page)
         {
             _output.AddRange(page); //Lots of memory
-            _logger.LogDebug("Add TEKs to output - Count:{Count}, Total:{OutputCount}.", page.Length, _output.Count);
+            _logger.LogDebug("Add TEKs to output - Count: {Count}, Total: {OutputCount}.", page.Length, _output.Count);
         }
 
         private async Task WriteNewSetToOutput()
@@ -165,7 +165,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 Content = content
             };
 
-            _logger.LogInformation("Write IKS - Id:{CreatingJobQualifier}.", e.CreatingJobQualifier);
+            _logger.LogInformation("Write IKS - Id: {CreatingJobQualifier}.", e.CreatingJobQualifier);
 
             await using var tx = _publishingDbContext.BeginTransaction();
             await _publishingDbContext.AddAsync(e);
@@ -202,7 +202,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 .Take(take)
                 .ToArray();
 
-            _logger.LogDebug("Read page - Count:{Count}.", result.Length);
+            _logger.LogDebug("Read page - Count: {Count}.", result.Length);
 
             return result;
         }
@@ -215,7 +215,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             _logger.LogInformation("Commit results - Mark TEKs as Published.");
             var result = await _markSourceAsUsed.ExecuteAsync();
-            _logger.LogInformation("Marked as published - Total:{TotalMarked}.", result);
+            _logger.LogInformation("Marked as published - Total: {TotalMarked}.", result);
 
             await ClearJobTables();
         }

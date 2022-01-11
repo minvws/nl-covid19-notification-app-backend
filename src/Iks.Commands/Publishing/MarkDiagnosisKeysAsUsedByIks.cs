@@ -50,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                 .ToList();
 
             _index += used.Length;
-            _logger.LogInformation("Marking as Published - Count:{Count}, Running total:{RunningTotal}.", diagnosisKeyEntities.Count, _index);
+            _logger.LogInformation("Marking as Published - Count: {Count}, Running total: {RunningTotal}.", diagnosisKeyEntities.Count, _index);
 
             if (diagnosisKeyEntities.Count == 0)
             {

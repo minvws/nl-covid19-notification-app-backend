@@ -183,7 +183,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 .Where(x => x.PublishingState == PublishingState.Unpublished && used.Contains(x.Id)).ToList();
 
             _commitIndex += used.Length;
-            _logger.LogInformation("Marking TEKs as Published - Count:{Count}, Running total:{RunningTotal}.", zap.Count, _commitIndex);
+            _logger.LogInformation("Marking TEKs as Published - Count: {Count}, Running total: {RunningTotal}.", zap.Count, _commitIndex);
 
             foreach (var i in zap)
             {
