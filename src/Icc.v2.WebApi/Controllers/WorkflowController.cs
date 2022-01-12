@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
 using NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Services;
 
@@ -45,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi.Controllers
                 throw new ArgumentNullException(nameof(publishTekService));
             }
 
-            _logger.WritePubTekStart();
+            _logger.LogInformation("PUT PubTEK triggered.");
 
             var isOriginPortal = !string.IsNullOrEmpty(refererName) && refererName.Equals(LocalRefererName);
 

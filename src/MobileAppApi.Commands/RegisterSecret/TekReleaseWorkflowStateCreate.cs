@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -24,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         private readonly ILuhnModNGenerator _luhnModNGenerator;
         private readonly ILuhnModNConfig _luhnModNConfig;
         private readonly IWorkflowTime _workflowTime;
-        private readonly RegisterSecretLoggingExtensions _logger;
+        private readonly ILogger _logger;
 
         public TekReleaseWorkflowStateCreate(
             WorkflowDbContext workflowDbContext,
@@ -33,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
             IWorkflowTime workflowTime,
             ILuhnModNConfig luhnModNConfig,
             ILuhnModNGenerator luhnModNGenerator,
-            RegisterSecretLoggingExtensions logger)
+            ILogger<TekReleaseWorkflowStateCreate> logger)
         {
             _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
@@ -56,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
                 ValidUntil = _workflowTime.Expiry(_dateTimeProvider.Snapshot)
             };
 
-            _logger.WriteWritingStart();
+            _logger.LogDebug("Writing.");
 
             var success = await BuildEntityAndAddToContextAsync(entity);
             while (!success)
@@ -71,13 +72,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
         {
             if (++_attemptCount > AttemptCountMax)
             {
-                _logger.WriteMaximumCreateAttemptsReached();
+                _logger.LogCritical("Maximum attempts made at creating workflow.");
                 throw new InvalidOperationException("Maximum create attempts reached.");
             }
 
             if (_attemptCount > 1)
             {
-                _logger.WriteDuplicatesFound(_attemptCount);
+                _logger.LogWarning("Duplicates found while creating workflow - Attempt: {AttemptCount}", _attemptCount);
             }
 
             _workflowDbContext.BeginTransaction();
@@ -92,7 +93,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands.Re
                 await _workflowDbContext.KeyReleaseWorkflowStates.AddAsync(entity);
 
                 _workflowDbContext.SaveAndCommit();
-                _logger.WriteCommitted();
+                _logger.LogDebug("Committed.");
                 return true;
             }
             catch (DbUpdateException ex)

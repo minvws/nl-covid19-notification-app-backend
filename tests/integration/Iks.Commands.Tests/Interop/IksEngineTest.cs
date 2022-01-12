@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -20,7 +20,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramewo
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Commands;
-using Serilog.Extensions.Logging;
 using Xunit;
 using EfgsReportType = Iks.Protobuf.EfgsReportType;
 
@@ -40,8 +39,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         private readonly DkSourceDbContext _dkSourceDbContext;
         private readonly IksPublishingJobDbContext _iksPublishingJobDbContext;
         private readonly IksOutDbContext _iksOutDbContext;
-
-        private readonly ILoggerFactory _loggerFactory = new SerilogLoggerFactory();
 
         private readonly Mock<IIksConfig> _iksConfigMock = new Mock<IIksConfig>(MockBehavior.Strict);
         private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _countriesConfigMock = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
@@ -67,13 +64,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             _iksConfigMock.Setup(x => x.PageSize).Returns(1000);
             _countriesConfigMock.Setup(x => x.CountriesOfInterest).Returns(new[] { "GB", "AU" });
             return new IksEngine(
-                _loggerFactory.CreateLogger<IksEngine>(),
-                new IksInputSnapshotCommand(_loggerFactory.CreateLogger<IksInputSnapshotCommand>(), _dkSourceDbContext, _iksPublishingJobDbContext, _countriesConfigMock.Object),
+                new NullLogger<IksEngine>(),
+                new IksInputSnapshotCommand(new NullLogger<IksInputSnapshotCommand>(), _dkSourceDbContext, _iksPublishingJobDbContext, _countriesConfigMock.Object),
                 new IksFormatter(),
                 _iksConfigMock.Object,
                 _utcDateTimeProviderMock.Object,
-                new MarkDiagnosisKeysAsUsedByIks(_dkSourceDbContext, _iksConfigMock.Object, _iksPublishingJobDbContext, _loggerFactory.CreateLogger<MarkDiagnosisKeysAsUsedByIks>()),
-                new IksJobContentWriter(_iksOutDbContext, _iksPublishingJobDbContext, _loggerFactory.CreateLogger<IksJobContentWriter>()),
+                new MarkDiagnosisKeysAsUsedByIks(_dkSourceDbContext, _iksConfigMock.Object, _iksPublishingJobDbContext, new NullLogger<MarkDiagnosisKeysAsUsedByIks>()),
+                new IksJobContentWriter(_iksOutDbContext, _iksPublishingJobDbContext, new NullLogger<IksJobContentWriter>()),
                 _iksPublishingJobDbContext
             );
         }

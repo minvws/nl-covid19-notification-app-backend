@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
@@ -20,12 +21,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     /// </summary>
     public class SnapshotDiagnosisKeys : ISnapshotEksInput
     {
-        private readonly SnapshotLoggingExtensions _logger;
+        private readonly ILogger _logger;
         private readonly DkSourceDbContext _dkSourceDbContext;
         private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
         private readonly IInfectiousness _infectiousness;
 
-        public SnapshotDiagnosisKeys(SnapshotLoggingExtensions logger, DkSourceDbContext dkSourceDbContext, EksPublishingJobDbContext eksPublishingJobDbContext, IInfectiousness infectiousness)
+        public SnapshotDiagnosisKeys(ILogger<SnapshotDiagnosisKeys> logger, DkSourceDbContext dkSourceDbContext, EksPublishingJobDbContext eksPublishingJobDbContext, IInfectiousness infectiousness)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
@@ -35,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         public async Task<SnapshotEksInputResult> ExecuteAsync(DateTime snapshotStart)
         {
-            _logger.WriteStart();
+            _logger.LogDebug("Snapshot publishable TEKs..");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -67,7 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 FilteredTekInputCount = filteredTekInputCount
             };
 
-            _logger.WriteTeksToPublish(index);
+            _logger.LogInformation("TEKs to publish - Count: {TekInputCount}.", index);
 
             return snapshotEksInputResult;
         }

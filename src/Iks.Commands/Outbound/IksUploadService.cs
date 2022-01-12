@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound;
@@ -23,9 +24,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private readonly IEfgsConfig _efgsConfig;
         private readonly IThumbprintConfig _efgsAuthenticationConfig;
         private readonly IAuthenticationCertificateProvider _certificateProvider;
-        private readonly IksUploaderLoggingExtensions _logger;
+        private readonly ILogger _logger;
 
-        public IksUploadService(HttpClient httpClient, IEfgsConfig efgsConfig, IAuthenticationCertificateProvider certificateProvider, IksUploaderLoggingExtensions logger, IConfiguration config)
+        public IksUploadService(
+            HttpClient httpClient,
+            IEfgsConfig efgsConfig,
+            IAuthenticationCertificateProvider certificateProvider,
+            ILogger<IksUploadService> logger,
+            IConfiguration config)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
@@ -41,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             // Configure authentication certificate
             using var clientCert = _certificateProvider.GetCertificate(_efgsAuthenticationConfig.Thumbprint, _efgsAuthenticationConfig.RootTrusted);
 
-            _logger.WriteRequestContent(args.Content);
+            _logger.LogDebug("EFGS request content: {Content}", Convert.ToBase64String(args.Content));
 
             try
             {
@@ -55,11 +61,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             }
             catch (BrokenCircuitException e)
             {
-                _logger.WriteEfgsError(e);
+                _logger.LogError(e, "Error calling EFGS, see exception for details.");
 
                 if (e.InnerException != null)
                 {
-                    _logger.WriteEfgsInnerException(e.InnerException);
+                    _logger.LogError(e.InnerException,
+                        "Error calling EFGS, see inner exception for further details.");
                 }
 
                 return new HttpPostIksResult
@@ -87,7 +94,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                 request.Headers.Add("X-SSL-Client-DN", clientCert.Subject.Replace(" ", string.Empty));
             }
 
-            _logger.WriteRequest(request);
+            _logger.LogInformation("EFGS request: {Request}", request);
 
             return request;
         }

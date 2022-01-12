@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
     public class JwtClaimValidator : IJwtClaimValidator
     {
         private readonly ITheIdentityHubService _theIdentityHubService;
-        private readonly ILogger<JwtClaimValidator> _logger;
+        private readonly ILogger _logger;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly IIccPortalConfig _iccPortalConfig;
 
@@ -50,7 +50,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
 
             if (tokenExpiry > maxExpiry)
             {
-                _logger.WriteTokenExpTooLong(_iccPortalConfig.ClaimLifetimeHours.ToString());
+                _logger.LogInformation("Token invalid, has longer exp. than configured {ClaimLifetimeHours} hrs.",
+                    _iccPortalConfig.ClaimLifetimeHours.ToString());
                 return false;
             }
 

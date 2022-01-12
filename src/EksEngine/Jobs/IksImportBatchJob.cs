@@ -60,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Jobs
             }
             catch (Exception e)
             {
-                _logger.LogCritical(e.Message);
+                _logger.LogCritical(e, "Error importing IksInEntity");
             }
         }
 

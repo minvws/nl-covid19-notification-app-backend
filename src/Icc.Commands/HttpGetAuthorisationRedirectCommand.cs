@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
     public class HttpGetAuthorisationRedirectCommand
     {
         private readonly IIccPortalConfig _configuration;
-        private readonly ILogger<HttpGetAuthorisationRedirectCommand> _logger;
+        private readonly ILogger _logger;
         private readonly IAuthCodeService _authCodeService;
         private readonly IJwtService _jwtService;
         private readonly ITheIdentityHubService _theIdentityHubService;
@@ -41,7 +41,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
                 throw new ArgumentNullException(nameof(httpContext));
             }
 
-            _logger.WriteRedirecting(httpContext.Request.Host.ToString());
+            _logger.LogInformation("Executing Auth.Redirect on Host {CurrentHost}.",
+                httpContext.Request.Host.ToString());
 
             // check httpContext claims on AccessToken validity
             if (!await _theIdentityHubService.VerifyClaimTokenAsync(httpContext.User.Claims))

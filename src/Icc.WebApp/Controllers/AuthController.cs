@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
 {
     public class AuthController : Controller
     {
-        private readonly ILogger<AuthController> _logger;
+        private readonly ILogger _logger;
 
         public AuthController(ILogger<AuthController> logger)
         {
@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
                 throw new ArgumentNullException(nameof(command));
             }
 
-            _logger.WriteAuthStart();
+            _logger.LogInformation("POST Auth/Token triggered.");
             return await command.ExecuteAsync(HttpContext, args);
         }
 

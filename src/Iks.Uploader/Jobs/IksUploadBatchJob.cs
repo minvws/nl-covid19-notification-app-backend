@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
@@ -11,12 +12,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.Jobs
 {
     public class IksUploadBatchJob : IJob
     {
-        private readonly IksUploaderLoggingExtensions _logger;
+        private readonly ILogger _logger;
         private readonly IEfgsConfig _efgsConfig;
         private readonly CommandInvoker _commandInvoker;
         private readonly IksSendBatchCommand _iksSendBatchCommand;
 
-        public IksUploadBatchJob(IksUploaderLoggingExtensions logger,
+        public IksUploadBatchJob(
+            ILogger<IksUploadBatchJob> logger,
             IEfgsConfig efgsConfig,
             CommandInvoker commandInvoker,
             IksSendBatchCommand iksSendBatchCommand
@@ -32,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.Jobs
         {
             if (!_efgsConfig.UploaderEnabled)
             {
-                _logger.WriteDisabledByConfig();
+                _logger.LogWarning("EfgsUploader is disabled by the configuration.");
                 return;
             }
 

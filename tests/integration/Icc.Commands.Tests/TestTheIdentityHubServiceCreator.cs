@@ -5,6 +5,7 @@
 using System;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation;
 using TheIdentityHub.AspNetCore.Authentication;
@@ -16,7 +17,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
     {
         public static TheIdentityHubService CreateInstance(WireMockServer server)
         {
-            var logger = new TestLogger<TheIdentityHubService>();
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddCustomOptions(TheIdentityHubDefaults.AuthenticationScheme, options =>
             {
@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
             var builder = serviceCollection.BuildServiceProvider();
             var options = builder.GetService<IOptionsMonitor<TheIdentityHubOptions>>();
 
-            return new TheIdentityHubService(options, logger);
+            return new TheIdentityHubService(options, new NullLogger<TheIdentityHubService>());
         }
     }
 }

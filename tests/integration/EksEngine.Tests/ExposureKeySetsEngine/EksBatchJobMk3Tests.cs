@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
@@ -40,7 +39,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         private readonly DbContextOptions<EksPublishingJobDbContext> _publishingContextOptions;
         private readonly ContentDbContext _contentDbContext;
         private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _outboundCountriesMock;
-        private readonly LoggerFactory _lf;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly SnapshotWorkflowTeksToDksCommand _snapshot;
         private ExposureKeySetBatchJobMk3 _engine;
@@ -60,9 +58,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             _dateTimeProvider = new StandardUtcDateTimeProvider();
             _fakeEksConfig = new FakeEksConfig { LifetimeDays = 14, PageSize = 1000, TekCountMax = 10, TekCountMin = 5 };
-            _lf = new LoggerFactory();
 
-            _snapshot = new SnapshotWorkflowTeksToDksCommand(_lf.CreateLogger<SnapshotWorkflowTeksToDksCommand>(),
+            _snapshot = new SnapshotWorkflowTeksToDksCommand(new NullLogger<SnapshotWorkflowTeksToDksCommand>(),
                 new StandardUtcDateTimeProvider(),
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowContext,
@@ -120,9 +117,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new FakeEksBuilder(),
                 eksPublishingJobContext,
                 new StandardUtcDateTimeProvider(),
-                new EksEngineLoggingExtensions(_lf.CreateLogger<EksEngineLoggingExtensions>()),
+                new NullLogger<ExposureKeySetBatchJobMk3>(),
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(), new StandardRandomNumberGenerator(), _dateTimeProvider, _fakeEksConfig),
-                new SnapshotDiagnosisKeys(new SnapshotLoggingExtensions(new NullLogger<SnapshotLoggingExtensions>()), dkSourceContext, eksPublishingJobContext,
+                new SnapshotDiagnosisKeys(new NullLogger<SnapshotDiagnosisKeys>(), dkSourceContext, eksPublishingJobContext,
                     new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
                         {
                             InfectiousPeriodType.Symptomatic,
@@ -133,9 +130,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                             new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
                         }
                     })),
-                new MarkDiagnosisKeysAsUsedLocally(dkSourceContext, _fakeEksConfig, eksPublishingJobContext, _lf.CreateLogger<MarkDiagnosisKeysAsUsedLocally>()),
+                new MarkDiagnosisKeysAsUsedLocally(dkSourceContext, _fakeEksConfig, eksPublishingJobContext, new NullLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_contentDbContext, eksPublishingJobContext, new Sha256HexPublishingIdService(),
-                    new EksJobContentWriterLoggingExtensions(_lf.CreateLogger<EksJobContentWriterLoggingExtensions>())),
+                    new NullLogger<EksJobContentWriter>()),
                 new WriteStuffingToDiagnosisKeys(dkSourceContext, eksPublishingJobContext,
                     new IDiagnosticKeyProcessor[] {
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_outboundCountriesMock.Object),

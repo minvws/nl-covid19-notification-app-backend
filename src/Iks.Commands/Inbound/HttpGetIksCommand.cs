@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Iks.Protobuf;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -21,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         private readonly IEfgsConfig _efgsConfig;
         private readonly IAuthenticationCertificateProvider _certificateProvider;
         private readonly IThumbprintConfig _thumbprintConfig;
-        private readonly IksDownloaderLoggingExtensions _logger;
+        private readonly ILogger _logger;
         private readonly IHttpClientFactory _httpClientFactory;
 
         public HttpGetIksCommand(
@@ -29,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             IAuthenticationCertificateProvider certificateProvider,
             IThumbprintConfig thumbprintConfig,
             IHttpClientFactory httpClientFactory,
-            IksDownloaderLoggingExtensions logger)
+            ILogger<HttpGetIksCommand> logger)
         {
             _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
             _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
@@ -42,23 +43,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         {
             try
             {
-                _logger.WriteRequestingData(date, batchTag);
+                _logger.LogInformation("Requesting data from EFGS for {Date}, batch {BatchTag}",
+                    date, batchTag);
 
                 var request = BuildHttpRequest(batchTag, date);
 
-                _logger.WriteRequest(request);
+                _logger.LogInformation("EFGS request: {Request}", request);
 
                 var httpClient = _httpClientFactory.CreateClient(UniversalConstants.EfgsDownloader);
                 var response = await httpClient.SendAsync(request);
 
-                _logger.WriteResponse(response.StatusCode);
-                _logger.WriteResponseHeaders(response.Headers);
+                _logger.LogInformation("Response from EFGS: {StatusCodeInt} {Statuscode}.",
+                    (int)response.StatusCode, response.StatusCode);
+                _logger.LogInformation("Response headers: {Headers}", response.Headers?.ToString());
 
                 return await HandleResponse(response);
             }
             catch (Exception e)
             {
-                _logger.WriteEfgsError(e);
+                _logger.LogCritical(e, "EFGS error");
 
                 throw;
             }
@@ -84,7 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                     };
                 }
 
-                _logger.WriteBatchTagNotFound();
+                _logger.LogWarning("Response headers: BatchTag not found.");
             }
 
             return new HttpGetIksResult
@@ -106,7 +109,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
             }
             catch (InvalidProtocolBufferException)
             {
-                _logger.WriteResponseNotAcceptable();
+                _logger.LogCritical("EFGS: data format or content is not valid!");
                 return false;
             }
         }

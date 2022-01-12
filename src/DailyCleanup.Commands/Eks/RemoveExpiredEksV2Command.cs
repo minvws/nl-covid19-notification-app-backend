@@ -51,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ek
 
             foreach (var i in zombies)
             {
-                _logger.LogInformation("Found expired EKSv2 - PublishingId: {EksV2PublishingId} Release: {EksV2Release}", i.PublishingId, i.Release);
+                _logger.LogInformation("Found expired EKSv2 - PublishingId: {ContentId} Release: {EksV2Release}", i.PublishingId, i.Release);
             }
 
             if (!_config.CleanupDeletesData)

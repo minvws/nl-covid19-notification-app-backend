@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
@@ -133,9 +133,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
 
         private RemoveExpiredManifestsCommand CompileRemoveExpiredManifestsCommand()
         {
-            var loggerMock = new Mock<ILogger<RemoveExpiredManifestsReceiver>>();
-            var dateTimeProvider = new StandardUtcDateTimeProvider();
-            var receiver = new RemoveExpiredManifestsReceiver(_contentDbContext, _manifestConfigMock.Object, dateTimeProvider, loggerMock.Object);
+            var receiver = new RemoveExpiredManifestsReceiver(
+                _contentDbContext,
+                _manifestConfigMock.Object,
+                new StandardUtcDateTimeProvider(),
+                new NullLogger<RemoveExpiredManifestsReceiver>());
 
             var result = new RemoveExpiredManifestsCommand(receiver);
             return result;

@@ -11,6 +11,7 @@ McsTestConfigProvider.Db.DoNotCommit.cs
 local.settings.json
 **/*.[Dd]evelopment.json
 .idea
+global.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

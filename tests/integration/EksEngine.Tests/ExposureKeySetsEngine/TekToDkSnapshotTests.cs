@@ -7,14 +7,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.DiagnosisKeys.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
@@ -26,7 +25,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     {
         private readonly WorkflowDbContext _workflowDbContext;
         private readonly DkSourceDbContext _dkSourceDbContext;
-        private readonly LoggerFactory _lf;
         private readonly Mock<IUtcDateTimeProvider> _dateTimeProvider;
         private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _outboundCountries;
 
@@ -39,14 +37,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             _dateTimeProvider = new Mock<IUtcDateTimeProvider>();
             _outboundCountries = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
-            _lf = new LoggerFactory();
         }
 
         private SnapshotWorkflowTeksToDksCommand Create()
         {
             _outboundCountries.Setup(x => x.CountriesOfInterest).Returns(new[] { "GB" });
 
-            return new SnapshotWorkflowTeksToDksCommand(_lf.CreateLogger<SnapshotWorkflowTeksToDksCommand>(),
+            return new SnapshotWorkflowTeksToDksCommand(new NullLogger<SnapshotWorkflowTeksToDksCommand>(),
                 _dateTimeProvider.Object,
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowDbContext,

@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Validators;
@@ -24,7 +25,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
 
         public JwtClaimValidatorTests()
         {
-            var logger = new TestLogger<JwtClaimValidator>();
             _dateTimeProvider = new StandardUtcDateTimeProvider();
             _server = WireMockServer.Start();
 
@@ -35,7 +35,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
             iccPortalConfigMock.Setup(x => x.StrictRolePolicyEnabled).Returns(true);
 
             _jwtClaimValidator =
-                new JwtClaimValidator(TestTheIdentityHubServiceCreator.CreateInstance(_server), logger,
+                new JwtClaimValidator(
+                    TestTheIdentityHubServiceCreator.CreateInstance(_server),
+                    new NullLogger<JwtClaimValidator>(),
                     _dateTimeProvider,
                     iccPortalConfigMock.Object);
         }

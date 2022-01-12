@@ -5,6 +5,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
@@ -36,18 +37,15 @@ namespace SigTestFileCreator
             services.AddSingleton<IEksHeaderInfoConfig, EksHeaderInfoConfig>();
             services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
             services.AddTransient<IEksBuilder, EksBuilderV1>();
-            services.AddSingleton<EksBuilderV1LoggingExtensions>();
-            services.AddSingleton<SigTestFileCreatorLoggingExtensions>();
-            services.AddSingleton<LocalMachineStoreCertificateProviderLoggingExtensions>();
 
             services.AddTransient(x =>
                 SignerConfigStartup.BuildEvSigner(
                     x.GetRequiredService<IConfiguration>(),
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
                     x.GetRequiredService<IUtcDateTimeProvider>()));
             services.AddTransient(x =>
                 SignerConfigStartup.BuildGaSigner(
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>(),
+                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
                     x.GetRequiredService<IConfiguration>()));
         }
     }

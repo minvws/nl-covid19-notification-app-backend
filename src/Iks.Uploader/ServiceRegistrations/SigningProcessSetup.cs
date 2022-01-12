@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
 
@@ -17,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
             services.AddTransient<ICertificateChainConfig, CertificateChainConfig>();
             services.AddTransient<ICertificateProvider>(
                 x => new LocalMachineStoreCertificateProvider(
-                    x.GetRequiredService<LocalMachineStoreCertificateProviderLoggingExtensions>()));
+                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>()));
         }
     }
 }
