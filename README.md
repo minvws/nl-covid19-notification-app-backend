@@ -19,13 +19,13 @@ This increases the chance that we might be able to use your contribution (or it 
 
 ### Docker – to quickstart local app development
 
-To quickly start a local Standalone development environment for app testing purposes you can use of the docker-compose file:
+To quickly start a local Standalone development environment for app testing purposes you can use docker-compose:
 ```bash
 # Solution root
 cd docker
 docker-compose up --build
 ``` 
-**Please be aware of the 'quickstart development'-only semi-secrets in `docker/**/*`, the Docker configuration has no intentions to be used in publicly available testing, acceptation or production environments.**
+**Please be aware of the 'quickstart development'-only semi-secrets in `docker/**/*`, the Docker configuration has no intentions to be used in publicly available testing, acceptance or production environments.**
 
 
 ### ICC Portal (SPA Web Application)
@@ -46,9 +46,9 @@ The ICC Portal consists of a .Net Core hosted Angular frontend found under `Icc.
 
 ## Building and packaging
 
-The build and package pipeline for this project is implemented as a set of batch scripts. These scripts can be executed on a development machine without arguments or via a build server (Jenkins, Azure Devops) without the need to lock-in the build process to one specific vendor. This should also make it easier to build older versions of the server because all of the logic required to build is committed to version control.
+The build and package pipeline for this project is implemented as a set of batch scripts. These scripts can be executed on a development machine without arguments or via a build server (Jenkins, Azure Devops) without the need to lock-in the build process to one specific vendor. This should also make it easier to build older versions of the server, because all of the logic required to build is committed to version control.
 
-To run the scripts you must have following installed and accessible in your path:
+To run the scripts, you must have the following installed and accessible in your path:
 
 * 7zip
 
@@ -58,7 +58,7 @@ Here is an overview of our scripts:
 | -------------------- | ------------------------------------------ |
 | build.bat            | Builds all of the project in release mode  |
 |                      | and publishes packages into the folder     |
-|                      | `publish` in the root of the solution.     |
+|                      | `publish` at the root of the solution.     |
 | package.bat          | Packages the published files as zip        |
 |                      | archives and puts them in `publish`.       |
 
