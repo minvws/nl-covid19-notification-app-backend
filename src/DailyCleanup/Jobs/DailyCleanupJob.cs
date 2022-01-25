@@ -60,7 +60,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs
             _logger.LogInformation("Daily cleanup - Starting.");
 
             _commandInvoker
-                .SetCommand(_statisticsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Calculating daily stats starting."))
                 .SetCommand(_removeExpiredWorkflowsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Workflows run starting."))
                 .SetCommand(_removeDiagnosisKeysReadyForCleanupCommand)
                 .SetCommand(_removePublishedDiagnosisKeysCommand)
@@ -70,6 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs
                 .SetCommand(_removeExpiredManifestsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Manifests run starting."))
                 .SetCommand(_removeExpiredIksInCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Expired IksIn run starting."))
                 .SetCommand(_removeExpiredIksOutCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Expired IksOut run starting."))
+                .SetCommand(_statisticsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Calculating daily stats starting."))
                 .Execute();
 
             _logger.LogInformation("Daily cleanup - Finished.");
