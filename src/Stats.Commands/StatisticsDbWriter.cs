@@ -35,7 +35,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands
             {
                 Created = _dtp.Snapshot,
                 Name = args.Name,
-                Qualifier = args.Qualifier,
                 Value = args.Value,
                 TotalFromPortal = args.TotalFromPortal,
                 TotalFromOther = args.TotalFromOther

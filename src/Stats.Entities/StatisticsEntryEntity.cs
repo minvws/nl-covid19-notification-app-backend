@@ -14,7 +14,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Entities
         public int Id { get; set; }
         public DateTime Created { get; set; }
         public string Name { get; set; }
-        public string Qualifier { get; set; }
         public double Value { get; set; }
         public double TotalFromPortal { get; set; }
         public double TotalFromOther { get; set; }
