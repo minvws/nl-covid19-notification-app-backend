@@ -17,5 +17,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Entities
         public double Value { get; set; }
         public double TotalFromPortal { get; set; }
         public double TotalFromOther { get; set; }
+        public StatisticPublishingState PublishingState { get; set; }
     }
 }
