@@ -2,10 +2,10 @@
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Created] [datetime] NOT NULL,
 	[Name] [nvarchar](50) NOT NULL,
-	[Qualifier] [nvarchar](50) NULL,
 	[Value] [float] NOT NULL,
- [TotalFromPortal] FLOAT NOT NULL DEFAULT 0, 
-    [TotalFromOther] FLOAT NOT NULL DEFAULT 0, 
+ 	[TotalFromPortal] FLOAT NOT NULL DEFAULT 0,
+    [TotalFromOther] FLOAT NOT NULL DEFAULT 0,
+	[PublishingState] INT NOT NULL, 
     CONSTRAINT [PK_Statistics] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
