@@ -26,7 +26,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.EntityFramework
 
             modelBuilder.Entity<StatisticsEntryEntity>().HasIndex(u => u.Created);
             modelBuilder.Entity<StatisticsEntryEntity>().HasIndex(u => u.Name);
-            modelBuilder.Entity<StatisticsEntryEntity>().HasIndex(u => u.Qualifier);
         }
     }
 }
