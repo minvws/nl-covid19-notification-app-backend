@@ -5,7 +5,7 @@
 	[Value] [float] NOT NULL,
  	[TotalFromPortal] FLOAT NOT NULL DEFAULT 0,
     [TotalFromOther] FLOAT NOT NULL DEFAULT 0,
-	[PublishingState] INT NOT NULL, 
+	[PublishingState] INT NULL, 
     CONSTRAINT [PK_Statistics] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
