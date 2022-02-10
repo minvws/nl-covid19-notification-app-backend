@@ -5,8 +5,10 @@
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -35,6 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         public async Task ManifestUpdateCommand_ExecuteForV3()
         {
             //Arrange
+            await BulkDeleteAllDataInTest();
             PopulateContentDb();
 
             var sut = CompileManifestUpdateCommand();
@@ -125,6 +128,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             });
 
             _contentDbContext.SaveChanges();
+        }
+
+        private async Task BulkDeleteAllDataInTest()
+        {
+            await _contentDbContext.BulkDeleteAsync(_contentDbContext.Content.ToList());
         }
     }
 }
