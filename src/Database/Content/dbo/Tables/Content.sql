@@ -29,3 +29,10 @@ GO
 CREATE NONCLUSTERED INDEX [IX_Content_ContentTypeName]
     ON [dbo].[Content]([ContentTypeName] ASC);
 
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Content_PublishingId_Type] ON [dbo].[Content]
+(
+	[PublishingId] ASC,
+	[Type] ASC
+)
+WHERE ([PublishingId] IS NOT NULL)
