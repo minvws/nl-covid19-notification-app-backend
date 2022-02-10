@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -18,6 +19,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities
         public string Region { get; set; } = DefaultValues.Region;
         public byte[] Content { get; set; }
         public GaenVersion GaenVersion { get; set; }
+
+        [MaxLength(64)]
+        public string OutputId { get; set; }
 
         /// <summary>
         /// Metadata - Job Id.
