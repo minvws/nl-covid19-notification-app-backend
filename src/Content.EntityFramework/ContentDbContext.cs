@@ -31,11 +31,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityF
 
             modelBuilder
                 .Entity<ContentEntity>()
+                .HasIndex(e => new { e.PublishingId, e.Type })
+                .IsUnique(true);
+
+            modelBuilder
+                .Entity<ContentEntity>()
                 .Property(e => e.Type)
                 .HasConversion(
                     v => v.ToString(),
                     v => (ContentTypes)Enum.Parse(typeof(ContentTypes), v));
-
         }
     }
 }
