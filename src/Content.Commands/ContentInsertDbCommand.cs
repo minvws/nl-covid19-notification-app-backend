@@ -34,6 +34,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 throw new ArgumentNullException(nameof(args));
             }
 
+            // Generate a new guid string, formatted without dashes
+            var newPublishingId = Guid.NewGuid().ToString("N");
+
             var contentBytes = Encoding.UTF8.GetBytes(args.Json);
 
             var e = new ContentEntity
@@ -41,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 Created = _dateTimeProvider.Snapshot,
                 Release = args.Release,
                 Type = args.ContentType,
-                PublishingId = _publishingIdService.Create(contentBytes),
+                PublishingId = newPublishingId,
                 Content = await _signedFormatter.SignedContentPacketAsync(contentBytes)
             };
 

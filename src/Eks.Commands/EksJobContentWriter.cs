@@ -37,6 +37,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         public async Task ExecuteAsync()
         {
+            // Generate a new guid string, formatted without dashes
+            var newPublishingId = Guid.NewGuid().ToString("N");
+
             await using (_eksPublishingJobDbContext.BeginTransaction())
             {
                 var moveV12 = _eksPublishingJobDbContext.EksOutput.AsNoTracking().Where(x => x.GaenVersion == GaenVersion.v12).Select(
@@ -47,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                         ContentTypeName = MediaTypeNames.Application.Zip,
                         Content = x.Content,
                         Type = ContentTypes.ExposureKeySetV2,
-                        PublishingId = _publishingIdService.Create(x.Content)
+                        PublishingId = newPublishingId
                     }).ToArray();
 
                 var moveV15 = _eksPublishingJobDbContext.EksOutput.AsNoTracking().Where(x => x.GaenVersion == GaenVersion.v15).Select(
@@ -58,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                         ContentTypeName = MediaTypeNames.Application.Zip,
                         Content = x.Content,
                         Type = ContentTypes.ExposureKeySetV3,
-                        PublishingId = _publishingIdService.Create(x.Content)
+                        PublishingId = newPublishingId
                     }).ToArray();
 
                 await using (_contentDbContext.BeginTransaction())

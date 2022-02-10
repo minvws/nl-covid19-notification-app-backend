@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 throw new ArgumentNullException(nameof(httpContext));
             }
 
-            if (!_publishingIdService.Validate(id))
+            if (!Guid.TryParse(id, out _))
             {
                 _logger.LogError("Invalid content id - {ContentId}.", id);
                 httpContext.Response.StatusCode = 400;

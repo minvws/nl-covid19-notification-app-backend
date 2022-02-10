@@ -36,9 +36,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 throw new ArgumentNullException(nameof(c));
             }
 
+            // Generate a new guid string, formatted without dashes
+            var newPublishingId = Guid.NewGuid().ToString("N");
+
             var contentJson = _jsonSerializer.Serialize(c);
             var contentBytes = Encoding.UTF8.GetBytes(contentJson);
-            e.PublishingId = _publishingIdService.Create(contentBytes);
+            e.PublishingId = newPublishingId;
             e.Content = await _signedFormatter.SignedContentPacketAsync(contentBytes);
             return e;
         }
