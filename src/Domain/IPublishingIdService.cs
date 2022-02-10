@@ -7,7 +7,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
     public interface IPublishingIdService
     {
         string Create(byte[] contents);
-
-        bool Validate(string id);
     }
 }
