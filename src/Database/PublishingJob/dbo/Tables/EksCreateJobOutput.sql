@@ -6,7 +6,7 @@
     [CreatingJobName]      NVARCHAR (MAX)  NOT NULL,
     [CreatingJobQualifier] INT             NOT NULL,
     [GaenVersion]          INT             NOT NULL  DEFAULT 12,
-    [OutputId]             NVARCHAR (64)   NULL,
+    [OutputId]             NVARCHAR (36)   NULL,
     CONSTRAINT [PK_EksCreateJobOutput] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 
