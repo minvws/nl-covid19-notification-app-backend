@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities
         public byte[] Content { get; set; }
         public GaenVersion GaenVersion { get; set; }
 
-        [MaxLength(64)]
+        [MaxLength(36)]
         public string OutputId { get; set; }
 
         /// <summary>
