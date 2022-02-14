@@ -51,7 +51,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
             services.AddTransient<ISnapshotEksInput, SnapshotDiagnosisKeys>();
 
             // Publishing
-            services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
             services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
             services.AddTransient<IEksJobContentWriter, EksJobContentWriter>();
 

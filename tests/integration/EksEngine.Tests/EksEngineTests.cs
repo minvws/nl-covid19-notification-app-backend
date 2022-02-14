@@ -132,7 +132,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 new NullLogger<ManifestUpdateCommand>(),
                 _dtp,
                 jsonSerializer,
-                new StandardContentEntityFormatter(new ZippedSignedContentFormatter(nlSigner.Object), new Sha256HexPublishingIdService(), jsonSerializer)
+                new StandardContentEntityFormatter(
+                    new ZippedSignedContentFormatter(nlSigner.Object),
+                    jsonSerializer)
             );
         }
 

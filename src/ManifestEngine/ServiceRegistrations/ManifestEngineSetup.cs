@@ -9,7 +9,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Jobs;
 
@@ -30,7 +29,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.ServiceRe
 
             // Operating components
             services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
-            services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient(x =>
                 SignerConfigStartup.BuildEvSigner(

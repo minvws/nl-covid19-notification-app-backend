@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
@@ -19,14 +18,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
     public class HttpGetCdnContentCommand
     {
         private readonly ContentDbContext _dbContext;
-        private readonly IPublishingIdService _publishingIdService;
         private readonly ILogger _logger;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
 
-        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IUtcDateTimeProvider dateTimeProvider)
+        public HttpGetCdnContentCommand(
+            ContentDbContext dbContext,
+            ILogger<HttpGetCdnContentCommand> logger,
+            IUtcDateTimeProvider dateTimeProvider)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _publishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
