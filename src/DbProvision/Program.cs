@@ -15,7 +15,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
@@ -72,7 +71,6 @@ namespace DbProvision
             services.AddTransient<DatabaseProvisioner>();
             services.AddTransient<ContentPublisher>();
             services.AddTransient<ContentValidator>();
-            services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<ContentInsertDbCommand>();
             services.AddTransient<IContentSigner>(x => SignerConfigStartup.BuildEvSigner(

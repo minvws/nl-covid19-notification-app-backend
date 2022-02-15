@@ -7,20 +7,17 @@ using System.Text;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public class StandardContentEntityFormatter : IContentEntityFormatter
     {
         private readonly ZippedSignedContentFormatter _signedFormatter;
-        private readonly IPublishingIdService _publishingIdService;
         private readonly IJsonSerializer _jsonSerializer;
 
-        public StandardContentEntityFormatter(ZippedSignedContentFormatter signedFormatter, IPublishingIdService publishingIdService, IJsonSerializer jsonSerializer)
+        public StandardContentEntityFormatter(ZippedSignedContentFormatter signedFormatter, IJsonSerializer jsonSerializer)
         {
             _signedFormatter = signedFormatter ?? throw new ArgumentNullException(nameof(signedFormatter));
-            _publishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
             _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
         }
 
@@ -36,9 +33,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 throw new ArgumentNullException(nameof(c));
             }
 
+            // Generate a new guid string, formatted without dashes
+            var newPublishingId = Guid.NewGuid().ToString("N");
+
             var contentJson = _jsonSerializer.Serialize(c);
             var contentBytes = Encoding.UTF8.GetBytes(contentJson);
-            e.PublishingId = _publishingIdService.Create(contentBytes);
+            e.PublishingId = newPublishingId;
             e.Content = await _signedFormatter.SignedContentPacketAsync(contentBytes);
             return e;
         }

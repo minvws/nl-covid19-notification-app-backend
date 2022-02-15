@@ -20,18 +20,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     {
         private readonly ContentDbContext _contentDbContext;
         private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
-        private readonly IPublishingIdService _publishingIdService;
         private readonly ILogger _logger;
 
         public EksJobContentWriter(
             ContentDbContext contentDbContext,
             EksPublishingJobDbContext eksPublishingJobDbContext,
-            IPublishingIdService publishingIdService,
             ILogger<EksJobContentWriter> logger)
         {
             _contentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _eksPublishingJobDbContext = eksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContext));
-            _publishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -47,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                         ContentTypeName = MediaTypeNames.Application.Zip,
                         Content = x.Content,
                         Type = ContentTypes.ExposureKeySetV2,
-                        PublishingId = _publishingIdService.Create(x.Content)
+                        PublishingId = x.OutputId
                     }).ToArray();
 
                 var moveV15 = _eksPublishingJobDbContext.EksOutput.AsNoTracking().Where(x => x.GaenVersion == GaenVersion.v15).Select(
@@ -58,7 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                         ContentTypeName = MediaTypeNames.Application.Zip,
                         Content = x.Content,
                         Type = ContentTypes.ExposureKeySetV3,
-                        PublishingId = _publishingIdService.Create(x.Content)
+                        PublishingId = x.OutputId
                     }).ToArray();
 
                 await using (_contentDbContext.BeginTransaction())

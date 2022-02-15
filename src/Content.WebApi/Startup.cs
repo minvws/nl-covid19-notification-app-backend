@@ -61,7 +61,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
             services.AddSingleton<IEksConfig, StandardEksConfig>();
 
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
-            services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
 
             if (_isDev)
             {

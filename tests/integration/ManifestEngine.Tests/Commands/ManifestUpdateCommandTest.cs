@@ -48,7 +48,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 
             IContentEntityFormatter contentFormatterInjector = new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(nlSignerMock.Object),
-                    new Sha256HexPublishingIdService(),
                     jsonSerializer);
 
             _sut = new ManifestUpdateCommand(
