@@ -69,7 +69,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             IContentEntityFormatter formatterForV3 = new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(
                     TestSignerHelpers.CreateCmsSignerEnhanced()),
-                    new Sha256HexPublishingIdService(),
                     jsonSerialiser
                         );
 
