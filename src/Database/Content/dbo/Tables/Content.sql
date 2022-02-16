@@ -35,4 +35,4 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_Content_PublishingId_Type] ON [dbo].[Conten
 	[PublishingId] ASC,
 	[Type] ASC
 )
-WHERE ([PublishingId] IS NOT NULL)
+WHERE ([PublishingId] IS NOT NULL AND ([Type] IN ('ExposureKeySetV2', 'ExposureKeySetV3')))
