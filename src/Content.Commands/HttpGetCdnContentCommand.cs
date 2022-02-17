@@ -98,7 +98,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
             for (var i = 0; i < id.Length; i += 2)
             {
-                if (!int.TryParse(id.Substring(i, 2), NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out _))
+                if (!int.TryParse(id.AsSpan(i, 2), NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out _))
                 {
                     return false;
                 }
