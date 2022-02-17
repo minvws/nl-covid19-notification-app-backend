@@ -83,7 +83,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             return content;
         }
 
-        private bool ValidateHash(string id)
+        private static bool ValidateHash(string id)
         {
             const int Sha256Length = 32;
             if (string.IsNullOrWhiteSpace(id))
