@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -41,7 +42,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 throw new ArgumentNullException(nameof(httpContext));
             }
 
-            if (!Guid.TryParse(id, out _))
+            // Validate both guid and hash-based id while we're transitioning from hash-based id to guid
+            if (!Guid.TryParse(id, out _) && !ValidateHash(id))
             {
                 _logger.LogError("Invalid content id - {ContentId}.", id);
                 httpContext.Response.StatusCode = 400;
@@ -79,6 +81,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             httpContext.Response.StatusCode = 200;
             httpContext.Response.ContentLength = content.Content?.Length ?? throw new InvalidOperationException("SignedContent empty.");
             return content;
+        }
+
+        private static bool ValidateHash(string id)
+        {
+            const int Sha256Length = 32;
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return false;
+            }
+
+            if (id.Length != Sha256Length * 2)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < id.Length; i += 2)
+            {
+                if (!int.TryParse(id.AsSpan(i, 2), NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out _))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
