@@ -155,6 +155,11 @@
       </DefaultValue>
       <Value>$(SqlCmdVar__12)</Value>
     </SqlCmdVariable>
+    <SqlCmdVariable Include="DashboardData">
+      <DefaultValue>
+      </DefaultValue>
+      <Value>$(SqlCmdVar__17)</Value>
+    </SqlCmdVariable>
     <SqlCmdVariable Include="DbProvision">
       <DefaultValue>
       </DefaultValue>

@@ -16,5 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public const string IksPublishing = "IksPublishingJob";
         public const string IksIn = "IksIn";
         public const string IksOut = "IksOut";
+        public const string DashboardDataInput = "DashboardDataInput";
+        public const string DashboardData = "DashboardData";
     }
 }

@@ -43,10 +43,10 @@ GRANT SELECT ON [dbo].[Content] TO [Dbr_Service_CleanupJob];
 GRANT DELETE ON [dbo].[Content] TO [Dbr_Service_CleanupJob];
 GRANT INSERT ON [dbo].[Content] TO [Dbr_Service_CleanupJob];
 
---[Dbr_Service_ManagementPortal] 
-GRANT SELECT ON [dbo].[Content] TO [Dbr_Service_ManagementPortal];
-GRANT INSERT ON [dbo].[Content] TO [Dbr_Service_ManagementPortal];
-GRANT UPDATE ON [dbo].[Content] TO [Dbr_Service_ManagementPortal];
+--[Dbr_Service_DashboardData] 
+GRANT INSERT ON [dbo].[Content] TO [Dbr_Service_DashboardData];
+GRANT SELECT ON [dbo].[Content] TO [Dbr_Service_DashboardData];
+GRANT UPDATE ON [dbo].[Content] TO [Dbr_Service_DashboardData];
 --end 
 
 GRANT VIEW ANY COLUMN ENCRYPTION KEY DEFINITION TO PUBLIC;

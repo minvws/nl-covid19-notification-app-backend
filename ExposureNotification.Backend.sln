@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31729.503
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AF7302DA-EC4A-4A77-9092-98DEAB8B4D5C}"
 	ProjectSection(SolutionItems) = preProject
@@ -148,6 +148,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "jobs", "jobs", "{C3CD8AF9-2
 		build\pipelines\jobs\apps-publish-appiccportal-artifact.yaml = build\pipelines\jobs\apps-publish-appiccportal-artifact.yaml
 		build\pipelines\jobs\apps-publish-contentwebapi-artifact.yaml = build\pipelines\jobs\apps-publish-contentwebapi-artifact.yaml
 		build\pipelines\jobs\apps-publish-dailycleanup-artifact.yaml = build\pipelines\jobs\apps-publish-dailycleanup-artifact.yaml
+		build\pipelines\jobs\apps-publish-dashboarddata-artifact.yaml = build\pipelines\jobs\apps-publish-dashboarddata-artifact.yaml
 		build\pipelines\jobs\apps-publish-eksengine-artifact.yaml = build\pipelines\jobs\apps-publish-eksengine-artifact.yaml
 		build\pipelines\jobs\apps-publish-iccbackend-artifact.yaml = build\pipelines\jobs\apps-publish-iccbackend-artifact.yaml
 		build\pipelines\jobs\apps-publish-iksdownloader-artifact.yaml = build\pipelines\jobs\apps-publish-iksdownloader-artifact.yaml
@@ -233,6 +234,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbBuilder", "src\DbBuilder\DbBuilder.csproj", "{B5838C8F-7B59-4655-8B63-E9B15C83CA96}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfgsTestDataGenerator", "src\EfgsTestDataGenerator\EfgsTestDataGenerator.csproj", "{3A11F17C-EB8E-45EF-B3FA-E63881B64132}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DashboardData.Entities", "src\DashboardData.Entities\DashboardData.Entities.csproj", "{D2500C82-3EA0-4049-BCAF-EF994740A67D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DashboardData.EntityFramework", "src\DashboardData.EntityFramework\DashboardData.EntityFramework.csproj", "{8D6AB01E-2038-4140-BE79-4BE3ECB090BE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DashboardData.Downloader", "src\DashboardData.Downloader\DashboardData.Downloader.csproj", "{A38E9938-EA70-415B-9E4D-67A3BB2EA8E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -536,6 +543,18 @@ Global
 		{3A11F17C-EB8E-45EF-B3FA-E63881B64132}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A11F17C-EB8E-45EF-B3FA-E63881B64132}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A11F17C-EB8E-45EF-B3FA-E63881B64132}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2500C82-3EA0-4049-BCAF-EF994740A67D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2500C82-3EA0-4049-BCAF-EF994740A67D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2500C82-3EA0-4049-BCAF-EF994740A67D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2500C82-3EA0-4049-BCAF-EF994740A67D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D6AB01E-2038-4140-BE79-4BE3ECB090BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D6AB01E-2038-4140-BE79-4BE3ECB090BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D6AB01E-2038-4140-BE79-4BE3ECB090BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D6AB01E-2038-4140-BE79-4BE3ECB090BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A38E9938-EA70-415B-9E4D-67A3BB2EA8E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A38E9938-EA70-415B-9E4D-67A3BB2EA8E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A38E9938-EA70-415B-9E4D-67A3BB2EA8E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A38E9938-EA70-415B-9E4D-67A3BB2EA8E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -625,6 +644,9 @@ Global
 		{23DF13F2-1AEB-4E04-B000-9F1E0520FCD6} = {72259EEA-61F5-415E-B5D7-52F5B73EA3DE}
 		{B5838C8F-7B59-4655-8B63-E9B15C83CA96} = {854D6C6B-16DD-41C9-87E9-2E824154F3AA}
 		{3A11F17C-EB8E-45EF-B3FA-E63881B64132} = {854D6C6B-16DD-41C9-87E9-2E824154F3AA}
+		{D2500C82-3EA0-4049-BCAF-EF994740A67D} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}
+		{8D6AB01E-2038-4140-BE79-4BE3ECB090BE} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}
+		{A38E9938-EA70-415B-9E4D-67A3BB2EA8E4} = {A18FFA4C-EBAB-4456-823B-92D12279F030}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C11D180-469F-4C9C-B06C-7E12C47EB158}

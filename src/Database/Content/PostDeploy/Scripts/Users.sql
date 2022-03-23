@@ -36,6 +36,8 @@ IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'$(Domain)\$
 	CREATE LOGIN [$(Domain)\$(DbProvision)] FROM WINDOWS;
 IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'$(Domain)\$(GenTeks)')
 	CREATE LOGIN [$(Domain)\$(GenTeks)] FROM WINDOWS;
+IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'$(Domain)\$(DashboardData)')
+	CREATE LOGIN [$(Domain)\$(DashboardData)] FROM WINDOWS;
 
 
 
@@ -76,3 +78,5 @@ IF NOT EXISTS (SELECT name FROM [sys].[database_principals] WHERE name = N'$(Dom
 	CREATE USER [$(Domain)\$(DbProvision)];
 IF NOT EXISTS (SELECT name FROM [sys].[database_principals] WHERE name = N'$(Domain)\$(GenTeks)')
 	CREATE USER [$(Domain)\$(GenTeks)];
+IF NOT EXISTS (SELECT name FROM [sys].[database_principals] WHERE name = N'$(Domain)\$(DashboardData)')
+	CREATE USER [$(Domain)\$(DashboardData)];

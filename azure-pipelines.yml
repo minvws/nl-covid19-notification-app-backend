@@ -41,6 +41,7 @@ variables:
   Apps.EksEngine.ArtifactSubDirectory: 'EksEngine'
   Apps.IksDownloader.ArtifactSubDirectory: 'EfgsDownloader'
   Apps.IksUploader.ArtifactSubDirectory: 'EfgsUploader'
+  Apps.DashboardData.ArtifactSubDirectory: 'DashboardData'
   Apps.ManifestEngine.ArtifactSubDirectory: 'ManifestEngine'
   Tools.PublishContent.ArtifactSubDirectory: 'PublishContent'
   Tools.GenTeks.ArtifactSubDirectory: 'GenTeks'
@@ -91,6 +92,9 @@ stages:
 
   # EfgsUploader
   - template: /build/pipelines/jobs/apps-publish-iksuploader-artifact.yaml
+
+  # DashboardData
+  - template: /build/pipelines/jobs/apps-publish-dashboarddata-artifact.yaml
 
   # ManifestEngine
   - template: /build/pipelines/jobs/apps-publish-manifestengine-artifact.yaml

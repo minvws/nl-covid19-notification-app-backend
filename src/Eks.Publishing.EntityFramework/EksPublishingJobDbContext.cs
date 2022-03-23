@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFra
             modelBuilder.Entity<EksCreateJobInputEntity>().HasIndex(x => x.KeyData);
             modelBuilder.Entity<EksCreateJobInputEntity>().HasIndex(x => x.TekId).IsUnique();
 
-            modelBuilder.Entity<EksCreateJobOutputEntity>().HasIndex(x => new { x.OutputId, x.GaenVersion}).IsUnique(true);
+            modelBuilder.Entity<EksCreateJobOutputEntity>().HasIndex(x => new { x.OutputId, x.GaenVersion }).IsUnique(true);
         }
     }
 }

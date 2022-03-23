@@ -9,11 +9,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.En
 {
     public class DataProtectionKeysDbContext : DbContext, IDataProtectionKeyContext
     {
-        public DataProtectionKeysDbContext(DbContextOptions options)
+        public DataProtectionKeysDbContext(DbContextOptions<DataProtectionKeysDbContext> options)
             : base(options)
-        {
-
-        }
+        { }
 
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
     }

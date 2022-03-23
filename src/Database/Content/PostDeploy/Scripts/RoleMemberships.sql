@@ -14,3 +14,4 @@ ALTER ROLE [Dbr_Service_CleanupJob] ADD MEMBER [$(Domain)\$(CleanupJob)];
 ALTER ROLE [Dbr_Service_ManagementPortal] ADD MEMBER [$(Domain)\$(ManagementPortal)];
 ALTER ROLE [Dbr_Service_DbProvision] ADD MEMBER [$(Domain)\$(DbProvision)];
 ALTER ROLE [Dbr_Service_GenTeks] ADD MEMBER [$(Domain)\$(GenTeks)];
+ALTER ROLE [Dbr_Service_DashboardData] ADD MEMBER [$(Domain)\$(DashboardData)];

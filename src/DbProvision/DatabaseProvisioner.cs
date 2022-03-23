@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
@@ -31,6 +32,7 @@ namespace DbProvision
         private readonly IksInDbContext _iksInDbContext;
         private readonly IksOutDbContext _iksOutDbContext;
         private readonly IksPublishingJobDbContext _iksPublishingJobDbContext;
+        private readonly DashboardDataDbContext _dashboardDataDbContext;
 
         public DatabaseProvisioner(ILogger<DatabaseProvisioner> logger,
             WorkflowDbContext workflowDbContext,
@@ -41,7 +43,8 @@ namespace DbProvision
             DkSourceDbContext dkSourceDbContext,
             IksInDbContext iksInDbContext,
             IksOutDbContext iksOutDbContext,
-            IksPublishingJobDbContext iksPublishingJobDbContext)
+            IksPublishingJobDbContext iksPublishingJobDbContext,
+            DashboardDataDbContext dashboardDataDbContext)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
@@ -53,7 +56,7 @@ namespace DbProvision
             _iksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
             _iksOutDbContext = iksOutDbContext ?? throw new ArgumentNullException(nameof(iksOutDbContext));
             _iksPublishingJobDbContext = iksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(iksPublishingJobDbContext));
-
+            _dashboardDataDbContext = dashboardDataDbContext ?? throw new ArgumentNullException(nameof(dashboardDataDbContext));
         }
 
         public async Task ExecuteAsync(string[] args)
@@ -89,7 +92,20 @@ namespace DbProvision
             _logger.LogInformation("IksPublishingJob...");
             await ProvisionIksPublishingJob(nuke);
 
+            _logger.LogInformation("DashboardData...");
+            await ProvisionDashboardData(nuke);
+
             _logger.LogInformation("Complete.");
+        }
+
+        private async Task ProvisionDashboardData(bool nuke)
+        {
+            if (nuke)
+            {
+                await _dashboardDataDbContext.Database.EnsureDeletedAsync();
+            }
+
+            await _dashboardDataDbContext.Database.EnsureCreatedAsync();
         }
 
         private async Task ProvisionWorkflow(bool nuke)

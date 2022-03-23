@@ -20,5 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entitie
         ManifestV4,
         ManifestV5,
         ExposureKeySetV3,
+
+        DashboardData
     }
 }

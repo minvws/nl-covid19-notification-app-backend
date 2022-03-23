@@ -10,6 +10,7 @@ echo f|xcopy ..\s\src\ManifestEngine\appsettings.release.json Artifacts\Manifest
 echo f|xcopy ..\s\src\DailyCleanup\appsettings.release.json Artifacts\DailyCleanup\appsettings.json /Y
 echo f|xcopy ..\s\src\Iks.Downloader\appsettings.release.json Artifacts\EfgsDownloader\appsettings.json /Y
 echo f|xcopy ..\s\src\Iks.Uploader\appsettings.release.json Artifacts\EfgsUploader\appsettings.json /Y
+echo f|xcopy ..\s\src\DashboardData.Downloader\appsettings.release.json Artifacts\DashboardData\appsettings.json /Y
 
 echo f|xcopy ..\s\src\PublishContent\appsettings.release.json Artifacts\PublishContent\appsettings.json /Y
 echo f|xcopy ..\s\src\SigTestFileCreator\appsettings.release.json Artifacts\SigTestFileCreator\appsettings.json /Y

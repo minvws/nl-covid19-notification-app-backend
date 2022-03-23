@@ -31,6 +31,7 @@ xcopy ..\s\src\publish\ManifestEngine Artifacts\ManifestEngine /E /I
 xcopy ..\s\src\publish\DailyCleanup Artifacts\DailyCleanup /E /I
 xcopy ..\s\src\publish\EfgsDownloader Artifacts\EfgsDownloader /E /I
 xcopy ..\s\src\publish\EfgsUploader Artifacts\EfgsUploader /E /I
+xcopy ..\s\src\publish\DashboardData Artifacts\DashboardData /E /I
 
 REM Database
 REM 7z a -tzip packages\SQL\SQL.DbProvision.zip publish\Tools\DbProvision"

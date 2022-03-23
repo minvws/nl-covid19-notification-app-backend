@@ -30,6 +30,8 @@ dotnet publish Iks.Downloader\Iks.Downloader.csproj --no-self-contained --runtim
 IF %ERRORLEVEL% NEQ 0 EXIT 1
 dotnet publish Iks.Uploader\Iks.Uploader.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\EfgsUploader --version-suffix %suffix%
 IF %ERRORLEVEL% NEQ 0 EXIT 1
+dotnet publish DashboardData.Downloader\DashboardData.Downloader.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\DashboardData --version-suffix %suffix%
+IF %ERRORLEVEL% NEQ 0 EXIT 1
 
 REM Publish tools
 dotnet publish PublishContent\PublishContent.csproj --no-self-contained --runtime win-x64 --configuration Release -o publish\Tools\PublishContent --version-suffix %suffix%

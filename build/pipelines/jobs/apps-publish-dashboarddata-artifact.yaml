@@ -1,0 +1,13 @@
+jobs:  
+  - job: Build_DashboardData
+    dependsOn: Install_SDK_31x
+    variables:
+    - name: ArtifactSubfolder
+      value: $(Apps.DashboardData.ArtifactSubDirectory)
+    - name: ProjectBuildFolder
+      value: 'DashboardData.Downloader'
+    - name: ProjectPath
+      value: 'src/DashboardData.Downloader/DashboardData.Downloader.csproj'
+    displayName: 'Publish Build Artifact DashboardData'
+    steps:
+      - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'

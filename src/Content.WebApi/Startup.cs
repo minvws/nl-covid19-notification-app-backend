@@ -50,6 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi
             services.AddScoped<HttpGetCdnManifestCommand>();
             services.AddScoped<HttpGetCdnEksCommand>();
             services.AddScoped<HttpGetCdnImmutableNonExpiringContentCommand>();
+            services.AddScoped<HttpGetCdnDashboardDataCommand>();
 
             services.AddScoped<HttpGetCdnContentCommand>();
             services.AddTransient<EksCacheControlHeaderProcessor>();
