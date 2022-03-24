@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         public int SortingValue { get; set; } = 0;
         public List<PositiveTestResultsValue> Values { get; set; }
         public double InfectedPercentage { get; set; }
-        public long? InfectedMovingAverage { get; set; }
+        public MovingAverageValue InfectedMovingAverage { get; set; }
         public PositiveTestResultsValue HighlightedValue { get; set; }
     }
 
@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
     {
         public int SortingValue { get; set; } = 2;
         public List<HospitalAdmissionsValue> Values { get; set; }
-        public long? HospitalAdmissionMovingAverage { get; set; }
+        public MovingAverageValue HospitalAdmissionMovingAverage { get; set; }
         public HospitalAdmissionsValue HighlightedValue { get; set; }
     }
 
@@ -61,7 +61,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
     {
         public int SortingValue { get; set; } = 3;
         public List<IcuAdmissionsValue> Values { get; set; }
-        public long? IcuAdmissionMovingAverage { get; set; }
+        public MovingAverageValue IcuAdmissionMovingAverage { get; set; }
         public IcuAdmissionsValue HighlightedValue { get; set; }
     }
 
@@ -77,18 +77,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
         public double VaccinationCoverage18Plus { get; set; }
         public double BoosterCoverage18Plus { get; set; }
-        public BoosterCoverage BoosterCoverage { get; set; }
     }
 
-    public class BoosterCoverage
+    public class MovingAverageValue
     {
-        public List<BoosterCoverageValue> Values { get; set; }
-        public BoosterCoverageValue HighlightedValue { get; set; }
-    }
-
-    public class BoosterCoverageValue
-    {
-        public long Timestamp { get; set; }
-        public double Value { get; set; }
+        public long TimestampStart { get; set; }
+        public long TimestampEnd { get; set; }
+        public long? Value { get; set; }
     }
 }

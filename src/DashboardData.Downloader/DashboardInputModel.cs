@@ -110,13 +110,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
     {
         [JsonPropertyName("values")]
         public List<BoosterCoverageInputValue> Values { get; set; }
-
-        [JsonPropertyName("last_value")]
-        public BoosterCoverageInputValue LastValue { get; set; }
     }
 
     public class BoosterCoverageInputValue
     {
+        [JsonPropertyName("age_group")]
+        public string AgeGroup { get; set; }
+
         [JsonPropertyName("percentage")]
         public double Percentage { get; set; }
 

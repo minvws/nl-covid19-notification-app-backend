@@ -43,5 +43,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         {
             return Convert.ToInt32(Math.Floor((value - DateTimeOffset.UnixEpoch).TotalSeconds));
         }
+
+        public static double ToDateUnix(this DateTime value)
+        {
+            return value.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+        }
+
+        public static DateTime ToDateTime(long value)
+        {
+            return new DateTime(1970, 1, 1).Add(TimeSpan.FromSeconds(value));
+        }
     }
 }
