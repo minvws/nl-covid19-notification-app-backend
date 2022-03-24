@@ -120,9 +120,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         [JsonPropertyName("percentage")]
         public double Percentage { get; set; }
 
-        [JsonPropertyName("date_of_insertion_unix")]
-        public long DateOfInsertionUnix { get; set; }
-
         [JsonPropertyName("date_unix")]
         public long DateUnix { get; set; }
     }
