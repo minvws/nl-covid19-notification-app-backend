@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
                 if (dashboardInputJsonEntity == null)
                 {
-                    _logger.LogInformation("No downloaded dashboard data found, stopping.");
+                    _logger.LogInformation("No unprocessed downloaded dashboard data found, stopping.");
                     return;
                 }
 

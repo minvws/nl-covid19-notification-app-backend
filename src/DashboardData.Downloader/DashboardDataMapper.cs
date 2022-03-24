@@ -33,7 +33,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                     TimestampStart = (long)TimeConverter.ToDateTime(overallInput.LastValue.DateUnix).AddDays(-7).ToDateUnix(),
                     Value = overallInput.LastValue.InfectedMovingAverageRounded
                 },
-                InfectedPercentage = ggdInput.LastValue.InfectedPercentage
+                InfectedPercentage = ggdInput.LastValue.InfectedPercentage,
+                HighlightedValue = MapPositiveTestResultsValues(new TestedOverallInputValue[] { overallInput.LastValue }).Single()
             };
         }
 
@@ -69,7 +70,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                     TimestampEnd = firstUsableMovingAverageValue.DateUnix,
                     TimestampStart = (long)TimeConverter.ToDateTime(firstUsableMovingAverageValue.DateUnix).AddDays(-6).ToDateUnix(),
                     Value = firstUsableMovingAverageValue.AdmissionsOnDateOfAdmissionMovingAverageRounded
-                }
+                },
+                HighlightedValue = MapHospitalAdmissionsValues(new HospitalAdmissionsInputValue[] { input.LastValue }).Single()
             };
         }
 
@@ -105,7 +107,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                     TimestampEnd = firstUsableMovingAverageValue.DateUnix,
                     TimestampStart = (long)TimeConverter.ToDateTime(firstUsableMovingAverageValue.DateUnix).AddDays(-7).ToDateUnix(),
                     Value = firstUsableMovingAverageValue.AdmissionsOnDateOfAdmissionMovingAverageRounded
-                }
+                },
+                HighlightedValue = MapIcuAdmissionsValues(new HospitalAdmissionsInputValue[] { input.LastValue }).Single()
             };
         }
 
