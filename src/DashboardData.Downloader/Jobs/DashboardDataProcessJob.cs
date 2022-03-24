@@ -67,7 +67,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
                 _logger.LogInformation("Done mapping dashboard data to output model; serializing into output json.");
 
-                var outputJson = JsonSerializer.Serialize(dashboardDataOutputModel);
+                var outputJson = JsonSerializer.Serialize(dashboardDataOutputModel, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
 
                 var dashboardOutputJsonEntity = new DashboardOutputJsonEntity
                 {
