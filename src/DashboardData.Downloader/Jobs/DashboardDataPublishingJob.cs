@@ -42,45 +42,62 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
         public void Run()
         {
-            // Get latest output json data
-            var outputJsonEntity = _dbContext.DashboardOutputJson
-                .OrderByDescending(x => x.CreatedDate)
-                .FirstOrDefault();
-
-            if (outputJsonEntity == null)
+            try
             {
-                _logger.LogInformation("No output dashboard data found, stopping.");
-                return;
+                // Get latest output json data
+                var outputJsonEntity = _dbContext.DashboardOutputJson
+                    .Where(x => x.PublishedDate == null)
+                    .OrderByDescending(x => x.CreatedDate)
+                    .FirstOrDefault();
+
+                if (outputJsonEntity == null)
+                {
+                    _logger.LogInformation("No output dashboard data found, stopping.");
+                    return;
+                }
+
+                var outputJson = outputJsonEntity.JsonData;
+
+                if (string.IsNullOrEmpty(outputJson))
+                {
+                    _logger.LogError("No output dashboard json string found, stopping.");
+                    return;
+                }
+
+                // Publish output to content db
+                var contentArgs = new ContentArgs
+                {
+                    Release = _dateTimeProvider.Snapshot,
+                    ContentType = ContentTypes.DashboardData,
+                    Json = outputJson
+                };
+
+                if (!_validator.IsValid(contentArgs))
+                {
+                    throw new InvalidOperationException($"Content not valid, creation date of entity: {outputJsonEntity.CreatedDate}");
+                }
+
+                _logger.LogDebug("Writing DashboardData to database.");
+
+                _contentDbContext.BeginTransaction();
+                _insertDbCommand.ExecuteAsync(contentArgs).GetAwaiter().GetResult();
+                _contentDbContext.SaveAndCommit();
+
+                _logger.LogDebug("Done writing DashboardData to database.");
+
+                // Mark dashboard json as published
+                _logger.LogInformation("Marking dashboard json as published");
+
+                using (_dbContext.BeginTransaction())
+                {
+                    outputJsonEntity.PublishedDate = DateTime.UtcNow;
+                    _dbContext.SaveAndCommit();
+                }
             }
-
-            var outputJson = outputJsonEntity.JsonData;
-
-            if (string.IsNullOrEmpty(outputJson))
+            catch (Exception ex)
             {
-                _logger.LogError("No output dashboard json string found, stopping.");
-                return;
+                _logger.LogError(ex, "Error publishing dashboard json");
             }
-
-            // Publish output to content db
-            var contentArgs = new ContentArgs
-            {
-                Release = _dateTimeProvider.Snapshot,
-                ContentType = ContentTypes.DashboardData,
-                Json = outputJson
-            };
-
-            if (!_validator.IsValid(contentArgs))
-            {
-                throw new InvalidOperationException($"Content not valid, creation date of entity: {outputJsonEntity.CreatedDate}");
-            }
-
-            _logger.LogDebug("Writing {ContentType} to database.", contentArgs.ContentType);
-
-            _contentDbContext.BeginTransaction();
-            _insertDbCommand.ExecuteAsync(contentArgs).GetAwaiter().GetResult();
-            _contentDbContext.SaveAndCommit();
-
-            _logger.LogDebug("Done writing {ContentType} to database.", contentArgs.ContentType);
         }
     }
 }
