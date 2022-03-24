@@ -21,6 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         public List<PositiveTestResultsValue> Values { get; set; }
         public double InfectedPercentage { get; set; }
         public long? InfectedMovingAverage { get; set; }
+        public PositiveTestResultsValue HighlightedValue { get; set; }
     }
 
     public class PositiveTestResultsValue
@@ -33,6 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
     {
         public int SortingValue { get; set; } = 1;
         public List<CoronaMelderUsersValue> Values { get; set; }
+        public CoronaMelderUsersValue HighlightedValue { get; set; }
     }
 
     public class CoronaMelderUsersValue
@@ -46,6 +48,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         public int SortingValue { get; set; } = 2;
         public List<HospitalAdmissionsValue> Values { get; set; }
         public long? HospitalAdmissionMovingAverage { get; set; }
+        public HospitalAdmissionsValue HighlightedValue { get; set; }
     }
 
     public class HospitalAdmissionsValue
@@ -59,6 +62,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         public int SortingValue { get; set; } = 3;
         public List<IcuAdmissionsValue> Values { get; set; }
         public long? IcuAdmissionMovingAverage { get; set; }
+        public IcuAdmissionsValue HighlightedValue { get; set; }
     }
 
     public class IcuAdmissionsValue
@@ -79,6 +83,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
     public class BoosterCoverage
     {
         public List<BoosterCoverageValue> Values { get; set; }
+        public BoosterCoverageValue HighlightedValue { get; set; }
     }
 
     public class BoosterCoverageValue

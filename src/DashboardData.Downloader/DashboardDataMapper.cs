@@ -27,7 +27,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
             {
                 Values = MapPositiveTestResultsValues(overallInput.Values.Where(x => dateWithinCutOffRange(x.DateUnix, 0, cutOffInDays))),
                 InfectedMovingAverage = overallInput.LastValue.InfectedMovingAverageRounded,
-                InfectedPercentage = ggdInput.LastValue.InfectedPercentage
+                InfectedPercentage = ggdInput.LastValue.InfectedPercentage,
+                HighlightedValue = MapPositiveTestResultsValues(new TestedOverallInputValue[] { overallInput.LastValue }).Single()
             };
         }
 
@@ -56,7 +57,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                     x => dateWithinCutOffRange(x.DateUnix, offsetInDays, cutOffInDays))),
                 HospitalAdmissionMovingAverage = input.Values
                     .OrderByDescending(x => x.DateUnix)
-                    .First(x => x.AdmissionsOnDateOfAdmissionMovingAverageRounded != null).AdmissionsOnDateOfAdmissionMovingAverageRounded
+                    .First(x => x.AdmissionsOnDateOfAdmissionMovingAverageRounded != null).AdmissionsOnDateOfAdmissionMovingAverageRounded,
+                HighlightedValue = MapHospitalAdmissionsValues(new HospitalAdmissionsInputValue[] { input.LastValue }).Single()
             };
         }
 
@@ -85,7 +87,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                     x => dateWithinCutOffRange(x.DateUnix, offsetInDays, cutOffInDays))),
                 IcuAdmissionMovingAverage = input.Values
                     .OrderByDescending(x => x.DateUnix)
-                    .First(x => x.AdmissionsOnDateOfAdmissionMovingAverageRounded != null).AdmissionsOnDateOfAdmissionMovingAverageRounded
+                    .First(x => x.AdmissionsOnDateOfAdmissionMovingAverageRounded != null).AdmissionsOnDateOfAdmissionMovingAverageRounded,
+                HighlightedValue = MapIcuAdmissionsValues(new HospitalAdmissionsInputValue[] { input.LastValue }).Single()
             };
         }
 
@@ -115,7 +118,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         {
             return new BoosterCoverage
             {
-                Values = MapBoosterCoverageValues(boosterInput.Values.Where(x => dateWithinCutOffRange(x.DateUnix, 0, cutOffInDays)))
+                Values = MapBoosterCoverageValues(boosterInput.Values.Where(x => dateWithinCutOffRange(x.DateUnix, 0, cutOffInDays))),
+                HighlightedValue = MapBoosterCoverageValues(new BoosterCoverageInputValue[] { boosterInput.LastValue }).Single()
             };
         }
 
