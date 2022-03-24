@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 {
@@ -17,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                 PositiveTestResults = MapPositiveTestResults(input.TestedOverallInput, input.TestedGgdInput, cutOffInDays),
                 HospitalAdmissions = MapHospitalAdmissions(input.GeneralHospitalAdmissions, cutOffInDays),
                 IcuAdmissions = MapIcuAdmissions(input.IntensiveCareAdmissions, cutOffInDays),
-                VaccinationCoverage = MapVaccinationCoverage(input.VaccineCoveragePerAgeGroup, input.BoosterCoverage, cutOffInDays)
+                VaccinationCoverage = MapVaccinationCoverage(input.VaccineCoveragePerAgeGroup, input.BoosterCoverage)
             };
         }
 
@@ -26,8 +27,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
             return new PositiveTestResults
             {
                 Values = MapPositiveTestResultsValues(overallInput.Values.Where(x => dateWithinCutOffRange(x.DateUnix, 0, cutOffInDays))),
-                InfectedMovingAverage = overallInput.LastValue.InfectedMovingAverageRounded,
-                InfectedPercentage = ggdInput.LastValue.InfectedPercentage
+                InfectedMovingAverage = new MovingAverageValue
+                {
+                    TimestampEnd = overallInput.LastValue.DateUnix,
+                    TimestampStart = (long)TimeConverter.ToDateTime(overallInput.LastValue.DateUnix).AddDays(-7).ToDateUnix(),
+                    Value = overallInput.LastValue.InfectedMovingAverageRounded
+                },
+                InfectedPercentage = ggdInput.LastValue.InfectedPercentage,
+                HighlightedValue = MapPositiveTestResultsValues(new TestedOverallInputValue[] { overallInput.LastValue }).Single()
             };
         }
 
@@ -50,13 +57,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
             var offsetInDays = 5;
 
+            var firstUsableMovingAverageValue = input.Values
+                .OrderByDescending(x => x.DateUnix)
+                .First(x => x.AdmissionsOnDateOfAdmissionMovingAverageRounded != null);
+
             return new HospitalAdmissions
             {
                 Values = MapHospitalAdmissionsValues(input.Values.Where(
                     x => dateWithinCutOffRange(x.DateUnix, offsetInDays, cutOffInDays))),
-                HospitalAdmissionMovingAverage = input.Values
-                    .OrderByDescending(x => x.DateUnix)
-                    .First(x => x.AdmissionsOnDateOfAdmissionMovingAverageRounded != null).AdmissionsOnDateOfAdmissionMovingAverageRounded
+                HospitalAdmissionMovingAverage = new MovingAverageValue
+                {
+                    TimestampEnd = firstUsableMovingAverageValue.DateUnix,
+                    TimestampStart = (long)TimeConverter.ToDateTime(firstUsableMovingAverageValue.DateUnix).AddDays(-6).ToDateUnix(),
+                    Value = firstUsableMovingAverageValue.AdmissionsOnDateOfAdmissionMovingAverageRounded
+                },
+                HighlightedValue = MapHospitalAdmissionsValues(new HospitalAdmissionsInputValue[] { input.LastValue }).Single()
             };
         }
 
@@ -79,13 +94,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
             var offsetInDays = 4;
 
+            var firstUsableMovingAverageValue = input.Values
+                .OrderByDescending(x => x.DateUnix)
+                .First(x => x.AdmissionsOnDateOfAdmissionMovingAverageRounded != null);
+
             return new IcuAdmissions
             {
                 Values = MapIcuAdmissionsValues(input.Values.Where(
                     x => dateWithinCutOffRange(x.DateUnix, offsetInDays, cutOffInDays))),
-                IcuAdmissionMovingAverage = input.Values
-                    .OrderByDescending(x => x.DateUnix)
-                    .First(x => x.AdmissionsOnDateOfAdmissionMovingAverageRounded != null).AdmissionsOnDateOfAdmissionMovingAverageRounded
+                IcuAdmissionMovingAverage = new MovingAverageValue
+                {
+                    TimestampEnd = firstUsableMovingAverageValue.DateUnix,
+                    TimestampStart = (long)TimeConverter.ToDateTime(firstUsableMovingAverageValue.DateUnix).AddDays(-7).ToDateUnix(),
+                    Value = firstUsableMovingAverageValue.AdmissionsOnDateOfAdmissionMovingAverageRounded
+                },
+                HighlightedValue = MapIcuAdmissionsValues(new HospitalAdmissionsInputValue[] { input.LastValue }).Single()
             };
         }
 
@@ -100,37 +123,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
         private static VaccinationCoverage MapVaccinationCoverage(
             VaccineCoveragePerAgeGroupInput vaccineInput,
-            BoosterCoverageInput boosterInput,
-            int cutOffInDays)
+            BoosterCoverageInput boosterInput)
         {
             return new VaccinationCoverage
             {
                 VaccinationCoverage18Plus = vaccineInput.LastValue.Age18_PlusFullyVaccinated,
-                BoosterCoverage18Plus = boosterInput.LastValue.Percentage,
-                BoosterCoverage = MapBoosterCoverage(boosterInput, cutOffInDays)
+                BoosterCoverage18Plus = boosterInput.Values.Where(x => "18+".Equals(x.AgeGroup)).FirstOrDefault().Percentage
             };
-        }
-
-        private static BoosterCoverage MapBoosterCoverage(BoosterCoverageInput boosterInput, int cutOffInDays)
-        {
-            return new BoosterCoverage
-            {
-                Values = MapBoosterCoverageValues(boosterInput.Values.Where(x => dateWithinCutOffRange(x.DateUnix, 0, cutOffInDays)))
-            };
-        }
-
-        private static List<BoosterCoverageValue> MapBoosterCoverageValues(IEnumerable<BoosterCoverageInputValue> input)
-        {
-            return input.Select(x => new BoosterCoverageValue
-            {
-                Timestamp = x.DateUnix,
-                Value = x.Percentage
-            }).ToList();
-        }
-
-        private static double ToDateUnix(this DateTime value)
-        {
-            return value.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
         }
 
         private static readonly Func<long, int, int, bool> dateWithinCutOffRange =
