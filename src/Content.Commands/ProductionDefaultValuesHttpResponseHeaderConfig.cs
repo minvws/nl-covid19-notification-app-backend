@@ -8,5 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
     {
         public string ManifestCacheControl => "s-maxage=30";
         public string ImmutableContentCacheControl => "immutable";
+        public string DashboardDataCacheControl => "s-maxage=30";
     }
 }
