@@ -17,5 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 
         public string ManifestCacheControl => GetConfigValue(nameof(ManifestCacheControl), productionDefaultValues.ManifestCacheControl);
         public string ImmutableContentCacheControl => GetConfigValue(nameof(ImmutableContentCacheControl), productionDefaultValues.ImmutableContentCacheControl);
+        public string DashboardDataCacheControl => GetConfigValue(nameof(DashboardDataCacheControl), productionDefaultValues.DashboardDataCacheControl);
+
     }
 }
