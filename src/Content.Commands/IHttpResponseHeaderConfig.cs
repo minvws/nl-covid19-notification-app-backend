@@ -8,5 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
     {
         string ManifestCacheControl { get; }
         string ImmutableContentCacheControl { get; }
+        string DashboardDataCacheControl { get; }
     }
 }

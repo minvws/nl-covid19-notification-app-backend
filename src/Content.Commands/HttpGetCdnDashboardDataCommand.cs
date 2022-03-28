@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             httpContext.Response.Headers.Add("etag", e.PublishingId);
             httpContext.Response.Headers.Add("last-modified", e.Release.ToUniversalTime().ToString("r"));
             httpContext.Response.Headers.Add("content-type", e.ContentTypeName);
-            httpContext.Response.Headers.Add("cache-control", _httpResponseHeaderConfig.ImmutableContentCacheControl);
+            httpContext.Response.Headers.Add("cache-control", _httpResponseHeaderConfig.DashboardDataCacheControl);
 
             httpContext.Response.StatusCode = 200;
             httpContext.Response.ContentLength = e.Content?.Length ?? throw new InvalidOperationException("SignedContent empty.");
