@@ -40,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
     public class CoronaMelderUsersValue
     {
         public long Timestamp { get; set; }
-        public long Value { get; set; }
+        public double Value { get; set; }
     }
 
     public class HospitalAdmissions
