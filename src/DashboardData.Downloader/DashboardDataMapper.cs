@@ -18,8 +18,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                 PositiveTestResults = MapPositiveTestResults(input.TestedOverallInput, input.TestedGgdInput, cutOffInDays),
                 HospitalAdmissions = MapHospitalAdmissions(input.GeneralHospitalAdmissions, cutOffInDays),
                 IcuAdmissions = MapIcuAdmissions(input.IntensiveCareAdmissions, cutOffInDays),
-                VaccinationCoverage = MapVaccinationCoverage(input.VaccineCoveragePerAgeGroup, input.BoosterCoverage)
+                VaccinationCoverage = MapVaccinationCoverage(input.VaccineCoveragePerAgeGroup, input.BoosterCoverage),
+                CoronaMelderUsers = MapCoronMelderUsers(input.CoronaMelderUsersInput, cutOffInDays)
             };
+        }
+
+        private static CoronaMelderUsers MapCoronMelderUsers(CoronaMelderUsersInput input, int cutOffInDays)
+        {
+            return new CoronaMelderUsers
+            {
+                Values = MapCoronaMelderUsersValues(input.Values.Where(x => x.LastDate > DateTime.UtcNow.AddDays(-cutOffInDays))),
+                HighlightedValue = MapCoronaMelderUsersValues(new CoronaMelderUsersInputValue[] { input.Values.OrderByDescending(x => x.LastDate).First() }).Single()
+            };
+        }
+
+        private static List<CoronaMelderUsersValue> MapCoronaMelderUsersValues(IEnumerable<CoronaMelderUsersInputValue> input)
+        {
+            return input.Select(x => new CoronaMelderUsersValue
+            {
+                Value = x.AverageDailyUsers,
+                Timestamp = new DateTimeOffset(x.LastDate).ToUnixTimeSeconds()
+            }).ToList();
         }
 
         private static PositiveTestResults MapPositiveTestResults(TestedOverallInput overallInput, TestedGgdInput ggdInput, int cutOffInDays)

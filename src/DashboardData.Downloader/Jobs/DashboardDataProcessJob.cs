@@ -62,6 +62,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
                 var dashboardInputModel = JsonSerializer.Deserialize<DashboardInputModel>(jsonString);
 
+                // Add the active user data from CDN
+                var cdnStatsEntity = _dbContext.CdnStats.Select(x => x);
+                dashboardInputModel.CoronaMelderUsersInput = new CoronaMelderUsersInput
+                {
+                    Values = cdnStatsEntity.Select(x => new CoronaMelderUsersInputValue
+                    {
+                        AverageDailyUsers = x.AverageDailyUsers,
+                        FirstDate = x.FirstDate,
+                        LastDate = x.LastDate
+                    }).ToList()
+                };
+
                 // Process into output model
                 var dashboardDataOutputModel = DashboardDataMapper.Map(dashboardInputModel, _dashboardDataConfig.CutOffInDays);
 

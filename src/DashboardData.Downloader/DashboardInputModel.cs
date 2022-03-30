@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -26,6 +27,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
         [JsonPropertyName("booster_coverage")]
         public BoosterCoverageInput BoosterCoverage { get; set; }
+
+        public CoronaMelderUsersInput CoronaMelderUsersInput { get; set; }
     }
 
     public class HospitalAdmissionsInput
@@ -122,5 +125,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
         [JsonPropertyName("date_unix")]
         public long DateUnix { get; set; }
+    }
+
+    public class CoronaMelderUsersInput
+    {
+        public List<CoronaMelderUsersInputValue> Values { get; set; }
+    }
+
+    public class CoronaMelderUsersInputValue
+    {
+        public DateTime FirstDate { get; set; }
+        public DateTime LastDate { get; set; }
+        public double AverageDailyUsers { get; set; }
     }
 }
