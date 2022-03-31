@@ -7,19 +7,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
     public class ProductionDefaultValuesDashboardDataConfig : IDashboardDataConfig
     {
         public string DashboardDataDownloadUrl => string.Empty;
-
         public int CutOffInDays => 35;
-
         public string DashboardOverviewExternalLink => string.Empty;
-
         public string PositiveTestResultsExternalLink => string.Empty;
-
         public string HospitalAdmissionsExternalLink => string.Empty;
-
         public string IcuAdmissionsExternalLink => string.Empty;
-
         public string VaccinationCoverageExternalLink => string.Empty;
-
         public string CoronaMelderUsersExternalLink => string.Empty;
     }
 }
