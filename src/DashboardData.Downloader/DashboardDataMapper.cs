@@ -19,11 +19,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                 HospitalAdmissions = MapHospitalAdmissions(input.GeneralHospitalAdmissions, cutOffInDays),
                 IcuAdmissions = MapIcuAdmissions(input.IntensiveCareAdmissions, cutOffInDays),
                 VaccinationCoverage = MapVaccinationCoverage(input.VaccineCoveragePerAgeGroup, input.BoosterCoverage),
-                CoronaMelderUsers = MapCoronMelderUsers(input.CoronaMelderUsersInput, cutOffInDays)
+                CoronaMelderUsers = MapCoronaMelderUsers(input.CoronaMelderUsersInput, cutOffInDays)
             };
         }
 
-        private static CoronaMelderUsers MapCoronMelderUsers(CoronaMelderUsersInput input, int cutOffInDays)
+        private static CoronaMelderUsers MapCoronaMelderUsers(CoronaMelderUsersInput input, int cutOffInDays)
         {
             return new CoronaMelderUsers
             {

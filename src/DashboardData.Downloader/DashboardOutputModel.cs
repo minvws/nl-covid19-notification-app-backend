@@ -13,6 +13,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         public IcuAdmissions IcuAdmissions { get; set; }
         public VaccinationCoverage VaccinationCoverage { get; set; }
         public CoronaMelderUsers CoronaMelderUsers { get; set; }
+        public string MoreInfoUrl { get; set; }
     }
 
     public class PositiveTestResults
@@ -22,6 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         public double InfectedPercentage { get; set; }
         public MovingAverageValue InfectedMovingAverage { get; set; }
         public PositiveTestResultsValue HighlightedValue { get; set; }
+        public string MoreInfoUrl { get; set; }
     }
 
     public class PositiveTestResultsValue
@@ -35,6 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         public int SortingValue { get; set; } = 1;
         public List<CoronaMelderUsersValue> Values { get; set; }
         public CoronaMelderUsersValue HighlightedValue { get; set; }
+        public string MoreInfoUrl { get; set; }
     }
 
     public class CoronaMelderUsersValue
@@ -49,6 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         public List<HospitalAdmissionsValue> Values { get; set; }
         public MovingAverageValue HospitalAdmissionMovingAverage { get; set; }
         public HospitalAdmissionsValue HighlightedValue { get; set; }
+        public string MoreInfoUrl { get; set; }
     }
 
     public class HospitalAdmissionsValue
@@ -63,6 +67,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         public List<IcuAdmissionsValue> Values { get; set; }
         public MovingAverageValue IcuAdmissionMovingAverage { get; set; }
         public IcuAdmissionsValue HighlightedValue { get; set; }
+        public string MoreInfoUrl { get; set; }
     }
 
     public class IcuAdmissionsValue
@@ -77,6 +82,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
         public double VaccinationCoverage18Plus { get; set; }
         public double BoosterCoverage18Plus { get; set; }
+        public string MoreInfoUrl { get; set; }
     }
 
     public class MovingAverageValue

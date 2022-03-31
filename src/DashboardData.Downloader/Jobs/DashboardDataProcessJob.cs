@@ -58,26 +58,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                     return;
                 }
 
-                _logger.LogInformation("Retrieved downloaded json; deserializing into input model.");
+                _logger.LogInformation("Retrieved downloaded json.");
 
-                var dashboardInputModel = JsonSerializer.Deserialize<DashboardInputModel>(jsonString);
+                // Transform downloaded json data into our output model
+                var dashboardInputModel = CreateInputModel(jsonString);
+                var dashboardDataOutputModel = CreateOutputModel(dashboardInputModel);
 
-                // Add the active user data from CDN
-                var cdnStatsEntity = _dbContext.CdnStats.Select(x => x);
-                dashboardInputModel.CoronaMelderUsersInput = new CoronaMelderUsersInput
-                {
-                    Values = cdnStatsEntity.Select(x => new CoronaMelderUsersInputValue
-                    {
-                        AverageDailyUsers = x.AverageDailyUsers,
-                        FirstDate = x.FirstDate,
-                        LastDate = x.LastDate
-                    }).ToList()
-                };
-
-                // Process into output model
-                var dashboardDataOutputModel = DashboardDataMapper.Map(dashboardInputModel, _dashboardDataConfig.CutOffInDays);
-
-                _logger.LogInformation("Done mapping dashboard data to output model; serializing into output json.");
+                _logger.LogInformation("Serializing into output json.");
 
                 var outputJson = JsonSerializer.Serialize(dashboardDataOutputModel, new JsonSerializerOptions
                 {
@@ -114,6 +101,44 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
             {
                 _logger.LogError(ex, "Error processing dashboard json");
             }
+        }
+
+        private DashboardInputModel CreateInputModel(string jsonString)
+        {
+            _logger.LogInformation("Creating input model.");
+
+            var result = JsonSerializer.Deserialize<DashboardInputModel>(jsonString);
+
+            // Add the active user data from CDN
+            var cdnStatsEntity = _dbContext.CdnStats.Select(x => x);
+            result.CoronaMelderUsersInput = new CoronaMelderUsersInput
+            {
+                Values = cdnStatsEntity.Select(x => new CoronaMelderUsersInputValue
+                {
+                    AverageDailyUsers = x.AverageDailyUsers,
+                    FirstDate = x.FirstDate,
+                    LastDate = x.LastDate
+                }).ToList()
+            };
+
+            return result;
+        }
+
+        private DashboardOutputModel CreateOutputModel(DashboardInputModel inputModel)
+        {
+            _logger.LogInformation("Creating output model.");
+
+            var result = DashboardDataMapper.Map(inputModel, _dashboardDataConfig.CutOffInDays);
+
+            // Add links to Coronadashboard pages
+            result.MoreInfoUrl = _dashboardDataConfig.DashboardOverviewExternalLink;
+            result.PositiveTestResults.MoreInfoUrl = _dashboardDataConfig.PositiveTestResultsExternalLink;
+            result.HospitalAdmissions.MoreInfoUrl = _dashboardDataConfig.HospitalAdmissionsExternalLink;
+            result.IcuAdmissions.MoreInfoUrl = _dashboardDataConfig.IcuAdmissionsExternalLink;
+            result.VaccinationCoverage.MoreInfoUrl = _dashboardDataConfig.VaccinationCoverageExternalLink;
+            result.CoronaMelderUsers.MoreInfoUrl = _dashboardDataConfig.CoronaMelderUsersExternalLink;
+
+            return result;
         }
     }
 }
