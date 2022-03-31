@@ -170,10 +170,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
         public void Gaen15SameDay_UsingCurrentDateTime_TekReleaseOn_Publishing()
         {
             var utcDateToday = DateTime.UtcNow.Date;
-            var year = DateTime.UtcNow.Date.Year;
-            var month = DateTime.UtcNow.Date.Month;
-            var today = DateTime.UtcNow.Date.Day;
-            var tomorrow = DateTime.UtcNow.Date.AddDays(1).Day;
+
+            var year = utcDateToday.Year;
+            var month = utcDateToday.Month;
+            var today = utcDateToday.Day;
+
+            var utcDateTomorrow = utcDateToday.AddDays(1);
+            var tomorrowYear = utcDateTomorrow.Year;
+            var tomorrowMonth = utcDateTomorrow.Month;
+            var tomorrow = utcDateTomorrow.Day;
 
             // -14 days to today
             var deviceTeks = Enumerable.Range(0, 14).Select(x => GenerateTek(utcDateToday.AddDays(-x).Year, utcDateToday.AddDays(-x).Month, utcDateToday.AddDays(-x).Day, 1)).ToList();
@@ -193,7 +198,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
 
             // Tomorrow
             deviceTeks.RemoveAt(0);
-            deviceTeks.Add(GenerateTek(year, month, tomorrow, 1)); //1st key for today
+            deviceTeks.Add(GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 1)); //1st key for today
             Assert.Equal(15, deviceTeks.Count);
 
 
@@ -204,7 +209,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
             };
             Write(w, new Tek[0]);
 
-            deviceTeks.Add(GenerateTek(year, month, tomorrow, 2)); //2nd key for today
+            deviceTeks.Add(GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 2)); //2nd key for today
             Assert.Equal(16, deviceTeks.Count);
             Assert.Empty(Publish(utcDateToday.AddHours(9).AddMinutes(36)));
 
@@ -215,7 +220,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
             Assert.Equal(14, filteredResult.Items.Length);
             Write(w, filteredResult.Items);
             //Get after post
-            deviceTeks.Add(GenerateTek(year, month, tomorrow, 3));
+            deviceTeks.Add(GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 3));
             Assert.Equal(17, deviceTeks.Count);
 
             //11:20 Server publishes Server publishes K0902.1 through K0915.2 to the CDN. 
@@ -228,7 +233,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
             Assert.Empty(filteredResult.Items);
             Assert.Equal(17, filteredResult.Messages.Length); //14.00h Server silently discards all keys as they arrive > 120 minutes after GGD code
 
-            deviceTeks.Add(GenerateTek(year, month, tomorrow, 4));
+            deviceTeks.Add(GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 4));
             Assert.Equal(18, deviceTeks.Count);
 
             Assert.Empty(Publish(utcDateToday.AddDays(1).AddHours(23).AddMinutes(59)));
@@ -258,30 +263,38 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
             var year = utcDateToday.Year;
             var month = utcDateToday.Month;
             var today = utcDateToday.Day;
-            var yesterday = utcDateToday.AddDays(-1).Day;
-            var tomorrow = utcDateToday.AddDays(1).Day;
+
+            var utcDateYesterday = utcDateToday.AddDays(-1);
+            var yesterdayYear = utcDateYesterday.Year;
+            var yesterdayMonth = utcDateYesterday.Month;
+            var yesterday = utcDateYesterday.Day;
+
+            var utcDateTomorrow = utcDateToday.AddDays(1);
+            var tomorrowYear = utcDateTomorrow.Year;
+            var tomorrowMonth = utcDateTomorrow.Month;
+            var tomorrow = utcDateTomorrow.Day;
 
             // add keys from yesterday, today and tomorrow
             var deviceTeks = new List<Tek>
             {
-                GenerateTek(year, month, yesterday, 1, 1),
-                GenerateTek(year, month, yesterday, 2, 57),
-                GenerateTek(year, month, yesterday, 3, 58),
-                GenerateTek(year, month, yesterday, 4, 69),
-                GenerateTek(year, month, yesterday, 5, 70),
-                GenerateTek(year, month, yesterday, 6, 144),
+                GenerateTek(yesterdayYear, yesterdayMonth, yesterday, 1, 1),
+                GenerateTek(yesterdayYear, yesterdayMonth, yesterday, 2, 57),
+                GenerateTek(yesterdayYear, yesterdayMonth, yesterday, 3, 58),
+                GenerateTek(yesterdayYear, yesterdayMonth, yesterday, 4, 69),
+                GenerateTek(yesterdayYear, yesterdayMonth, yesterday, 5, 70),
+                GenerateTek(yesterdayYear, yesterdayMonth, yesterday, 6, 144),
                 GenerateTek(year, month, today, 7, 1),
                 GenerateTek(year, month, today, 8, 57), // 9:30 AM UTC (before embargo  time)
                 GenerateTek(year, month, today, 9, 58), // 9:40 AM UTC (before embargo  time)
                 GenerateTek(year, month, today, 10, 69), // 11:30 AM UTC (before embargo  time)
                 GenerateTek(year, month, today, 11, 70), // 11:40 AM UTC (after embargo  time)
                 GenerateTek(year, month, today, 12, 144),
-                GenerateTek(year, month, tomorrow, 13, 1),
-                GenerateTek(year, month, tomorrow, 14, 57),
-                GenerateTek(year, month, tomorrow, 15, 58),
-                GenerateTek(year, month, tomorrow, 16, 69),
-                GenerateTek(year, month, tomorrow, 17, 70),
-                GenerateTek(year, month, tomorrow, 18, 144)
+                GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 13, 1),
+                GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 14, 57),
+                GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 15, 58),
+                GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 16, 69),
+                GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 17, 70),
+                GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 18, 144)
             };
 
 
