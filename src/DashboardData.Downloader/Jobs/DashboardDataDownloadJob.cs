@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
@@ -52,7 +53,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                     return;
                 }
 
-                //TODO: add check on last_generated
+                // Check if we didn't accidentally got served a stale json
+                var lastGeneratedDate = GetLastGeneratedDateFromJson(jsonString);
+                if (!IsLastGeneratedFresh(lastGeneratedDate))
+                {
+                    _logger.LogError("New dashboard json was generated before the last download");
+                    return;
+                }
 
                 var dashboardInputJsonEntity = new DashboardInputJsonEntity()
                 {
@@ -73,6 +80,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
             {
                 _logger.LogError(ex, "Error downloading dashboard json");
             }
+        }
+
+        private bool IsLastGeneratedFresh(long lastGeneratedDate)
+        {
+            var result = true;
+
+            var lastDownloadedJson = _dbContext.DashboardInputJson.OrderByDescending(x => x.DownloadedDate).FirstOrDefault();
+            if (lastDownloadedJson != null)
+            {
+                var lastDownloadedDate = lastDownloadedJson.DownloadedDate ?? DateTime.MinValue;
+                if (new DateTimeOffset(lastDownloadedDate).ToUnixTimeSeconds() > lastGeneratedDate)
+                {
+                    result = false;
+                }
+            }
+
+            return result;
+        }
+
+        private static long GetLastGeneratedDateFromJson(string jsonString)
+        {
+            using var document = JsonDocument.Parse(jsonString);
+            var lastGenerated = document.RootElement.GetProperty("last_generated");
+            _ = long.TryParse(lastGenerated.ToString(), out var result);
+            return result;
         }
     }
 }
