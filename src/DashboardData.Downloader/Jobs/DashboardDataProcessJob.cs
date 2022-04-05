@@ -89,7 +89,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                 // Mark downloaded json as processed
                 var hash = _sha256HashService.Create(Encoding.UTF8.GetBytes(jsonString));
 
-                _logger.LogInformation("Marking dashboard json with has {Hash} as processed", hash);
+                _logger.LogInformation("Marking dashboard json with hash {Hash} as processed", hash);
 
                 await using (_dbContext.BeginTransaction())
                 {
@@ -128,17 +128,40 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         {
             _logger.LogInformation("Creating output model.");
 
-            var result = DashboardDataMapper.Map(inputModel, _dashboardDataConfig.CutOffInDays);
+            var result = DashboardDataMapper.Map(inputModel);
+
+            // Add sorting values (for presentation ordering)
+            result.PositiveTestResults.SortingValue = _dashboardDataConfig.PositiveTestResultsSortingValue;
+            result.CoronaMelderUsers.SortingValue = _dashboardDataConfig.CoronaMelderUsersSortingValue;
+            result.HospitalAdmissions.SortingValue = _dashboardDataConfig.HospitalAdmissionsSortingValue;
+            result.IcuAdmissions.SortingValue = _dashboardDataConfig.IcuAdmissionsSortingValue;
+            result.VaccinationCoverage.SortingValue = _dashboardDataConfig.VaccinationCoverageSortingValue;
 
             // Add links to Coronadashboard pages
             result.MoreInfoUrl = _dashboardDataConfig.DashboardOverviewExternalLink;
             result.PositiveTestResults.MoreInfoUrl = _dashboardDataConfig.PositiveTestResultsExternalLink;
+            result.CoronaMelderUsers.MoreInfoUrl = _dashboardDataConfig.CoronaMelderUsersExternalLink;
             result.HospitalAdmissions.MoreInfoUrl = _dashboardDataConfig.HospitalAdmissionsExternalLink;
             result.IcuAdmissions.MoreInfoUrl = _dashboardDataConfig.IcuAdmissionsExternalLink;
             result.VaccinationCoverage.MoreInfoUrl = _dashboardDataConfig.VaccinationCoverageExternalLink;
-            result.CoronaMelderUsers.MoreInfoUrl = _dashboardDataConfig.CoronaMelderUsersExternalLink;
+
+            // Filter output values that fall outside configured cut-off window
+            var cutOffInDays = _dashboardDataConfig.CutOffInDays;
+            var hospitalAdmissionsOffset = 5;  // data for the most recent days is not dependable enough; t-5 is used as start.
+            var icuAdmissionsOffset = 4;  //data for the most recent days is not dependable enough; t-4 is used as start.
+
+            result.PositiveTestResults.Values.RemoveAll(x => !DateIsWithinCutOffRange(x.Timestamp, cutOffInDays));
+            result.CoronaMelderUsers.Values.RemoveAll(x => !DateIsWithinCutOffRange(x.Timestamp, cutOffInDays));
+            result.HospitalAdmissions.Values.RemoveAll(x => !DateIsWithinCutOffRange(x.Timestamp, cutOffInDays, hospitalAdmissionsOffset));
+            result.IcuAdmissions.Values.RemoveAll(x => !DateIsWithinCutOffRange(x.Timestamp, cutOffInDays, icuAdmissionsOffset));
 
             return result;
+        }
+
+        private bool DateIsWithinCutOffRange(long timestamp, int cutOffDay, int startAtDay = 0)
+        {
+            return timestamp > DateTime.UtcNow.AddDays(-cutOffDay).ToDateUnix()
+                && timestamp < DateTime.UtcNow.AddDays(-startAtDay).ToDateUnix();
         }
     }
 }

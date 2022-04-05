@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
@@ -11,41 +10,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 {
     public static class DashboardDataMapper
     {
-        public static DashboardOutputModel Map(DashboardInputModel input, int cutOffInDays = 35)
+        public static DashboardOutputModel Map(DashboardInputModel input)
         {
             return new DashboardOutputModel
             {
-                PositiveTestResults = MapPositiveTestResults(input.TestedOverallInput, input.TestedGgdInput, cutOffInDays),
-                HospitalAdmissions = MapHospitalAdmissions(input.GeneralHospitalAdmissions, cutOffInDays),
-                IcuAdmissions = MapIcuAdmissions(input.IntensiveCareAdmissions, cutOffInDays),
-                VaccinationCoverage = MapVaccinationCoverage(input.VaccineCoveragePerAgeGroup, input.BoosterCoverage),
-                CoronaMelderUsers = MapCoronaMelderUsers(input.CoronaMelderUsersInput, cutOffInDays)
+                PositiveTestResults = MapPositiveTestResults(input.TestedOverallInput, input.TestedGgdInput),
+                CoronaMelderUsers = MapCoronaMelderUsers(input.CoronaMelderUsersInput),
+                HospitalAdmissions = MapHospitalAdmissions(input.GeneralHospitalAdmissions),
+                IcuAdmissions = MapIcuAdmissions(input.IntensiveCareAdmissions),
+                VaccinationCoverage = MapVaccinationCoverage(input.VaccineCoveragePerAgeGroup, input.BoosterCoverage)
             };
         }
 
-        private static CoronaMelderUsers MapCoronaMelderUsers(CoronaMelderUsersInput input, int cutOffInDays)
-        {
-            return new CoronaMelderUsers
-            {
-                Values = MapCoronaMelderUsersValues(input.Values.Where(x => x.LastDate > DateTime.UtcNow.AddDays(-cutOffInDays))),
-                HighlightedValue = MapCoronaMelderUsersValues(new CoronaMelderUsersInputValue[] { input.Values.OrderByDescending(x => x.LastDate).First() }).Single()
-            };
-        }
-
-        private static List<CoronaMelderUsersValue> MapCoronaMelderUsersValues(IEnumerable<CoronaMelderUsersInputValue> input)
-        {
-            return input.Select(x => new CoronaMelderUsersValue
-            {
-                Value = x.AverageDailyUsers,
-                Timestamp = new DateTimeOffset(x.LastDate).ToUnixTimeSeconds()
-            }).ToList();
-        }
-
-        private static PositiveTestResults MapPositiveTestResults(TestedOverallInput overallInput, TestedGgdInput ggdInput, int cutOffInDays)
+        private static PositiveTestResults MapPositiveTestResults(TestedOverallInput overallInput, TestedGgdInput ggdInput)
         {
             return new PositiveTestResults
             {
-                Values = MapPositiveTestResultsValues(overallInput.Values.Where(x => dateWithinCutOffRange(x.DateUnix, 0, cutOffInDays))),
+                Values = overallInput.Values.Select(x => MapPositiveTestResultsValue(x)).ToList(),
                 InfectedMovingAverage = new MovingAverageValue
                 {
                     TimestampEnd = overallInput.LastValue.DateUnix,
@@ -53,91 +34,86 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                     Value = overallInput.LastValue.InfectedMovingAverageRounded
                 },
                 InfectedPercentage = ggdInput.LastValue.InfectedPercentage,
-                HighlightedValue = MapPositiveTestResultsValues(new TestedOverallInputValue[] { overallInput.LastValue }).Single()
+                HighlightedValue = MapPositiveTestResultsValue(overallInput.LastValue)
             };
         }
 
-        private static List<PositiveTestResultsValue> MapPositiveTestResultsValues(IEnumerable<TestedOverallInputValue> input)
+        private static DashboardOutputModelItemValue MapPositiveTestResultsValue(TestedOverallInputValue input)
         {
-            return input.Select(x => new PositiveTestResultsValue
+            return new DashboardOutputModelItemValue
             {
-                Timestamp = x.DateUnix,
-                Value = x.Infected
-            }).ToList();
+                Timestamp = input.DateUnix,
+                Value = input.Infected
+            };
         }
 
-        private static HospitalAdmissions MapHospitalAdmissions(HospitalAdmissionsInput input, int cutOffInDays)
+        private static CoronaMelderUsers MapCoronaMelderUsers(CoronaMelderUsersInput input)
         {
-            // Not all downloaded data is used here; data from t-5 and back is used,
-            // as the data for the most recent days is not dependable enough.
+            var mappedValues = input.Values.Select(x => MapCoronaMelderUsersValue(x)).ToList();
 
-            // For the hospital admissions moving average,
-            // the value of the most recent date with a non-null value.
+            return new CoronaMelderUsers
+            {
+                Values = mappedValues,
+                HighlightedValue = mappedValues.OrderByDescending(x => x.Timestamp).First()
+            };
+        }
 
-            var offsetInDays = 5;
+        private static DashboardOutputModelItemValue MapCoronaMelderUsersValue(CoronaMelderUsersInputValue input)
+        {
+            return new DashboardOutputModelItemValue
+            {
+                // Bluntly round averageDailyUsers to the nearest long,
+                // as precision is not required here.
+                Value = Convert.ToInt64(input.AverageDailyUsers),
+                Timestamp = new DateTimeOffset(input.LastDate).ToUnixTimeSeconds()
+            };
+        }
 
+        private static HospitalAdmissions MapHospitalAdmissions(HospitalAdmissionsInput input)
+        {
             var firstUsableMovingAverageValue = input.Values
                 .OrderByDescending(x => x.DateUnix)
                 .First(x => x.AdmissionsOnDateOfAdmissionMovingAverageRounded != null);
 
             return new HospitalAdmissions
             {
-                Values = MapHospitalAdmissionsValues(input.Values.Where(
-                    x => dateWithinCutOffRange(x.DateUnix, offsetInDays, cutOffInDays))),
+                Values = input.Values.Select(x => MapHospitalAdmissionsValue(x)).ToList(),
                 HospitalAdmissionMovingAverage = new MovingAverageValue
                 {
                     TimestampEnd = firstUsableMovingAverageValue.DateUnix,
                     TimestampStart = (long)TimeConverter.ToDateTime(firstUsableMovingAverageValue.DateUnix).AddDays(-6).ToDateUnix(),
                     Value = firstUsableMovingAverageValue.AdmissionsOnDateOfAdmissionMovingAverageRounded
                 },
-                HighlightedValue = MapHospitalAdmissionsValues(new HospitalAdmissionsInputValue[] { input.LastValue }).Single()
+                HighlightedValue = MapHospitalAdmissionsValue(input.LastValue)
             };
         }
 
-        private static List<HospitalAdmissionsValue> MapHospitalAdmissionsValues(IEnumerable<HospitalAdmissionsInputValue> input)
+        private static IcuAdmissions MapIcuAdmissions(HospitalAdmissionsInput input)
         {
-            return input.Select(x => new HospitalAdmissionsValue
-            {
-                Timestamp = x.DateUnix,
-                Value = x.AdmissionsOnDateOfReporting
-            }).ToList();
-        }
-
-        private static IcuAdmissions MapIcuAdmissions(HospitalAdmissionsInput input, int cutOffInDays)
-        {
-            // Not all downloaded data is used here; data from t-4 and back is used,
-            // as the data for the most recent days is not dependable enough.
-
-            // For the icu admissions moving average,
-            // the value of the most recent date with a non-null value.
-
-            var offsetInDays = 4;
-
             var firstUsableMovingAverageValue = input.Values
                 .OrderByDescending(x => x.DateUnix)
                 .First(x => x.AdmissionsOnDateOfAdmissionMovingAverageRounded != null);
 
             return new IcuAdmissions
             {
-                Values = MapIcuAdmissionsValues(input.Values.Where(
-                    x => dateWithinCutOffRange(x.DateUnix, offsetInDays, cutOffInDays))),
+                Values = input.Values.Select(x => MapHospitalAdmissionsValue(x)).ToList(),
                 IcuAdmissionMovingAverage = new MovingAverageValue
                 {
                     TimestampEnd = firstUsableMovingAverageValue.DateUnix,
                     TimestampStart = (long)TimeConverter.ToDateTime(firstUsableMovingAverageValue.DateUnix).AddDays(-7).ToDateUnix(),
                     Value = firstUsableMovingAverageValue.AdmissionsOnDateOfAdmissionMovingAverageRounded
                 },
-                HighlightedValue = MapIcuAdmissionsValues(new HospitalAdmissionsInputValue[] { input.LastValue }).Single()
+                HighlightedValue = MapHospitalAdmissionsValue(input.LastValue)
             };
         }
 
-        private static List<IcuAdmissionsValue> MapIcuAdmissionsValues(IEnumerable<HospitalAdmissionsInputValue> input)
+        private static DashboardOutputModelItemValue MapHospitalAdmissionsValue(HospitalAdmissionsInputValue input)
         {
-            return input.Select(x => new IcuAdmissionsValue
+            return new DashboardOutputModelItemValue
             {
-                Timestamp = x.DateUnix,
-                Value = x.AdmissionsOnDateOfReporting
-            }).ToList();
+                Timestamp = input.DateUnix,
+                Value = input.AdmissionsOnDateOfReporting
+            };
         }
 
         private static VaccinationCoverage MapVaccinationCoverage(
@@ -150,9 +126,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                 BoosterCoverage18Plus = boosterInput.Values.Where(x => "18+".Equals(x.AgeGroup)).FirstOrDefault().Percentage
             };
         }
-
-        private static readonly Func<long, int, int, bool> dateWithinCutOffRange =
-            (dateUnix, startAtDay, cutOffDay) => dateUnix > DateTime.UtcNow.AddDays(-cutOffDay).ToDateUnix()
-                && dateUnix < DateTime.UtcNow.AddDays(-startAtDay).ToDateUnix();
     }
 }
