@@ -89,7 +89,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                 // Mark downloaded json as processed
                 var hash = _sha256HashService.Create(Encoding.UTF8.GetBytes(jsonString));
 
-                _logger.LogInformation("Marking dashboard json with has {Hash} as processed", hash);
+                _logger.LogInformation("Marking dashboard json with hash {Hash} as processed", hash);
 
                 await using (_dbContext.BeginTransaction())
                 {
