@@ -16,20 +16,39 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         public string MoreInfoUrl { get; set; }
     }
 
-    public class PositiveTestResults
+    public class DashboardOutputModelItem
     {
-        public int SortingValue { get; set; } = 0;
-        public List<PositiveTestResultsValue> Values { get; set; }
-        public double InfectedPercentage { get; set; }
-        public MovingAverageValue InfectedMovingAverage { get; set; }
-        public PositiveTestResultsValue HighlightedValue { get; set; }
+        public int SortingValue { get; set; }
+        public List<DashboardOutputModelItemValue> Values { get; set; }
+        public DashboardOutputModelItemValue HighlightedValue { get; set; }
         public string MoreInfoUrl { get; set; }
     }
 
-    public class PositiveTestResultsValue
+    public class DashboardOutputModelItemValue
     {
         public long Timestamp { get; set; }
         public long Value { get; set; }
+    }
+
+    public class PositiveTestResults : DashboardOutputModelItem
+    {
+        public double InfectedPercentage { get; set; }
+        public MovingAverageValue InfectedMovingAverage { get; set; }
+    }
+    public class HospitalAdmissions : DashboardOutputModelItem
+    {
+        public MovingAverageValue HospitalAdmissionMovingAverage { get; set; }
+    }
+
+    public class IcuAdmissions : DashboardOutputModelItem
+    {
+        public MovingAverageValue IcuAdmissionMovingAverage { get; set; }
+    }
+
+    public class VaccinationCoverage : DashboardOutputModelItem
+    {
+        public double VaccinationCoverage18Plus { get; set; }
+        public double BoosterCoverage18Plus { get; set; }
     }
 
     public class CoronaMelderUsers
@@ -45,46 +64,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         public long Timestamp { get; set; }
         public double Value { get; set; }
     }
-
-    public class HospitalAdmissions
-    {
-        public int SortingValue { get; set; } = 2;
-        public List<HospitalAdmissionsValue> Values { get; set; }
-        public MovingAverageValue HospitalAdmissionMovingAverage { get; set; }
-        public HospitalAdmissionsValue HighlightedValue { get; set; }
-        public string MoreInfoUrl { get; set; }
-    }
-
-    public class HospitalAdmissionsValue
-    {
-        public long Timestamp { get; set; }
-        public long Value { get; set; }
-    }
-
-    public class IcuAdmissions
-    {
-        public int SortingValue { get; set; } = 3;
-        public List<IcuAdmissionsValue> Values { get; set; }
-        public MovingAverageValue IcuAdmissionMovingAverage { get; set; }
-        public IcuAdmissionsValue HighlightedValue { get; set; }
-        public string MoreInfoUrl { get; set; }
-    }
-
-    public class IcuAdmissionsValue
-    {
-        public long Timestamp { get; set; }
-        public long Value { get; set; }
-    }
-
-    public class VaccinationCoverage
-    {
-        public int SortingValue { get; set; } = 4;
-
-        public double VaccinationCoverage18Plus { get; set; }
-        public double BoosterCoverage18Plus { get; set; }
-        public string MoreInfoUrl { get; set; }
-    }
-
     public class MovingAverageValue
     {
         public long TimestampStart { get; set; }
