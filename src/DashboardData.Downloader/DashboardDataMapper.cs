@@ -58,11 +58,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
             };
         }
 
-        private static CoronaMelderUsersValue MapCoronaMelderUsersValue(CoronaMelderUsersInputValue input)
+        private static DashboardOutputModelItemValue MapCoronaMelderUsersValue(CoronaMelderUsersInputValue input)
         {
-            return new CoronaMelderUsersValue
+            return new DashboardOutputModelItemValue
             {
-                Value = input.AverageDailyUsers,
+                // Bluntly round averageDailyUsers to the nearest long,
+                // as precision is not required here.
+                Value = Convert.ToInt64(input.AverageDailyUsers),
                 Timestamp = new DateTimeOffset(input.LastDate).ToUnixTimeSeconds()
             };
         }

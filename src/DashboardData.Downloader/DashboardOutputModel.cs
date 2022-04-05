@@ -36,19 +36,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         public MovingAverageValue InfectedMovingAverage { get; set; }
     }
 
-    public class CoronaMelderUsers
-    {
-        public int SortingValue { get; set; } = 1;
-        public List<CoronaMelderUsersValue> Values { get; set; }
-        public CoronaMelderUsersValue HighlightedValue { get; set; }
-        public string MoreInfoUrl { get; set; }
-    }
-
-    public class CoronaMelderUsersValue
-    {
-        public long Timestamp { get; set; }
-        public double Value { get; set; }
-    }
+    public class CoronaMelderUsers : DashboardOutputModelItem
+    { }
 
     public class HospitalAdmissions : DashboardOutputModelItem
     {
