@@ -13,7 +13,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace PublishContent
 {
@@ -38,9 +37,6 @@ namespace PublishContent
             services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
 
             services.AddTransient<PublishContentCommand>();
-
-            services.AddTransient<IPublishingIdService, Sha256HexPublishingIdService>();
-
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<IContentSigner>(x => SignerConfigStartup.BuildEvSigner(
                 configuration,

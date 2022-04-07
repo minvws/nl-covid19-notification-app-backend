@@ -11,7 +11,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFrame
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace PublishContent
 {
@@ -23,7 +22,6 @@ namespace PublishContent
                 () => new ContentInsertDbCommand(
                         x.GetRequiredService<ContentDbContext>(),
                         x.GetRequiredService<IUtcDateTimeProvider>(),
-                        x.GetRequiredService<IPublishingIdService>(),
                         new ZippedSignedContentFormatter(
                             SignerConfigStartup.BuildEvSigner(
                                 x.GetRequiredService<IConfiguration>(),

@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
@@ -19,14 +19,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
     public class HttpGetCdnContentCommand
     {
         private readonly ContentDbContext _dbContext;
-        private readonly IPublishingIdService _publishingIdService;
         private readonly ILogger _logger;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
 
-        public HttpGetCdnContentCommand(ContentDbContext dbContext, IPublishingIdService publishingIdService, ILogger<HttpGetCdnContentCommand> logger, IUtcDateTimeProvider dateTimeProvider)
+        public HttpGetCdnContentCommand(
+            ContentDbContext dbContext,
+            ILogger<HttpGetCdnContentCommand> logger,
+            IUtcDateTimeProvider dateTimeProvider)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _publishingIdService = publishingIdService ?? throw new ArgumentNullException(nameof(publishingIdService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
@@ -41,7 +42,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 throw new ArgumentNullException(nameof(httpContext));
             }
 
-            if (!_publishingIdService.Validate(id))
+            // Validate both guid and hash-based id while we're transitioning from hash-based id to guid
+            if (!Guid.TryParse(id, out _) && !ValidateHash(id))
             {
                 _logger.LogError("Invalid content id - {ContentId}.", id);
                 httpContext.Response.StatusCode = 400;
@@ -79,6 +81,30 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             httpContext.Response.StatusCode = 200;
             httpContext.Response.ContentLength = content.Content?.Length ?? throw new InvalidOperationException("SignedContent empty.");
             return content;
+        }
+
+        private static bool ValidateHash(string id)
+        {
+            const int Sha256Length = 32;
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return false;
+            }
+
+            if (id.Length != Sha256Length * 2)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < id.Length; i += 2)
+            {
+                if (!int.TryParse(id.AsSpan(i, 2), NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out _))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

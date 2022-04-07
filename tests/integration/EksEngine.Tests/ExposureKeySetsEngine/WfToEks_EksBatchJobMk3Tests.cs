@@ -141,7 +141,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new MarkDiagnosisKeysAsUsedLocally(_dkSourceContext, _fakeEksConfig,
                     eksPublishingJobContext, new NullLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_contentContext, eksPublishingJobContext,
-                    new Sha256HexPublishingIdService(),
                     new NullLogger<EksJobContentWriter>()),
                 new WriteStuffingToDiagnosisKeys(_dkSourceContext,
                     eksPublishingJobContext,

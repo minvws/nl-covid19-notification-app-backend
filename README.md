@@ -17,43 +17,16 @@ The core team works on the repository in a private fork (for reasons of complian
 If you plan to make non-trivial changes, we recommend to open an issue beforehand where we can discuss your planned changes.
 This increases the chance that we might be able to use your contribution (or it avoids doing work if there are reasons why we wouldn't be able to use it).
 
-## Running a standalone server
-
-Local development support is provided for all platforms - Windows, macOS, Linux - by ServerStandAlone - a .NET Core MVC Web App, and the command line apps in the Data Utilities folder.
-
-## Development Tools
-* Visual Studio 2019 (or Rider)
-* Your choice of SQL Server instances
-* Or quickstart: only Docker
-
 ### Docker – to quickstart local app development
 
-To quickly start a local Standalone development environment for app testing purposes you can use of the docker-compose file:
+To quickly start a local Standalone development environment for app testing purposes you can use docker-compose:
 ```bash
 # Solution root
 cd docker
 docker-compose up --build
 ``` 
-**Please be aware of the 'quickstart development'-only semi-secrets in `docker/**/*`, the Docker configuration has no intentions to be used in publicly available testing, acceptation or production environments.**
+**Please be aware of the 'quickstart development'-only semi-secrets in `docker/**/*`, the Docker configuration has no intentions to be used in publicly available testing, acceptance or production environments.**
 
-## Supporting local mobile app development
-
-First make sure that you have the following installed:
-
-1. Dotnet Core 3.1 SDK: https://dotnet.microsoft.com/download/dotnet-core/3.1
-1. Node JS 14.15.1+ with NPM: https://nodejs.org/en/ (It will NOT work wilt Node version 15.x.x or higher)
-1. Yarn: https://yarnpkg.com/
-1. Angular CLI: https://angular.io/guide/setup-local
-1. Optionally either Visual Studio or Rider.
-1. A terminal is recommended, if you're running an older windows then https://cmder.net/ is useful. You need gitbash.
-
-Then clone this repo.
-
-### Standalone
-
-1. Setup a database instance. Windows users can use a local SQL Server.
-1. Add an `appsettings.Development.json` file. This overrides the settings in appsettings.json. And add a value for the MSS connection string.
-1. Go to the ServerStandAlone folder and run it with 'dotnet run'.
 
 ### ICC Portal (SPA Web Application)
 
@@ -73,9 +46,9 @@ The ICC Portal consists of a .Net Core hosted Angular frontend found under `Icc.
 
 ## Building and packaging
 
-The build and package pipeline for this project is implemented as a set of batch scripts. These scripts can be executed on a development machine without arguments or via a build server (Jenkins, Azure Devops) without the need to lock-in the build process to one specific vendor. This should also make it easier to build older versions of the server because all of the logic required to build is committed to version control.
+The build and package pipeline for this project is implemented as a set of batch scripts. These scripts can be executed on a development machine without arguments or via a build server (Jenkins, Azure Devops) without the need to lock-in the build process to one specific vendor. This should also make it easier to build older versions of the server, because all of the logic required to build is committed to version control.
 
-To run the scripts you must have following installed and accessible in your path:
+To run the scripts, you must have the following installed and accessible in your path:
 
 * 7zip
 
@@ -85,7 +58,7 @@ Here is an overview of our scripts:
 | -------------------- | ------------------------------------------ |
 | build.bat            | Builds all of the project in release mode  |
 |                      | and publishes packages into the folder     |
-|                      | `publish` in the root of the solution.     |
+|                      | `publish` at the root of the solution.     |
 | package.bat          | Packages the published files as zip        |
 |                      | archives and puts them in `publish`.       |
 

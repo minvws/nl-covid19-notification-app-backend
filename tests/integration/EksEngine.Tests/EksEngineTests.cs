@@ -115,7 +115,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                         }
                     })),
                 new MarkDiagnosisKeysAsUsedLocally(_dkSourceContext, eksConfig.Object, _eksPublishingJobContext, new NullLogger<MarkDiagnosisKeysAsUsedLocally>()),
-                new EksJobContentWriter(_contentDbContext, _eksPublishingJobContext, new Sha256HexPublishingIdService(), new NullLogger<EksJobContentWriter>()),
+                new EksJobContentWriter(_contentDbContext, _eksPublishingJobContext, new NullLogger<EksJobContentWriter>()),
                 new WriteStuffingToDiagnosisKeys(_dkSourceContext, _eksPublishingJobContext,
                 new IDiagnosticKeyProcessor[] {
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(countriesOut.Object),
@@ -132,7 +132,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 new NullLogger<ManifestUpdateCommand>(),
                 _dtp,
                 jsonSerializer,
-                new StandardContentEntityFormatter(new ZippedSignedContentFormatter(nlSigner.Object), new Sha256HexPublishingIdService(), jsonSerializer)
+                new StandardContentEntityFormatter(
+                    new ZippedSignedContentFormatter(nlSigner.Object),
+                    jsonSerializer)
             );
         }
 

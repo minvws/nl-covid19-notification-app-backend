@@ -231,13 +231,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             var release = _eksEngineResult.Started;
             var eksCount = ++_eksCount;
 
+            // Generate a new guid string, formatted without dashes
+            var newOutputId = Guid.NewGuid().ToString("N");
+
             var eksCreateJobOutputEntityV12 = new EksCreateJobOutputEntity
             {
                 Region = DefaultValues.Region,
                 Release = release,
                 CreatingJobQualifier = eksCount,
                 Content = content,
-                GaenVersion = GaenVersion.v12
+                GaenVersion = GaenVersion.v12,
+                OutputId = newOutputId
             };
 
             _logger.LogInformation("Write EKS - Id: {CreatingJobQualifier}.",
@@ -249,7 +253,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 Release = release,
                 CreatingJobQualifier = eksCount,
                 Content = contentV15,
-                GaenVersion = GaenVersion.v15
+                GaenVersion = GaenVersion.v15,
+                OutputId = newOutputId
             };
 
             _logger.LogInformation("Write EKS - Id: {CreatingJobQualifier}.",

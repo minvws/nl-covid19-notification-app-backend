@@ -2,12 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Entities
 {
-    public interface IPublishingIdService
+    public enum StatisticPublishingState
     {
-        string Create(byte[] contents);
-
-        bool Validate(string id);
+        Unpublished = 0,
+        Published = 1,
+        Failed = 2
     }
 }
