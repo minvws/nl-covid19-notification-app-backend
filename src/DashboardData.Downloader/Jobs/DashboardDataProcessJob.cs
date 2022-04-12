@@ -158,10 +158,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
             return result;
         }
 
-        private bool DateIsWithinCutOffRange(long timestamp, int cutOffDay, int startAtDay = 0)
+        private bool DateIsWithinCutOffRange(long timestamp, int cutoffDay, int startAtDay = 0)
         {
-            return timestamp > DateTime.UtcNow.AddDays(-cutOffDay).ToDateUnix()
-                && timestamp < DateTime.UtcNow.AddDays(-startAtDay).ToDateUnix();
+            var cutoffDayUnix = (long)DateTime.UtcNow.AddDays(-cutoffDay).ToUnixTimeU64();
+            var startAtDayUnix = (long)DateTime.UtcNow.AddDays(-startAtDay).ToUnixTimeU64();
+
+            return timestamp > cutoffDayUnix && timestamp < startAtDayUnix;
         }
     }
 }
