@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                 InfectedMovingAverage = new MovingAverageValue
                 {
                     TimestampEnd = overallInput.LastValue.DateUnix,
-                    TimestampStart = (long)TimeConverter.ToDateTime(overallInput.LastValue.DateUnix).AddDays(-7).ToDateUnix(),
+                    TimestampStart = overallInput.LastValue.DateUnix.AddUnixDays(-7),
                     Value = overallInput.LastValue.InfectedMovingAverageRounded
                 },
                 InfectedPercentage = ggdInput.LastValue.InfectedPercentage,
@@ -71,17 +71,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
         private static HospitalAdmissions MapHospitalAdmissions(HospitalAdmissionsInput input)
         {
+            
             var firstUsableMovingAverageValue = input.Values
                 .OrderByDescending(x => x.DateUnix)
                 .First(x => x.AdmissionsOnDateOfAdmissionMovingAverageRounded != null);
-
+            
             return new HospitalAdmissions
             {
                 Values = input.Values.Select(x => MapHospitalAdmissionsValue(x)).ToList(),
                 HospitalAdmissionMovingAverage = new MovingAverageValue
                 {
                     TimestampEnd = firstUsableMovingAverageValue.DateUnix,
-                    TimestampStart = (long)TimeConverter.ToDateTime(firstUsableMovingAverageValue.DateUnix).AddDays(-6).ToDateUnix(),
+                    TimestampStart = firstUsableMovingAverageValue.DateUnix.AddUnixDays(-6),
                     Value = firstUsableMovingAverageValue.AdmissionsOnDateOfAdmissionMovingAverageRounded
                 },
                 HighlightedValue = MapHospitalAdmissionsValue(input.LastValue)
@@ -100,7 +101,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                 IcuAdmissionMovingAverage = new MovingAverageValue
                 {
                     TimestampEnd = firstUsableMovingAverageValue.DateUnix,
-                    TimestampStart = (long)TimeConverter.ToDateTime(firstUsableMovingAverageValue.DateUnix).AddDays(-7).ToDateUnix(),
+                    TimestampStart = firstUsableMovingAverageValue.DateUnix.AddUnixDays(-7),
                     Value = firstUsableMovingAverageValue.AdmissionsOnDateOfAdmissionMovingAverageRounded
                 },
                 HighlightedValue = MapHospitalAdmissionsValue(input.LastValue)
@@ -125,6 +126,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
                 VaccinationCoverage18Plus = vaccineInput.LastValue.Age18_PlusFullyVaccinated,
                 BoosterCoverage18Plus = boosterInput.Values.Where(x => "18+".Equals(x.AgeGroup)).FirstOrDefault().Percentage
             };
+        }
+
+        private static long AddUnixDays(this long unixTime, int days)
+        {
+            return unixTime + days * 86400; // One day is 86.400 seconds
         }
     }
 }
