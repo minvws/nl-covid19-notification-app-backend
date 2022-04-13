@@ -49,19 +49,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
             services.DbContextRegistration(configuration);
 
             // Register services needed for publishing
-            services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient(x => SignerConfigStartup.BuildEvSigner(
-                x.GetRequiredService<IConfiguration>(),
-                x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
-                x.GetRequiredService<IUtcDateTimeProvider>()));
-            services.AddTransient<ContentValidator>();
-            services.AddTransient<ContentInsertDbCommand>();
+            services.PublishingRegistration();
 
             // Register dashboard data jobs
-            services.AddTransient<DashboardDataDownloadJob>();
-            services.AddTransient<DashboardDataProcessJob>();
-            services.AddTransient<DashboardDataPublishingJob>();
+            services.JobsRegistration();
 
             // Register settings
             services.SettingsRegistration();

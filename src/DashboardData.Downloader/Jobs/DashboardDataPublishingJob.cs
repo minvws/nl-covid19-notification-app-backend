@@ -79,9 +79,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
                 _logger.LogDebug("Writing DashboardData to database.");
 
-                _contentDbContext.BeginTransaction();
-                _insertDbCommand.ExecuteAsync(contentArgs).GetAwaiter().GetResult();
-                _contentDbContext.SaveAndCommit();
+                using (_contentDbContext.BeginTransaction())
+                {
+                    _insertDbCommand.ExecuteAsync(contentArgs).GetAwaiter().GetResult();
+                    _contentDbContext.SaveAndCommit();
+                }
 
                 _logger.LogDebug("Done writing DashboardData to database.");
 
