@@ -16,7 +16,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         static Iso3166RegionCodeValidator()
         {
             validValues = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
-                .Select(x => new RegionInfo(x.LCID).TwoLetterISORegionName.ToUpper())
+                .Select(x => new RegionInfo(x.Name).TwoLetterISORegionName.ToUpper())
                 .Concat(notSupportedDirectlyInDotNet)
                 .Distinct()
                 .ToHashSet();
