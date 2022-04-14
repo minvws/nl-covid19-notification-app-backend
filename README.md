@@ -19,7 +19,7 @@ This increases the chance that we might be able to use your contribution (or it 
 
 ### Docker – to quickstart local app development
 
-To quickly start a local Standalone development environment for app testing purposes you can use docker-compose:
+To quickly start a local development environment for app testing purposes you can use docker-compose:
 ```bash
 # Solution root
 cd docker
@@ -42,25 +42,6 @@ The ICC Portal consists of a .Net Core hosted Angular frontend found under `Icc.
 1. Go to the `Icc.v2.WebApi` folder and run it with `dotnet run`, this will start the backend in Kestrel.
 1. Access the APIs here: `http://localhost:5003/swagger/index.html`.
 1. Done :)
-
-
-## Building and packaging
-
-The build and package pipeline for this project is implemented as a set of batch scripts. These scripts can be executed on a development machine without arguments or via a build server (Jenkins, Azure Devops) without the need to lock-in the build process to one specific vendor. This should also make it easier to build older versions of the server, because all of the logic required to build is committed to version control.
-
-To run the scripts, you must have the following installed and accessible in your path:
-
-* 7zip
-
-Here is an overview of our scripts:
-
-| Name                 | Description                                |
-| -------------------- | ------------------------------------------ |
-| build.bat            | Builds all of the project in release mode  |
-|                      | and publishes packages into the folder     |
-|                      | `publish` at the root of the solution.     |
-| package.bat          | Packages the published files as zip        |
-|                      | archives and puts them in `publish`.       |
 
 ## Attribution
 
