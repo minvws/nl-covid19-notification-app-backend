@@ -1,5 +1,12 @@
 # COVID-19 Notification App - Backend
 
+## Table of Contents
+[Introduction](#introduction)<br>
+[External Documentation](#external-documentation)<br>
+[Development and Contribution Process](#development-and-contribution-process)<br>
+[Local Development Setup](#local-development-setup)<br>
+[Attribution](#attribution)<br>
+
 ## Introduction
 
 This repository contains the backend code for the Dutch exposure notification app.
@@ -10,15 +17,29 @@ This repository contains the backend code for the Dutch exposure notification ap
 * The designs that are used as a basis to develop the apps can be found here: https://github.com/minvws/nl-covid19-notification-app-design
 * The architecture that underpins the development can be found here: https://github.com/minvws/nl-covid19-notification-app-coordination
 
-The backend code runs on .NET Core 3.1. End of support for this version is December 3rd, 2022.
+The backend code runs on .NET Core 3.1. End of support for this version of .NET is December 3rd, 2022.
 
-## Development & Contribution process
+## External Documentation
+The Dutch exposure notification app uses the Google Apple Exposure Notification (GAEN) framework developed by Google and Apple as part of their effort to help combat the SARS-CoV-2 pandemic. Please find their documentation in one of the following 2 locations:
+
+* [Google's Android Exposure Notifications Implementation Guide](https://developers.google.com/android/exposure-notifications/implementation-guide)
+* [Apple's iOS Exposure Notification Documentation](https://developer.apple.com/documentation/exposurenotification)
+
+The Dutch exposure notification app is part of the group of EU countries using the European Federation Gateway Service (EFGS) for sharing their national exposure keys on a European level. Please find the EFGS code and documentation on GitHub:
+
+* [efgs-federation-gateway](https://github.com/eu-federation-gateway-service/efgs-federation-gateway)
+
+## Development and Contribution Process
 
 The core team works on the repository in a private fork for reasons of compliance with existing processes, and will share its work as often as possible.
 
-If you plan to make changes, please feel free to open an issue beforehand where we can discuss your changes. This avoids possibly doing work that we might not be able to use due to various reasons (specific infrastructure demands, already working on, etc).
+If you plan to make code changes, please feel free to open an issue where we can discuss your changes, before opening a pull request. This avoids possibly doing work that we might not be able to use due to various reasons (specific infrastructure demands, already working on, etc).
 
-## Local development setup
+If you think the information contained in this README is incomplete or wrong, please feel free to directly open a pull request on the README.
+
+If you have any other questions about the README or the information contained therein, please feel free to open an issue.
+
+## Local Development Setup
 Before being able to run the projects contained in the backend solution, you will need to set up a database, and install a test certificate on the machine that will run the code.
 
 ### Certificates (this section is to be expanded)
@@ -28,25 +49,37 @@ This solution contains the following certificates, located in `src/Crypto/Resour
 - TestRSA.p12
 - BdCertChain.p7b (deprecated)
 
-For local development, you will need to install the `TestRSA.p12` certificate on your local machine.
+**Please note: these certificates are not production certificates.**
 
-This project assumes the RSA certicicate is installed in the Local Machine Certificate Store.
+For local development, you will need to install the *TestRSA.p12* certificate on your machine. The password for this certificate is `Covid-19!` (this information can also be found in the relevant `appsettings.json` files).
 
-For macOS this means the project assumes the RSA certificate is installed in the @@@ keychain. Please note that this makes running the project locally slightly awkward, as it involves either giving the code permission to access this keychain indefinitely, or otherwise forces the developer to click "Allow" a large amount of times. To ger around this, please make the following changes:
+This project assumes the RSA certicicate is installed in the *Local Machine Certificate Store*.
+
+For macOS this means the project assumes the RSA certificate is installed in the *System* keychain. Please note that installing the certificate in the *System* keychain makes running the project locally slightly awkward, as it involves either giving the code permission to access this keychain permanently, or otherwise forces the developer to click "Allow" a large amount of times. To get around this, please make the following changes if you are running the backend on macOS:
+
+1. install the `TestRSA.p12` certificate in the *login* keychain
+2. change `LocalMachineStoreCertificateProvider.cs` to read from
+`StoreLocation.CurrentUser` instead of `StoreLocation.LocalMachine`
+
+For Linux (tested on Debian):
 
 @@@
-
-**Please note: these certificates are not production certificates.**
 
 ### Database
 This project assumes the presence of a Microsoft SQL Server database.
 
+#### Windows
 For local development on Windows, it would suffice to download [SQL Server Developer](https://www.microsoft.com/nl-nl/sql-server/sql-server-downloads).
 
-For local development on macOS or Linux, local installation of SQL Server is not possible, and as such we have created a small Docker setup that contains a database to make developing locally on macOS and Linux possible. Of course you can also use this on Windows if you do not want to install SQL Server on your machine.
+After installing SQL Server, you can either create all the necessary databases and tables manually, or run the `DbProvision` project to have everything generated automatically.
+
+#### macOS/Linux
+For local development on macOS or Linux, local installation of SQL Server is not possible, and as such we have created a small Docker setup that contains a database to make developing locally on macOS and Linux possible. The Docker setup also contains `DbBuilder`, which serves the same function as the `DbProvision` project mentioned in the paragraph above. When combined together through `docker-compose`, you will end up with a database server populated with the necessary databases and tables running on Docker.
+
+Of course you can also use the Docker setup on Windows if you do not want to install SQL Server on your machine.
 
 ### Docker (general)
-To start a local development environment you can use docker-compose:
+To start a local development environment on macOS/Linux/Windows, you can use docker-compose:
 ```bash
 # Solution root
 cd docker
@@ -55,8 +88,14 @@ docker-compose up --build
 ### Docker (macOS M1)
 The Docker image used will currently not work out of the box for macOS machines with ARM architecture (macOS M1). To use the Docker setup on macOS M1, please make the following changes:
 
-@@@
-
+In `docker-compose.yml`, change
+```
+image: mcr.microsoft.com/mssql/server:2019-latest
+```
+to
+```
+image: mcr.microsoft.com/azure-sql-edge
+```
 ### Projects
 This code base consists of the following projects that allow you to locally set up a backend that contains Temporary Exposure Keys, Exposure Key Sets, a Manifest, and the various configuration JSON files that are representative of the actual backend.
 
