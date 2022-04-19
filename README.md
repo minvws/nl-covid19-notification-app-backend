@@ -10,38 +10,58 @@ This repository contains the backend code for the Dutch exposure notification ap
 * The designs that are used as a basis to develop the apps can be found here: https://github.com/minvws/nl-covid19-notification-app-design
 * The architecture that underpins the development can be found here: https://github.com/minvws/nl-covid19-notification-app-coordination
 
+The backend code runs on .NET Core 3.1. End of support for this version is December 3rd, 2022.
+
 ## Development & Contribution process
 
-The core team works on the repository in a private fork (for reasons of compliance with existing processes) and will share its work as often as possible.
+The core team works on the repository in a private fork for reasons of compliance with existing processes, and will share its work as often as possible.
 
-If you plan to make non-trivial changes, we recommend to open an issue beforehand where we can discuss your planned changes.
-This increases the chance that we might be able to use your contribution (or it avoids doing work if there are reasons why we wouldn't be able to use it).
+If you plan to make changes, please feel free to open an issue beforehand where we can discuss your changes. This avoids possibly doing work that we might not be able to use due to various reasons (specific infrastructure demands, already working on, etc).
 
-### Docker – to quickstart local app development
+## Local development setup
+Before being able to run the projects contained in the backend solution, you will need to set up a database, and install a test certificate on the machine that will run the code.
 
-To quickly start a local development environment for app testing purposes you can use docker-compose:
+### Certificates (this section is to be expanded)
+This solution contains the following certificates, located in `src/Crypto/Resources`:
+- StaatDerNLChain-EV-Expires-2022-12-05.p7b
+- TestECDSA.p12
+- TestRSA.p12
+- BdCertChain.p7b (deprecated)
+
+For local development, you will need to install the `TestRSA.p12` certificate on your local machine.
+
+This project assumes the RSA certicicate is installed in the Local Machine Certificate Store.
+
+For macOS this means the project assumes the RSA certificate is installed in the @@@ keychain. Please note that this makes running the project locally slightly awkward, as it involves either giving the code permission to access this keychain indefinitely, or otherwise forces the developer to click "Allow" a large amount of times. To ger around this, please make the following changes:
+
+@@@
+
+**Please note: these certificates are not production certificates.**
+
+### Database
+This project assumes the presence of a Microsoft SQL Server database.
+
+For local development on Windows, it would suffice to download [SQL Server Developer](https://www.microsoft.com/nl-nl/sql-server/sql-server-downloads).
+
+For local development on macOS or Linux, local installation of SQL Server is not possible, and as such we have created a small Docker setup that contains a database to make developing locally on macOS and Linux possible. Of course you can also use this on Windows if you do not want to install SQL Server on your machine.
+
+### Docker (general)
+To start a local development environment you can use docker-compose:
 ```bash
 # Solution root
 cd docker
 docker-compose up --build
-``` 
-**Please be aware of the 'quickstart development'-only semi-secrets in `docker/**/*`, the Docker configuration has no intentions to be used in publicly available testing, acceptance or production environments.**
+```
+### Docker (macOS M1)
+The Docker image used will currently not work out of the box for macOS machines with ARM architecture (macOS M1). To use the Docker setup on macOS M1, please make the following changes:
 
+@@@
 
-### ICC Portal (SPA Web Application)
+### Projects
+This code base consists of the following projects that allow you to locally set up a backend that contains Temporary Exposure Keys, Exposure Key Sets, a Manifest, and the various configuration JSON files that are representative of the actual backend.
 
-The ICC Portal consists of a .Net Core hosted Angular frontend found under `Icc.WebApp`
-1. Go to the `Icc.v2.WebApi` folder and run it with `dotnet run`, this will start the backend in Kestrel.
-1. Access the APIs here: `http://localhost:5011/`.
-1. Done :)
-
-#### ICC Portal Pubtek Api
-
-1. Setup a database instance. Windows users can use a local SQL Server.
-1. Add an `appsettings.Development.json` file to the folder `Icc.v2.WebApi`. This overrides the settings in appsettings.json. And add a value for the MSS connection string.
-1. Go to the `Icc.v2.WebApi` folder and run it with `dotnet run`, this will start the backend in Kestrel.
-1. Access the APIs here: `http://localhost:5003/swagger/index.html`.
-1. Done :)
+#### GenTeks
+This console application project generates Temporary Exposure Keys (or TEKs) and inserts them into the database. This project exists for development and testing purposes only. The amount of TEKs generated can be controlled by `commandLineArgs` in `launchSettings.json` (located in `src/GenTeks/Properties/`). The default setting is `10 1000`, which means 10 so-called workflows (also knows as buckets) are created, with 1000 TEKs in each workflow/bucket.
 
 ## Attribution
 
