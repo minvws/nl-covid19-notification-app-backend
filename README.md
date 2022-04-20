@@ -42,7 +42,10 @@ If you have any other questions about the README or the information contained th
 ## Local Development Setup
 Before being able to run the projects contained in the backend solution, you will need to set up a database, and install a test certificate on the machine that will run the code.
 
-### Certificates (this section is to be expanded)
+### Certificates
+
+> This section on Certificates is unfinished, and needs to be expanded with general information about the various certificates involved in the backend.
+
 This solution contains the following certificates, located in `src/Crypto/Resources`:
 - StaatDerNLChain-EV-Expires-2022-12-05.p7b
 - TestECDSA.p12
@@ -78,13 +81,15 @@ For local development on macOS or Linux, local installation of SQL Server is not
 
 Of course you can also use the Docker setup on Windows if you do not want to install SQL Server on your machine.
 
-### Docker (general)
-To start a local development environment on macOS/Linux/Windows, you can use docker-compose:
+### Docker (Windows/Linux/macOS)
+To start the Docker database setup, you can use docker-compose:
 ```bash
 # Solution root
 cd docker
 docker-compose up --build
 ```
+This will create a Docker-based database server, as well as generate all the necessary databases and tables.
+
 ### Docker (macOS M1)
 The Docker image used will currently not work out of the box for macOS machines with ARM architecture (macOS M1). To use the Docker setup on macOS M1, please make the following changes:
 
@@ -96,11 +101,16 @@ to
 ```
 image: mcr.microsoft.com/azure-sql-edge
 ```
+The rest of the setup should work as-is.
+
 ### Projects
 This code base consists of the following projects that allow you to locally set up a backend that contains Temporary Exposure Keys, Exposure Key Sets, a Manifest, and the various configuration JSON files that are representative of the actual backend.
 
 #### GenTeks
 This console application project generates Temporary Exposure Keys (or TEKs) and inserts them into the database. This project exists for development and testing purposes only. The amount of TEKs generated can be controlled by `commandLineArgs` in `launchSettings.json` (located in `src/GenTeks/Properties/`). The default setting is `10 1000`, which means 10 so-called workflows (also knows as buckets) are created, with 1000 TEKs in each workflow/bucket.
+
+## License
+This project is licensed under the EUPL license. See [LICENSE](LICENSE/LICENSE.txt) for more information.
 
 ## Attribution
 
