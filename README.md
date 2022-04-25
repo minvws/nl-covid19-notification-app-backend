@@ -102,10 +102,56 @@ image: mcr.microsoft.com/azure-sql-edge
 The rest of the setup should work as-is.
 
 ### Projects
-This code base consists of the following projects that allow you to locally set up a backend that contains Temporary Exposure Keys, Exposure Key Sets, a Manifest, and the various configuration JSON files that are representative of the actual backend.
+The codebase consists of the following projects, allowing you to locally set up a backend that contains Temporary Exposure Keys, Exposure Key Sets, a Manifest, and the various configuration JSON-files that are representative of the actual backend.  
+- DatabaseProvision
+- DbBuilder
+- GenTeks
+- ForceTekAuth
+- PublishContent
+- SigtestFileCreator
+- ProtobufScrubber
+- EfgsTestDataGenerator
+- Content.WebApi
+- DailyCleanup
+- EksEngine
+- ICC.V2.WebApi
+- Icc.WebApp
+- Iks.Downloader
+- Iks.Uploader
+- ManifestEngine
+- MobileAppApi.WebApi
+
+#### DatabaseProvision
+A console application that removes and rebuilds the required databases; only used for development and debugging.  
+The `nonuke`-argument can be supplied to prevent removing any existing databases.  
+Additionally, several types of JSON-files can be inserted into the database by means of passing one of the following arguments, followed by a path to the specific JSON-file:
+- `-a`, for AppconfigV2.
+- `-r`, for RiskCalculationParametersV2.
+- `-b`, for ResourcebundleV2.
+- `-b2`, for ResourcebundleV3.
+
+#### DbBuilder
+Identical to the DatabaseProvisioner, but only supports the `nonuke`-argument.
 
 #### GenTeks
-This console application project generates Temporary Exposure Keys (or TEKs) and inserts them into the database. This project exists for development and testing purposes only. The amount of TEKs generated can be controlled by `commandLineArgs` in `launchSettings.json` (located in `src/GenTeks/Properties/`). The default setting is `10 1000`, which means 10 so-called workflows (also knows as buckets) are created, with 1000 TEKs in each workflow/bucket.
+A console-application that generates Temporary Exposure Keys ('TEKs') and inserts them into the database. For development- and testing-purposes only.  
+Two arguments can be passed to the application: the amount of workflows (or 'buckets') and the amount of TEKs per workflow.  
+By default, 10 workflows with each 14 TEKs are created, equivalent to passing the arguments `10 14`.
+
+#### ForceTekAuth
+A console-application that authenticates all workflows in the database, equivalent to users contacting the GGD to publish their workflows.  
+For development- and testing-purposes only; no command-line arguments can be provided.
+
+#### PublishContent
+A console-application that, equal to DatabaseProvision, allows the insertion of various JSON-files into the database.  
+The files can be inserted into the database by means of passing one of the following arguments, followed by a path to a JSON-file that contains said content:
+- `-a`, for AppconfigV2.
+- `-r`, for RiskCalculationParametersV2.
+- `-b`, for ResourcebundleV2.
+- `-b2`, for ResourcebundleV3.
+
+#### SigtestFileCreator
+
 
 ## License
 This project is licensed under the EUPL license. See [LICENSE](LICENSE/LICENSE.txt) for more information.
