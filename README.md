@@ -44,29 +44,27 @@ Before being able to run the projects contained in the backend solution, you wil
 
 ### Certificates
 
-> This section on Certificates is unfinished, and needs to be expanded with general information about the various certificates involved in the backend.
+CoronaMelder signs its files with an RSA-certificate and an ECDSA-certificate. The latter is a requirement set by Apple and Google.  
+Versions of these certificates for local testing can be found in the folder `src/Crypto/Resources`:
+- TestRSA.p12  
+- TestECDSA.p12  
+  
+**Please note: these certificates are not production certificates.**  
+The file-password for TestRSA.p12 is `Covid19!`; the password for TestECDSA.p12 is `12345678`.
 
-This solution contains the following certificates, located in `src/Crypto/Resources`:
-- StaatDerNLChain-EV-Expires-2022-12-05.p7b
-- TestECDSA.p12
-- TestRSA.p12
-- BdCertChain.p7b (deprecated)
+The files `StaatDerNLChain-EV-Expires-2022-12-05.p7b` and `BdCertChain.p7b` can be ignored, as the local certificates are self-signed.  
 
-**Please note: these certificates are not production certificates.**
+#### Installation: Windows
+Both certificates need to be installed into the local machine certificate store, under 'personal certificates'. Run `certlm.msc` to view this store.  
 
-For local development, you will need to install the *TestRSA.p12* certificate on your machine. The password for this certificate is `Covid-19!` (this information can also be found in the relevant `appsettings.json` files).
+#### Installation: macOS  
+For macOS the project assumes that the RSA certificate is installed in the *System* keychain. Please note that installing the certificate in the *System* keychain makes running the project locally slightly awkward, as it involves either giving the code permission to access this keychain permanently, or otherwise forces the developer to click "Allow" a large amount of times. To get around this, please make the following changes if you are running the backend on macOS:
 
-This project assumes the RSA certicicate is installed in the *Local Machine Certificate Store*.
+1. Install the `TestRSA.p12` certificate in the *login* keychain.
+2. Change `LocalMachineStoreCertificateProvider.cs` to read from `StoreLocation.CurrentUser` instead of `StoreLocation.LocalMachine`.
 
-For macOS this means the project assumes the RSA certificate is installed in the *System* keychain. Please note that installing the certificate in the *System* keychain makes running the project locally slightly awkward, as it involves either giving the code permission to access this keychain permanently, or otherwise forces the developer to click "Allow" a large amount of times. To get around this, please make the following changes if you are running the backend on macOS:
-
-1. install the `TestRSA.p12` certificate in the *login* keychain
-2. change `LocalMachineStoreCertificateProvider.cs` to read from
-`StoreLocation.CurrentUser` instead of `StoreLocation.LocalMachine`
-
-For Linux (tested on Debian):
-
-@@@
+#### Installation: Linux  
+TBD
 
 ### Database
 This project assumes the presence of a Microsoft SQL Server database.
