@@ -151,7 +151,30 @@ The files can be inserted into the database by means of passing one of the follo
 - `-b2`, for ResourcebundleV3.
 
 #### SigtestFileCreator
+A console-application that is used to check if the private keys of the installed certificates can be accessed and used. For development- and testing-purposes only.  
+The program has one command-line argument: the path to a file that will be signed with the RSA- and GAEN-key.
 
+#### ProtobufScrubber
+
+#### EfgsTestDataGenerator
+
+#### Content.WebApi
+
+#### DailyCleanup
+
+#### EksEngine
+
+#### ICC.V2.WebApi
+
+#### Icc.WebApp
+
+#### Iks.Downloader
+
+#### Iks.Uploader
+
+#### ManifestEngine
+
+#### MobileAppApi.WebApi
 
 ## License
 This project is licensed under the EUPL license. See [LICENSE](LICENSE/LICENSE.txt) for more information.
