@@ -1,7 +1,6 @@
 # COVID-19 Notification App - Backend
 
 ## Table of Contents
-[Table of Contents](#Table-of-Contents)  
 [Introduction](#Introduction)  
 [External Documentation](#External-Documentation)  
 [Development and Contribution Process](#Development-and-Contribution-Process)  
