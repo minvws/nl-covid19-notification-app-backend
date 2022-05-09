@@ -95,7 +95,7 @@ certificate-tool list
 ```
 One of the entries should be:
 ```
-Subject             : C=NL, S=Zuid-Holland, L=Den Haag, O=CIBG, OU=CIBG, CN=nl.samensterk.en.rsa
+  Subject             : C=NL, S=Zuid-Holland, L=Den Haag, O=CIBG, OU=CIBG, CN=nl.samensterk.en.rsa
   Issuer              : C=NL, S=Zuid-Holland, L=Den Haag, O=CIBG, OU=CIBG, CN=nl.samensterk.en.rsa
   Serial Number       : 74AC87DD249C09A14919ED183BFD75BF
   Not Before          : 6/8/2021 12:14:28 PM
@@ -192,7 +192,7 @@ The files can be inserted into the database by means of passing one of the follo
 
 #### SigTestFileCreator
 A console application that is used to check if the private keys of the installed certificates can be accessed and used. For development and testing purposes only.
-  
+
 The program has one command-line argument: the path to a file that will be signed with the RSA and GAEN key.
 
 #### ProtobufScrubber
