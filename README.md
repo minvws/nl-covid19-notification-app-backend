@@ -5,36 +5,8 @@
 [External Documentation](#External-Documentation)  
 [Development and Contribution Process](#Development-and-Contribution-Process)  
 [Local Development Setup](#Local-Development-Setup)  
-[Certificates](#Certificates)  
-[Installation: Windows](#Installation%3A-Windows)  
-[Installation: macOS](#Installation%3A-macOS)  
-[Installation: Linux](#Installation%3A-Linux)  
-[Database](#Database)  
-[Windows](#Windows)  
-[macOS/Linux](#macOS/Linux)  
-[Docker (Windows/Linux/macOS)](#Docker-(Windows/Linux/macOS))  
-[Docker (macOS M1)](#Docker-(macOS-M1))  
-[Projects](#Projects)  
-[DatabaseProvision](#DatabaseProvision)  
-[DbBuilder](#DbBuilder)  
-[GenTeks](#GenTeks)  
-[ForceTekAuth](#ForceTekAuth)  
-[PublishContent](#PublishContent)  
-[SigtestFileCreator](#SigtestFileCreator)  
-[ProtobufScrubber](#ProtobufScrubber)  
-[EfgsTestDataGenerator](#EfgsTestDataGenerator)  
-[Content.WebApi](#Content.WebApi)  
-[DailyCleanup](#DailyCleanup)  
-[EksEngine](#EksEngine)  
-[ICC.V2.WebApi](#ICC.V2.WebApi)  
-[Icc.WebApp](#Icc.WebApp)  
-[Iks.Downloader](#Iks.Downloader)  
-[Iks.Uploader](#Iks.Uploader)  
-[ManifestEngine](#ManifestEngine)  
-[MobileAppApi.WebApi](#MobileAppApi.WebApi)  
 [License](#License)  
 [Attribution](#Attribution)  
-
 
 ## Introduction
 
@@ -75,13 +47,14 @@ Before being able to run the projects contained in the backend solution, you wil
 
 ### Certificates
 
-CoronaMelder signs its files with an RSA-certificate and an ECDSA-certificate. The latter is a requirement set by Apple and Google.  
+CoronaMelder signs its files with a RSA certificate and an ECDSA certificate. The latter is a requirement set by Apple and Google.  
 Versions of these certificates for local testing can be found in the folder `src/Crypto/Resources`:
 - TestRSA.p12  
 - TestECDSA.p12  
   
-**Please note: these certificates are not production certificates.**  
-The file-password for TestRSA.p12 is `Covid19!`; the password for TestECDSA.p12 is `12345678`.
+**Please note: these certificates are not production certificates.**
+
+The file password for TestRSA.p12 is `Covid19!`; the password for TestECDSA.p12 is `12345678`.
 
 The files `StaatDerNLChain-EV-Expires-2022-12-05.p7b` and `BdCertChain.p7b` can be ignored, as the local certificates are self-signed.  
 
@@ -95,7 +68,46 @@ For macOS the project assumes that the RSA certificate is installed in the *Syst
 2. Change `LocalMachineStoreCertificateProvider.cs` to read from `StoreLocation.CurrentUser` instead of `StoreLocation.LocalMachine`.
 
 #### Installation: Linux  
-TBD
+To be able to install the necessary test certificate(s) on Linux, it can be convenient to use the `dotnet-certificate-tool` (see the [NuGet package](https://www.nuget.org/packages/dotnet-certificate-tool/) or the [GitHub repository](https://github.com/gsoft-inc/dotnet-certificate-tool)):
+```
+dotnet tool install --global dotnet-certificate-tool
+```
+To create the certificate from the p12 as decribed [here](#Certificates):
+```
+openssl pkcs12 -in TestRSA.p12 -out TestRSA.crt
+```
+To create the pfx from this created certificate:
+```
+openssl pkcs12 -export -out TestRSA.pfx -in TestRSA.crt
+```
+To install the created pfx to the keystore using the `dotnet-certificate-tool`:
+```
+certificate-tool add --file ./TestRSA.pfx --password Covid-19!
+```
+The output should be something like:
+```
+Installing certificate from './TestRSA.pfx' to 'My' certificate store (location: CurrentUser)...
+Done.
+```
+Verify the certificate was installed into the keystore as expected, check the keystore with:
+```
+certificate-tool list
+```
+One of the entries should be:
+```
+Subject             : C=NL, S=Zuid-Holland, L=Den Haag, O=CIBG, OU=CIBG, CN=nl.samensterk.en.rsa
+  Issuer              : C=NL, S=Zuid-Holland, L=Den Haag, O=CIBG, OU=CIBG, CN=nl.samensterk.en.rsa
+  Serial Number       : 74AC87DD249C09A14919ED183BFD75BF
+  Not Before          : 6/8/2021 12:14:28 PM
+  Not After           : 6/8/2031 12:24:28 PM
+  Thumbprint          : 235930C0869A8D84B3CB0A9379522A4B0B4DBE0B
+  Signature Algorithm : sha256RSA (1.2.840.113549.1.1.11)
+  PublicKey Algorithm : RSA (1.2.840.113549.1.1.1)
+  Has PrivateKey      : Yes
+```
+As Linux does not have a LocalMachine store, please change `LocalMachineStoreCertificateProvider.cs` to read from `StoreLocation.CurrentUser` instead of `StoreLocation.LocalMachine`.
+
+More information on the various available keystores on specific operating systems can be found [here](https://docs.microsoft.com/en-us/dotnet/standard/security/cross-platform-cryptography#x509store).
 
 ### Database
 
@@ -144,82 +156,90 @@ image: mcr.microsoft.com/azure-sql-edge
 The rest of the setup should work as-is.
 
 ### Projects
-The codebase consists of the following projects, allowing you to locally set up a backend that contains Temporary Exposure Keys, Exposure Key Sets, a Manifest, and the various configuration JSON-files that are representative of the actual backend.  
+The codebase consists of the following projects, allowing you to locally set up a backend that contains Temporary Exposure Keys, Exposure Key Sets, a Manifest, and the various configuration JSON files that are representative of the actual backend.  
 
-#### DatabaseProvision
+#### DbProvision
 A console application that removes and rebuilds the required databases; only used for development and debugging.  
 The `nonuke`-argument can be supplied to prevent removing any existing databases.  
-Additionally, several types of JSON-files can be inserted into the database by means of passing one of the following arguments, followed by a path to the specific JSON-file:
+Additionally, several types of JSON files can be inserted into the database by means of passing one of the following arguments, followed by a path to the specific JSON file:
 - `-a`, for AppconfigV2.
 - `-r`, for RiskCalculationParametersV2.
 - `-b`, for ResourcebundleV2.
 - `-b2`, for ResourcebundleV3.
 
 #### DbBuilder
-Identical to the DatabaseProvisioner, but only supports the `nonuke`-argument.
+This project exists purely for running the Docker setup described [above](#Docker-(Windows/Linux/macOS)). It is identical to the DbProvision project, but only supports the `nonuke`-argument. 
 
 #### GenTeks
-A console-application that generates Temporary Exposure Keys ('TEKs') and inserts them into the database. For development- and testing-purposes only.  
+A console application that generates Temporary Exposure Keys ('TEKs') and inserts them into the database. For development and testing purposes only.  
 Two arguments can be passed to the application: the amount of workflows (or 'buckets') and the amount of TEKs per workflow.  
-By default, 10 workflows with each 14 TEKs are created, equivalent to passing the arguments `10 14`.
+By default, 10 workflows with each 1000 TEKs are created, equivalent to passing the arguments `10 1000`. These arguments can be found (and changed) in `src/GenTeks/Properties/launchSettings.json`
 
 #### ForceTekAuth
-A console-application that authenticates all workflows in the database, equivalent to users contacting the GGD to publish their workflows.  
-For development- and testing-purposes only; no command-line arguments can be provided.
+A console application that authenticates all workflows in the database, equivalent to users contacting the GGD to publish their workflows, or self-authorising their workflows through [Coronatest.nl](https://coronatest.nl/).
+
+This project is for development and testing purposes only. No command-line arguments can be provided.
+
+As the GenTeks project currently marks workflows as "authorised" when it creates them, there is strictly speaking no need to run the ForceTekAuth project anymore.
 
 #### PublishContent
-A console-application that, equal to DatabaseProvision, allows the insertion of various JSON-files into the database.  
-The files can be inserted into the database by means of passing one of the following arguments, followed by a path to a JSON-file that contains said content:
+A console application that, equal to DbProvision, allows the insertion of various JSON files into the database.  
+The files can be inserted into the database by means of passing one of the following arguments, followed by a path to a JSON file that contains said content:
 - `-a`, for AppconfigV2.
 - `-r`, for RiskCalculationParametersV2.
 - `-b`, for ResourcebundleV2.
 - `-b2`, for ResourcebundleV3.
 
-#### SigtestFileCreator
-A console-application that is used to check if the private keys of the installed certificates can be accessed and used. For development- and testing-purposes only.  
-The program has one command-line argument: the path to a file that will be signed with the RSA- and GAEN-key.
+#### SigTestFileCreator
+A console application that is used to check if the private keys of the installed certificates can be accessed and used. For development and testing purposes only.
+  
+The program has one command-line argument: the path to a file that will be signed with the RSA and GAEN key.
 
 #### ProtobufScrubber
-A console-application that alters the GAEN-signature of a signed file so that it can be verified by OpenSSL. The requirement of this program stems from a difference in writing the header bytes to the signature files. See `X962PackagingFix.cs` for more info.  
-The program has one command-line argument: the path to a zip with an export.sig-file.
+A console application that alters the GAEN signature of a signed file so that it can be verified by OpenSSL. The requirement of this program stems from a difference in writing the header bytes to the signature files. See `X962PackagingFix.cs` for more info.  
+
+The program has one command-line argument: the path to a zip with an `export.sig` file.
 
 #### EfgsTestDataGenerator
 A webservice that is used for automated end-to-end tests. It exposes one endpoint to mock the EFGS-service.  
 
 #### Content.WebApi
-A webservice for downloading the various files by the clients. It exposes endpoints that allows the user to download the manifests, exposure keysets, appconfig-files, resourcebundles and risk-calculation parameters.
+A webservice for downloading the various files by the clients. It exposes endpoints that allows the user to download the manifests, exposure keysets, appconfigs, resourcebundles and risk calculation parameters.
 
 #### DailyCleanup
-A command-line program that removes old data from the database, in order to comply with privacy regulations.  
+A console application that removes old data (i.e., older than 14 days) from the database, in order to comply with privacy regulations.
+
 After the cleanup, it generates a set of statistics:  
 - The total amount of TEKs.
 - The amount of published TEKs.
 - The total amount of Workflows.
 - The total amount of Workflows with TEKs.
-- The total amount of Workflows authorised.  
+- The total amount of Workflows authorised.
+
 As the name suggests, the DailyCleanup is run every night at a set time.
 
 #### EksEngine
-The meat and potatoes of CoronaMelder. A console-application that takes all authorised workflows and downloaded TEKs from EFGS, bundles them into an EKS, signs it and places it in the databas. It then updates the manifest and prepares the TEKs from the authorised workflows for delivery to EFGS.
+A console application that takes all authorised workflows and downloaded TEKs from EFGS, bundles them into an EKS, signs it and places it in the databas. It then updates the manifest and prepares the TEKs from the authorised workflows for delivery to EFGS. Please find more elaborate documentation on the EksEngine in `docs`.
 
-#### ICC.V2.WebApi
-A webservice that exposes the PubTek-endpoint. This endpoint is used to authorise workflows with the GGD-key.
+#### Icc.V2.WebApi
+A webservice that exposes the PubTek-endpoint. This endpoint is used to authorise workflows with the GGD key. Its functionality is used by the GGD Portal and by [Coronatest.nl](https://coronatest.nl/).
 
 #### Icc.WebApp
-A webservice that is used internally as a pass-through to the PubTek-endpoint.
-It exposes the endpoints for the GGD telephone-operators that use the ICCportal-website.
+This project contains 2 functionalities:
+1. the frontend code for the GGD Portal, utilizing [Microsoft.AspNetCore.SpaServices.Extensions](https://www.nuget.org/packages/Microsoft.AspNetCore.SpaServices.Extensions).
+2. a webservice that is used as a passthrough to the PubTek-endpoint described [above](#Icc.V2.WebApi) for the GGD Portal, and that provides authorisation functionality for the GGD Portal.
 
 #### Iks.Downloader
-A console-application that downloads TEKs from EFGS and stores them to be processed by the EKSEngine.
+A console application that downloads TEKs from EFGS and stores them to be processed by the EKSEngine.
 
 #### Iks.Uploader
-A console-application that takes the TEKs that the EKSEngine has prepared and uploads them to EFGS.
+A console application that takes the TEKs that the EKSEngine has prepared and uploads them to EFGS.
 
 #### ManifestEngine
-A console-application that updates the manifest with the most recent content of the databases.
+A console application that updates the manifest with the most recent content of the databases.
 
 #### MobileAppApi.WebApi
-The webservice that the clients use to request the creation of a Workflow (or 'bucket'), upload their TEKs and perform decoy-uploads to preserve the privacy of the client.
+The webservice that the clients use to request the creation of a Workflow (or 'bucket'), upload their TEKs and perform decoy uploads to preserve the privacy of the client.
 
 ## License
 
