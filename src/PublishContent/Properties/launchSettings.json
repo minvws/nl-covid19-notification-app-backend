@@ -2,7 +2,7 @@
   "profiles": {
     "PublishContent": {
       "commandName": "Project",
-      "commandLineArgs": "-b appsettings.json"
+      "commandLineArgs": "-a ./Resources/AppConfig.json"
     }
   }
 }
