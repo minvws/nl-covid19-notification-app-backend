@@ -1,0 +1,24 @@
+{
+  "cachebuster": "7d28c85d-4da7-4ae8-bd72-1ff6961d6e80",
+  "androidMinimumVersion": 125210,
+  "appointmentPhoneNumber": "0800-2035",
+  "decoyProbability": 0.01,
+  "iOSAppStoreURL": "https://apps.apple.com/nl/app/id1517652429",
+  "iOSMinimumVersion": "2.5.3",
+  "iOSMinimumVersionMessage": "",
+  "manifestFrequency": 210,
+  "repeatedUploadDelay": 14400,
+  "requestMaximumSize": 17000,
+  "requestMinimumSize": 1800,
+  "shareKeyURL": "https://coronatest.nl/inloggen?target=testen%2Fmeest-recente-testuitslag",
+  "coronaTestURL": "https://coronatest.nl/ik-wil-me-laten-testen/online-een-afspraak-maken",
+  "featureFlags": [
+    {
+      "id": "independentKeySharing",
+      "featureEnabled": true
+    }
+  ],
+  "coronaMelderDeactivated": "deactivated",
+  "coronaMelderDeactivatedTitle": "end_of_life_title",
+  "coronaMelderDeactivatedBody": "end_of_life_body"
+}

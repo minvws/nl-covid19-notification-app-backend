@@ -1,3 +1,15 @@
+**/.dockerignore
+**/.git
+**/.gitignore
+**/.vs
+**/.vscode
+**/bin
+**/docker-compose*
+**/Dockerfile*
+**/node_modules
+**/npm-debug.log
+**/obj
+**/tests
+LICENSE
+README.md
 appsettings.[Dd]evelopment.json
-node_modules
-ICCPortal/ClientApp/node_modules
