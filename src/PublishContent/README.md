@@ -12,7 +12,7 @@ The current production versions of these files can be found in the [Resources](R
 
 ## AppConfig
 
-TODO: add description
+File containing configuration values for the behavior of the apps themselves, such as frequency of checks and minimum app versions.
 
 | Property | Description |
 | -------- | ----------- |
@@ -36,11 +36,11 @@ TODO: add description
 
 ## ResourceBundle
 
-TODO: add description
+File containing the textual resources for the apps, including corresponding translations. This allows for changing for instance the treatment perspective when government advice changes, without having to do a full app release.
 
 ## RiskCalculationParameters
 
-TODO: add description
+File containing configuration values for determining the risk associated with a given exposure.
 
 | Property | Description |
 | -------- | ----------- |
