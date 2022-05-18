@@ -11,12 +11,12 @@ using Xunit;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 {
     [Trait("db", "ss")]
-    public class ManifestV3CreationTestSqlserver : ManifestV3CreationTest
+    public class ManifestV5CreationTestSqlserver : ManifestV5CreationTest
     {
-        private const string Prefix = nameof(ManifestV3CreationTest) + "_";
+        private const string Prefix = nameof(ManifestV5CreationTest) + "_";
         private static DbConnection connection;
 
-        public ManifestV3CreationTestSqlserver() : base(
+        public ManifestV5CreationTestSqlserver() : base(
             new DbContextOptionsBuilder<ContentDbContext>().UseSqlServer(CreateSqlDatabase("C")).Options
         )
         { }

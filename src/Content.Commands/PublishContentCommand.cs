@@ -24,7 +24,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         public PublishContentCommand(
             ContentValidator validator,
             ContentInsertDbCommand insertDbCommand,
-            Func<ContentInsertDbCommand> insertDbCommandV3,
             IUtcDateTimeProvider dateTimeProvider,
             ContentDbContext contentDbContext,
             ILogger<PublishContentCommand> logger)
@@ -71,21 +70,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 return ContentTypes.AppConfigV2;
             }
 
-            if (arg.Equals("-r", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return ContentTypes.RiskCalculationParametersV2;
-            }
-
+            //TODO: change r2 to r
             if (arg.Equals("-r2", StringComparison.InvariantCultureIgnoreCase))
             {
                 return ContentTypes.RiskCalculationParametersV3;
             }
 
-            if (arg.Equals("-b", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return ContentTypes.ResourceBundleV2;
-            }
-
+            //TODO: change b2 to b
             if (arg.Equals("-b2", StringComparison.InvariantCultureIgnoreCase))
             {
                 return ContentTypes.ResourceBundleV3;
