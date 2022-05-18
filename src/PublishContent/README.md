@@ -34,6 +34,18 @@ File containing configuration values for the behavior of the apps themselves, su
 | coronaMelderDeactivatedTitle | Contains reference to the correct string in the resourceBundle. The value should be "end_of_life_title" |
 | coronaMelderDeactivatedBody | Contains reference to the correct string in the resourceBundle. The value should be "end_of_life_body" |
 
+The following property can also exist in the AppConfig, but is currently unused:
+```
+"notification": {
+  "scheduledDateTime": "2022-04-20T21:00:00+01:00",
+  "title": "notification_app_deactivation_title",
+  "body": "notification_app_deactivation_body",
+  "targetScreen": "main",
+  "probability": 1
+}
+```
+This `notification` property allows for configuring a push notification to be sent to the mobile apps at the configured `scheduledDateTime`, with the given `title` and `body`. The `targetScreen` sub-property defines where users will land in the app when they click the notification, the `probability` sub-property allows for targeting only a given portion of users with the push notification. A `probability` with a value of 1 sends the configured push notification to all users.
+
 ## ResourceBundle
 
 File containing the textual resources for the apps, including corresponding translations. This allows for changing for instance the treatment perspective when government advice changes, without having to do a full app release.
