@@ -15,9 +15,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain
 
         public int TimeToLiveMinutes => GetConfigValue(nameof(TimeToLiveMinutes), 1680); //24 x 60 + 4 x 60
         public int PermittedMobileDeviceClockErrorMinutes => GetConfigValue(nameof(PermittedMobileDeviceClockErrorMinutes), 30);
-        public int PostKeysSignatureLength => GetConfigValue(nameof(PostKeysSignatureLength), 32);
-        public int BucketIdLength => GetConfigValue(nameof(BucketIdLength), 32);
-        public int ConfirmationKeyLength => GetConfigValue(nameof(ConfirmationKeyLength), 32);
         public bool CleanupDeletesData => GetConfigValue(nameof(CleanupDeletesData), false);
     }
 }
