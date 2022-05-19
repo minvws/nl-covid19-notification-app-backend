@@ -70,14 +70,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 return ContentTypes.AppConfigV2;
             }
 
-            //TODO: change r2 to r
-            if (arg.Equals("-r2", StringComparison.InvariantCultureIgnoreCase))
+            if (arg.Equals("-r", StringComparison.InvariantCultureIgnoreCase))
             {
                 return ContentTypes.RiskCalculationParametersV3;
             }
 
-            //TODO: change b2 to b
-            if (arg.Equals("-b2", StringComparison.InvariantCultureIgnoreCase))
+            if (arg.Equals("-b", StringComparison.InvariantCultureIgnoreCase))
             {
                 return ContentTypes.ResourceBundleV3;
             }
