@@ -13,8 +13,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi.Controlle
     public class AppConfigController : ControllerBase
     {
         [HttpGet]
-        [Route("/v2/appconfig/{id}")]
-        [Route("/v3/appconfig/{id}")]
         [Route("/v4/appconfig/{id}")]
         [Route("/v5/appconfig/{id}")]
         public async Task GetAppConfigV2Async(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)

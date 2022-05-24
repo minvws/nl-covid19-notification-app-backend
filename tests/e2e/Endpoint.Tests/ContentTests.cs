@@ -14,9 +14,6 @@ namespace Endpoint.Tests
     public class ContentTests : TestBase
     {
         [Theory]
-        [InlineData("test", "v3")]
-        [InlineData("acc", "v3")]
-        [InlineData("prod", "v3")]
         [InlineData("test", "v4")]
         [InlineData("acc", "v4")]
         [InlineData("prod", "v4")]
@@ -41,9 +38,6 @@ namespace Endpoint.Tests
         }
 
         [Theory]
-        [InlineData("test", "v3")]
-        [InlineData("acc", "v3")]
-        [InlineData("prod", "v3")]
         [InlineData("test", "v4")]
         [InlineData("acc", "v4")]
         [InlineData("prod", "v4")]
