@@ -33,6 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
             public DateTime TakeSnapshot() => throw new NotImplementedException();
             public DateTime Snapshot { get; set; }
         }
+
         private class FakeEksConfig : IEksConfig
         {
             public int LifetimeDays => 14;
@@ -41,6 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
             public int PageSize => throw new NotImplementedException();
             public bool CleanupDeletesData { get; set; }
         }
+
         private void Add(int id)
         {
             _contentDbContext.Content.Add(new ContentEntity
@@ -125,7 +127,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
             Assert.Equal(0, result.Reconciliation);
         }
 
-
         [Fact]
         public async Task Kill()
         {
@@ -152,7 +153,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
             Assert.Equal(0, result.Remaining);
             Assert.Equal(0, result.Reconciliation);
         }
-
 
         [Fact]
         public async Task MoreRealistic()
@@ -233,7 +233,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
             Assert.Equal(0, result.Reconciliation);
         }
 
-
         [Fact]
         public async Task KillV2()
         {
@@ -260,7 +259,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
             Assert.Equal(0, result.Remaining);
             Assert.Equal(0, result.Reconciliation);
         }
-
 
         [Fact]
         public async Task MoreRealisticV2()
@@ -341,7 +339,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
             Assert.Equal(0, result.Reconciliation);
         }
 
-
         [Fact]
         public async Task KillV3()
         {
@@ -368,7 +365,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
             Assert.Equal(0, result.Remaining);
             Assert.Equal(0, result.Reconciliation);
         }
-
 
         [Fact]
         public async Task MoreRealisticV3()
