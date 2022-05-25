@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Iks.Uploader.EntityFramework\Iks.Uploader.EntityFramework.csproj" />
     <ProjectReference Include="..\MobileAppApi.Entities\MobileAppApi.Entities.csproj" />
     <ProjectReference Include="..\MobileAppApi.EntityFramework\MobileAppApi.EntityFramework.csproj" />
+    <ProjectReference Include="..\DashboardData.EntityFramework\DashboardData.EntityFramework.csproj" />
   </ItemGroup>
 
 </Project>
