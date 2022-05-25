@@ -21,6 +21,7 @@
     <ProjectReference Include="..\MobileAppApi.Entities\MobileAppApi.Entities.csproj" />
     <ProjectReference Include="..\MobileAppApi.EntityFramework\MobileAppApi.EntityFramework.csproj" />
     <ProjectReference Include="..\DashboardData.EntityFramework\DashboardData.EntityFramework.csproj" />
+    <ProjectReference Include="..\DashboardData.Entities\DashboardData.Entities.csproj" />
   </ItemGroup>
 
 </Project>

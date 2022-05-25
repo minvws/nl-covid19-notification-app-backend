@@ -6,9 +6,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.DashboardData
 {
-    public class RemovePublishedDashboardDataResult : CommandResult
+    public class RemoveProcessedDashboardDataResult : CommandResult
     {
         public long Removed { get; set; }
-        public long RemainingExpiredCount { get; set; }
+        public long Remaining { get; set; }
     }
 }
