@@ -69,15 +69,10 @@ namespace DbProvision
 
             if (arg.Equals("-r", StringComparison.InvariantCultureIgnoreCase))
             {
-                return ContentTypes.RiskCalculationParametersV2;
+                return ContentTypes.RiskCalculationParametersV3;
             }
 
             if (arg.Equals("-b", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return ContentTypes.ResourceBundleV2;
-            }
-
-            if (arg.Equals("-b2", StringComparison.InvariantCultureIgnoreCase))
             {
                 return ContentTypes.ResourceBundleV3;
             }

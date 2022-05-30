@@ -124,8 +124,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 
             var jsonSerializer = new StandardJsonSerializer();
             _manifestJob = new ManifestUpdateCommand(
-                new ManifestV2Builder(_contentDbContext, eksConfig.Object, _dtp),
-                new ManifestV3Builder(_contentDbContext, eksConfig.Object, _dtp),
                 new ManifestV4Builder(_contentDbContext, eksConfig.Object, _dtp),
                 new ManifestV5Builder(_contentDbContext, eksConfig.Object, _dtp),
                 _contentDbContext,
@@ -155,7 +153,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             await _manifestJob.ExecuteAsync();
 
             // Assert
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV4));
             Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2)); // Stuffing not added
 
             Assert.Equal(0, _workflowContext.TemporaryExposureKeys.Count());
@@ -188,7 +186,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             await _manifestJob.ExecuteAsync();
 
             // Assert
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV2));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV4));
             Assert.Equal(0, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2)); // Stuffing not added
         }
     }
