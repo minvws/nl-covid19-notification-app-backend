@@ -23,18 +23,18 @@ using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 {
-    public abstract class ManifestV3CreationTest
+    public abstract class ManifestV5CreationTest
     {
         private readonly ContentDbContext _contentDbContext;
 
-        protected ManifestV3CreationTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
+        protected ManifestV5CreationTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
             _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
             _contentDbContext.Database.EnsureCreated();
         }
 
         [Fact]
-        public async Task ManifestUpdateCommand_ExecuteForV3()
+        public async Task ManifestUpdateCommand_ExecuteForV5()
         {
             //Arrange
             await BulkDeleteAllDataInTest();
@@ -43,9 +43,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             var sut = CompileManifestUpdateCommand();
 
             //Act
-            await sut.ExecuteV3Async();
+            await sut.ExecuteV5Async();
 
-            var result = _contentDbContext.SafeGetLatestContentAsync(ContentTypes.ManifestV3, DateTime.Now).GetAwaiter().GetResult();
+            var result = _contentDbContext.SafeGetLatestContentAsync(ContentTypes.ManifestV5, DateTime.Now).GetAwaiter().GetResult();
 
             //Assert
             Assert.NotNull(result);
@@ -54,8 +54,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             zipFileInMemory.Write(result.Content, 0, result.Content.Length);
             using var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false);
             var manifestContent = Encoding.ASCII.GetString(zipFileContent.ReadEntry(ZippedContentEntryNames.Content));
-            var correctResLocation = manifestContent.IndexOf("TheV3ResourceBundleId", StringComparison.Ordinal);
-            var wrongResLocation = manifestContent.IndexOf("TheWrongResourceBundleId", StringComparison.Ordinal);
+            var correctResLocation = manifestContent.IndexOf("CorrectId", StringComparison.Ordinal);
+            var wrongResLocation = manifestContent.IndexOf("WrongId", StringComparison.Ordinal);
             Assert.True(correctResLocation > 0);
             Assert.True(wrongResLocation == -1);
         }
@@ -63,6 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         private ManifestUpdateCommand CompileManifestUpdateCommand()
         {
             var eksConfigMock = new Mock<IEksConfig>();
+            eksConfigMock.SetupGet(x => x.LifetimeDays).Returns(14);
             var dateTimeProvider = new StandardUtcDateTimeProvider();
             var jsonSerialiser = new StandardJsonSerializer();
 
@@ -73,14 +74,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
                         );
 
             var result = new ManifestUpdateCommand(
-                new ManifestV2Builder(
-                    _contentDbContext,
-                    eksConfigMock.Object,
-                    dateTimeProvider),
-                new ManifestV3Builder(
-                    _contentDbContext,
-                    eksConfigMock.Object,
-                    dateTimeProvider),
                 new ManifestV4Builder(
                     _contentDbContext,
                     eksConfigMock.Object,
@@ -102,24 +95,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         private void PopulateContentDb()
         {
             var yesterday = DateTime.Now.AddDays(-1);
-            var content = "This is a ResourceBundleV3";
+            var content = "This is a test";
 
             _contentDbContext.Content.AddRange(new[]
             {
                 new ContentEntity{
                     Content = Encoding.ASCII.GetBytes(content),
-                    PublishingId = "TheV3ResourceBundleId",
-                    ContentTypeName = "Mwah",
-                    Type = ContentTypes.ResourceBundleV3,
+                    PublishingId = "WrongId",
+                    ContentTypeName = "ExposureKeySetV2",
+                    Type = ContentTypes.ExposureKeySetV2,
                     Created = yesterday,
                     Release = yesterday
 
                 },
                 new ContentEntity{
                     Content = Encoding.ASCII.GetBytes(content),
-                    PublishingId = "TheWrongResourceBundleId",
-                    ContentTypeName = "Mwah",
-                    Type = ContentTypes.ResourceBundleV2,
+                    PublishingId = "CorrectId",
+                    ContentTypeName = "ExposureKeySetV3",
+                    Type = ContentTypes.ExposureKeySetV3,
                     Created = yesterday,
                     Release = yesterday
 

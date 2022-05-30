@@ -21,7 +21,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.ServiceRegi
             services.AddTransient<RemoveExpiredWorkflowsCommand>();
             services.AddTransient<RemoveDiagnosisKeysReadyForCleanupCommand>();
             services.AddTransient<RemovePublishedDiagnosisKeysCommand>();
-            services.AddTransient<RemoveExpiredEksCommand>();
             services.AddTransient<RemoveExpiredEksV2Command>();
             services.AddTransient<RemoveExpiredEksV3Command>();
             services.AddTransient<RemoveExpiredManifestsCommand>();

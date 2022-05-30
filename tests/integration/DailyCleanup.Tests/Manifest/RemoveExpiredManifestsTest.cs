@@ -26,8 +26,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
 
         private readonly List<ContentTypes> _manifestTypes = new List<ContentTypes>
         {
-            ContentTypes.ManifestV2,
-            ContentTypes.ManifestV3,
             ContentTypes.ManifestV4,
             ContentTypes.ManifestV5,
         };
@@ -39,8 +37,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
         }
 
         [Theory]
-        [InlineData(ContentTypes.ManifestV2)]
-        [InlineData(ContentTypes.ManifestV3)]
         [InlineData(ContentTypes.ManifestV4)]
         [InlineData(ContentTypes.ManifestV5)]
         public async Task Remove_Expired_Manifest_By_Type_Should_Leave_One(ContentTypes manifestTypeName)
@@ -106,8 +102,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
         }
 
         [Theory]
-        [InlineData(ContentTypes.ManifestV2)]
-        [InlineData(ContentTypes.ManifestV3)]
         [InlineData(ContentTypes.ManifestV4)]
         [InlineData(ContentTypes.ManifestV5)]
         public async Task Remove_Zero_Manifest_By_Type_Should_Not_Crash(ContentTypes manifestTypeName)
