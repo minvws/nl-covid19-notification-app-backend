@@ -26,7 +26,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Dashb
         private void AddTestData(int processed, int unprocessed)
         {
             // Add requested amount of processed DashboardData rows
-            for (int i = 0; i < processed; i++)
+            for (var i = 0; i < processed; i++)
             {
                 _dbContext.DashboardInputJson.Add(new DashboardInputJsonEntity
                 {
@@ -38,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Dashb
             }
 
             // Add requested amount of unprocessed DashboardData rows
-            for (int i = 0; i < unprocessed; i++)
+            for (var i = 0; i < unprocessed; i++)
             {
                 _dbContext.DashboardInputJson.Add(new DashboardInputJsonEntity
                 {

@@ -2,6 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Data.Common;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.EntityFramework;
+using Xunit;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.DashboardData
 {
     [Trait("db", "ss")]

@@ -2,12 +2,20 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System;
+using System.Data.Common;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.EntityFramework;
+using Xunit;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.DashboardData
 {
     [Trait("db", "mem")]
     public class DashboardDataCleanerTestsSqlite : DashboardDataCleanerTests, IDisposable
     {
         private static DbConnection connection;
+
         public DashboardDataCleanerTestsSqlite() : base(
             new DbContextOptionsBuilder<DashboardDataDbContext>().UseSqlite(CreateInMemoryDatabase()).Options
         )
