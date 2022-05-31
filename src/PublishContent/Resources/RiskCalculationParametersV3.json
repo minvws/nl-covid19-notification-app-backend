@@ -1,0 +1,150 @@
+{
+  "daysSinceOnsetToInfectiousness": [
+    {
+      "daysSinceOnsetOfSymptoms": -14,
+      "infectiousness": 0
+    },
+    {
+      "daysSinceOnsetOfSymptoms": -13,
+      "infectiousness": 0
+    },
+    {
+      "daysSinceOnsetOfSymptoms": -12,
+      "infectiousness": 0
+    },
+    {
+      "daysSinceOnsetOfSymptoms": -11,
+      "infectiousness": 0
+    },
+    {
+      "daysSinceOnsetOfSymptoms": -10,
+      "infectiousness": 0
+    },
+    {
+      "daysSinceOnsetOfSymptoms": -9,
+      "infectiousness": 0
+    },
+    {
+      "daysSinceOnsetOfSymptoms": -8,
+      "infectiousness": 0
+    },
+    {
+      "daysSinceOnsetOfSymptoms": -7,
+      "infectiousness": 0
+    },
+    {
+      "daysSinceOnsetOfSymptoms": -6,
+      "infectiousness": 0
+    },
+    {
+      "daysSinceOnsetOfSymptoms": -5,
+      "infectiousness": 0
+    },
+    {
+      "daysSinceOnsetOfSymptoms": -4,
+      "infectiousness": 0
+    },
+    {
+      "daysSinceOnsetOfSymptoms": -3,
+      "infectiousness": 0
+    },
+    {
+      "daysSinceOnsetOfSymptoms": -2,
+      "infectiousness": 1
+    },
+    {
+      "daysSinceOnsetOfSymptoms": -1,
+      "infectiousness": 1
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 0,
+      "infectiousness": 1
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 1,
+      "infectiousness": 1
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 2,
+      "infectiousness": 1
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 3,
+      "infectiousness": 1
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 4,
+      "infectiousness": 1
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 5,
+      "infectiousness": 1
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 6,
+      "infectiousness": 1
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 7,
+      "infectiousness": 1
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 8,
+      "infectiousness": 1
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 9,
+      "infectiousness": 1
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 10,
+      "infectiousness": 1
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 11,
+      "infectiousness": 1
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 12,
+      "infectiousness": 0
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 13,
+      "infectiousness": 0
+    },
+    {
+      "daysSinceOnsetOfSymptoms": 14,
+      "infectiousness": 0
+    }
+  ],
+  "infectiousnessWhenDaysSinceOnsetMissing": 1,
+  "minimumWindowScore": 300,
+  "minimumRiskScore": 900,
+  "daysSinceExposureThreshold": 14,
+  "attenuationBucketThresholds": [
+    56,
+    62,
+    73
+  ],
+  "attenuationBucketWeights": [
+    1.5,
+    1.0,
+    0.4,
+    0.0
+  ],
+  "infectiousnessWeights": [
+    0.0,
+    1.0,
+    1.0
+  ],
+  "reportTypeWeights": [
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "reportTypeWhenMissing": 1,
+  "cachebuster": "7d28c85d-4da7-4ae8-bd72-1ff6961d6e80"
+}

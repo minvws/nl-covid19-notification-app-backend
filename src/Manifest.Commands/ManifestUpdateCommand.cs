@@ -18,8 +18,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
     public class ManifestUpdateCommand : BaseCommand
     {
-        private readonly ManifestV2Builder _v2Builder;
-        private readonly ManifestV3Builder _v3Builder;
         private readonly ManifestV4Builder _v4Builder;
         private readonly ManifestV5Builder _v5Builder;
         private readonly ContentDbContext _contentDbContext;
@@ -29,8 +27,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         private readonly IContentEntityFormatter _formatter;
 
         public ManifestUpdateCommand(
-            ManifestV2Builder v2Builder,
-            ManifestV3Builder v3Builder,
             ManifestV4Builder v4Builder,
             ManifestV5Builder v5Builder,
             ContentDbContext contentDbContext,
@@ -39,8 +35,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             IJsonSerializer jsonSerializer,
             IContentEntityFormatter formatter)
         {
-            _v2Builder = v2Builder ?? throw new ArgumentNullException(nameof(v2Builder));
-            _v3Builder = v3Builder ?? throw new ArgumentNullException(nameof(v3Builder));
             _v4Builder = v4Builder ?? throw new ArgumentNullException(nameof(v4Builder));
             _v5Builder = v5Builder ?? throw new ArgumentNullException(nameof(v5Builder));
             _contentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
@@ -50,16 +44,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             _formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
         }
 
-        //ManifestV1 is no longer supported.
-        public async Task ExecuteV2Async() => await Execute(async () => await _v2Builder.ExecuteAsync(), ContentTypes.ManifestV2);
-        public async Task ExecuteV3Async() => await Execute(async () => await _v3Builder.ExecuteAsync(), ContentTypes.ManifestV3);
         public async Task ExecuteV4Async() => await Execute(async () => await _v4Builder.ExecuteAsync(), ContentTypes.ManifestV4);
         public async Task ExecuteV5Async() => await Execute(async () => await _v5Builder.ExecuteAsync(), ContentTypes.ManifestV5);
 
         public override async Task<ICommandResult> ExecuteAsync()
         {
-            await ExecuteV2Async();
-            await ExecuteV3Async();
             await ExecuteV4Async();
             await ExecuteV5Async();
 

@@ -79,8 +79,6 @@ namespace DbProvision
                   configuration,
                   new NullLogger<LocalMachineStoreCertificateProvider>(),
                   new StandardUtcDateTimeProvider()));
-
-            services.PublishContentForV3Startup();
         }
     }
 }
