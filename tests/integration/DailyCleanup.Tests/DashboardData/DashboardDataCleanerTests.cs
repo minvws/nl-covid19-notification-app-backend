@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.DashboardData;
@@ -51,17 +53,25 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Dashb
             _dbContext.SaveChanges();
         }
 
-        [Fact]
-        public async Task Remove_With_All_Processed_Should_Leave_None()
+        [Theory]
+        [InlineData(5, 0)]
+        [InlineData(4, 1)]
+        [InlineData(3, 2)]
+        [InlineData(2, 3)]
+        [InlineData(1, 4)]
+        [InlineData(0, 5)]
+        public async Task Removing_Processed_Should_Leave_Unprocessed_Count(int processed, int unprocessed)
         {
+            await _dbContext.BulkDeleteAsync(_dbContext.DashboardInputJson.ToList());
+
             var command = new RemoveProcessedDashboardDataCommand(_dbContext, new NullLogger<RemoveProcessedDashboardDataCommand>());
 
-            AddTestData(processed: 5, unprocessed: 0);
+            AddTestData(processed, unprocessed);
 
             var result = (RemoveProcessedDashboardDataResult)await command.ExecuteAsync();
 
-            Assert.Equal(5, result.Removed);
-            Assert.Equal(0, result.Remaining);
+            Assert.Equal(processed, result.Removed);
+            Assert.Equal(unprocessed, result.Remaining);
         }
     }
 }
