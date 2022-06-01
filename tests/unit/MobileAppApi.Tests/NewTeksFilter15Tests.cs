@@ -169,74 +169,66 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
         [Fact]
         public void Gaen15SameDay_UsingCurrentDateTime_TekReleaseOn_Publishing()
         {
-            var utcDateToday = DateTime.UtcNow.Date;
-
-            var year = utcDateToday.Year;
-            var month = utcDateToday.Month;
-            var today = utcDateToday.Day;
-
-            var utcDateTomorrow = utcDateToday.AddDays(1);
-            var tomorrowYear = utcDateTomorrow.Year;
-            var tomorrowMonth = utcDateTomorrow.Month;
-            var tomorrow = utcDateTomorrow.Day;
+            var today = DateTime.UtcNow.Date;
+            var tomorrow = DateTime.UtcNow.Date.AddDays(1);
 
             // -14 days to today
-            var deviceTeks = Enumerable.Range(0, 14).Select(x => GenerateTek(utcDateToday.AddDays(-x).Year, utcDateToday.AddDays(-x).Month, utcDateToday.AddDays(-x).Day, 1)).ToList();
+            var deviceTeks = Enumerable.Range(0, 14).Select(x => GenerateTek(today.AddDays(-x).Year, today.AddDays(-x).Month, today.AddDays(-x).Day, 1)).ToList();
 
             var w = new TekReleaseWorkflowStateEntity
             {
-                Created = utcDateToday.AddHours(10),
-                ValidUntil = utcDateToday.AddDays(1).AddHours(4),
+                Created = today.AddHours(10),
+                ValidUntil = today.AddDays(1).AddHours(4),
             };
             Write(w, new Tek[0]);
-            var filteredResult = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(utcDateToday.AddHours(9).AddMinutes(35)), new DefaultTekValidatorConfig()).Filter(deviceTeks.ToArray(), w);
+            var filteredResult = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(today.AddHours(9).AddMinutes(35)), new DefaultTekValidatorConfig()).Filter(deviceTeks.ToArray(), w);
             Assert.Equal(14, filteredResult.Items.Length);
             Write(w, filteredResult.Items); //These will be lost cos they don't get GGD authorisation
-            Assert.Empty(Publish(utcDateToday.AddHours(9).AddMinutes(36)));
+            Assert.Empty(Publish(today.AddHours(9).AddMinutes(36)));
 
-            deviceTeks.Add(GenerateTek(year, month, today, 2));
+            deviceTeks.Add(GenerateTek(today.Year, today.Month, today.Day, 2));
 
             // Tomorrow
             deviceTeks.RemoveAt(0);
-            deviceTeks.Add(GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 1)); //1st key for today
+            deviceTeks.Add(GenerateTek(tomorrow.Year, tomorrow.Month, tomorrow.Day, 1)); //1st key for today
             Assert.Equal(15, deviceTeks.Count);
 
 
             w = new TekReleaseWorkflowStateEntity
             {
-                Created = utcDateToday.AddHours(10),
-                ValidUntil = utcDateToday.AddDays(1).AddHours(4),
+                Created = today.AddHours(10),
+                ValidUntil = today.AddDays(1).AddHours(4),
             };
             Write(w, new Tek[0]);
 
-            deviceTeks.Add(GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 2)); //2nd key for today
+            deviceTeks.Add(GenerateTek(tomorrow.Year, tomorrow.Month, tomorrow.Day, 2)); //2nd key for today
             Assert.Equal(16, deviceTeks.Count);
-            Assert.Empty(Publish(utcDateToday.AddHours(9).AddMinutes(36)));
+            Assert.Empty(Publish(today.AddHours(9).AddMinutes(36)));
 
             //Post
-            w.AuthorisedByCaregiver = utcDateToday.AddDays(1).AddHours(11);
-            filteredResult = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(utcDateToday.AddDays(1).AddHours(11).AddMinutes(5)), new DefaultTekValidatorConfig()).Filter(deviceTeks.ToArray(), w);
+            w.AuthorisedByCaregiver = today.AddDays(1).AddHours(11);
+            filteredResult = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(today.AddDays(1).AddHours(11).AddMinutes(5)), new DefaultTekValidatorConfig()).Filter(deviceTeks.ToArray(), w);
             Assert.Equal(2, filteredResult.Messages.Length);
             Assert.Equal(14, filteredResult.Items.Length);
             Write(w, filteredResult.Items);
             //Get after post
-            deviceTeks.Add(GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 3));
+            deviceTeks.Add(GenerateTek(tomorrow.Year, tomorrow.Month, tomorrow.Day, 3));
             Assert.Equal(17, deviceTeks.Count);
 
             //11:20 Server publishes Server publishes K0902.1 through K0915.2 to the CDN. 
             //Only 14.
-            Assert.Equal(14, Publish(utcDateToday.AddDays(1).AddHours(13).AddMinutes(6)).Length);
+            Assert.Equal(14, Publish(today.AddDays(1).AddHours(13).AddMinutes(6)).Length);
             Assert.Equal(14, w.Teks.Count(x => x.PublishingState == PublishingState.Published));
 
             //14.00h - POST - Server silently discards all keys as they arrive > 120 minutes after GGD code
-            filteredResult = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(utcDateToday.AddDays(1).AddHours(14)), new DefaultTekValidatorConfig()).Filter(deviceTeks.ToArray(), w);
+            filteredResult = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(today.AddDays(1).AddHours(14)), new DefaultTekValidatorConfig()).Filter(deviceTeks.ToArray(), w);
             Assert.Empty(filteredResult.Items);
             Assert.Equal(17, filteredResult.Messages.Length); //14.00h Server silently discards all keys as they arrive > 120 minutes after GGD code
 
-            deviceTeks.Add(GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 4));
+            deviceTeks.Add(GenerateTek(tomorrow.Year, tomorrow.Month, tomorrow.Day, 4));
             Assert.Equal(18, deviceTeks.Count);
 
-            Assert.Empty(Publish(utcDateToday.AddDays(1).AddHours(23).AddMinutes(59)));
+            Assert.Empty(Publish(today.AddDays(1).AddHours(23).AddMinutes(59)));
 
             // Day after tomorrow
             deviceTeks.RemoveAt(0);
@@ -244,69 +236,57 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests
             deviceTeks.Add(GenerateTek(dayAfterTomorrow.Year, dayAfterTomorrow.Month, dayAfterTomorrow.Day, 1));
             Assert.Equal(18, deviceTeks.Count);
             //Nothing new to publish
-            Assert.Empty(Publish(utcDateToday.AddDays(2).AddMinutes(1)));
+            Assert.Empty(Publish(today.AddDays(2).AddMinutes(1)));
 
             //POST
             // - ignores the keys it already has
             // - K0916.1 is discarded because it's a key for today and the bucket doesn't accept same day keys after midnight.
-            filteredResult = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(utcDateToday.AddDays(2).AddMinutes(30)), new DefaultTekValidatorConfig()).Filter(deviceTeks.ToArray(), w);
+            filteredResult = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(today.AddDays(2).AddMinutes(30)), new DefaultTekValidatorConfig()).Filter(deviceTeks.ToArray(), w);
             Assert.Empty(filteredResult.Items);
             Assert.Equal(18, filteredResult.Messages.Length);
-            Assert.Empty(Publish(utcDateToday.AddDays(2).AddMinutes(31)));
+            Assert.Empty(Publish(today.AddDays(2).AddMinutes(31)));
         }
 
         [Fact]
         public void Gaen15SameDay_UsingCurrentDateTime_TekRelease_Has_CorrectEmbargoTime()
         {
-            var utcDateToday = DateTime.UtcNow.Date;
-
-            var year = utcDateToday.Year;
-            var month = utcDateToday.Month;
-            var today = utcDateToday.Day;
-
-            var utcDateYesterday = utcDateToday.AddDays(-1);
-            var yesterdayYear = utcDateYesterday.Year;
-            var yesterdayMonth = utcDateYesterday.Month;
-            var yesterday = utcDateYesterday.Day;
-
-            var utcDateTomorrow = utcDateToday.AddDays(1);
-            var tomorrowYear = utcDateTomorrow.Year;
-            var tomorrowMonth = utcDateTomorrow.Month;
-            var tomorrow = utcDateTomorrow.Day;
+            var today = DateTime.UtcNow.Date;
+            var yesterday = today.AddDays(-1);
+            var tomorrow = today.AddDays(1);
 
             // add keys from yesterday, today and tomorrow
             var deviceTeks = new List<Tek>
             {
-                GenerateTek(yesterdayYear, yesterdayMonth, yesterday, 1, 1),
-                GenerateTek(yesterdayYear, yesterdayMonth, yesterday, 2, 57),
-                GenerateTek(yesterdayYear, yesterdayMonth, yesterday, 3, 58),
-                GenerateTek(yesterdayYear, yesterdayMonth, yesterday, 4, 69),
-                GenerateTek(yesterdayYear, yesterdayMonth, yesterday, 5, 70),
-                GenerateTek(yesterdayYear, yesterdayMonth, yesterday, 6, 144),
-                GenerateTek(year, month, today, 7, 1),
-                GenerateTek(year, month, today, 8, 57), // 9:30 AM UTC (before embargo  time)
-                GenerateTek(year, month, today, 9, 58), // 9:40 AM UTC (before embargo  time)
-                GenerateTek(year, month, today, 10, 69), // 11:30 AM UTC (before embargo  time)
-                GenerateTek(year, month, today, 11, 70), // 11:40 AM UTC (after embargo  time)
-                GenerateTek(year, month, today, 12, 144),
-                GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 13, 1),
-                GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 14, 57),
-                GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 15, 58),
-                GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 16, 69),
-                GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 17, 70),
-                GenerateTek(tomorrowYear, tomorrowMonth, tomorrow, 18, 144)
+                GenerateTek(yesterday.Year, yesterday.Month, yesterday.Day, 1, 1),
+                GenerateTek(yesterday.Year, yesterday.Month, yesterday.Day, 2, 57),
+                GenerateTek(yesterday.Year, yesterday.Month, yesterday.Day, 3, 58),
+                GenerateTek(yesterday.Year, yesterday.Month, yesterday.Day, 4, 69),
+                GenerateTek(yesterday.Year, yesterday.Month, yesterday.Day, 5, 70),
+                GenerateTek(yesterday.Year, yesterday.Month, yesterday.Day, 6, 144),
+                GenerateTek(today.Year, today.Month, today.Day, 7, 1),
+                GenerateTek(today.Year, today.Month, today.Day, 8, 57), // 9:30 AM UTC (before embargo  time)
+                GenerateTek(today.Year, today.Month, today.Day, 9, 58), // 9:40 AM UTC (before embargo  time)
+                GenerateTek(today.Year, today.Month, today.Day, 10, 69), // 11:30 AM UTC (before embargo  time)
+                GenerateTek(today.Year, today.Month, today.Day, 11, 70), // 11:40 AM UTC (after embargo  time)
+                GenerateTek(today.Year, today.Month, today.Day, 12, 144),
+                GenerateTek(tomorrow.Year, tomorrow.Month, tomorrow.Day, 13, 1),
+                GenerateTek(tomorrow.Year, tomorrow.Month, tomorrow.Day, 14, 57),
+                GenerateTek(tomorrow.Year, tomorrow.Month, tomorrow.Day, 15, 58),
+                GenerateTek(tomorrow.Year, tomorrow.Month, tomorrow.Day, 16, 69),
+                GenerateTek(tomorrow.Year, tomorrow.Month, tomorrow.Day, 17, 70),
+                GenerateTek(tomorrow.Year, tomorrow.Month, tomorrow.Day, 18, 144)
             };
 
 
             var w = new TekReleaseWorkflowStateEntity
             {
-                Created = utcDateToday.AddHours(10),
-                ValidUntil = utcDateToday.AddDays(1).AddHours(4),
+                Created = today.AddHours(10),
+                ValidUntil = today.AddDays(1).AddHours(4),
             };
             Write(w, new Tek[0]);
 
             // Assume it's 9.35 AM UTC
-            var todaysDateTime = utcDateToday.AddHours(9).AddMinutes(35);
+            var todaysDateTime = today.AddHours(9).AddMinutes(35);
 
             var filteredResult = new BackwardCompatibleV15TekListWorkflowFilter(new FakedNow(todaysDateTime), new DefaultTekValidatorConfig()).Filter(deviceTeks.ToArray(), w);
             Assert.Equal(12, filteredResult.Items.Length); // Yesterdays and todays keys. Future keys are filtered out
