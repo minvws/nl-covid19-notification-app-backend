@@ -23,8 +23,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
 
             // ManifestEngine
             services.AddTransient<ManifestUpdateCommand>();
-            services.AddTransient<ManifestV2Builder>();
-            services.AddTransient<ManifestV3Builder>();
             services.AddTransient<ManifestV4Builder>();
             services.AddTransient<ManifestV5Builder>();
             services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();

@@ -4,9 +4,7 @@
     <None Remove="appsettings.json" />
     <None Remove="appsettings.release.json" />
     <None Remove="Resources\AppConfig.json" />
-    <None Remove="Resources\ResourceBundle.json" />
     <None Remove="Resources\ResourceBundleV3.json" />
-    <None Remove="Resources\RiskCalculationParameters.json" />
     <None Remove="Resources\RiskCalculationParametersV3.json" />
   </ItemGroup>
 
@@ -20,13 +18,7 @@
     <Content Include="Resources\AppConfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\ResourceBundle.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Resources\ResourceBundleV3.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\RiskCalculationParameters.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\RiskCalculationParametersV3.json">
