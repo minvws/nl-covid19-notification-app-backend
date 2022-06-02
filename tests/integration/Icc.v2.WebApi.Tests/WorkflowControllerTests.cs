@@ -40,7 +40,9 @@ namespace Icc.v2.WebApi.Tests
                     builder.ConfigureTestServices(services =>
                     {
                         services.AddScoped(sp => new WorkflowDbContext(workflowDbContextOptions));
+                        services.AddControllers();
                     });
+                    ;
                 });
         }
 

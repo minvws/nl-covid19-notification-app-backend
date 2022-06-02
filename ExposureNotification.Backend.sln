@@ -154,6 +154,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "jobs", "jobs", "{C3CD8AF9-2
 		build\pipelines\jobs\tests-e2e-publish-scenariotests-artifact.yaml = build\pipelines\jobs\tests-e2e-publish-scenariotests-artifact.yaml
 		build\pipelines\jobs\tools-publish-forcetekauth-artifact.yaml = build\pipelines\jobs\tools-publish-forcetekauth-artifact.yaml
 		build\pipelines\jobs\tools-publish-genteks-artifact.yaml = build\pipelines\jobs\tools-publish-genteks-artifact.yaml
+		build\pipelines\jobs\tools-publish-protobufscrubber-artifact.yaml = build\pipelines\jobs\tools-publish-protobufscrubber-artifact.yaml
 		build\pipelines\jobs\tools-publish-publishcontent-artifact.yaml = build\pipelines\jobs\tools-publish-publishcontent-artifact.yaml
 		build\pipelines\jobs\tools-publish-sigtestfilecreator-artifact.yaml = build\pipelines\jobs\tools-publish-sigtestfilecreator-artifact.yaml
 	EndProjectSection
