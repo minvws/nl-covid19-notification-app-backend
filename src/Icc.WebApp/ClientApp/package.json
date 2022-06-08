@@ -23,7 +23,6 @@
     "@angular/platform-server": "9.1.11",
     "@angular/router": "9.1.11",
     "@auth0/angular-jwt": "^5.0.0",
-    "@nguniversal/module-map-ngfactory-loader": "8.1.1",
     "@types/file-saver": "^2.0.1",
     "aspnet-prerendering": "^3.0.1",
     "bootstrap": "^4.3.1",

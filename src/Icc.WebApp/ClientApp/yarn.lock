@@ -1064,11 +1064,6 @@
     "rxjs" "6.5.4"
     "webpack-sources" "1.4.3"
 
-"@nguniversal/module-map-ngfactory-loader@8.1.1":
-  "integrity" "sha512-vXFydMTPFRfGjmtdwtbNhl4Pmfg580Yit0vzlTeb3ZC1v+TJKR2GzaWYUileWxS60FrgNF4/tkOEL5ouDDx6Bw=="
-  "resolved" "https://registry.npmjs.org/@nguniversal/module-map-ngfactory-loader/-/module-map-ngfactory-loader-8.1.1.tgz"
-  "version" "8.1.1"
-
 "@nodelib/fs.scandir@2.1.5":
   "integrity" "sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g=="
   "resolved" "https://registry.npmjs.org/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz"
@@ -1492,7 +1487,7 @@
     "type-fest" "^0.11.0"
 
 "ansi-html@0.0.7":
-  "integrity" "sha1-gTWEAhliqenm/QOflA0S9WynhZ4="
+  "integrity" "sha512-JoAxEa1DfP9m2xfB/y2r/aKcwXNlltr4+0QSBC4TrLfcxyvepX2Pv0t/xpgGV5bGsDzCYV8SzjWgyCW0T9yYbA=="
   "resolved" "https://registry.npmjs.org/ansi-html/-/ansi-html-0.0.7.tgz"
   "version" "0.0.7"
 
@@ -1684,7 +1679,7 @@
     "safer-buffer" "~2.1.0"
 
 "aspnet-prerendering@^3.0.1":
-  "integrity" "sha1-C252e0nkJeHT1ZYR+sgMnG9bAQA="
+  "integrity" "sha512-nfOQYVKW3sYQMZBXNM2KPrXU2MOBuLn/gszRZM0Y1Pj4EpzCw1KjXiO681eQo4ZR1TLLzJ8L2sQbq0qeC1zxVg=="
   "resolved" "https://registry.npmjs.org/aspnet-prerendering/-/aspnet-prerendering-3.0.1.tgz"
   "version" "3.0.1"
   dependencies:
@@ -3402,7 +3397,7 @@
   "version" "0.5.1"
 
 "domain-task@^3.0.0":
-  "integrity" "sha1-T+fXQ5rP55LWm/jmv6ax41aGLUU="
+  "integrity" "sha512-7oAiY1AvjhVNVJbOwSHbrm6lEHczOSSCSqDkHp2ZO7vb/iOCGl7YNk/1cv4yKwSGhBMpBZ5mu+7cMorbWxWvOg=="
   "resolved" "https://registry.npmjs.org/domain-task/-/domain-task-3.0.3.tgz"
   "version" "3.0.3"
   dependencies:
@@ -3689,9 +3684,9 @@
   "version" "3.1.0"
 
 "eventsource@^1.0.7":
-  "integrity" "sha512-4Ln17+vVT0k8aWq+t/bF5arcS3EpT9gYtW66EPacdj/mAFevznsnyoHLPy2BA8gbIQeIHoPsvwmfBftfcG//BQ=="
-  "resolved" "https://registry.npmjs.org/eventsource/-/eventsource-1.0.7.tgz"
-  "version" "1.0.7"
+  "integrity" "sha512-qV5ZC0h7jYIAOhArFJgSfdyz6rALJyb270714o7ZtNnw2WSJ+eexhKtE0O8LYPRsHZHf2osHKZBxGPvm3kPkCA=="
+  "resolved" "https://registry.npmjs.org/eventsource/-/eventsource-1.1.1.tgz"
+  "version" "1.1.1"
   dependencies:
     "original" "^1.0.0"
 
@@ -4191,7 +4186,7 @@
     "assert-plus" "^1.0.0"
 
 "glob-parent@^3.1.0":
-  "integrity" "sha1-nmr2KZ2NO9K9QEMIMr0RPfkGxa4="
+  "integrity" "sha512-E8Ak/2+dZY6fnzlR7+ueWvhsH1SjHr4jjss4YS/h4py44jY9MhK/VFdaZJAWDz6BbL21KeteKxFSFpq8OS5gVA=="
   "resolved" "https://registry.npmjs.org/glob-parent/-/glob-parent-3.1.0.tgz"
   "version" "3.1.0"
   dependencies:
@@ -5110,7 +5105,7 @@
   "version" "3.0.1"
 
 "isomorphic-fetch@^2.2.1":
-  "integrity" "sha1-YRrhrPFPXoH3KVB0coGf6XM1WKk="
+  "integrity" "sha512-9c4TNAKYXM5PRyVcwUZrF3W09nQ+sO7+jydgs4ZGW9dhsLG2VOlISJABombdQqQRXCwuYG3sYV/puGf5rp0qmA=="
   "resolved" "https://registry.npmjs.org/isomorphic-fetch/-/isomorphic-fetch-2.2.1.tgz"
   "version" "2.2.1"
   dependencies:
@@ -6864,7 +6859,7 @@
     "postcss" "^7.0.0"
 
 "postcss-functions@^3.0.0":
-  "integrity" "sha1-DpTQFERwCkgd4g3k1V+yZAVkJQ4="
+  "integrity" "sha512-N5yWXWKA+uhpLQ9ZhBRl2bIAdM6oVJYpDojuI1nF2SzXBimJcdjFwiAouBVbO5VuOF3qA6BSFWFc3wXbbj72XQ=="
   "resolved" "https://registry.npmjs.org/postcss-functions/-/postcss-functions-3.0.0.tgz"
   "version" "3.0.0"
   dependencies:
