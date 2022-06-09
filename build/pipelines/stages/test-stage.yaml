@@ -20,10 +20,10 @@ stages:
         npm install -g mocha-junit-reporter
       displayName: 'Install npm Packages'
 
-    # - script: |
-        # cd src/Icc.WebApp/ClientApp
-        # ng lint
-      # displayName: 'Run Lint'
+    - script: |
+        cd src/Icc.WebApp/ClientApp
+        ng lint
+      displayName: 'Run Lint'
 
     - script: |
         cd src/Icc.WebApp/ClientApp
