@@ -115,8 +115,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 {
                     x.Id,
                     DailyKey = new DailyKey(x.KeyData, x.RollingStartNumber, x.RollingPeriod),
-                    DateOfSymptomsOnset = x.Owner.StartDateOfTekInclusion.Value,
-                    Symptomatic = x.Owner.IsSymptomatic.Value
+                    DateOfSymptomsOnset = x.Owner.StartDateOfTekInclusion ?? default,
+                    Symptomatic = x.Owner.IsSymptomatic ?? default
                 }).ToList();
 
             // Map TEKS from selectTeksFromWorkflowQuery to a List of DiagnosisKeyInputEntities
