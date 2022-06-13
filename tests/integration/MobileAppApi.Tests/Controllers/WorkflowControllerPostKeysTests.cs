@@ -42,17 +42,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
                 {
                     services.AddTransient<DecoyTimeAggregatorAttribute>();
                 });
-
-                builder.ConfigureAppConfiguration((ctx, config) =>
-                {
-                    config.AddInMemoryCollection(new Dictionary<string, string>
-                    {
-                        ["Validation:TemporaryExposureKey:RollingPeriod:Min"] = "1",
-                        ["Validation:TemporaryExposureKey:RollingPeriod:Max"] = "256",
-                        ["Workflow:ResponsePadding:ByteCount:Min"] = "8",
-                        ["Workflow:ResponsePadding:ByteCount:Max"] = "64",
-                    });
-                });
             });
         }
 
