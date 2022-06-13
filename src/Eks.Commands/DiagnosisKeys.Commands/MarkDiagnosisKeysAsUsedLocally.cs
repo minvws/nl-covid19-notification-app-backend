@@ -85,7 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 .OrderBy(x => x.TekId)
                 .Skip(_index)
                 .Take(_eksConfig.PageSize)
-                .Select(x => x.TekId.Value)
+                .Select(x => x.TekId ?? default)
                 .ToArray();
         }
     }
