@@ -10,4 +10,8 @@ jobs:
       value: 'src/Icc.WebApp/Icc.WebApp.csproj'
     displayName: 'Publish Build Artifact IccPortal Frontend'
     steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '16.x'
+        displayName: 'Install Node.js'
       - template: '/build/pipelines/jobs/templates/build-and-publish-steps.yaml'
