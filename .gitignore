@@ -10,7 +10,6 @@ McsTestConfigProvider.Db.DoNotCommit.cs
 *.sln.docstates
 local.settings.json
 **/*.[Dd]evelopment.json
-.idea
 global.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
@@ -386,3 +385,44 @@ publish_Logger.txt
 /ContentApi/NL.Rijksoverheid.ExposureNotification.BackEnd.ContentApi.xml
 /IccBackend/NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.IccBackend.xml
 /MobileAppApi/NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.xml
+
+# angular-cli generated (for ICC Portal in src/Icc.WebApp/ClientApp)
+
+# compiled output
+/dist
+/dist-server
+/tmp
+/out-tsc
+
+# dependencies
+/node_modules
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.angular/cache
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+Thumbs.db
