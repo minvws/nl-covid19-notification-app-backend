@@ -64,9 +64,6 @@
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
             "browserTarget": "App.IccPortal:build",
-            "customWebpackConfig": {
-              "path": "./webpack.config.js"
-            }
           },
           "configurations": {
             "production": {
