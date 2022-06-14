@@ -136,46 +136,46 @@ span.icon {
   }
 
   &.icon-expand:after {
-    background-image: url("src/assets/icon-arrow-up.svg");
+    background-image: url("../assets/icon-arrow-up.svg");
   }
 
   &.icon-arrow-right:after {
     transform: rotate(90deg);
     margin-left: 0.1em;
-    background-image: url("src/assets/icon-arrow-up.svg");
+    background-image: url("../assets/icon-arrow-up.svg");
   }
 
   &.icon-arrow-left:after {
-    background-image: url("src/assets/icon-arrow-left.svg");
+    background-image: url("../assets/icon-arrow-left.svg");
   }
 
   &.icon-arrow-left-sm:after {
     transform: rotate(-90deg);
     margin-left: -0.1em;
-    background-image: url("src/assets/icon-arrow-up.svg");
+    background-image: url("../assets/icon-arrow-up.svg");
   }
 
 
   &.icon-collapse:after {
-    background-image: url("src/assets/icon-arrow-up.svg");
+    background-image: url("../assets/icon-arrow-up.svg");
     transform: rotate(180deg);
   }
 
   &.icon-exclamation-mark:after {
-    background-image: url("src/assets/icon-exclamation-mark.svg");
+    background-image: url("../assets/icon-exclamation-mark.svg");
   }
 
   &.icon-check-green:after {
-    background-image: url("src/assets/icon-check-green.svg");
+    background-image: url("../assets/icon-check-green.svg");
   }
 
   &.icon-close:after {
-    background-image: url("src/assets/icon-close.svg");
+    background-image: url("../assets/icon-close.svg");
   }
 
   &.icon-loading:after {
     animation: loading_circle 1s infinite linear;
-    background-image: url("src/assets/icon-loading.svg");
+    background-image: url("../assets/icon-loading.svg");
   }
 
   &.icon-white {
@@ -184,7 +184,7 @@ span.icon {
 }
 
 
-// TODO: Move to component' file
+// TODO: Move to component file
 .input-box {
   width: 540px;
 
