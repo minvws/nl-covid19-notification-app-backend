@@ -23,10 +23,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 
         public EksEngineTestsSqlServer()
             : base(
-                new DbContextOptionsBuilder<WorkflowDbContext>().UseSqlServer(CreateSqlDatabase("W")).Options,
-                new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlServer(CreateSqlDatabase("D")).Options,
-                new DbContextOptionsBuilder<EksPublishingJobDbContext>().UseSqlServer(CreateSqlDatabase("P")).Options,
-                new DbContextOptionsBuilder<ContentDbContext>().UseSqlServer(CreateSqlDatabase("C")).Options
+                new DbContextOptionsBuilder<WorkflowDbContext>().UseNpgsql(CreateSqlDatabase("W")).Options,
+                new DbContextOptionsBuilder<DkSourceDbContext>().UseNpgsql(CreateSqlDatabase("D")).Options,
+                new DbContextOptionsBuilder<EksPublishingJobDbContext>().UseNpgsql(CreateSqlDatabase("P")).Options,
+                new DbContextOptionsBuilder<ContentDbContext>().UseNpgsql(CreateSqlDatabase("C")).Options
             )
         { }
         private static DbConnection CreateSqlDatabase(string suffix)

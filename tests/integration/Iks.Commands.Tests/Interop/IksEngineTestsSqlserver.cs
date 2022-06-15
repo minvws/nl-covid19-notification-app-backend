@@ -22,11 +22,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         private static DbConnection connection;
 
         public IksEngineTestsSqlserver() : base(
-            new DbContextOptionsBuilder<WorkflowDbContext>().UseSqlServer(CreateSqlDatabase("W")).Options,
-            new DbContextOptionsBuilder<IksInDbContext>().UseSqlServer(CreateSqlDatabase("II")).Options,
-            new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlServer(CreateSqlDatabase("D")).Options,
-            new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseSqlServer(CreateSqlDatabase("P")).Options,
-            new DbContextOptionsBuilder<IksOutDbContext>().UseSqlServer(CreateSqlDatabase("IO")).Options
+            new DbContextOptionsBuilder<WorkflowDbContext>().UseNpgsql(CreateSqlDatabase("W")).Options,
+            new DbContextOptionsBuilder<IksInDbContext>().UseNpgsql(CreateSqlDatabase("II")).Options,
+            new DbContextOptionsBuilder<DkSourceDbContext>().UseNpgsql(CreateSqlDatabase("D")).Options,
+            new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseNpgsql(CreateSqlDatabase("P")).Options,
+            new DbContextOptionsBuilder<IksOutDbContext>().UseNpgsql(CreateSqlDatabase("IO")).Options
         )
         { }
 

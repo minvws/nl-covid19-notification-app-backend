@@ -20,8 +20,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         private static DbConnection connection;
 
         public MarkDiagnosisKeysAsUsedByIksTestsSqlServer() : base(
-            new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlServer(CreateSqlDatabase("D")).Options,
-            new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseSqlServer(CreateSqlDatabase("IPJ")).Options
+            new DbContextOptionsBuilder<DkSourceDbContext>().UseNpgsql(CreateSqlDatabase("D")).Options,
+            new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseNpgsql(CreateSqlDatabase("IPJ")).Options
         )
         { }
 

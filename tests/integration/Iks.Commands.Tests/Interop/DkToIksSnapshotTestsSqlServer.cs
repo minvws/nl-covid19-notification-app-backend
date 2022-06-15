@@ -20,8 +20,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         private static DbConnection connection;
 
         public DkToIksSnapshotTestsSqlServer() : base(
-            new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlServer(CreateSqlDatabase("D")).Options,
-            new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseSqlServer(CreateSqlDatabase("I")).Options
+            new DbContextOptionsBuilder<DkSourceDbContext>().UseNpgsql(CreateSqlDatabase("D")).Options,
+            new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseNpgsql(CreateSqlDatabase("I")).Options
         )
         { }
 
