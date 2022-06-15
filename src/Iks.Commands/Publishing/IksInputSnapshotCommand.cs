@@ -87,7 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             var q2 = q1A.Select(x => new IksCreateJobInputEntity
             {
                 DkId = x.Dkid,
-                DaysSinceSymptomsOnset = x.DaysSinceSymptomsOnset.Value,
+                DaysSinceSymptomsOnset = x.DaysSinceSymptomsOnset ?? default,
                 TransmissionRiskLevel = TransmissionRiskLevel.None, //Remove; this isn't in used in any calculations
                 ReportType = ReportType.ConfirmedTest,
                 DailyKey = x.DailyKey,

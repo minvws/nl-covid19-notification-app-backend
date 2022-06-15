@@ -1,6 +1,6 @@
 jobs:  
   - job: Build_GenTeks
-    dependsOn: Install_SDK_31x
+    dependsOn: Install_SDK_60
     variables:
     - name: ArtifactSubfolder
       value: $(Tools.GenTeks.ArtifactSubDirectory)

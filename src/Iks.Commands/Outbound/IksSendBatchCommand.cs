@@ -43,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         public override async Task<ICommandResult> ExecuteAsync()
         {
             _iksOutEntities = _iksOutboundDbContext.Iks
-                .Where(x => !x.Sent && (!x.CanRetry.HasValue || x.CanRetry.Value))
+                .Where(x => !x.Sent && x.CanRetry != false)
                 .OrderBy(x => x.Created)
                 .ThenBy(x => x.Qualifier)
                 .Select(x => x)

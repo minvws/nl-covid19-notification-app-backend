@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Commands</RootNamespace>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>

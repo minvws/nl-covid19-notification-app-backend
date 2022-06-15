@@ -1,6 +1,6 @@
 jobs:  
   - job: Build_E2E_ScenarioTests
-    dependsOn: Install_SDK_31x
+    dependsOn: Install_SDK_60
     variables:
     - name: ArtifactSubfolder
       value: $(Tests.Scenario.ArtifactSubDirectory)

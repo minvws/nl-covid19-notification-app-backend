@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             var duplicates = (
                     await _dkSourceDbContext.DiagnosisKeys
                         .AsNoTracking()
-                        .Where(p => !p.ReadyForCleanup.HasValue || !p.ReadyForCleanup.Value)
+                        .Where(p => p.ReadyForCleanup != true)
                         .ToListAsync())
                 .GroupBy(p => p, new DiagnosisKeysEntityComparer())
                 .Where(group => group.Count() > 1)

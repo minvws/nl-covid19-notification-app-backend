@@ -92,7 +92,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         {
             var page = _dkSourceDbContext.DiagnosisKeys
                 .AsNoTracking()
-                .Where(x => !x.PublishedLocally && (!x.ReadyForCleanup.HasValue || !x.ReadyForCleanup.Value))
+                .Where(x => !x.PublishedLocally && x.ReadyForCleanup != true)
                 .OrderBy(x => x.Id)
                 .Skip(index)
                 .Take(pageSize)
@@ -102,8 +102,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                     KeyData = x.DailyKey.KeyData,
                     RollingStartNumber = x.DailyKey.RollingStartNumber,
                     RollingPeriod = x.DailyKey.RollingPeriod,
-                    TransmissionRiskLevel = x.Local.TransmissionRiskLevel.Value,
-                    DaysSinceSymptomsOnset = x.Local.DaysSinceSymptomsOnset.Value,
+                    TransmissionRiskLevel = x.Local.TransmissionRiskLevel ?? default,
+                    DaysSinceSymptomsOnset = x.Local.DaysSinceSymptomsOnset ?? default,
                     Symptomatic = x.Local.Symptomatic,
                     ReportType = x.Local.ReportType
                 }).ToArray();
