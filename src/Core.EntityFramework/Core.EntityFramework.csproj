@@ -55,6 +55,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\DiagnosisKeys.Entities\DiagnosisKeys.Entities.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Eks.Publishing.Entities\Eks.Publishing.Entities.csproj" />
+    <ProjectReference Include="..\Iks.Publishing.Entities\Iks.Publishing.Entities.csproj" />
   </ItemGroup>
 
 </Project>

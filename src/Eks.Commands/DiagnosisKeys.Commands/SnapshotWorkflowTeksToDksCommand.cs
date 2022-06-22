@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             _result = new SnapshotWorkflowTeksToDksResult();
             await ClearJobTablesAsync();
-            await SnapshotTeks();
+            SnapshotTeks();
             await CommitSnapshotAsync();
             return _result;
         }
@@ -73,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             await _dkSourceDbContext.TruncateAsync<DiagnosisKeyInputEntity>();
         }
 
-        private async Task SnapshotTeks()
+        private void SnapshotTeks()
         {
             _logger.LogDebug("Snapshot publishable TEKs.");
 
@@ -87,7 +87,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             while (page.Count > 0)
             {
-                await _dkSourceDbContext.BulkInsertWithTransactionAsync(page, new SubsetBulkArgs());
+                //await _dkSourceDbContext.BulkInsertWithTransactionAsync(page, new SubsetBulkArgs());
+                _dkSourceDbContext.BulkCopyDkIn(page);
 
                 index += page.Count;
                 page = ReadFromWorkflow(index, PageSize);
@@ -146,13 +147,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             var used = ReadDkPage();
             while (used.Length > 0)
             {
-                await WriteToDksAsync(used);
+                WriteToDks(used);
                 await MarkTeksAsPublishedAsync(used.Select(x => x.TekId).ToArray());
                 used = ReadDkPage();
             }
         }
 
-        private async Task WriteToDksAsync(DiagnosisKeyInputEntity[] used)
+        private void WriteToDks(DiagnosisKeyInputEntity[] used)
         {
             var q3 = used.Select(x => (DkProcessingItem)new DkProcessingItem
             {
@@ -173,7 +174,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             var items = q4.Select(x => x.DiagnosisKey).ToList();
             _result.DkCount += items.Count;
 
-            await _dkSourceDbContext.BulkInsertWithTransactionAsync(items, new SubsetBulkArgs());
+            //await _dkSourceDbContext.BulkInsertWithTransactionAsync(items, new SubsetBulkArgs());
+            _dkSourceDbContext.BulkCopyDk(items);
         }
 
         private async Task MarkTeksAsPublishedAsync(long[] used)

@@ -143,7 +143,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             Assert.Equal(0, _iksPublishingDbContext.Input.Count());
 
             var c = Create();
-            var result = await c.ExecuteAsync();
+            var result = c.Execute();
 
             Assert.Equal(3 * baseCount, result.Count);
             Assert.Equal(result.Count, _iksPublishingDbContext.Input.Count());

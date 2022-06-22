@@ -313,7 +313,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _logger.LogInformation("Marked as published - Total: {TotalMarked}.", result.Marked);
 
             //Write stuffing to DKs
-            await _writeStuffingToDiagnosisKeys.ExecuteAsync();
+            _writeStuffingToDiagnosisKeys.Execute();
 
             await ClearJobTablesAsync();
         }

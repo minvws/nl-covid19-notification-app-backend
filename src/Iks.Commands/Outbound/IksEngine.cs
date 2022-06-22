@@ -77,7 +77,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             await ClearJobTables();
 
-            var snapshotResult = await _snapshotter.ExecuteAsync();
+            var snapshotResult = _snapshotter.Execute();
 
             _engineResult.InputCount = snapshotResult.Count;
             _engineResult.SnapshotSeconds = snapshotResult.ElapsedSeconds;

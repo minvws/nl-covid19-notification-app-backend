@@ -53,7 +53,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
                 if (filteredResult.Length > 0)
                 {
-                    await _eksPublishingJobDbContext.BulkInsertWithTransactionAsync(filteredResult, new SubsetBulkArgs());
+                    //await _eksPublishingJobDbContext.BulkInsertWithTransactionAsync(filteredResult, new SubsetBulkArgs());
+                    _eksPublishingJobDbContext.BulkCopyEksIn(filteredResult.ToList());
                 }
 
                 index += page.Length;

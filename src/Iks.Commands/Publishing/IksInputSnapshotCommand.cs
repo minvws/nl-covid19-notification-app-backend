@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
-        public async Task<SnapshotIksInputResult> ExecuteAsync()
+        public SnapshotIksInputResult Execute()
         {
             _logger.LogDebug("Snapshot publishable DKs.");
 
@@ -46,7 +46,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 
             while (page.Count > 0)
             {
-                await _iksPublishingJobDbContext.BulkInsertWithTransactionAsync(page, new SubsetBulkArgs());
+                //await _iksPublishingJobDbContext.BulkInsertWithTransactionAsync(page, new SubsetBulkArgs());
+                _iksPublishingJobDbContext.BulkCopyIksIn(page);
 
                 index += page.Count;
                 page = Read(index, PageSize);
