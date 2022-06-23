@@ -45,7 +45,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             //Act
             await sut.ExecuteV5Async();
 
-            var result = _contentDbContext.SafeGetLatestContentAsync(ContentTypes.ManifestV5, DateTime.Now).GetAwaiter().GetResult();
+            var result = _contentDbContext.SafeGetLatestContentAsync(ContentTypes.ManifestV5, DateTime.UtcNow).GetAwaiter().GetResult();
 
             //Assert
             Assert.NotNull(result);
@@ -94,7 +94,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 
         private void PopulateContentDb()
         {
-            var yesterday = DateTime.Now.AddDays(-1);
+            var yesterday = DateTime.UtcNow.AddDays(-1);
             var content = "This is a test";
 
             _contentDbContext.Content.AddRange(new[]

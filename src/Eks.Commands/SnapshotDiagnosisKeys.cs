@@ -54,7 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 if (filteredResult.Length > 0)
                 {
                     //await _eksPublishingJobDbContext.BulkInsertWithTransactionAsync(filteredResult, new SubsetBulkArgs());
-                    _eksPublishingJobDbContext.BulkCopyEksIn(filteredResult.ToList());
+                    _eksPublishingJobDbContext.BulkInsertBinaryCopy(filteredResult.ToList());
                 }
 
                 index += page.Length;
@@ -80,12 +80,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             if(leftoverDkIds.Any())
             {
                 var dksToMarkForCleanup = _dkSourceDbContext.DiagnosisKeys.AsNoTracking().Where(x => leftoverDkIds.Contains(x.Id)).ToList();
-                foreach (var diagnosisKeyEntity in dksToMarkForCleanup)
-                {
-                    diagnosisKeyEntity.ReadyForCleanup = true;
-                }
 
-                await _dkSourceDbContext.BulkUpdateWithTransactionAsync(dksToMarkForCleanup, new SubsetBulkArgs());
+                var idsToUpdate = string.Join(",", dksToMarkForCleanup.Select(x => x.Id.ToString()).ToArray());
+
+                await _dkSourceDbContext.BulkUpdateSqlRawAsync(
+                    tableName: "DiagnosisKeys",
+                    columnName: "ReadyForCleanup",
+                    value: "true",
+                    ids: idsToUpdate);                
             }
         }
 

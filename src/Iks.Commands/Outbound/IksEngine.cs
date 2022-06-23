@@ -173,17 +173,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             _logger.LogInformation("Mark TEKs as used.");
 
-            foreach (var i in _output)
-            {
-                i.Used = true;
-            }
-
             //Could be 750k in this hit
-            var bulkArgs = new SubsetBulkArgs
-            {
-                PropertiesToInclude = new[] { nameof(IksCreateJobInputEntity.Used) }
-            };
-            await _publishingDbContext.BulkUpdateWithTransactionAsync(_output, bulkArgs);
+
+            var idsToUpdate = string.Join(",", _output.Select(x => x.Id.ToString()).ToArray());
+
+            await _publishingDbContext.BulkUpdateSqlRawAsync(
+                tableName: "IksCreateJobInput",
+                columnName: "Used",
+                value: "true",
+                ids: idsToUpdate);
 
             _engineResult.OutputCount += _output.Count;
 

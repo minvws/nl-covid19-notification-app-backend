@@ -16,31 +16,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
 {
     public static class EfBulkExtensions
     {
-        public static async Task BulkUpdateWithTransactionAsync<T>(
-            this DbContext db,
-            IList<T> page,
-            SubsetBulkArgs args) where T : class
-        {
-            await using (db.BeginTransaction())
-            {
-                await db.BulkUpdateAsync(page, args.ToBulkConfig());
-                db.SaveAndCommit();
-            }
-        }
-
-        // Temporarily disabled BulkInsertWithTransactionAsync method until EFCore.BulkExtensions
-        // adds support for bulk inserting Owned entity types in PostgreSQL.
-        // Replaced with BulkCopy methods below.
-
-        // public static async Task BulkInsertWithTransactionAsync<T>(this DbContext db, IList<T> page, SubsetBulkArgs args) where T : class
-        // {
-        //     await using (db.BeginTransaction())
-        //     {
-        //         await db.BulkInsertAsync(page, args.ToBulkConfig());
-        //         db.SaveAndCommit();
-        //     }
-        // }
-
         public static async Task BulkDeleteWithTransactionAsync<T>(
             this DbContext db,
             IList<T> page,
@@ -53,9 +28,29 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             }
         }
 
-        // Temporary (hard-coded) BulkCopy methods to replace
-        // BulkInsertWithTransactionAsync method above
-        public static void BulkCopyEksIn(
+        public static async Task BulkUpdateSqlRawAsync(
+            this DbContext db,
+            string tableName,
+            string columnName,
+            string value,
+            string ids)
+        {
+            var sql = $"UPDATE \"{tableName}\" SET \"{columnName}\" = {value} WHERE \"Id\" in ({ids})";
+            await db.Database.ExecuteSqlRawAsync(sql);
+        }
+
+        public static async Task BulkUpdateSqlRawAsync(
+            this DbContext db,
+            string tableName,
+            string columnName,
+            int value,
+            string ids)
+        {
+            var sql = $"UPDATE \"{tableName}\" SET \"{columnName}\" = {value} WHERE \"Id\" in ({ids})";
+            await db.Database.ExecuteSqlRawAsync(sql);
+        }
+
+        public static void BulkInsertBinaryCopy(
             this DbContext db,
             IEnumerable<EksCreateJobInputEntity> entities)
         {
@@ -65,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             var tableName = "\"EksCreateJobInput\"";
 
             var commaSeparatedColumns =
-                "\"TekId\", \"KeyData\", \"RollingStartNumber\", \"RollingPeriod\", " +
+                "\"TekId\", \"Used\", \"KeyData\", \"RollingStartNumber\", \"RollingPeriod\", " +
                 "\"TransmissionRiskLevel\", \"DaysSinceSymptomsOnset\", \"Symptomatic\", " +
                 "\"ReportType\"";
 
@@ -91,9 +86,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
                 writer.Write(entity.KeyData, NpgsqlDbType.Bytea);
                 writer.Write(entity.RollingStartNumber, NpgsqlDbType.Integer);
                 writer.Write(entity.RollingPeriod, NpgsqlDbType.Integer);
-                writer.Write(entity.TransmissionRiskLevel, NpgsqlDbType.Integer);
+                writer.Write((int)entity.TransmissionRiskLevel, NpgsqlDbType.Integer);
                 writer.Write(entity.DaysSinceSymptomsOnset, NpgsqlDbType.Integer);
-                writer.Write(entity.Symptomatic, NpgsqlDbType.Integer);
+                writer.Write((int)entity.Symptomatic, NpgsqlDbType.Integer);
                 writer.Write(entity.ReportType, NpgsqlDbType.Integer);
             }
 
@@ -101,7 +96,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             connection.Close();
         }
 
-        public static void BulkCopyIksIn(
+        public static void BulkInsertBinaryCopy(
             this DbContext db,
             IEnumerable<IksCreateJobInputEntity> entities)
         {
@@ -138,7 +133,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             connection.Close();
         }
 
-        public static void BulkCopyDkIn(this DbContext db, IEnumerable<DiagnosisKeyInputEntity> entities)
+        public static void BulkInsertBinaryCopy(this DbContext db, IEnumerable<DiagnosisKeyInputEntity> entities)
         {
             var connection = db.Database.GetDbConnection() as NpgsqlConnection;
             connection.Open();
@@ -189,7 +184,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             connection.Close();
         }
 
-        public static void BulkCopyDk(this DbContext db, IEnumerable<DiagnosisKeyEntity> entities)
+        public static void BulkInsertBinaryCopy(this DbContext db, IEnumerable<DiagnosisKeyEntity> entities)
         {
             var connection = db.Database.GetDbConnection() as NpgsqlConnection;
             connection.Open();
@@ -214,7 +209,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
                 writer.StartRow();
 
                 writer.Write(entity.Created, NpgsqlDbType.TimestampTz);
-                writer.Write(entity.Origin, NpgsqlDbType.Integer);
+                writer.Write((int)entity.Origin, NpgsqlDbType.Integer);
                 writer.Write(entity.PublishedLocally, NpgsqlDbType.Boolean);
                 writer.Write(entity.PublishedToEfgs, NpgsqlDbType.Boolean);
 
@@ -270,7 +265,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
                     writer.WriteNull();
                 }
 
-                writer.Write(entity.Local.Symptomatic, NpgsqlDbType.Integer);
+                writer.Write((int)entity.Local.Symptomatic, NpgsqlDbType.Integer);
                 writer.Write(entity.Local.ReportType, NpgsqlDbType.Integer);
             }
 

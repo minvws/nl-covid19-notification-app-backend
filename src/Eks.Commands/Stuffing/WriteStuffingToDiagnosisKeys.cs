@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -57,8 +56,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
             items = _dkProcessors.Execute(items);
             var results = items.Select(x => x.DiagnosisKey).ToList(); //Can't get rid of compiler warning.
 
-            //await _dkDbContext.BulkInsertWithTransactionAsync(results, new SubsetBulkArgs());
-            _dkDbContext.BulkCopyDk(results);
+            _dkDbContext.BulkInsertBinaryCopy(results);
         }
     }
 }

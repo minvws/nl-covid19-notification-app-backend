@@ -109,8 +109,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         public async Task When_DK_Has_Not_Been_Published_All_Duplicates_Except_The_First_Confirmed_Are_Marked_As_Published()
         {
             // Assemble
-            var firstCreatedDate = DateTime.Now.AddHours(-1);
-            var otherCreatedDate = DateTime.Now;
+            var firstCreatedDate = DateTime.UtcNow.AddHours(-1);
+            var otherCreatedDate = DateTime.UtcNow;
 
             // Arrange
             await _dkSourceContext.BulkDeleteAsync(_dkSourceContext.DiagnosisKeys.ToList());
@@ -150,7 +150,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 {
                     TransmissionRiskLevel = trl
                 },
-                Created = created ?? DateTime.Now
+                Created = created ?? DateTime.UtcNow
             };
         }
 

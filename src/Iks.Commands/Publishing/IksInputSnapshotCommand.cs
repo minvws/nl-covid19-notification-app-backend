@@ -46,8 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 
             while (page.Count > 0)
             {
-                //await _iksPublishingJobDbContext.BulkInsertWithTransactionAsync(page, new SubsetBulkArgs());
-                _iksPublishingJobDbContext.BulkCopyIksIn(page);
+                _iksPublishingJobDbContext.BulkInsertBinaryCopy(page);
 
                 index += page.Count;
                 page = Read(index, PageSize);

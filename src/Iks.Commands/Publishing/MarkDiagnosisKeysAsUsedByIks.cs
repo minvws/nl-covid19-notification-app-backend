@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
@@ -57,17 +56,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
                 return;
             }
 
-            foreach (var i in diagnosisKeyEntities)
-            {
-                i.PublishedToEfgs = true;
-            }
+            var idsToUpdate = string.Join(",", diagnosisKeyEntities.Select(x => x.Id.ToString()).ToArray());
 
-            var bulkArgs = new SubsetBulkArgs
-            {
-                PropertiesToInclude = new[] { $"{nameof(DiagnosisKeyEntity.PublishedToEfgs)}" }
-            };
-
-            await _dkSourceDbContext.BulkUpdateWithTransactionAsync(diagnosisKeyEntities, bulkArgs);
+            await _dkSourceDbContext.BulkUpdateSqlRawAsync(
+                tableName: "DiagnosisKeys",
+                columnName: "PublishedToEfgs",
+                value: "true",
+                ids: idsToUpdate);
         }
 
         private long[] ReadPage()
