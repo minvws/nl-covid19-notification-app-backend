@@ -49,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             {
                 var idsToUpdate = string.Join(",", cleanableEntities.Select(x => x.Id.ToString()).ToArray());
 
-                await _dkSourceDbContext.BulkUpdateSqlInterpolatedsync(
+                await _dkSourceDbContext.BulkUpdateSqlRawAsync(
                     tableName: "DiagnosisKeys",
                     columnName: "ReadyForCleanup",
                     value: true,

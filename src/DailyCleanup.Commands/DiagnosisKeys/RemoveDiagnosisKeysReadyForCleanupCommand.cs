@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Di
 
         public override async Task<ICommandResult> ExecuteAsync()
         {
-            await _diagnosticKeyDbContext.BulkDeleteSqlInterpolatedAsync(
+            await _diagnosticKeyDbContext.BulkDeleteSqlRawAsync(
                 tableName: "DiagnosisKeys",
                 columnName: "ReadyForCleanup",
                 checkValue: true);

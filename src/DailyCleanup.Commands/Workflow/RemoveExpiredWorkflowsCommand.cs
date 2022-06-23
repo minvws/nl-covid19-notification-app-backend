@@ -71,7 +71,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Wo
                 _result.GivenMercy = workflowsToDelete.Count;
 
                 var idsToDelete = string.Join(",", workflowsToDelete.Select(x => x.Id.ToString()).ToArray());
-                await _workflowDbContext.BulkDeleteSqlInterpolatedAsync(
+                await _workflowDbContext.BulkDeleteSqlRawAsync(
                     tableName: "TekReleaseWorkflowState",
                     ids: idsToDelete
                 );

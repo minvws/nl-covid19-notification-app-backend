@@ -83,7 +83,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
                 var idsToUpdate = string.Join(",", dksToMarkForCleanup.Select(x => x.Id.ToString()).ToArray());
 
-                await _dkSourceDbContext.BulkUpdateSqlInterpolatedsync(
+                await _dkSourceDbContext.BulkUpdateSqlRawAsync(
                     tableName: "DiagnosisKeys",
                     columnName: "ReadyForCleanup",
                     value: true,

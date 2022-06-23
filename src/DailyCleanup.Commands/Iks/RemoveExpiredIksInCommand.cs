@@ -63,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ik
             _result.GivenMercy = iksToBeCleaned.Length;
 
             var idsToDelete = string.Join(",", iksToBeCleaned.Select(x => x.Id.ToString()).ToArray());
-            await _iksInDbContext.BulkDeleteSqlInterpolatedAsync(
+            await _iksInDbContext.BulkDeleteSqlRawAsync(
                 tableName: "IksIn",
                 ids: idsToDelete
             );

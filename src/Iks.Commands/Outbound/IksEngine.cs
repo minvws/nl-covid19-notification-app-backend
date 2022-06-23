@@ -177,7 +177,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             var idsToUpdate = string.Join(",", _output.Select(x => x.Id.ToString()).ToArray());
 
-            await _publishingDbContext.BulkUpdateSqlInterpolatedsync(
+            await _publishingDbContext.BulkUpdateSqlRawAsync(
                 tableName: "IksCreateJobInput",
                 columnName: "Used",
                 value: true,

@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 
             var idsToUpdate = string.Join(",", diagnosisKeyEntities.Select(x => x.Id.ToString()).ToArray());
 
-            await _dkSourceDbContext.BulkUpdateSqlInterpolatedsync(
+            await _dkSourceDbContext.BulkUpdateSqlRawAsync(
                 tableName: "DiagnosisKeys",
                 columnName: "PublishedToEfgs",
                 value: true,
