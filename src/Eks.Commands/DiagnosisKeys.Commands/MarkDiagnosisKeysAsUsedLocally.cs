@@ -64,10 +64,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             var idsToUpdate = string.Join(",", zap.Select(x => x.Id.ToString()).ToArray());
 
-            await _dkSourceDbContext.BulkUpdateSqlRawAsync(
+            await _dkSourceDbContext.BulkUpdateSqlInterpolatedsync(
                 tableName: "DiagnosisKeys",
                 columnName: "PublishedLocally",
-                value: "true",
+                value: true,
                 ids: idsToUpdate);
         }
 

@@ -63,7 +63,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ek
 
             var eksToBeCleaned = await _dbContext.Content.AsNoTracking().Where(p => p.Type == ContentTypes.ExposureKeySetV2 && p.Release < cutoff).ToArrayAsync();
             result.GivenMercy = eksToBeCleaned.Length;
-            await _dbContext.BulkDeleteWithTransactionAsync(eksToBeCleaned, new SubsetBulkArgs());
+
+            var idsToDelete = string.Join(",", eksToBeCleaned.Select(x => x.Id.ToString()).ToArray());
+            await _dbContext.BulkDeleteSqlInterpolatedAsync(
+                tableName: "Content",
+                ids: idsToDelete);
+
             result.Remaining = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2);
 
             _logger.LogInformation("Removed expired EKSv2 - Count: {EksV2Count}, Remaining: {EksV2Remaining}", result.GivenMercy, result.Remaining);

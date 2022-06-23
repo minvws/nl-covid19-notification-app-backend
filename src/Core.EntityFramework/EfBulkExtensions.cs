@@ -16,38 +16,47 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
 {
     public static class EfBulkExtensions
     {
-        public static async Task BulkDeleteWithTransactionAsync<T>(
-            this DbContext db,
-            IList<T> page,
-            SubsetBulkArgs args) where T : class
-        {
-            await using (db.BeginTransaction())
-            {
-                await db.BulkDeleteAsync(page, args.ToBulkConfig());
-                db.SaveAndCommit();
-            }
-        }
-
-        public static async Task BulkUpdateSqlRawAsync(
+        public static async Task BulkDeleteSqlInterpolatedAsync(
             this DbContext db,
             string tableName,
             string columnName,
-            string value,
-            string ids)
+            bool checkValue
+        )
         {
-            var sql = $"UPDATE \"{tableName}\" SET \"{columnName}\" = {value} WHERE \"Id\" in ({ids})";
-            await db.Database.ExecuteSqlRawAsync(sql);
+            await db.Database.ExecuteSqlInterpolatedAsync(
+                $"DELETE FROM \"{tableName}\" WHERE \"{columnName}\" = \"{checkValue}\"");
         }
 
-        public static async Task BulkUpdateSqlRawAsync(
+        public static async Task BulkDeleteSqlInterpolatedAsync(
+            this DbContext db,
+            string tableName,
+            string ids
+        )
+        {
+            await db.Database.ExecuteSqlInterpolatedAsync(
+                $"DELETE FROM \"{tableName}\" WHERE \"Id\" in \"{ids}\"");
+        }
+
+        public static async Task BulkUpdateSqlInterpolatedsync(
+            this DbContext db,
+            string tableName,
+            string columnName,
+            bool value,
+            string ids)
+        {
+            await db.Database.ExecuteSqlInterpolatedAsync(
+                $"UPDATE \"{tableName}\" SET \"{columnName}\" = {value} WHERE \"Id\" in ({ids})");
+        }
+
+        public static async Task BulkUpdateSqlInterpolatedAsync(
             this DbContext db,
             string tableName,
             string columnName,
             int value,
             string ids)
         {
-            var sql = $"UPDATE \"{tableName}\" SET \"{columnName}\" = {value} WHERE \"Id\" in ({ids})";
-            await db.Database.ExecuteSqlRawAsync(sql);
+            await db.Database.ExecuteSqlInterpolatedAsync(
+                $"UPDATE \"{tableName}\" SET \"{columnName}\" = {value} WHERE \"Id\" in ({ids})");
         }
 
         public static void BulkInsertBinaryCopy(

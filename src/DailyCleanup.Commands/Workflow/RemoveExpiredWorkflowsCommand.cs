@@ -69,7 +69,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Wo
             {
                 var workflowsToDelete = _workflowDbContext.KeyReleaseWorkflowStates.AsNoTracking().Where(p => p.ValidUntil < _dtp.Snapshot).ToList();
                 _result.GivenMercy = workflowsToDelete.Count;
-                await _workflowDbContext.BulkDeleteWithTransactionAsync(workflowsToDelete, new SubsetBulkArgs());
+
+                var idsToDelete = string.Join(",", workflowsToDelete.Select(x => x.Id.ToString()).ToArray());
+                await _workflowDbContext.BulkDeleteSqlInterpolatedAsync(
+                    tableName: "TekReleaseWorkflowState",
+                    ids: idsToDelete
+                );
+
                 _logger.LogInformation("Workflows deleted - Unauthorised: {UnauthorisedWorkflows}", _result.GivenMercy);
             }
 
