@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
-using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities;
@@ -63,8 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             this DbContext db,
             IEnumerable<EksCreateJobInputEntity> entities)
         {
-            var connection = db.Database.GetDbConnection() as NpgsqlConnection;
-            connection.Open();
+            var (connection, closeConnectionInternally) = OpenAndGetNpgsqlConnection(db);
 
             var tableName = "\"EksCreateJobInput\"";
 
@@ -102,15 +101,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             }
 
             writer.Complete();
-            connection.Close();
+
+            if (closeConnectionInternally)
+            {
+                connection.Close();
+            }
         }
 
         public static void BulkInsertBinaryCopy(
             this DbContext db,
             IEnumerable<IksCreateJobInputEntity> entities)
         {
-            var connection = db.Database.GetDbConnection() as NpgsqlConnection;
-            connection.Open();
+            var (connection, closeConnectionInternally) = OpenAndGetNpgsqlConnection(db);
 
             var tableName = "\"IksCreateJobInput\"";
 
@@ -139,13 +141,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             }
 
             writer.Complete();
-            connection.Close();
+            
+            if (closeConnectionInternally)
+            {
+                connection.Close();
+            }
         }
 
         public static void BulkInsertBinaryCopy(this DbContext db, IEnumerable<DiagnosisKeyInputEntity> entities)
         {
-            var connection = db.Database.GetDbConnection() as NpgsqlConnection;
-            connection.Open();
+            var (connection, closeConnectionInternally) = OpenAndGetNpgsqlConnection(db);
 
             var tableName = "\"DiagnosisKeysInput\"";
 
@@ -190,13 +195,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             }
 
             writer.Complete();
-            connection.Close();
+
+            if (closeConnectionInternally)
+            {
+                connection.Close();
+            }
         }
 
         public static void BulkInsertBinaryCopy(this DbContext db, IEnumerable<DiagnosisKeyEntity> entities)
         {
-            var connection = db.Database.GetDbConnection() as NpgsqlConnection;
-            connection.Open();
+            var (connection, closeConnectionInternally) = OpenAndGetNpgsqlConnection(db);
 
             var tableName = "\"DiagnosisKeys\"";
 
@@ -279,7 +287,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             }
 
             writer.Complete();
-            connection.Close();
+
+            if (closeConnectionInternally)
+            {
+                connection.Close();
+            }
+        }
+
+        // From https://github.com/borisdj/EFCore.BulkExtensions/blob/ffc84d1eec1c700d11f39c94e73f4fca63a70948/EFCore.BulkExtensions/SQLAdapters/PostgreSql/PostgreSqlAdapter.cs#L322
+        internal static (NpgsqlConnection, bool) OpenAndGetNpgsqlConnection(DbContext context)
+        {
+            bool closeConnectionInternally = false;
+            var connection = context.Database.GetDbConnection() as NpgsqlConnection;
+
+            if (connection.State != ConnectionState.Open)
+            {
+                connection.Open();
+                closeConnectionInternally = true;
+            }
+
+            return (connection, closeConnectionInternally);
         }
     }
 }
