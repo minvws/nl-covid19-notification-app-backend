@@ -11,33 +11,33 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramewo
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
+using Npgsql;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop
 {
-    [Trait("db", "ss")]
-    public class IksEngineTestsSqlserver : IksEngineTest, IDisposable
+    [Trait("db", "postgres")]
+    public class IksEngineTestsPostgres : IksEngineTest, IDisposable
     {
         private const string Prefix = nameof(IksEngineTest) + "_";
         private static DbConnection connection;
 
-        public IksEngineTestsSqlserver() : base(
-            new DbContextOptionsBuilder<WorkflowDbContext>().UseNpgsql(CreateSqlDatabase("W")).Options,
-            new DbContextOptionsBuilder<IksInDbContext>().UseNpgsql(CreateSqlDatabase("II")).Options,
-            new DbContextOptionsBuilder<DkSourceDbContext>().UseNpgsql(CreateSqlDatabase("D")).Options,
-            new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseNpgsql(CreateSqlDatabase("P")).Options,
-            new DbContextOptionsBuilder<IksOutDbContext>().UseNpgsql(CreateSqlDatabase("IO")).Options
+        public IksEngineTestsPostgres() : base(
+            new DbContextOptionsBuilder<WorkflowDbContext>().UseNpgsql(CreateDatabase("W")).Options,
+            new DbContextOptionsBuilder<IksInDbContext>().UseNpgsql(CreateDatabase("II")).Options,
+            new DbContextOptionsBuilder<DkSourceDbContext>().UseNpgsql(CreateDatabase("D")).Options,
+            new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseNpgsql(CreateDatabase("P")).Options,
+            new DbContextOptionsBuilder<IksOutDbContext>().UseNpgsql(CreateDatabase("IO")).Options
         )
         { }
 
-        private static DbConnection CreateSqlDatabase(string suffix)
+        private static DbConnection CreateDatabase(string suffix)
         {
-            var csb = new SqlConnectionStringBuilder($"Data Source=.;Initial Catalog={Prefix + suffix};Integrated Security=True")
-            {
-                MultipleActiveResultSets = true
-            };
+            var csb = new NpgsqlConnectionStringBuilder($"Host=localhost;Database={Prefix + suffix};");
 
-            connection = new SqlConnection(csb.ConnectionString);
+            connection = new NpgsqlConnection(csb.ConnectionString);
+            connection.Open();
+
             return connection;
         }
 
