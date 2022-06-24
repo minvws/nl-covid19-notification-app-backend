@@ -38,7 +38,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         {
             _countriesConfigMock.Setup(x => x.CountriesOfInterest).Returns(new[] { "DE", "BG" });
 
-
             return new IksInputSnapshotCommand(new NullLogger<IksInputSnapshotCommand>(),
                 _dkSourceDbContext,
                 _iksPublishingDbContext,

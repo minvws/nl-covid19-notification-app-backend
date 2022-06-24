@@ -36,7 +36,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             var csb = new NpgsqlConnectionStringBuilder($"Host=localhost;Database={Prefix + suffix};");
 
             connection = new NpgsqlConnection(csb.ConnectionString);
-            connection.Open();
 
             return connection;
         }

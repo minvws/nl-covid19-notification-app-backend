@@ -4,7 +4,6 @@
 
 using System;
 using System.Data.Common;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
@@ -14,7 +13,7 @@ using Xunit;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop
 {
     [Collection(nameof(DkToIksSnapshotTestsPostgres))]
-    [Trait("db", "ss")]
+    [Trait("db", "postgres")]
     public class DkToIksSnapshotTestsPostgres : DkToIksSnapshotTests, IDisposable
     {
         private const string Prefix = nameof(DkToIksSnapshotTests) + "_";
@@ -31,6 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             var csb = new NpgsqlConnectionStringBuilder($"Host=localhost;Database={Prefix + suffix};");
 
             connection = new NpgsqlConnection(csb.ConnectionString);
+
             return connection;
         }
 
