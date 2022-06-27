@@ -15,7 +15,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader.ServiceRe
         public static void DbContextRegistration(this IServiceCollection services, IConfigurationRoot configuration)
         {
             services.AddDbContext<IksInDbContext>(
-                options => options.UseSqlServer(
+                options => options.UseNpgsql(
                     configuration.GetConnectionString(DatabaseConnectionStringNames.IksIn)),
                 ServiceLifetime.Transient);
         }

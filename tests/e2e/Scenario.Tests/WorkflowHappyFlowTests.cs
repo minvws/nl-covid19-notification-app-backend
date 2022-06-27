@@ -65,7 +65,7 @@ namespace Scenario.Tests
             var appClient = new AppClient();
 
             // Act
-            var responseMessage = await appClient.GetAsync(new Uri($"{Config.AppBaseUrl(environment, true)}"));
+            var responseMessage = await appClient.GetAsync(new Uri($"{Config.AppBaseUrl(environment)}"));
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode); // I should have received the manifest
@@ -84,14 +84,14 @@ namespace Scenario.Tests
             // Arrange
             // Get the current manifest.
             var cdnClient = new CdnClient();
-            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ManifestEndPoint}");
+            var (_, manifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v5", $"{Config.ManifestEndPoint}");
             CurrentManifest = manifest;
 
             var client = new AppClient();
 
             // Register
             // Act
-            var (responseMessage, enrollmentResponse) = await client.PostAsync<EnrollmentResponse>(new Uri($"{Config.AppBaseUrl(environment, true)}"), $"v2", $"{Config.RegisterEndPoint}", null);
+            var (responseMessage, enrollmentResponse) = await client.PostAsync<EnrollmentResponse>(new Uri($"{Config.AppBaseUrl(environment)}"), $"v2", $"{Config.RegisterEndPoint}", null);
             EnrollmentResponseV2 = enrollmentResponse;
 
             // Assert
@@ -130,7 +130,7 @@ namespace Scenario.Tests
             postkeysContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
             // Act
-            var postkeysResult = await client.PostAsync(new Uri($"{Config.AppBaseUrl(environment, true)}"), "v1", $"postkeys?sig={signature}", postkeysContent);
+            var postkeysResult = await client.PostAsync(new Uri($"{Config.AppBaseUrl(environment)}"), "v1", $"postkeys?sig={signature}", postkeysContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, postkeysResult.StatusCode);
@@ -147,7 +147,7 @@ namespace Scenario.Tests
             var pubtekContent = new StringContent(publishTekArgs.ToJson(), Encoding.UTF8, "application/json");
 
             // Act
-            var pubTekResult = await client.PutAsync(new Uri($"{Config.IccApiBaseUrl(environment, true)}"), "pubtek", pubtekContent);
+            var pubTekResult = await client.PutAsync(new Uri($"{Config.IccApiBaseUrl(environment)}"), "pubtek", pubtekContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, pubTekResult.StatusCode);
@@ -172,7 +172,7 @@ namespace Scenario.Tests
             var pubtekContent = new StringContent(publishTekArgs.ToJson(), Encoding.UTF8, "application/json");
 
             // Act
-            var pubTekResult = await client.PutAsync(new Uri($"{Config.IccApiBaseUrl(environment, true)}"), "pubtek", pubtekContent);
+            var pubTekResult = await client.PutAsync(new Uri($"{Config.IccApiBaseUrl(environment)}"), "pubtek", pubtekContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, pubTekResult.StatusCode);
@@ -180,7 +180,7 @@ namespace Scenario.Tests
 
         [TestPriority((int)TestOrder.VerifyExposureKeySet)]
         [Theory]
-        [InlineData("test")]
+        [InlineData("test", Skip = "Skipping, no EKS published during standby")]
         public async Task New_ExposureKeySets_Should_Be_Published(string environment)
         {
             // Arrange
@@ -193,7 +193,7 @@ namespace Scenario.Tests
             var retriesCount = 0;
             while (!manifestIsNew && retriesCount < maxRetries)
             {
-                (_, newManifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ManifestEndPoint}");
+                (_, newManifest) = await cdnClient.GetCdnContent<ManifestContent>(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v5", $"{Config.ManifestEndPoint}");
                 manifestIsNew = !newManifest.Equals(CurrentManifest);
 
                 if (!manifestIsNew)
@@ -209,7 +209,7 @@ namespace Scenario.Tests
             // Act
             foreach (var eksKey in newManifest.ExposureKeySets)
             {
-                var (responseMessage, rcp) = await cdnClient.GetCdnEksContent(new Uri($"{Config.CdnBaseUrl(environment, true)}"), $"v5", $"{Config.ExposureKeySetEndPoint}/{eksKey}");
+                var (responseMessage, rcp) = await cdnClient.GetCdnEksContent(new Uri($"{Config.CdnBaseUrl(environment)}"), $"v5", $"{Config.ExposureKeySetEndPoint}/{eksKey}");
 
                 // Assert
                 Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);

@@ -91,7 +91,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 
             items = _importProcessors.Execute(items);
             var result = items.Select(x => x.DiagnosisKey).ToList();
-            await _dkSourceDbContext.BulkInsertWithTransactionAsync(result, new SubsetBulkArgs());
+
+            _dkSourceDbContext.BulkInsertBinaryCopy(result);
 
             return commandResult;
         }

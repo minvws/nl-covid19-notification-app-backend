@@ -41,7 +41,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Di
                 p.PublishedLocally && p.PublishedToEfgs && p.DailyKey.RollingStartNumber < cutoff).ToArrayAsync();
 
             _result.GivenMercy = resultToDelete.Length;
-            await _diagnosticKeyDbContext.BulkDeleteWithTransactionAsync(resultToDelete, new SubsetBulkArgs());
+
+            var idsToDelete = string.Join(",", resultToDelete.Select(x => x.Id.ToString()).ToArray());
+            await _diagnosticKeyDbContext.BulkDeleteSqlRawAsync(
+                tableName: "DiagnosisKeys",
+                ids: idsToDelete
+            );
 
             _result.RemainingExpiredCount = _diagnosticKeyDbContext.DiagnosisKeys.Count(x => x.DailyKey.RollingStartNumber < cutoff);
 

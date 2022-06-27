@@ -26,11 +26,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFram
             }
 
             modelBuilder.Entity<DiagnosisKeyEntity>().OwnsOne(p => p.Local);
+            modelBuilder.Entity<DiagnosisKeyEntity>().Navigation(p => p.Local).IsRequired();
+
             modelBuilder.Entity<DiagnosisKeyEntity>().OwnsOne(p => p.Efgs);
+            modelBuilder.Entity<DiagnosisKeyEntity>().Navigation(p => p.Efgs).IsRequired();
+
             modelBuilder.Entity<DiagnosisKeyEntity>().OwnsOne(p => p.DailyKey);
+            modelBuilder.Entity<DiagnosisKeyEntity>().Navigation(p => p.DailyKey).IsRequired();
 
             modelBuilder.Entity<DiagnosisKeyInputEntity>().OwnsOne(p => p.Local);
+            modelBuilder.Entity<DiagnosisKeyInputEntity>().Navigation(p => p.Local).IsRequired();
+
             modelBuilder.Entity<DiagnosisKeyInputEntity>().OwnsOne(p => p.DailyKey);
+            modelBuilder.Entity<DiagnosisKeyInputEntity>().Navigation(p => p.DailyKey).IsRequired();
         }
     }
 }
