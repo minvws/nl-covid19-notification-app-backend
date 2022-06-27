@@ -23,8 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             bool checkValue
         )
         {
-            var sql = $"DELETE FROM \"{tableName}\" WHERE \"{columnName}\" = {checkValue}";
-            await db.Database.ExecuteSqlRawAsync(sql);
+            await db.Database.ExecuteSqlRawAsync($"DELETE FROM \"{tableName}\" WHERE \"{columnName}\" = {checkValue}");
         }
 
         public static async Task BulkDeleteSqlRawAsync(
@@ -33,8 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             string ids
         )
         {
-            var sql = $"DELETE FROM \"{tableName}\" WHERE \"Id\" in ({ids})";
-            await db.Database.ExecuteSqlRawAsync(sql);
+            await db.Database.ExecuteSqlRawAsync($"DELETE FROM \"{tableName}\" WHERE \"Id\" in ({ids})");
         }
 
         public static async Task BulkUpdateSqlRawAsync(
@@ -44,8 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             bool value,
             string ids)
         {
-            var sql = $"UPDATE \"{tableName}\" SET \"{columnName}\" = {value} WHERE \"Id\" in ({ids})";
-            await db.Database.ExecuteSqlRawAsync(sql);
+            await db.Database.ExecuteSqlRawAsync($"UPDATE \"{tableName}\" SET \"{columnName}\" = {value} WHERE \"Id\" in ({ids})");
         }
 
         public static async Task BulkUpdateSqlRawAsync(
@@ -55,8 +52,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             int value,
             string ids)
         {
-            var sql = $"UPDATE \"{tableName}\" SET \"{columnName}\" = {value} WHERE \"Id\" in ({ids})";
-            await db.Database.ExecuteSqlRawAsync(sql);
+            await db.Database.ExecuteSqlRawAsync($"UPDATE \"{tableName}\" SET \"{columnName}\" = {value} WHERE \"Id\" in ({ids})");
         }
 
         public static void BulkInsertBinaryCopy(
@@ -72,10 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
                 "\"TransmissionRiskLevel\", \"DaysSinceSymptomsOnset\", \"Symptomatic\", " +
                 "\"ReportType\"";
 
-            var sqlCopy =
-                $"COPY {tableName} ({commaSeparatedColumns}) FROM STDIN (FORMAT BINARY);";
-
-            using var writer = connection.BeginBinaryImport(sqlCopy);
+            using var writer = connection.BeginBinaryImport($"COPY {tableName} ({commaSeparatedColumns}) FROM STDIN (FORMAT BINARY);");
 
             foreach (var entity in entities)
             {
@@ -121,10 +114,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
                 "\"ReportType\", \"TransmissionRiskLevel\", \"Used\", \"DailyKey_KeyData\", " +
                 "\"DailyKey_RollingStartNumber\", \"DailyKey_RollingPeriod\"";
 
-            var sqlCopy =
-                $"COPY {tableName} ({commaSeparatedColumns}) FROM STDIN (FORMAT BINARY);";
-
-            using var writer = connection.BeginBinaryImport(sqlCopy);
+            using var writer = connection.BeginBinaryImport($"COPY {tableName} ({commaSeparatedColumns}) FROM STDIN (FORMAT BINARY);");
 
             foreach (var entity in entities)
             {
@@ -159,10 +149,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
                 "\"DailyKey_RollingPeriod\", \"Local_TransmissionRiskLevel\", " +
                 "\"Local_DaysSinceSymptomsOnset\", \"Local_Symptomatic\", \"Local_ReportType\"";
 
-            var sqlCopy =
-                $"COPY {tableName} ({commaSeparatedColumns}) FROM STDIN (FORMAT BINARY);";
-
-            using var writer = connection.BeginBinaryImport(sqlCopy);
+            using var writer = connection.BeginBinaryImport($"COPY {tableName} ({commaSeparatedColumns}) FROM STDIN (FORMAT BINARY);");
 
             foreach (var entity in entities)
             {
@@ -216,10 +203,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
                 "\"Local_TransmissionRiskLevel\", \"Local_DaysSinceSymptomsOnset\", " +
                 "\"Local_Symptomatic\", \"Local_ReportType\"";
 
-            var sqlCopy =
-                $"COPY {tableName} ({commaSeparatedColumns}) FROM STDIN (FORMAT BINARY);";
-
-            using var writer = connection.BeginBinaryImport(sqlCopy);
+            using var writer = connection.BeginBinaryImport($"COPY {tableName} ({commaSeparatedColumns}) FROM STDIN (FORMAT BINARY);");
 
             foreach (var entity in entities)
             {
@@ -297,7 +281,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
         // From https://github.com/borisdj/EFCore.BulkExtensions/blob/ffc84d1eec1c700d11f39c94e73f4fca63a70948/EFCore.BulkExtensions/SQLAdapters/PostgreSql/PostgreSqlAdapter.cs#L322
         internal static (NpgsqlConnection, bool) OpenAndGetNpgsqlConnection(DbContext context)
         {
-            bool closeConnectionInternally = false;
+            var closeConnectionInternally = false;
             var connection = context.Database.GetDbConnection() as NpgsqlConnection;
 
             if (connection.State != ConnectionState.Open)
