@@ -18,8 +18,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Sta
         private static DbConnection connection;
 
         public StatsTestsSqlserver() : base(
-            new DbContextOptionsBuilder<WorkflowDbContext>().UseNpgsql(CreateSqlDatabase("W")).Options,
-            new DbContextOptionsBuilder<StatsDbContext>().UseNpgsql(CreateSqlDatabase("S")).Options
+            new DbContextOptionsBuilder<WorkflowDbContext>()
+                .UseNpgsql(CreateSqlDatabase("w"))
+                .UseSnakeCaseNamingConvention()
+                .Options,
+            new DbContextOptionsBuilder<StatsDbContext>()
+                .UseNpgsql(CreateSqlDatabase("s"))
+                .UseSnakeCaseNamingConvention()
+                .Options
         )
         { }
 

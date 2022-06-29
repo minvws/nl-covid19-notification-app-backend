@@ -11,7 +11,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities
     /// <summary>
     /// Job table for importing TEKs
     /// </summary>
-    [Table(TableNames.DiagnosisKeysInput)]
     public class DiagnosisKeyInputEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

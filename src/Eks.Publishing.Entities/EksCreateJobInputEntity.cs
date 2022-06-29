@@ -9,7 +9,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities
 {
-    [Table(TableNames.EksEngineInput)]
     public class EksCreateJobInputEntity
     {
         /// <summary>

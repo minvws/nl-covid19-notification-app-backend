@@ -23,11 +23,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         private static DbConnection connection;
 
         public IksEngineTestsPostgres() : base(
-            new DbContextOptionsBuilder<WorkflowDbContext>().UseNpgsql(CreateDatabase("W")).Options,
-            new DbContextOptionsBuilder<IksInDbContext>().UseNpgsql(CreateDatabase("II")).Options,
-            new DbContextOptionsBuilder<DkSourceDbContext>().UseNpgsql(CreateDatabase("D")).Options,
-            new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseNpgsql(CreateDatabase("P")).Options,
-            new DbContextOptionsBuilder<IksOutDbContext>().UseNpgsql(CreateDatabase("IO")).Options
+            new DbContextOptionsBuilder<WorkflowDbContext>()
+                .UseNpgsql(CreateDatabase("w"))
+                .UseSnakeCaseNamingConvention()
+                .Options,
+            new DbContextOptionsBuilder<IksInDbContext>()
+                .UseNpgsql(CreateDatabase("ii"))
+                .UseSnakeCaseNamingConvention()
+                .Options,
+            new DbContextOptionsBuilder<DkSourceDbContext>()
+                .UseNpgsql(CreateDatabase("d"))
+                .UseSnakeCaseNamingConvention()
+                .Options,
+            new DbContextOptionsBuilder<IksPublishingJobDbContext>()
+                .UseNpgsql(CreateDatabase("p"))
+                .UseSnakeCaseNamingConvention()
+                .Options,
+            new DbContextOptionsBuilder<IksOutDbContext>()
+                .UseNpgsql(CreateDatabase("io"))
+                .UseSnakeCaseNamingConvention()
+                .Options
         )
         { }
 

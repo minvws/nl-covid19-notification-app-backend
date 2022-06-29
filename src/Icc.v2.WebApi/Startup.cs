@@ -62,7 +62,10 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
                 options.TableName = "Cache";
             });
 
-            services.AddDbContext<WorkflowDbContext>(options => options.UseNpgsql(_configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
+            services.AddDbContext<WorkflowDbContext>(
+                options => options
+                    .UseNpgsql(_configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow))
+                    .UseSnakeCaseNamingConvention());
 
             services.AddSingleton<IIccPortalConfig, IccPortalConfig>();
 

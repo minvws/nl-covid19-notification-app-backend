@@ -21,10 +21,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         private static DbConnection connection;
 
         public WfToEksEksBatchJobMk3TestsSqlServer() : base(
-            new DbContextOptionsBuilder<WorkflowDbContext>().UseNpgsql(CreateSqlDatabase("W")).Options,
-            new DbContextOptionsBuilder<DkSourceDbContext>().UseNpgsql(CreateSqlDatabase("D")).Options,
-            new DbContextOptionsBuilder<EksPublishingJobDbContext>().UseNpgsql(CreateSqlDatabase("P")).Options,
-            new DbContextOptionsBuilder<ContentDbContext>().UseNpgsql(CreateSqlDatabase("C")).Options
+            new DbContextOptionsBuilder<WorkflowDbContext>()
+                .UseNpgsql(CreateSqlDatabase("w"))
+                .UseSnakeCaseNamingConvention()
+                .Options,
+            new DbContextOptionsBuilder<DkSourceDbContext>()
+                .UseNpgsql(CreateSqlDatabase("d"))
+                .UseSnakeCaseNamingConvention()
+                .Options,
+            new DbContextOptionsBuilder<EksPublishingJobDbContext>()
+                .UseNpgsql(CreateSqlDatabase("p"))
+                .UseSnakeCaseNamingConvention()
+                .Options,
+            new DbContextOptionsBuilder<ContentDbContext>()
+                .UseNpgsql(CreateSqlDatabase("c"))
+                .UseSnakeCaseNamingConvention()
+                .Options
             )
         { }
 

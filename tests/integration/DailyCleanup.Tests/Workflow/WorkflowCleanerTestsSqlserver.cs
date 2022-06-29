@@ -18,7 +18,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Workf
         private static DbConnection connection;
 
         public WorkflowCleanerTestsSqlserver() : base(
-            new DbContextOptionsBuilder<WorkflowDbContext>().UseNpgsql(CreateSqlDatabase("W")).Options
+            new DbContextOptionsBuilder<WorkflowDbContext>()
+                .UseNpgsql(CreateSqlDatabase("w"))
+                .UseSnakeCaseNamingConvention()
+                .Options
         )
         { }
         private static DbConnection CreateSqlDatabase(string suffix)

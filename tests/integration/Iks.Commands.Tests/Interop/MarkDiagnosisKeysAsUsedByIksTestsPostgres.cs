@@ -21,8 +21,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         private static DbConnection connection;
 
         public MarkDiagnosisKeysAsUsedByIksTestsPostgres() : base(
-            new DbContextOptionsBuilder<DkSourceDbContext>().UseNpgsql(CreateDatabase("D")).Options,
-            new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseNpgsql(CreateDatabase("IPJ")).Options
+            new DbContextOptionsBuilder<DkSourceDbContext>()
+                .UseNpgsql(CreateDatabase("d"))
+                .UseSnakeCaseNamingConvention()
+                .Options,
+            new DbContextOptionsBuilder<IksPublishingJobDbContext>()
+                .UseNpgsql(CreateDatabase("ipj"))
+                .UseSnakeCaseNamingConvention()
+                .Options
         )
         { }
 

@@ -10,7 +10,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities
 {
-    [Table(TableNames.EksEngineOutput)]
     public class EksCreateJobOutputEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -18,8 +18,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         private static DbConnection connection;
 
         public TekToDkSnapshotTestsSqlServer() : base(
-            new DbContextOptionsBuilder<WorkflowDbContext>().UseNpgsql(CreateSqlDatabase("W")).Options,
-            new DbContextOptionsBuilder<DkSourceDbContext>().UseNpgsql(CreateSqlDatabase("D")).Options
+            new DbContextOptionsBuilder<WorkflowDbContext>()
+                .UseNpgsql(CreateSqlDatabase("w"))
+                .UseSnakeCaseNamingConvention()
+                .Options,
+            new DbContextOptionsBuilder<DkSourceDbContext>()
+                .UseNpgsql(CreateSqlDatabase("d"))
+                .UseSnakeCaseNamingConvention()
+                .Options
         )
         { }
 
