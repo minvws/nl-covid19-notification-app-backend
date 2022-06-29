@@ -10,7 +10,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities
 {
-    [Table("TekReleaseWorkflowState")]
     public class TekReleaseWorkflowStateEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

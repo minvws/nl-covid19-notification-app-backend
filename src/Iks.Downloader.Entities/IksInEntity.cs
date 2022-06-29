@@ -7,7 +7,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities
 {
-    [Table("IksIn")]
     public class IksInEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

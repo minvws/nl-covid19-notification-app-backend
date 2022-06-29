@@ -7,7 +7,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Entities
 {
-    [Table("Statistics")]
     public class StatisticsEntryEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
