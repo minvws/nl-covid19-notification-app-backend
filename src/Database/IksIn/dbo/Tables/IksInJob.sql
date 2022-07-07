@@ -1,6 +1,0 @@
-﻿CREATE TABLE [dbo].[IksInJob]
-(
-	[Id] INT IDENTITY (1, 1) NOT NULL PRIMARY KEY,
-    [LastBatchTag] NVARCHAR(255) NULL,
-    [LastRun] DATETIME NOT NULL
-)
