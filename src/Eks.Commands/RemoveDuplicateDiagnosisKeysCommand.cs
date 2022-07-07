@@ -49,9 +49,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             {
                 var idsToUpdate = string.Join(",", cleanableEntities.Select(x => x.Id.ToString()).ToArray());
 
-                await _diagnosisKeysDbContext.BulkUpdateSqlRawAsync(
-                    tableName: "DiagnosisKeys",
-                    columnName: "ReadyForCleanup",
+                await _diagnosisKeysDbContext.BulkUpdateSqlRawAsync<DiagnosisKeyEntity>(
+                    columnName: "ready_for_cleanup",
                     value: true,
                     ids: idsToUpdate);
             }

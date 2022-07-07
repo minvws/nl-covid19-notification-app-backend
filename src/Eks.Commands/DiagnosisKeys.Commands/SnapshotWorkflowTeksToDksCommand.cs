@@ -187,9 +187,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             var idsToUpdate = string.Join(",", zap.Select(x => x.Id.ToString()).ToArray());
 
-            await _workflowDbContext.BulkUpdateSqlRawAsync(
-                tableName: "TemporaryExposureKeys",
-                columnName: "PublishingState",
+            await _workflowDbContext.BulkUpdateSqlRawAsync<TekEntity>(
+                columnName: "publishing_state",
                 value: 1,
                 ids: idsToUpdate);
         }

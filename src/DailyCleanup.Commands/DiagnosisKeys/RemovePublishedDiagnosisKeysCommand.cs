@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.DiagnosisKeys
@@ -43,10 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Di
             _result.GivenMercy = resultToDelete.Length;
 
             var idsToDelete = string.Join(",", resultToDelete.Select(x => x.Id.ToString()).ToArray());
-            await _diagnosticKeyDbContext.BulkDeleteSqlRawAsync(
-                tableName: "DiagnosisKeys",
-                ids: idsToDelete
-            );
+            await _diagnosticKeyDbContext.BulkDeleteSqlRawAsync<DiagnosisKeyEntity>(idsToDelete);
 
             _result.RemainingExpiredCount = _diagnosticKeyDbContext.DiagnosisKeys.Count(x => x.DailyKey.RollingStartNumber < cutoff);
 

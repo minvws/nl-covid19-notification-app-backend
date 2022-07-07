@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities;
@@ -82,9 +83,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
                 var idsToUpdate = string.Join(",", dksToMarkForCleanup.Select(x => x.Id.ToString()).ToArray());
 
-                await _diagnosisKeysDbContext.BulkUpdateSqlRawAsync(
-                    tableName: "DiagnosisKeys",
-                    columnName: "ReadyForCleanup",
+                await _diagnosisKeysDbContext.BulkUpdateSqlRawAsync<DiagnosisKeyEntity>(
+                    columnName: "ready_for_cleanup",
                     value: true,
                     ids: idsToUpdate);                
             }
