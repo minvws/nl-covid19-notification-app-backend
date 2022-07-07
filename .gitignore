@@ -10,7 +10,6 @@ McsTestConfigProvider.Db.DoNotCommit.cs
 *.sln.docstates
 local.settings.json
 **/*.[Dd]evelopment.json
-global.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -150,15 +149,6 @@ coverage*[.json, .xml, .info]
 # Visual Studio code coverage results
 *.coverage
 *.coveragexml
-
-# NCrunch
-globalconfig.crunch.v3.xml
-_NCrunch_*
-_NCrunch_\**
-SOLUTION.v3.ncrunchsolution.user
-nCrunchTemp_*
-*.ncrunchproject
-*.ncrunchsolution
 
 # MightyMoose
 *.mm.*

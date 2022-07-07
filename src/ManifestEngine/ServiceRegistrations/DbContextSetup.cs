@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.ServiceRe
     {
         public static void DbContextRegistration(this IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
+            services.AddDbContext<ContentDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
         }
     }
 }

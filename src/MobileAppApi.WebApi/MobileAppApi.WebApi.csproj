@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>MobileAppApi</AssemblyName>
     <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi</RootNamespace>
     <UserSecretsId>045384c8-5b24-4f13-98d7-c4b2f51f1c12</UserSecretsId>
@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="appsettings.development.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Core.EntityFramework\Core.EntityFramework.csproj" />
     <ProjectReference Include="..\Core.AspNet\Core.AspNet.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
@@ -27,16 +23,18 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.20" />
-		<PackageReference Include="Serilog" Version="2.10.0" />
-		<PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
+		<PackageReference Include="Serilog" Version="2.11.0" />
+		<PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
 		<PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
 		<PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
-		<PackageReference Include="Serilog.Sinks.Console" Version="4.0.0" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
 		<PackageReference Include="Serilog.Sinks.Elasticsearch" Version="8.4.1" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.2.2" />
-		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.2.2" />
-		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.2.2" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.3.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.3.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.3.1" />
 	</ItemGroup>
 
 	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
-        public async Task<SnapshotIksInputResult> ExecuteAsync()
+        public SnapshotIksInputResult Execute()
         {
             _logger.LogDebug("Snapshot publishable DKs.");
 
@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 
             while (page.Count > 0)
             {
-                await _iksPublishingJobDbContext.BulkInsertWithTransactionAsync(page, new SubsetBulkArgs());
+                _iksPublishingJobDbContext.BulkInsertBinaryCopy(page);
 
                 index += page.Count;
                 page = Read(index, PageSize);
@@ -87,7 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
             var q2 = q1A.Select(x => new IksCreateJobInputEntity
             {
                 DkId = x.Dkid,
-                DaysSinceSymptomsOnset = x.DaysSinceSymptomsOnset.Value,
+                DaysSinceSymptomsOnset = x.DaysSinceSymptomsOnset ?? default,
                 TransmissionRiskLevel = TransmissionRiskLevel.None, //Remove; this isn't in used in any calculations
                 ReportType = ReportType.ConfirmedTest,
                 DailyKey = x.DailyKey,

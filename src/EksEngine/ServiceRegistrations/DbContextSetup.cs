@@ -20,13 +20,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
     {
         public static void DbContextRegistration(this IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
-            services.AddDbContext<DkSourceDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.DkSource)));
-            services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
-            services.AddDbContext<IksInDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksIn)));
-            services.AddDbContext<IksOutDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksOut)));
-            services.AddDbContext<IksPublishingJobDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksPublishing)));
-            services.AddDbContext<EksPublishingJobDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.EksPublishing)));
+            services.AddDbContext<WorkflowDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
+            services.AddDbContext<DkSourceDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.DkSource)));
+            services.AddDbContext<ContentDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
+            services.AddDbContext<IksInDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksIn)));
+            services.AddDbContext<IksOutDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksOut)));
+            services.AddDbContext<IksPublishingJobDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksPublishing)));
+            services.AddDbContext<EksPublishingJobDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.EksPublishing)));
         }
     }
 }

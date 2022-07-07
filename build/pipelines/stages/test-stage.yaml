@@ -58,11 +58,12 @@ stages:
             projectKey: 'MSS.Backend'
             projectName: 'CoronaMelder.Backend'
         
-        # Install .Net Core 3.1 LTS Version
+        # Install .Net 6.0 Version
         - task: UseDotNet@2
-          displayName: 'Install .NET Core SDK'
+          displayName: 'Install .NET SDK 6.0'
           inputs:
-            version: 3.1.x
+            packageType: 'sdk'
+            version: '6.0.x'
         # Restore 
         - task: NuGetToolInstaller@1
           displayName: 'Install NuGet Tool'
@@ -75,7 +76,7 @@ stages:
             projects: |
                 **/*.sln
                 !**/*Database.sln
-            arguments: ' --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)\tests'
+            arguments: ' --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
 
         # Run Unit Tests
         - task: DotNetCoreCLI@2

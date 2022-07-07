@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
+      <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
       <AssemblyName>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests</AssemblyName>
       <RootNamespace>NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests</RootNamespace>
       <IsPackable>false</IsPackable>
@@ -10,30 +11,32 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="EFCore.BulkExtensions" Version="3.6.3" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.20" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.20">
+        <PackageReference Include="EFCore.BulkExtensions" Version="6.5.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.5" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.5">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.20" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.20">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.5">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="3.1.20" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.20" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-        <PackageReference Include="Moq" Version="4.16.1" />
-        <PackageReference Include="coverlet.collector" Version="3.1.0">
+        <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="6.0.5" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+        <PackageReference Include="Moq" Version="4.18.1" />
+        <PackageReference Include="coverlet.collector" Version="3.1.2">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Serilog" Version="2.10.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
+        <PackageReference Include="Serilog" Version="2.11.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
         <PackageReference Include="Serilog.Sinks.Trace" Version="3.0.0" />
         <PackageReference Include="xunit" Version="2.4.1" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

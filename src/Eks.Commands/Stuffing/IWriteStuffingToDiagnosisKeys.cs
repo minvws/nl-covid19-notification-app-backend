@@ -8,6 +8,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
 {
     public interface IWriteStuffingToDiagnosisKeys
     {
-        Task ExecuteAsync();
+        void Execute();
     }
 }

@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             var duplicates = (
                     await _dkSourceDbContext.DiagnosisKeys
                         .AsNoTracking()
-                        .Where(p => !p.ReadyForCleanup.HasValue || !p.ReadyForCleanup.Value)
+                        .Where(p => p.ReadyForCleanup != true)
                         .ToListAsync())
                 .GroupBy(p => p, new DiagnosisKeysEntityComparer())
                 .Where(group => group.Count() > 1)
@@ -41,7 +41,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 diagnosisKeyEntity.ReadyForCleanup = diagnosisKeyEntity.PublishedLocally && diagnosisKeyEntity.PublishedToEfgs;
             }
 
-            await _dkSourceDbContext.BulkUpdateWithTransactionAsync(affectedEntities, new SubsetBulkArgs());
+            var cleanableEntities = affectedEntities
+                .Where(x => x.ReadyForCleanup.HasValue && x.ReadyForCleanup.Value)
+                .ToList();
+
+            if (cleanableEntities.Any())
+            {
+                var idsToUpdate = string.Join(",", cleanableEntities.Select(x => x.Id.ToString()).ToArray());
+
+                await _dkSourceDbContext.BulkUpdateSqlRawAsync(
+                    tableName: "DiagnosisKeys",
+                    columnName: "ReadyForCleanup",
+                    value: true,
+                    ids: idsToUpdate);
+            }
 
             return null;
         }

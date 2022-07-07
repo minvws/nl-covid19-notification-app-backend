@@ -8,31 +8,30 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
+using Npgsql;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Interop
 {
-    [Collection(nameof(MarkDiagnosisKeysAsUsedByIksTestsSqlServer))]
-    [Trait("db", "ss")]
-    public class MarkDiagnosisKeysAsUsedByIksTestsSqlServer : MarkDiagnosisKeysAsUsedByIksTests, IDisposable
+    [Collection(nameof(MarkDiagnosisKeysAsUsedByIksTestsPostgres))]
+    [Trait("db", "postgres")]
+    public class MarkDiagnosisKeysAsUsedByIksTestsPostgres : MarkDiagnosisKeysAsUsedByIksTests, IDisposable
     {
         private const string Prefix = nameof(MarkDiagnosisKeysAsUsedByIksTests) + "_";
         private static DbConnection connection;
 
-        public MarkDiagnosisKeysAsUsedByIksTestsSqlServer() : base(
-            new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlServer(CreateSqlDatabase("D")).Options,
-            new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseSqlServer(CreateSqlDatabase("IPJ")).Options
+        public MarkDiagnosisKeysAsUsedByIksTestsPostgres() : base(
+            new DbContextOptionsBuilder<DkSourceDbContext>().UseNpgsql(CreateDatabase("D")).Options,
+            new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseNpgsql(CreateDatabase("IPJ")).Options
         )
         { }
 
-        private static DbConnection CreateSqlDatabase(string suffix)
+        private static DbConnection CreateDatabase(string suffix)
         {
-            var csb = new SqlConnectionStringBuilder($"Data Source=.;Initial Catalog={Prefix + suffix};Integrated Security=True")
-            {
-                MultipleActiveResultSets = true
-            };
+            var csb = new NpgsqlConnectionStringBuilder($"Host=localhost;Database={Prefix + suffix};");
 
-            connection = new SqlConnection(csb.ConnectionString);
+            connection = new NpgsqlConnection(csb.ConnectionString);
+
             return connection;
         }
 

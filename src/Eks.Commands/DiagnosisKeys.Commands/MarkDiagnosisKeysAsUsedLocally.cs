@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities;
@@ -63,17 +62,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 return;
             }
 
-            foreach (var i in zap)
-            {
-                i.PublishedLocally = true;
-            }
+            var idsToUpdate = string.Join(",", zap.Select(x => x.Id.ToString()).ToArray());
 
-            var bargs = new SubsetBulkArgs
-            {
-                PropertiesToInclude = new[] { $"{nameof(DiagnosisKeyEntity.PublishedLocally)}" }
-            };
-
-            await _dkSourceDbContext.BulkUpdateWithTransactionAsync(zap, bargs);
+            await _dkSourceDbContext.BulkUpdateSqlRawAsync(
+                tableName: "DiagnosisKeys",
+                columnName: "PublishedLocally",
+                value: true,
+                ids: idsToUpdate);
         }
 
         private long[] ReadPage()
@@ -85,7 +80,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 .OrderBy(x => x.TekId)
                 .Skip(_index)
                 .Take(_eksConfig.PageSize)
-                .Select(x => x.TekId.Value)
+                .Select(x => x.TekId ?? default)
                 .ToArray();
         }
     }
