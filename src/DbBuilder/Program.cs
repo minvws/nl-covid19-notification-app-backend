@@ -37,9 +37,9 @@ namespace DbBuilder
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow))
                     .UseSnakeCaseNamingConvention());
 
-            services.AddDbContext<DkSourceDbContext>(
+            services.AddDbContext<DiagnosisKeysDbContext>(
                 options => options
-                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.DkSource))
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.DiagnosisKeys))
                     .UseSnakeCaseNamingConvention());
 
             services.AddDbContext<ContentDbContext>(

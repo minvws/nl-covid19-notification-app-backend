@@ -13,18 +13,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 {
     public class DiagnosisKeyTestDataGenerator
     {
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
         public DateTime BaseDate { get; set; } = DateTime.UtcNow.Date;
 
-        public DiagnosisKeyTestDataGenerator(DkSourceDbContext dkSourceDbContext)
+        public DiagnosisKeyTestDataGenerator(DiagnosisKeysDbContext diagnosisKeysDbContext)
         {
-            _dkSourceDbContext = dkSourceDbContext;
+            _diagnosisKeysDbContext = diagnosisKeysDbContext;
         }
 
         public long[] Write(DiagnosisKeyEntity[] items)
         {
-            _dkSourceDbContext.DiagnosisKeys.AddRange(items);
-            _dkSourceDbContext.SaveChanges();
+            _diagnosisKeysDbContext.DiagnosisKeys.AddRange(items);
+            _diagnosisKeysDbContext.SaveChanges();
             return items.Select(x => x.Id).ToArray();
         }
 

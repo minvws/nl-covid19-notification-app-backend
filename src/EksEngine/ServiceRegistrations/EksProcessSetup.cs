@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
                 x.GetRequiredService<IUtcDateTimeProvider>(),
                 x.GetRequiredService<ITransmissionRiskLevelCalculationMk2>(),
                 x.GetRequiredService<WorkflowDbContext>(),
-                x.GetRequiredService<DkSourceDbContext>(),
+                x.GetRequiredService<DiagnosisKeysDbContext>(),
                 new IDiagnosticKeyProcessor[]
                 {
                     x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
@@ -77,7 +77,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
 
             services.AddTransient<IWriteStuffingToDiagnosisKeys>(x =>
                 new WriteStuffingToDiagnosisKeys(
-                    x.GetRequiredService<DkSourceDbContext>(),
+                    x.GetRequiredService<DiagnosisKeysDbContext>(),
                     x.GetRequiredService<EksPublishingJobDbContext>(),
                     new IDiagnosticKeyProcessor[]
                     {

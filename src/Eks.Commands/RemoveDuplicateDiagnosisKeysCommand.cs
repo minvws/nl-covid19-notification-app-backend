@@ -16,17 +16,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 {
     public class RemoveDuplicateDiagnosisKeysCommand : BaseCommand
     {
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
 
-        public RemoveDuplicateDiagnosisKeysCommand(DkSourceDbContext dkSourceDbContext)
+        public RemoveDuplicateDiagnosisKeysCommand(DiagnosisKeysDbContext diagnosisKeysDbContext)
         {
-            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
+            _diagnosisKeysDbContext = diagnosisKeysDbContext ?? throw new ArgumentNullException(nameof(diagnosisKeysDbContext));
         }
 
         public override async Task<ICommandResult> ExecuteAsync()
         {
             var duplicates = (
-                    await _dkSourceDbContext.DiagnosisKeys
+                    await _diagnosisKeysDbContext.DiagnosisKeys
                         .AsNoTracking()
                         .Where(p => p.ReadyForCleanup != true)
                         .ToListAsync())
@@ -49,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             {
                 var idsToUpdate = string.Join(",", cleanableEntities.Select(x => x.Id.ToString()).ToArray());
 
-                await _dkSourceDbContext.BulkUpdateSqlRawAsync(
+                await _diagnosisKeysDbContext.BulkUpdateSqlRawAsync(
                     tableName: "DiagnosisKeys",
                     columnName: "ReadyForCleanup",
                     value: true,

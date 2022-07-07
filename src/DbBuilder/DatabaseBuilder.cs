@@ -28,7 +28,7 @@ namespace DbBuilder
         private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
         private readonly DataProtectionKeysDbContext _dataProtectionKeysDbContext;
         private readonly StatsDbContext _statsDbContext;
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
         private readonly IksInDbContext _iksInDbContext;
         private readonly IksOutDbContext _iksOutDbContext;
         private readonly IksPublishingJobDbContext _iksPublishingJobDbContext;
@@ -39,7 +39,7 @@ namespace DbBuilder
             EksPublishingJobDbContext eksPublishingJobDbContext,
             DataProtectionKeysDbContext dataProtectionKeysDbContext,
             StatsDbContext statsDbContext,
-            DkSourceDbContext dkSourceDbContext,
+            DiagnosisKeysDbContext diagnosisKeysDbContext,
             IksInDbContext iksInDbContext,
             IksOutDbContext iksOutDbContext,
             IksPublishingJobDbContext iksPublishingJobDbContext)
@@ -50,7 +50,7 @@ namespace DbBuilder
             _eksPublishingJobDbContext = eksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContext));
             _dataProtectionKeysDbContext = dataProtectionKeysDbContext ?? throw new ArgumentNullException(nameof(dataProtectionKeysDbContext));
             _statsDbContext = statsDbContext ?? throw new ArgumentNullException(nameof(statsDbContext));
-            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
+            _diagnosisKeysDbContext = diagnosisKeysDbContext ?? throw new ArgumentNullException(nameof(diagnosisKeysDbContext));
             _iksInDbContext = iksInDbContext ?? throw new ArgumentNullException(nameof(iksInDbContext));
             _iksOutDbContext = iksOutDbContext ?? throw new ArgumentNullException(nameof(iksOutDbContext));
             _iksPublishingJobDbContext = iksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(iksPublishingJobDbContext));
@@ -78,8 +78,8 @@ namespace DbBuilder
             _logger.LogInformation("Stats...");
             await ProvisionStats(nuke);
 
-            _logger.LogInformation("DkSource...");
-            await ProvisionDkSource(nuke);
+            _logger.LogInformation("DiagnosisKeys...");
+            await ProvisionDiagnosisKeys(nuke);
 
             _logger.LogInformation("IksIn...");
             await ProvisionIksIn(nuke);
@@ -138,13 +138,13 @@ namespace DbBuilder
             await _statsDbContext.Database.EnsureCreatedAsync();
         }
 
-        private async Task ProvisionDkSource(bool nuke)
+        private async Task ProvisionDiagnosisKeys(bool nuke)
         {
             if (nuke)
             {
-                await _dkSourceDbContext.Database.EnsureDeletedAsync();
+                await _diagnosisKeysDbContext.Database.EnsureDeletedAsync();
             }
-            await _dkSourceDbContext.Database.EnsureCreatedAsync();
+            await _diagnosisKeysDbContext.Database.EnsureCreatedAsync();
         }
 
         private async Task ProvisionIksIn(bool nuke)

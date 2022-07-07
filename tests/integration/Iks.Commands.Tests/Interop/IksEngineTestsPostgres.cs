@@ -31,7 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
                 .UseNpgsql(CreateDatabase("ii"))
                 .UseSnakeCaseNamingConvention()
                 .Options,
-            new DbContextOptionsBuilder<DkSourceDbContext>()
+            new DbContextOptionsBuilder<DiagnosisKeysDbContext>()
                 .UseNpgsql(CreateDatabase("d"))
                 .UseSnakeCaseNamingConvention()
                 .Options,

@@ -14,9 +14,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Di
 {
     public class RemoveDiagnosisKeysReadyForCleanupCommand : BaseCommand
     {
-        private readonly DkSourceDbContext _diagnosticKeyDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosticKeyDbContext;
 
-        public RemoveDiagnosisKeysReadyForCleanupCommand(DkSourceDbContext diagnosticKeyDbContext)
+        public RemoveDiagnosisKeysReadyForCleanupCommand(DiagnosisKeysDbContext diagnosticKeyDbContext)
         {
             _diagnosticKeyDbContext = diagnosticKeyDbContext ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContext));
         }

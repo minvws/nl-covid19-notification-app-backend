@@ -16,15 +16,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 {
     public class MarkDiagnosisKeysAsUsedByIks
     {
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
         private readonly IksPublishingJobDbContext _iksPublishingJobDbContext;
         private readonly IIksConfig _iksConfig;
         private readonly ILogger<MarkDiagnosisKeysAsUsedByIks> _logger;
         private int _index;
 
-        public MarkDiagnosisKeysAsUsedByIks(DkSourceDbContext dkSourceDbContext, IIksConfig config, IksPublishingJobDbContext iksPublishingJobDbContext, ILogger<MarkDiagnosisKeysAsUsedByIks> logger)
+        public MarkDiagnosisKeysAsUsedByIks(DiagnosisKeysDbContext diagnosisKeysDbContext, IIksConfig config, IksPublishingJobDbContext iksPublishingJobDbContext, ILogger<MarkDiagnosisKeysAsUsedByIks> logger)
         {
-            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
+            _diagnosisKeysDbContext = diagnosisKeysDbContext ?? throw new ArgumentNullException(nameof(diagnosisKeysDbContext));
             _iksConfig = config ?? throw new ArgumentNullException(nameof(config));
             _iksPublishingJobDbContext = iksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(iksPublishingJobDbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -43,7 +43,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 
         private async Task Zap(long[] used)
         {
-            var diagnosisKeyEntities = _dkSourceDbContext.DiagnosisKeys
+            var diagnosisKeyEntities = _diagnosisKeysDbContext.DiagnosisKeys
                 .AsNoTracking()
                 .Where(x => used.Contains(x.Id))
                 .ToList();
@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 
             var idsToUpdate = string.Join(",", diagnosisKeyEntities.Select(x => x.Id.ToString()).ToArray());
 
-            await _dkSourceDbContext.BulkUpdateSqlRawAsync(
+            await _diagnosisKeysDbContext.BulkUpdateSqlRawAsync(
                 tableName: "DiagnosisKeys",
                 columnName: "PublishedToEfgs",
                 value: true,

@@ -17,10 +17,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Di
         private const int CutOffDays = -14;
 
         private RemovePublishedDiagnosisKeysResult _result;
-        private readonly DkSourceDbContext _diagnosticKeyDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosticKeyDbContext;
         private readonly IUtcDateTimeProvider _utcDateTimeProvider;
 
-        public RemovePublishedDiagnosisKeysCommand(DkSourceDbContext diagnosticKeyDbContext, IUtcDateTimeProvider utcDateTimeProvider)
+        public RemovePublishedDiagnosisKeysCommand(DiagnosisKeysDbContext diagnosticKeyDbContext, IUtcDateTimeProvider utcDateTimeProvider)
         {
             _diagnosticKeyDbContext = diagnosticKeyDbContext ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContext));
             _utcDateTimeProvider = utcDateTimeProvider ?? throw new ArgumentNullException(nameof(utcDateTimeProvider));

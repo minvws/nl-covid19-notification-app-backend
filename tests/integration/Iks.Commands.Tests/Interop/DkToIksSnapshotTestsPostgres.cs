@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         private static DbConnection connection;
 
         public DkToIksSnapshotTestsPostgres() : base(
-            new DbContextOptionsBuilder<DkSourceDbContext>()
+            new DbContextOptionsBuilder<DiagnosisKeysDbContext>()
                 .UseNpgsql(CreateDatabase("d"))
                 .UseSnakeCaseNamingConvention()
                 .Options,
