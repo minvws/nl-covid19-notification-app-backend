@@ -40,11 +40,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFram
             modelBuilder.Entity<DiagnosisKeyInputEntity>().OwnsOne(p => p.DailyKey);
             modelBuilder.Entity<DiagnosisKeyInputEntity>().Navigation(p => p.DailyKey).IsRequired();
 
-            // modelBuilder
-            //     .Entity<DiagnosisKeyEntity>()
-            //     .HasIndex(p => new { p.Local.Symptomatic, p.Local.ReportType })
-            //     .IncludeProperties(p => new { p.Id, p.Local.TransmissionRiskLevel, p.Local.DaysSinceSymptomsOnset });
-
             modelBuilder
                 .Entity<DiagnosisKeyInputEntity>()
                 .HasIndex(p => new { p.TekId, p.Id });
