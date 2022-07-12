@@ -10,7 +10,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.Entities
 {
-    [Table("TekReleaseWorkflowState")]
     public class TekReleaseWorkflowStateEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -36,7 +35,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
         /// <summary>
         /// This is either the DateOfSymptomsOnset or Date of Test value.
         /// </summary>
-        [Column("DateOfSymptomsOnset")]
         public DateTime? StartDateOfTekInclusion { get; set; }
 
         /// <summary>

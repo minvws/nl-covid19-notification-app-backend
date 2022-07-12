@@ -17,9 +17,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         private const string Prefix = nameof(ManifestUpdateCommandTest) + "_";
         private static DbConnection connection;
 
-        public ManifestUpdateCommandTestSqlServer()
-            : base(
-                new DbContextOptionsBuilder<ContentDbContext>().UseNpgsql(CreateSqlDatabase("C")).Options)
+        public ManifestUpdateCommandTestSqlServer() : base(
+            new DbContextOptionsBuilder<ContentDbContext>()
+                .UseNpgsql(CreateSqlDatabase("c"))
+                .UseSnakeCaseNamingConvention()
+                .Options
+        )
         { }
 
         private static DbConnection CreateSqlDatabase(string suffix)

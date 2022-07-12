@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities;
@@ -22,15 +23,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
     /// </summary>
     public class MarkDiagnosisKeysAsUsedLocally
     {
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
         private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
         private readonly IEksConfig _eksConfig;
         private readonly ILogger<MarkDiagnosisKeysAsUsedLocally> _logger;
         private int _index;
 
-        public MarkDiagnosisKeysAsUsedLocally(DkSourceDbContext dkDbContext, IEksConfig eksConfig, EksPublishingJobDbContext eksPublishingJobDbContext, ILogger<MarkDiagnosisKeysAsUsedLocally> logger)
+        public MarkDiagnosisKeysAsUsedLocally(DiagnosisKeysDbContext diagnosisKeysDbContext, IEksConfig eksConfig, EksPublishingJobDbContext eksPublishingJobDbContext, ILogger<MarkDiagnosisKeysAsUsedLocally> logger)
         {
-            _dkSourceDbContext = dkDbContext ?? throw new ArgumentNullException(nameof(dkDbContext));
+            _diagnosisKeysDbContext = diagnosisKeysDbContext ?? throw new ArgumentNullException(nameof(diagnosisKeysDbContext));
             _eksConfig = eksConfig ?? throw new ArgumentNullException(nameof(eksConfig));
             _eksPublishingJobDbContext = eksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -49,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
         private async Task ZapAsync(long[] used)
         {
-            var zap = _dkSourceDbContext.DiagnosisKeys
+            var zap = _diagnosisKeysDbContext.DiagnosisKeys
                 .AsNoTracking()
                 .Where(x => used.Contains(x.Id))
                 .ToList();
@@ -64,9 +65,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             var idsToUpdate = string.Join(",", zap.Select(x => x.Id.ToString()).ToArray());
 
-            await _dkSourceDbContext.BulkUpdateSqlRawAsync(
-                tableName: "DiagnosisKeys",
-                columnName: "PublishedLocally",
+            await _diagnosisKeysDbContext.BulkUpdateSqlRawAsync<DiagnosisKeyEntity>(
+                columnName: "published_locally",
                 value: true,
                 ids: idsToUpdate);
         }

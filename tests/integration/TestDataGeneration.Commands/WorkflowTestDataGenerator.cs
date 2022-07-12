@@ -22,14 +22,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
     public class WorkflowTestDataGenerator
     {
         private readonly WorkflowDbContext _workflowDbContext;
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
         private readonly IUtcDateTimeProvider _utcDateTimeProvider = new StandardUtcDateTimeProvider();
         private readonly StandardRandomNumberGenerator _rng = new StandardRandomNumberGenerator();
 
-        public WorkflowTestDataGenerator(WorkflowDbContext workflowDbContext, DkSourceDbContext dkSourceDbContext)
+        public WorkflowTestDataGenerator(WorkflowDbContext workflowDbContext, DiagnosisKeysDbContext diagnosisKeysDbContext)
         {
             _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
-            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
+            _diagnosisKeysDbContext = diagnosisKeysDbContext ?? throw new ArgumentNullException(nameof(diagnosisKeysDbContext));
         }
 
         public async Task<int> GenerateAndAuthoriseWorkflowsAsync(int workflowCount = 25, int tekPerWOrkflowCount = 4)
@@ -37,7 +37,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
             await GenerateWorkflowsAsync(workflowCount, tekPerWOrkflowCount);
             await AuthoriseAllWorkflowsAsync();
             await SnapshotToDks();
-            return _dkSourceDbContext.DiagnosisKeys.Count();
+            return _diagnosisKeysDbContext.DiagnosisKeys.Count();
         }
 
         private async Task SnapshotToDks()
@@ -49,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.TestDataGeneration.Comma
                 _utcDateTimeProvider,
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowDbContext,
-                _dkSourceDbContext,
+                _diagnosisKeysDbContext,
                 new IDiagnosticKeyProcessor[] {
                     new ExcludeTrlNoneDiagnosticKeyProcessor(),
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(countriesOutMock.Object),

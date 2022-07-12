@@ -1,2 +1,0 @@
-﻿CREATE ROLE [Dbr_Users] AUTHORIZATION [dbo];
-GO

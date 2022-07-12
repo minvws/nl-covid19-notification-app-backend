@@ -9,7 +9,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.Entities
 {
 
     //1 row only
-    [Table("IksInJob")]
     public class IksInJobEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

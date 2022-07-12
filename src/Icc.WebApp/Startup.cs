@@ -107,7 +107,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
                 options.TableName = "Cache";
             });
 
-            services.AddDbContext<WorkflowDbContext>(options => options.UseNpgsql(_configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
+            services.AddDbContext<WorkflowDbContext>(
+                options => options
+                    .UseNpgsql(_configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow))
+                    .UseSnakeCaseNamingConvention());
             
             services.Configure<CookiePolicyOptions>(options =>
             {

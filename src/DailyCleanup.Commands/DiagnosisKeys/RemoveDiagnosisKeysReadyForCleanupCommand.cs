@@ -3,29 +3,27 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.DiagnosisKeys
 {
     public class RemoveDiagnosisKeysReadyForCleanupCommand : BaseCommand
     {
-        private readonly DkSourceDbContext _diagnosticKeyDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosticKeyDbContext;
 
-        public RemoveDiagnosisKeysReadyForCleanupCommand(DkSourceDbContext diagnosticKeyDbContext)
+        public RemoveDiagnosisKeysReadyForCleanupCommand(DiagnosisKeysDbContext diagnosticKeyDbContext)
         {
             _diagnosticKeyDbContext = diagnosticKeyDbContext ?? throw new ArgumentNullException(nameof(diagnosticKeyDbContext));
         }
 
         public override async Task<ICommandResult> ExecuteAsync()
         {
-            await _diagnosticKeyDbContext.BulkDeleteSqlRawAsync(
-                tableName: "DiagnosisKeys",
-                columnName: "ReadyForCleanup",
+            await _diagnosticKeyDbContext.BulkDeleteSqlRawAsync<DiagnosisKeyEntity>(
+                columnName: "ready_for_cleanup",
                 checkValue: true);
 
             return null;

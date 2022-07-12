@@ -18,7 +18,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
         private static DbConnection connection;
 
         public RemoveExpiredManifestsTestSqlserver() : base(
-            new DbContextOptionsBuilder<ContentDbContext>().UseNpgsql(CreateSqlDatabase("C")).Options
+            new DbContextOptionsBuilder<ContentDbContext>()
+                .UseNpgsql(CreateSqlDatabase("c"))
+                .UseSnakeCaseNamingConvention()
+                .Options
             )
         { }
 

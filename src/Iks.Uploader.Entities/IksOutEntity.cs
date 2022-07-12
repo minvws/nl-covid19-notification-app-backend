@@ -10,7 +10,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.Entities
     /// <summary>
     /// AKA Interop Content
     /// </summary>
-    [Table("IksOut")]
     public class IksOutEntity
     {
         public int Id { get; set; }

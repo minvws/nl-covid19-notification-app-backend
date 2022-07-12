@@ -18,7 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         private static DbConnection connection;
 
         public DkToIksSnapshotTestsSqlite() : base(
-            new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
+            new DbContextOptionsBuilder<DiagnosisKeysDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
             new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseSqlite(CreateInMemoryDatabase()).Options
         )
         { }

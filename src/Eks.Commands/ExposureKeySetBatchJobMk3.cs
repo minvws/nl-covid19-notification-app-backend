@@ -271,9 +271,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             
             var idsToUpdate = string.Join(",", _output.Select(x => x.Id.ToString()).ToArray());
 
-            await _eksPublishingJobDbContext.BulkUpdateSqlRawAsync(
-                tableName: "EksCreateJobInput",
-                columnName: "Used",
+            await _eksPublishingJobDbContext.BulkUpdateSqlRawAsync<EksCreateJobInputEntity>(
+                columnName: "used",
                 value: true,
                 ids: idsToUpdate);
 

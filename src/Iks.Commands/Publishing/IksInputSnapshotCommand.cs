@@ -20,14 +20,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
     public class IksInputSnapshotCommand
     {
         private readonly ILogger<IksInputSnapshotCommand> _logger;
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
         private readonly IksPublishingJobDbContext _iksPublishingJobDbContext;
         private readonly IOutboundFixedCountriesOfInterestSetting _config;
 
-        public IksInputSnapshotCommand(ILogger<IksInputSnapshotCommand> logger, DkSourceDbContext dkSourceDbContext, IksPublishingJobDbContext iksPublishingJobDbContext, IOutboundFixedCountriesOfInterestSetting config)
+        public IksInputSnapshotCommand(ILogger<IksInputSnapshotCommand> logger, DiagnosisKeysDbContext diagnosisKeysDbContext, IksPublishingJobDbContext iksPublishingJobDbContext, IOutboundFixedCountriesOfInterestSetting config)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
+            _diagnosisKeysDbContext = diagnosisKeysDbContext ?? throw new ArgumentNullException(nameof(diagnosisKeysDbContext));
             _iksPublishingJobDbContext = iksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(iksPublishingJobDbContext));
             _config = config ?? throw new ArgumentNullException(nameof(config));
         }
@@ -69,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
         private IList<IksCreateJobInputEntity> Read(int index, int pageSize)
         {
             //All imported IKS DKs are mark PublishedToEfgs as true at the point of import
-            var q1 = _dkSourceDbContext.DiagnosisKeys
+            var q1 = _diagnosisKeysDbContext.DiagnosisKeys
                 .AsNoTracking() //EF treats DTO property classes as 'owned tables'
                 .Where(x => x.Origin == TekOrigin.Local && !x.PublishedToEfgs)
                 .Skip(index)

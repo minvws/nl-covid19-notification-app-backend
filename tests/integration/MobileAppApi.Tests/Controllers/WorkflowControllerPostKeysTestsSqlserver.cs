@@ -18,7 +18,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         private static DbConnection connection;
 
         public WorkflowControllerPostKeysTestsSqlserver() : base(
-            new DbContextOptionsBuilder<WorkflowDbContext>().UseNpgsql(CreateSqlDatabase("W")).Options
+            new DbContextOptionsBuilder<WorkflowDbContext>()
+                .UseNpgsql(CreateSqlDatabase("w"))
+                .UseSnakeCaseNamingConvention()
+                .Options
         )
         { }
 

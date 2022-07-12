@@ -34,6 +34,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="EFCore.NamingConventions" Version="6.0.0" />
       <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="6.0.5" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.5">
         <PrivateAssets>all</PrivateAssets>

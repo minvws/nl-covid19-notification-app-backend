@@ -54,15 +54,50 @@ namespace DbProvision
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddDbContext<WorkflowDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
-            services.AddDbContext<DkSourceDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.DkSource)));
-            services.AddDbContext<ContentDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
-            services.AddDbContext<IksInDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksIn)));
-            services.AddDbContext<IksOutDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksOut)));
-            services.AddDbContext<IksPublishingJobDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksPublishing)));
-            services.AddDbContext<EksPublishingJobDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.EksPublishing)));
-            services.AddDbContext<StatsDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Stats)));
-            services.AddDbContext<DataProtectionKeysDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.DataProtectionKeys)));
+            services.AddDbContext<WorkflowDbContext>(
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow))
+                    .UseSnakeCaseNamingConvention());
+
+            services.AddDbContext<DiagnosisKeysDbContext>(
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.DiagnosisKeys))
+                    .UseSnakeCaseNamingConvention());
+            
+            services.AddDbContext<ContentDbContext>(
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Content))
+                    .UseSnakeCaseNamingConvention());
+            
+            services.AddDbContext<IksInDbContext>(
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksIn))
+                    .UseSnakeCaseNamingConvention());
+            
+            services.AddDbContext<IksOutDbContext>(
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksOut))
+                    .UseSnakeCaseNamingConvention());
+            
+            services.AddDbContext<IksPublishingJobDbContext>(
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksPublishing))
+                    .UseSnakeCaseNamingConvention());
+            
+            services.AddDbContext<EksPublishingJobDbContext>(
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.EksPublishing))
+                    .UseSnakeCaseNamingConvention());
+            
+            services.AddDbContext<StatsDbContext>(
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Stats))
+                    .UseSnakeCaseNamingConvention());
+            
+            services.AddDbContext<DataProtectionKeysDbContext>(
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.DataProtectionKeys))
+                    .UseSnakeCaseNamingConvention());
 
             services.AddSingleton<IConfiguration>(configuration);
 

@@ -34,7 +34,10 @@ namespace PublishContent
             services.AddSingleton<IConfiguration>(configuration);
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
-            services.AddDbContext<ContentDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
+            services.AddDbContext<ContentDbContext>(
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Content))
+                    .UseSnakeCaseNamingConvention());
 
             services.AddTransient<PublishContentCommand>();
             services.AddTransient<ZippedSignedContentFormatter>();

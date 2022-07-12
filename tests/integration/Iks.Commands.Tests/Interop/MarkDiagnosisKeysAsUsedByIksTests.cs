@@ -21,15 +21,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 {
     public abstract class MarkDiagnosisKeysAsUsedByIksTests
     {
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
         private readonly IksPublishingJobDbContext _iksPublishingDbContext;
         private readonly Mock<IUtcDateTimeProvider> _utcDateTimeProviderMock = new Mock<IUtcDateTimeProvider>();
         private readonly Mock<IIksConfig> _iksConfigMock = new Mock<IIksConfig>();
 
-        protected MarkDiagnosisKeysAsUsedByIksTests(DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions, DbContextOptions<IksPublishingJobDbContext> iksPublishingJobDbContextOptions)
+        protected MarkDiagnosisKeysAsUsedByIksTests(DbContextOptions<DiagnosisKeysDbContext> diagnosisKeysDbContextOptions, DbContextOptions<IksPublishingJobDbContext> iksPublishingJobDbContextOptions)
         {
-            _dkSourceDbContext = new DkSourceDbContext(dkSourceDbContextOptions ?? throw new ArgumentNullException(nameof(dkSourceDbContextOptions)));
-            _dkSourceDbContext.Database.EnsureCreated();
+            _diagnosisKeysDbContext = new DiagnosisKeysDbContext(diagnosisKeysDbContextOptions ?? throw new ArgumentNullException(nameof(diagnosisKeysDbContextOptions)));
+            _diagnosisKeysDbContext.Database.EnsureCreated();
 
             _iksPublishingDbContext = new IksPublishingJobDbContext(iksPublishingJobDbContextOptions ?? throw new ArgumentNullException(nameof(iksPublishingJobDbContextOptions)));
             _iksPublishingDbContext.Database.EnsureCreated();
@@ -38,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         private MarkDiagnosisKeysAsUsedByIks Create()
         {
             return new MarkDiagnosisKeysAsUsedByIks(
-                _dkSourceDbContext,
+                _diagnosisKeysDbContext,
                 _iksConfigMock.Object,
                 _iksPublishingDbContext,
                 new NullLogger<MarkDiagnosisKeysAsUsedByIks>()
@@ -59,21 +59,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             _utcDateTimeProviderMock.Setup(x => x.Snapshot).Returns(DateTime.UtcNow);
             _iksConfigMock.Setup(x => x.PageSize).Returns(10);
 
-            var gen = new DiagnosisKeyTestDataGenerator(_dkSourceDbContext);
+            var gen = new DiagnosisKeyTestDataGenerator(_diagnosisKeysDbContext);
             var items = gen.Write(gen.LocalDksForLocalPeople(gen.GenerateDks(baseCount)));
 
             var gen2 = new IksDkSnapshotTestDataGenerator(_iksPublishingDbContext);
             gen2.Write(gen2.GenerateInput(items));
 
             Assert.Equal(baseCount, _iksPublishingDbContext.Input.Count());
-            Assert.Equal(baseCount, _dkSourceDbContext.DiagnosisKeys.Count());
-            Assert.Equal(0, _dkSourceDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
+            Assert.Equal(baseCount, _diagnosisKeysDbContext.DiagnosisKeys.Count());
+            Assert.Equal(0, _diagnosisKeysDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
 
             var result = await Create().ExecuteAsync();
 
             Assert.Equal(baseCount, result.Count);
-            Assert.Equal(baseCount, _dkSourceDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
-            Assert.Equal(baseCount, _dkSourceDbContext.DiagnosisKeys.Count());
+            Assert.Equal(baseCount, _diagnosisKeysDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
+            Assert.Equal(baseCount, _diagnosisKeysDbContext.DiagnosisKeys.Count());
         }
 
         //Not pub'd x 1
@@ -90,7 +90,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             _utcDateTimeProviderMock.Setup(x => x.Snapshot).Returns(DateTime.UtcNow);
             _iksConfigMock.Setup(x => x.PageSize).Returns(10);
 
-            var gen = new DiagnosisKeyTestDataGenerator(_dkSourceDbContext);
+            var gen = new DiagnosisKeyTestDataGenerator(_diagnosisKeysDbContext);
             var items = gen.Write(gen.LocalDksForLocalPeople(gen.GenerateDks(baseCount)));
             gen.Write(gen.AlreadyPublished(gen.GenerateDks(baseCount)));
             gen.Write(gen.NotLocal(gen.GenerateDks(baseCount)));
@@ -99,23 +99,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             gen2.Write(gen2.GenerateInput(items));
 
             Assert.Equal(baseCount, _iksPublishingDbContext.Input.Count());
-            Assert.Equal(baseCount * 3, _dkSourceDbContext.DiagnosisKeys.Count());
-            Assert.Equal(baseCount * 2, _dkSourceDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
+            Assert.Equal(baseCount * 3, _diagnosisKeysDbContext.DiagnosisKeys.Count());
+            Assert.Equal(baseCount * 2, _diagnosisKeysDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
 
             var c = Create();
             var result = await c.ExecuteAsync();
 
             Assert.Equal(baseCount, result.Count); //Affected
             Assert.Equal(baseCount, _iksPublishingDbContext.Input.Count()); //Unchanged
-            Assert.Equal(baseCount * 3, _dkSourceDbContext.DiagnosisKeys.Count()); //Unchanged
-            Assert.Equal(baseCount * 3, _dkSourceDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs)); //
+            Assert.Equal(baseCount * 3, _diagnosisKeysDbContext.DiagnosisKeys.Count()); //Unchanged
+            Assert.Equal(baseCount * 3, _diagnosisKeysDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs)); //
         }
 
         private async Task BulkDeleteAllDataInTest()
         {
             await _iksPublishingDbContext.BulkDeleteAsync(_iksPublishingDbContext.Input.ToList());
             await _iksPublishingDbContext.BulkDeleteAsync(_iksPublishingDbContext.Output.ToList());
-            await _dkSourceDbContext.BulkDeleteAsync(_dkSourceDbContext.DiagnosisKeys.ToList());
+            await _diagnosisKeysDbContext.BulkDeleteAsync(_diagnosisKeysDbContext.DiagnosisKeys.ToList());
         }
     }
 }

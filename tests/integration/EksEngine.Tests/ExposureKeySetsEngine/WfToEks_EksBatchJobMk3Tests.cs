@@ -39,8 +39,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         private readonly FakeEksConfig _fakeEksConfig;
         private readonly WorkflowDbContext _workflowContext;
-        private readonly DkSourceDbContext _dkSourceContext;
-        private readonly DbContextOptions<DkSourceDbContext> _dkSourceContextOptions;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysContext;
+        private readonly DbContextOptions<DiagnosisKeysDbContext> _diagnosisKeysContextOptions;
         private readonly DbContextOptions<EksPublishingJobDbContext> _publishingContextOptions;
         private readonly ContentDbContext _contentContext;
 
@@ -50,15 +50,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         private readonly SnapshotWorkflowTeksToDksCommand _snapshot;
         private Mock<IOutboundFixedCountriesOfInterestSetting> _countriesOut;
 
-        protected WfToEksEksBatchJobMk3Tests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DkSourceDbContext> dkSourceContextOptions, DbContextOptions<EksPublishingJobDbContext> publishingContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions)
+        protected WfToEksEksBatchJobMk3Tests(DbContextOptions<WorkflowDbContext> workflowContextOptions, DbContextOptions<DiagnosisKeysDbContext> diagnosisKeysContextOptions, DbContextOptions<EksPublishingJobDbContext> publishingContextOptions, DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
-            _dkSourceContextOptions = dkSourceContextOptions ?? throw new ArgumentNullException(nameof(dkSourceContextOptions));
+            _diagnosisKeysContextOptions = diagnosisKeysContextOptions ?? throw new ArgumentNullException(nameof(diagnosisKeysContextOptions));
             _publishingContextOptions = publishingContextOptions ?? throw new ArgumentNullException(nameof(publishingContextOptions));
 
             _workflowContext = new WorkflowDbContext(workflowContextOptions ?? throw new ArgumentNullException(nameof(workflowContextOptions)));
             _workflowContext.Database.EnsureCreated();
-            _dkSourceContext = new DkSourceDbContext(_dkSourceContextOptions);
-            _dkSourceContext.Database.EnsureCreated();
+            _diagnosisKeysContext = new DiagnosisKeysDbContext(_diagnosisKeysContextOptions);
+            _diagnosisKeysContext.Database.EnsureCreated();
             _contentContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
             _contentContext.Database.EnsureCreated();
 
@@ -69,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new StandardUtcDateTimeProvider(),
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowContext,
-                _dkSourceContext,
+                _diagnosisKeysContext,
                 Array.Empty<IDiagnosticKeyProcessor>()
             );
         }
@@ -110,8 +110,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
         private EksEngineResult RunEngine()
         {
-            var dkSourceContext = new DkSourceDbContext(_dkSourceContextOptions);
-            dkSourceContext.Database.EnsureCreated();
+            var diagnosisKeysContext = new DiagnosisKeysDbContext(_diagnosisKeysContextOptions);
+            diagnosisKeysContext.Database.EnsureCreated();
 
             var eksPublishingJobContext = new EksPublishingJobDbContext(_publishingContextOptions);
             eksPublishingJobContext.Database.EnsureCreated();
@@ -127,7 +127,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new EksStuffingGeneratorMk2(new TransmissionRiskLevelCalculationMk2(),
                     new StandardRandomNumberGenerator(), _dateTimeProvider, _fakeEksConfig),
                 new SnapshotDiagnosisKeys(new NullLogger<SnapshotDiagnosisKeys>(),
-                   _dkSourceContext, eksPublishingJobContext,
+                   _diagnosisKeysContext, eksPublishingJobContext,
                     new Infectiousness(new Dictionary<InfectiousPeriodType, HashSet<int>>{
                         {
                             InfectiousPeriodType.Symptomatic,
@@ -138,11 +138,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                             new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
                         }
                     })),
-                new MarkDiagnosisKeysAsUsedLocally(_dkSourceContext, _fakeEksConfig,
+                new MarkDiagnosisKeysAsUsedLocally(_diagnosisKeysContext, _fakeEksConfig,
                     eksPublishingJobContext, new NullLogger<MarkDiagnosisKeysAsUsedLocally>()),
                 new EksJobContentWriter(_contentContext, eksPublishingJobContext,
                     new NullLogger<EksJobContentWriter>()),
-                new WriteStuffingToDiagnosisKeys(_dkSourceContext,
+                new WriteStuffingToDiagnosisKeys(_diagnosisKeysContext,
                     eksPublishingJobContext,
                     new IDiagnosticKeyProcessor[]
                     {
@@ -183,7 +183,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         {
             // Arrange
             _contentContext.Truncate<ContentEntity>();
-            _dkSourceContext.Truncate<DiagnosisKeyEntity>();
+            _diagnosisKeysContext.Truncate<DiagnosisKeyEntity>();
             _workflowContext.BulkDelete(_workflowContext.KeyReleaseWorkflowStates.ToList());
 
             //One TEK from the dawn of time.
@@ -210,7 +210,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
-            Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount + result.StuffingCount);
+            Assert.Equal(_diagnosisKeysContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount + result.StuffingCount);
 
             Assert.True(result.TotalSeconds > 0);
 
@@ -227,7 +227,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             Assert.Equal(1, _contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2)); // 2nd has only stuffing
             Assert.Equal(1, _contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3)); // 2nd has only stuffing
-            Assert.Equal(5, _dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally)); // 2nd run adds 0 stuffing records
+            Assert.Equal(5, _diagnosisKeysContext.DiagnosisKeys.Count(x => x.PublishedLocally)); // 2nd run adds 0 stuffing records
 
             Assert.True(result.TotalSeconds > 0);
         }
@@ -264,7 +264,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         {
             // Arrange
             _contentContext.Truncate<ContentEntity>();
-            _dkSourceContext.Truncate<DiagnosisKeyEntity>();
+            _diagnosisKeysContext.Truncate<DiagnosisKeyEntity>();
             _workflowContext.BulkDelete(_workflowContext.KeyReleaseWorkflowStates.ToList());
 
             var wfs = new[]
@@ -291,7 +291,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
-            Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount + result.StuffingCount);
+            Assert.Equal(_diagnosisKeysContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount + result.StuffingCount);
 
             Assert.True(result.TotalSeconds > 0);
         }
@@ -300,7 +300,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         public void Tek5_NotStuffed()
         {
             _contentContext.Truncate<ContentEntity>();
-            _dkSourceContext.Truncate<DiagnosisKeyEntity>();
+            _diagnosisKeysContext.Truncate<DiagnosisKeyEntity>();
             _workflowContext.BulkDelete(_workflowContext.KeyReleaseWorkflowStates.ToList());
 
             var teks = Enumerable.Range(1, 5)
@@ -328,7 +328,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
-            Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
+            Assert.Equal(_diagnosisKeysContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
         }
@@ -338,7 +338,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         {
             // Arrange
             _contentContext.Truncate<ContentEntity>();
-            _dkSourceContext.Truncate<DiagnosisKeyEntity>();
+            _diagnosisKeysContext.Truncate<DiagnosisKeyEntity>();
             _workflowContext.BulkDelete(_workflowContext.KeyReleaseWorkflowStates.ToList());
 
             var teks = Enumerable.Range(1, 10)
@@ -369,7 +369,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
-            Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
+            Assert.Equal(_diagnosisKeysContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
         }
@@ -379,7 +379,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         {
             // Arrange
             _contentContext.Truncate<ContentEntity>();
-            _dkSourceContext.Truncate<DiagnosisKeyEntity>();
+            _diagnosisKeysContext.Truncate<DiagnosisKeyEntity>();
             _workflowContext.BulkDelete(_workflowContext.KeyReleaseWorkflowStates.ToList());
 
             var teks = Enumerable.Range(1, 11)
@@ -411,7 +411,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2), result.EksInfo.Length);
             Assert.Equal(_contentContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV3), result.EksInfo.Length);
-            Assert.Equal(_dkSourceContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
+            Assert.Equal(_diagnosisKeysContext.DiagnosisKeys.Count(x => x.PublishedLocally), result.InputCount);
 
             Assert.True(result.TotalSeconds > 0);
         }

@@ -9,7 +9,6 @@ using System.Net.Mime;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities
 {
-    [Table("Content")]
     public class ContentEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

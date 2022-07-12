@@ -24,16 +24,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
     public abstract class TekToDkSnapshotTests
     {
         private readonly WorkflowDbContext _workflowDbContext;
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
         private readonly Mock<IUtcDateTimeProvider> _dateTimeProvider;
         private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _outboundCountries;
 
-        protected TekToDkSnapshotTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions, DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions)
+        protected TekToDkSnapshotTests(DbContextOptions<WorkflowDbContext> workflowDbContextOptions, DbContextOptions<DiagnosisKeysDbContext> diagnosisKeysDbContextOptions)
         {
             _workflowDbContext = new WorkflowDbContext(workflowDbContextOptions ?? throw new ArgumentNullException(nameof(workflowDbContextOptions)));
             _workflowDbContext.Database.EnsureCreated();
-            _dkSourceDbContext = new DkSourceDbContext(dkSourceDbContextOptions ?? throw new ArgumentNullException(nameof(dkSourceDbContextOptions)));
-            _dkSourceDbContext.Database.EnsureCreated();
+            _diagnosisKeysDbContext = new DiagnosisKeysDbContext(diagnosisKeysDbContextOptions ?? throw new ArgumentNullException(nameof(diagnosisKeysDbContextOptions)));
+            _diagnosisKeysDbContext.Database.EnsureCreated();
 
             _dateTimeProvider = new Mock<IUtcDateTimeProvider>();
             _outboundCountries = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
@@ -47,7 +47,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 _dateTimeProvider.Object,
                 new TransmissionRiskLevelCalculationMk2(),
                 _workflowDbContext,
-                _dkSourceDbContext,
+                _diagnosisKeysDbContext,
                 new IDiagnosticKeyProcessor[] {
                     new ExcludeTrlNoneDiagnosticKeyProcessor(),
                     new FixedCountriesOfInterestOutboundDiagnosticKeyProcessor(_outboundCountries.Object),
@@ -112,7 +112,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         {
             // Arrange
             await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
-            await _dkSourceDbContext.BulkDeleteAsync(_dkSourceDbContext.DiagnosisKeys.ToList());
+            await _diagnosisKeysDbContext.BulkDeleteAsync(_diagnosisKeysDbContext.DiagnosisKeys.ToList());
 
             var t = new DateTime(2020, 11, 5, 12, 0, 0, DateTimeKind.Utc);
             _dateTimeProvider.Setup(x => x.Snapshot).Returns(t);
@@ -120,7 +120,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             GenerateWorkflowTeks(wfCount, tekPerWfCount);
 
             Assert.Equal(tekCount, _workflowDbContext.TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Unpublished));
-            Assert.Equal(0, _dkSourceDbContext.DiagnosisKeys.Count());
+            Assert.Equal(0, _diagnosisKeysDbContext.DiagnosisKeys.Count());
 
             _dateTimeProvider.Setup(x => x.Snapshot).Returns(t.AddMinutes(addMins));
             var c = Create();
@@ -131,7 +131,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             // Assert
             Assert.Equal(resultCount, result.TekReadCount);
             Assert.Equal(tekCount - resultCount, _workflowDbContext.TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Unpublished));
-            Assert.Equal(result.DkCount, _dkSourceDbContext.DiagnosisKeys.Count(x => x.Local.TransmissionRiskLevel != TransmissionRiskLevel.None));
+            Assert.Equal(result.DkCount, _diagnosisKeysDbContext.DiagnosisKeys.Count(x => x.Local.TransmissionRiskLevel != TransmissionRiskLevel.None));
         }
 
         [InlineData(0, 0)] //Null case
@@ -142,7 +142,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
         {
             // Arrange
             await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
-            await _dkSourceDbContext.BulkDeleteAsync(_dkSourceDbContext.DiagnosisKeys.ToList());
+            await _diagnosisKeysDbContext.BulkDeleteAsync(_diagnosisKeysDbContext.DiagnosisKeys.ToList());
 
             _dateTimeProvider.Setup(x => x.Snapshot).Returns(new DateTime(2020, 11, 5, 14, 00, 0, DateTimeKind.Utc));
             GenerateWorkflowTeks(wfCount, tekPerWfCount);
@@ -151,8 +151,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             _dateTimeProvider.Setup(x => x.Snapshot).Returns(new DateTime(2020, 11, 5, 16, 00, 0, DateTimeKind.Utc));
             var tekCount = wfCount * tekPerWfCount;
             Assert.Equal(tekCount, _workflowDbContext.TemporaryExposureKeys.Count(x => x.PublishingState == PublishingState.Unpublished));
-            Assert.Equal(0, _dkSourceDbContext.DiagnosisKeys.Count());
-            Assert.True(_dkSourceDbContext.DiagnosisKeys.All(x => x.DailyKey.RollingPeriod == UniversalConstants.RollingPeriodRange.Hi)); //Compatible with Apple API
+            Assert.Equal(0, _diagnosisKeysDbContext.DiagnosisKeys.Count());
+            Assert.True(_diagnosisKeysDbContext.DiagnosisKeys.All(x => x.DailyKey.RollingPeriod == UniversalConstants.RollingPeriodRange.Hi)); //Compatible with Apple API
 
             // Act
             var result = (SnapshotWorkflowTeksToDksResult)await Create().ExecuteAsync();
@@ -160,7 +160,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             // Assert
             Assert.Equal(tekCount, result.TekReadCount);
             Assert.Equal(tekCount, _workflowDbContext.TemporaryExposureKeys.Count(x => x.PublishingState != PublishingState.Unpublished));
-            Assert.Equal(tekCount, _dkSourceDbContext.DiagnosisKeys.Count());
+            Assert.Equal(tekCount, _diagnosisKeysDbContext.DiagnosisKeys.Count());
 
             //Second Act
             result = (SnapshotWorkflowTeksToDksResult)await Create().ExecuteAsync();
@@ -168,7 +168,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             //  Assert No changes
             Assert.Equal(0, result.TekReadCount);
             Assert.Equal(tekCount, _workflowDbContext.TemporaryExposureKeys.Count(x => x.PublishingState != PublishingState.Unpublished));
-            Assert.Equal(tekCount, _dkSourceDbContext.DiagnosisKeys.Count());
+            Assert.Equal(tekCount, _diagnosisKeysDbContext.DiagnosisKeys.Count());
         }
     }
 }
