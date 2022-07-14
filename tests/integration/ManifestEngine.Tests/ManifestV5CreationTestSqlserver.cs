@@ -17,7 +17,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         private static DbConnection connection;
 
         public ManifestV5CreationTestSqlserver() : base(
-            new DbContextOptionsBuilder<ContentDbContext>().UseSqlServer(CreateSqlDatabase("C")).Options
+            new DbContextOptionsBuilder<ContentDbContext>().UseNpgsql(CreateSqlDatabase("C")).Options
         )
         { }
 

@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -28,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
             _dkProcessors = dkProcessors ?? throw new ArgumentNullException(nameof(eksPublishingDbContext));
         }
 
-        public async Task ExecuteAsync()
+        public void Execute()
         {
             var stuffing = _eksPublishingDbContext.Set<EksCreateJobInputEntity>()
                 .Where(x => x.TekId == null && x.Used)
@@ -56,7 +55,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
 
             items = _dkProcessors.Execute(items);
             var results = items.Select(x => x.DiagnosisKey).ToList(); //Can't get rid of compiler warning.
-            await _dkDbContext.BulkInsertWithTransactionAsync(results, new SubsetBulkArgs());
+
+            _dkDbContext.BulkInsertBinaryCopy(results);
         }
     }
 }

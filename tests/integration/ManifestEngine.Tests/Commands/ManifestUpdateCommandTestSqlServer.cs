@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 
         public ManifestUpdateCommandTestSqlServer()
             : base(
-                new DbContextOptionsBuilder<ContentDbContext>().UseSqlServer(CreateSqlDatabase("C")).Options)
+                new DbContextOptionsBuilder<ContentDbContext>().UseNpgsql(CreateSqlDatabase("C")).Options)
         { }
 
         private static DbConnection CreateSqlDatabase(string suffix)

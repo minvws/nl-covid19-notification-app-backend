@@ -20,4 +20,8 @@
     <ProjectReference Include="..\DbProvision\DbProvision.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
+  </ItemGroup>
+
 </Project>

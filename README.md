@@ -55,7 +55,7 @@ Versions of these certificates for local testing can be found in the folder `src
   
 **Please note: these certificates are not production certificates.**
 
-The file password for TestRSA.p12 is `Covid19!`; the password for TestECDSA.p12 is `12345678`.
+The file password for TestRSA.p12 is `Covid-19!`; the password for TestECDSA.p12 is `12345678`.
 
 The files `StaatDerNLChain-EV-Expires-2022-12-05.p7b` and `BdCertChain.p7b` can be ignored, as the local certificates are self-signed.  
 

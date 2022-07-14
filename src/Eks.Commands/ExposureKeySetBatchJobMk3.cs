@@ -267,17 +267,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
             _logger.LogInformation("Mark TEKs as used.");
 
-            foreach (var i in _output)
-            {
-                i.Used = true;
-            }
-
             //Could be 750k in this hit
-            var bulkArgs = new SubsetBulkArgs
-            {
-                PropertiesToInclude = new[] { nameof(EksCreateJobInputEntity.Used) }
-            };
-            await _eksPublishingJobDbContext.BulkUpdateWithTransactionAsync(_output, bulkArgs);
+            
+            var idsToUpdate = string.Join(",", _output.Select(x => x.Id.ToString()).ToArray());
+
+            await _eksPublishingJobDbContext.BulkUpdateSqlRawAsync(
+                tableName: "EksCreateJobInput",
+                columnName: "Used",
+                value: true,
+                ids: idsToUpdate);
 
             _eksEngineResult.OutputCount += _output.Count;
 
@@ -313,7 +311,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
             _logger.LogInformation("Marked as published - Total: {TotalMarked}.", result.Marked);
 
             //Write stuffing to DKs
-            await _writeStuffingToDiagnosisKeys.ExecuteAsync();
+            _writeStuffingToDiagnosisKeys.Execute();
 
             await ClearJobTablesAsync();
         }

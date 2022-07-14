@@ -23,7 +23,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
         public static FixedResultHttpGetIksCommand Create(List<HttpGetIksResult> responses)
         {
-            return Create(responses, DateTime.Now);
+            return Create(responses, DateTime.UtcNow);
         }
 
         public static FixedResultHttpGetIksCommand Create(List<HttpGetIksResult> responses, DateTime date)
@@ -65,7 +65,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
 
         public void AddItem(HttpGetIksResult item)
         {
-            AddItem(item, DateTime.Now);
+            AddItem(item, DateTime.UtcNow);
         }
 
         public Task<HttpGetIksResult> ExecuteAsync(DateTime date, string batchTag = null)

@@ -72,8 +72,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.GenerateTeks.Commands
                     BucketId = GenerateUniqueBucketId(workflowList),
                     ConfirmationKey = GenerateUniqueConfirmationKey(workflowList),
                     AuthorisedByCaregiver = DateTime.UtcNow,
-                    StartDateOfTekInclusion = DateTime.UtcNow.AddDays(-1),
-                    IsSymptomatic = InfectiousPeriodType.Symptomatic,
+                    StartDateOfTekInclusion = DateTime.UtcNow.AddDays(_numberGenerator.Next(-13, 0)),
+                    IsSymptomatic = (InfectiousPeriodType)_numberGenerator.Next(0, 1),
                     IsOriginPortal = Convert.ToBoolean(_numberGenerator.Next(0, 1))
                 };
 
