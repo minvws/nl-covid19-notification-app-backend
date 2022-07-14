@@ -7,6 +7,7 @@
 [Local Development Setup](#Local-Development-Setup)  
 [License](#License)  
 [Attribution](#Attribution)  
+[Unreleased](#unreleased)   
 
 ## Introduction
 
@@ -248,3 +249,18 @@ This project is licensed under the EUPL license. See [LICENSE](LICENSE/LICENSE.t
 ## Attribution
 
 Some parts of this application are inspired by the work on [Private Tracer](https://gitlab.com/PrivateTracer/server.azure). You can find their license [here](LICENSE/LICENSE.PrivateTracer.org.txt).
+
+## Unreleased
+The `feature/dashboarddata` branch contains the backend code changes for the (as of yet unreleased) in-app COVID-19 related statistics (similar to [coronadashboard.rijksoverheid.nl](https://coronadashboard.rijksoverheid.nl)).
+
+The new functionalities added to the backend are:
+- fetching of data with the DashboardData.Downloader
+- making the downloaded data available for the apps through a new API endpoint `v1/dashboard` in Content.WebApi
+- removing old downloaded data with the DailyCleanup process
+
+The status of this branch is "work in progress", and additional improvements are necessary to make it more robust.
+
+For an extensive explanation of the dashboard functionality, please see one of the following pages for more information:
+
+- Android: [CORONA_DASHBOARD.md](https://github.com/minvws/nl-covid19-notification-app-android/blob/release/2.6.0-dashboard/CORONA_DASHBOARD.md)
+- iOS: [CORONA_DASHBOARD.md](https://github.com/minvws/nl-covid19-notification-app-ios/blob/feature/coronamelder-dashboard/CORONA_DASHBOARD.md)
