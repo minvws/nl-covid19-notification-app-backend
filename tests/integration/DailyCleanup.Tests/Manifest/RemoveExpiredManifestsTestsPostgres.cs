@@ -7,17 +7,18 @@ using System.Data.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
+using Npgsql;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manifest
 {
-    [Trait("db", "ss")]
-    public class RemoveExpiredManifestsTestSqlserver : RemoveExpiredManifestsTest, IDisposable
+    [Trait("db", "postgres")]
+    public class RemoveExpiredManifestsTestsPostgres : RemoveExpiredManifestsTest, IDisposable
     {
         private const string Prefix = nameof(RemoveExpiredManifestsTest) + "_";
         private static DbConnection connection;
 
-        public RemoveExpiredManifestsTestSqlserver() : base(
+        public RemoveExpiredManifestsTestsPostgres() : base(
             new DbContextOptionsBuilder<ContentDbContext>()
                 .UseNpgsql(CreateSqlDatabase("c"))
                 .UseSnakeCaseNamingConvention()
@@ -27,12 +28,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
 
         private static DbConnection CreateSqlDatabase(string suffix)
         {
-            var csb = new SqlConnectionStringBuilder($"Data Source=.;Initial Catalog={Prefix + suffix};Integrated Security=True")
-            {
-                MultipleActiveResultSets = true
-            };
+            var csb = new NpgsqlConnectionStringBuilder($"Host=localhost;Database={Prefix + suffix}");
 
-            connection = new SqlConnection(csb.ConnectionString);
+            connection = new NpgsqlConnection(csb.ConnectionString);
             return connection;
         }
 

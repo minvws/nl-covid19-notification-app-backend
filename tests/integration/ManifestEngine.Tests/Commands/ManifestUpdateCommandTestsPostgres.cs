@@ -6,17 +6,19 @@ using System.Data.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
+using Npgsql;
 using Xunit;
 
-namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
+namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 {
-    [Trait("db", "ss")]
-    public class ExposureKeySetCleanerTestsSqlserver : ExposureKeySetCleanerTests
+    [Trait("db", "postgres")]
+    [Collection(nameof(ManifestUpdateCommandTestsPostgres))]
+    public class ManifestUpdateCommandTestsPostgres : ManifestUpdateCommandTest
     {
-        private const string Prefix = nameof(ExposureKeySetCleanerTests) + "_";
+        private const string Prefix = nameof(ManifestUpdateCommandTest) + "_";
         private static DbConnection connection;
 
-        public ExposureKeySetCleanerTestsSqlserver() : base(
+        public ManifestUpdateCommandTestsPostgres() : base(
             new DbContextOptionsBuilder<ContentDbContext>()
                 .UseNpgsql(CreateSqlDatabase("c"))
                 .UseSnakeCaseNamingConvention()
@@ -26,12 +28,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Eks
 
         private static DbConnection CreateSqlDatabase(string suffix)
         {
-            var csb = new SqlConnectionStringBuilder($"Data Source=.;Initial Catalog={Prefix + suffix};Integrated Security=True")
-            {
-                MultipleActiveResultSets = true
-            };
+            var csb = new NpgsqlConnectionStringBuilder($"Host=localhost;Database={Prefix + suffix}");
 
-            connection = new SqlConnection(csb.ConnectionString);
+            connection = new NpgsqlConnection(csb.ConnectionString);
             return connection;
         }
 

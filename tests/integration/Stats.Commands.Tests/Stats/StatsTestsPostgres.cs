@@ -7,17 +7,18 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.EntityFramework;
+using Npgsql;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Stats
 {
-    [Trait("db", "ss")]
-    public class StatsTestsSqlserver : StatsTests
+    [Trait("db", "postgres")]
+    public class StatsTestsPostgres : StatsTests
     {
         private const string Prefix = nameof(StatsTests) + "_";
         private static DbConnection connection;
 
-        public StatsTestsSqlserver() : base(
+        public StatsTestsPostgres() : base(
             new DbContextOptionsBuilder<WorkflowDbContext>()
                 .UseNpgsql(CreateSqlDatabase("w"))
                 .UseSnakeCaseNamingConvention()
@@ -31,12 +32,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Stats.Commands.Tests.Sta
 
         private static DbConnection CreateSqlDatabase(string suffix)
         {
-            var csb = new SqlConnectionStringBuilder($"Data Source=.;Initial Catalog={Prefix + suffix};Integrated Security=True")
-            {
-                MultipleActiveResultSets = true
-            };
+            var csb = new NpgsqlConnectionStringBuilder($"Host=localhost;Database={Prefix + suffix}");
 
-            connection = new SqlConnection(csb.ConnectionString);
+            connection = new NpgsqlConnection(csb.ConnectionString);
             return connection;
         }
 

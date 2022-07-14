@@ -7,17 +7,18 @@ using System.Data.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
+using Npgsql;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Controllers
 {
-    [Trait("db", "ss")]
-    public class WorkflowControllerPostSecretTestsSqlserver : WorkflowControllerPostSecretTests, IDisposable
+    [Trait("db", "postgres")]
+    public class WorkflowControllerPostSecretTestsPostgres : WorkflowControllerPostSecretTests, IDisposable
     {
         private const string Prefix = nameof(WorkflowControllerPostSecretTests) + "_";
         private static DbConnection connection;
 
-        public WorkflowControllerPostSecretTestsSqlserver() : base(
+        public WorkflowControllerPostSecretTestsPostgres() : base(
             new DbContextOptionsBuilder<WorkflowDbContext>()
                 .UseNpgsql(CreateSqlDatabase("w"))
                 .UseSnakeCaseNamingConvention()
@@ -26,12 +27,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Tests.Contr
         { }
         private static DbConnection CreateSqlDatabase(string suffix)
         {
-            var csb = new SqlConnectionStringBuilder($"Data Source=.;Initial Catalog={Prefix + suffix};Integrated Security=True")
-            {
-                MultipleActiveResultSets = true
-            };
+            var csb = new NpgsqlConnectionStringBuilder($"Host=localhost;Database={Prefix + suffix}");
 
-            connection = new SqlConnection(csb.ConnectionString);
+            connection = new NpgsqlConnection(csb.ConnectionString);
             return connection;
         }
 

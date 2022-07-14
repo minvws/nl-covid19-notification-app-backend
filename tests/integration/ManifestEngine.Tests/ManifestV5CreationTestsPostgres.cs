@@ -6,17 +6,18 @@ using System.Data.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
+using Npgsql;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 {
-    [Trait("db", "ss")]
-    public class ManifestV5CreationTestSqlserver : ManifestV5CreationTest
+    [Trait("db", "postgres")]
+    public class ManifestV5CreationTestsPostgres : ManifestV5CreationTest
     {
         private const string Prefix = nameof(ManifestV5CreationTest) + "_";
         private static DbConnection connection;
 
-        public ManifestV5CreationTestSqlserver() : base(
+        public ManifestV5CreationTestsPostgres() : base(
             new DbContextOptionsBuilder<ContentDbContext>()
                 .UseNpgsql(CreateSqlDatabase("c"))
                 .UseSnakeCaseNamingConvention()
@@ -26,12 +27,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 
         private static DbConnection CreateSqlDatabase(string suffix)
         {
-            var csb = new SqlConnectionStringBuilder($"Data Source=.;Initial Catalog={Prefix + suffix};Integrated Security=True")
-            {
-                MultipleActiveResultSets = true
-            };
+            var csb = new NpgsqlConnectionStringBuilder($"Host=localhost;Database={Prefix + suffix}");
 
-            connection = new SqlConnection(csb.ConnectionString);
+            connection = new NpgsqlConnection(csb.ConnectionString);
             return connection;
         }
 

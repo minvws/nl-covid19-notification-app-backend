@@ -10,18 +10,19 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFrame
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.EntityFramework;
+using Npgsql;
 using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
 {
-    [Trait("db", "ss")]
-    [Collection(nameof(EksEngineTestsSqlServer))]
-    public class EksEngineTestsSqlServer : EksEngineTests, IDisposable
+    [Trait("db", "postgres")]
+    [Collection(nameof(EksEngineTestsPostgres))]
+    public class EksEngineTestsPostgres : EksEngineTests, IDisposable
     {
         private const string Prefix = nameof(EksEngineTests) + "_";
         private static DbConnection connection;
 
-        public EksEngineTestsSqlServer()
+        public EksEngineTestsPostgres()
             : base(
                 new DbContextOptionsBuilder<WorkflowDbContext>()
                     .UseNpgsql(CreateSqlDatabase("w"))
@@ -43,12 +44,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
         { }
         private static DbConnection CreateSqlDatabase(string suffix)
         {
-            var csb = new SqlConnectionStringBuilder($"Data Source=.;Initial Catalog={Prefix + suffix};Integrated Security=True")
-            {
-                MultipleActiveResultSets = true
-            };
+            var csb = new NpgsqlConnectionStringBuilder($"Host=localhost;Database={Prefix + suffix}");
 
-            connection = new SqlConnection(csb.ConnectionString);
+            connection = new NpgsqlConnection(csb.ConnectionString);
             return connection;
         }
 
