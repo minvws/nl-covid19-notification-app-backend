@@ -35,8 +35,8 @@ steps:
     displayName: 'npm run test:ci'
 
   - script: |
-      ng build --prod
-    displayName: 'ng build --prod'
+      ng build --configuration=production
+    displayName: 'ng build --configuration=production'
 
   - task: CmdLine@2
     inputs:
