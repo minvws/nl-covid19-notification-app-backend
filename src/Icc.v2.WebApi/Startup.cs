@@ -55,13 +55,6 @@ namespace NL.Rijksoverheid.ExposureNotification.Icc.v2.WebApi
 
             services.AddTransient<IRandomNumberGenerator, StandardRandomNumberGenerator>();
 
-            services.AddDistributedSqlServerCache(options =>
-            {
-                options.ConnectionString = _configuration.GetConnectionString(DatabaseConnectionStringNames.IccDistMemCache);
-                options.SchemaName = "dbo";
-                options.TableName = "Cache";
-            });
-
             services.AddDbContext<WorkflowDbContext>(
                 options => options
                     .UseNpgsql(_configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow))

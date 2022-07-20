@@ -51,7 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands
                 return new RedirectResult(httpContext.Request.Path); // redirect to {prefix}/Auth/Redirect to trigger login
             }
 
-            var authorizationCode = await _authCodeService.GenerateAuthCodeAsync(httpContext.User);
+            var authorizationCode = _authCodeService.GenerateAuthCode(httpContext.User);
 
             return new RedirectResult(_configuration.FrontendBaseUrl + "/auth/callback?code=" + authorizationCode);
         }

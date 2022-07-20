@@ -4,8 +4,6 @@
 
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -23,7 +21,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         {
             var randomNumberGenerator = new StandardRandomNumberGenerator();
             _authCodeGenerator = new AuthCodeGenerator(randomNumberGenerator);
-            var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var cache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
 
             _authCodeService = new AuthCodeService(cache, _authCodeGenerator);
         }
@@ -42,40 +40,40 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.IccPortal.Components.Tes
         }
 
         [Fact]
-        public async void ValidateIfGeneratedAuthCodeIsStored()
+        public void ValidateIfGeneratedAuthCodeIsStored()
         {
-            var authCode = await _authCodeService.GenerateAuthCodeAsync(new ClaimsPrincipal());
+            var authCode = _authCodeService.GenerateAuthCode(new ClaimsPrincipal());
 
-            var result = await _authCodeService.GetClaimsByAuthCodeAsync(authCode);
+            var result = _authCodeService.GetClaimsByAuthCode(authCode);
 
             Assert.NotNull(result);
         }
 
 
         [Fact]
-        public async void ValidateIfClaimsPrincipalIsStored()
+        public void ValidateIfClaimsPrincipalIsStored()
         {
             var testClaim = new Claim("testType", "testValue", "string");
             var identity = new ClaimsIdentity(new List<Claim>() { testClaim }, "test");
 
             var expectedClaimsPrincipal = new ClaimsPrincipal(identity);
 
-            var authCode = await _authCodeService.GenerateAuthCodeAsync(expectedClaimsPrincipal);
+            var authCode = _authCodeService.GenerateAuthCode(expectedClaimsPrincipal);
 
-            var outputClaims = await _authCodeService.GetClaimsByAuthCodeAsync(authCode);
+            var outputClaims = _authCodeService.GetClaimsByAuthCode(authCode);
 
             Assert.Equal(testClaim.Type, outputClaims?[0].Type);
             Assert.Equal(testClaim.Value, outputClaims?[0].Value);
         }
 
         [Fact]
-        public async Task ValidateIfAuthCodeIsRevokedCorrectly()
+        public void ValidateIfAuthCodeIsRevokedCorrectly()
         {
-            var authCode = await _authCodeService.GenerateAuthCodeAsync(new ClaimsPrincipal());
+            var authCode = _authCodeService.GenerateAuthCode(new ClaimsPrincipal());
 
-            await _authCodeService.RevokeAuthCodeAsync(authCode);
+            _authCodeService.RevokeAuthCode(authCode);
 
-            var result = await _authCodeService.GetClaimsByAuthCodeAsync(authCode);
+            var result = _authCodeService.GetClaimsByAuthCode(authCode);
 
             Assert.Null(result);
         }
