@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 
             try
             {
-                using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+                using var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
                 store.Open(OpenFlags.ReadOnly);
 
                 result = store.Certificates
