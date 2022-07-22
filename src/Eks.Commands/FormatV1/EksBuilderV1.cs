@@ -95,7 +95,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
         private async Task<byte[]> CreateZippedContent(IGaContentSigner gaContentSigner, ExposureKeySetContentArgs exposureKeySetContentArgs, SignatureInfoArgs securityInfoArgs)
         {
             var contentBytes = _eksContentFormatter.GetBytes(exposureKeySetContentArgs);
+
+            //TODO: replace with call to HSM API; CmsSigner uses cert + cert chain
             var nlSig = _nlContentSigner.GetSignature(contentBytes);
+
+            //TODO: replace with call to HSM API; EcdsaSigner uses cert
             var gaenSig = gaContentSigner.GetSignature(contentBytes);
 
             _logger.LogDebug("NL Sig: {NlSig}.", Convert.ToBase64String(nlSig));

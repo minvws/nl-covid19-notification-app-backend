@@ -24,6 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 throw new ArgumentNullException(nameof(content));
             }
 
+            //TODO: replace with call to HSM API; CmsSigner uses cert + cert chain
             var signature = _contentSigner.GetSignature(content);
             return await new ZippedContentBuilder().BuildStandardAsync(content, signature);
         }
