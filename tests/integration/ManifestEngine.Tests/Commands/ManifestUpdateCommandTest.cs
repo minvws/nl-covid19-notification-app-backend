@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -12,6 +13,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
@@ -47,7 +49,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             var logger = new NullLogger<ManifestUpdateCommand>();
 
             IContentEntityFormatter contentFormatterInjector = new StandardContentEntityFormatter(
-                    new ZippedSignedContentFormatter(nlSignerMock.Object),
+                    new ZippedSignedContentFormatter(
+                        new HsmSignerHttpClient(
+                            new HttpClient(), 
+                            new Mock<ICertificateProvider>().Object)),
                     jsonSerializer);
 
             _sut = new ManifestUpdateCommand(

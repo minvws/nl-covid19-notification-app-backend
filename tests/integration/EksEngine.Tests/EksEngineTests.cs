@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -97,7 +99,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             _rng = new StandardRandomNumberGenerator();
             _eksJob = new ExposureKeySetBatchJobMk3(
                 eksConfig.Object,
-                new EksBuilderV1(eksHeaderConfig.Object, gaSigner.Object, gaV15Signer.Object, nlSigner.Object, _dtp, new GeneratedProtobufEksContentFormatter(),
+                new EksBuilderV1(
+                    new HsmSignerHttpClient(
+                        new HttpClient(), 
+                        new Mock<ICertificateProvider>().Object),
+                    eksHeaderConfig.Object, gaSigner.Object, gaV15Signer.Object, nlSigner.Object, _dtp, new GeneratedProtobufEksContentFormatter(),
                     new NullLogger<EksBuilderV1>()
                     ),
                 _eksPublishingJobContext,
@@ -131,7 +137,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 _dtp,
                 jsonSerializer,
                 new StandardContentEntityFormatter(
-                    new ZippedSignedContentFormatter(nlSigner.Object),
+                    new ZippedSignedContentFormatter(
+                        new HsmSignerHttpClient(
+                            new HttpClient(), 
+                            new Mock<ICertificateProvider>().Object)),
                     jsonSerializer)
             );
         }

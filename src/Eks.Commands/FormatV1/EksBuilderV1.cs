@@ -26,8 +26,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
         private readonly IEksContentFormatter _eksContentFormatter;
         private readonly IEksHeaderInfoConfig _config;
         private readonly ILogger _logger;
+        private readonly HsmSignerHttpClient _httpClient;
 
         public EksBuilderV1(
+            HsmSignerHttpClient httpClient,
             IEksHeaderInfoConfig headerInfoConfig,
             IGaContentSigner gaenContentSigner,
             IGaContentSigner gaenV15ContentSigner,
@@ -37,6 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
             ILogger<EksBuilderV1> logger
             )
         {
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _gaenContentSigner = gaenContentSigner ?? throw new ArgumentNullException(nameof(gaenContentSigner));
             _gaenV15ContentSigner = gaenV15ContentSigner ?? throw new ArgumentNullException(nameof(gaenV15ContentSigner));
             _nlContentSigner = nlContentSigner ?? throw new ArgumentNullException(nameof(nlContentSigner));
@@ -96,11 +99,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
         {
             var contentBytes = _eksContentFormatter.GetBytes(exposureKeySetContentArgs);
 
-            //TODO: replace with call to HSM API; CmsSigner uses cert + cert chain
-            var nlSig = _nlContentSigner.GetSignature(contentBytes);
-
-            //TODO: replace with call to HSM API; EcdsaSigner uses cert
-            var gaenSig = gaContentSigner.GetSignature(contentBytes);
+            var nlSig = await _httpClient.GetNlSignatureAsync(contentBytes);
+            var gaenSig = await _httpClient.GetGaenSignatureAsync(contentBytes);
 
             _logger.LogDebug("NL Sig: {NlSig}.", Convert.ToBase64String(nlSig));
             _logger.LogDebug("GAEN Sig: {GaenSig}.", Convert.ToBase64String(gaenSig));

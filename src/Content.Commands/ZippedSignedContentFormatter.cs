@@ -10,11 +10,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public class ZippedSignedContentFormatter
     {
-        private readonly IContentSigner _contentSigner;
+        private readonly HsmSignerHttpClient _httpClient;
 
-        public ZippedSignedContentFormatter(IContentSigner contentSigner)
+        public ZippedSignedContentFormatter(HsmSignerHttpClient httpClient)
         {
-            _contentSigner = contentSigner ?? throw new ArgumentNullException(nameof(contentSigner));
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
         public async Task<byte[]> SignedContentPacketAsync(byte[] content)
@@ -24,8 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 throw new ArgumentNullException(nameof(content));
             }
 
-            //TODO: replace with call to HSM API; CmsSigner uses cert + cert chain
-            var signature = _contentSigner.GetSignature(content);
+            var signature = await _httpClient.GetNlSignatureAsync(content);
             return await new ZippedContentBuilder().BuildStandardAsync(content, signature);
         }
     }

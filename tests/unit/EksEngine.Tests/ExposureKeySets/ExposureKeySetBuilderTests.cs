@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Net.Http;
 using EksEngine.Tests;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -16,6 +17,9 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1;
 using Xunit;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySets
 {
@@ -42,6 +46,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var dtp = new StandardUtcDateTimeProvider();
 
             var sut = new EksBuilderV1(
+                new HsmSignerHttpClient(
+                    new HttpClient(),
+                    new Mock<ICertificateProvider>().Object),
                 new FakeEksHeaderInfoConfig(),
                 TestSignerHelpers.CreateGASigner(),
                 TestSignerHelpers.CreateGAv15Signer(),
@@ -73,6 +80,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var dummySigner = new DummyCmsSigner();
 
             var sut = new EksBuilderV1(
+                new HsmSignerHttpClient(
+                    new HttpClient(),
+                    new Mock<ICertificateProvider>().Object),
                 new FakeEksHeaderInfoConfig(),
                 TestSignerHelpers.CreateGASigner(),
                 TestSignerHelpers.CreateGAv15Signer(),

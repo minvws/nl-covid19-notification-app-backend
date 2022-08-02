@@ -54,9 +54,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
             services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
             services.AddTransient<IEksJobContentWriter, EksJobContentWriter>();
 
+            services.AddTransient<ICertificateProvider>(
+                x => new LocalMachineStoreCertificateProvider(
+                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>()));
+
             services.AddHttpClient<HsmSignerHttpClient>();
 
             services.AddTransient<IEksBuilder, EksBuilderV1>(x => new EksBuilderV1(
+                x.GetRequiredService<HsmSignerHttpClient>(),
                 x.GetRequiredService<IEksHeaderInfoConfig>(),
                 SignerConfigStartup.BuildGaSigner(
                     x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
