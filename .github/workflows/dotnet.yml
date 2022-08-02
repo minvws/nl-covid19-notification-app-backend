@@ -22,4 +22,4 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --filter "db!=postgres&db!=mem&test!=e2e" --no-build --verbosity normal
+      run: dotnet test tests/**/*.Tests.dll --filter "db!=postgres&db!=mem&test!=e2e" --no-build --verbosity normal
