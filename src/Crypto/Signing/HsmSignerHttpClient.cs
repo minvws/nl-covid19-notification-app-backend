@@ -62,12 +62,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 builder.AppendLine(new string(PemEncoding.Write("CERTIFICATE", cert.RawData)));
             }
 
-            var pemCert = builder.ToString();
+            var pem = builder.ToString();
+            var pemBytes = Encoding.UTF8.GetBytes(pem);
+            var pemBytesBased64 = Convert.ToBase64String(pemBytes);
 
             var requestModel = new HsmSignerRequestModel()
             {
                 Algorithm = "sha256",
-                Cert = pemCert,
+                Cert = pemBytesBased64,
                 Hash = contentHashBased64,
                 TimeStamp = true
             };
@@ -88,12 +90,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 false);
 
             // Add GAEN ECDSA certificate
-            var pemCert = new string(PemEncoding.Write("CERTIFICATE", certificate.RawData));
+            var pem = new string(PemEncoding.Write("CERTIFICATE", certificate.RawData));
+            var pemBytes = Encoding.UTF8.GetBytes(pem);
+            var pemBytesBased64 = Convert.ToBase64String(pemBytes);
 
             var requestModel = new HsmSignerRequestModel()
             {
                 Algorithm = "sha256",
-                Cert = pemCert,
+                Cert = pemBytesBased64,
                 Hash = contentHashBased64,
                 TimeStamp = true
             };
