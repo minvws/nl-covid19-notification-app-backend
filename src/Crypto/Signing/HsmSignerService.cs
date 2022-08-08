@@ -12,32 +12,32 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 {
     /// <summary>
     /// Typed HttpClient to request a signature from the HsmSignerService API
     /// </summary>
-    public class HsmSignerHttpClient
+    public class HsmSignerService : IHsmSignerService
     {
         private readonly HttpClient _httpClient;
+        private readonly IHsmSignerConfig _config;
         private readonly ICertificateProvider _certificateProvider;
 
-        private readonly string _jwt = "";
-
-        public HsmSignerHttpClient(
+        public HsmSignerService(
             HttpClient httpClient,
+            IHsmSignerConfig config,
             ICertificateProvider certificateProvider
-        )
+            )
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
 
             _httpClient.BaseAddress = new Uri("");
 
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Add("Authorization", _jwt);
-
-            _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
         }
 
         public async Task<byte[]> GetNlSignatureAsync(byte[] content)
@@ -46,6 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             var contentHash = sha256Hasher.ComputeHash(content);
             var contentHashBased64 = Convert.ToBase64String(contentHash);
 
+            // Get EV RSA certificate from certificate store
             var certificate = _certificateProvider.GetCertificate(
                 "",
                 false);
@@ -63,6 +64,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             }
 
             var pem = builder.ToString();
+            var pemFromConfig = _config.NlPem;
+
             var pemBytes = Encoding.UTF8.GetBytes(pem);
             var pemBytesBased64 = Convert.ToBase64String(pemBytes);
 
@@ -74,7 +77,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 TimeStamp = true
             };
 
-            var response = await _httpClient.PostAsJsonAsync("/sign", requestModel);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", _config.NlJwt);
+            var response = await _httpClient.PostAsJsonAsync("/cms", requestModel);
 
             return await response.Content.ReadAsByteArrayAsync();
         }
@@ -85,12 +89,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             var contentHash = sha256Hasher.ComputeHash(content);
             var contentHashBased64 = Convert.ToBase64String(contentHash);
 
+            // Get GAEN ECDSA certificate from certificate store
             var certificate = _certificateProvider.GetCertificate(
                 "",
                 false);
 
             // Add GAEN ECDSA certificate
             var pem = new string(PemEncoding.Write("CERTIFICATE", certificate.RawData));
+            var pemFromConfig = _config.GaenPem;
+
             var pemBytes = Encoding.UTF8.GetBytes(pem);
             var pemBytesBased64 = Convert.ToBase64String(pemBytes);
 
@@ -102,7 +109,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 TimeStamp = true
             };
 
-            var response = await _httpClient.PostAsJsonAsync("/sign", requestModel);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", _config.GaenJwt);
+            var response = await _httpClient.PostAsJsonAsync("/signature", requestModel);
 
             return await response.Content.ReadAsByteArrayAsync();
         }

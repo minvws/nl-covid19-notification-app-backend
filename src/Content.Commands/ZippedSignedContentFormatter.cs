@@ -10,11 +10,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
 {
     public class ZippedSignedContentFormatter
     {
-        private readonly HsmSignerHttpClient _httpClient;
+        private readonly IHsmSignerService _hsmSignerService;
 
-        public ZippedSignedContentFormatter(HsmSignerHttpClient httpClient)
+        public ZippedSignedContentFormatter(IHsmSignerService hsmSignerService)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _hsmSignerService = hsmSignerService ?? throw new ArgumentNullException(nameof(hsmSignerService));
         }
 
         public async Task<byte[]> SignedContentPacketAsync(byte[] content)
@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 throw new ArgumentNullException(nameof(content));
             }
 
-            var signature = await _httpClient.GetNlSignatureAsync(content);
+            var signature = await _hsmSignerService.GetNlSignatureAsync(content);
             return await new ZippedContentBuilder().BuildStandardAsync(content, signature);
         }
     }

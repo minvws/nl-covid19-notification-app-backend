@@ -25,27 +25,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly IEksContentFormatter _eksContentFormatter;
         private readonly IEksHeaderInfoConfig _config;
+        private readonly IHsmSignerService _hsmSignerService;
         private readonly ILogger _logger;
-        private readonly HsmSignerHttpClient _httpClient;
 
         public EksBuilderV1(
-            HsmSignerHttpClient httpClient,
             IEksHeaderInfoConfig headerInfoConfig,
             IGaContentSigner gaenContentSigner,
             IGaContentSigner gaenV15ContentSigner,
             IContentSigner nlContentSigner,
             IUtcDateTimeProvider dateTimeProvider,
             IEksContentFormatter eksContentFormatter,
+            IHsmSignerService hsmSignerService,
             ILogger<EksBuilderV1> logger
             )
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _gaenContentSigner = gaenContentSigner ?? throw new ArgumentNullException(nameof(gaenContentSigner));
             _gaenV15ContentSigner = gaenV15ContentSigner ?? throw new ArgumentNullException(nameof(gaenV15ContentSigner));
             _nlContentSigner = nlContentSigner ?? throw new ArgumentNullException(nameof(nlContentSigner));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _eksContentFormatter = eksContentFormatter ?? throw new ArgumentNullException(nameof(eksContentFormatter));
             _config = headerInfoConfig ?? throw new ArgumentNullException(nameof(headerInfoConfig));
+            _hsmSignerService = hsmSignerService ?? throw new ArgumentNullException(nameof(hsmSignerService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -99,8 +99,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
         {
             var contentBytes = _eksContentFormatter.GetBytes(exposureKeySetContentArgs);
 
-            var nlSig = await _httpClient.GetNlSignatureAsync(contentBytes);
-            var gaenSig = await _httpClient.GetGaenSignatureAsync(contentBytes);
+            var nlSig = await _hsmSignerService.GetNlSignatureAsync(contentBytes);
+            var gaenSig = await _hsmSignerService.GetGaenSignatureAsync(contentBytes);
 
             _logger.LogDebug("NL Sig: {NlSig}.", Convert.ToBase64String(nlSig));
             _logger.LogDebug("GAEN Sig: {GaenSig}.", Convert.ToBase64String(gaenSig));

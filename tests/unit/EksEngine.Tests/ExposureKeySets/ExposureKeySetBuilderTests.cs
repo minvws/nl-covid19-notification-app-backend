@@ -46,15 +46,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var dtp = new StandardUtcDateTimeProvider();
 
             var sut = new EksBuilderV1(
-                new HsmSignerHttpClient(
-                    new HttpClient(),
-                    new Mock<ICertificateProvider>().Object),
                 new FakeEksHeaderInfoConfig(),
                 TestSignerHelpers.CreateGASigner(),
                 TestSignerHelpers.CreateGAv15Signer(),
                 TestSignerHelpers.CreateCmsSignerEnhanced(),
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
+                new HsmSignerService(
+                    new HttpClient(),
+                    new Mock<IHsmSignerConfig>().Object,
+                    new Mock<ICertificateProvider>().Object),
                 new NullLogger<EksBuilderV1>());
 
             //Act
@@ -80,15 +81,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var dummySigner = new DummyCmsSigner();
 
             var sut = new EksBuilderV1(
-                new HsmSignerHttpClient(
-                    new HttpClient(),
-                    new Mock<ICertificateProvider>().Object),
                 new FakeEksHeaderInfoConfig(),
                 TestSignerHelpers.CreateGASigner(),
                 TestSignerHelpers.CreateGAv15Signer(),
                 dummySigner,
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
+                new HsmSignerService(
+                    new HttpClient(),
+                    new Mock<IHsmSignerConfig>().Object,
+                    new Mock<ICertificateProvider>().Object),
                 new NullLogger<EksBuilderV1>());
 
             //Act

@@ -100,10 +100,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             _eksJob = new ExposureKeySetBatchJobMk3(
                 eksConfig.Object,
                 new EksBuilderV1(
-                    new HsmSignerHttpClient(
-                        new HttpClient(), 
+                    eksHeaderConfig.Object,
+                    gaSigner.Object,
+                    gaV15Signer.Object,
+                    nlSigner.Object,
+                    _dtp,
+                    new GeneratedProtobufEksContentFormatter(),
+                    new HsmSignerService(
+                        new HttpClient(),
+                        new Mock<IHsmSignerConfig>().Object,
                         new Mock<ICertificateProvider>().Object),
-                    eksHeaderConfig.Object, gaSigner.Object, gaV15Signer.Object, nlSigner.Object, _dtp, new GeneratedProtobufEksContentFormatter(),
                     new NullLogger<EksBuilderV1>()
                     ),
                 _eksPublishingJobContext,
@@ -138,8 +144,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 jsonSerializer,
                 new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(
-                        new HsmSignerHttpClient(
-                            new HttpClient(), 
+                        new HsmSignerService(
+                            new HttpClient(),
+                            new Mock<IHsmSignerConfig>().Object,
                             new Mock<ICertificateProvider>().Object)),
                     jsonSerializer)
             );
