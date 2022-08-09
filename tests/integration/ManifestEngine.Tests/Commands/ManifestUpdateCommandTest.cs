@@ -37,6 +37,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             nlSignerMock.Setup(x => x.GetSignature(new byte[0]))
                 .Returns(new byte[] { 2 });
 
+            var hsmSignerServiceMock = new Mock<IHsmSignerService>();
+            hsmSignerServiceMock.Setup(x => x.GetNlSignatureAsync(new byte[0]))
+                .ReturnsAsync(new byte[] { 2 });
+
             var eksConfigMock = new Mock<IEksConfig>(MockBehavior.Strict);
             eksConfigMock.Setup(x => x.LifetimeDays)
                 .Returns(14);
@@ -49,11 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             var logger = new NullLogger<ManifestUpdateCommand>();
 
             IContentEntityFormatter contentFormatterInjector = new StandardContentEntityFormatter(
-                    new ZippedSignedContentFormatter(
-                        new HsmSignerService(
-                            new HttpClient(),
-                            new Mock<IHsmSignerConfig>().Object,
-                            new Mock<ICertificateProvider>().Object)),
+                    new ZippedSignedContentFormatter(hsmSignerServiceMock.Object),
                     jsonSerializer);
 
             _sut = new ManifestUpdateCommand(

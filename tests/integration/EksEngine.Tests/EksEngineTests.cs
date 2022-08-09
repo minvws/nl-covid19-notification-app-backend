@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +14,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
@@ -85,6 +83,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             var nlSigner = new Mock<IContentSigner>(MockBehavior.Loose);
             nlSigner.Setup(x => x.GetSignature(new byte[0])).Returns(new byte[] { 2 });
 
+            var hsmSignerService = new Mock<IHsmSignerService>();
+            hsmSignerService.Setup(x => x.GetNlSignatureAsync(new byte[0])).ReturnsAsync(new byte[] { 2 });
+            hsmSignerService.Setup(x => x.GetGaenSignatureAsync(It.IsAny<byte[]>())).ReturnsAsync(new byte[] { 1 });
+
             _snapshot = new SnapshotWorkflowTeksToDksCommand(
                 new NullLogger<SnapshotWorkflowTeksToDksCommand>(),
                 _dtp,
@@ -106,10 +108,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                     nlSigner.Object,
                     _dtp,
                     new GeneratedProtobufEksContentFormatter(),
-                    new HsmSignerService(
-                        new HttpClient(),
-                        new Mock<IHsmSignerConfig>().Object,
-                        new Mock<ICertificateProvider>().Object),
+                    hsmSignerService.Object,
                     new NullLogger<EksBuilderV1>()
                     ),
                 _eksPublishingJobContext,
@@ -144,10 +143,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 jsonSerializer,
                 new StandardContentEntityFormatter(
                     new ZippedSignedContentFormatter(
-                        new HsmSignerService(
-                            new HttpClient(),
-                            new Mock<IHsmSignerConfig>().Object,
-                            new Mock<ICertificateProvider>().Object)),
+                        hsmSignerService.Object),
                     jsonSerializer)
             );
         }
