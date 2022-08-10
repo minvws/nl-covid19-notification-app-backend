@@ -63,7 +63,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             if (!response.IsSuccessStatusCode)
             {
                 //TODO: improve error handling
-                _logger.LogError("HTTP request to cms endpoint failed");
+                _logger.LogError("HTTP request to cms endpoint failed with status code {StatusCode}", response.StatusCode);
                 throw new Exception();
             }
 
@@ -110,7 +110,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             if (!response.IsSuccessStatusCode)
             {
                 //TODO: improve error handling
-                _logger.LogError("HTTP request to signature endpoint failed");
+                _logger.LogError("HTTP request to signature endpoint failed with status code {StatusCode}", response.StatusCode);
                 throw new Exception();
             }
 
