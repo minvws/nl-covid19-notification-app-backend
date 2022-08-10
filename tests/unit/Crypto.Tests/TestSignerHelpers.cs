@@ -2,6 +2,7 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Text;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -12,6 +13,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
 {
     public static class TestSignerHelpers
     {
+        public static IHsmSignerService CreateHsmSignerService()
+        {
+            var dummyContent = Encoding.ASCII.GetBytes("Signature intentionally left empty");
+
+            var hsmServiceMock = new Mock<IHsmSignerService>();
+            hsmServiceMock
+                .Setup(x => x.GetCmsSignatureAsync(It.IsAny<byte[]>()))
+                .ReturnsAsync(dummyContent);
+
+            return hsmServiceMock.Object;
+        }
+
         public static CmsSignerEnhanced CreateCmsSignerEnhanced()
         {
             var cmsCertMock = new Mock<ICertificateChainConfig>();

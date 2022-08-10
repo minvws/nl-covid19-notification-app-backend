@@ -83,6 +83,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             var nlSigner = new Mock<IContentSigner>(MockBehavior.Loose);
             nlSigner.Setup(x => x.GetSignature(new byte[0])).Returns(new byte[] { 2 });
 
+            var hsmSignerService = new Mock<IHsmSignerService>();
+            hsmSignerService.Setup(x => x.GetCmsSignatureAsync(new byte[0])).ReturnsAsync(new byte[] { 2 });
+            hsmSignerService.Setup(x => x.GetGaenSignatureAsync(It.IsAny<byte[]>())).ReturnsAsync(new byte[] { 1 });
+
             _snapshot = new SnapshotWorkflowTeksToDksCommand(
                 new NullLogger<SnapshotWorkflowTeksToDksCommand>(),
                 _dtp,
@@ -97,7 +101,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             _rng = new StandardRandomNumberGenerator();
             _eksJob = new ExposureKeySetBatchJobMk3(
                 eksConfig.Object,
-                new EksBuilderV1(eksHeaderConfig.Object, gaSigner.Object, gaV15Signer.Object, nlSigner.Object, _dtp, new GeneratedProtobufEksContentFormatter(),
+                new EksBuilderV1(
+                    eksHeaderConfig.Object,
+                    gaSigner.Object,
+                    gaV15Signer.Object,
+                    nlSigner.Object,
+                    _dtp,
+                    new GeneratedProtobufEksContentFormatter(),
+                    hsmSignerService.Object,
                     new NullLogger<EksBuilderV1>()
                     ),
                 _eksPublishingJobContext,
@@ -131,7 +142,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 _dtp,
                 jsonSerializer,
                 new StandardContentEntityFormatter(
-                    new ZippedSignedContentFormatter(nlSigner.Object),
+                    new ZippedSignedContentFormatter(
+                        hsmSignerService.Object),
                     jsonSerializer)
             );
         }

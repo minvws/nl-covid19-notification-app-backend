@@ -54,6 +54,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
             services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
             services.AddTransient<IEksJobContentWriter, EksJobContentWriter>();
 
+            // Signing
+            services.AddSingleton<IHsmSignerConfig, HsmSignerConfig>();
+            services.AddHttpClient<IHsmSignerService, HsmSignerService>();
+
             services.AddTransient<IEksBuilder, EksBuilderV1>(x => new EksBuilderV1(
                 x.GetRequiredService<IEksHeaderInfoConfig>(),
                 SignerConfigStartup.BuildGaSigner(
@@ -68,6 +72,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
                     x.GetRequiredService<IUtcDateTimeProvider>()),
                 x.GetRequiredService<IUtcDateTimeProvider>(),
                 x.GetRequiredService<IEksContentFormatter>(),
+                x.GetRequiredService<IHsmSignerService>(),
                 x.GetRequiredService<ILogger<EksBuilderV1>>()
             ));
 

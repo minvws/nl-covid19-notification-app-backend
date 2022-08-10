@@ -75,6 +75,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             var efgsSerializer = new EfgsDiagnosisKeyBatchSerializer();
 
+            //TODO: replace with call to HSM API; EfgsCmsSigner uses cert
             return _signer.GetSignature(efgsSerializer.Serialize(batch));
         }
 

@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
@@ -16,6 +17,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
@@ -68,10 +71,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             var jsonSerialiser = new StandardJsonSerializer();
 
             IContentEntityFormatter formatterForV3 = new StandardContentEntityFormatter(
-                    new ZippedSignedContentFormatter(
-                    TestSignerHelpers.CreateCmsSignerEnhanced()),
-                    jsonSerialiser
-                        );
+                    new ZippedSignedContentFormatter(TestSignerHelpers.CreateHsmSignerService()),
+                    jsonSerialiser);
 
             var result = new ManifestUpdateCommand(
                 new ManifestV4Builder(
