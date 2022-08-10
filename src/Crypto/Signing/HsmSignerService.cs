@@ -41,7 +41,21 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             var contentHash = sha256Hasher.ComputeHash(content);
             var contentHashBased64 = Convert.ToBase64String(contentHash);
 
-            var pem = _config.NlPem;
+            var certificateChain = GetCertificateChain();
+            var nlPem = _config.NlPem;
+
+            var builder = new StringBuilder();
+
+            // Add EV RSA certificate
+            builder.AppendLine(nlPem);
+
+            // Add EV certificate chain
+            foreach (var cert in certificateChain)
+            {
+                builder.AppendLine(new string(PemEncoding.Write("CERTIFICATE", cert.RawData)));
+            }
+
+            var pem = builder.ToString();
 
             var pemBytes = Encoding.UTF8.GetBytes(pem);
             var pemBytesBased64 = Convert.ToBase64String(pemBytes);
