@@ -11,7 +11,6 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
@@ -23,20 +22,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
     {
         private readonly HttpClient _httpClient;
         private readonly IHsmSignerConfig _config;
-        private readonly ICertificateProvider _certificateProvider;
 
         public HsmSignerService(
             HttpClient httpClient,
-            IHsmSignerConfig config,
-            ICertificateProvider certificateProvider
+            IHsmSignerConfig config
             )
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _config = config ?? throw new ArgumentNullException(nameof(config));
-            _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
 
-            _httpClient.BaseAddress = new Uri("");
-
+            _httpClient.BaseAddress = new Uri(_config.BaseAddress);
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
@@ -46,25 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             var contentHash = sha256Hasher.ComputeHash(content);
             var contentHashBased64 = Convert.ToBase64String(contentHash);
 
-            // Get EV RSA certificate from certificate store
-            var certificate = _certificateProvider.GetCertificate(
-                "",
-                false);
-            var certificateChain = GetCertificateChain();
-
-            var builder = new StringBuilder();
-
-            // Add EV RSA certificate
-            builder.AppendLine(new string(PemEncoding.Write("CERTIFICATE", certificate.RawData)));
-
-            // Add EV certificate chain
-            foreach (var cert in certificateChain)
-            {
-                builder.AppendLine(new string(PemEncoding.Write("CERTIFICATE", cert.RawData)));
-            }
-
-            var pem = builder.ToString();
-            var pemFromConfig = _config.NlPem;
+            var pem = _config.NlPem;
 
             var pemBytes = Encoding.UTF8.GetBytes(pem);
             var pemBytesBased64 = Convert.ToBase64String(pemBytes);
@@ -77,10 +54,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 TimeStamp = true
             };
 
+            _httpClient.DefaultRequestHeaders.Remove("Authorization");
             _httpClient.DefaultRequestHeaders.Add("Authorization", _config.NlJwt);
-            var response = await _httpClient.PostAsJsonAsync("/cms", requestModel);
 
-            return await response.Content.ReadAsByteArrayAsync();
+            var response = _httpClient.PostAsJsonAsync("/cms", requestModel).Result;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                //TODO: error handling
+                return Array.Empty<byte>();
+            }
+
+            var responseModel = await response.Content.ReadFromJsonAsync<HsmSignerCmsResponseModel>();
+            if (responseModel == null)
+            {
+                //TODO: error handling
+                return Array.Empty<byte>();
+            }
+
+            var cms = responseModel.Cms;
+
+            var cmsBytes = Convert.FromBase64String(cms);
+            var cmsString = Encoding.UTF8.GetString(cmsBytes);
+
+            var result = StripCmsString(cmsString);
+            return Convert.FromBase64String(result);
         }
 
         public async Task<byte[]> GetGaenSignatureAsync(byte[] content)
@@ -89,14 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             var contentHash = sha256Hasher.ComputeHash(content);
             var contentHashBased64 = Convert.ToBase64String(contentHash);
 
-            // Get GAEN ECDSA certificate from certificate store
-            var certificate = _certificateProvider.GetCertificate(
-                "",
-                false);
-
-            // Add GAEN ECDSA certificate
-            var pem = new string(PemEncoding.Write("CERTIFICATE", certificate.RawData));
-            var pemFromConfig = _config.GaenPem;
+            var pem = _config.GaenPem;
 
             var pemBytes = Encoding.UTF8.GetBytes(pem);
             var pemBytesBased64 = Convert.ToBase64String(pemBytes);
@@ -109,10 +100,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
                 TimeStamp = true
             };
 
+            _httpClient.DefaultRequestHeaders.Remove("Authorization");
             _httpClient.DefaultRequestHeaders.Add("Authorization", _config.GaenJwt);
+
             var response = await _httpClient.PostAsJsonAsync("/signature", requestModel);
 
-            return await response.Content.ReadAsByteArrayAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                //TODO: error handling
+                return Array.Empty<byte>();
+            }
+
+            var responseModel = await response.Content.ReadFromJsonAsync<HsmSignerSignatureResponseModel>();
+            if (responseModel == null)
+            {
+                //TODO: error handling
+                return Array.Empty<byte>();
+            }
+
+            var signature = responseModel.Signature;
+
+            return Convert.FromBase64String(signature);
         }
 
         private X509Certificate2[] GetCertificateChain()
@@ -141,6 +149,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             }
 
             return certList.ToArray();
+        }
+
+        private string StripCmsString(string cmsString)
+        {
+            cmsString = cmsString.Replace("\r", string.Empty);
+            cmsString = cmsString.Replace("\n", string.Empty);
+            cmsString = cmsString.Substring("-----BEGIN CMS-----".Length);
+            cmsString = cmsString.Substring(0, cmsString.Length - "-----END CMS-----".Length);
+
+            return cmsString;
         }
     }
 }

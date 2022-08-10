@@ -6,5 +6,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 
 public class HsmSignerCmsResponseModel
 {
-    public string Csm { get; set; }
+    public string Cms { get; set; }
 }

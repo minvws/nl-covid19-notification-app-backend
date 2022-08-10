@@ -13,6 +13,7 @@ public class HsmSignerConfig : AppSettingsReader, IHsmSignerConfig
     {
     }
 
+    public string BaseAddress => GetConfigValue(nameof(BaseAddress), string.Empty);
     public string NlJwt => GetConfigValue(nameof(NlJwt), string.Empty);
 
     public string GaenJwt => GetConfigValue(nameof(GaenJwt), string.Empty);
