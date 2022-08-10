@@ -9,6 +9,7 @@ using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
@@ -20,14 +21,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
     {
         private readonly HttpClient _httpClient;
         private readonly IHsmSignerConfig _config;
+        private readonly ILogger _logger;
 
         public HsmSignerService(
             HttpClient httpClient,
-            IHsmSignerConfig config
-            )
+            IHsmSignerConfig config,
+            ILogger<HsmSignerService> logger)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _config = config ?? throw new ArgumentNullException(nameof(config));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             _httpClient.BaseAddress = new Uri(_config.BaseAddress);
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -59,15 +62,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 
             if (!response.IsSuccessStatusCode)
             {
-                //TODO: error handling
-                return Array.Empty<byte>();
+                //TODO: improve error handling
+                _logger.LogError("HTTP request to cms endpoint failed");
+                throw new Exception();
             }
 
             var responseModel = await response.Content.ReadFromJsonAsync<HsmSignerCmsResponseModel>();
             if (responseModel == null)
             {
-                //TODO: error handling
-                return Array.Empty<byte>();
+                _logger.LogError("No response available to read from HTTP request to cms endpoint");
+                throw new ArgumentNullException(nameof(responseModel));
             }
 
             var cms = responseModel.Cms;
@@ -105,15 +109,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
 
             if (!response.IsSuccessStatusCode)
             {
-                //TODO: error handling
-                return Array.Empty<byte>();
+                //TODO: improve error handling
+                _logger.LogError("HTTP request to signature endpoint failed");
+                throw new Exception();
             }
 
             var responseModel = await response.Content.ReadFromJsonAsync<HsmSignerSignatureResponseModel>();
             if (responseModel == null)
             {
-                //TODO: error handling
-                return Array.Empty<byte>();
+                _logger.LogError("No response available to read from HTTP request to signature endpoint");
+                throw new ArgumentNullException(nameof(responseModel));
             }
 
             var signature = responseModel.Signature;
