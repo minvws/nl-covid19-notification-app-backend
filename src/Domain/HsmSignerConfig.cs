@@ -14,8 +14,8 @@ public class HsmSignerConfig : AppSettingsReader, IHsmSignerConfig
     }
 
     public string BaseAddress => GetConfigValue(nameof(BaseAddress), string.Empty);
-    public string NlJwt => GetConfigValue(nameof(NlJwt), string.Empty);
+    public string CmsJwt => GetConfigValue(nameof(CmsJwt), string.Empty);
     public string GaenJwt => GetConfigValue(nameof(GaenJwt), string.Empty);
-    public string NlPem => GetConfigValue(nameof(NlPem), string.Empty);
-    public string GaenPem => GetConfigValue(nameof(GaenPem), string.Empty);
+    public string CmsPublicCertificateChain => GetConfigValue(nameof(CmsPublicCertificateChain), string.Empty);
+    public string GaenPublicCertificate => GetConfigValue(nameof(GaenPublicCertificate), string.Empty);
 }

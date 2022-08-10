@@ -99,11 +99,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
         {
             var contentBytes = _eksContentFormatter.GetBytes(exposureKeySetContentArgs);
 
-            var nlSig = await _hsmSignerService.GetNlSignatureAsync(contentBytes);
-            var gaenSig = await _hsmSignerService.GetGaenSignatureAsync(contentBytes);
+            var cmsSignature = await _hsmSignerService.GetCmsSignatureAsync(contentBytes);
+            var gaenSignature = await _hsmSignerService.GetGaenSignatureAsync(contentBytes);
 
-            _logger.LogDebug("NL Sig: {NlSig}.", Convert.ToBase64String(nlSig));
-            _logger.LogDebug("GAEN Sig: {GaenSig}.", Convert.ToBase64String(gaenSig));
+            _logger.LogDebug("CMS Sig: {CmsSignature}.", Convert.ToBase64String(cmsSignature));
+            _logger.LogDebug("GAEN Sig: {GaenSignature}.", Convert.ToBase64String(gaenSignature));
 
             var signatures = new ExposureKeySetSignaturesContentArgs
             {
@@ -112,7 +112,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
                     new ExposureKeySetSignatureContentArgs
                     {
                         SignatureInfo = securityInfoArgs,
-                        Signature = gaenSig,
+                        Signature = gaenSignature,
                         BatchSize = exposureKeySetContentArgs.BatchSize,
                         BatchNum = exposureKeySetContentArgs.BatchNum
                     }
@@ -121,7 +121,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
 
             var gaenSigFile = _eksContentFormatter.GetBytes(signatures);
 
-            var zippedContent = await new ZippedContentBuilder().BuildEksAsync(contentBytes, gaenSigFile, nlSig);
+            var zippedContent = await new ZippedContentBuilder().BuildEksAsync(contentBytes, gaenSigFile, cmsSignature);
             return zippedContent;
         }
 

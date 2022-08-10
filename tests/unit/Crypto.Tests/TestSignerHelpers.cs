@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests
 
             var hsmServiceMock = new Mock<IHsmSignerService>();
             hsmServiceMock
-                .Setup(x => x.GetNlSignatureAsync(It.IsAny<byte[]>()))
+                .Setup(x => x.GetCmsSignatureAsync(It.IsAny<byte[]>()))
                 .ReturnsAsync(dummyContent);
 
             return hsmServiceMock.Object;

@@ -84,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             nlSigner.Setup(x => x.GetSignature(new byte[0])).Returns(new byte[] { 2 });
 
             var hsmSignerService = new Mock<IHsmSignerService>();
-            hsmSignerService.Setup(x => x.GetNlSignatureAsync(new byte[0])).ReturnsAsync(new byte[] { 2 });
+            hsmSignerService.Setup(x => x.GetCmsSignatureAsync(new byte[0])).ReturnsAsync(new byte[] { 2 });
             hsmSignerService.Setup(x => x.GetGaenSignatureAsync(It.IsAny<byte[]>())).ReturnsAsync(new byte[] { 1 });
 
             _snapshot = new SnapshotWorkflowTeksToDksCommand(

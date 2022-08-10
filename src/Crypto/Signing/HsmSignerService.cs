@@ -3,12 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -35,41 +33,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<byte[]> GetNlSignatureAsync(byte[] content)
+        public async Task<byte[]> GetCmsSignatureAsync(byte[] content)
         {
             using var sha256Hasher = SHA256.Create();
             var contentHash = sha256Hasher.ComputeHash(content);
             var contentHashBased64 = Convert.ToBase64String(contentHash);
 
-            var certificateChain = GetCertificateChain();
-            var nlPem = _config.NlPem;
+            var cmsPublicCertificateChain = _config.CmsPublicCertificateChain;
 
-            var builder = new StringBuilder();
-
-            // Add EV RSA certificate
-            builder.AppendLine(nlPem);
-
-            // Add EV certificate chain
-            foreach (var cert in certificateChain)
-            {
-                builder.AppendLine(new string(PemEncoding.Write("CERTIFICATE", cert.RawData)));
-            }
-
-            var pem = builder.ToString();
-
-            var pemBytes = Encoding.UTF8.GetBytes(pem);
-            var pemBytesBased64 = Convert.ToBase64String(pemBytes);
+            var cmsCertBytes = Encoding.UTF8.GetBytes(cmsPublicCertificateChain);
+            var cmsCertBytesBased64 = Convert.ToBase64String(cmsCertBytes);
 
             var requestModel = new HsmSignerRequestModel()
             {
                 Algorithm = "sha256",
-                Cert = pemBytesBased64,
+                Cert = cmsCertBytesBased64,
                 Hash = contentHashBased64,
                 TimeStamp = true
             };
 
             _httpClient.DefaultRequestHeaders.Remove("Authorization");
-            _httpClient.DefaultRequestHeaders.Add("Authorization", _config.NlJwt);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", _config.CmsJwt);
 
             var response = _httpClient.PostAsJsonAsync("/cms", requestModel).Result;
 
@@ -101,15 +85,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             var contentHash = sha256Hasher.ComputeHash(content);
             var contentHashBased64 = Convert.ToBase64String(contentHash);
 
-            var pem = _config.GaenPem;
+            var gaenPublicCertificate = _config.GaenPublicCertificate;
 
-            var pemBytes = Encoding.UTF8.GetBytes(pem);
-            var pemBytesBased64 = Convert.ToBase64String(pemBytes);
+            var gaenCertBytes = Encoding.UTF8.GetBytes(gaenPublicCertificate);
+            var gaenCertBytesBased64 = Convert.ToBase64String(gaenCertBytes);
 
             var requestModel = new HsmSignerRequestModel()
             {
                 Algorithm = "sha256",
-                Cert = pemBytesBased64,
+                Cert = gaenCertBytesBased64,
                 Hash = contentHashBased64,
                 TimeStamp = true
             };
@@ -135,34 +119,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             var signature = responseModel.Signature;
 
             return Convert.FromBase64String(signature);
-        }
-
-        private X509Certificate2[] GetCertificateChain()
-        {
-            var certList = new List<X509Certificate2>();
-
-            using var s = ResourcesHook.GetManifestResourceStream(
-                "StaatDerNLChain-EV-Expires-2022-12-05.p7b");
-
-            if (s == null)
-            {
-                throw new InvalidOperationException($"Certificate chain not found in resource.");
-            }
-
-            var bytes = new byte[s.Length];
-            s.Read(bytes, 0, bytes.Length);
-
-            var result = new X509Certificate2Collection();
-            result.Import(bytes);
-            foreach (var c in result)
-            {
-                if (c.IssuerName.Name != c.SubjectName.Name)
-                {
-                    certList.Add(c);
-                }
-            }
-
-            return certList.ToArray();
         }
 
         private string StripCmsString(string cmsString)

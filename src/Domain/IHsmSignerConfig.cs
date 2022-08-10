@@ -7,8 +7,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 public interface IHsmSignerConfig
 {
     public string BaseAddress { get; }
-    public string NlJwt { get; }
+    public string CmsJwt { get; }
     public string GaenJwt { get; }
-    public string NlPem { get; }
-    public string GaenPem { get; }
+    public string CmsPublicCertificateChain { get; }
+    public string GaenPublicCertificate { get; }
 }

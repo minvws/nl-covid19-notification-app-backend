@@ -24,7 +24,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
                 throw new ArgumentNullException(nameof(content));
             }
 
-            var signature = await _hsmSignerService.GetNlSignatureAsync(content);
+            var signature = await _hsmSignerService.GetCmsSignatureAsync(content);
             return await new ZippedContentBuilder().BuildStandardAsync(content, signature);
         }
     }

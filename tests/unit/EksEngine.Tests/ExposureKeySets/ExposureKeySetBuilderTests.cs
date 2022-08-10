@@ -95,18 +95,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             zipFileInMemory.Write(result, 0, result.Length);
 
             using var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false);
-            var nlSignature = zipFileContent.ReadEntry(ZippedContentEntryNames.NlSignature);
-            Assert.NotNull(nlSignature);
-            Assert.Equal(nlSignature, dummySigner.DummyContent);
+            var cmsSignature = zipFileContent.ReadEntry(ZippedContentEntryNames.CmsSignature);
+            Assert.NotNull(cmsSignature);
+            Assert.Equal(cmsSignature, dummySigner.DummyContent);
 
             //Assert V15
             using var zipFileInMemoryV15 = new MemoryStream();
             zipFileInMemoryV15.Write(resultv15, 0, resultv15.Length);
 
             using var zipFileContentV15 = new ZipArchive(zipFileInMemoryV15, ZipArchiveMode.Read, false);
-            var nlSignatureV15 = zipFileContentV15.ReadEntry(ZippedContentEntryNames.NlSignature);
-            Assert.NotNull(nlSignatureV15);
-            Assert.Equal(nlSignatureV15, dummySigner.DummyContent);
+            var cmsSignatureV15 = zipFileContentV15.ReadEntry(ZippedContentEntryNames.CmsSignature);
+            Assert.NotNull(cmsSignatureV15);
+            Assert.Equal(cmsSignatureV15, dummySigner.DummyContent);
         }
 
         private TemporaryExposureKeyArgs[] GetRandomKeys(int workflowCount, int seed)
