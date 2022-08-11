@@ -33,10 +33,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
             _contentDbContext.Database.EnsureCreated();
 
-            var nlSignerMock = new Mock<IContentSigner>();
-            nlSignerMock.Setup(x => x.GetSignature(new byte[0]))
-                .Returns(new byte[] { 2 });
-
             var hsmSignerServiceMock = new Mock<IHsmSignerService>();
             hsmSignerServiceMock.Setup(x => x.GetCmsSignatureAsync(new byte[0]))
                 .ReturnsAsync(new byte[] { 2 });

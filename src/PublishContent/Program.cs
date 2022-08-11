@@ -41,10 +41,6 @@ namespace PublishContent
 
             services.AddTransient<PublishContentCommand>();
             services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient<IContentSigner>(x => SignerConfigStartup.BuildEvSigner(
-                configuration,
-                new LoggerFactory().CreateLogger<LocalMachineStoreCertificateProvider>(),
-                new StandardUtcDateTimeProvider()));
 
             services.AddTransient<ContentValidator>();
             services.AddTransient<ContentInsertDbCommand>();

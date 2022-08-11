@@ -9,6 +9,8 @@ public interface IHsmSignerConfig
     public string BaseAddress { get; }
     public string CmsJwt { get; }
     public string GaenJwt { get; }
+    public string EfgsJwt { get; }
     public string CmsPublicCertificateChain { get; }
     public string GaenPublicCertificate { get; }
+    public string EfgsPublicCertificate { get; }
 }

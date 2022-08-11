@@ -42,6 +42,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             var contentHash = sha256Hasher.ComputeHash(content);
             var contentHashBased64 = Convert.ToBase64String(contentHash);
 
+            //TODO: add EFGS-specific code (i.e., split up and re-use)
             var cmsPublicCertificateChain = _config.CmsPublicCertificateChain;
 
             var cmsCertBytes = Encoding.UTF8.GetBytes(cmsPublicCertificateChain);

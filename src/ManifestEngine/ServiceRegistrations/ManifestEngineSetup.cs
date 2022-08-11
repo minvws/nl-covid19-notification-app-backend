@@ -28,11 +28,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.ServiceRe
             // Operating components
             services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
             services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient(x =>
-                SignerConfigStartup.BuildEvSigner(
-                    x.GetRequiredService<IConfiguration>(),
-                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
-                    x.GetRequiredService<IUtcDateTimeProvider>()));
         }
     }
 }

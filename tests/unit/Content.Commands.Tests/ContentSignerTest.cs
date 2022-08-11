@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Tests
         public void Build(int length)
         {
             var content = Encoding.UTF8.GetBytes(CreateString(length));
-            var sig = TestSignerHelpers.CreateCmsSignerEnhanced().GetSignature(content);
+            var sig = TestSignerHelpers.CreateHsmSignerService().GetCmsSignatureAsync(content).Result;
             Assert.True((sig?.Length ?? 0) != 0);
         }
 

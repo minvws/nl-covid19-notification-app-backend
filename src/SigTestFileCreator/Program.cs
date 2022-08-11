@@ -37,16 +37,6 @@ namespace SigTestFileCreator
             services.AddSingleton<IEksHeaderInfoConfig, EksHeaderInfoConfig>();
             services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
             services.AddTransient<IEksBuilder, EksBuilderV1>();
-
-            services.AddTransient(x =>
-                SignerConfigStartup.BuildEvSigner(
-                    x.GetRequiredService<IConfiguration>(),
-                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
-                    x.GetRequiredService<IUtcDateTimeProvider>()));
-            services.AddTransient(x =>
-                SignerConfigStartup.BuildGaSigner(
-                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
-                    x.GetRequiredService<IConfiguration>()));
         }
     }
 }

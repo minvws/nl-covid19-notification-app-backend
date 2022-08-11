@@ -7,13 +7,14 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
-    public class CertificateChainConfig : AppSettingsReader, ICertificateChainConfig
+    public class CertificateConfig : AppSettingsReader, ICertificateConfig
     {
-        public CertificateChainConfig(IConfiguration config, string prefix = null) : base(config, prefix)
+        public CertificateConfig(IConfiguration config, string prefix = "Certificates") : base(config, prefix)
         {
         }
 
-        public string Path => GetConfigValue<string>(nameof(Path));
-        public string Password => GetConfigValue<string>(nameof(Password));
+        public string CertificatePath => GetConfigValue(nameof(CertificatePath), string.Empty);
+        public string CertificateFileName => GetConfigValue(nameof(CertificateFileName), string.Empty);
+
     }
 }
