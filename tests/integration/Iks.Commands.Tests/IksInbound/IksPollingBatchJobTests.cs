@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
         private readonly Mock<IUtcDateTimeProvider> _dtpMock;
         private readonly EfgsConfigMock _efgsConfigMock = new EfgsConfigMock();
         private readonly Mock<IAuthenticationCertificateProvider> _certProviderMock;
-        private readonly Mock<ICertificateConfig> _certificateConfigMock;
+        private readonly Mock<IFileSystemCertificateConfig> _certificateConfigMock;
         private readonly IRandomNumberGenerator _numberGenerator;
 
         private static DbConnection connection;
@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             _dtpMock.Setup(x => x.Snapshot).Returns(_now);
 
             _certProviderMock = new Mock<IAuthenticationCertificateProvider>();
-            _certificateConfigMock = new Mock<ICertificateConfig>();
+            _certificateConfigMock = new Mock<IFileSystemCertificateConfig>();
 
             var mockCertificate = new Mock<X509Certificate2>();
             _certProviderMock.Setup(p => p.GetCertificate()).Returns(mockCertificate.Object);

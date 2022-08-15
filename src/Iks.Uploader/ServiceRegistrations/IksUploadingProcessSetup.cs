@@ -25,7 +25,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
                 .ConfigurePrimaryHttpMessageHandler(
                     x => new EfgsOutboundHttpClientHandler(
                         x.GetRequiredService<IAuthenticationCertificateProvider>(),
-                        x.GetRequiredService<ICertificateConfig>()
+                        x.GetRequiredService<IFileSystemCertificateConfig>()
                     ))
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
                 .AddPolicyHandler(GetRetryPolicy()) // Retry first

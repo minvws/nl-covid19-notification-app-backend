@@ -12,7 +12,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
     {
         public EfgsOutboundHttpClientHandler(
             IAuthenticationCertificateProvider efgsCertificateProvider,
-            ICertificateConfig config)
+            IFileSystemCertificateConfig config)
         {
             if (efgsCertificateProvider == null)
             {

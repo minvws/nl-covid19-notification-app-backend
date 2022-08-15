@@ -35,7 +35,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
         private readonly EfgsConfigMock _efgsConfigFake = new EfgsConfigMock();
         private readonly Mock<IAuthenticationCertificateProvider> _certProviderMock;
         private readonly IConfiguration _configuration;
-        private readonly Mock<ICertificateConfig> _certificateConfigMock;
+        private readonly Mock<IFileSystemCertificateConfig> _certificateConfigMock;
         private readonly Mock<IBatchTagProvider> _batchTagProviderMock;
         private readonly Mock<IHsmSignerService> _hsmSignerServiceMock;
 
@@ -44,7 +44,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
             _iksOutDbContext = new IksOutDbContext(iksOutDbContextOptions ?? throw new ArgumentNullException(nameof(iksOutDbContextOptions)));
             _iksOutDbContext.Database.EnsureCreated();
             _certProviderMock = new Mock<IAuthenticationCertificateProvider>();
-            _certificateConfigMock = new Mock<ICertificateConfig>();
+            _certificateConfigMock = new Mock<IFileSystemCertificateConfig>();
             _batchTagProviderMock = new Mock<IBatchTagProvider>();
 
             _certificateConfigMock.Setup(x => x.CertificatePath).Returns(It.IsAny<string>());

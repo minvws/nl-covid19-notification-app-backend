@@ -11,11 +11,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
     public class FileSystemCertificateProvider : IAuthenticationCertificateProvider
     {
-        private readonly ICertificateConfig _config;
+        private readonly IFileSystemCertificateConfig _config;
         private readonly ILogger _logger;
 
         public FileSystemCertificateProvider(
-            ICertificateConfig config,
+            IFileSystemCertificateConfig config,
             ILogger<FileSystemCertificateProvider> logger)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
