@@ -93,7 +93,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
         {
             var contentBytes = _eksContentFormatter.GetBytes(exposureKeySetContentArgs);
 
-            var cmsSignature = await _hsmSignerService.GetCmsSignatureAsync(contentBytes);
+            var cmsSignature = await _hsmSignerService.GetNlCmsSignatureAsync(contentBytes);
             var gaenSignature = await _hsmSignerService.GetGaenSignatureAsync(contentBytes);
 
             _logger.LogDebug("CMS Sig: {CmsSignature}", Convert.ToBase64String(cmsSignature));

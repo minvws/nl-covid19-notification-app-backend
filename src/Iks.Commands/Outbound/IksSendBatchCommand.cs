@@ -77,7 +77,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             var efgsSerializer = new EfgsDiagnosisKeyBatchSerializer();
 
             var efgsContent = efgsSerializer.Serialize(batch);
-            var result = _hsmSignerService.GetCmsSignatureAsync(efgsContent).Result;
+            var result = _hsmSignerService.GetEfgsCmsSignatureAsync(efgsContent).Result;
 
             return result;
         }

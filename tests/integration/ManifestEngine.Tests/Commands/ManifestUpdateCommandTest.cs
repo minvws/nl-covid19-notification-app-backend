@@ -32,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             _contentDbContext.Database.EnsureCreated();
 
             var hsmSignerServiceMock = new Mock<IHsmSignerService>();
-            hsmSignerServiceMock.Setup(x => x.GetCmsSignatureAsync(new byte[0]))
+            hsmSignerServiceMock.Setup(x => x.GetNlCmsSignatureAsync(new byte[0]))
                 .ReturnsAsync(new byte[] { 2 });
 
             var eksConfigMock = new Mock<IEksConfig>(MockBehavior.Strict);
