@@ -7,8 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Net.Http;
-using EksEngine.Tests;
+using System.Text;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
@@ -17,9 +16,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1;
 using Xunit;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Tests;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.ExposureKeySets
 {
@@ -47,9 +43,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
 
             var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
-                TestSignerHelpers.CreateGASigner(),
-                TestSignerHelpers.CreateGAv15Signer(),
-                TestSignerHelpers.CreateCmsSignerEnhanced(),
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
                 TestSignerHelpers.CreateHsmSignerService(),
@@ -75,17 +68,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             //Arrange
             var keyCount = 500;
             var dtp = new StandardUtcDateTimeProvider();
-            var dummySigner = new DummyCmsSigner();
 
             var sut = new EksBuilderV1(
                 new FakeEksHeaderInfoConfig(),
-                TestSignerHelpers.CreateGASigner(),
-                TestSignerHelpers.CreateGAv15Signer(),
-                dummySigner,
                 dtp,
                 new GeneratedProtobufEksContentFormatter(),
                 TestSignerHelpers.CreateHsmSignerService(),
                 new NullLogger<EksBuilderV1>());
+
+            var dummyContent = Encoding.ASCII.GetBytes("Signature intentionally left empty");
 
             //Act
             var (result, resultv15) = sut.BuildAsync(GetRandomKeys(keyCount, 123)).GetAwaiter().GetResult();
@@ -97,7 +88,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             using var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false);
             var cmsSignature = zipFileContent.ReadEntry(ZippedContentEntryNames.CmsSignature);
             Assert.NotNull(cmsSignature);
-            Assert.Equal(cmsSignature, dummySigner.DummyContent);
+            Assert.Equal(cmsSignature, dummyContent);
 
             //Assert V15
             using var zipFileInMemoryV15 = new MemoryStream();
@@ -106,7 +97,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             using var zipFileContentV15 = new ZipArchive(zipFileInMemoryV15, ZipArchiveMode.Read, false);
             var cmsSignatureV15 = zipFileContentV15.ReadEntry(ZippedContentEntryNames.CmsSignature);
             Assert.NotNull(cmsSignatureV15);
-            Assert.Equal(cmsSignatureV15, dummySigner.DummyContent);
+            Assert.Equal(cmsSignatureV15, dummyContent);
         }
 
         private TemporaryExposureKeyArgs[] GetRandomKeys(int workflowCount, int seed)

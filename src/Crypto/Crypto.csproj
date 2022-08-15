@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\BdCertChain.p7b" />
     <EmbeddedResource Include="Resources\efgs\efgs-cb-client.jks" />
     <EmbeddedResource Include="Resources\efgs\efgs-ta.jks" />
     <EmbeddedResource Include="Resources\efgs\efgs-trustanchor\trustanchor.key" />

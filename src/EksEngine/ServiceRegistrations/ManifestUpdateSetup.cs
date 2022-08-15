@@ -2,13 +2,9 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Jobs;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
 
@@ -27,19 +23,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
             services.AddTransient<ManifestV5Builder>();
             services.AddTransient<IContentEntityFormatter, StandardContentEntityFormatter>();
             services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient(x =>
-                SignerConfigStartup.BuildEvSigner(
-                    x.GetRequiredService<IConfiguration>(),
-                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
-                    x.GetRequiredService<IUtcDateTimeProvider>()));
-            services.AddTransient(x =>
-                SignerConfigStartup.BuildGaSigner(
-                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
-                    x.GetRequiredService<IConfiguration>()));
-            services.AddTransient(x =>
-                SignerConfigStartup.BuildGaV15Signer(
-                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
-                    x.GetRequiredService<IConfiguration>()));
             services.AddTransient<IJsonSerializer, StandardJsonSerializer>();
         }
     }

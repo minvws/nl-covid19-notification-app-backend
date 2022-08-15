@@ -41,7 +41,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
         private readonly Mock<IUtcDateTimeProvider> _dtpMock;
         private readonly EfgsConfigMock _efgsConfigMock = new EfgsConfigMock();
         private readonly Mock<IAuthenticationCertificateProvider> _certProviderMock;
-        private readonly Mock<IThumbprintConfig> _thumbprintConfigMock;
+        private readonly Mock<ICertificateConfig> _certificateConfigMock;
         private readonly IRandomNumberGenerator _numberGenerator;
 
         private static DbConnection connection;
@@ -58,13 +58,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             _dtpMock.Setup(x => x.Snapshot).Returns(_now);
 
             _certProviderMock = new Mock<IAuthenticationCertificateProvider>();
-            _thumbprintConfigMock = new Mock<IThumbprintConfig>();
-
-            _thumbprintConfigMock.Setup(x => x.RootTrusted).Returns(It.IsAny<bool>());
-            _thumbprintConfigMock.Setup(x => x.Thumbprint).Returns(It.IsAny<string>());
+            _certificateConfigMock = new Mock<ICertificateConfig>();
 
             var mockCertificate = new Mock<X509Certificate2>();
-            _certProviderMock.Setup(p => p.GetCertificate(It.IsAny<string>(), It.IsAny<bool>())).Returns(mockCertificate.Object);
+            _certProviderMock.Setup(p => p.GetCertificate()).Returns(mockCertificate.Object);
 
             _numberGenerator = new StandardRandomNumberGenerator();
             _dummyContent = GenerateKeys();
@@ -396,7 +393,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = new HttpGetIksCommand(
                 _efgsConfigMock,
                 _certProviderMock.Object,
-                _thumbprintConfigMock.Object,
                 mockHttpClientFactory.Object,
                 new NullLogger<HttpGetIksCommand>());
 
@@ -467,7 +463,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = new HttpGetIksCommand(
                 _efgsConfigMock,
                 _certProviderMock.Object,
-                _thumbprintConfigMock.Object,
                 mockHttpClientFactory.Object,
                 new NullLogger<HttpGetIksCommand>());
 
@@ -538,7 +533,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksIn
             var receiver = new HttpGetIksCommand(
                 _efgsConfigMock,
                 _certProviderMock.Object,
-                _thumbprintConfigMock.Object,
                 mockHttpClientFactory.Object,
                 new NullLogger<HttpGetIksCommand>());
 

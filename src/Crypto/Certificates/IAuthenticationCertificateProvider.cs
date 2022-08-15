@@ -2,9 +2,12 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using System.Security.Cryptography.X509Certificates;
+
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
-    public interface IAuthenticationCertificateProvider : ICertificateProvider
+    public interface IAuthenticationCertificateProvider
     {
+        X509Certificate2 GetCertificate();
     }
 }

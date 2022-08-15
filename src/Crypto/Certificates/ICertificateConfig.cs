@@ -4,9 +4,9 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
-    public interface IThumbprintConfig
+    public interface ICertificateConfig
     {
-        string Thumbprint { get; }
-        bool RootTrusted { get; }
+        public string CertificatePath { get; }
+        public string CertificateFileName { get; }
     }
 }

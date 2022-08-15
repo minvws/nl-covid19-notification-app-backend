@@ -8,6 +8,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 
 public interface IHsmSignerService
 {
-    Task<byte[]> GetCmsSignatureAsync(byte[] content);
+    Task<byte[]> GetNlCmsSignatureAsync(byte[] content);
+    Task<byte[]> GetEfgsCmsSignatureAsync(byte[] content);
     Task<byte[]> GetGaenSignatureAsync(byte[] content);
 }

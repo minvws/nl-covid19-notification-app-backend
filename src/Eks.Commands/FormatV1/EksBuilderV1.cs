@@ -19,9 +19,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
     {
         private const string Header = "EK Export v1    ";
 
-        private readonly IGaContentSigner _gaenContentSigner;
-        private readonly IGaContentSigner _gaenV15ContentSigner;
-        private readonly IContentSigner _nlContentSigner;
+        public const string GaenSignatureOid = "1.2.840.10045.4.3.2";
+        private const string GaenV15SignatureOid = "1.2.840.10045.4.3.2";
+
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly IEksContentFormatter _eksContentFormatter;
         private readonly IEksHeaderInfoConfig _config;
@@ -30,18 +30,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
 
         public EksBuilderV1(
             IEksHeaderInfoConfig headerInfoConfig,
-            IGaContentSigner gaenContentSigner,
-            IGaContentSigner gaenV15ContentSigner,
-            IContentSigner nlContentSigner,
             IUtcDateTimeProvider dateTimeProvider,
             IEksContentFormatter eksContentFormatter,
             IHsmSignerService hsmSignerService,
             ILogger<EksBuilderV1> logger
             )
         {
-            _gaenContentSigner = gaenContentSigner ?? throw new ArgumentNullException(nameof(gaenContentSigner));
-            _gaenV15ContentSigner = gaenV15ContentSigner ?? throw new ArgumentNullException(nameof(gaenV15ContentSigner));
-            _nlContentSigner = nlContentSigner ?? throw new ArgumentNullException(nameof(nlContentSigner));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _eksContentFormatter = eksContentFormatter ?? throw new ArgumentNullException(nameof(eksContentFormatter));
             _config = headerInfoConfig ?? throw new ArgumentNullException(nameof(headerInfoConfig));
@@ -66,14 +60,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
                 throw new ArgumentException("At least one key in null.", nameof(keys));
             }
 
-            var securityInfo = GetGaenSignatureInfo(_gaenContentSigner.SignatureOid, _config.VerificationKeyVersion);
-            var securityInfoV15 = GetGaenSignatureInfo(_gaenV15ContentSigner.SignatureOid, _config.VerificationKeyVersionV15);
+            var securityInfo = GetGaenSignatureInfo(GaenSignatureOid, _config.VerificationKeyVersion);
+            var securityInfoV15 = GetGaenSignatureInfo(GaenV15SignatureOid, _config.VerificationKeyVersionV15);
 
             var content = CreateContent(keys, securityInfo);
             var contentV15 = CreateContent(keys, securityInfoV15);
 
-            var zippedContent = await CreateZippedContent(_gaenContentSigner, content, securityInfo);
-            var zippedContentV15 = await CreateZippedContent(_gaenV15ContentSigner, contentV15, securityInfoV15);
+            var zippedContent = await CreateZippedContent(content, securityInfo);
+            var zippedContentV15 = await CreateZippedContent(contentV15, securityInfoV15);
 
             return (zippedContent, zippedContentV15);
         }
@@ -95,15 +89,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
             return content;
         }
 
-        private async Task<byte[]> CreateZippedContent(IGaContentSigner gaContentSigner, ExposureKeySetContentArgs exposureKeySetContentArgs, SignatureInfoArgs securityInfoArgs)
+        private async Task<byte[]> CreateZippedContent(ExposureKeySetContentArgs exposureKeySetContentArgs, SignatureInfoArgs securityInfoArgs)
         {
             var contentBytes = _eksContentFormatter.GetBytes(exposureKeySetContentArgs);
 
-            var cmsSignature = await _hsmSignerService.GetCmsSignatureAsync(contentBytes);
+            var cmsSignature = await _hsmSignerService.GetNlCmsSignatureAsync(contentBytes);
             var gaenSignature = await _hsmSignerService.GetGaenSignatureAsync(contentBytes);
 
-            _logger.LogDebug("CMS Sig: {CmsSignature}.", Convert.ToBase64String(cmsSignature));
-            _logger.LogDebug("GAEN Sig: {GaenSignature}.", Convert.ToBase64String(gaenSignature));
+            _logger.LogDebug("CMS Sig: {CmsSignature}", Convert.ToBase64String(cmsSignature));
+            _logger.LogDebug("GAEN Sig: {GaenSignature}", Convert.ToBase64String(gaenSignature));
 
             var signatures = new ExposureKeySetSignaturesContentArgs
             {

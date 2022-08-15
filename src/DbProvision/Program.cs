@@ -6,14 +6,11 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.AspNet.DataProtection.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Downloader.EntityFramework;
@@ -45,7 +42,7 @@ namespace DbProvision
             {
                 if (args[i].StartsWith('-'))
                 {
-                    var subArgs = new[] { args[i], args[++i] }; // Get contenttype argument with value 
+                    var subArgs = new[] { args[i], args[++i] }; // Get contenttype argument with value
 
                     services.GetRequiredService<ContentPublisher>().ExecuteAsync(subArgs).GetAwaiter().GetResult();
                 }
@@ -63,37 +60,37 @@ namespace DbProvision
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.DiagnosisKeys))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.AddDbContext<ContentDbContext>(
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Content))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.AddDbContext<IksInDbContext>(
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksIn))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.AddDbContext<IksOutDbContext>(
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksOut))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.AddDbContext<IksPublishingJobDbContext>(
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksPublishing))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.AddDbContext<EksPublishingJobDbContext>(
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.EksPublishing))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.AddDbContext<StatsDbContext>(
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Stats))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.AddDbContext<DataProtectionKeysDbContext>(
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.DataProtectionKeys))
@@ -108,10 +105,6 @@ namespace DbProvision
             services.AddTransient<ContentValidator>();
             services.AddTransient<ZippedSignedContentFormatter>();
             services.AddTransient<ContentInsertDbCommand>();
-            services.AddTransient<IContentSigner>(x => SignerConfigStartup.BuildEvSigner(
-                  configuration,
-                  new NullLogger<LocalMachineStoreCertificateProvider>(),
-                  new StandardUtcDateTimeProvider()));
         }
     }
 }

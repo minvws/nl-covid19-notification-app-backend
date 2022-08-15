@@ -4,7 +4,6 @@
 
 using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -13,7 +12,6 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
@@ -33,12 +31,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
             _contentDbContext.Database.EnsureCreated();
 
-            var nlSignerMock = new Mock<IContentSigner>();
-            nlSignerMock.Setup(x => x.GetSignature(new byte[0]))
-                .Returns(new byte[] { 2 });
-
             var hsmSignerServiceMock = new Mock<IHsmSignerService>();
-            hsmSignerServiceMock.Setup(x => x.GetCmsSignatureAsync(new byte[0]))
+            hsmSignerServiceMock.Setup(x => x.GetNlCmsSignatureAsync(new byte[0]))
                 .ReturnsAsync(new byte[] { 2 });
 
             var eksConfigMock = new Mock<IEksConfig>(MockBehavior.Strict);

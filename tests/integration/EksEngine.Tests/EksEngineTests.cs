@@ -72,19 +72,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
             eksConfig.Setup(x => x.PageSize).Returns(10000);
             eksConfig.Setup(x => x.LifetimeDays).Returns(14);
 
-            var gaSigner = new Mock<IGaContentSigner>(MockBehavior.Strict);
-            gaSigner.Setup(x => x.SignatureOid).Returns("unittest");
-            gaSigner.Setup(x => x.GetSignature(It.IsAny<byte[]>())).Returns(new byte[] { 1 });
-
-            var gaV15Signer = new Mock<IGaContentSigner>(MockBehavior.Strict);
-            gaV15Signer.Setup(x => x.SignatureOid).Returns("unittestV15");
-            gaV15Signer.Setup(x => x.GetSignature(It.IsAny<byte[]>())).Returns(new byte[] { 1 });
-
-            var nlSigner = new Mock<IContentSigner>(MockBehavior.Loose);
-            nlSigner.Setup(x => x.GetSignature(new byte[0])).Returns(new byte[] { 2 });
-
             var hsmSignerService = new Mock<IHsmSignerService>();
-            hsmSignerService.Setup(x => x.GetCmsSignatureAsync(new byte[0])).ReturnsAsync(new byte[] { 2 });
+            hsmSignerService.Setup(x => x.GetNlCmsSignatureAsync(new byte[0])).ReturnsAsync(new byte[] { 2 });
             hsmSignerService.Setup(x => x.GetGaenSignatureAsync(It.IsAny<byte[]>())).ReturnsAsync(new byte[] { 1 });
 
             _snapshot = new SnapshotWorkflowTeksToDksCommand(
@@ -103,9 +92,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
                 eksConfig.Object,
                 new EksBuilderV1(
                     eksHeaderConfig.Object,
-                    gaSigner.Object,
-                    gaV15Signer.Object,
-                    nlSigner.Object,
                     _dtp,
                     new GeneratedProtobufEksContentFormatter(),
                     hsmSignerService.Object,

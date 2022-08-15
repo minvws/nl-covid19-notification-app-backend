@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegistrations
 {
@@ -13,12 +12,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
     {
         public static void SigningProcessRegistration(this IServiceCollection services)
         {
-            // Batch Job
-            services.AddTransient<IIksSigner, EfgsCmsSigner>();
-            services.AddTransient<ICertificateChainConfig, CertificateChainConfig>();
-            services.AddTransient<ICertificateProvider>(
-                x => new LocalMachineStoreCertificateProvider(
-                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>()));
+            services.AddSingleton<IHsmSignerConfig, HsmSignerConfig>();
+            services.AddHttpClient<IHsmSignerService, HsmSignerService>();
         }
     }
 }

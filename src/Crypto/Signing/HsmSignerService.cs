@@ -36,15 +36,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<byte[]> GetCmsSignatureAsync(byte[] content)
+        public async Task<byte[]> GetNlCmsSignatureAsync(byte[] content)
+        {
+            return await GetCmsSignatureAsync(content, _config.CmsPublicCertificateChain);
+        }
+
+        public async Task<byte[]> GetEfgsCmsSignatureAsync(byte[] content)
+        {
+            return await GetCmsSignatureAsync(content, _config.EfgsPublicCertificate);
+        }
+
+        private async Task<byte[]> GetCmsSignatureAsync(byte[] content, string cmsPublicCertificate)
         {
             using var sha256Hasher = SHA256.Create();
             var contentHash = sha256Hasher.ComputeHash(content);
             var contentHashBased64 = Convert.ToBase64String(contentHash);
 
-            var cmsPublicCertificateChain = _config.CmsPublicCertificateChain;
-
-            var cmsCertBytes = Encoding.UTF8.GetBytes(cmsPublicCertificateChain);
+            var cmsCertBytes = Encoding.UTF8.GetBytes(cmsPublicCertificate);
             var cmsCertBytesBased64 = Convert.ToBase64String(cmsCertBytes);
 
             var requestModel = new HsmSignerRequestModel()
