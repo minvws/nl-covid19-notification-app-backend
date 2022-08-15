@@ -39,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
             services.IksDownloadingProcessRegistration();
 
             // Authentication (with certs)
-            services.AuthenticationProviderRegistration();
+            services.AuthenticationProviderRegistration(configuration);
 
             // Shared registrations
             services.SettingsRegistration();

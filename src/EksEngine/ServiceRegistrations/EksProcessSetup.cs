@@ -53,7 +53,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
             services.AddTransient<IEksJobContentWriter, EksJobContentWriter>();
 
             // Signing
-            services.AddSingleton<IHsmSignerConfig, HsmSignerConfig>();
             services.AddHttpClient<IHsmSignerService, HsmSignerService>();
 
             services.AddTransient<IEksBuilder, EksBuilderV1>(x => new EksBuilderV1(

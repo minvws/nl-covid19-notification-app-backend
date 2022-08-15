@@ -20,14 +20,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
         private readonly IEfgsConfig _efgsConfig;
         private readonly IAuthenticationCertificateProvider _efgsCertificateProvider;
-        private readonly ICertificateConfig _certificateConfig;
+        private readonly IFileSystemCertificateConfig _certificateConfig;
         private readonly ILogger _logger;
 
         public IksUploadService(
             HttpClient httpClient,
             IEfgsConfig efgsConfig,
             IAuthenticationCertificateProvider certificateProvider,
-            ICertificateConfig certificateConfig,
+            IFileSystemCertificateConfig certificateConfig,
             ILogger<IksUploadService> logger)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));

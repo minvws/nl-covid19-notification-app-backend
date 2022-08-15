@@ -4,7 +4,7 @@
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates
 {
-    public interface ICertificateConfig
+    public interface IFileSystemCertificateConfig
     {
         public string CertificatePath { get; }
         public string CertificateFileName { get; }

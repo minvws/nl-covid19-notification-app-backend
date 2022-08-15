@@ -39,10 +39,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader
             services.IksUploadingProcessRegistration();
 
             // IKS Signing
-            services.SigningProcessRegistration();
+            services.SigningProcessRegistration(configuration);
 
             // Authentication (with certs)
-            services.AuthenticationProviderRegistration();
+            services.AuthenticationProviderRegistration(configuration);
 
             // Shared registrations
             services.SettingsRegistration();
