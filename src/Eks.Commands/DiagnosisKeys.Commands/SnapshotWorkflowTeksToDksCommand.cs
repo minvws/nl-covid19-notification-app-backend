@@ -173,7 +173,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             var items = q4.Select(x => x.DiagnosisKey).ToList();
             _result.DkCount += items.Count;
 
-            _diagnosisKeysDbContext.BulkInsertBinaryCopy(items);
+            if (items.Any())
+            {
+                _diagnosisKeysDbContext.BulkInsertBinaryCopy(items);
+            }
         }
 
         private async Task MarkTeksAsPublishedAsync(long[] used)
@@ -185,12 +188,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             _commitIndex += used.Length;
             _logger.LogInformation("Marking TEKs as Published - Count: {Count}, Running total: {RunningTotal}.", zap.Count, _commitIndex);
 
-            var idsToUpdate = string.Join(",", zap.Select(x => x.Id.ToString()).ToArray());
+            if (zap.Any())
+            {
+                var idsToUpdate = string.Join(",", zap.Select(x => x.Id.ToString()).ToArray());
 
-            await _workflowDbContext.BulkUpdateSqlRawAsync<TekEntity>(
-                columnName: "publishing_state",
-                value: 1,
-                ids: idsToUpdate);
+                await _workflowDbContext.BulkUpdateSqlRawAsync<TekEntity>(
+                    columnName: "publishing_state",
+                    value: 1,
+                    ids: idsToUpdate);
+            }
         }
 
         private DiagnosisKeyInputEntity[] ReadDkPage()

@@ -58,17 +58,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             _index += used.Length;
             _logger.LogInformation("Marking as Published - Count: {Count}, Running total: {RunningTotal}.", zap.Count, _index);
 
-            if (zap.Count == 0)
+            if(zap.Any())
             {
-                return;
+                var idsToUpdate = string.Join(",", zap.Select(x => x.Id.ToString()).ToArray());
+
+                await _diagnosisKeysDbContext.BulkUpdateSqlRawAsync<DiagnosisKeyEntity>(
+                    columnName: "published_locally",
+                    value: true,
+                    ids: idsToUpdate);
             }
-
-            var idsToUpdate = string.Join(",", zap.Select(x => x.Id.ToString()).ToArray());
-
-            await _diagnosisKeysDbContext.BulkUpdateSqlRawAsync<DiagnosisKeyEntity>(
-                columnName: "published_locally",
-                value: true,
-                ids: idsToUpdate);
         }
 
         private long[] ReadPage()
