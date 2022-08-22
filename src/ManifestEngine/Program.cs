@@ -36,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine
             services.AddSingleton<IConfiguration>(configuration);
             services.DbContextRegistration(configuration);
             services.ManifestEngineRegistration();
-            services.SettingsRegistration();
+            services.SettingsRegistration(configuration);
         }
     }
 }

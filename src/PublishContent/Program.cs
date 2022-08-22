@@ -10,6 +10,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 
 namespace PublishContent
 {
@@ -35,6 +37,12 @@ namespace PublishContent
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Content))
                     .UseSnakeCaseNamingConvention());
+            
+            services.AddSingleton<IHsmSignerConfig, HsmSignerConfig>(
+                x => new HsmSignerConfig(configuration, "Certificates:HsmSigner")
+            );
+
+            services.AddHttpClient<IHsmSignerService, HsmSignerService>();
 
             services.AddTransient<PublishContentCommand>();
             services.AddTransient<ZippedSignedContentFormatter>();
