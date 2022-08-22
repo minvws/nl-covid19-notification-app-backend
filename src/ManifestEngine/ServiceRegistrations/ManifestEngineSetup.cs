@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Jobs;
 
@@ -16,6 +17,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.ServiceRe
             // Orchestrating components
             services.AddTransient<ManifestBatchJob>();
 
+            // Signing
+            services.AddHttpClient<IHsmSignerService, HsmSignerService>();
+
+            // Manifest commands
             services.AddTransient<ManifestUpdateCommand>();
             services.AddTransient<ManifestV4Builder>();
             services.AddTransient<ManifestV5Builder>();
