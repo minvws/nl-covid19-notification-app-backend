@@ -64,8 +64,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ek
             var eksToBeCleaned = await _dbContext.Content.AsNoTracking().Where(p => p.Type == ContentTypes.ExposureKeySetV2 && p.Release < cutoff).ToArrayAsync();
             result.GivenMercy = eksToBeCleaned.Length;
 
-            var idsToDelete = string.Join(",", eksToBeCleaned.Select(x => x.Id.ToString()).ToArray());
-            await _dbContext.BulkDeleteSqlRawAsync<ContentEntity>(idsToDelete);
+            if (eksToBeCleaned.Any())
+            {
+                var idsToDelete = string.Join(",", eksToBeCleaned.Select(x => x.Id.ToString()).ToArray());
+                await _dbContext.BulkDeleteSqlRawAsync<ContentEntity>(idsToDelete);
+            }
 
             result.Remaining = _dbContext.Content.Count(x => x.Type == ContentTypes.ExposureKeySetV2);
 

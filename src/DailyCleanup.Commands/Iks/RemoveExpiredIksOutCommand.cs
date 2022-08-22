@@ -64,8 +64,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ik
             var iksToBeCleaned = await _iksOutDbContext.Iks.AsNoTracking().Where(p => p.Created < cutoff).ToArrayAsync();
             _result.GivenMercy = iksToBeCleaned.Length;
 
-            var idsToDelete = string.Join(",", iksToBeCleaned.Select(x => x.Id.ToString()).ToArray());
-            await _iksOutDbContext.BulkDeleteSqlRawAsync<IksOutEntity>(idsToDelete);
+            if (iksToBeCleaned.Any())
+            {
+                var idsToDelete = string.Join(",", iksToBeCleaned.Select(x => x.Id.ToString()).ToArray());
+                await _iksOutDbContext.BulkDeleteSqlRawAsync<IksOutEntity>(idsToDelete);
+            }
 
             _result.Remaining = _iksOutDbContext.Iks.Count();
             _logger.LogInformation("Removed expired IksOut - Count: {IksOutRemoved}, Remaining: {IksOutRemaining}", _result.GivenMercy, _result.Remaining);
