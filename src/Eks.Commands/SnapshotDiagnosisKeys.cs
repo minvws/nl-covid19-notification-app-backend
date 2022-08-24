@@ -77,7 +77,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private async Task MarkFilteredEntitiesForCleanupAsync(EksCreateJobInputEntity[] allEntities, EksCreateJobInputEntity[] filteredResult)
         {
             var leftoverDkIds = allEntities.Except(filteredResult).Select(x => x.TekId).ToArray();
-            if(leftoverDkIds.Any())
+            if (leftoverDkIds.Any())
             {
                 var dksToMarkForCleanup = _diagnosisKeysDbContext.DiagnosisKeys.AsNoTracking().Where(x => leftoverDkIds.Contains(x.Id)).ToList();
 
@@ -86,7 +86,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 await _diagnosisKeysDbContext.BulkUpdateSqlRawAsync<DiagnosisKeyEntity>(
                     columnName: "ready_for_cleanup",
                     value: true,
-                    ids: idsToUpdate);                
+                    ids: idsToUpdate);
             }
         }
 

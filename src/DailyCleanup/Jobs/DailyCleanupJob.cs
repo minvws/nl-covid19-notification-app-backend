@@ -22,8 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs
         private readonly RemoveExpiredWorkflowsCommand _removeExpiredWorkflowsCommand;
         private readonly RemoveDiagnosisKeysReadyForCleanupCommand _removeDiagnosisKeysReadyForCleanupCommand;
         private readonly RemovePublishedDiagnosisKeysCommand _removePublishedDiagnosisKeysCommand;
-        private readonly RemoveExpiredEksV2Command _removeExpiredEksV2Command;
-        private readonly RemoveExpiredEksV3Command _removeExpiredEksV3Command;
+        private readonly RemoveExpiredEksCommand _removeExpiredEksCommand;
         private readonly RemoveExpiredManifestsCommand _removeExpiredManifestsCommand;
         private readonly RemoveExpiredIksInCommand _removeExpiredIksInCommand;
         private readonly RemoveExpiredIksOutCommand _removeExpiredIksOutCommand;
@@ -34,8 +33,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs
             RemoveExpiredWorkflowsCommand removeExpiredWorkflowsCommand,
             RemovePublishedDiagnosisKeysCommand removePublishedDiagnosisKeysCommand,
             RemoveDiagnosisKeysReadyForCleanupCommand removeDiagnosisKeysReadyForCleanupCommand,
-            RemoveExpiredEksV2Command removeExpiredEksV2Command,
-            RemoveExpiredEksV3Command removeExpiredEksV3Command,
+            RemoveExpiredEksCommand removeExpiredEksCommand,
             RemoveExpiredManifestsCommand removeExpiredManifestsCommand,
             RemoveExpiredIksInCommand removeExpiredIksInCommand,
             RemoveExpiredIksOutCommand removeExpiredIksOutCommand)
@@ -46,29 +44,27 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs
             _removeExpiredWorkflowsCommand = removeExpiredWorkflowsCommand ?? throw new ArgumentNullException(nameof(removeExpiredWorkflowsCommand));
             _removeDiagnosisKeysReadyForCleanupCommand = removeDiagnosisKeysReadyForCleanupCommand ?? throw new ArgumentNullException(nameof(removeDiagnosisKeysReadyForCleanupCommand));
             _removePublishedDiagnosisKeysCommand = removePublishedDiagnosisKeysCommand ?? throw new ArgumentNullException(nameof(removePublishedDiagnosisKeysCommand));
-            _removeExpiredEksV2Command = removeExpiredEksV2Command ?? throw new ArgumentNullException(nameof(removeExpiredEksV2Command));
-            _removeExpiredEksV3Command = removeExpiredEksV3Command ?? throw new ArgumentNullException(nameof(removeExpiredEksV3Command));
+            _removeExpiredEksCommand = removeExpiredEksCommand ?? throw new ArgumentNullException(nameof(removeExpiredEksCommand));
             _removeExpiredManifestsCommand = removeExpiredManifestsCommand ?? throw new ArgumentNullException(nameof(removeExpiredManifestsCommand));
             _removeExpiredIksInCommand = removeExpiredIksInCommand ?? throw new ArgumentNullException(nameof(removeExpiredIksInCommand));
             _removeExpiredIksOutCommand = removeExpiredIksOutCommand ?? throw new ArgumentNullException(nameof(removeExpiredIksOutCommand));
         }
         public void Run()
         {
-            _logger.LogInformation("Daily cleanup - Starting.");
+            _logger.LogInformation("Daily cleanup - Starting");
 
             _commandInvoker
-                .SetCommand(_removeExpiredWorkflowsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Workflows run starting."))
+                .SetCommand(_removeExpiredWorkflowsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Workflows run starting"))
                 .SetCommand(_removeDiagnosisKeysReadyForCleanupCommand)
                 .SetCommand(_removePublishedDiagnosisKeysCommand)
-                .SetCommand(_removeExpiredEksV2Command).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup EKSv2 run starting."))
-                .SetCommand(_removeExpiredEksV3Command).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup EKSv3 run starting."))
-                .SetCommand(_removeExpiredManifestsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Manifests run starting."))
-                .SetCommand(_removeExpiredIksInCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Expired IksIn run starting."))
-                .SetCommand(_removeExpiredIksOutCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Expired IksOut run starting."))
-                .SetCommand(_statisticsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Calculating daily stats starting."))
+                .SetCommand(_removeExpiredEksCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup EKS run starting"))
+                .SetCommand(_removeExpiredManifestsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Manifests run starting"))
+                .SetCommand(_removeExpiredIksInCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Expired IksIn run starting"))
+                .SetCommand(_removeExpiredIksOutCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Expired IksOut run starting"))
+                .SetCommand(_statisticsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Calculating daily stats starting"))
                 .Execute();
 
-            _logger.LogInformation("Daily cleanup - Finished.");
+            _logger.LogInformation("Daily cleanup - Finished");
         }
     }
 }

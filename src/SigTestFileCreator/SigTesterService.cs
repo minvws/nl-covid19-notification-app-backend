@@ -7,7 +7,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1;
 
@@ -32,7 +31,7 @@ namespace SigTestFileCreator
 
         public async Task ExecuteAsync(string[] args)
         {
-            _logger.LogDebug("Key presence Test started ({Time}).", _dateTimeProvider.Snapshot);
+            _logger.LogDebug("Key presence Test started ({Time})", _dateTimeProvider.Snapshot);
 
             if (args.Length != 1)
             {
@@ -45,30 +44,30 @@ namespace SigTestFileCreator
 
             var fileContents = File.ReadAllBytes(fullPath);
 
-            var (signedFileContents, _) = await BuildEksOutputAsync(fileContents);
+            var signedFileContents = await BuildEksOutputAsync(fileContents);
 
-            _logger.LogDebug("Saving EKS-engine resultfile.");
+            _logger.LogDebug("Saving EksEngine result file");
 
             using (var outputFile = File.Create($"{fileDirectory}\\{fileName}-signed.zip", 1024, FileOptions.None))
             {
                 outputFile.Write(signedFileContents);
             }
 
-            _logger.LogDebug("Key presence test complete.\nResults can be found in: {OutputLocation}.",
+            _logger.LogDebug("Key presence test complete.\nResults can be found in: {OutputLocation}",
                 fileDirectory);
         }
 
-        private async Task<(byte[], byte[])> BuildEksOutputAsync(byte[] fileData)
+        private async Task<byte[]> BuildEksOutputAsync(byte[] fileData)
         {
-            _logger.LogDebug("Building EKS-engine resultfile.");
+            _logger.LogDebug("Building EKS-engine result file");
 
-            var args = new TemporaryExposureKeyArgs[]
+            var args = new[]
             {
                 new TemporaryExposureKeyArgs{
-                    RollingPeriod = default(int),
-                    TransmissionRiskLevel = default(TransmissionRiskLevel),
+                    RollingPeriod = default,
+                    TransmissionRiskLevel = default,
                     KeyData = fileData,
-                    RollingStartNumber = default(int)
+                    RollingStartNumber = default
                 }
             };
 

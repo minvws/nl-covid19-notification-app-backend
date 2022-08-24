@@ -22,8 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private readonly IksOutDbContext _iksOutboundDbContext;
         private List<IksOutEntity> _iksOutEntities;
         private readonly IBatchTagProvider _batchTagProvider;
-        private readonly List<IksSendResult> _results = new List<IksSendResult>();
-        private readonly HttpPostIksResult _lastResult;
+        private readonly List<IksSendResult> _results = new();
         private readonly IHsmSignerService _hsmSignerService;
         private readonly ILogger _logger;
 

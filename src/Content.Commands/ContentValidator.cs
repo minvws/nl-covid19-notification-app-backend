@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             {
                 return false;
             }
-            
+
             if (!IsValidJson(args.Json))
             {
                 return false;

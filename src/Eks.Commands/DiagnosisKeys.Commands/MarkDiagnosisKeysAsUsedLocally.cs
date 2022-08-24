@@ -58,7 +58,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             _index += used.Length;
             _logger.LogInformation("Marking as Published - Count: {Count}, Running total: {RunningTotal}.", zap.Count, _index);
 
-            if(zap.Any())
+            if (zap.Any())
             {
                 var idsToUpdate = string.Join(",", zap.Select(x => x.Id.ToString()).ToArray());
 

@@ -12,10 +12,10 @@ using Xunit;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 {
     [Trait("db", "mem")]
-    public class ManifestV5CreationTestSqlite : ManifestV5CreationTest, IDisposable
+    public class ManifestCreationTestSqlite : ManifestCreationTest, IDisposable
     {
         private static DbConnection connection;
-        public ManifestV5CreationTestSqlite() : base(
+        public ManifestCreationTestSqlite() : base(
             new DbContextOptionsBuilder<ContentDbContext>().UseSqlite(CreateInMemoryDatabase()).Options
         )
         { }

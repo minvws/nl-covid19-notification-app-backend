@@ -30,4 +30,4 @@ CREATE UNIQUE INDEX ix_content_publishing_id_type
     ON public.content USING btree
     (publishing_id ASC NULLS LAST, type ASC NULLS LAST)
     WHERE publishing_id IS NOT NULL
-    AND (type = ANY (ARRAY['ExposureKeySetV2'::text, 'ExposureKeySetV3'::text]));
+    AND type = 'ExposureKeySet'::text;

@@ -37,7 +37,7 @@ namespace PublishContent
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Content))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.AddSingleton<IHsmSignerConfig, HsmSignerConfig>(
                 x => new HsmSignerConfig(configuration, "Certificates:HsmSigner")
             );

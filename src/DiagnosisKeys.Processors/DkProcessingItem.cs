@@ -13,7 +13,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors
     public class DkProcessingItem
     {
         public DiagnosisKeyEntity DiagnosisKey { get; set; }
-        
         public IDictionary<string, object> Metadata { get; set; }
     }
 }

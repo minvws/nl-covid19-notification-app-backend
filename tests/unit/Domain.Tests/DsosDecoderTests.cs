@@ -84,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Tests
             Assert.Equal(value, symptomatic.DaysSinceOnsetOfSymptoms);
             Assert.Throws<InvalidOperationException>(() => symptomatic.DaysSinceLastSymptoms);
         }
-        
+
         [InlineData(86, -14, -14)] //Min
         [InlineData(87, -13, -13)]
         [InlineData(100, 0, 0)]

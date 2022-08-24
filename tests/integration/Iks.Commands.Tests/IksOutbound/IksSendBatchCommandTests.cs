@@ -32,9 +32,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
     {
         private readonly IksOutDbContext _iksOutDbContext;
 
-        private readonly EfgsConfigMock _efgsConfigFake = new EfgsConfigMock();
+        private readonly EfgsConfigMock _efgsConfigFake = new();
         private readonly Mock<IAuthenticationCertificateProvider> _certProviderMock;
-        private readonly IConfiguration _configuration;
         private readonly Mock<IFileSystemCertificateConfig> _certificateConfigMock;
         private readonly Mock<IBatchTagProvider> _batchTagProviderMock;
         private readonly Mock<IHsmSignerService> _hsmSignerServiceMock;
@@ -54,7 +53,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
             _certProviderMock.Setup(p => p.GetCertificate()).Returns(mockCertificate.Object);
 
             //TODO: remove or replace with Efgs signing settings from HsmConfig
-            _configuration = new ConfigurationBuilder()
+            new ConfigurationBuilder()
                 .AddInMemoryCollection(
                     new Dictionary<string, string> {
                         {"Certificates:EfgsAuthentication:Thumbprint", "Thumbprint"},

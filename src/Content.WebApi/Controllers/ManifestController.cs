@@ -13,17 +13,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi.Controlle
     public class ManifestController : ControllerBase
     {
         [HttpGet]
-        [Route("/v4/manifest")]
-        public async Task GetManifestV4Async([FromServices] HttpGetCdnManifestCommand command)
-        {
-            await command.ExecuteAsync(HttpContext, ContentTypes.ManifestV4);
-        }
-
-        [HttpGet]
-        [Route("/v5/manifest")]
+        [Route("/v6/manifest")]
         public async Task GetManifestAsync([FromServices] HttpGetCdnManifestCommand command)
         {
-            await command.ExecuteAsync(HttpContext, ContentTypes.ManifestV5);
+            await command.ExecuteAsync(HttpContext, ContentTypes.Manifest);
         }
     }
 }

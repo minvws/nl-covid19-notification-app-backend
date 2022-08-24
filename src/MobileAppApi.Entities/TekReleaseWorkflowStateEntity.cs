@@ -14,7 +14,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
-        
+
         public DateTime Created { get; set; }
         public DateTime ValidUntil { get; set; }
 
@@ -28,7 +28,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi.Workflow.En
         public byte[] BucketId { get; set; }
 
         /// <summary>
-        /// From Icc 
+        /// From Icc
         /// </summary>
         public DateTime? AuthorisedByCaregiver { get; set; }
 

@@ -4,14 +4,13 @@ CREATE TABLEpublic.eks_output
     release timestamp with time zone NOT NULL,
     region text NOT NULL,
     content bytea NOT NULL,
-    gaen_version integer NOT NULL,
     output_id character varying(36),
     creating_job_name text NOT NULL,
     creating_job_qualifier integer NOT NULL,
     CONSTRAINT pk_eks_output PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX ix_eks_output_output_id_gaen_version
+CREATE UNIQUE INDEX ix_eks_output_output_id
     ON public.eks_output USING btree
-    (output_id ASC NULLS LAST, gaen_version ASC NULLS LAST)
+    (output_id ASC NULLS LAST)
     WHERE output_id IS NOT NULL;

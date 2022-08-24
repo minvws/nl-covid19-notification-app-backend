@@ -13,11 +13,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi.Controlle
     public class ResourceBundleController : ControllerBase
     {
         [HttpGet]
-        [Route("/v4/resourcebundle/{id}")]
-        [Route("/v5/resourcebundle/{id}")]
+        [Route("/v6/resourcebundle/{id}")]
         public async Task GetResourceBundleV3Async(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
         {
-            await command.ExecuteAsync(HttpContext, ContentTypes.ResourceBundleV3, id);
+            await command.ExecuteAsync(HttpContext, ContentTypes.ResourceBundle, id);
         }
     }
 }
