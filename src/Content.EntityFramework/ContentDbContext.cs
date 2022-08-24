@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityF
             modelBuilder.Entity<ContentEntity>().HasIndex(u => u.ContentTypeName);
 
             // Restrict the unique index on PublishingId and Type to ExposureKeySet
-            var indexFilter = $"publishing_id IS NOT NULL AND type = '{ContentTypes.ExposureKeySet}'i";
+            var indexFilter = $"publishing_id IS NOT NULL AND type = '{ContentTypes.ExposureKeySet}'";
 
             modelBuilder
                 .Entity<ContentEntity>()
