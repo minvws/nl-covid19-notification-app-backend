@@ -57,7 +57,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Jobs
                 .SetCommand(_removeExpiredWorkflowsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Workflows run starting"))
                 .SetCommand(_removeDiagnosisKeysReadyForCleanupCommand)
                 .SetCommand(_removePublishedDiagnosisKeysCommand)
-                .SetCommand(_removeExpiredEksCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup EKSv3 run starting"))
+                .SetCommand(_removeExpiredEksCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup EKS run starting"))
                 .SetCommand(_removeExpiredManifestsCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Manifests run starting"))
                 .SetCommand(_removeExpiredIksInCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Expired IksIn run starting"))
                 .SetCommand(_removeExpiredIksOutCommand).WithPreExecuteAction(() => _logger.LogInformation("Daily cleanup - Cleanup Expired IksOut run starting"))

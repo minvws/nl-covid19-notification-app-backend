@@ -59,7 +59,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
                     // If current manifest equals existing manifest, do nothing
                     _logger.LogInformation("Manifest does NOT require updating.");
 
-                    //TODO: don't return null ;(
                     return null;
                 }
 
@@ -82,7 +81,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 
             _logger.LogInformation("Manifest updated.");
 
-            //TODO: don't return null ;(
             return null;
         }
 
