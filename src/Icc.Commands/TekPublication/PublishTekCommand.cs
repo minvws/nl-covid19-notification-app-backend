@@ -59,7 +59,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
             if (wf == null)
             {
                 _logger.LogError("KeyReleaseWorkflowState not found - GGDKey: {GGDKey}.", args.GGDKey);
-                return new CommandResult{ HasErrors = true };
+                return new CommandResult { HasErrors = true };
             }
 
             wf.AuthorisedByCaregiver = _dateTimeProvider.Snapshot;
@@ -75,7 +75,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublicat
                 _logger.LogInformation("GGDKey {GGDKey} authorized.", wf.GGDKey);
             }
 
-            return new CommandResult{ HasErrors = false };
+            return new CommandResult { HasErrors = false };
         }
 
         private async Task<bool> PublishTek(TekReleaseWorkflowStateEntity workflowStateEntity)

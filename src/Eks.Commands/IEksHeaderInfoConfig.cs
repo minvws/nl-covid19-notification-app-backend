@@ -9,6 +9,5 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         string AppBundleId { get; }
         string VerificationKeyId { get; }
         string VerificationKeyVersion { get; }
-        string VerificationKeyVersionV15 { get; }
     }
 }

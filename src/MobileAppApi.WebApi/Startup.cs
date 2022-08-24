@@ -46,7 +46,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.MobileAppApi
             services.AddControllers();
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            
+
             services.AddDbContext<WorkflowDbContext>(
                 options => options
                     .UseNpgsql(Configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow))

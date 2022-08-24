@@ -51,8 +51,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
                     jsonSerializer);
 
             _sut = new ManifestUpdateCommand(
-                new ManifestV4Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
-                new ManifestV5Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
+                new ManifestBuilder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
                 _contentDbContext,
                 logger,
                 _dateTimeProviderMock.Object,
@@ -70,8 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 
             //Assert
             Assert.Equal(2, _contentDbContext.Content.Count());
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV4));
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV5));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.Manifest));
         }
 
         [Fact]
@@ -89,8 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 
             //Assert
             Assert.Equal(2, _contentDbContext.Content.Count());
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV4));
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV5));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.Manifest));
         }
     }
 }

@@ -24,32 +24,32 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.AddDbContext<DiagnosisKeysDbContext>(
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.DiagnosisKeys))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.AddDbContext<ContentDbContext>(
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Content))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.AddDbContext<IksInDbContext>(
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksIn))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.AddDbContext<IksOutDbContext>(
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksOut))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.AddDbContext<IksPublishingJobDbContext>(
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksPublishing))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.AddDbContext<EksPublishingJobDbContext>(
                 options => options
                     .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.EksPublishing))

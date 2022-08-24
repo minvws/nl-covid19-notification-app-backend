@@ -18,8 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
 {
     public class ManifestUpdateCommand : BaseCommand
     {
-        private readonly ManifestV4Builder _v4Builder;
-        private readonly ManifestV5Builder _v5Builder;
+        private readonly ManifestBuilder _builder;
         private readonly ContentDbContext _contentDbContext;
         private readonly ILogger _logger;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
@@ -27,16 +26,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
         private readonly IContentEntityFormatter _formatter;
 
         public ManifestUpdateCommand(
-            ManifestV4Builder v4Builder,
-            ManifestV5Builder v5Builder,
+            ManifestBuilder builder,
             ContentDbContext contentDbContext,
             ILogger<ManifestUpdateCommand> logger,
             IUtcDateTimeProvider dateTimeProvider,
             IJsonSerializer jsonSerializer,
             IContentEntityFormatter formatter)
         {
-            _v4Builder = v4Builder ?? throw new ArgumentNullException(nameof(v4Builder));
-            _v5Builder = v5Builder ?? throw new ArgumentNullException(nameof(v5Builder));
+            _builder = builder ?? throw new ArgumentNullException(nameof(builder));
             _contentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
@@ -44,36 +41,26 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             _formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
         }
 
-        public async Task ExecuteV4Async() => await Execute(async () => await _v4Builder.ExecuteAsync(), ContentTypes.ManifestV4);
-        public async Task ExecuteV5Async() => await Execute(async () => await _v5Builder.ExecuteAsync(), ContentTypes.ManifestV5);
-
         public override async Task<ICommandResult> ExecuteAsync()
-        {
-            await ExecuteV4Async();
-            await ExecuteV5Async();
-
-            return null;
-        }
-
-        private async Task Execute<T>(Func<Task<T>> build, ContentTypes contentType) where T : IEquatable<T>
         {
             var snapshot = _dateTimeProvider.Snapshot;
 
             await using var tx = _contentDbContext.BeginTransaction();
 
-            var currentManifestData = await _contentDbContext.SafeGetLatestContentAsync(contentType, snapshot);
-            var candidateManifest = await build();
+            var currentManifestData = await _contentDbContext.SafeGetLatestContentAsync(ContentTypes.Manifest, snapshot);
+            var candidateManifest = await _builder.ExecuteAsync();
 
             if (currentManifestData != null)
             {
-                var currentManifest = ParseContent<T>(currentManifestData.Content);
+                var currentManifest = ParseContent<ManifestContent>(currentManifestData.Content);
 
                 if (candidateManifest.Equals(currentManifest))
                 {
                     // If current manifest equals existing manifest, do nothing
                     _logger.LogInformation("Manifest does NOT require updating.");
 
-                    return;
+                    //TODO: don't return null ;(
+                    return null;
                 }
 
                 // If current manifest does not equal existing manifest, then replace current manifest.
@@ -86,7 +73,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             {
                 Created = snapshot,
                 Release = snapshot,
-                Type = contentType
+                Type = ContentTypes.Manifest
             };
             await _formatter.FillAsync(contentEntity, candidateManifest);
 
@@ -94,6 +81,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Manifest.Commands
             _contentDbContext.SaveAndCommit();
 
             _logger.LogInformation("Manifest updated.");
+
+            //TODO: don't return null ;(
+            return null;
         }
 
         private T ParseContent<T>(byte[] formattedContent)

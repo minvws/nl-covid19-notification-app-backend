@@ -13,17 +13,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi.Controlle
     public class ExposureKeySetController : ControllerBase
     {
         [HttpGet]
-        [Route("/v4/exposurekeyset/{id}")]
-        public async Task GetExposureKeySetV2Async(string id, [FromServices] HttpGetCdnEksCommand command)
-        {
-            await command.ExecuteAsync(HttpContext, ContentTypes.ExposureKeySetV2, id);
-        }
-
-        [HttpGet]
-        [Route("/v5/exposurekeyset/{id}")]
+        [Route("/v6/exposurekeyset/{id}")]
         public async Task GetExposureKeySetAsync(string id, [FromServices] HttpGetCdnEksCommand command)
         {
-            await command.ExecuteAsync(HttpContext, ContentTypes.ExposureKeySetV3, id);
+            await command.ExecuteAsync(HttpContext, ContentTypes.ExposureKeySet, id);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
         private readonly IksPublishingJobDbContext _publishingDbContext;
         private readonly ILogger<IksJobContentWriter> _logger;
 
-        public  IksJobContentWriter(IksOutDbContext contentDbContext, IksPublishingJobDbContext publishingDbContext, ILogger<IksJobContentWriter> logger)
+        public IksJobContentWriter(IksOutDbContext contentDbContext, IksPublishingJobDbContext publishingDbContext, ILogger<IksJobContentWriter> logger)
         {
             _contentDbContext = contentDbContext ?? throw new ArgumentNullException(nameof(contentDbContext));
             _publishingDbContext = publishingDbContext ?? throw new ArgumentNullException(nameof(publishingDbContext));

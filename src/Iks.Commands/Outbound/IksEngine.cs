@@ -72,7 +72,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
             stopwatch.Start();
 
             _logger.LogInformation("Started - JobName: {JobName}", _jobName);
-            
+
             _engineResult.Started = _dateTimeProvider.Snapshot; //Align with the logged job name.
 
             await ClearJobTables();

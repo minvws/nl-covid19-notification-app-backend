@@ -13,14 +13,13 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.FormatV1
 {
     /// <summary>
-    /// Building EKS GAEN and GAENv15 content
+    /// Building EKS GAEN content
     /// </summary>
     public class EksBuilderV1 : IEksBuilder
     {
         private const string Header = "EK Export v1    ";
 
-        public const string GaenSignatureOid = "1.2.840.10045.4.3.2";
-        private const string GaenV15SignatureOid = "1.2.840.10045.4.3.2";
+        private const string GaenSignatureOid = "1.2.840.10045.4.3.2";
 
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly IEksContentFormatter _eksContentFormatter;
@@ -44,11 +43,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
         }
 
         /// <summary>
-        /// Builds content with Gaen V12 and Gaen V15 signed data and signing files
+        /// Builds content with Gaen signed data and signing files
         /// </summary>
         /// <param name="keys">All TEks</param>
-        /// <returns>First result is byte[] result the  Gaen V12 data, the second byte[] result is the Gaen V15 data</returns>
-        public async Task<(byte[], byte[])> BuildAsync(TemporaryExposureKeyArgs[] keys)
+        /// <returns>Gaen data</returns>
+        public async Task<byte[]> BuildAsync(TemporaryExposureKeyArgs[] keys)
         {
             if (keys == null)
             {
@@ -57,19 +56,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
 
             if (keys.Any(x => x == null))
             {
-                throw new ArgumentException("At least one key in null.", nameof(keys));
+                throw new ArgumentException("At least one key is null.", nameof(keys));
             }
 
             var securityInfo = GetGaenSignatureInfo(GaenSignatureOid, _config.VerificationKeyVersion);
-            var securityInfoV15 = GetGaenSignatureInfo(GaenV15SignatureOid, _config.VerificationKeyVersionV15);
-
             var content = CreateContent(keys, securityInfo);
-            var contentV15 = CreateContent(keys, securityInfoV15);
-
             var zippedContent = await CreateZippedContent(content, securityInfo);
-            var zippedContentV15 = await CreateZippedContent(contentV15, securityInfoV15);
 
-            return (zippedContent, zippedContentV15);
+            return zippedContent;
         }
 
         private ExposureKeySetContentArgs CreateContent(TemporaryExposureKeyArgs[] keys, SignatureInfoArgs securityInfo)
@@ -80,7 +74,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
                 Region = "NL",
                 BatchNum = 1,
                 BatchSize = 1,
-                SignatureInfos = new[] {securityInfo},
+                SignatureInfos = new[] { securityInfo },
                 StartTimestamp = _dateTimeProvider.Snapshot.AddDays(-1).ToUnixTimeU64(),
                 EndTimestamp = _dateTimeProvider.Snapshot.ToUnixTimeU64(),
                 Keys = keys
@@ -114,13 +108,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Forma
             };
 
             var gaenSigFile = _eksContentFormatter.GetBytes(signatures);
-
             var zippedContent = await new ZippedContentBuilder().BuildEksAsync(contentBytes, gaenSigFile, cmsSignature);
             return zippedContent;
         }
 
         private SignatureInfoArgs GetGaenSignatureInfo(string signatureOid, string verificationKeyVersion)
-            => new SignatureInfoArgs
+            => new()
             {
                 SignatureAlgorithm = signatureOid,
                 VerificationKeyId = _config.VerificationKeyId,

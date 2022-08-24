@@ -104,7 +104,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
                 options => options
                     .UseNpgsql(_configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow))
                     .UseSnakeCaseNamingConvention());
-            
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.HttpOnly = HttpOnlyPolicy.Always;
@@ -182,6 +182,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
             authBuilder.AddScheme<AuthenticationSchemeOptions, JwtAuthenticationHandler>(
                 JwtAuthenticationHandler.SchemeName, null);
         }
+
         private void StartupIdentityHub(IServiceCollection services)
         {
             var iccIdentityHubConfig = new IccIdentityHubConfig(_configuration);

@@ -49,17 +49,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
                 new NullLogger<EksBuilderV1>());
 
             //Act
-            var (result, resultv15) = sut.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
-            Trace.WriteLine($"{keyCount} keys = {result.Length} bytes.");
+            var result = sut.BuildAsync(GetRandomKeys(keyCount, seed)).GetAwaiter().GetResult();
+            Trace.WriteLine($"{keyCount} keys = {result.Length} bytes");
 
             //Assert
             Assert.True(result.Length > 0);
-            Assert.True(resultv15.Length > 0);
 
             using var fs = new FileStream("EKS.zip", FileMode.Create, FileAccess.Write);
             fs.Write(result, 0, result.Length);
-            using var fsV15 = new FileStream("EKSV15.zip", FileMode.Create, FileAccess.Write);
-            fsV15.Write(resultv15, 0, resultv15.Length);
         }
 
         [Fact]
@@ -79,7 +76,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var dummyContent = Encoding.ASCII.GetBytes("Signature intentionally left empty");
 
             //Act
-            var (result, resultv15) = sut.BuildAsync(GetRandomKeys(keyCount, 123)).GetAwaiter().GetResult();
+            var result = sut.BuildAsync(GetRandomKeys(keyCount, 123)).GetAwaiter().GetResult();
 
             //Assert
             using var zipFileInMemory = new MemoryStream();
@@ -89,15 +86,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests.Exposure
             var cmsSignature = zipFileContent.ReadEntry(ZippedContentEntryNames.CmsSignature);
             Assert.NotNull(cmsSignature);
             Assert.Equal(cmsSignature, dummyContent);
-
-            //Assert V15
-            using var zipFileInMemoryV15 = new MemoryStream();
-            zipFileInMemoryV15.Write(resultv15, 0, resultv15.Length);
-
-            using var zipFileContentV15 = new ZipArchive(zipFileInMemoryV15, ZipArchiveMode.Read, false);
-            var cmsSignatureV15 = zipFileContentV15.ReadEntry(ZippedContentEntryNames.CmsSignature);
-            Assert.NotNull(cmsSignatureV15);
-            Assert.Equal(cmsSignatureV15, dummyContent);
         }
 
         private TemporaryExposureKeyArgs[] GetRandomKeys(int workflowCount, int seed)

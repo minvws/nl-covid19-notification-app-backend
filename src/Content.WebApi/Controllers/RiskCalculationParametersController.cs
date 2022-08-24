@@ -13,11 +13,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.WebApi.Controlle
     public class RiskCalculationParametersController : ControllerBase
     {
         [HttpGet]
-        [Route("/v4/riskcalculationparameters/{id}")]
-        [Route("/v5/riskcalculationparameters/{id}")]
+        [Route("/v6/riskcalculationparameters/{id}")]
         public async Task GetRiskCalculationParametersV3Async(string id, [FromServices] HttpGetCdnImmutableNonExpiringContentCommand command)
         {
-            await command.ExecuteAsync(HttpContext, ContentTypes.RiskCalculationParametersV3, id);
+            await command.ExecuteAsync(HttpContext, ContentTypes.RiskCalculationParameters, id);
         }
     }
 }

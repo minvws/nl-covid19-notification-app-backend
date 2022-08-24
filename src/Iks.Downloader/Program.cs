@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
                 new ConsoleAppRunner().Execute(args, Configure, Start);
                 return 0;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return -1;
             }

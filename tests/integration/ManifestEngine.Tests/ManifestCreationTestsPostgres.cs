@@ -11,12 +11,12 @@ using Xunit;
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 {
     [Trait("db", "postgres")]
-    public class ManifestV5CreationTestsPostgres : ManifestV5CreationTest
+    public class ManifestCreationTestsPostgres : ManifestCreationTest
     {
-        private const string Prefix = nameof(ManifestV5CreationTest) + "_";
+        private const string Prefix = nameof(ManifestCreationTest) + "_";
         private static DbConnection connection;
 
-        public ManifestV5CreationTestsPostgres() : base(
+        public ManifestCreationTestsPostgres() : base(
             new DbContextOptionsBuilder<ContentDbContext>()
                 .UseNpgsql(CreateSqlDatabase("c"))
                 .UseSnakeCaseNamingConvention()

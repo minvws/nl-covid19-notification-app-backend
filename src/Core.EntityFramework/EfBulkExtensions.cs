@@ -131,7 +131,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             }
 
             writer.Complete();
-            
+
             if (closeConnectionInternally)
             {
                 connection.Close();

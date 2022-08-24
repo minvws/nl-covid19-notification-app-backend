@@ -24,12 +24,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
         private readonly ContentDbContext _contentDbContext;
         private Mock<IManifestConfig> _manifestConfigMock;
 
-        private readonly List<ContentTypes> _manifestTypes = new List<ContentTypes>
-        {
-            ContentTypes.ManifestV4,
-            ContentTypes.ManifestV5,
-        };
-
         protected RemoveExpiredManifestsTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
             _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
@@ -37,8 +31,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
         }
 
         [Theory]
-        [InlineData(ContentTypes.ManifestV4)]
-        [InlineData(ContentTypes.ManifestV5)]
+        [InlineData(ContentTypes.Manifest)]
         public async Task Remove_Expired_Manifest_By_Type_Should_Leave_One(ContentTypes manifestTypeName)
         {
             //Arrange
@@ -47,7 +40,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
             _manifestConfigMock = new Mock<IManifestConfig>();
             _manifestConfigMock.Setup(x => x.KeepAliveCount).Returns(1);
 
-            CreateManifestsForManifestType(manifestTypeName);
+            CreateManifest();
 
             //Act
             var sut = CompileRemoveExpiredManifestsCommand();
@@ -56,7 +49,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
             var content = GetAllContent();
 
             var manifests = content.Where(x => x.Type == manifestTypeName);
-            var appConfig = content.Where(x => x.Type == ContentTypes.AppConfigV2);
+            var appConfig = content.Where(x => x.Type == ContentTypes.AppConfig);
 
             //Assert
             Assert.NotNull(manifests);
@@ -67,7 +60,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
         }
 
         [Fact]
-        public async Task Remove_Expired_Manifests_Should_Leave_One_Per_Type()
+        public async Task Remove_Expired_Manifests_Should_Leave_One()
         {
             //Arrange
             _contentDbContext.BulkDelete(_contentDbContext.Content.ToList());
@@ -75,10 +68,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
             _manifestConfigMock = new Mock<IManifestConfig>();
             _manifestConfigMock.Setup(x => x.KeepAliveCount).Returns(1);
 
-            foreach (var manifestType in _manifestTypes)
-            {
-                CreateManifestsForManifestType(manifestType);
-            }
+            CreateManifest();
 
             //Act
             var sut = CompileRemoveExpiredManifestsCommand();
@@ -86,25 +76,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
 
             var content = GetAllContent();
 
-            //Assert per type
-            foreach (var manifestType in _manifestTypes)
-            {
-                var manifests = content.Where(x => x.Type == manifestType);
-                var appConfig = content.Where(x => x.Type == ContentTypes.AppConfigV2);
+            //Assert
+            var manifests = content.Where(x => x.Type == ContentTypes.Manifest);
+            var appConfig = content.Where(x => x.Type == ContentTypes.AppConfig);
 
+            Assert.NotNull(manifests);
+            Assert.True(manifests.Count() == 1, $"More than 1 {ContentTypes.Manifest} remains after deletion.");
 
-                Assert.NotNull(manifests);
-                Assert.True(manifests.Count() == 1, $"More than 1 {manifestType} remains after deletion.");
-
-                Assert.NotNull(appConfig);
-                Assert.True(appConfig.Count() != 0, $"No AppConfigV2 remains after deletion.");
-            }
+            Assert.NotNull(appConfig);
+            Assert.True(appConfig.Count() != 0, $"No AppConfigV2 remains after deletion.");
         }
 
         [Theory]
-        [InlineData(ContentTypes.ManifestV4)]
-        [InlineData(ContentTypes.ManifestV5)]
-        public async Task Remove_Zero_Manifest_By_Type_Should_Not_Crash(ContentTypes manifestTypeName)
+        [InlineData(ContentTypes.Manifest)]
+        public async Task Remove_Zero_Manifest_Should_Not_Crash(ContentTypes manifestTypeName)
         {
             //Arrange
             await _contentDbContext.BulkDeleteAsync(_contentDbContext.Content.ToList());
@@ -122,22 +107,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
 
             //Assert
             Assert.NotNull(manifests);
-            Assert.True(!manifests.Any(), $"More than 0 {manifestTypeName} remains after deletion.");
+            Assert.True(!manifests.Any(), $"More than 0 {manifestTypeName} remains after deletion");
         }
 
         private RemoveExpiredManifestsCommand CompileRemoveExpiredManifestsCommand()
         {
-            var receiver = new RemoveExpiredManifestsReceiver(
+            return new RemoveExpiredManifestsCommand(
                 _contentDbContext,
                 _manifestConfigMock.Object,
                 new StandardUtcDateTimeProvider(),
-                new NullLogger<RemoveExpiredManifestsReceiver>());
-
-            var result = new RemoveExpiredManifestsCommand(receiver);
-            return result;
+                new NullLogger<RemoveExpiredManifestsCommand>());
         }
 
-        private void CreateManifestsForManifestType(ContentTypes manifestTypeName)
+        private void CreateManifest()
         {
             var manifestContent = "This is a Manifest";
             var appConfigContent = "This is an AppConfig";
@@ -153,7 +135,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
                     Content = Encoding.ASCII.GetBytes(appConfigContent),
                     PublishingId = It.IsAny<string>(),
                     ContentTypeName = It.IsAny<string>(),
-                    Type = ContentTypes.AppConfigV2,
+                    Type = ContentTypes.AppConfig,
                     Created = twoDaysAgo,
                     Release = twoDaysAgo
 
@@ -162,7 +144,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
                     Content = Encoding.ASCII.GetBytes(manifestContent),
                     PublishingId = It.IsAny<string>(),
                     ContentTypeName = It.IsAny<string>(),
-                    Type = manifestTypeName,
+                    Type = ContentTypes.Manifest,
                     Created = twoDaysAgo,
                     Release = twoDaysAgo
 
@@ -171,7 +153,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
                     Content = Encoding.ASCII.GetBytes(manifestContent),
                     PublishingId = It.IsAny<string>(),
                     ContentTypeName = It.IsAny<string>(),
-                    Type = manifestTypeName,
+                    Type = ContentTypes.Manifest,
                     Created = yesterday,
                     Release = yesterday
 
@@ -180,7 +162,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
                     Content = Encoding.ASCII.GetBytes(manifestContent),
                     PublishingId = It.IsAny<string>(),
                     ContentTypeName = It.IsAny<string>(),
-                    Type = manifestTypeName,
+                    Type = ContentTypes.Manifest,
                     Created = today,
                     Release = today
 
@@ -189,7 +171,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Tests.Manif
                     Content = Encoding.ASCII.GetBytes(manifestContent),
                     PublishingId = It.IsAny<string>(),
                     ContentTypeName = It.IsAny<string>(),
-                    Type = manifestTypeName,
+                    Type = ContentTypes.Manifest,
                     Created = tomorrow,
                     Release = tomorrow
 

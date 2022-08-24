@@ -23,11 +23,11 @@ using Xunit;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 {
-    public abstract class ManifestV5CreationTest
+    public abstract class ManifestCreationTest
     {
         private readonly ContentDbContext _contentDbContext;
 
-        protected ManifestV5CreationTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
+        protected ManifestCreationTest(DbContextOptions<ContentDbContext> contentDbContextOptions)
         {
             _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
             _contentDbContext.Database.EnsureCreated();
@@ -43,9 +43,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             var sut = CompileManifestUpdateCommand();
 
             //Act
-            await sut.ExecuteV5Async();
+            await sut.ExecuteAsync();
 
-            var result = _contentDbContext.SafeGetLatestContentAsync(ContentTypes.ManifestV5, DateTime.UtcNow).GetAwaiter().GetResult();
+            var result = _contentDbContext.SafeGetLatestContentAsync(ContentTypes.Manifest, DateTime.UtcNow).GetAwaiter().GetResult();
 
             //Assert
             Assert.NotNull(result);
@@ -72,11 +72,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
                     jsonSerialiser);
 
             var result = new ManifestUpdateCommand(
-                new ManifestV4Builder(
-                    _contentDbContext,
-                    eksConfigMock.Object,
-                    dateTimeProvider),
-                new ManifestV5Builder(
+                new ManifestBuilder(
                     _contentDbContext,
                     eksConfigMock.Object,
                     dateTimeProvider),
@@ -100,8 +96,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
                 new ContentEntity{
                     Content = Encoding.ASCII.GetBytes(content),
                     PublishingId = "WrongId",
-                    ContentTypeName = "ExposureKeySetV2",
-                    Type = ContentTypes.ExposureKeySetV2,
+                    ContentTypeName = "ExposureKeySet",
+                    Type = ContentTypes.ExposureKeySet,
                     Created = yesterday,
                     Release = yesterday
 
@@ -109,8 +105,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
                 new ContentEntity{
                     Content = Encoding.ASCII.GetBytes(content),
                     PublishingId = "CorrectId",
-                    ContentTypeName = "ExposureKeySetV3",
-                    Type = ContentTypes.ExposureKeySetV3,
+                    ContentTypeName = "ExposureKeySet",
+                    Type = ContentTypes.ExposureKeySet,
                     Created = yesterday,
                     Release = yesterday
 
