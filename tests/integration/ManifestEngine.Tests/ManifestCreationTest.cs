@@ -34,7 +34,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         }
 
         [Fact]
-        public async Task ManifestUpdateCommand_ExecuteForV5()
+        public async Task ManifestUpdateCommand_Execute()
         {
             //Arrange
             await BulkDeleteAllDataInTest();
@@ -55,9 +55,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             using var zipFileContent = new ZipArchive(zipFileInMemory, ZipArchiveMode.Read, false);
             var manifestContent = Encoding.ASCII.GetString(zipFileContent.ReadEntry(ZippedContentEntryNames.Content));
             var correctResLocation = manifestContent.IndexOf("CorrectId", StringComparison.Ordinal);
-            var wrongResLocation = manifestContent.IndexOf("WrongId", StringComparison.Ordinal);
             Assert.True(correctResLocation > 0);
-            Assert.True(wrongResLocation == -1);
         }
 
         private ManifestUpdateCommand CompileManifestUpdateCommand()
@@ -93,15 +91,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
 
             _contentDbContext.Content.AddRange(new[]
             {
-                new ContentEntity{
-                    Content = Encoding.ASCII.GetBytes(content),
-                    PublishingId = "WrongId",
-                    ContentTypeName = "ExposureKeySet",
-                    Type = ContentTypes.ExposureKeySet,
-                    Created = yesterday,
-                    Release = yesterday
-
-                },
                 new ContentEntity{
                     Content = Encoding.ASCII.GetBytes(content),
                     PublishingId = "CorrectId",

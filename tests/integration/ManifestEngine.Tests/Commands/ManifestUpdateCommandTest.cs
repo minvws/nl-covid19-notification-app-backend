@@ -61,19 +61,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         }
 
         [Fact]
-        public async Task NoManifestInDb_ExecuteAll_ThreeManifestsInDb()
+        public async Task NoManifestInDb_Execute_ManifestInDb()
         {
             // Arrange
             //Act
             await _sut.ExecuteAsync();
 
             //Assert
-            Assert.Equal(2, _contentDbContext.Content.Count());
             Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.Manifest));
         }
 
         [Fact]
-        public async Task NoManifestInDb_ExecuteAllTwice_ThreeManifestsInDb()
+        public async Task NoManifestInDb_Execute_ManifestsInDb()
         {
             // Arrange
             //Act
@@ -86,7 +85,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             await _sut.ExecuteAsync();
 
             //Assert
-            Assert.Equal(2, _contentDbContext.Content.Count());
             Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.Manifest));
         }
     }
