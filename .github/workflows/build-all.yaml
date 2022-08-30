@@ -4,7 +4,6 @@ name: Build-all-apps
 
 on:
   push:
-    branches: [ "feature/migration-linux-postgres" ]
     tags:
       - v*
 
