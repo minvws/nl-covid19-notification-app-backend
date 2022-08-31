@@ -22,7 +22,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Tests
         public EksEngineTestsSqlite()
             : base(
                 new DbContextOptionsBuilder<WorkflowDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
-                new DbContextOptionsBuilder<DkSourceDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
+                new DbContextOptionsBuilder<DiagnosisKeysDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
                 new DbContextOptionsBuilder<EksPublishingJobDbContext>().UseSqlite(CreateInMemoryDatabase()).Options,
                 new DbContextOptionsBuilder<ContentDbContext>().UseSqlite(CreateInMemoryDatabase()).Options
             )

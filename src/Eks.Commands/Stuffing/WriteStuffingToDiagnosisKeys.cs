@@ -17,12 +17,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
 {
     public class WriteStuffingToDiagnosisKeys : IWriteStuffingToDiagnosisKeys
     {
-        private readonly DkSourceDbContext _dkDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
         private readonly EksPublishingJobDbContext _eksPublishingDbContext;
         private readonly IDiagnosticKeyProcessor[] _dkProcessors;
-        public WriteStuffingToDiagnosisKeys(DkSourceDbContext dkDbContext, EksPublishingJobDbContext eksPublishingDbContext, IDiagnosticKeyProcessor[] dkProcessors)
+        public WriteStuffingToDiagnosisKeys(DiagnosisKeysDbContext diagnosisKeysDbContext, EksPublishingJobDbContext eksPublishingDbContext, IDiagnosticKeyProcessor[] dkProcessors)
         {
-            _dkDbContext = dkDbContext ?? throw new ArgumentNullException(nameof(dkDbContext));
+            _diagnosisKeysDbContext = diagnosisKeysDbContext ?? throw new ArgumentNullException(nameof(diagnosisKeysDbContext));
             _eksPublishingDbContext = eksPublishingDbContext ?? throw new ArgumentNullException(nameof(eksPublishingDbContext));
             _dkProcessors = dkProcessors ?? throw new ArgumentNullException(nameof(eksPublishingDbContext));
         }
@@ -56,7 +56,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Stuff
             items = _dkProcessors.Execute(items);
             var results = items.Select(x => x.DiagnosisKey).ToList(); //Can't get rid of compiler warning.
 
-            _dkDbContext.BulkInsertBinaryCopy(results);
+            if (results.Any())
+            {
+                _diagnosisKeysDbContext.BulkInsertBinaryCopy(results);
+            }
         }
     }
 }

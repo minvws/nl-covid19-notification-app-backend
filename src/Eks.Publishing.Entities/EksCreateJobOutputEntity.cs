@@ -6,11 +6,9 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities
 {
-    [Table(TableNames.EksEngineOutput)]
     public class EksCreateJobOutputEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,7 +16,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities
         public DateTime Release { get; set; }
         public string Region { get; set; } = DefaultValues.Region;
         public byte[] Content { get; set; }
-        public GaenVersion GaenVersion { get; set; }
 
         [MaxLength(36)]
         public string OutputId { get; set; }

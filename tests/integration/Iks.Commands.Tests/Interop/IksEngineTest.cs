@@ -36,7 +36,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
     {
         private readonly WorkflowDbContext _workflowDbContext;
         private readonly IksInDbContext _iksInDbContext;
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
         private readonly IksPublishingJobDbContext _iksPublishingJobDbContext;
         private readonly IksOutDbContext _iksOutDbContext;
 
@@ -44,12 +44,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _countriesConfigMock = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
         private readonly Mock<IUtcDateTimeProvider> _utcDateTimeProviderMock = new Mock<IUtcDateTimeProvider>(MockBehavior.Strict);
 
-        protected IksEngineTest(DbContextOptions<WorkflowDbContext> workflowDbContextOptions, DbContextOptions<IksInDbContext> iksInDbContextOptions, DbContextOptions<DkSourceDbContext> dkSourceDbContextOptions, DbContextOptions<IksPublishingJobDbContext> iksPublishingJobDbContextOptions, DbContextOptions<IksOutDbContext> iksOutDbContextOptions)
+        protected IksEngineTest(DbContextOptions<WorkflowDbContext> workflowDbContextOptions, DbContextOptions<IksInDbContext> iksInDbContextOptions, DbContextOptions<DiagnosisKeysDbContext> diagnosisKeysDbContextOptions, DbContextOptions<IksPublishingJobDbContext> iksPublishingJobDbContextOptions, DbContextOptions<IksOutDbContext> iksOutDbContextOptions)
         {
             _iksInDbContext = new IksInDbContext(iksInDbContextOptions ?? throw new ArgumentNullException(nameof(iksInDbContextOptions)));
             _iksInDbContext.Database.EnsureCreated();
-            _dkSourceDbContext = new DkSourceDbContext(dkSourceDbContextOptions ?? throw new ArgumentNullException(nameof(dkSourceDbContextOptions)));
-            _dkSourceDbContext.Database.EnsureCreated();
+            _diagnosisKeysDbContext = new DiagnosisKeysDbContext(diagnosisKeysDbContextOptions ?? throw new ArgumentNullException(nameof(diagnosisKeysDbContextOptions)));
+            _diagnosisKeysDbContext.Database.EnsureCreated();
             _iksPublishingJobDbContext = new IksPublishingJobDbContext(iksPublishingJobDbContextOptions ?? throw new ArgumentNullException(nameof(iksPublishingJobDbContextOptions)));
             _iksPublishingJobDbContext.Database.EnsureCreated();
             _iksOutDbContext = new IksOutDbContext(iksOutDbContextOptions ?? throw new ArgumentNullException(nameof(iksOutDbContextOptions)));
@@ -65,11 +65,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             _countriesConfigMock.Setup(x => x.CountriesOfInterest).Returns(new[] { "GB", "AU" });
             return new IksEngine(
                 new NullLogger<IksEngine>(),
-                new IksInputSnapshotCommand(new NullLogger<IksInputSnapshotCommand>(), _dkSourceDbContext, _iksPublishingJobDbContext, _countriesConfigMock.Object),
+                new IksInputSnapshotCommand(new NullLogger<IksInputSnapshotCommand>(), _diagnosisKeysDbContext, _iksPublishingJobDbContext, _countriesConfigMock.Object),
                 new IksFormatter(),
                 _iksConfigMock.Object,
                 _utcDateTimeProviderMock.Object,
-                new MarkDiagnosisKeysAsUsedByIks(_dkSourceDbContext, _iksConfigMock.Object, _iksPublishingJobDbContext, new NullLogger<MarkDiagnosisKeysAsUsedByIks>()),
+                new MarkDiagnosisKeysAsUsedByIks(_diagnosisKeysDbContext, _iksConfigMock.Object, _iksPublishingJobDbContext, new NullLogger<MarkDiagnosisKeysAsUsedByIks>()),
                 new IksJobContentWriter(_iksOutDbContext, _iksPublishingJobDbContext, new NullLogger<IksJobContentWriter>()),
                 _iksPublishingJobDbContext
             );
@@ -80,7 +80,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         public async Task Execute(int iksCount)
         {
             // Arrange
-            await _dkSourceDbContext.BulkDeleteAsync(_dkSourceDbContext.DiagnosisKeys.ToList());
+            await _diagnosisKeysDbContext.BulkDeleteAsync(_diagnosisKeysDbContext.DiagnosisKeys.ToList());
             await _iksInDbContext.BulkDeleteAsync(_iksInDbContext.InJob.ToList());
             await _iksOutDbContext.BulkDeleteAsync(_iksOutDbContext.Iks.ToList());
 
@@ -92,7 +92,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             GenerateIks(iksCount);
 
             Assert.Equal(iksCount, _iksInDbContext.Received.Count(x => x.Accepted == null));
-            Assert.Equal(0, _dkSourceDbContext.DiagnosisKeys.Count(x => x.PublishedLocally == false));
+            Assert.Equal(0, _diagnosisKeysDbContext.DiagnosisKeys.Count(x => x.PublishedLocally == false));
             Assert.Equal(0, _iksOutDbContext.Iks.Count());
 
             //Act
@@ -104,8 +104,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             Assert.Equal(0, result.ReconcileOutputCount);
 
             //Don't publish DKs from EFGS
-            Assert.Equal(0, _dkSourceDbContext.DiagnosisKeys.Count());
-            Assert.Equal(0, _dkSourceDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
+            Assert.Equal(0, _diagnosisKeysDbContext.DiagnosisKeys.Count());
+            Assert.Equal(0, _diagnosisKeysDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
         }
 
         private void GenerateIks(int iksCount)
@@ -149,7 +149,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             _utcDateTimeProviderMock.Setup(x => x.Snapshot).Returns(new DateTime(2020, 11, 16, 15, 14, 13, DateTimeKind.Utc));
 
             Assert.Equal(0, _iksInDbContext.Received.Count());
-            Assert.Equal(0, _dkSourceDbContext.DiagnosisKeys.Count());
+            Assert.Equal(0, _diagnosisKeysDbContext.DiagnosisKeys.Count());
             Assert.Equal(0, _iksOutDbContext.Iks.Count());
 
             //Act
@@ -160,7 +160,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             Assert.Empty(result.Items);
             Assert.Equal(0, result.ReconcileEksSumCount);
             Assert.Equal(0, result.ReconcileOutputCount);
-            Assert.Equal(0, _dkSourceDbContext.DiagnosisKeys.Count());
+            Assert.Equal(0, _diagnosisKeysDbContext.DiagnosisKeys.Count());
             Assert.Equal(0, _iksOutDbContext.Iks.Count());
         }
 
@@ -177,7 +177,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 
             var usableDkCount = await new WorkflowTestDataGenerator(
                 _workflowDbContext,
-                _dkSourceDbContext
+                _diagnosisKeysDbContext
             ).GenerateAndAuthoriseWorkflowsAsync();
 
             //Act
@@ -193,8 +193,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             var itemResult = result.Items[0];
             Assert.Equal(usableDkCount, itemResult.ItemCount);
 
-            Assert.Equal(usableDkCount, _dkSourceDbContext.DiagnosisKeys.Count());
-            Assert.Equal(usableDkCount, _dkSourceDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
+            Assert.Equal(usableDkCount, _diagnosisKeysDbContext.DiagnosisKeys.Count());
+            Assert.Equal(usableDkCount, _diagnosisKeysDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
             Assert.Equal(1, _iksOutDbContext.Iks.Count());
         }
 
@@ -211,7 +211,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 
             var usableDkCount = await new WorkflowTestDataGenerator(
                 _workflowDbContext,
-                _dkSourceDbContext
+                _diagnosisKeysDbContext
             ).GenerateAndAuthoriseWorkflowsAsync();
 
             //Act
@@ -227,8 +227,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             var itemResult = result.Items[0];
             Assert.Equal(usableDkCount, itemResult.ItemCount);
 
-            Assert.Equal(usableDkCount, _dkSourceDbContext.DiagnosisKeys.Count());
-            Assert.Equal(usableDkCount, _dkSourceDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
+            Assert.Equal(usableDkCount, _diagnosisKeysDbContext.DiagnosisKeys.Count());
+            Assert.Equal(usableDkCount, _diagnosisKeysDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
             Assert.Equal(1, _iksOutDbContext.Iks.Count());
 
             //Act
@@ -239,15 +239,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
             Assert.Equal(0, result2.ReconcileEksSumCount);
             Assert.Equal(0, result2.ReconcileOutputCount);
             //Unchanged
-            Assert.Equal(usableDkCount, _dkSourceDbContext.DiagnosisKeys.Count());
-            Assert.Equal(usableDkCount, _dkSourceDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
+            Assert.Equal(usableDkCount, _diagnosisKeysDbContext.DiagnosisKeys.Count());
+            Assert.Equal(usableDkCount, _diagnosisKeysDbContext.DiagnosisKeys.Count(x => x.PublishedToEfgs));
             Assert.Equal(1, _iksOutDbContext.Iks.Count());
         }
 
         private async Task BulkDeleteAllDataInTest()
         {
             await _workflowDbContext.BulkDeleteAsync(_workflowDbContext.KeyReleaseWorkflowStates.ToList());
-            await _dkSourceDbContext.BulkDeleteAsync(_dkSourceDbContext.DiagnosisKeys.ToList());
+            await _diagnosisKeysDbContext.BulkDeleteAsync(_diagnosisKeysDbContext.DiagnosisKeys.ToList());
             await _iksInDbContext.BulkDeleteAsync(_iksInDbContext.InJob.ToList());
             await _iksInDbContext.BulkDeleteAsync(_iksInDbContext.Received.ToList());
             await _iksOutDbContext.BulkDeleteAsync(_iksOutDbContext.Iks.ToList());

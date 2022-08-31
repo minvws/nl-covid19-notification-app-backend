@@ -10,9 +10,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core
         public const string EksPublishing = "PublishingJob";
         public const string Content = "Content";
         public const string Stats = "Stats";
-        public const string IccDistMemCache = "IccDistMemCache";
         public const string DataProtectionKeys = "DataProtectionKeys";
-        public const string DkSource = "DiagnosisKeySource";
+        public const string DiagnosisKeys = "DiagnosisKeys";
         public const string IksPublishing = "IksPublishingJob";
         public const string IksIn = "IksIn";
         public const string IksOut = "IksOut";

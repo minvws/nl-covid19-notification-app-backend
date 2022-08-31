@@ -27,7 +27,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly ITransmissionRiskLevelCalculationMk2 _transmissionRiskLevelCalculation;
         private readonly WorkflowDbContext _workflowDbContext;
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
         private readonly IDiagnosticKeyProcessor[] _orderedProcessorList;
 
         private int _commitIndex;
@@ -38,14 +38,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             IUtcDateTimeProvider dateTimeProvider,
             ITransmissionRiskLevelCalculationMk2 transmissionRiskLevelCalculation,
             WorkflowDbContext workflowDbContext,
-            DkSourceDbContext dkSourceDbContext,
+            DiagnosisKeysDbContext diagnosisKeysDbContext,
             IDiagnosticKeyProcessor[] orderedProcessorList)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _transmissionRiskLevelCalculation = transmissionRiskLevelCalculation ?? throw new ArgumentNullException(nameof(transmissionRiskLevelCalculation));
             _workflowDbContext = workflowDbContext ?? throw new ArgumentNullException(nameof(workflowDbContext));
-            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
+            _diagnosisKeysDbContext = diagnosisKeysDbContext ?? throw new ArgumentNullException(nameof(diagnosisKeysDbContext));
             _orderedProcessorList = orderedProcessorList ?? throw new ArgumentNullException(nameof(orderedProcessorList));
         }
 
@@ -70,7 +70,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
         private async Task ClearJobTablesAsync()
         {
-            await _dkSourceDbContext.TruncateAsync<DiagnosisKeyInputEntity>();
+            await _diagnosisKeysDbContext.TruncateAsync<DiagnosisKeyInputEntity>();
         }
 
         private void SnapshotTeks()
@@ -87,7 +87,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 
             while (page.Count > 0)
             {
-                _dkSourceDbContext.BulkInsertBinaryCopy(page);
+                _diagnosisKeysDbContext.BulkInsertBinaryCopy(page);
 
                 index += page.Count;
                 page = ReadFromWorkflow(index, PageSize);
@@ -173,7 +173,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             var items = q4.Select(x => x.DiagnosisKey).ToList();
             _result.DkCount += items.Count;
 
-            _dkSourceDbContext.BulkInsertBinaryCopy(items);
+            if (items.Any())
+            {
+                _diagnosisKeysDbContext.BulkInsertBinaryCopy(items);
+            }
         }
 
         private async Task MarkTeksAsPublishedAsync(long[] used)
@@ -185,18 +188,20 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
             _commitIndex += used.Length;
             _logger.LogInformation("Marking TEKs as Published - Count: {Count}, Running total: {RunningTotal}.", zap.Count, _commitIndex);
 
-            var idsToUpdate = string.Join(",", zap.Select(x => x.Id.ToString()).ToArray());
+            if (zap.Any())
+            {
+                var idsToUpdate = string.Join(",", zap.Select(x => x.Id.ToString()).ToArray());
 
-            await _workflowDbContext.BulkUpdateSqlRawAsync(
-                tableName: "TemporaryExposureKeys",
-                columnName: "PublishingState",
-                value: 1,
-                ids: idsToUpdate);
+                await _workflowDbContext.BulkUpdateSqlRawAsync<TekEntity>(
+                    columnName: "publishing_state",
+                    value: 1,
+                    ids: idsToUpdate);
+            }
         }
 
         private DiagnosisKeyInputEntity[] ReadDkPage()
         {
-            var q = _dkSourceDbContext.DiagnosisKeysInput
+            var q = _diagnosisKeysDbContext.DiagnosisKeysInput
                 .AsNoTracking()
                 .OrderBy(x => x.TekId)
                 .Skip(_commitIndex)

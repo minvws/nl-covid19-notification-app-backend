@@ -6,27 +6,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Caching.Memory;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Code
 {
     public class AuthCodeService : IAuthCodeService
     {
-        private readonly IDistributedCache _cache;
+        private readonly IMemoryCache _cache;
         private readonly IAuthCodeGenerator _authCodeGenerator;
 
-        public AuthCodeService(IDistributedCache cache,
+        public AuthCodeService(IMemoryCache cache,
             IAuthCodeGenerator authCodeGenerator)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             _authCodeGenerator = authCodeGenerator ?? throw new ArgumentNullException(nameof(authCodeGenerator));
         }
 
-        public async Task<string> GenerateAuthCodeAsync(ClaimsPrincipal claimsPrincipal)
+        public string GenerateAuthCode(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null)
             {
@@ -34,45 +31,31 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisati
             }
 
             var authCode = _authCodeGenerator.Next();
+            var claims = claimsPrincipal.Claims.Select(claim => new AuthClaim(claim.Type, claim.Value)).ToList();
 
-            var claimsObject = claimsPrincipal.Claims.Select(claim => new AuthClaim(claim.Type, claim.Value)).ToList();
-
-            var principalJson = JsonConvert.SerializeObject(claimsObject);
-            var encodedClaimsPrincipal = Encoding.UTF8.GetBytes(principalJson);
-
-            await _cache.SetAsync(authCode, encodedClaimsPrincipal);
+            _cache.Set(authCode, claims);
 
             return authCode;
         }
 
-        public async Task<List<AuthClaim>> GetClaimsByAuthCodeAsync(string authCode)
+        public List<AuthClaim> GetClaimsByAuthCode(string authCode)
         {
             if (string.IsNullOrWhiteSpace(authCode))
             {
                 throw new ArgumentException(nameof(authCode));
             }
 
-            List<AuthClaim> result = null;
-
-            var encodedAuthClaimList = await _cache.GetAsync(authCode);
-
-            if (encodedAuthClaimList != null)
-            {
-                var claimListJson = Encoding.UTF8.GetString(encodedAuthClaimList);
-                result = JsonConvert.DeserializeObject<List<AuthClaim>>(claimListJson);
-            }
-
-            return result;
+            return _cache.Get<List<AuthClaim>>(authCode);
         }
 
-        public async Task RevokeAuthCodeAsync(string authCode)
+        public void RevokeAuthCode(string authCode)
         {
             if (string.IsNullOrWhiteSpace(authCode))
             {
                 throw new ArgumentException(nameof(authCode));
             }
 
-            await _cache.RemoveAsync(authCode);
+            _cache.Remove(authCode);
         }
     }
 }

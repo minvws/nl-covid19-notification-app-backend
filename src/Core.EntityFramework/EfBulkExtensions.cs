@@ -16,43 +16,43 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
 {
     public static class EfBulkExtensions
     {
-        public static async Task BulkDeleteSqlRawAsync(
+        public static async Task BulkDeleteSqlRawAsync<T>(
             this DbContext db,
-            string tableName,
             string columnName,
             bool checkValue
         )
         {
-            await db.Database.ExecuteSqlRawAsync($"DELETE FROM \"{tableName}\" WHERE \"{columnName}\" = {checkValue}");
+            var tableName = db.Model.FindEntityType(typeof(T)).GetTableName();
+            await db.Database.ExecuteSqlRawAsync($"DELETE FROM {tableName} WHERE {columnName} = {checkValue}");
         }
 
-        public static async Task BulkDeleteSqlRawAsync(
+        public static async Task BulkDeleteSqlRawAsync<T>(
             this DbContext db,
-            string tableName,
             string ids
         )
         {
-            await db.Database.ExecuteSqlRawAsync($"DELETE FROM \"{tableName}\" WHERE \"Id\" in ({ids})");
+            var tableName = db.Model.FindEntityType(typeof(T)).GetTableName();
+            await db.Database.ExecuteSqlRawAsync($"DELETE FROM {tableName} WHERE id in ({ids})");
         }
 
-        public static async Task BulkUpdateSqlRawAsync(
+        public static async Task BulkUpdateSqlRawAsync<T>(
             this DbContext db,
-            string tableName,
             string columnName,
             bool value,
             string ids)
         {
-            await db.Database.ExecuteSqlRawAsync($"UPDATE \"{tableName}\" SET \"{columnName}\" = {value} WHERE \"Id\" in ({ids})");
+            var tableName = db.Model.FindEntityType(typeof(T)).GetTableName();
+            await db.Database.ExecuteSqlRawAsync($"UPDATE {tableName} SET {columnName} = {value} WHERE id in ({ids})");
         }
 
-        public static async Task BulkUpdateSqlRawAsync(
+        public static async Task BulkUpdateSqlRawAsync<T>(
             this DbContext db,
-            string tableName,
             string columnName,
             int value,
             string ids)
         {
-            await db.Database.ExecuteSqlRawAsync($"UPDATE \"{tableName}\" SET \"{columnName}\" = {value} WHERE \"Id\" in ({ids})");
+            var tableName = db.Model.FindEntityType(typeof(T)).GetTableName();
+            await db.Database.ExecuteSqlRawAsync($"UPDATE {tableName} SET {columnName} = {value} WHERE id in ({ids})");
         }
 
         public static void BulkInsertBinaryCopy(
@@ -61,12 +61,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
         {
             var (connection, closeConnectionInternally) = OpenAndGetNpgsqlConnection(db);
 
-            var tableName = "\"EksCreateJobInput\"";
+            var tableName = db.Model.FindEntityType(typeof(EksCreateJobInputEntity)).GetTableName();
 
             var commaSeparatedColumns =
-                "\"TekId\", \"Used\", \"KeyData\", \"RollingStartNumber\", \"RollingPeriod\", " +
-                "\"TransmissionRiskLevel\", \"DaysSinceSymptomsOnset\", \"Symptomatic\", " +
-                "\"ReportType\"";
+                "tek_id, used, key_data, rolling_start_number, rolling_period, " +
+                "transmission_risk_level, days_since_symptoms_onset, symptomatic, " +
+                "report_type";
 
             using var writer = connection.BeginBinaryImport($"COPY {tableName} ({commaSeparatedColumns}) FROM STDIN (FORMAT BINARY);");
 
@@ -107,12 +107,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
         {
             var (connection, closeConnectionInternally) = OpenAndGetNpgsqlConnection(db);
 
-            var tableName = "\"IksCreateJobInput\"";
+            var tableName = db.Model.FindEntityType(typeof(IksCreateJobInputEntity)).GetTableName();
 
             var commaSeparatedColumns =
-                "\"CountriesOfInterest\", \"DaysSinceSymptomsOnset\", \"DkId\", " +
-                "\"ReportType\", \"TransmissionRiskLevel\", \"Used\", \"DailyKey_KeyData\", " +
-                "\"DailyKey_RollingStartNumber\", \"DailyKey_RollingPeriod\"";
+                "countries_of_interest, days_since_symptoms_onset, dk_id, " +
+                "report_type, transmission_risk_level, used, daily_key_key_data, " +
+                "daily_key_rolling_start_number, daily_key_rolling_period";
 
             using var writer = connection.BeginBinaryImport($"COPY {tableName} ({commaSeparatedColumns}) FROM STDIN (FORMAT BINARY);");
 
@@ -131,7 +131,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
             }
 
             writer.Complete();
-            
+
             if (closeConnectionInternally)
             {
                 connection.Close();
@@ -142,12 +142,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
         {
             var (connection, closeConnectionInternally) = OpenAndGetNpgsqlConnection(db);
 
-            var tableName = "\"DiagnosisKeysInput\"";
+            var tableName = db.Model.FindEntityType(typeof(DiagnosisKeyInputEntity)).GetTableName();
 
             var commaSeparatedColumns =
-                "\"TekId\", \"DailyKey_KeyData\", \"DailyKey_RollingStartNumber\", " +
-                "\"DailyKey_RollingPeriod\", \"Local_TransmissionRiskLevel\", " +
-                "\"Local_DaysSinceSymptomsOnset\", \"Local_Symptomatic\", \"Local_ReportType\"";
+                "tek_id, daily_key_key_data, daily_key_rolling_start_number, " +
+                "daily_key_rolling_period, local_transmission_risk_level, " +
+                "local_days_since_symptoms_onset, local_symptomatic, local_report_type";
 
             using var writer = connection.BeginBinaryImport($"COPY {tableName} ({commaSeparatedColumns}) FROM STDIN (FORMAT BINARY);");
 
@@ -193,15 +193,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework
         {
             var (connection, closeConnectionInternally) = OpenAndGetNpgsqlConnection(db);
 
-            var tableName = "\"DiagnosisKeys\"";
+            var tableName = db.Model.FindEntityType(typeof(DiagnosisKeyEntity)).GetTableName();
 
             var commaSeparatedColumns =
-                "\"Created\", \"Origin\", \"PublishedLocally\", \"PublishedToEfgs\", " +
-                "\"ReadyForCleanup\", \"DailyKey_KeyData\", \"DailyKey_RollingStartNumber\", " +
-                "\"DailyKey_RollingPeriod\", \"Efgs_CountriesOfInterest\", " +
-                "\"Efgs_DaysSinceSymptomsOnset\", \"Efgs_ReportType\", \"Efgs_CountryOfOrigin\", " +
-                "\"Local_TransmissionRiskLevel\", \"Local_DaysSinceSymptomsOnset\", " +
-                "\"Local_Symptomatic\", \"Local_ReportType\"";
+                "created, origin, published_locally, published_to_efgs, " +
+                "ready_for_cleanup, daily_key_key_data, daily_key_rolling_start_number, " +
+                "daily_key_rolling_period, efgs_countries_of_interest, " +
+                "efgs_days_since_symptoms_onset, efgs_report_type, efgs_country_of_origin, " +
+                "local_transmission_risk_level, local_days_since_symptoms_onset, " +
+                "local_symptomatic, local_report_type";
 
             using var writer = connection.BeginBinaryImport($"COPY {tableName} ({commaSeparatedColumns}) FROM STDIN (FORMAT BINARY);");
 

@@ -11,6 +11,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         public string BatchTag { get; set; }
         public string NextBatchTag { get; set; }
         public byte[] Content { get; set; }
-        public HttpStatusCode ResultCode { get; set;}
+        public HttpStatusCode ResultCode { get; set; }
     }
 }

@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
@@ -36,41 +35,24 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         {
             await using (_eksPublishingJobDbContext.BeginTransaction())
             {
-                var moveV12 = _eksPublishingJobDbContext.EksOutput.AsNoTracking().Where(x => x.GaenVersion == GaenVersion.v12).Select(
+                var move = _eksPublishingJobDbContext.EksOutput.AsNoTracking().Select(
                     x => new ContentEntity
                     {
                         Created = x.Release,
                         Release = x.Release,
                         ContentTypeName = MediaTypeNames.Application.Zip,
                         Content = x.Content,
-                        Type = ContentTypes.ExposureKeySetV2,
-                        PublishingId = x.OutputId
-                    }).ToArray();
-
-                var moveV15 = _eksPublishingJobDbContext.EksOutput.AsNoTracking().Where(x => x.GaenVersion == GaenVersion.v15).Select(
-                    x => new ContentEntity
-                    {
-                        Created = x.Release,
-                        Release = x.Release,
-                        ContentTypeName = MediaTypeNames.Application.Zip,
-                        Content = x.Content,
-                        Type = ContentTypes.ExposureKeySetV3,
+                        Type = ContentTypes.ExposureKeySet,
                         PublishingId = x.OutputId
                     }).ToArray();
 
                 await using (_contentDbContext.BeginTransaction())
                 {
-                    await _contentDbContext.Content.AddRangeAsync(moveV12);
-                    await _contentDbContext.Content.AddRangeAsync(moveV15);
+                    await _contentDbContext.Content.AddRangeAsync(move);
                     _contentDbContext.SaveAndCommit();
                 }
 
-                _logger.LogInformation(
-                    "Published Gaen {GaenVersion} - EKSs - Count: {EksPublishedCount}.",
-                    GaenVersion.v12, moveV12.Length);
-                _logger.LogInformation(
-                    "Published Gaen {GaenVersion} - EKSs - Count: {EksPublishedCount}.",
-                    GaenVersion.v15, moveV15.Length);
+                _logger.LogInformation("Published EKSs - Count: {EksPublishedCount}", move.Length);
             }
         }
     }

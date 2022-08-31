@@ -2,11 +2,9 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors;
@@ -34,7 +32,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
                 x.GetRequiredService<IUtcDateTimeProvider>(),
                 x.GetRequiredService<ITransmissionRiskLevelCalculationMk2>(),
                 x.GetRequiredService<WorkflowDbContext>(),
-                x.GetRequiredService<DkSourceDbContext>(),
+                x.GetRequiredService<DiagnosisKeysDbContext>(),
                 new IDiagnosticKeyProcessor[]
                 {
                     x.GetRequiredService<ExcludeTrlNoneDiagnosticKeyProcessor>(),
@@ -54,20 +52,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
             services.AddTransient<IEksContentFormatter, GeneratedProtobufEksContentFormatter>();
             services.AddTransient<IEksJobContentWriter, EksJobContentWriter>();
 
+            // Signing
+            services.AddHttpClient<IHsmSignerService, HsmSignerService>();
+
             services.AddTransient<IEksBuilder, EksBuilderV1>(x => new EksBuilderV1(
                 x.GetRequiredService<IEksHeaderInfoConfig>(),
-                SignerConfigStartup.BuildGaSigner(
-                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
-                    x.GetRequiredService<IConfiguration>()),
-                SignerConfigStartup.BuildGaV15Signer(
-                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
-                    x.GetRequiredService<IConfiguration>()),
-                SignerConfigStartup.BuildEvSigner(
-                    x.GetRequiredService<IConfiguration>(),
-                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
-                    x.GetRequiredService<IUtcDateTimeProvider>()),
                 x.GetRequiredService<IUtcDateTimeProvider>(),
                 x.GetRequiredService<IEksContentFormatter>(),
+                x.GetRequiredService<IHsmSignerService>(),
                 x.GetRequiredService<ILogger<EksBuilderV1>>()
             ));
 
@@ -77,7 +69,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
 
             services.AddTransient<IWriteStuffingToDiagnosisKeys>(x =>
                 new WriteStuffingToDiagnosisKeys(
-                    x.GetRequiredService<DkSourceDbContext>(),
+                    x.GetRequiredService<DiagnosisKeysDbContext>(),
                     x.GetRequiredService<EksPublishingJobDbContext>(),
                     new IDiagnosticKeyProcessor[]
                     {

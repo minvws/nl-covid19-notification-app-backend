@@ -20,21 +20,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
         private const string ApplicationProtobuf = "application/protobuf; version=1.0";
 
         private readonly IEfgsConfig _efgsConfig;
-        private readonly IAuthenticationCertificateProvider _certificateProvider;
-        private readonly IThumbprintConfig _thumbprintConfig;
+        private readonly IAuthenticationCertificateProvider _efgsCertificateProvider;
         private readonly ILogger _logger;
         private readonly IHttpClientFactory _httpClientFactory;
 
         public HttpGetIksCommand(
             IEfgsConfig efgsConfig,
             IAuthenticationCertificateProvider certificateProvider,
-            IThumbprintConfig thumbprintConfig,
             IHttpClientFactory httpClientFactory,
             ILogger<HttpGetIksCommand> logger)
         {
             _efgsConfig = efgsConfig ?? throw new ArgumentNullException(nameof(efgsConfig));
-            _certificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
-            _thumbprintConfig = thumbprintConfig ?? throw new ArgumentNullException(nameof(thumbprintConfig));
+            _efgsCertificateProvider = certificateProvider ?? throw new ArgumentNullException(nameof(certificateProvider));
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -53,7 +50,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
                 var httpClient = _httpClientFactory.CreateClient(UniversalConstants.EfgsDownloader);
                 var response = await httpClient.SendAsync(request);
 
-                _logger.LogInformation("Response from EFGS: {StatusCodeInt} {Statuscode}.",
+                _logger.LogInformation("Response from EFGS: {StatusCodeInt} {Statuscode}",
                     (int)response.StatusCode, response.StatusCode);
                 _logger.LogInformation("Response headers: {Headers}", response.Headers?.ToString());
 
@@ -130,8 +127,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Inbound
 
             if (_efgsConfig.SendClientAuthenticationHeaders)
             {
-                using var clientCert = _certificateProvider.GetCertificate(
-                    _thumbprintConfig.Thumbprint, _thumbprintConfig.RootTrusted);
+                using var clientCert = _efgsCertificateProvider.GetCertificate();
 
                 request.Headers.Add("X-SSL-Client-SHA256", clientCert.ComputeSha256Hash());
                 request.Headers.Add("X-SSL-Client-DN", clientCert.Subject.Replace(" ", string.Empty));

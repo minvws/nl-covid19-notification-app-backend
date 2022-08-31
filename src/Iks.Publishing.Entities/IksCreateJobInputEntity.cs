@@ -10,7 +10,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.Entities
     /// <summary>
     /// AKA Interoperability Input
     /// </summary>
-    [Table("IksCreateJobInput")]
     public class IksCreateJobInputEntity
     {
         /// <summary>

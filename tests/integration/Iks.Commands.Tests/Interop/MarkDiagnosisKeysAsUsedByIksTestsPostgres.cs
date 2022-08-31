@@ -4,7 +4,6 @@
 
 using System;
 using System.Data.Common;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Publishing.EntityFramework;
@@ -21,8 +20,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         private static DbConnection connection;
 
         public MarkDiagnosisKeysAsUsedByIksTestsPostgres() : base(
-            new DbContextOptionsBuilder<DkSourceDbContext>().UseNpgsql(CreateDatabase("D")).Options,
-            new DbContextOptionsBuilder<IksPublishingJobDbContext>().UseNpgsql(CreateDatabase("IPJ")).Options
+            new DbContextOptionsBuilder<DiagnosisKeysDbContext>()
+                .UseNpgsql(CreateDatabase("d"))
+                .UseSnakeCaseNamingConvention()
+                .Options,
+            new DbContextOptionsBuilder<IksPublishingJobDbContext>()
+                .UseNpgsql(CreateDatabase("ipj"))
+                .UseSnakeCaseNamingConvention()
+                .Options
         )
         { }
 

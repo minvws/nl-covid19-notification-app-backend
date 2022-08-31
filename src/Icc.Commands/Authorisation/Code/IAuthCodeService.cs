@@ -4,17 +4,16 @@
 
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Models;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Code
 {
     public interface IAuthCodeService
     {
-        Task<string> GenerateAuthCodeAsync(ClaimsPrincipal claimsPrincipal);
+        string GenerateAuthCode(ClaimsPrincipal claimsPrincipal);
 
-        Task<List<AuthClaim>> GetClaimsByAuthCodeAsync(string authCode);
+        List<AuthClaim> GetClaimsByAuthCode(string authCode);
 
-        Task RevokeAuthCodeAsync(string authCode);
+        void RevokeAuthCode(string authCode);
     }
 }

@@ -100,15 +100,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
                 services.AddTransient<IJwtClaimValidator, JwtClaimValidator>();
             }
 
-            services.AddDistributedSqlServerCache(options =>
-            {
-                options.ConnectionString = _configuration.GetConnectionString(DatabaseConnectionStringNames.IccDistMemCache);
-                options.SchemaName = "dbo";
-                options.TableName = "Cache";
-            });
+            services.AddDbContext<WorkflowDbContext>(
+                options => options
+                    .UseNpgsql(_configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow))
+                    .UseSnakeCaseNamingConvention());
 
-            services.AddDbContext<WorkflowDbContext>(options => options.UseNpgsql(_configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
-            
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.HttpOnly = HttpOnlyPolicy.Always;
@@ -186,6 +182,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp
             authBuilder.AddScheme<AuthenticationSchemeOptions, JwtAuthenticationHandler>(
                 JwtAuthenticationHandler.SchemeName, null);
         }
+
         private void StartupIdentityHub(IServiceCollection services)
         {
             var iccIdentityHubConfig = new IccIdentityHubConfig(_configuration);

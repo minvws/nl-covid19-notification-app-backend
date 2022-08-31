@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Token([FromBody] TokenAuthorisationArgs args, [FromServices] HttpPostAuthorizationTokenCommand command)
+        public IActionResult Token([FromBody] TokenAuthorisationArgs args, [FromServices] HttpPostAuthorizationTokenCommand command)
         {
             if (command == null)
             {
@@ -38,7 +38,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Applications.Icc.WebApp.
             }
 
             _logger.LogInformation("POST Auth/Token triggered.");
-            return await command.ExecuteAsync(HttpContext, args);
+            return command.Execute(HttpContext, args);
         }
 
         [Authorize(AuthenticationSchemes = JwtAuthenticationHandler.SchemeName)]

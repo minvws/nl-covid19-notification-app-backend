@@ -20,7 +20,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
                 new ConsoleAppRunner().Execute(args, Configure, Start);
                 return 0;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return -1;
             }
@@ -39,7 +39,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsDownloader
             services.IksDownloadingProcessRegistration();
 
             // Authentication (with certs)
-            services.AuthenticationProviderRegistration();
+            services.AuthenticationProviderRegistration(configuration);
 
             // Shared registrations
             services.SettingsRegistration();

@@ -67,17 +67,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
         {
             if (arg.Equals("-a", StringComparison.InvariantCultureIgnoreCase))
             {
-                return ContentTypes.AppConfigV2;
+                return ContentTypes.AppConfig;
             }
 
             if (arg.Equals("-r", StringComparison.InvariantCultureIgnoreCase))
             {
-                return ContentTypes.RiskCalculationParametersV3;
+                return ContentTypes.RiskCalculationParameters;
             }
 
             if (arg.Equals("-b", StringComparison.InvariantCultureIgnoreCase))
             {
-                return ContentTypes.ResourceBundleV3;
+                return ContentTypes.ResourceBundle;
             }
 
             throw new InvalidOperationException("Cannot parse Content Type.");

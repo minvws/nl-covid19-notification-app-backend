@@ -6,7 +6,6 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
@@ -34,14 +33,19 @@ namespace PublishContent
             services.AddSingleton<IConfiguration>(configuration);
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
 
-            services.AddDbContext<ContentDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
+            services.AddDbContext<ContentDbContext>(
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Content))
+                    .UseSnakeCaseNamingConvention());
+
+            services.AddSingleton<IHsmSignerConfig, HsmSignerConfig>(
+                x => new HsmSignerConfig(configuration, "Certificates:HsmSigner")
+            );
+
+            services.AddHttpClient<IHsmSignerService, HsmSignerService>();
 
             services.AddTransient<PublishContentCommand>();
             services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient<IContentSigner>(x => SignerConfigStartup.BuildEvSigner(
-                configuration,
-                new LoggerFactory().CreateLogger<LocalMachineStoreCertificateProvider>(),
-                new StandardUtcDateTimeProvider()));
 
             services.AddTransient<ContentValidator>();
             services.AddTransient<ContentInsertDbCommand>();

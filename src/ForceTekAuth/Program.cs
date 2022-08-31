@@ -27,7 +27,10 @@ namespace ForceTekAuth
 
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddDbContext<WorkflowDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
+            services.AddDbContext<WorkflowDbContext>(
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow))
+                    .UseSnakeCaseNamingConvention());
 
             services.AddSingleton<IConfiguration>(configuration);
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
