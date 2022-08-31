@@ -30,7 +30,7 @@ jobs:
       - name: Restore
         run: dotnet restore ${{ inputs.projectPath }}
       - name: Build and Publish
-        run: dotnet publish src/${{ inputs.projectName }}/${{ inputs.projectName }}.csproj -o publish/${{ inputs.artifactSubfolder }} --no-self-contained --runtime ${{ inputs.runtime }} --version-suffix '${{ env.RELEASE_VERSION }}'
+        run: dotnet publish src/${{ inputs.projectName }}/${{ inputs.projectName }}.csproj -o publish/${{ inputs.artifactSubfolder }} --no-self-contained --runtime ${{ inputs.runtime }} --version-suffix '${{ env.RELEASE_VERSION }}-$GITHUB_SHA'
       - name: Add Version file
         run: 'echo "{ \"version\": \"${{ env.RELEASE_VERSION }}\", \"git_ref\": \"$GITHUB_SHA\"}" > publish/${{ inputs.artifactSubfolder }}/version.rdo.json'
         shell: bash
