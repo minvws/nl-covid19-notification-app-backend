@@ -10,7 +10,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entitie
         ExposureKeySet,
         ResourceBundle,
         RiskCalculationParameters,
-        Manifest
+        Manifest,
         DashboardData
     }
 }
