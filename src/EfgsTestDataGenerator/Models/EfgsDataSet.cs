@@ -8,7 +8,7 @@ namespace EfgsTestDataGenerator.Models
 {
     public class EfgsDataSet
     {
-        public string BatchTag { get; set;}
+        public string BatchTag { get; set; }
         public string NextBatchTag { get; set; }
         public DiagnosisKeyBatch Content { get; set; }
     }

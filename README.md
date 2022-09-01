@@ -7,6 +7,7 @@
 [Local Development Setup](#Local-Development-Setup)  
 [License](#License)  
 [Attribution](#Attribution)  
+[Unreleased](#unreleased)   
 
 ## Introduction
 
@@ -54,7 +55,7 @@ Versions of these certificates for local testing can be found in the folder `src
   
 **Please note: these certificates are not production certificates.**
 
-The file password for TestRSA.p12 is `Covid19!`; the password for TestECDSA.p12 is `12345678`.
+The file password for TestRSA.p12 is `Covid-19!`; the password for TestECDSA.p12 is `12345678`.
 
 The files `StaatDerNLChain-EV-Expires-2022-12-05.p7b` and `BdCertChain.p7b` can be ignored, as the local certificates are self-signed.  
 
@@ -111,49 +112,9 @@ More information on the various available keystores on specific operating system
 
 ### Database
 
-This project assumes the presence of a Microsoft SQL Server database.
+This project assumes the presence of a PostgreSQL database.
 
-#### Windows/Linux
-
-For local development on Windows or Linux, it would suffice to download [SQL Server Developer for Windows](https://www.microsoft.com/nl-nl/sql-server/sql-server-downloads) or follow the installation instructions for [SQL Server on Linux](https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-setup).
-
-After installing SQL Server, you can either create all the necessary databases and tables manually, or run the `DbProvision` project to have everything generated automatically.
-
-#### macOS
-
-For local development on macOS, local installation of SQL Server is not possible, and as such we have created a small Docker setup that contains a database to make developing locally on macOS possible. The Docker setup also contains `DbBuilder`, which serves the same function as the `DbProvision` project mentioned in the paragraph above. When combined together through `docker-compose`, you will end up with a database server populated with the necessary databases and tables running on Docker.
-
-Of course you can also use the Docker setup on Linux or Windows if you do not want to install SQL Server on your machine.
-
-### Docker (Windows/Linux/macOS)
-
-To start the Docker database setup, you can use docker-compose:
-
-```bash
-# Solution root
-cd docker
-docker-compose up --build
-```
-
-This will create a Docker-based database server, as well as generate all the necessary databases and tables.
-
-### Docker (macOS M1)
-
-The Docker image used will currently not work out of the box for macOS machines with ARM architecture (macOS M1). To use the Docker setup on macOS M1, please make the following changes:
-
-In `docker-compose.yml`, change
-
-```
-image: mcr.microsoft.com/mssql/server:2019-latest
-```
-
-to
-
-```
-image: mcr.microsoft.com/azure-sql-edge
-```
-
-The rest of the setup should work as-is.
+After installing PostgreSQL, you can either create all the necessary databases and tables manually (using the SQL scripts contained in the [databases](databases) directory), or run the `DbProvision` project to have everything generated automatically.
 
 ### Projects
 The codebase consists of the following projects, allowing you to locally set up a backend that contains Temporary Exposure Keys, Exposure Key Sets, a Manifest, and the various configuration JSON files that are representative of the actual backend.  
@@ -167,16 +128,13 @@ Additionally, several types of JSON files can be inserted into the database by m
 - `-b`, for ResourcebundleV2.
 - `-b2`, for ResourcebundleV3.
 
-#### DbBuilder
-This project exists purely for running the Docker setup described [above](#Docker-(Windows/Linux/macOS)). It is identical to the DbProvision project, but only supports the `nonuke`-argument. 
-
 #### GenTeks
 A console application that generates Temporary Exposure Keys ('TEKs') and inserts them into the database. For development and testing purposes only.  
 Two arguments can be passed to the application: the amount of workflows (or 'buckets') and the amount of TEKs per workflow.  
 By default, 10 workflows with each 1000 TEKs are created, equivalent to passing the arguments `10 1000`. These arguments can be found (and changed) in `src/GenTeks/Properties/launchSettings.json`
 
 #### ForceTekAuth
-A console application that authenticates all workflows in the database, equivalent to users contacting the GGD to publish their workflows, or self-authorising their workflows through [Coronatest.nl](https://coronatest.nl/).
+A console application that authenticates all workflows in the database, equivalent to users contacting the GGD to publish their workflows, or self-authorising their workflows through [coronatest.nl](https://coronatest.nl/).
 
 This project is for development and testing purposes only. No command-line arguments can be provided.
 
@@ -222,7 +180,7 @@ As the name suggests, the DailyCleanup is run every night at a set time.
 A console application that takes all authorised workflows and downloaded TEKs from EFGS, bundles them into an EKS, signs it and places it in the databas. It then updates the manifest and prepares the TEKs from the authorised workflows for delivery to EFGS. Please find more elaborate documentation on the EksEngine in `docs`.
 
 #### Icc.V2.WebApi
-A webservice that exposes the PubTek-endpoint. This endpoint is used to authorise workflows with the GGD key. Its functionality is used by the GGD Portal and by [Coronatest.nl](https://coronatest.nl/).
+A webservice that exposes the PubTek-endpoint. This endpoint is used to authorise workflows with the GGD key. Its functionality is used by the GGD Portal and by [coronatest.nl](https://coronatest.nl/).
 
 #### Icc.WebApp
 This project contains 2 functionalities:
@@ -248,3 +206,18 @@ This project is licensed under the EUPL license. See [LICENSE](LICENSE/LICENSE.t
 ## Attribution
 
 Some parts of this application are inspired by the work on [Private Tracer](https://gitlab.com/PrivateTracer/server.azure). You can find their license [here](LICENSE/LICENSE.PrivateTracer.org.txt).
+
+## Unreleased
+The `feature/dashboarddata` branch contains the backend code changes for the (as of yet unreleased) in-app COVID-19 related statistics (similar to [coronadashboard.rijksoverheid.nl](https://coronadashboard.rijksoverheid.nl)).
+
+The new functionalities added to the backend are:
+- fetching of data with the DashboardData.Downloader
+- making the downloaded data available for the apps through a new API endpoint `v1/dashboard` in Content.WebApi
+- removing old downloaded data with the DailyCleanup process
+
+The status of this branch is "work in progress", and additional improvements are necessary to make it more robust.
+
+For an extensive explanation of the dashboard functionality, please see one of the following pages for more information:
+
+- Android: [CORONA_DASHBOARD.md](https://github.com/minvws/nl-covid19-notification-app-android/blob/release/2.6.0-dashboard/CORONA_DASHBOARD.md)
+- iOS: [CORONA_DASHBOARD.md](https://github.com/minvws/nl-covid19-notification-app-ios/blob/feature/coronamelder-dashboard/CORONA_DASHBOARD.md)

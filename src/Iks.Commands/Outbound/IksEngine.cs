@@ -77,7 +77,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             await ClearJobTables();
 
-            var snapshotResult = await _snapshotter.ExecuteAsync();
+            var snapshotResult = _snapshotter.Execute();
 
             _engineResult.InputCount = snapshotResult.Count;
             _engineResult.SnapshotSeconds = snapshotResult.ElapsedSeconds;
@@ -173,17 +173,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             _logger.LogInformation("Mark TEKs as used.");
 
-            foreach (var i in _output)
+            if (_output.Any())
             {
-                i.Used = true;
-            }
+                var idsToUpdate = string.Join(",", _output.Select(x => x.Id.ToString()).ToArray());
 
-            //Could be 750k in this hit
-            var bulkArgs = new SubsetBulkArgs
-            {
-                PropertiesToInclude = new[] { nameof(IksCreateJobInputEntity.Used) }
-            };
-            await _publishingDbContext.BulkUpdateWithTransactionAsync(_output, bulkArgs);
+                await _publishingDbContext.BulkUpdateSqlRawAsync<IksCreateJobInputEntity>(
+                    columnName: "used",
+                    value: true,
+                    ids: idsToUpdate);
+            }
 
             _engineResult.OutputCount += _output.Count;
 

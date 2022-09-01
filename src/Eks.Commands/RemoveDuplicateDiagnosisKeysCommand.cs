@@ -16,17 +16,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
 {
     public class RemoveDuplicateDiagnosisKeysCommand : BaseCommand
     {
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
 
-        public RemoveDuplicateDiagnosisKeysCommand(DkSourceDbContext dkSourceDbContext)
+        public RemoveDuplicateDiagnosisKeysCommand(DiagnosisKeysDbContext diagnosisKeysDbContext)
         {
-            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
+            _diagnosisKeysDbContext = diagnosisKeysDbContext ?? throw new ArgumentNullException(nameof(diagnosisKeysDbContext));
         }
 
         public override async Task<ICommandResult> ExecuteAsync()
         {
             var duplicates = (
-                    await _dkSourceDbContext.DiagnosisKeys
+                    await _diagnosisKeysDbContext.DiagnosisKeys
                         .AsNoTracking()
                         .Where(p => p.ReadyForCleanup != true)
                         .ToListAsync())
@@ -41,7 +41,19 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands.Diagn
                 diagnosisKeyEntity.ReadyForCleanup = diagnosisKeyEntity.PublishedLocally && diagnosisKeyEntity.PublishedToEfgs;
             }
 
-            await _dkSourceDbContext.BulkUpdateWithTransactionAsync(affectedEntities, new SubsetBulkArgs());
+            var cleanableEntities = affectedEntities
+                .Where(x => x.ReadyForCleanup.HasValue && x.ReadyForCleanup.Value)
+                .ToList();
+
+            if (cleanableEntities.Any())
+            {
+                var idsToUpdate = string.Join(",", cleanableEntities.Select(x => x.Id.ToString()).ToArray());
+
+                await _diagnosisKeysDbContext.BulkUpdateSqlRawAsync<DiagnosisKeyEntity>(
+                    columnName: "ready_for_cleanup",
+                    value: true,
+                    ids: idsToUpdate);
+            }
 
             return null;
         }

@@ -18,6 +18,7 @@ using Moq;
 using Moq.Protected;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing;
@@ -31,29 +32,28 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
     {
         private readonly IksOutDbContext _iksOutDbContext;
 
-        private readonly EfgsConfigMock _efgsConfigFake = new EfgsConfigMock();
+        private readonly EfgsConfigMock _efgsConfigFake = new();
         private readonly Mock<IAuthenticationCertificateProvider> _certProviderMock;
-        private readonly IConfiguration _configuration;
-        private readonly Mock<IThumbprintConfig> _thumbprintConfigMock;
-        private readonly Mock<IIksSigner> _signerMock;
+        private readonly Mock<IFileSystemCertificateConfig> _certificateConfigMock;
         private readonly Mock<IBatchTagProvider> _batchTagProviderMock;
+        private readonly Mock<IHsmSignerService> _hsmSignerServiceMock;
 
         public IksSendBatchCommandTests(DbContextOptions<IksOutDbContext> iksOutDbContextOptions)
         {
             _iksOutDbContext = new IksOutDbContext(iksOutDbContextOptions ?? throw new ArgumentNullException(nameof(iksOutDbContextOptions)));
             _iksOutDbContext.Database.EnsureCreated();
             _certProviderMock = new Mock<IAuthenticationCertificateProvider>();
-            _thumbprintConfigMock = new Mock<IThumbprintConfig>();
-            _signerMock = new Mock<IIksSigner>();
+            _certificateConfigMock = new Mock<IFileSystemCertificateConfig>();
             _batchTagProviderMock = new Mock<IBatchTagProvider>();
 
-            _thumbprintConfigMock.Setup(x => x.RootTrusted).Returns(It.IsAny<bool>());
-            _thumbprintConfigMock.Setup(x => x.Thumbprint).Returns(It.IsAny<string>());
+            _certificateConfigMock.Setup(x => x.CertificatePath).Returns(It.IsAny<string>());
+            _certificateConfigMock.Setup(x => x.CertificateFileName).Returns(It.IsAny<string>());
 
             var mockCertificate = new Mock<X509Certificate2>();
-            _certProviderMock.Setup(p => p.GetCertificate(It.IsAny<string>(), It.IsAny<bool>())).Returns(mockCertificate.Object);
+            _certProviderMock.Setup(p => p.GetCertificate()).Returns(mockCertificate.Object);
 
-            _configuration = new ConfigurationBuilder()
+            //TODO: remove or replace with Efgs signing settings from HsmConfig
+            new ConfigurationBuilder()
                 .AddInMemoryCollection(
                     new Dictionary<string, string> {
                         {"Certificates:EfgsAuthentication:Thumbprint", "Thumbprint"},
@@ -141,7 +141,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
             // Act
             var result = (IksSendBatchResult)await sut.ExecuteAsync();
 
-            // Assert            
+            // Assert
             Assert.False(result.Success);
             Assert.False(result.HasErrors);
             Assert.Equal(httpStatusCode, result.Sent.First().StatusCode);
@@ -236,11 +236,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.IksOu
                     new HttpClient(handlerMock.Object),
                     _efgsConfigFake,
                     _certProviderMock.Object,
-                    new NullLogger<IksUploadService>(),
-                    _configuration),
+                    _certificateConfigMock.Object,
+                    new NullLogger<IksUploadService>()),
                 _iksOutDbContext,
-                _signerMock.Object,
                 _batchTagProviderMock.Object,
+                _hsmSignerServiceMock.Object,
                 new NullLogger<IksSendBatchCommand>()
                 );
         }

@@ -30,7 +30,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands
             }
 
             var ttl = _eksTtlCalculator.Execute(content.Created);
-            httpContext.Response.Headers.Add("cache-control", $"public, immutable, max-age={ ttl }, s-maxage={ ttl }");
+            httpContext.Response.Headers.Add("cache-control", $"public, immutable, max-age={ttl}, s-maxage={ttl}");
         }
     }
 }

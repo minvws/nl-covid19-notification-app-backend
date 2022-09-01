@@ -1,3 +1,7 @@
+// Copyright 2020 De Staat der Nederlanden, Ministerie van Volksgezondheid, Welzijn en Sport.
+// Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
+// SPDX-License-Identifier: EUPL-1.2
+
 using System;
 using System.IO;
 using System.Net;
@@ -33,7 +37,7 @@ namespace EfgsTestDataGenerator.Controllers
 
             var efgsDataSet = _efgsDataService.GetEfgsDataSet(date, batchTag);
 
-            if(efgsDataSet == null)
+            if (efgsDataSet == null)
             {
                 return StatusCode((int)HttpStatusCode.Gone);
             }

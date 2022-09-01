@@ -31,9 +31,9 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             _contentDbContext = new ContentDbContext(contentDbContextOptions ?? throw new ArgumentNullException(nameof(contentDbContextOptions)));
             _contentDbContext.Database.EnsureCreated();
 
-            var nlSignerMock = new Mock<IContentSigner>();
-            nlSignerMock.Setup(x => x.GetSignature(new byte[0]))
-                .Returns(new byte[] { 2 });
+            var hsmSignerServiceMock = new Mock<IHsmSignerService>();
+            hsmSignerServiceMock.Setup(x => x.GetNlCmsSignatureAsync(new byte[0]))
+                .ReturnsAsync(new byte[] { 2 });
 
             var eksConfigMock = new Mock<IEksConfig>(MockBehavior.Strict);
             eksConfigMock.Setup(x => x.LifetimeDays)
@@ -47,12 +47,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             var logger = new NullLogger<ManifestUpdateCommand>();
 
             IContentEntityFormatter contentFormatterInjector = new StandardContentEntityFormatter(
-                    new ZippedSignedContentFormatter(nlSignerMock.Object),
+                    new ZippedSignedContentFormatter(hsmSignerServiceMock.Object),
                     jsonSerializer);
 
             _sut = new ManifestUpdateCommand(
-                new ManifestV4Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
-                new ManifestV5Builder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
+                new ManifestBuilder(_contentDbContext, eksConfigMock.Object, _dateTimeProviderMock.Object),
                 _contentDbContext,
                 logger,
                 _dateTimeProviderMock.Object,
@@ -62,20 +61,18 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
         }
 
         [Fact]
-        public async Task NoManifestInDb_ExecuteAll_ThreeManifestsInDb()
+        public async Task NoManifestInDb_Execute_ManifestInDb()
         {
             // Arrange
             //Act
             await _sut.ExecuteAsync();
 
             //Assert
-            Assert.Equal(2, _contentDbContext.Content.Count());
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV4));
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV5));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.Manifest));
         }
 
         [Fact]
-        public async Task NoManifestInDb_ExecuteAllTwice_ThreeManifestsInDb()
+        public async Task NoManifestInDb_Execute_ManifestsInDb()
         {
             // Arrange
             //Act
@@ -88,9 +85,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.ManifestEngine.Tests
             await _sut.ExecuteAsync();
 
             //Assert
-            Assert.Equal(2, _contentDbContext.Content.Count());
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV4));
-            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.ManifestV5));
+            Assert.Equal(1, _contentDbContext.Content.Count(x => x.Type == ContentTypes.Manifest));
         }
     }
 }

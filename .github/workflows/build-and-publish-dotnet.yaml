@@ -1,0 +1,43 @@
+---
+
+name: "Build and Publish .net App"
+
+on:
+  workflow_call:
+    inputs:
+      runtime:
+        required: false
+        type: string
+        default: 'linux-x64'
+      artifactSubfolder:
+        required: true
+        type: string
+      projectName:
+        required: true
+        type: string
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Version environment variable
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" | sed 's/\//_/g' >> $GITHUB_ENV
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Setup .NET v6
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore
+        run: dotnet restore ${{ inputs.projectPath }}
+      - name: Build and Publish
+        run: dotnet publish src/${{ inputs.projectName }}/${{ inputs.projectName }}.csproj -o publish/${{ inputs.artifactSubfolder }} --no-self-contained --runtime ${{ inputs.runtime }} --version-suffix '${{ env.RELEASE_VERSION }}-${{ github.sha }}'
+      - name: Add Version file
+        run: 'echo "{ \"version\": \"${{ env.RELEASE_VERSION }}\", \"git_ref\": \"$GITHUB_SHA\"}" > publish/${{ inputs.artifactSubfolder }}/version.rdo.json'
+        shell: bash
+      - name: Add files to tar
+        run: tar -czf ${{ inputs.projectName }}_${{ env.RELEASE_VERSION }}.tar.gz -C publish/${{ inputs.artifactSubfolder }} .
+      - name: Upload release tar
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ inputs.projectName }}_${{ env.RELEASE_VERSION }}
+          path: ${{ inputs.projectName }}_${{ env.RELEASE_VERSION }}.tar.gz

@@ -38,7 +38,11 @@ namespace GenTeks
         private static void Configure(IServiceCollection services, IConfigurationRoot configuration)
         {
             services.AddTransient<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
-            services.AddDbContext<WorkflowDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow)));
+
+            services.AddDbContext<WorkflowDbContext>(
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Workflow))
+                    .UseSnakeCaseNamingConvention());
 
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IRandomNumberGenerator, StandardRandomNumberGenerator>();

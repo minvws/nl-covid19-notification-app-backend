@@ -1,0 +1,80 @@
+---
+
+name: Build-all-apps
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  contentApi:
+    uses: ./.github/workflows/build-and-publish-dotnet.yaml
+    with:
+      artifactSubfolder: "ContentApi"
+      projectName: 'Content.WebApi'
+  iccPortalApp:
+    uses: ./.github/workflows/build-and-publish-dotnet.yaml
+    with:
+      artifactSubfolder: "IccPortalApp"
+      projectName: 'Icc.WebApp'
+  iccBackendApi:
+    uses: ./.github/workflows/build-and-publish-dotnet.yaml
+    with:
+      artifactSubfolder: "IccBackendApi"
+      projectName: 'Icc.v2.WebApi'
+  mobileAppApi:
+    uses: ./.github/workflows/build-and-publish-dotnet.yaml
+    with:
+      artifactSubfolder: "MobileAppApi"
+      projectName: 'MobileAppApi.WebApi'
+  dailyCleanup:
+    uses: ./.github/workflows/build-and-publish-dotnet.yaml
+    with:
+      artifactSubfolder: "DailyCleanup"
+      projectName: 'DailyCleanup'
+  eksEngine:
+    uses: ./.github/workflows/build-and-publish-dotnet.yaml
+    with:
+      artifactSubfolder: "EksEngine"
+      projectName: 'EksEngine'
+  efgsDownloader:
+    uses: ./.github/workflows/build-and-publish-dotnet.yaml
+    with:
+      artifactSubfolder: "EfgsDownloader"
+      projectName: 'Iks.Downloader'
+  efgsUploader:
+    uses: ./.github/workflows/build-and-publish-dotnet.yaml
+    with:
+      artifactSubfolder: "EfgsUploader"
+      projectName: 'Iks.Uploader'
+  manifestEngine:
+    uses: ./.github/workflows/build-and-publish-dotnet.yaml
+    with:
+      artifactSubfolder: "ManifestEngine"
+      projectName: 'ManifestEngine'
+  publishContent:
+    uses: ./.github/workflows/build-and-publish-dotnet.yaml
+    with:
+      artifactSubfolder: "PublishContent"
+      projectName: 'PublishContent'
+  genTeks:
+    uses: ./.github/workflows/build-and-publish-dotnet.yaml
+    with:
+      artifactSubfolder: "GenTeks"
+      projectName: 'GenTeks'
+  forceTekAuth:
+    uses: ./.github/workflows/build-and-publish-dotnet.yaml
+    with:
+      artifactSubfolder: "ForceTekAuth"
+      projectName: 'ForceTekAuth'
+  sigTestFileCreator:
+    uses: ./.github/workflows/build-and-publish-dotnet.yaml
+    with:
+      artifactSubfolder: "SigTestFileCreator"
+      projectName: 'SigTestFileCreator'
+  protobufScrubber:
+    uses: ./.github/workflows/build-and-publish-dotnet.yaml
+    with:
+      artifactSubfolder: "ProtobufScrubber"
+      projectName: 'ProtobufScrubber'

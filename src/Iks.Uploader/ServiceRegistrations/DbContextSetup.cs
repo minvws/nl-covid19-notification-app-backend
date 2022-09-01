@@ -14,7 +14,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegi
     {
         public static void DbContextRegistration(this IServiceCollection services, IConfigurationRoot configuration)
         {
-            services.AddDbContext<IksOutDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.IksOut)));
+            services.AddDbContext<IksOutDbContext>(
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.IksOut))
+                    .UseSnakeCaseNamingConvention());
         }
     }
 }

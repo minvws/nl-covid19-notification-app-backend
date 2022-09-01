@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.Processors.Rcp;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities;
@@ -22,14 +23,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
     public class SnapshotDiagnosisKeys : ISnapshotEksInput
     {
         private readonly ILogger _logger;
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
         private readonly EksPublishingJobDbContext _eksPublishingJobDbContext;
         private readonly IInfectiousness _infectiousness;
 
-        public SnapshotDiagnosisKeys(ILogger<SnapshotDiagnosisKeys> logger, DkSourceDbContext dkSourceDbContext, EksPublishingJobDbContext eksPublishingJobDbContext, IInfectiousness infectiousness)
+        public SnapshotDiagnosisKeys(ILogger<SnapshotDiagnosisKeys> logger, DiagnosisKeysDbContext diagnosisKeysDbContext, EksPublishingJobDbContext eksPublishingJobDbContext, IInfectiousness infectiousness)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
+            _diagnosisKeysDbContext = diagnosisKeysDbContext ?? throw new ArgumentNullException(nameof(diagnosisKeysDbContext));
             _eksPublishingJobDbContext = eksPublishingJobDbContext ?? throw new ArgumentNullException(nameof(eksPublishingJobDbContext));
             _infectiousness = infectiousness ?? throw new ArgumentNullException(nameof(infectiousness));
         }
@@ -53,7 +54,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
                 if (filteredResult.Length > 0)
                 {
-                    await _eksPublishingJobDbContext.BulkInsertWithTransactionAsync(filteredResult, new SubsetBulkArgs());
+                    _eksPublishingJobDbContext.BulkInsertBinaryCopy(filteredResult.ToList());
                 }
 
                 index += page.Length;
@@ -76,21 +77,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
         private async Task MarkFilteredEntitiesForCleanupAsync(EksCreateJobInputEntity[] allEntities, EksCreateJobInputEntity[] filteredResult)
         {
             var leftoverDkIds = allEntities.Except(filteredResult).Select(x => x.TekId).ToArray();
-            if(leftoverDkIds.Any())
+            if (leftoverDkIds.Any())
             {
-                var dksToMarkForCleanup = _dkSourceDbContext.DiagnosisKeys.AsNoTracking().Where(x => leftoverDkIds.Contains(x.Id)).ToList();
-                foreach (var diagnosisKeyEntity in dksToMarkForCleanup)
-                {
-                    diagnosisKeyEntity.ReadyForCleanup = true;
-                }
+                var dksToMarkForCleanup = _diagnosisKeysDbContext.DiagnosisKeys.AsNoTracking().Where(x => leftoverDkIds.Contains(x.Id)).ToList();
 
-                await _dkSourceDbContext.BulkUpdateWithTransactionAsync(dksToMarkForCleanup, new SubsetBulkArgs());
+                var idsToUpdate = string.Join(",", dksToMarkForCleanup.Select(x => x.Id.ToString()).ToArray());
+
+                await _diagnosisKeysDbContext.BulkUpdateSqlRawAsync<DiagnosisKeyEntity>(
+                    columnName: "ready_for_cleanup",
+                    value: true,
+                    ids: idsToUpdate);
             }
         }
 
         private (EksCreateJobInputEntity[], EksCreateJobInputEntity[]) ReadAndFilter(int index, int pageSize)
         {
-            var page = _dkSourceDbContext.DiagnosisKeys
+            var page = _diagnosisKeysDbContext.DiagnosisKeys
                 .AsNoTracking()
                 .Where(x => !x.PublishedLocally && x.ReadyForCleanup != true)
                 .OrderBy(x => x.Id)

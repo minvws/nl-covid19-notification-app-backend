@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.DsosEncoding;
 using Xunit;
 
@@ -85,7 +84,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Tests
             Assert.Equal(value, symptomatic.DaysSinceOnsetOfSymptoms);
             Assert.Throws<InvalidOperationException>(() => symptomatic.DaysSinceLastSymptoms);
         }
-        
+
         [InlineData(86, -14, -14)] //Min
         [InlineData(87, -13, -13)]
         [InlineData(100, 0, 0)]

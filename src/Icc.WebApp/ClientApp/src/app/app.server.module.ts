@@ -2,14 +2,13 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
-import { NgModule } from '@angular/core';
-import { ServerModule } from '@angular/platform-server';
-import { ModuleMapLoaderModule } from '@nguniversal/module-map-ngfactory-loader';
-import { AppComponent } from './app.component';
-import { AppModule } from './app.module';
+import { NgModule } from "@angular/core";
+import { ServerModule } from "@angular/platform-server";
+import { AppComponent } from "./app.component";
+import { AppModule } from "./app.module";
 
 @NgModule({
-    imports: [AppModule, ServerModule, ModuleMapLoaderModule],
-    bootstrap: [AppComponent]
+  imports: [AppModule, ServerModule],
+  bootstrap: [AppComponent],
 })
-export class AppServerModule { }
+export class AppServerModule {}

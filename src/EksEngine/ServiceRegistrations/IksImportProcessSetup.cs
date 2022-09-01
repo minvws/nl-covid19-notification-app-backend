@@ -29,7 +29,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.ServiceRegistr
             services.AddTransient<Func<IksImportCommand>>(x => x.GetRequiredService<IksImportCommand>);
             services.AddTransient(
                 x => new IksImportCommand(
-                    x.GetRequiredService<DkSourceDbContext>(),
+                    x.GetRequiredService<DiagnosisKeysDbContext>(),
                     new IDiagnosticKeyProcessor[]
                     {
                         x.GetRequiredService<OnlyIncludeCountryOfOriginKeyProcessor>(),

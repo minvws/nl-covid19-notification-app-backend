@@ -24,16 +24,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
     /// </summary>
     public class IksImportCommand : BaseCommand
     {
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
         private readonly IDiagnosticKeyProcessor[] _importProcessors;
         private readonly Iso3166RegionCodeValidator _countryValidator = new Iso3166RegionCodeValidator();
         private readonly ITekValidatorConfig _tekValidatorConfig;
         private readonly IUtcDateTimeProvider _dateTimeProvider;
         private readonly ILogger<IksImportCommand> _logger;
 
-        public IksImportCommand(DkSourceDbContext dkSourceDbContext, IDiagnosticKeyProcessor[] importProcessors, ITekValidatorConfig tekValidatorConfig, IUtcDateTimeProvider dateTimeProvider, ILogger<IksImportCommand> logger)
+        public IksImportCommand(DiagnosisKeysDbContext diagnosisKeysDbContext, IDiagnosticKeyProcessor[] importProcessors, ITekValidatorConfig tekValidatorConfig, IUtcDateTimeProvider dateTimeProvider, ILogger<IksImportCommand> logger)
         {
-            _dkSourceDbContext = dkSourceDbContext ?? throw new ArgumentNullException(nameof(dkSourceDbContext));
+            _diagnosisKeysDbContext = diagnosisKeysDbContext ?? throw new ArgumentNullException(nameof(diagnosisKeysDbContext));
             _importProcessors = importProcessors ?? throw new ArgumentNullException(nameof(importProcessors));
             _tekValidatorConfig = tekValidatorConfig ?? throw new ArgumentNullException(nameof(tekValidatorConfig));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
@@ -91,7 +91,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Publishing
 
             items = _importProcessors.Execute(items);
             var result = items.Select(x => x.DiagnosisKey).ToList();
-            await _dkSourceDbContext.BulkInsertWithTransactionAsync(result, new SubsetBulkArgs());
+
+            _diagnosisKeysDbContext.BulkInsertBinaryCopy(result);
 
             return commandResult;
         }

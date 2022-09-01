@@ -21,15 +21,15 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 {
     public abstract class DkToIksSnapshotTests
     {
-        private readonly DkSourceDbContext _dkSourceDbContext;
+        private readonly DiagnosisKeysDbContext _diagnosisKeysDbContext;
         private readonly IksPublishingJobDbContext _iksPublishingDbContext;
         private readonly Mock<IUtcDateTimeProvider> _dateTimeProvider = new Mock<IUtcDateTimeProvider>();
         private readonly Mock<IOutboundFixedCountriesOfInterestSetting> _countriesConfigMock = new Mock<IOutboundFixedCountriesOfInterestSetting>(MockBehavior.Strict);
 
-        protected DkToIksSnapshotTests(DbContextOptions<DkSourceDbContext> dkSourceDbOptions, DbContextOptions<IksPublishingJobDbContext> iksPublishingDbOptions)
+        protected DkToIksSnapshotTests(DbContextOptions<DiagnosisKeysDbContext> diagnosisKeysContextOptions, DbContextOptions<IksPublishingJobDbContext> iksPublishingDbOptions)
         {
-            _dkSourceDbContext = new DkSourceDbContext(dkSourceDbOptions ?? throw new ArgumentNullException(nameof(dkSourceDbOptions)));
-            _dkSourceDbContext.Database.EnsureCreated();
+            _diagnosisKeysDbContext = new DiagnosisKeysDbContext(diagnosisKeysContextOptions ?? throw new ArgumentNullException(nameof(diagnosisKeysContextOptions)));
+            _diagnosisKeysDbContext.Database.EnsureCreated();
             _iksPublishingDbContext = new IksPublishingJobDbContext(iksPublishingDbOptions ?? throw new ArgumentNullException(nameof(iksPublishingDbOptions)));
             _iksPublishingDbContext.Database.EnsureCreated();
         }
@@ -38,9 +38,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         {
             _countriesConfigMock.Setup(x => x.CountriesOfInterest).Returns(new[] { "DE", "BG" });
 
-
             return new IksInputSnapshotCommand(new NullLogger<IksInputSnapshotCommand>(),
-                _dkSourceDbContext,
+                _diagnosisKeysDbContext,
                 _iksPublishingDbContext,
                 _countriesConfigMock.Object
             );
@@ -48,8 +47,8 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
 
         private void Write(DiagnosisKeyEntity[] items)
         {
-            _dkSourceDbContext.DiagnosisKeys.AddRange(items);
-            _dkSourceDbContext.SaveChanges();
+            _diagnosisKeysDbContext.DiagnosisKeys.AddRange(items);
+            _diagnosisKeysDbContext.SaveChanges();
         }
 
         private DiagnosisKeyEntity[] AlreadyPublished(DiagnosisKeyEntity[] items)
@@ -133,17 +132,17 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Tests.Inter
         [Theory]
         public async Task Run1(int baseCount)
         {
-            await _dkSourceDbContext.BulkDeleteAsync(_dkSourceDbContext.DiagnosisKeys.ToList());
+            await _diagnosisKeysDbContext.BulkDeleteAsync(_diagnosisKeysDbContext.DiagnosisKeys.ToList());
             await _iksPublishingDbContext.BulkDeleteAsync(_iksPublishingDbContext.Input.ToList());
 
             _dateTimeProvider.Setup(x => x.Snapshot).Returns(DateTime.UtcNow);
             Setup(baseCount);
 
-            Assert.Equal(baseCount * 5, _dkSourceDbContext.DiagnosisKeys.Count());
+            Assert.Equal(baseCount * 5, _diagnosisKeysDbContext.DiagnosisKeys.Count());
             Assert.Equal(0, _iksPublishingDbContext.Input.Count());
 
             var c = Create();
-            var result = await c.ExecuteAsync();
+            var result = c.Execute();
 
             Assert.Equal(3 * baseCount, result.Count);
             Assert.Equal(result.Count, _iksPublishingDbContext.Input.Count());

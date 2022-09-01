@@ -223,61 +223,44 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private async Task WriteNewEksToOutputAsync()
         {
-            _logger.LogDebug("Build EKS.");
+            _logger.LogDebug("Build EKS");
 
             var args = _output.Select(Map).ToArray();
 
-            var (content, contentV15) = await _setBuilder.BuildAsync(args);
+            var content = await _setBuilder.BuildAsync(args);
             var release = _eksEngineResult.Started;
             var eksCount = ++_eksCount;
 
             // Generate a new guid string, formatted without dashes
             var newOutputId = Guid.NewGuid().ToString("N");
 
-            var eksCreateJobOutputEntityV12 = new EksCreateJobOutputEntity
+            var eksCreateJobOutputEntity = new EksCreateJobOutputEntity
             {
                 Region = DefaultValues.Region,
                 Release = release,
                 CreatingJobQualifier = eksCount,
                 Content = content,
-                GaenVersion = GaenVersion.v12,
                 OutputId = newOutputId
             };
 
-            _logger.LogInformation("Write EKS - Id: {CreatingJobQualifier}.",
-                eksCreateJobOutputEntityV12.CreatingJobQualifier);
-
-            var eksCreateJobOutputEntityV15 = new EksCreateJobOutputEntity
-            {
-                Region = DefaultValues.Region,
-                Release = release,
-                CreatingJobQualifier = eksCount,
-                Content = contentV15,
-                GaenVersion = GaenVersion.v15,
-                OutputId = newOutputId
-            };
-
-            _logger.LogInformation("Write EKS - Id: {CreatingJobQualifier}.",
-                eksCreateJobOutputEntityV15.CreatingJobQualifier);
+            _logger.LogInformation("Write EKS - Id: {CreatingJobQualifier}",
+                eksCreateJobOutputEntity.CreatingJobQualifier);
 
             await using var tx = _eksPublishingJobDbContext.BeginTransaction();
-            await _eksPublishingJobDbContext.AddAsync(eksCreateJobOutputEntityV12);
-            await _eksPublishingJobDbContext.AddAsync(eksCreateJobOutputEntityV15);
+            await _eksPublishingJobDbContext.AddAsync(eksCreateJobOutputEntity);
             _eksPublishingJobDbContext.SaveAndCommit();
 
-            _logger.LogInformation("Mark TEKs as used.");
+            _logger.LogInformation("Mark TEKs as used");
 
-            foreach (var i in _output)
+            if (_output.Any())
             {
-                i.Used = true;
+                var idsToUpdate = string.Join(",", _output.Select(x => x.Id.ToString()).ToArray());
+
+                await _eksPublishingJobDbContext.BulkUpdateSqlRawAsync<EksCreateJobInputEntity>(
+                    columnName: "used",
+                    value: true,
+                    ids: idsToUpdate);
             }
-
-            //Could be 750k in this hit
-            var bulkArgs = new SubsetBulkArgs
-            {
-                PropertiesToInclude = new[] { nameof(EksCreateJobInputEntity.Used) }
-            };
-            await _eksPublishingJobDbContext.BulkUpdateWithTransactionAsync(_output, bulkArgs);
 
             _eksEngineResult.OutputCount += _output.Count;
 
@@ -287,7 +270,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
 
         private EksCreateJobInputEntity[] GetInputPage(int skip, int take)
         {
-            _logger.LogDebug("Read page - Skip {Skip}, Take {Take}.", skip, take);
+            _logger.LogDebug("Read page - Skip {Skip}, Take {Take}", skip, take);
 
             var unFilteredResult = _eksPublishingJobDbContext.EksInput
                 .AsNoTracking()
@@ -297,23 +280,23 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EksEngine.Commands
                 .Take(take)
                 .ToArray();
 
-            _logger.LogDebug("Read page - Count: {EksReadCount}.", unFilteredResult.Length);
+            _logger.LogDebug("Read page - Count: {EksReadCount}", unFilteredResult.Length);
 
             return unFilteredResult;
         }
 
         private async Task CommitResultsAsync()
         {
-            _logger.LogInformation("Commit results - publish EKSs.");
+            _logger.LogInformation("Commit results - publish EKSs");
 
             await _contentWriter.ExecuteAsync();
 
-            _logger.LogInformation("Commit results - Mark TEKs as Published.");
+            _logger.LogInformation("Commit results - Mark TEKs as Published");
             var result = await _markWorkFlowTeksAsUsed.ExecuteAsync();
-            _logger.LogInformation("Marked as published - Total: {TotalMarked}.", result.Marked);
+            _logger.LogInformation("Marked as published - Total: {TotalMarked}", result.Marked);
 
             //Write stuffing to DKs
-            await _writeStuffingToDiagnosisKeys.ExecuteAsync();
+            _writeStuffingToDiagnosisKeys.Execute();
 
             await ClearJobTablesAsync();
         }

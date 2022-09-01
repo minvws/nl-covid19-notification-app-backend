@@ -2,23 +2,20 @@
 // Licensed under the EUROPEAN UNION PUBLIC LICENCE v. 1.2
 // SPDX-License-Identifier: EUPL-1.2
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.EfgsUploader.ServiceRegistrations
 {
     public static class SigningProcessSetup
     {
-        public static void SigningProcessRegistration(this IServiceCollection services)
+        public static void SigningProcessRegistration(this IServiceCollection services, IConfigurationRoot configuration)
         {
-            // Batch Job
-            services.AddTransient<IIksSigner, EfgsCmsSigner>();
-            services.AddTransient<ICertificateChainConfig, CertificateChainConfig>();
-            services.AddTransient<ICertificateProvider>(
-                x => new LocalMachineStoreCertificateProvider(
-                    x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>()));
+            services.AddSingleton<IHsmSignerConfig, HsmSignerConfig>(
+                x => new HsmSignerConfig(configuration, "Certificates:HsmSigner"));
+            services.AddHttpClient<IHsmSignerService, HsmSignerService>();
         }
     }
 }

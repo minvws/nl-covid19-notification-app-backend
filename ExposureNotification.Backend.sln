@@ -4,7 +4,6 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AF7302DA-EC4A-4A77-9092-98DEAB8B4D5C}"
 	ProjectSection(SolutionItems) = preProject
-		.dockerignore = .dockerignore
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		azure-pipelines.yml = azure-pipelines.yml
@@ -120,20 +119,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{F458B84D
 		build\run-e2e-tests.yml = build\run-e2e-tests.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{7B34EF2E-51E5-4734-AB98-490C0CCB02CD}"
-	ProjectSection(SolutionItems) = preProject
-		docker\.gitignore = docker\.gitignore
-		docker\docker-compose.yml = docker\docker-compose.yml
-		docker\README.md = docker\README.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "development", "development", "{E4E317C9-6B41-4E93-99D2-0D3B10FD52FF}"
-	ProjectSection(SolutionItems) = preProject
-		docker\development\.dockerignore = docker\development\.dockerignore
-		docker\development\appsettings.json = docker\development\appsettings.json
-		docker\development\Dockerfile.DbBuilder = docker\development\Dockerfile.DbBuilder
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{27576F12-63A8-4D88-8548-2E8770243C1F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "jobs", "jobs", "{C3CD8AF9-2F56-46E4-9AD1-CBA4DFF4B271}"
@@ -224,8 +209,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endpoint.Tests", "tests\e2e\Endpoint.Tests\Endpoint.Tests.csproj", "{93389D4D-3271-4FFA-9CE9-3C92A677281B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scenario.Tests", "tests\e2e\Scenario.Tests\Scenario.Tests.csproj", "{23DF13F2-1AEB-4E04-B000-9F1E0520FCD6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbBuilder", "src\DbBuilder\DbBuilder.csproj", "{B5838C8F-7B59-4655-8B63-E9B15C83CA96}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfgsTestDataGenerator", "src\EfgsTestDataGenerator\EfgsTestDataGenerator.csproj", "{3A11F17C-EB8E-45EF-B3FA-E63881B64132}"
 EndProject
@@ -529,10 +512,6 @@ Global
 		{23DF13F2-1AEB-4E04-B000-9F1E0520FCD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23DF13F2-1AEB-4E04-B000-9F1E0520FCD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23DF13F2-1AEB-4E04-B000-9F1E0520FCD6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5838C8F-7B59-4655-8B63-E9B15C83CA96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5838C8F-7B59-4655-8B63-E9B15C83CA96}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5838C8F-7B59-4655-8B63-E9B15C83CA96}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5838C8F-7B59-4655-8B63-E9B15C83CA96}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3A11F17C-EB8E-45EF-B3FA-E63881B64132}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3A11F17C-EB8E-45EF-B3FA-E63881B64132}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A11F17C-EB8E-45EF-B3FA-E63881B64132}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -604,7 +583,6 @@ Global
 		{71351FB6-C478-4E8F-B7CE-F5C0A65DFBE2} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}
 		{A18FFA4C-EBAB-4456-823B-92D12279F030} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}
 		{854D6C6B-16DD-41C9-87E9-2E824154F3AA} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}
-		{E4E317C9-6B41-4E93-99D2-0D3B10FD52FF} = {7B34EF2E-51E5-4734-AB98-490C0CCB02CD}
 		{27576F12-63A8-4D88-8548-2E8770243C1F} = {F458B84D-1A03-45EE-9D7E-DCB6E766E722}
 		{C3CD8AF9-2F56-46E4-9AD1-CBA4DFF4B271} = {27576F12-63A8-4D88-8548-2E8770243C1F}
 		{01808CB4-79B1-46E8-A219-3A857F1C9B94} = {27576F12-63A8-4D88-8548-2E8770243C1F}
@@ -636,7 +614,6 @@ Global
 		{8ECA3FDC-0732-41E9-A44A-B92216074552} = {72259EEA-61F5-415E-B5D7-52F5B73EA3DE}
 		{93389D4D-3271-4FFA-9CE9-3C92A677281B} = {72259EEA-61F5-415E-B5D7-52F5B73EA3DE}
 		{23DF13F2-1AEB-4E04-B000-9F1E0520FCD6} = {72259EEA-61F5-415E-B5D7-52F5B73EA3DE}
-		{B5838C8F-7B59-4655-8B63-E9B15C83CA96} = {854D6C6B-16DD-41C9-87E9-2E824154F3AA}
 		{3A11F17C-EB8E-45EF-B3FA-E63881B64132} = {854D6C6B-16DD-41C9-87E9-2E824154F3AA}
 		{D2500C82-3EA0-4049-BCAF-EF994740A67D} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}
 		{8D6AB01E-2038-4140-BE79-4BE3ECB090BE} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}

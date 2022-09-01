@@ -14,7 +14,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.AspNet;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.LuhnModN;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.Authorisation.Handlers;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Icc.Commands.TekPublication;
 

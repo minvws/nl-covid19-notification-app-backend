@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Iks.Protobuf;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
 
@@ -20,23 +21,22 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
         private readonly IksUploadService _iksUploadService;
         private readonly IksOutDbContext _iksOutboundDbContext;
         private List<IksOutEntity> _iksOutEntities;
-        private readonly IIksSigner _signer;
         private readonly IBatchTagProvider _batchTagProvider;
-        private readonly List<IksSendResult> _results = new List<IksSendResult>();
-        private readonly HttpPostIksResult _lastResult;
+        private readonly List<IksSendResult> _results = new();
+        private readonly IHsmSignerService _hsmSignerService;
         private readonly ILogger _logger;
 
         public IksSendBatchCommand(
             IksUploadService iksUploadService,
             IksOutDbContext iksOutboundDbContext,
-            IIksSigner signer,
             IBatchTagProvider batchTagProvider,
+            IHsmSignerService hsmSignerService,
             ILogger<IksSendBatchCommand> logger)
         {
             _iksUploadService = iksUploadService ?? throw new ArgumentNullException(nameof(iksUploadService));
             _iksOutboundDbContext = iksOutboundDbContext ?? throw new ArgumentNullException(nameof(iksOutboundDbContext));
-            _signer = signer ?? throw new ArgumentNullException(nameof(signer));
             _batchTagProvider = batchTagProvider ?? throw new ArgumentNullException(nameof(batchTagProvider));
+            _hsmSignerService = hsmSignerService ?? throw new ArgumentNullException(nameof(hsmSignerService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -75,7 +75,10 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
 
             var efgsSerializer = new EfgsDiagnosisKeyBatchSerializer();
 
-            return _signer.GetSignature(efgsSerializer.Serialize(batch));
+            var efgsContent = efgsSerializer.Serialize(batch);
+            var result = _hsmSignerService.GetEfgsCmsSignatureAsync(efgsContent).Result;
+
+            return result;
         }
 
         private async Task ProcessOne(IksOutEntity item)
@@ -168,7 +171,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Commands.Outbound
                         break;
                     case HttpStatusCode.InternalServerError:
                         item.CanRetry = true;
-                        item.ProcessState = ProcessState.Failed.ToString(); // Adjust State to Failed 
+                        item.ProcessState = ProcessState.Failed.ToString(); // Adjust State to Failed
                         _logger.LogError("EFGS: Not able to write data. Retry please.");
                         break;
                     default:

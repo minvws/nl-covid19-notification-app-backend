@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Iks.Uploader.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Iks
@@ -62,7 +63,12 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Ik
             // DELETE FROM IksIn.dbo.IksIn WHERE Created < (today - 14-days)
             var iksToBeCleaned = await _iksOutDbContext.Iks.AsNoTracking().Where(p => p.Created < cutoff).ToArrayAsync();
             _result.GivenMercy = iksToBeCleaned.Length;
-            await _iksOutDbContext.BulkDeleteWithTransactionAsync(iksToBeCleaned, new SubsetBulkArgs());
+
+            if (iksToBeCleaned.Any())
+            {
+                var idsToDelete = string.Join(",", iksToBeCleaned.Select(x => x.Id.ToString()).ToArray());
+                await _iksOutDbContext.BulkDeleteSqlRawAsync<IksOutEntity>(idsToDelete);
+            }
 
             _result.Remaining = _iksOutDbContext.Iks.Count();
             _logger.LogInformation("Removed expired IksOut - Count: {IksOutRemoved}, Remaining: {IksOutRemaining}", _result.GivenMercy, _result.Remaining);

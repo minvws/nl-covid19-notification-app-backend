@@ -3,13 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 using System.ComponentModel.DataAnnotations.Schema;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Domain.Rcp;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.Entities
 {
-    [Table(TableNames.EksEngineInput)]
     public class EksCreateJobInputEntity
     {
         /// <summary>
