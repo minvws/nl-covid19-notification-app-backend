@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.EntityFramework;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Entities;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.EntityFramework;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.DashboardData
@@ -35,7 +36,13 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DailyCleanup.Commands.Da
             _result = new RemoveProcessedDashboardDataResult();
 
             var removalCandidates = await _dbContext.DashboardInputJson.AsNoTracking().Where(x => x.ProcessedDate != null).ToArrayAsync();
-            await _dbContext.BulkDeleteWithTransactionAsync(removalCandidates, new SubsetBulkArgs());
+
+            if (removalCandidates.Any())
+            {
+                var idsToDelete = string.Join(",", removalCandidates.Select(x => x.Id.ToString()).ToArray());
+                await _dbContext.BulkDeleteSqlRawAsync<DashboardInputJsonEntity>(idsToDelete);
+            }
+
 
             _result.Removed = removalCandidates.Length;
             _logger.LogInformation("Removed {DashboardDataItemsRemoved} processed DashboardData jsons", _result.Removed);

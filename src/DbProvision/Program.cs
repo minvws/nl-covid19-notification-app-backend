@@ -11,6 +11,8 @@ using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Core.ConsoleApps;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Certificates;
+using NL.Rijksoverheid.ExposureNotification.BackEnd.Crypto.Signing;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.DiagnosisKeys.EntityFramework;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Eks.Publishing.EntityFramework;
@@ -105,6 +107,9 @@ namespace DbProvision
             services.AddSingleton<IConfiguration>(configuration);
 
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
+            services.AddSingleton<IHsmSignerConfig, HsmSignerConfig>(
+                x => new HsmSignerConfig(configuration, "Certificates:HsmSigner"));
+            services.AddHttpClient<IHsmSignerService, HsmSignerService>();
 
             services.AddTransient<DatabaseProvisioner>();
             services.AddTransient<ContentPublisher>();

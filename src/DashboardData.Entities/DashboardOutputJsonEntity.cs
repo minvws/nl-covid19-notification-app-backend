@@ -14,8 +14,6 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Entities
 
         public DateTime CreatedDate { get; set; }
         public DateTime? PublishedDate { get; set; }
-
-        [Column(TypeName = "nvarchar(max)")]
         public string JsonData { get; set; }
     }
 }

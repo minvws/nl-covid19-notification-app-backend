@@ -18,10 +18,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         {
             services.AddScoped<IUtcDateTimeProvider, StandardUtcDateTimeProvider>();
             services.AddTransient<ZippedSignedContentFormatter>();
-            services.AddTransient(x => SignerConfigStartup.BuildEvSigner(
-                x.GetRequiredService<IConfiguration>(),
-                x.GetRequiredService<ILogger<LocalMachineStoreCertificateProvider>>(),
-                x.GetRequiredService<IUtcDateTimeProvider>()));
+            services.AddHttpClient<IHsmSignerService, HsmSignerService>();
             services.AddTransient<ContentValidator>();
             services.AddTransient<ContentInsertDbCommand>();
         }

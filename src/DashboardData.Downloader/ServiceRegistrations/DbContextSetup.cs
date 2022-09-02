@@ -16,9 +16,14 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
         public static void DbContextRegistration(this IServiceCollection services, IConfigurationRoot configuration)
         {
             services.AddDbContext<DashboardDataDbContext>(
-                options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.DashboardData)));
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.DashboardData))
+                    .UseSnakeCaseNamingConvention());
+
             services.AddDbContext<ContentDbContext>(
-                options => options.UseSqlServer(configuration.GetConnectionString(DatabaseConnectionStringNames.Content)));
+                options => options
+                    .UseNpgsql(configuration.GetConnectionString(DatabaseConnectionStringNames.Content))
+                    .UseSnakeCaseNamingConvention());
         }
     }
 }
