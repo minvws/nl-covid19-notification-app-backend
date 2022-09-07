@@ -4,7 +4,6 @@
 
 using System;
 using System.Linq;
-using NL.Rijksoverheid.ExposureNotification.BackEnd.Core;
 
 namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 {
@@ -49,13 +48,16 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
         private static CoronaMelderUsers MapCoronaMelderUsers(CoronaMelderUsersInput input)
         {
+            var result = new CoronaMelderUsers();
             var mappedValues = input.Values.Select(x => MapCoronaMelderUsersValue(x)).ToList();
 
-            return new CoronaMelderUsers
+            if (mappedValues.Any())
             {
-                Values = mappedValues,
-                HighlightedValue = mappedValues.OrderByDescending(x => x.Timestamp).First()
-            };
+                result.Values = mappedValues;
+                result.HighlightedValue = mappedValues.OrderByDescending(x => x.Timestamp).First();
+            }
+
+            return result;
         }
 
         private static DashboardOutputModelItemValue MapCoronaMelderUsersValue(CoronaMelderUsersInputValue input)
@@ -71,11 +73,11 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
 
         private static HospitalAdmissions MapHospitalAdmissions(HospitalAdmissionsInput input)
         {
-            
+
             var firstUsableMovingAverageValue = input.Values
                 .OrderByDescending(x => x.DateUnix)
                 .First(x => x.AdmissionsOnDateOfAdmissionMovingAverageRounded != null);
-            
+
             return new HospitalAdmissions
             {
                 Values = input.Values.Select(x => MapHospitalAdmissionsValue(x)).ToList(),

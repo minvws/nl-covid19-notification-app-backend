@@ -4,7 +4,6 @@
 
 using System;
 using System.Linq;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands;
 using NL.Rijksoverheid.ExposureNotification.BackEnd.Content.Commands.Entities;

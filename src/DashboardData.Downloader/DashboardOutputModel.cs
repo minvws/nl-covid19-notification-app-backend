@@ -19,7 +19,7 @@ namespace NL.Rijksoverheid.ExposureNotification.BackEnd.DashboardData.Downloader
     public class DashboardOutputModelItem
     {
         public int SortingValue { get; set; }
-        public List<DashboardOutputModelItemValue> Values { get; set; }
+        public List<DashboardOutputModelItemValue> Values { get; set; } = new();
         public DashboardOutputModelItemValue HighlightedValue { get; set; }
         public string MoreInfoUrl { get; set; }
     }
