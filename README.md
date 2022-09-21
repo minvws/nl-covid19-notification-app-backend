@@ -18,8 +18,9 @@ This repository contains the backend code for the Dutch exposure notification ap
 - The Android app can be found here: https://github.com/minvws/nl-covid19-notification-app-android
 - The designs that are used as a basis to develop the apps can be found here: https://github.com/minvws/nl-covid19-notification-app-design
 - The architecture that underpins the development can be found here: https://github.com/minvws/nl-covid19-notification-app-coordination
+- The HSM Signer Service used to sign content can be found here: https://github.com/minvws/nl-rdo-hsm-signer-service
 
-The backend code runs on .NET Core 3.1. End of support for this version of .NET is December 3rd, 2022.
+The backend code runs on .NET 6.
 
 ## External Documentation
 
@@ -44,71 +45,21 @@ If you have any other questions about the README or the information contained th
 
 ## Local Development Setup
 
-Before being able to run the projects contained in the backend solution, you will need to set up a database, and install a test certificate on the machine that will run the code.
+Before being able to run the projects contained in the backend solution, you will need to set up a database, and be able to connect to the [HSM Signer Service](https://github.com/minvws/nl-rdo-hsm-signer-service) test server.
 
 ### Certificates
 
-CoronaMelder signs its files with a RSA certificate and an ECDSA certificate. The latter is a requirement set by Apple and Google.  
+CoronaMelder has its files signed by the [HSM Signer Service](https://github.com/minvws/nl-rdo-hsm-signer-service) with a RSA certificate and an ECDSA certificate. The latter is a requirement set by Apple and Google.
+
 Versions of these certificates for local testing can be found in the folder `src/Crypto/Resources`:
 - TestRSA.p12  
 - TestECDSA.p12  
   
 **Please note: these certificates are not production certificates.**
 
-The file password for TestRSA.p12 is `Covid-19!`; the password for TestECDSA.p12 is `12345678`.
+The file password for TestRSA.p12 is `Covid-19!`; the password for TestECDSA.p12 is empty.
 
-The files `StaatDerNLChain-EV-Expires-2022-12-05.p7b` and `BdCertChain.p7b` can be ignored, as the local certificates are self-signed.  
-
-#### Installation: Windows
-Both certificates need to be installed into the local machine certificate store, under 'personal certificates'. Run `certlm.msc` to view this store.  
-
-#### Installation: macOS  
-For macOS the project assumes that the RSA certificate is installed in the *System* keychain. Please note that installing the certificate in the *System* keychain makes running the project locally slightly awkward, as it involves either giving the code permission to access this keychain permanently, or otherwise forces the developer to click "Allow" a large amount of times. To get around this, please make the following changes if you are running the backend on macOS:
-
-1. Install the `TestRSA.p12` certificate in the *login* keychain.
-2. Change `LocalMachineStoreCertificateProvider.cs` to read from `StoreLocation.CurrentUser` instead of `StoreLocation.LocalMachine`.
-
-#### Installation: Linux  
-To be able to install the necessary test certificate(s) on Linux, it can be convenient to use the `dotnet-certificate-tool` (see the [NuGet package](https://www.nuget.org/packages/dotnet-certificate-tool/) or the [GitHub repository](https://github.com/gsoft-inc/dotnet-certificate-tool)):
-```
-dotnet tool install --global dotnet-certificate-tool
-```
-To create the certificate from the p12 as decribed [here](#Certificates):
-```
-openssl pkcs12 -in TestRSA.p12 -out TestRSA.crt
-```
-To create the pfx from this created certificate:
-```
-openssl pkcs12 -export -out TestRSA.pfx -in TestRSA.crt
-```
-To install the created pfx to the keystore using the `dotnet-certificate-tool`:
-```
-certificate-tool add --file ./TestRSA.pfx --password Covid-19!
-```
-The output should be something like:
-```
-Installing certificate from './TestRSA.pfx' to 'My' certificate store (location: CurrentUser)...
-Done.
-```
-Verify the certificate was installed into the keystore as expected, check the keystore with:
-```
-certificate-tool list
-```
-One of the entries should be:
-```
-  Subject             : C=NL, S=Zuid-Holland, L=Den Haag, O=CIBG, OU=CIBG, CN=nl.samensterk.en.rsa
-  Issuer              : C=NL, S=Zuid-Holland, L=Den Haag, O=CIBG, OU=CIBG, CN=nl.samensterk.en.rsa
-  Serial Number       : 74AC87DD249C09A14919ED183BFD75BF
-  Not Before          : 6/8/2021 12:14:28 PM
-  Not After           : 6/8/2031 12:24:28 PM
-  Thumbprint          : 235930C0869A8D84B3CB0A9379522A4B0B4DBE0B
-  Signature Algorithm : sha256RSA (1.2.840.113549.1.1.11)
-  PublicKey Algorithm : RSA (1.2.840.113549.1.1.1)
-  Has PrivateKey      : Yes
-```
-As Linux does not have a LocalMachine store, please change `LocalMachineStoreCertificateProvider.cs` to read from `StoreLocation.CurrentUser` instead of `StoreLocation.LocalMachine`.
-
-More information on the various available keystores on specific operating systems can be found [here](https://docs.microsoft.com/en-us/dotnet/standard/security/cross-platform-cryptography#x509store).
+The file `StaatDerNLChain-EV-Expires-2022-12-05.p7b` can be ignored, as the local certificates are self-signed.
 
 ### Database
 
@@ -123,10 +74,9 @@ The codebase consists of the following projects, allowing you to locally set up 
 A console application that removes and rebuilds the required databases; only used for development and debugging.  
 The `nonuke`-argument can be supplied to prevent removing any existing databases.  
 Additionally, several types of JSON files can be inserted into the database by means of passing one of the following arguments, followed by a path to the specific JSON file:
-- `-a`, for AppconfigV2.
-- `-r`, for RiskCalculationParametersV2.
-- `-b`, for ResourcebundleV2.
-- `-b2`, for ResourcebundleV3.
+- `-a`, for Appconfig.json
+- `-r`, for RiskCalculationParameters.json
+- `-b`, for ResourceBundle.json
 
 #### GenTeks
 A console application that generates Temporary Exposure Keys ('TEKs') and inserts them into the database. For development and testing purposes only.  
@@ -143,17 +93,22 @@ As the GenTeks project currently marks workflows as "authorised" when it creates
 #### PublishContent
 A console application that, equal to DbProvision, allows the insertion of various JSON files into the database.  
 The files can be inserted into the database by means of passing one of the following arguments, followed by a path to a JSON file that contains said content:
-- `-a`, for AppconfigV2.
-- `-r`, for RiskCalculationParametersV2.
-- `-b`, for ResourcebundleV2.
-- `-b2`, for ResourcebundleV3.
+- `-a`, for Appconfig.json
+- `-r`, for RiskCalculationParameters.json
+- `-b`, for Resourcebundle.json
 
-#### SigTestFileCreator
+#### SigTestFileCreator (deprecated)
+
+_Deprecated: the backend no longer self-signs content, so installing certificates is no longer necessary_
+
 A console application that is used to check if the private keys of the installed certificates can be accessed and used. For development and testing purposes only.
 
 The program has one command-line argument: the path to a file that will be signed with the RSA and GAEN key.
 
-#### ProtobufScrubber
+#### ProtobufScrubber (deprecated)
+
+_Deprecated: the backend no longer self-signs content, and the `X962PackagingFix.cs` is longer used_
+
 A console application that alters the GAEN signature of a signed file so that it can be verified by OpenSSL. The requirement of this program stems from a difference in writing the header bytes to the signature files. See `X962PackagingFix.cs` for more info.  
 
 The program has one command-line argument: the path to a zip with an `export.sig` file.
@@ -168,11 +123,11 @@ A webservice for downloading the various files by the clients. It exposes endpoi
 A console application that removes old data (i.e., older than 14 days) from the database, in order to comply with privacy regulations.
 
 After the cleanup, it generates a set of statistics:  
-- The total amount of TEKs.
-- The amount of published TEKs.
-- The total amount of Workflows.
-- The total amount of Workflows with TEKs.
-- The total amount of Workflows authorised.
+- The total amount of TEKs
+- The amount of published TEKs
+- The total amount of Workflows
+- The total amount of Workflows with TEKs
+- The total amount of Workflows authorised
 
 As the name suggests, the DailyCleanup is run every night at a set time.
 
