@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <None Remove="appsettings.json" />
-    <None Remove="appsettings.release.json" />
     <None Remove="Resources\AppConfig.json" />
     <None Remove="Resources\ResourceBundleV3.json" />
     <None Remove="Resources\RiskCalculationParametersV3.json" />
@@ -11,9 +10,6 @@
   <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="appsettings.release.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\AppConfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
