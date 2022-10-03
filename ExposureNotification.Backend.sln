@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31729.503
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AF7302DA-EC4A-4A77-9092-98DEAB8B4D5C}"
 	ProjectSection(SolutionItems) = preProject
@@ -113,47 +113,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{A18FFA4C-EBAB-4456-823B-92D12279F030}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{854D6C6B-16DD-41C9-87E9-2E824154F3AA}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{F458B84D-1A03-45EE-9D7E-DCB6E766E722}"
-	ProjectSection(SolutionItems) = preProject
-		build\run-e2e-tests.yml = build\run-e2e-tests.yml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{27576F12-63A8-4D88-8548-2E8770243C1F}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "jobs", "jobs", "{C3CD8AF9-2F56-46E4-9AD1-CBA4DFF4B271}"
-	ProjectSection(SolutionItems) = preProject
-		build\pipelines\jobs\apps-publish-appiccportal-artifact.yaml = build\pipelines\jobs\apps-publish-appiccportal-artifact.yaml
-		build\pipelines\jobs\apps-publish-contentwebapi-artifact.yaml = build\pipelines\jobs\apps-publish-contentwebapi-artifact.yaml
-		build\pipelines\jobs\apps-publish-dailycleanup-artifact.yaml = build\pipelines\jobs\apps-publish-dailycleanup-artifact.yaml
-		build\pipelines\jobs\apps-publish-eksengine-artifact.yaml = build\pipelines\jobs\apps-publish-eksengine-artifact.yaml
-		build\pipelines\jobs\apps-publish-iccbackend-artifact.yaml = build\pipelines\jobs\apps-publish-iccbackend-artifact.yaml
-		build\pipelines\jobs\apps-publish-iksdownloader-artifact.yaml = build\pipelines\jobs\apps-publish-iksdownloader-artifact.yaml
-		build\pipelines\jobs\apps-publish-iksuploader-artifact.yaml = build\pipelines\jobs\apps-publish-iksuploader-artifact.yaml
-		build\pipelines\jobs\apps-publish-manifestengine-artifact.yaml = build\pipelines\jobs\apps-publish-manifestengine-artifact.yaml
-		build\pipelines\jobs\apps-publish-mobileappipawebapi-artifact.yaml = build\pipelines\jobs\apps-publish-mobileappipawebapi-artifact.yaml
-		build\pipelines\jobs\dacpac-publish-database-artifact.yaml = build\pipelines\jobs\dacpac-publish-database-artifact.yaml
-		build\pipelines\jobs\files-publish-hsm-scripting-artifact.yaml = build\pipelines\jobs\files-publish-hsm-scripting-artifact.yaml
-		build\pipelines\jobs\tests-e2e-publish-endpointtests-artifact.yaml = build\pipelines\jobs\tests-e2e-publish-endpointtests-artifact.yaml
-		build\pipelines\jobs\tests-e2e-publish-scenariotests-artifact.yaml = build\pipelines\jobs\tests-e2e-publish-scenariotests-artifact.yaml
-		build\pipelines\jobs\tools-publish-forcetekauth-artifact.yaml = build\pipelines\jobs\tools-publish-forcetekauth-artifact.yaml
-		build\pipelines\jobs\tools-publish-genteks-artifact.yaml = build\pipelines\jobs\tools-publish-genteks-artifact.yaml
-		build\pipelines\jobs\tools-publish-protobufscrubber-artifact.yaml = build\pipelines\jobs\tools-publish-protobufscrubber-artifact.yaml
-		build\pipelines\jobs\tools-publish-publishcontent-artifact.yaml = build\pipelines\jobs\tools-publish-publishcontent-artifact.yaml
-		build\pipelines\jobs\tools-publish-sigtestfilecreator-artifact.yaml = build\pipelines\jobs\tools-publish-sigtestfilecreator-artifact.yaml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "stages", "stages", "{01808CB4-79B1-46E8-A219-3A857F1C9B94}"
-	ProjectSection(SolutionItems) = preProject
-		build\pipelines\stages\test-stage.yaml = build\pipelines\stages\test-stage.yaml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{CB1C1CF2-8C60-42F2-90DE-675784F5EEF0}"
-	ProjectSection(SolutionItems) = preProject
-		build\pipelines\jobs\templates\build-and-publish-steps-e2e-domain.yaml = build\pipelines\jobs\templates\build-and-publish-steps-e2e-domain.yaml
-		build\pipelines\jobs\templates\build-and-publish-steps-e2e-public.yaml = build\pipelines\jobs\templates\build-and-publish-steps-e2e-public.yaml
-		build\pipelines\jobs\templates\build-and-publish-steps.yaml = build\pipelines\jobs\templates\build-and-publish-steps.yaml
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DailyCleanup.Commands", "src\DailyCleanup.Commands\DailyCleanup.Commands.csproj", "{B96EBCAB-E313-4669-AA66-24D6F23D9F6E}"
 EndProject
@@ -564,10 +523,6 @@ Global
 		{71351FB6-C478-4E8F-B7CE-F5C0A65DFBE2} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}
 		{A18FFA4C-EBAB-4456-823B-92D12279F030} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}
 		{854D6C6B-16DD-41C9-87E9-2E824154F3AA} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}
-		{27576F12-63A8-4D88-8548-2E8770243C1F} = {F458B84D-1A03-45EE-9D7E-DCB6E766E722}
-		{C3CD8AF9-2F56-46E4-9AD1-CBA4DFF4B271} = {27576F12-63A8-4D88-8548-2E8770243C1F}
-		{01808CB4-79B1-46E8-A219-3A857F1C9B94} = {27576F12-63A8-4D88-8548-2E8770243C1F}
-		{CB1C1CF2-8C60-42F2-90DE-675784F5EEF0} = {C3CD8AF9-2F56-46E4-9AD1-CBA4DFF4B271}
 		{B96EBCAB-E313-4669-AA66-24D6F23D9F6E} = {6E45BE28-4D13-4B40-8D67-FEA38CE29AAA}
 		{ACE49B6D-BFA8-4BD6-9952-910BB99DC88D} = {A811ADB0-5804-4034-A8D7-CBC2E8C66594}
 		{A811ADB0-5804-4034-A8D7-CBC2E8C66594} = {4982AA33-03CF-4C13-84E9-BF9342124DD2}
