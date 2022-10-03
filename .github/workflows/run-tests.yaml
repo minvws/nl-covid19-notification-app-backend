@@ -2,9 +2,9 @@ name: Run tests on .NET
 
 on:
   push:
-    branches: [ "feature/migration-linux-postgres" ]
+    branches: main
   pull_request:
-    branches: [ "feature/migration-linux-postgres" ]
+    branches: main
 
 jobs:
   build:
