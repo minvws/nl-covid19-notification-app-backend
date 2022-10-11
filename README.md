@@ -107,7 +107,7 @@ The program has one command-line argument: the path to a file that will be signe
 
 #### ProtobufScrubber (deprecated)
 
-_Deprecated: the backend no longer self-signs content, and the `X962PackagingFix.cs` is longer used_
+_Deprecated: the backend no longer self-signs content, and the `X962PackagingFix.cs` is no longer used_
 
 A console application that alters the GAEN signature of a signed file so that it can be verified by OpenSSL. The requirement of this program stems from a difference in writing the header bytes to the signature files. See `X962PackagingFix.cs` for more info.  
 
